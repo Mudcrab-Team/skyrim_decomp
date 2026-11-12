@@ -1225,11 +1225,18 @@ def install_toolchain(ctx, accept):
     common = [sys.executable, '-I', str(src / 'vsdownload.py'), '--manifest', str(vsman), '--major', '15',
               '--host-arch', 'x64', '--architecture', 'x64', '--with-default', 'no', '--with-msvc', 'yes',
               '--with-sdk', 'yes', '--sdk-version', pins['SDK_VERSION'], '--accept-license']
+    # A persistent download cache: without one vsdownload.py discards every finished payload when
+    # one fails, so an interrupted 0.75 GB download on a slow link would start over. Each cached
+    # payload is checked against the manifest's SHA-256 before reuse.
+    cache = work / 'cache'
     if not toolchain_bins(dest):
-        ctx.say(f'downloading and unpacking the toolset and SDK into {dest} (about 4 GB of disk, from Microsoft)')
-        proc = ctx.run(common + ['--dest', str(dest)], cwd=work)
+        ctx.say(f'downloading and unpacking the toolset and SDK into {dest} (about 0.75 GB from Microsoft, '
+                f'about 3.5 GB of disk); an interrupted download resumes from {cache} on the next run')
+        proc = ctx.run(common + ['--cache', str(cache), '--dest', str(dest)], cwd=work)
         if proc.returncode != 0:
-            raise Stop(FAILED, 'vsdownload.py failed (see its output above)', f'{ctx.cli} setup --accept-microsoft-license')
+            raise Stop(FAILED, 'vsdownload.py failed (see its output above); finished downloads are kept',
+                       f'{ctx.cli} setup --accept-microsoft-license   (resumes)')
+    shutil.rmtree(cache, ignore_errors=True)
     if not ctx.windows and not (dest / 'bin/x64/cl').is_file():
         proc = ctx.run(['bash', str(src / 'install.sh'), str(dest)], cwd=work)
         if proc.returncode != 0:
