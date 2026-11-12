@@ -1557,11 +1557,13 @@ def start(ctx, args, quiet=False):
             raise Stop(CONSENT, 'say who drafts the unit (a person, and the AI model if one writes code)',
                        f'{ctx.cli} start {" ".join(args.rva)} --drafted-by "<your name>, assisted by <model or none>"')
         h_text, cpp_text = skeleton(fns[0], cls, m[0].group(2), area, drafted, recipe)
+        # LF on every platform: the source digest hashes the bytes on disk, and the project's hosts
+        # check out LF (.gitattributes), so text mode's CRLF on Windows would change the digest.
         if not (ctx.repo / header).exists():
             (ctx.repo / header).parent.mkdir(parents=True, exist_ok=True)
-            (ctx.repo / header).write_text(h_text)
+            (ctx.repo / header).write_text(h_text, encoding='utf-8', newline='\n')
             created.append(header)
-        (ctx.repo / cpp).write_text(cpp_text)
+        (ctx.repo / cpp).write_text(cpp_text, encoding='utf-8', newline='\n')
         created.append(cpp)
         save_config(ctx, drafted_by=drafted)
     elif not args.practice:

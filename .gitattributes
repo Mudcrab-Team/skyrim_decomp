@@ -4,3 +4,8 @@
 *.json text eol=lf
 *.md text eol=lf
 *.yml text eol=lf
+# Source digests (tools/source_digest.py) hash the bytes on disk, so a Windows checkout with
+# core.autocrlf=true (Git for Windows' default) would give every unit a different digest from the
+# project's hosts and the committed match records.
+*.cpp text eol=lf
+*.h text eol=lf
