@@ -259,6 +259,42 @@ filter a base would share the primary vptr and lose the observed member offset. 
 inventory-named base definition still needs a passing comparison; declare an existing external
 constructor instead of emitting a partial local version.
 
+## Shaping ideas from one contributor's cheap-model runs
+
+These are observations from one contributor's drafting runs with a cheap model, not rules.
+Items A to D each helped close at least one near-miss there; E is a way of working. The project
+has not checked them. Treat each as a hypothesis and try it when a candidate is close. A
+comparator pass is the only evidence. The names below (`Node`, `list`, `value`) are invented
+examples. (low)
+
+**A. Walking a linked list: take a reference, advance, then use the reference.**
+Symptom: a loop calls a function on each list element, and the candidate is shorter by one
+instruction. Cause: the target may keep an address computation of the element that nothing uses
+later. Fix: take a reference to the node's element, advance the node pointer, and only then make
+the call:
+`Value& item = node->value; node = node->next; Visit(item);`
+
+**B. Give each value its own local, declared just before its write.**
+Symptom: stack offsets differ because the candidate shares one slot between values. Fix: copy
+each value into its own local, declared right before the statement that writes it
+(`std::uint32_t count = list.count; Write(count);`). Do not reuse one local for several values.
+
+**C. Write an inner search as a small helper that returns.**
+Symptom: the jumps of a nested search loop merge in a different place from the target's. Fix: move
+the inner loop into a small helper with `return true` on a hit and `return false` after the loop
+(`bool Contains(const List& list, const Key& key)`). The caller then tests its result. Label the
+helper name `GUESS(low)`: the original may have inlined it.
+
+**D. A callee argument that fills a full 32-bit register is a 32-bit integer, not `bool`.**
+Symptom: the target sets the whole 32-bit argument register, where the candidate sets a byte.
+Fix: declare the parameter `std::uint32_t`. A changed signature has a new decorated name, so bind
+the new name to the target's callee with a hint.
+
+**E. Check the size difference first.**
+A difference of a few bytes (4, for example) is usually one missing or extra instruction. It is
+usually not a logic error. Look for that instruction (an unused address computation, a store, a
+register move) before you rewrite the logic.
+
 ## Unsolved patterns
 
 **12. A pure callee-saved register swap with the same instructions.** (low)
