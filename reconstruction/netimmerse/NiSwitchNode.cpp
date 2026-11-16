@@ -10,36 +10,51 @@
 // Drafted by Claude Haiku 5.5 (claude-haiku-5-5, worker haiku-202611122349-3), starting from
 // a tools/skeleton.py skeleton.
 // Source exposure: binary-analysis. Drafted by v-macrev, assisted by claude-opus-5-5.
-// Code origin: IsEqual and the small accessor helpers above it come from the earlier project draft
-// named in the Drafted by line; every other function and helper is an original implementation
-// written by v-macrev, assisted by claude-opus-5-5, from a local listing of the contributor's own
-// copy of the pinned image. Only names come from the community headers; no community or sibling
-// body is adapted.
+// Code origin: IsEqual and its small accessor helpers retain the earlier project draft.
+// StreamRead, StreamBinaryRead: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from
+// include/RE/N/NiBinaryStream.h (read) and src/RE/N/NiBinaryStream.cpp (binary_read).
+// Other bodies are original reconstructions by v-macrev, assisted by claude-opus-5-5,
+// from a local listing of the contributor's own pinned image. Integration repair by
+// awarebayes, assisted by gpt-6.1-sol, corrects provenance and defers four update bodies.
 // Compared functions:
 //   RVA 0xeed530, 82 bytes: NiSwitchNode::IsEqual
 //   RVA 0xeee380, 4 bytes: NiSwitchNode::AsSwitchNode
-//   RVA 0xeee080, 110 bytes: NiSwitchNode::UpdateWorldBound
 //   RVA 0xeed490, 142 bytes: NiSwitchNode::SaveBinary
 //   RVA 0xeed6e0, 143 bytes: NiSwitchNode::AttachChild
 //   RVA 0xeed3c0, 160 bytes: NiSwitchNode::LoadBinary
 //   RVA 0xeedae0, 161 bytes: NiSwitchNode::SetAt1
 //   RVA 0xeee100, 170 bytes: NiSwitchNode::OnVisible
-//   RVA 0xeedf20, 339 bytes: NiSwitchNode::UpdateRigidDownwardPass
-//   RVA 0xeedc40, 341 bytes: NiSwitchNode::UpdateDownwardPass
-//   RVA 0xeedda0, 363 bytes: NiSwitchNode::UpdateSelectedDownwardPass
 // CI hash: 0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
-// CI hash: 0xeee080 ?UpdateWorldBound@NiSwitchNode@@UEAAXXZ
 // CI hash: 0xeed490 ?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
 // CI hash: 0xeed6e0 ?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z
 // CI hash: 0xeed3c0 ?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
 // CI hash: 0xeedae0 ?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z
 // CI hash: 0xeee100 ?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z
-// CI hash: 0xeedf20 ?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
-// CI hash: 0xeedc40 ?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
-// CI hash: 0xeedda0 ?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
-// Adapted bodies: none
+// Adapted bodies: StreamRead, StreamBinaryRead (CommonLibSSE-NG, cited above).
 // A byte match shows that this source and recipe produce the checked code; it does not verify the
 // community names or that the original source looked like this.
+// CommonLibSSE-NG licence notice:
+// MIT License
+//
+// Copyright (c) 2018 Ryan-rsm-McKenzie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 #include "NiSwitchNode.h"
 
 // The shared header leaves the read pointer as void*; this view reads the same offset typed.
@@ -52,42 +67,6 @@ struct NiBinaryStreamReadSlot
 static inline NiBinaryStreamReadSlot* ReadSlot(NiBinaryStream* a_stream)
 {
 	return reinterpret_cast<NiBinaryStreamReadSlot*>(a_stream);
-}
-
-// The flags word is a bitfield struct in the shared header; the compared code tests it as one dword.
-static inline std::uint32_t FlagsWordOf(const NiAVObject* a_object)
-{
-	return *reinterpret_cast<const std::uint32_t*>(&a_object->flags);
-}
-
-// Copies a child's bound in the order the image does: centre x, then the radius, then centre y and z,
-// with the radius stored last. Centre words move as dwords.
-// AssignPoint, SetCenterAndRadius: GUESS(low); member-wise point assignment and a bound setter that
-// takes the radius by value, which is how the copy reaches the stores: the radius is loaded first
-// and stored after the centre.
-static inline void AssignPoint(NiPoint3& a_dst, const NiPoint3& a_src)
-{
-	a_dst.x = a_src.x;
-	a_dst.y = a_src.y;
-	a_dst.z = a_src.z;
-}
-
-static inline void SetCenterAndRadius(NiBound& a_bound, const NiPoint3& a_center, float a_radius)
-{
-	AssignPoint(a_bound.center, a_center);
-	a_bound.radius = a_radius;
-}
-
-static inline void CopyBoundFromChild(NiBound& a_dst, const NiBound& a_src)
-{
-	SetCenterAndRadius(a_dst, a_src.center, a_src.radius);
-}
-
-// DirtyFlagOf: GUESS(low); bit 0 of the update flags (kDirty in the community NiUpdateData::Flag),
-// read as a byte as the image does
-static inline std::uint8_t DirtyFlagOf(const NiUpdateData& a_data)
-{
-	return static_cast<std::uint8_t>(*reinterpret_cast<const std::uint8_t*>(&a_data.flags) & 1);
 }
 
 // RVA 0xeed530, 82 bytes.
@@ -110,15 +89,6 @@ bool NiSwitchNode::IsEqual(NiObject* a_object)
 static inline bool GetFlagBit(std::uint16_t a_flags, std::uint16_t a_mask)
 {
 	return (a_flags & a_mask) != 0;
-}
-
-// UpdateControllerList: GUESS(low); walks the node's controller list and updates each controller
-// with the update data.
-static inline void UpdateControllerList(NiSwitchNode* a_self, NiUpdateData& a_data)
-{
-	for (NiTimeController* controller = a_self->controllers; controller; controller = controller->next) {
-		controller->Update(a_data);
-	}
 }
 
 // SwitchTableClearAtGrow: GUESS(low); the switch table's set-at-grow with a zero element, as the
@@ -152,8 +122,7 @@ static inline void SwitchTableAddZero(NiTArray<std::uint32_t>& a_table)
 	a_table._data[a_idx] = 0;
 }
 
-// StreamBinaryRead, StreamRead: GUESS(low); the read path mirrored from the shared header's write
-// path (binary_write, write): one raw read of a member through the input stream's read pointer.
+// StreamBinaryRead, StreamRead: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted binary_read/read bodies.
 static inline std::uint32_t StreamBinaryRead(NiBinaryStream* a_in, void* a_buffer, std::uint32_t a_totalBytes, std::uint32_t* a_componentSizes, std::uint32_t a_numComponents = 1)
 {
 	std::uint32_t bytesRead = ReadSlot(a_in)->readFn(a_in, a_buffer, a_totalBytes, a_componentSizes, a_numComponents);
@@ -209,99 +178,6 @@ void NiSwitchNode::SetAt1(std::uint32_t a_idx, NiAVObject* a_child, NiPointer<Ni
 	NiNodeSetAt1(this, a_idx, a_child, a_childOut);
 }
 
-// RVA 0xeedc40, 341 bytes.
-void NiSwitchNode::UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
-{
-	flags = DirtyFlagOf(a_data) ? static_cast<std::uint16_t>(flags | 2) : static_cast<std::uint16_t>(flags & 0xFFFD);
-	savedTime = a_data.time;
-	if (flags & 1) {
-		++revID;
-		if (DirtyFlagOf(a_data)) {
-			UpdateControllerList(this, a_data);
-		}
-		UpdateWorldData(&a_data);
-		std::int32_t idx = index;
-		if (idx >= 0) {
-			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
-			if (child) {
-				child->UpdateDownwardPass(a_data, a_arg2);
-				SwitchTableSet(&childRevID, index, &revID);
-				CopyBoundFromChild(worldBound, child->worldBound);
-			}
-		}
-	} else {
-		NiNodeUpdateDownwardPass(this, a_data, a_arg2);
-	}
-}
-
-// RVA 0xeedda0, 363 bytes.
-void NiSwitchNode::UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
-{
-	savedTime = a_data.time;
-	if (flags & 1) {
-		++revID;
-		std::uint8_t dirty = DirtyFlagOf(a_data);
-		std::uint32_t word = a_data.flags;
-		a_data.flags = TestBit(FlagsWordOf(this), 3) ? (word | 1) : (word & ~1u);
-		if (a_data.flags & 1) {
-			UpdateControllerList(this, a_data);
-		}
-		word = a_data.flags;
-		a_data.flags = dirty ? (word | 1) : (word & ~1u);
-		UpdateWorldData(&a_data);
-		std::int32_t idx = index;
-		if (idx >= 0) {
-			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
-			if (child) {
-				std::uint32_t childFlags = FlagsWordOf(child);
-				if (TestBit(childFlags, 1)) {
-					NiChildSlots* slots = reinterpret_cast<NiChildSlots*>(child);
-					if (TestBit(childFlags, 4)) {
-						slots->UpdateRigidDownwardPass(a_data, a_arg2);
-					} else {
-						slots->UpdateSelectedDownwardPass(a_data, a_arg2);
-					}
-				}
-				SwitchTableSet(&childRevID, index, &revID);
-				CopyBoundFromChild(worldBound, child->worldBound);
-			}
-		}
-	} else {
-		NiNodeUpdateSelectedDownwardPass(this, a_data, a_arg2);
-	}
-}
-
-// RVA 0xeedf20, 339 bytes.
-void NiSwitchNode::UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
-{
-	savedTime = a_data.time;
-	if (flags & 1) {
-		++revID;
-		std::uint8_t dirty = DirtyFlagOf(a_data);
-		std::uint32_t word = a_data.flags;
-		a_data.flags = TestBit(FlagsWordOf(this), 3) ? (word | 1) : (word & ~1u);
-		if (a_data.flags & 1) {
-			UpdateControllerList(this, a_data);
-		}
-		word = a_data.flags;
-		a_data.flags = dirty ? (word | 1) : (word & ~1u);
-		UpdateWorldData(&a_data);
-		std::int32_t idx = index;
-		if (idx >= 0) {
-			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
-			if (child) {
-				if (TestBit(FlagsWordOf(child), 1)) {
-					reinterpret_cast<NiChildSlots*>(child)->UpdateRigidDownwardPass(a_data, a_arg2);
-				}
-				SwitchTableSet(&childRevID, index, &revID);
-				CopyBoundFromChild(worldBound, child->worldBound);
-			}
-		}
-	} else {
-		NiNodeUpdateRigidDownwardPass(this, a_data, a_arg2);
-	}
-}
-
 // RVA 0xeee100, 170 bytes.
 void NiSwitchNode::OnVisible(NiCullingProcess& a_process, std::int32_t)
 {
@@ -320,30 +196,3 @@ void NiSwitchNode::OnVisible(NiCullingProcess& a_process, std::int32_t)
 		}
 	}
 }
-
-// RVA 0xeee080, 110 bytes.
-void NiSwitchNode::UpdateWorldBound()
-{
-	if (flags & 1) {
-		std::int32_t idx = index;
-		if (idx >= 0) {
-			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
-			if (child) {
-				CopyBoundFromChild(worldBound, child->worldBound);
-				return;
-			}
-		}
-		worldBound.radius = 0.0f;
-	} else {
-		NiNodeUpdateWorldBound(this);
-	}
-}
-
-
-
-
-
-
-
-
-
