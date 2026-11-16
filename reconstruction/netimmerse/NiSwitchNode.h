@@ -7,7 +7,7 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
 // community names are unverified.
-// Base form: shared header ../netimmerse/NiNode.h for NiNode.
+// Base form: shared header NiNode.h (same folder) for NiNode.
 // Code origin: declarations from the skeleton and the community headers named in the labels; the
 // AsSwitchNodeImpl stand-in was added by v-macrev, assisted by claude-opus-5-5, from a local listing
 // of the contributor's own copy of the pinned image. No community or sibling body is adapted.
@@ -18,7 +18,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../netimmerse/NiNode.h"
+#include "NiNode.h"
 
 template <class T> class NiPointer;
 
