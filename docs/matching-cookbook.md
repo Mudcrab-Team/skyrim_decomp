@@ -285,14 +285,13 @@ the inner loop into a small helper with `return true` on a hit and `return false
 (`bool Contains(const List& list, const Key& key)`). The caller then tests its result. Label the
 helper name `GUESS(low)`: the original may have inlined it.
 
-**D. A callee argument that fills a full 32-bit register is a 32-bit integer, not `bool`.**
+**D. A callee argument that fills a full 32-bit register may be a 32-bit integer, not `bool`.**
 Symptom: the target sets the whole 32-bit argument register, where the candidate sets a byte.
-Fix: declare the parameter `std::uint32_t`. A changed signature has a new decorated name, so bind
-the new name to the target's callee with a hint.
+Fix: try `std::uint32_t` (or an enum), and label the type `GUESS(low)` unless other evidence pins it.
+A changed signature has a new decorated name, so bind the new name to the target's callee with a hint.
 
 **E. Check the size difference first.**
-A difference of a few bytes (4, for example) is usually one missing or extra instruction. It is
-usually not a logic error. Look for that instruction (an unused address computation, a store, a
+A difference of a few bytes (4, for example) is often one missing or extra instruction. Look for that instruction (an unused address computation, a store, a
 register move) before you rewrite the logic.
 
 ## Unsolved patterns
