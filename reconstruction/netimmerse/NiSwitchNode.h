@@ -8,6 +8,9 @@
 // Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
 // community names are unverified.
 // Base form: shared header ../netimmerse/NiNode.h for NiNode.
+// Code origin: declarations from the skeleton and the community headers named in the labels; the
+// AsSwitchNodeImpl stand-in was added by v-macrev, assisted by claude-opus-5-5, from a local listing
+// of the contributor's own copy of the pinned image. No community or sibling body is adapted.
 // NiSwitchNode: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiSwitchNode::IsEqual, NiSwitchNode::UpdateWorldBound, NiSwitchNode::SaveBinary, NiSwitchNode::AttachChild, NiSwitchNode::LoadBinary, NiSwitchNode::SetAt1, NiSwitchNode::OnVisible, NiSwitchNode::UpdateRigidDownwardPass, NiSwitchNode::UpdateDownwardPass, NiSwitchNode::UpdateSelectedDownwardPass: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiPointer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -119,6 +122,10 @@ public:
     virtual void UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);  // compared: 0xeedf20
     virtual void UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);  // compared: 0xeedc40
     virtual void UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);  // compared: 0xeedda0
+
+    // AsSwitchNodeImpl: STANDIN GUESS(low); body of the AsSwitchNode override (slot 4), which the shared
+    // base header declares returning void, so the override cannot be written with its real return type
+    NiSwitchNode* AsSwitchNodeImpl();  // compared: 0xeee380
 
     // flags128: GUESS(low); bit 0 gates the update passes, bit 1 is set by LoadBinary, bit 1 also feeds OnVisible
     std::uint16_t flags128;  // 0x128
