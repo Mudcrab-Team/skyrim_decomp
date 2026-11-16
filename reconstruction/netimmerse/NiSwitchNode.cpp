@@ -34,24 +34,13 @@
 // CI hash: 0xeed3c0 ?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
 // CI hash: 0xeedae0 ?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z
 // CI hash: 0xeee100 ?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z
-// CI hash: 0xeedf20?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
+// CI hash: 0xeedf20 ?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
 // CI hash: 0xeedc40 ?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
 // CI hash: 0xeedda0 ?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
 // Adapted bodies: none
 // A byte match shows that this source and recipe produce the checked code; it does not verify the
 // community names or that the original source looked like this.
 #include "NiSwitchNode.h"
-
-// Update-data record accessors: the first word is the time, the second word holds the flags.
-static inline std::uint32_t& UpdateWord0(NiUpdateData& a_data)
-{
-	return *reinterpret_cast<std::uint32_t*>(&a_data);
-}
-
-static inline std::uint32_t& UpdateWord1(NiUpdateData& a_data)
-{
-	return *(reinterpret_cast<std::uint32_t*>(&a_data) + 1);
-}
 
 // The shared header leaves the read pointer as void*; this view reads the same offset typed.
 struct NiBinaryStreamReadSlot
@@ -94,21 +83,11 @@ static inline void CopyBoundFromChild(NiBound& a_dst, const NiBound& a_src)
 	SetCenterAndRadius(a_dst, a_src.center, a_src.radius);
 }
 
-// Bit 0 of the update flags, read as a byte as the image does.
-static inline std::uint8_t UpdateByte1Bit0(NiUpdateData& a_data)
+// DirtyFlagOf: GUESS(low); bit 0 of the update flags (kDirty in the community NiUpdateData::Flag),
+// read as a byte as the image does
+static inline std::uint8_t DirtyFlagOf(const NiUpdateData& a_data)
 {
-	return static_cast<std::uint8_t>(*(reinterpret_cast<std::uint8_t*>(&a_data) + 4) & 1);
-}
-
-// Child list head and link: the list head is at +0x18 of the node and the link at +0x40 of a child.
-static inline NiChildSlots* ChildListHead(NiSwitchNode* a_self)
-{
-	return *reinterpret_cast<NiChildSlots**>(reinterpret_cast<std::uint8_t*>(a_self) + 0x18);
-}
-
-static inline NiChildSlots* ChildListNext(NiChildSlots* a_child)
-{
-	return *reinterpret_cast<NiChildSlots**>(reinterpret_cast<std::uint8_t*>(a_child) + 0x40);
+	return static_cast<std::uint8_t>(*reinterpret_cast<const std::uint8_t*>(&a_data.flags) & 1);
 }
 
 // RVA 0xeed530, 82 bytes.
@@ -118,10 +97,10 @@ bool NiSwitchNode::IsEqual(NiObject* a_object)
 		return false;
 	}
 	NiSwitchNode* other = static_cast<NiSwitchNode*>(a_object);
-	if (activeIndex != other->activeIndex) {
+	if (index != other->index) {
 		return false;
 	}
-	if (((static_cast<std::uint8_t>(other->flags128) ^ static_cast<std::uint8_t>(flags128)) & 1) != 0) {
+	if (((static_cast<std::uint8_t>(other->flags) ^ static_cast<std::uint8_t>(flags)) & 1) != 0) {
 		return false;
 	}
 	return true;
@@ -133,12 +112,12 @@ static inline bool GetFlagBit(std::uint16_t a_flags, std::uint16_t a_mask)
 	return (a_flags & a_mask) != 0;
 }
 
-// UpdateControllerList: GUESS(low); walks the controller list at +0x18 and updates each controller
-// through its slot 0x27 with the update data.
+// UpdateControllerList: GUESS(low); walks the node's controller list and updates each controller
+// with the update data.
 static inline void UpdateControllerList(NiSwitchNode* a_self, NiUpdateData& a_data)
 {
-	for (NiChildSlots* controller = ChildListHead(a_self); controller; controller = ChildListNext(controller)) {
-		controller->Slot27(a_data);
+	for (NiTimeController* controller = a_self->controllers; controller; controller = controller->next) {
+		controller->Update(a_data);
 	}
 }
 
@@ -201,52 +180,52 @@ NiSwitchNode* NiSwitchNode::AsSwitchNodeImpl()
 void NiSwitchNode::LoadBinary(NiStream& a_stream)
 {
 	NiNodeLoadBinary(this, a_stream);
-	StreamRead(a_stream.iStr, &flags128, 1);
-	StreamRead(a_stream.iStr, &activeIndex, 1);
-	flags128 |= 2;
+	StreamRead(a_stream.iStr, &flags, 1);
+	StreamRead(a_stream.iStr, &index, 1);
+	flags |= 2;
 }
 
 // RVA 0xeed490, 142 bytes.
 void NiSwitchNode::SaveBinary(NiStream& a_stream)
 {
 	NiNodeSaveBinary(this, a_stream);
-	a_stream.oStr->write(&flags128, 1);
-	a_stream.oStr->write(&activeIndex, 1);
+	a_stream.oStr->write(&flags, 1);
+	a_stream.oStr->write(&index, 1);
 }
 
 // RVA 0xeed6e0, 143 bytes.
 void NiSwitchNode::AttachChild(NiAVObject* a_child, bool a_firstAvail)
 {
 	NiNodeAttachChild(this, a_child, a_firstAvail);
-	counter134 = 1;
-	SwitchTableAddZero(flagsArr);
+	revID = 1;
+	SwitchTableAddZero(childRevID);
 }
 
 // RVA 0xeedae0, 161 bytes.
 void NiSwitchNode::SetAt1(std::uint32_t a_idx, NiAVObject* a_child, NiPointer<NiAVObject>& a_childOut)
 {
-	counter134 = 1;
-	SwitchTableClearAtGrow(flagsArr, a_idx);
+	revID = 1;
+	SwitchTableClearAtGrow(childRevID, a_idx);
 	NiNodeSetAt1(this, a_idx, a_child, a_childOut);
 }
 
 // RVA 0xeedc40, 341 bytes.
 void NiSwitchNode::UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
 {
-	flags128 = UpdateByte1Bit0(a_data) ? static_cast<std::uint16_t>(flags128 | 2) : static_cast<std::uint16_t>(flags128 & 0xFFFD);
-	time130 = UpdateWord0(a_data);
-	if (flags128 & 1) {
-		++counter134;
-		if (UpdateByte1Bit0(a_data)) {
+	flags = DirtyFlagOf(a_data) ? static_cast<std::uint16_t>(flags | 2) : static_cast<std::uint16_t>(flags & 0xFFFD);
+	savedTime = a_data.time;
+	if (flags & 1) {
+		++revID;
+		if (DirtyFlagOf(a_data)) {
 			UpdateControllerList(this, a_data);
 		}
 		UpdateWorldData(&a_data);
-		std::int32_t idx = activeIndex;
+		std::int32_t idx = index;
 		if (idx >= 0) {
 			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
 			if (child) {
 				child->UpdateDownwardPass(a_data, a_arg2);
-				SwitchTableSet(&flagsArr, activeIndex, &counter134);
+				SwitchTableSet(&childRevID, index, &revID);
 				CopyBoundFromChild(worldBound, child->worldBound);
 			}
 		}
@@ -258,19 +237,19 @@ void NiSwitchNode::UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2
 // RVA 0xeedda0, 363 bytes.
 void NiSwitchNode::UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
 {
-	time130 = UpdateWord0(a_data);
-	if (flags128 & 1) {
-		++counter134;
-		std::uint8_t updateControllers = UpdateByte1Bit0(a_data);
-		std::uint32_t word = UpdateWord1(a_data);
-		UpdateWord1(a_data) = TestBit(FlagsWordOf(this), 3) ? (word | 1) : (word & ~1u);
-		if (UpdateWord1(a_data) & 1) {
+	savedTime = a_data.time;
+	if (flags & 1) {
+		++revID;
+		std::uint8_t dirty = DirtyFlagOf(a_data);
+		std::uint32_t word = a_data.flags;
+		a_data.flags = TestBit(FlagsWordOf(this), 3) ? (word | 1) : (word & ~1u);
+		if (a_data.flags & 1) {
 			UpdateControllerList(this, a_data);
 		}
-		word = UpdateWord1(a_data);
-		UpdateWord1(a_data) = updateControllers ? (word | 1) : (word & ~1u);
+		word = a_data.flags;
+		a_data.flags = dirty ? (word | 1) : (word & ~1u);
 		UpdateWorldData(&a_data);
-		std::int32_t idx = activeIndex;
+		std::int32_t idx = index;
 		if (idx >= 0) {
 			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
 			if (child) {
@@ -283,7 +262,7 @@ void NiSwitchNode::UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_
 						slots->UpdateSelectedDownwardPass(a_data, a_arg2);
 					}
 				}
-				SwitchTableSet(&flagsArr, activeIndex, &counter134);
+				SwitchTableSet(&childRevID, index, &revID);
 				CopyBoundFromChild(worldBound, child->worldBound);
 			}
 		}
@@ -295,26 +274,26 @@ void NiSwitchNode::UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_
 // RVA 0xeedf20, 339 bytes.
 void NiSwitchNode::UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
 {
-	time130 = UpdateWord0(a_data);
-	if (flags128 & 1) {
-		++counter134;
-		std::uint8_t updateControllers = UpdateByte1Bit0(a_data);
-		std::uint32_t word = UpdateWord1(a_data);
-		UpdateWord1(a_data) = TestBit(FlagsWordOf(this), 3) ? (word | 1) : (word & ~1u);
-		if (UpdateWord1(a_data) & 1) {
+	savedTime = a_data.time;
+	if (flags & 1) {
+		++revID;
+		std::uint8_t dirty = DirtyFlagOf(a_data);
+		std::uint32_t word = a_data.flags;
+		a_data.flags = TestBit(FlagsWordOf(this), 3) ? (word | 1) : (word & ~1u);
+		if (a_data.flags & 1) {
 			UpdateControllerList(this, a_data);
 		}
-		word = UpdateWord1(a_data);
-		UpdateWord1(a_data) = updateControllers ? (word | 1) : (word & ~1u);
+		word = a_data.flags;
+		a_data.flags = dirty ? (word | 1) : (word & ~1u);
 		UpdateWorldData(&a_data);
-		std::int32_t idx = activeIndex;
+		std::int32_t idx = index;
 		if (idx >= 0) {
 			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
 			if (child) {
 				if (TestBit(FlagsWordOf(child), 1)) {
 					reinterpret_cast<NiChildSlots*>(child)->UpdateRigidDownwardPass(a_data, a_arg2);
 				}
-				SwitchTableSet(&flagsArr, activeIndex, &counter134);
+				SwitchTableSet(&childRevID, index, &revID);
 				CopyBoundFromChild(worldBound, child->worldBound);
 			}
 		}
@@ -326,16 +305,16 @@ void NiSwitchNode::UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a
 // RVA 0xeee100, 170 bytes.
 void NiSwitchNode::OnVisible(NiCullingProcess& a_process, std::int32_t)
 {
-	std::int32_t idx = activeIndex;
+	std::int32_t idx = index;
 	if (idx >= 0) {
 		NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
 		if (child) {
-			if (flagsArr._data[static_cast<std::uint32_t>(idx)] != static_cast<std::uint32_t>(counter134)) {
-				SwitchTableSet(&flagsArr, idx, &counter134);
-				SwitchUpdateInfo info;
-				info.time = *reinterpret_cast<float*>(&time130);
-				info.flag = GetFlagBit(flags128, 2);
-				child->UpdateDownwardPass(*reinterpret_cast<NiUpdateData*>(&info), 0);
+			if (childRevID._data[static_cast<std::uint32_t>(idx)] != revID) {
+				SwitchTableSet(&childRevID, idx, &revID);
+				NiUpdateData data;
+				data.time = savedTime;
+				data.flags = GetFlagBit(flags, 2);
+				child->UpdateDownwardPass(data, 0);
 			}
 			child->Cull(&a_process, -1);
 		}
@@ -345,8 +324,8 @@ void NiSwitchNode::OnVisible(NiCullingProcess& a_process, std::int32_t)
 // RVA 0xeee080, 110 bytes.
 void NiSwitchNode::UpdateWorldBound()
 {
-	if (flags128 & 1) {
-		std::int32_t idx = activeIndex;
+	if (flags & 1) {
+		std::int32_t idx = index;
 		if (idx >= 0) {
 			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
 			if (child) {
