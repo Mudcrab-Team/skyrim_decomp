@@ -1,0 +1,92 @@
+// Build: sse-steam-1-7-104; RVA 0x333dd0; 218 bytes
+// Labels: v2
+// Source exposure: mixed
+// Origin: independently reconstructed from target observations and public declarations.
+// Drafted by gpt-6.1-terra
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// Evidence: findings/ghidra-import.md
+// TESForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declaration kit.
+// TESObjectREFR and OBJ_REFR layout: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/T/TESObjectREFR.h.
+// names: GUESS(low); names and signatures are tentative.
+// MIT License
+//
+// Copyright (c) 2018 Ryan-rsm-McKenzie
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+// ConditionFunctions, ConditionFunctions::GetIsID: GUESS(low); the static source container and original signature are unverified.
+#include "ConditionFunctions.h"
+#include "TESForm.h"
+class TESBoundObject;
+struct NiPoint3 { float x, y, z; };
+struct OBJ_REFR { TESBoundObject* objectReference; NiPoint3 angle, location; };
+class BSExtraData;
+struct ExtraDataList {
+    virtual ~ExtraDataList();
+    BSExtraData* data;
+    void* presence;
+    unsigned int lockThread, lockCount;
+};
+class BSHandleRefObject {
+public:
+    virtual ~BSHandleRefObject();
+    volatile unsigned int refCount;
+};
+class AnimationEventSink {
+public:
+    virtual ~AnimationEventSink();
+};
+class AnimationGraphHolder {
+public:
+    virtual ~AnimationGraphHolder();
+};
+class TESObjectREFR : public TESForm, public BSHandleRefObject,
+                      public AnimationEventSink, public AnimationGraphHolder {
+public:
+    OBJ_REFR data;
+    void* parentCell;
+    void* loadedData;
+    ExtraDataList extraList;
+    ExtraDataList* ExtraList() { return &extraList; }
+};
+extern TESObjectREFR* cachedReference;
+extern TESBoundObject* cachedBase;
+extern void* conditionLogger;
+extern const char conditionLogFormat[];
+extern thread_local bool conditionLoggingEnabled;
+extern TESBoundObject* GetExtraBase(ExtraDataList*);
+extern void LogCondition(void*, const char*, ...);
+bool ConditionFunctions::GetIsID(TESObjectREFR* reference, TESForm* parameter, void*, double* result)
+{
+    *result = 0.0;
+    TESForm* form = nullptr;
+    if (parameter && parameter->IsBoundObject()) form = parameter;
+    if (reference && form) {
+        TESBoundObject* base;
+        if (reference == cachedReference) base = cachedBase;
+        else {
+            base = GetExtraBase(reference->ExtraList());
+            if (!base) base = reference->data.objectReference;
+            cachedReference = reference;
+            cachedBase = base;
+        }
+        if (reinterpret_cast<TESForm*>(base) == form) *result = 1.0;
+    }
+    if (conditionLoggingEnabled) LogCondition(conditionLogger, conditionLogFormat, *result);
+    return true;
+}
