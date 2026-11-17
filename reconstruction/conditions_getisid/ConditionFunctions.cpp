@@ -1,13 +1,16 @@
 // Build: sse-steam-1-7-104; RVA 0x333dd0; 218 bytes
 // Labels: v2
 // Source exposure: mixed
-// Origin: independently reconstructed from target observations and public declarations.
+// Origin: body structure adapted from the permitted FNV sibling cited below; declarations from public headers.
+// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/tesconditionfunctions.cpp:1973
 // Drafted by gpt-6.1-terra
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Evidence: findings/ghidra-import.md
 // TESForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declaration kit.
 // TESObjectREFR and OBJ_REFR layout: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/T/TESObjectREFR.h.
 // names: GUESS(low); names and signatures are tentative.
+// ConditionFunctions::GetIsID: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); body structure (clear result, bound-object test, one-entry reference cache with extra-data fallback, comparison, logging); another game's reconstruction, no evidence about this build
+// cachedReference, cachedBase, GetExtraBase, LogCondition, conditionLogger, conditionLoggingEnabled: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); roles only
 // MIT License
 //
 // Copyright (c) 2018 Ryan-rsm-McKenzie

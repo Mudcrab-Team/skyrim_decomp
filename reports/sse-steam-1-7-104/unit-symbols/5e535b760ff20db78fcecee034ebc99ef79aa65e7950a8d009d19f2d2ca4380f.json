@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetRelationshipIndex@@YAHPEAVTESBoundObject@@0@Z": {
+      "rva": 3821056,
+      "size": null
+    },
+    "?relationshipValues@@3PAHA": {
+      "rva": 34186568,
+      "size": null
+    },
+    "?relationshipNames@@3PAPEBDA": {
+      "rva": 34186496,
+      "size": null
+    },
+    "?LogCondition@@YAXPEAXPEBDZZ": {
+      "rva": 9499056,
+      "size": null
+    },
+    "?conditionLogger@@3PEAXEA": {
+      "rva": 52296560,
+      "size": null
+    },
+    "?relationshipLogFormat@@3QBDB": {
+      "rva": 25397672,
+      "size": null
+    },
+    "_tls_index": {
+      "rva": 57254520,
+      "size": null
+    },
+    "__ImageBase": {
+      "rva": 0,
+      "size": null
+    },
+    "?conditionLoggingEnabled@@3_NA": {
+      "kind": "thread-local",
+      "tls_offset": 1536,
+      "size": null
+    },
+    "?GetRelationshipRank@ConditionFunctions@@SA_NPEAVTESObjectREFR@@0PEAXPEAN@Z": {
+      "rva": 3389248,
+      "size": 148
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetRelationshipIndex@@YAHPEAVTESBoundObject@@0@Z",
+        "rva": "0x3a4e00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?relationshipValues@@3PAHA",
+        "rva": "0x209a548",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?relationshipNames@@3PAPEBDA",
+        "rva": "0x209a500",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LogCondition@@YAXPEAXPEBDZZ",
+        "rva": "0x90f1b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?conditionLogger@@3PEAXEA",
+        "rva": "0x31dfb70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?relationshipLogFormat@@3QBDB",
+        "rva": "0x18389a8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "_tls_index",
+        "rva": "0x369a278",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__ImageBase",
+        "rva": "0x0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?conditionLoggingEnabled@@3_NA",
+        "tls_offset": "0x600",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from a tls: bind hint; the offset is the one the target code adds to the TLS block, the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetRelationshipRank@ConditionFunctions@@SA_NPEAVTESObjectREFR@@0PEAXPEAN@Z",
+        "rva": "0x33b740",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

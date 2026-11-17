@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?LogCondition@@YAXPEAXPEBDZZ": {
+      "rva": 9499056,
+      "size": null
+    },
+    "?conditionLogger@@3PEAXEA": {
+      "rva": 52296560,
+      "size": null
+    },
+    "_tls_index": {
+      "rva": 57254520,
+      "size": null
+    },
+    "?GetLocationKeywordData@@YAMPEAVBGSLocation@@PEAVBGSKeyword@@@Z": {
+      "rva": 2729712,
+      "size": null
+    },
+    "?keywordDataLogFormat@@3QBDB": {
+      "rva": 25397256,
+      "size": null
+    },
+    "?conditionLoggingEnabled@@3_NA": {
+      "kind": "thread-local",
+      "tls_offset": 1536,
+      "size": null
+    },
+    "?GetKeywordDataForLocation@ConditionFunctions@@SA_NPEAVTESObjectREFR@@PEAVBGSLocation@@PEAVBGSKeyword@@PEAN@Z": {
+      "rva": 3386912,
+      "size": 111
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?LogCondition@@YAXPEAXPEBDZZ",
+        "rva": "0x90f1b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?conditionLogger@@3PEAXEA",
+        "rva": "0x31dfb70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "_tls_index",
+        "rva": "0x369a278",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetLocationKeywordData@@YAMPEAVBGSLocation@@PEAVBGSKeyword@@@Z",
+        "rva": "0x29a6f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?keywordDataLogFormat@@3QBDB",
+        "rva": "0x1838808",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?conditionLoggingEnabled@@3_NA",
+        "tls_offset": "0x600",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from a tls: bind hint; the offset is the one the target code adds to the TLS block, the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetKeywordDataForLocation@ConditionFunctions@@SA_NPEAVTESObjectREFR@@PEAVBGSLocation@@PEAVBGSKeyword@@PEAN@Z",
+        "rva": "0x33ae20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}
