@@ -429738,6 +429738,32 @@
       "owner": "awarebayes",
       "evidence": "reports/sse-steam-1-7-104/0x333dd0.json",
       "report": "reports/sse-steam-1-7-104/0x333dd0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x332260",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 3351136,
+      "size": 114,
+      "status": "mapped",
+      "name": "Condition::GetQuestCompleted",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(high): public CommonLibSSE-NG condition name; target command-table association independently checked; original signature and ownership unverified.",
+      "owner": "awarebayes",
+      "evidence": "reports/sse-steam-1-7-104/0x332260.json",
+      "report": "reports/sse-steam-1-7-104/0x332260.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x33a2c0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 3384000,
+      "size": 144,
+      "status": "mapped",
+      "name": "Condition::LocationHasKeyword",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(high): public CommonLibSSE-NG condition name; target command-table association independently checked; original signature and ownership unverified.",
+      "owner": "awarebayes",
+      "evidence": "reports/sse-steam-1-7-104/0x33a2c0.json",
+      "report": "reports/sse-steam-1-7-104/0x33a2c0.json"
     }
   ],
   "milestones": [
