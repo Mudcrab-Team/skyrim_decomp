@@ -21,3 +21,4 @@ inline AIWorldInteriorCellLayout::~AIWorldInteriorCellLayout() {}
 }
 static_assert(sizeof(ResearchLayouts::AIWorldInteriorCellLayout) == 32, "independently observed allocation size");
 static ResearchLayouts::AIWorldInteriorCellLayout object;
+// probe
