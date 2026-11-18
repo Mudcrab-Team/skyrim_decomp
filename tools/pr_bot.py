@@ -10,6 +10,7 @@ a review `leak: yes` or a regression of an already matched function blocks the w
 function that already fails on base is project debt: it never blocks and is never recorded.
 Accepted functions of a changed unit that the PR does not name (companions) are confirmed on both
 hosts and reviewed with it, and recorded in the same commit; one that fails blocks the merge.
+So does any accepted function, named or not, whose record the PR's unit text outdates: it is never debt.
 Per-head state lives in .local/pr-bot/ so a re-run resumes instead of repeating paid work.
 Each PR gets at most one bot comment, marked with STICKY, which is edited in place on every new
 head or verdict and never posted again.
@@ -107,6 +108,19 @@ class Rejected(Exception):
 
 # ---- pure decisions -------------------------------------------------------------------------
 
+CI_HASH_LINE = re.compile(r'^// CI hash: (0x[0-9a-fA-F]+)[ \t]+(\S+)[ \t]*$', re.M)
+
+
+def ci_hash_hints(text, rvas):
+    """{decorated symbol: rva} for the unit's `// CI hash:` lines that name a compared function.
+
+    A stand-in whose name differs from the community name (an override that must return a type the
+    shared base header cannot express) never binds by name, so the header's own request line is the
+    only statement of which symbol is the function.
+    """
+    return {sym: rva.lower() for rva, sym in CI_HASH_LINE.findall(text) if int(rva, 16) in set(rvas)}
+
+
 def scope_problem(files):
     """Reason code if any changed path (or rename origin) is outside reconstruction/, else None."""
     if not files:
@@ -120,12 +134,15 @@ def scope_problem(files):
     return None
 
 
-def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=(), leak_evidence=()):
+def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=(), leak_evidence=(), stale=()):
     """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail.
 
     `companions` are already accepted functions of a unit the PR changes that the PR does not name.
     Their records go stale with the unit, so each must be re-confirmed and re-approved against the
     PR's version; one that is not blocks the merge, since merging would leave main red.
+    `stale` is every accepted function, named by the PR or not, whose record the PR's unit text outdates.
+    It may never be debt: a function that fails to compare because its binding is missing is still one
+    whose acceptance the merge would break, so any verdict but `matched` blocks.
     """
     if leak_hits:
         return dict(blocked='leak', leak_source='leakgrep', merge=False, verdicts={r: 'blocked' for r in functions})
@@ -153,6 +170,9 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
     companions = sorted(set(companions) & set(functions))
     if any(verdicts[r] != 'matched' for r in companions):
         return dict(blocked='companion', merge=False, verdicts=verdicts, companions=companions)
+    stale = sorted(set(stale) & set(functions))
+    if any(verdicts[r] != 'matched' for r in stale):
+        return dict(blocked='stale', merge=False, verdicts=verdicts, companions=companions, stale=stale)
     own = [r for r in functions if r not in companions]
     return dict(blocked=None, merge=any(verdicts[r] == 'matched' for r in own), verdicts=verdicts,
                 companions=companions)
@@ -233,6 +253,18 @@ def comment_body(sha, decision, leak_codes=()):
     if decision['blocked'] == 'regression':
         return (f'This change makes an already matched function stop matching, so it was not '
                 f'merged. Please keep the shared code compatible or touch only your own unit.')
+    if decision['blocked'] == 'stale':
+        verdicts = decision['verdicts']
+        lines = ['This PR changes a unit whose already accepted functions would go stale: their recorded '
+                 'acceptance binds the old text of the unit. Each has to byte-match on both hosts and pass review '
+                 'against your version before the merge, and these did not, so nothing was merged:']
+        for r in decision.get('stale', []):
+            if verdicts.get(r) != 'matched':
+                code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
+                lines.append(f'- 0x{r:x}: {REASONS.get(code, "it was not re-confirmed")}')
+        lines.append('Please keep those functions compiling to the same code on both hosts, or leave the unit '
+                     'alone, and push again; the bot re-checks the new head.')
+        return '\n'.join(lines)
     if decision['blocked'] == 'companion':
         verdicts = decision['verdicts']
         lines = ['This PR changes a unit that already holds accepted functions this PR does '
@@ -713,6 +745,10 @@ class Bot:
                 out.setdefault(unit, []).append(fn['rva'])
         return {u: sorted(rs) for u, rs in out.items()}
 
+    def stale_accepted(self, units, files):
+        """RVAs of every accepted function of a changed unit whose record the change outdates, named or not."""
+        return sorted({r for rs in self.companions(units, files, []).values() for r in rs})
+
     def mac_compare(self, units, tag):
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
@@ -728,6 +764,10 @@ class Bot:
         listing.write_text('\n'.join(lines) + '\n')
         self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree, timeout=900)
         out = {}
+        for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
+            hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
+            if hints:
+                (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
         for task in tasks:
             code = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
                             cwd=self.tree, check=False, timeout=self.config['compare_timeout']).returncode
@@ -972,6 +1012,8 @@ class Bot:
         # before the companions were known are for a smaller set, so these stages use their own cache keys.
         extra_units = state.once('companions', lambda: self.companions(units, files, functions))
         extra = sorted({r for rs in extra_units.values() for r in rs})
+        # Named functions go stale too; the companion list leaves them out because they are reviewed as the PR's own.
+        stale = state.once('stale', lambda: self.stale_accepted(units, files))
         check_units = {u: sorted(set(units.get(u, [])) | set(extra_units.get(u, []))) for u in {*units, *extra_units}}
         everything = functions + extra
         sfx = '-c' if extra else ''
@@ -1010,7 +1052,7 @@ class Bot:
             notes = review_notes(text, passed)
             evidence_kinds = review_leak_evidence(text)
         verdict = {r: verdict.get(r, 'reject') for r in everything}
-        decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra,
+        decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra, stale=stale,
                           leak_evidence=evidence_kinds)
         state.set('decision', decision)
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review

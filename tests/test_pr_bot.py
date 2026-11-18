@@ -20,6 +20,14 @@ GOOD = json.dumps({'leak': 'no', 'functions': {'0x10': {'verdict': 'approve', 'g
                                                 '0x20': {'verdict': 'approve', 'ground': 'none'}}})
 
 
+class HintTests(unittest.TestCase):
+    def test_header_request_lines_become_bind_hints_for_compared_functions_only(self):
+        text = ('// CI hash: 0xEEE380 ?Impl@A@@QEAAXXZ\n// CI hash: 0x99 ?Other@A@@QEAAXXZ\n'
+                '// CI hash:0x10 ?Bad@A@@QEAAXXZ\nint x;\n// CI hash: 0x20 ?Late@A@@QEAAXXZ extra\n')
+        self.assertEqual(pr_bot.ci_hash_hints(text, [0xeee380]), {'?Impl@A@@QEAAXXZ': '0xeee380'})
+        self.assertEqual(pr_bot.ci_hash_hints(text, []), {})
+
+
 class DecisionTests(unittest.TestCase):
     def table(self, h1, h2, rv, **kw):
         return pr_bot.decide([0x10], {0x10: h1}, {0x10: h2}, {0x10: rv}, **kw)
@@ -146,6 +154,7 @@ class FakeBot(pr_bot.Bot):
         self.refused = set()
         self.history = None
         self.extra = {}
+        self.stale = []
         self.comments = []  # the PR's issue comments as {id, login, body}
         self.sizes = {}
 
@@ -193,6 +202,9 @@ class FakeBot(pr_bot.Bot):
 
     def companions(self, units, files, functions):
         return self.extra
+
+    def stale_accepted(self, units, files):
+        return self.stale
 
     def review(self, number, head, base, functions, *a):
         self.calls.append(['review', sorted(functions)])
@@ -484,6 +496,29 @@ class CompanionProcessTests(unittest.TestCase):
         debt = pr_bot.decide([0x10, 0x30], ok, {0x10: 'pass', 0x30: 'preexisting-fail'},
                              {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
         self.assertEqual((debt['blocked'], debt['merge']), ('companion', False))
+
+    def test_decide_blocks_a_named_stale_function_that_is_not_matched_even_as_debt(self):
+        h1 = {0x10: 'pass', 0x20: 'pass'}
+        for h2_20 in ('fail', 'preexisting-fail'):
+            out = pr_bot.decide([0x10, 0x20], h1, {0x10: 'pass', 0x20: h2_20},
+                                {0x10: 'approve', 0x20: 'approve'}, stale=[0x20])
+            self.assertEqual((out['blocked'], out['merge'], out['stale']), ('stale', False, [0x20]))
+        ok = pr_bot.decide([0x10, 0x20], h1, {0x10: 'pass', 0x20: 'pass'},
+                           {0x10: 'approve', 0x20: 'approve'}, stale=[0x20])
+        self.assertEqual((ok['blocked'], ok['merge']), (None, True))
+        unnamed = pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'}, stale=[0x20])
+        self.assertEqual((unnamed['blocked'], unnamed['merge']), (None, True))
+
+    def test_a_named_stale_function_that_fails_blocks_the_merge_with_a_comment_naming_it(self):
+        bot = FakeBot(self.work, h2={0x10: 'pass', 0x20: 'preexisting-fail'})
+        bot.stale = [0x20]
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('stale', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x20', body)
+        self.assertNotIn('0x10', body)
+        self.assertIn('go stale', body)
 
     def test_companions_are_confirmed_on_both_hosts_reviewed_recorded_and_credited_apart(self):
         bot = self.bot()
