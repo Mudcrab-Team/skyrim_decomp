@@ -178,8 +178,10 @@
   ],
   "source": {
     "compiled": "reconstruction/forms/TESObjectARMO.cpp",
-    "digest": "3d94dca2c48198c5173cb2f19340c879747321043f0d48fdefe90d2ed2e1b53e",
-    "digest_method": "tu-sha256-v1",
+    "digest": "bb1764649675044c4a5ece7dce73f7cfcb70b52b6035b934081347d7630cc515",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "3d94dca2c48198c5173cb2f19340c879747321043f0d48fdefe90d2ed2e1b53e",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/declarations/BaseFormComponent.h",
       "reconstruction/declarations/TESForm.h",
