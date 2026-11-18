@@ -20,6 +20,14 @@ GOOD = json.dumps({'leak': 'no', 'functions': {'0x10': {'verdict': 'approve', 'g
                                                 '0x20': {'verdict': 'approve', 'ground': 'none'}}})
 
 
+class HintTests(unittest.TestCase):
+    def test_header_request_lines_become_bind_hints_for_compared_functions_only(self):
+        text = ('// CI hash: 0xEEE380 ?Impl@A@@QEAAXXZ\n// CI hash: 0x99 ?Other@A@@QEAAXXZ\n'
+                '// CI hash:0x10 ?Bad@A@@QEAAXXZ\nint x;\n// CI hash: 0x20 ?Late@A@@QEAAXXZ extra\n')
+        self.assertEqual(pr_bot.ci_hash_hints(text, [0xeee380]), {'?Impl@A@@QEAAXXZ': '0xeee380'})
+        self.assertEqual(pr_bot.ci_hash_hints(text, []), {})
+
+
 class DecisionTests(unittest.TestCase):
     def table(self, h1, h2, rv, **kw):
         return pr_bot.decide([0x10], {0x10: h1}, {0x10: h2}, {0x10: rv}, **kw)
@@ -34,11 +42,35 @@ class DecisionTests(unittest.TestCase):
         self.assertFalse(self.table('pass', 'pass', 'reject')['merge'])
 
     def test_leak_or_grep_hit_blocks_the_whole_pr(self):
-        for kw in ({'leak': 'yes'}, {'leak_hits': ['R1']}):
+        for kw in ({'leak': 'yes'}, {'leak': 'unreadable'}, {'leak_hits': ['R1']}):
             d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'pass'}, {0x10: 'pass', 0x20: 'pass'},
                               {0x10: 'approve', 0x20: 'approve'}, **kw)
             self.assertEqual((d['blocked'], d['merge']), ('leak', False))
             self.assertEqual(set(d['verdicts'].values()), {'blocked'})
+
+    def test_a_leak_claim_blocks_only_with_recognised_evidence(self):
+        rows = {'0x10': {'verdict': 'approve', 'ground': 'none'}}
+        bare = json.dumps({'leak': 'yes', 'why': 'x', 'functions': rows})
+        self.assertEqual(pr_bot.parse_review(bare, [0x10]), ('no', {0x10: 'approve'}))
+        odd = json.dumps({'leak': 'yes', 'leak_evidence': ['style'], 'functions': rows})
+        self.assertEqual(pr_bot.parse_review(odd, [0x10])[0], 'no')
+        backed = json.dumps({'leak': 'yes', 'leak_evidence': ['decompiler-artifact'], 'functions': rows})
+        self.assertEqual(pr_bot.parse_review(backed, [0x10])[0], 'yes')
+        self.assertEqual(pr_bot.review_leak_evidence(backed), ['decompiler-artifact'])
+
+    def test_justified_cast_note_approves_and_comment_states_the_real_reason(self):
+        args = ([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'})
+        self.assertTrue(pr_bot.decide(*args, leak='no')['merge'])
+        review = pr_bot.decide(*args, leak='yes', leak_evidence=['copied-text'])
+        self.assertEqual((review['blocked'], review['leak_source']), ('leak', 'review'))
+        body = pr_bot.comment_body(HEAD, review)
+        self.assertIn('copied-text', body)
+        self.assertNotIn('held before any compile', body)
+        grep = pr_bot.decide(*args, leak_hits=['R1'])
+        self.assertIn('held before any compile', pr_bot.comment_body(HEAD, grep, ['R1']))
+        broken = pr_bot.decide(*args, leak='unreadable')
+        self.assertIn('bot fault', pr_bot.comment_body(HEAD, broken))
+        self.assertNotIn('held before any compile', pr_bot.comment_body(HEAD, broken))
 
     def test_regression_blocks_but_preexisting_debt_does_not(self):
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'regressed'}, {0x10: 'pass', 0x20: 'pass'},
@@ -66,7 +98,7 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(pr_bot.review_notes('nonsense', [0x10]), {})
 
     def test_a_bad_review_answer_never_approves(self):
-        self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('yes', {}))
+        self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('unreadable', {}))
         leak, out = pr_bot.parse_review('x ' + GOOD, [0x10, 0x30])
         self.assertEqual((leak, out), ('no', {0x10: 'approve', 0x30: 'reject'}))
 
@@ -122,6 +154,7 @@ class FakeBot(pr_bot.Bot):
         self.refused = set()
         self.history = None
         self.extra = {}
+        self.stale = []
         self.comments = []  # the PR's issue comments as {id, login, body}
         self.sizes = {}
 
@@ -169,6 +202,9 @@ class FakeBot(pr_bot.Bot):
 
     def companions(self, units, files, functions):
         return self.extra
+
+    def stale_accepted(self, units, files):
+        return self.stale
 
     def review(self, number, head, base, functions, *a):
         self.calls.append(['review', sorted(functions)])
@@ -460,6 +496,29 @@ class CompanionProcessTests(unittest.TestCase):
         debt = pr_bot.decide([0x10, 0x30], ok, {0x10: 'pass', 0x30: 'preexisting-fail'},
                              {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
         self.assertEqual((debt['blocked'], debt['merge']), ('companion', False))
+
+    def test_decide_blocks_a_named_stale_function_that_is_not_matched_even_as_debt(self):
+        h1 = {0x10: 'pass', 0x20: 'pass'}
+        for h2_20 in ('fail', 'preexisting-fail'):
+            out = pr_bot.decide([0x10, 0x20], h1, {0x10: 'pass', 0x20: h2_20},
+                                {0x10: 'approve', 0x20: 'approve'}, stale=[0x20])
+            self.assertEqual((out['blocked'], out['merge'], out['stale']), ('stale', False, [0x20]))
+        ok = pr_bot.decide([0x10, 0x20], h1, {0x10: 'pass', 0x20: 'pass'},
+                           {0x10: 'approve', 0x20: 'approve'}, stale=[0x20])
+        self.assertEqual((ok['blocked'], ok['merge']), (None, True))
+        unnamed = pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'}, stale=[0x20])
+        self.assertEqual((unnamed['blocked'], unnamed['merge']), (None, True))
+
+    def test_a_named_stale_function_that_fails_blocks_the_merge_with_a_comment_naming_it(self):
+        bot = FakeBot(self.work, h2={0x10: 'pass', 0x20: 'preexisting-fail'})
+        bot.stale = [0x20]
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('stale', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x20', body)
+        self.assertNotIn('0x10', body)
+        self.assertIn('go stale', body)
 
     def test_companions_are_confirmed_on_both_hosts_reviewed_recorded_and_credited_apart(self):
         bot = self.bot()

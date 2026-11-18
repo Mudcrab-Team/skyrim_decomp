@@ -14,7 +14,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../netimmerse/NiObject.h"
+#include "../gamebryo/nimain/NiObject.h"
 
 class NiBound;
 

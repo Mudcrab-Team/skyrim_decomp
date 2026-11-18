@@ -6,7 +6,7 @@
 // ConditionFunctions, ConditionFunctions::GetIsReference: GUESS(low); the static source container and original signature are unverified.
 // 0x334180 Condition::GetIsReference
 #include "ConditionFunctions_334180.h"
-#include "../../fo4p198c_bound/TESForm.h"
+#include "../forms/TESForm_1467c0.h"
 extern void* conditionLogger;
 extern const char referenceLogFormat[];
 extern thread_local bool conditionLoggingEnabled;

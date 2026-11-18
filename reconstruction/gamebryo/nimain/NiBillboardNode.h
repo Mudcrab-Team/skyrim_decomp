@@ -10,7 +10,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../../netimmerse/NiNode.h"
+#include "NiNode_ee1560.h"
 
 class NiBillboardNode : public NiNode
 {

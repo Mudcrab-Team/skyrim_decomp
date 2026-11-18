@@ -7,7 +7,7 @@
 // 0x146910 AlchemyItem::IsMedicine
 // 0x146940 AlchemyItem::IsPoison
 // 0x1468b0 AlchemyItem::IsFood
-#include "AlchemyItem.h"
+#include "AlchemyItem_1466b0.h"
 AlchemyData* AlchemyItem::GetData2() { return reinterpret_cast<AlchemyData*>(&cost); }
 bool AlchemyItem::IsMedicine() const { return ((GetData()->flags >> 16) & 1) != 0; }
 bool AlchemyItem::IsPoison() const { return ((GetData()->flags >> 17) & 1) != 0; }

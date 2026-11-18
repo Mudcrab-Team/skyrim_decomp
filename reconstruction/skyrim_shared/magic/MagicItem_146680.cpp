@@ -6,7 +6,7 @@
 // 0x14e7d0 MagicItem::IsPoison
 // 0x146870 MagicItem::IsAutoCalc
 // 0x1514d0 MagicItem::HasEffect
-#include "MagicItem.h"
+#include "MagicItem_146680.h"
 float MagicItem::GetChargeTime() const { return 0.0f; }
 bool MagicItem::IsPoison() const { return GetType() == 5; }
 bool MagicItem::IsAutoCalc() const { return (~GetData()->flags & 1) != 0; }

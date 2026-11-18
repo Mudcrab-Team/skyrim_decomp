@@ -10,7 +10,7 @@
 // TESObject and TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
 // 0x1467c0 TESBoundObject::GetObjectVoiceType
 // 0x277e00 TESBoundObject::Clone3D
-#include "TESBoundObject.h"
+#include "TESBoundObject_1467c0.h"
 NiAVObject* TESBoundObject::Clone3D(TESObjectREFR* ref) { return Clone3D(ref, false); }
 bool TESBoundObject::ReplaceModel() { return ReplaceModel(TESModel::GetModel(this)); }
 BGSVoiceType* TESBoundObject::GetObjectVoiceType() const { return nullptr; }

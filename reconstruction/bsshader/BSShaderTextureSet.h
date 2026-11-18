@@ -10,7 +10,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../netimmerse/NiObject.h"
+#include "../gamebryo/nimain/NiObject.h"
 
 enum Texture : std::int32_t
 {

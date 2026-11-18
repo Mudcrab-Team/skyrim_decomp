@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../../netimmerse/NiNode.h"
+#include "NiNode_ee1560.h"
 
 class BSFlattenedBoneTree : public NiNode
 {

@@ -1,7 +1,7 @@
 // Licence: uses some member names from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings and
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// decompiler output of the pinned image, with the class layout from the header beside this file.
 // NiNode::LoadBinary, NiNode::LinkObject, NiNode::RegisterStreamables, NiNode::SaveBinary, NiNode::IsEqual, NiNode::OnVisible: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // 0xee1560 NiNode::LoadBinary
 // 0xee15a0 NiNode::LinkObject
@@ -9,7 +9,7 @@
 // 0xee16e0 NiNode::SaveBinary
 // 0xee17b0 NiNode::IsEqual
 // 0xee2cc0 NiNode::OnVisible
-#include "NiNode.h"
+#include "NiNode_ee1560.h"
 
 void NiNode::LoadBinary(NiStream& a_stream)
 {

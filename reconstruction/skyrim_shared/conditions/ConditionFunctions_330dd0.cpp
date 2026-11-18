@@ -6,7 +6,7 @@
 // ConditionFunctions, ConditionFunctions::GetDisabled: GUESS(low); the static source container and original signature are unverified.
 // 0x330dd0 Condition::GetDisabled
 #include "ConditionFunctions_330dd0.h"
-#include "../../fo4p198c_bound/TESForm.h"
+#include "../forms/TESForm_1467c0.h"
 struct DisabledState { void* vtable; unsigned char flags; };
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value.
 static inline bool TestBit(unsigned int a_flags, unsigned int a_bit)

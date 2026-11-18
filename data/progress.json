@@ -96634,12 +96634,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 4435136,
       "size": 23,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSFaceGenKeyframeMultiple::GetModifierName",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), joined through Address Library id 27008. RVA 0x43acc0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x43acc0.json",
+      "report": "reports/sse-steam-1-7-104/0x43acc0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x43ace0",
@@ -179712,7 +179713,7 @@
     },
     {
       "build_id": "sse-steam-1-7-104",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0xeee380.json",
       "id": "sse-steam-1-7-104-0xeee380",
       "name": "NiSwitchNode::AsSwitchNode",
       "name_origin": "COMMUNITY",
@@ -430689,7 +430690,7 @@
     "notes": "Inventory and exclusions have not been established. No completion percentage is meaningful yet."
   },
   "target_build_id": "sse-steam-1-7-104",
-  "updated_at": "2026-11-18T19:38:11Z",
+  "updated_at": "2026-11-18T20:24:58Z",
   "work_items": [
     {
       "id": "pin-target",

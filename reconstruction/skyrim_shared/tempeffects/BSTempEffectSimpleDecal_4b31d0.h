@@ -4,7 +4,7 @@
 // BSTempEffectSimpleDecal, Function4b31d0, ApplyShape: GUESS(low)
 // BSTempEffectSimpleDecal: STANDIN GUESS(low)
 #pragma once
-#include "netimmerse/NiObject.h"
+#include "gamebryo/nimain/NiObject.h"
 class BSTempEffectSimpleDecal {
 public:
  void ApplyShape(BSTriShape*);

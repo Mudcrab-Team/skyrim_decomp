@@ -16,7 +16,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../../netimmerse/NiObject.h"
+#include "NiObject.h"
 
 class NiPoint3
 {

@@ -4,7 +4,7 @@
 // Adapted bodies: none
 // 0x26e110 TESFurniture::InitializeData
 // 0x26ed80 TESFurniture::Clone3D
-#include "TESFurniture.h"
+#include "TESFurniture_26e110.h"
 void TESFurniture::InitializeData()
 {
     furnFlags = 0;

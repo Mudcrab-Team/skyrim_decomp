@@ -6,7 +6,7 @@
 // 0x2677d0 TESObjectACTI::GetWaterType
 // 0x267690 TESObjectACTI::GetIgnoredBySandbox
 // 0x27a690 TESObjectACTI::IsWater
-#include "TESObjectACTI.h"
+#include "TESObjectACTI_267690.h"
 TESWaterForm* TESObjectACTI::GetWaterType() const { return waterForm; }
 bool TESObjectACTI::GetIgnoredBySandbox() const { return (flags >> 1) & 1; }
 bool TESObjectACTI::IsWater() const { return waterForm != nullptr; }

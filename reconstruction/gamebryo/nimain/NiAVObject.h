@@ -49,7 +49,7 @@
 // kBoneMapName: GUESS; fixed string at 0x332e3e0 used to look up the bone-map extra data
 #pragma once
 
-#include "../../netimmerse/NiObject.h"
+#include "NiObject.h"
 
 #include <intrin.h>
 #include <cstdint>

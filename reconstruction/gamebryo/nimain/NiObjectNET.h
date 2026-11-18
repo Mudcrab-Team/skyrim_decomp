@@ -4,7 +4,7 @@
 // NiObjectNET: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 
-#include "../../netimmerse/NiObject.h"
+#include "NiObject.h"
 
 #include <intrin.h>
 #include <cstddef>
