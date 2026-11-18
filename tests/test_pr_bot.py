@@ -1033,6 +1033,31 @@ class ReviewContextTests(unittest.TestCase):
         self.assertIn('reconstruction/a/B.cpp (changed by this PR), reconstruction/a/B.h (unchanged from main)', prompt)
         self.assertIn('Review the files this PR changes in full', prompt)
 
+    def declare_other_recipe(self, hint):
+        other = self.tree / 'reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json'
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text('{"x": 1}')
+        head = '// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json\n' + hint
+        (self.tree / 'reconstruction/a/B.cpp').write_text(head + '#include "B.h"\nint f() { return 1; }\n')
+        evidence = self.evidence()
+        return evidence
+
+    def test_a_requested_rva_is_compared_with_the_default_recipe_the_ci_job_selects(self):
+        evidence = self.declare_other_recipe('// CI hash: 0x10 ?f@@YAHXZ\n')
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash agrees', self.prompts[0])
+
+    def test_an_unrequested_rva_must_match_the_recipe_the_unit_names(self):
+        evidence = self.declare_other_recipe('')
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
+
+    def test_a_requested_rva_with_another_recipe_hash_still_differs(self):
+        evidence = self.declare_other_recipe('// CI hash: 0x10 ?f@@YAHXZ\n')
+        evidence[0x10]['row']['recipe_sha256'] = hashlib.sha256(b'other').hexdigest()
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
+
     def test_a_report_for_other_source_or_compiler_is_shown_as_differing(self):
         bad = self.evidence(source={'source_revision': '0' * 64, 'path': 'reconstruction/a/B.cpp'})
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, bad)

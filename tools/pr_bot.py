@@ -446,6 +446,12 @@ class Bot:
         recipe = re.search(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', text)
         recipe = recipe.group(0) if recipe else 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe_sha = hashlib.sha256((tree / recipe).read_bytes()).hexdigest() if (tree / recipe).is_file() else None
+        # The CI job compiles an RVA requested by a `// CI hash:` line with its default recipe, whatever
+        # recipe the unit names, so the second host's hash is compared with the recipe that job selects.
+        import ci_target_hash_check as ci_job
+        requested = {int(r, 16) for r, _ in ci_job.REQUEST.findall(text[:8192])}
+        ci_file = tree / ci_job.DEFAULT_RECIPE if rva in requested else tree / recipe
+        ci_recipe_sha = hashlib.sha256(ci_file.read_bytes()).hexdigest() if ci_file.is_file() else None
         report = None
         if evidence.get('report'):
             try:
@@ -471,7 +477,7 @@ class Bot:
         if row:
             lines.append(f'  second-host run {run.get("run_id")} (CI hash job, which compares the published target hashes) on head {str(run.get("head_sha"))[:12]}: {row.get("status")}; '
                          f'its source digest {"agrees" if row.get("source_sha256") == digest else "DIFFERS"}, '
-                         f'its recipe hash {"agrees" if row.get("recipe_sha256") == recipe_sha else "DIFFERS"}')
+                         f'its recipe hash {"agrees" if ci_recipe_sha is not None and row.get("recipe_sha256") == ci_recipe_sha else "DIFFERS"}')
         else:
             lines.append(f'  second-host run (CI hash job, which compares the published target hashes): {evidence.get("host1")}')
         return lines
