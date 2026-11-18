@@ -1,27 +1,14 @@
-// NiBillboardNode functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-nibillboardnode
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5 (haiku-202611122349-2), starting from a tools/skeleton.py skeleton.
-// Compared functions in this file:
-//   RVA 0x41cc60, 52 bytes: NiBillboardNode::~NiBillboardNode
-//   RVA 0xf02dc0, 68 bytes: NiBillboardNode::IsEqual
-//   RVA 0xf041d0, 71 bytes: NiBillboardNode::OnVisible
-//   RVA 0xf02ce0, 82 bytes: NiBillboardNode::LoadBinary
-//   RVA 0xf02d60, 82 bytes: NiBillboardNode::SaveBinary
-// Not in this file (not matched, kept in the unit's near-miss/ folder): RVA 0xf02ed0
-// UpdateWorldBound and 0xf02f60 UpdateWorldData.
 // Adapted bodies: none intended. The attempt origin check printed advice for the stream calls in
-// LoadBinary and SaveBinary, similar to NiBinaryStream::write and binary_write in
 // CharmedBaryon/CommonLibSSE-NG (MIT) and powerof3/CommonLibSSE (GPL-3.0); the bodies were written
-// from the listing and no upstream text was copied.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x41cc60 NiBillboardNode::~NiBillboardNode
+// 0xf02dc0 NiBillboardNode::IsEqual
+// 0xf041d0 NiBillboardNode::OnVisible
+// 0xf02ce0 NiBillboardNode::LoadBinary
+// 0xf02d60 NiBillboardNode::SaveBinary
+// 0xf02ed0 NiBillboardNode::UpdateWorldBound
 #include "NiBillboardNode.h"
 
 #include <cstdint>

@@ -1,20 +1,13 @@
-// Actor member functions, build sse-steam-1-7-104.
-//
-// Labels: v2
-// Compared: HasOutfitItems, GetLevel, IsAttacking, HasShout, GetMoveDirectionRelativeToFacing,
-// GetVoiceRecoveryTime, IsInRagdollState, GetActorValueModifier.
-// RVA 0x2e7fc0, 156 bytes (HasOutfitItems). RVA 0x6797a0, 13 bytes (GetLevel).
-// RVA 0x6cb920, 14 bytes (IsAttacking). RVA 0x6d7750, 16 bytes (HasShout).
-// RVA 0x6af1b0, 20 bytes (GetMoveDirectionRelativeToFacing). RVA 0x6d92b0, 20 bytes (GetVoiceRecoveryTime).
-// RVA 0x687c20, 102 bytes (IsInRagdollState). RVA 0x6c5440, 115 bytes (GetActorValueModifier).
-// Evidence: findings/second-batch-selection.md (0x2e7fc0), findings/third-batch-selection.md (the others).
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local listing of the pinned image
-// with types from the header beside this file.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// The HasOutfitItems callee at RVA 0x1648b0 is declared as FindOutfitExtra (label below).
 // FindOutfitExtra: GUESS; callee of HasOutfitItems at RVA 0x1648b0.
-// A byte match shows this source and recipe produce the checked code; it does not verify
-// the community name or that the original source looked like this.
+// 0x2e7fc0 Actor::HasOutfitItems
+// 0x6797a0 Actor::GetLevel
+// 0x6cb920 Actor::IsAttacking
+// 0x6d7750 Actor::HasShout
+// 0x6af1b0 Actor::GetMoveDirectionRelativeToFacing
+// 0x6d92b0 Actor::GetVoiceRecoveryTime
+// 0x687c20 Actor::IsInRagdollState
+// 0x6c5440 Actor::GetActorValueModifier
 #include "Actor.h"
 
 std::uint16_t Actor::GetLevel() const

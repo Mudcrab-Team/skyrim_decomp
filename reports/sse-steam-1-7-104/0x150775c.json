@@ -380,8 +380,10 @@
   ],
   "source": {
     "compiled": "reconstruction/shaders/BSImagespaceShaderISSAOCompositeFogThunkLayout.cpp",
-    "digest": "b6a5a9414c8f3283f71f8e6771675f6afd52f89c5879f5418786d28f55fba298",
-    "digest_method": "tu-sha256-v1",
+    "digest": "7c3d3d79c248e69c5db3890f736c4df9ec5780791a40523925557ec0cc05c59c",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "b6a5a9414c8f3283f71f8e6771675f6afd52f89c5879f5418786d28f55fba298",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/shaders/BSImagespaceShaderISSAOCompositeFogThunkLayout.cpp",
       "reconstruction/shaders/BSImagespaceShaderISSAOCompositeFogThunkLayout.h",

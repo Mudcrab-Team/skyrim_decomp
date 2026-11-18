@@ -1,25 +1,10 @@
-// BSShaderProperty member functions for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Drafted by claude-sonnet-5-5.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Compared functions:
-//   RVA 0x14e85f0, 6 bytes: ForEachTexture
-//   RVA 0x14e8680, 9 bytes: QMaterialAlpha
-//   RVA 0x14e7fb0, 66 bytes: DoClearRenderPasses
-//   RVA 0x14e7ef0, 73 bytes: SetFlags
-//   RVA 0x14e7450, 120 bytes: SaveBinary
-//   RVA 0x14e7390, 147 bytes: LoadBinary
-// Evidence: findings/fourth-batch-selection.md
-// Names are as labelled in BSShaderProperty.h. Bodies are written from the image; none is adapted
-// from a community source; tools/check_origin.py reports none above its threshold at
-// CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// Unbound targets are bound by position or hint: ClearRenderPass 0x1555920, the NiShadeProperty
-// stream bases 0xf0edf0 and 0xf0ee20, and NiPoint2 LoadBinary 0xeecd50 / SaveBinary 0xeecde0.
-// SetMaterial (0x14e8000) is not compared here; see the task's near-miss file.
-// The braces in SaveBinary end the component-size local before the last call so the compiler
-// emits it as a tail call, as the image does.
+// 0x14e85f0 BSShaderProperty::ForEachTexture
+// 0x14e8680 BSShaderProperty::QMaterialAlpha
+// 0x14e7fb0 BSShaderProperty::DoClearRenderPasses
+// 0x14e7ef0 BSShaderProperty::SetFlags
+// 0x14e7450 BSShaderProperty::SaveBinary
+// 0x14e7390 BSShaderProperty::LoadBinary
 #include "BSShaderProperty.h"
 
 #include <climits>

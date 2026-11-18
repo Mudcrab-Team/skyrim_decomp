@@ -345,8 +345,10 @@
   ],
   "source": {
     "compiled": "reconstruction/fields/FieldLeaf32add0.cpp",
-    "digest": "fbc47f3cd3939db5a66feebc2155f1ad91a410db95ff4abb562fb696794b0ab1",
-    "digest_method": "tu-sha256-v1",
+    "digest": "1a7a79643e595df477e5f62b544fbfd9a2af083f9903f69b7755d3ded0413ac7",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "fbc47f3cd3939db5a66feebc2155f1ad91a410db95ff4abb562fb696794b0ab1",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/fields/ConcreteFormFactoryLayout.h",
       "reconstruction/fields/FieldLeaf32add0.cpp",

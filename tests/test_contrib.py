@@ -367,7 +367,7 @@ class SkeletonTests(Base):
         cpp = cpp.replace('SKELETON_TODO_BODY;', '').replace('SKELETON_TODO_ORIGIN', 'none').replace(
             'SKELETON_TODO_CODE_ORIGIN', 'original synthetic fixture')
         root = self.tmp / 'repo'
-        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, fn['evidence']):
+        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, fn['evidence'], 'licenses/CommonLibSSE-NG.txt'):
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(ROOT / rel, root / rel)
         unit = root / 'reconstruction' / 'forms'
@@ -377,7 +377,7 @@ class SkeletonTests(Base):
         for rel in (f'reconstruction/forms/{cls}.h', f'reconstruction/forms/{cls}.cpp'):
             self.assertEqual(lint_reconstruction.lint_file(root, rel, TARGET['build_id']), [])
         self.assertIn('GPL-3.0', h)
-        self.assertIn(f'RVA 0x{fn["rva"]:x}', cpp)
+        self.assertIn(f'// 0x{fn["rva"]:x} ', cpp)
 
     def test_unit_files_are_written_with_lf(self):
         path = self.tmp / 'u.cpp'
@@ -399,7 +399,7 @@ class IntakeTests(Base):
     def setUp(self):
         super().setUp()
         self.repo = self.tmp / 'repo'
-        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, 'findings/fifth-batch-selection.md'):
+        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, 'findings/fifth-batch-selection.md', 'licenses/CommonLibSSE-NG.txt'):
             (self.repo / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(ROOT / rel, self.repo / rel)
         self.git('init', '-q')
@@ -588,7 +588,8 @@ class SubmitTests(Base):
                      'functions': [{'rva': f'0x{self.RVA:x}', 'size': fn['size'], 'symbol': 'x',
                                     'community_name': fn['name']}],
                      'contrib': {'practice': False, 'unit': self.unit}}
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         digest = tu_digest(self.repo, include_closure(self.repo, self.unit[1]))
         self.summary = {
             'task': self.tdir.name, 'run': 1, 'unit': self.unit[1], 'source_revision': digest,

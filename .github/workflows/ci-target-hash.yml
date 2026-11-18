@@ -1,18 +1,7 @@
 name: Advisory target hashes
 on:
-  pull_request:
-    paths:
-      - 'reconstruction/**'
-      - 'data/target-hashes/**'
-      - 'tools/toolchain/**'
-      - 'tools/ci_*'
-      - 'tools/target_hashes.py'
-      - 'tools/contrib.py'
-      - 'tools/contributor_standing.py'
-      - 'tools/build_leaderboard.py'
-      - 'tools/build_model_trend.py'
-      - '.gitattributes'
-      - '.github/workflows/ci-target-hash.yml'
+  # No pull_request trigger: pr-check's hash job is the per-PR compile. This file stays for the
+  # nightly run and the reusable self-test in ci-hash-check.yml.
   schedule:
     - cron: '23 3 * * *'
   workflow_dispatch:

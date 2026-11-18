@@ -1,11 +1,6 @@
-// TESDescription type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): the class header and
-// the vftables of the pinned image. Slot signatures other than the compared ones are placeholders.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BaseFormComponent: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only class names, base chain,
-// slot order and sizes are claimed.
 #pragma once
 
 #include <cstddef>

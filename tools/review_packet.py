@@ -43,7 +43,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check import (ROOT, STALE_UNIT, _json_or_none, acceptance_staleness,  # noqa: E402
                    record_code_section, review_record_path)
-from source_digest import include_closure, tu_digest  # noqa: E402
+from source_digest import include_closure  # noqa: E402
+from digest_v2 import DIGEST_METHODS, review_binds, tu_digest, unit_digest  # noqa: E402
 
 
 def git(root, *args):
@@ -53,25 +54,14 @@ def git(root, *args):
         return None
 
 
-def blobs_digest(blobs):
-    """tu-sha256-v1 over in-memory contents, the same lines `source_digest.tu_digest` hashes.
-
-    Kept here, not in source_digest.py, because that file is part of the comparator's source hash
-    and editing it would stale every accepted record. A test pins the two to each other.
-    """
-    lines = []
-    for name in sorted(blobs):
-        rel = PurePosixPath(name)
-        if rel.is_absolute() or '..' in rel.parts:
-            raise ValueError(f'translation unit path must be repository-relative: {name}')
-        lines.append(f'{hashlib.sha256(blobs[name]).hexdigest()}  {rel}\n')
-    if not lines:
-        raise ValueError('translation unit has no files')
-    return hashlib.sha256(''.join(lines).encode()).hexdigest()
+def blobs_digest(blobs, method=None):
+    """The unit digest over in-memory contents (`digest_v2.unit_digest`), for the read-only Reviewer
+    sandbox, which has no writable temporary directory. A test pins it to `tu_digest`."""
+    return unit_digest(blobs, method)
 
 
-def digest_at(root, commit, files):
-    """The tu-sha256-v1 digest of `files` as they were at `commit`, or None if one did not exist."""
+def digest_at(root, commit, files, method=None):
+    """The digest of `files` as they were at `commit` (default: the current method), or None if one did not exist."""
     # In memory: the read-only Reviewer sandbox has no writable temporary directory.
     blobs = {}
     for name in files:
@@ -79,7 +69,7 @@ def digest_at(root, commit, files):
         if blob is None:
             return None
         blobs[name] = blob
-    return blobs_digest(blobs)
+    return blobs_digest(blobs, method)
 
 
 def approved_commit(root, fn, files, digest):
@@ -95,7 +85,7 @@ def approved_commit(root, fn, files, digest):
         except ValueError:
             record = None
         unit = (record or {}).get('source', {}).get('translation_unit') or files
-        if digest_at(root, commit, unit) == digest:
+        if any(digest_at(root, commit, unit, method) == digest for method in DIGEST_METHODS):
             return commit, unit, record
     return None
 
@@ -233,11 +223,12 @@ def prior_view(root, fn, record, entries, prior_ref, shown):
                    'blocking grounds and move naming reasons to naming_findings):')
         out += [f'  | {l}' for l in body]
         old = block.get('source_digest')
-        if old == current:
+        if old == current or (old and old == record['source'].get('run_digest')):
             out.append('unit since earlier review: unchanged (same digest); the earlier reading applies to this source')
             continue
         if prior_ref:
-            then = digest_at(root, prior_ref, unit)
+            digests = [digest_at(root, prior_ref, unit, method) for method in DIGEST_METHODS]
+            then = old if old in digests else digest_at(root, prior_ref, unit, record['source'].get('digest_method'))
             commit = prior_ref if old and then == old else None
             why = f'--prior-ref {prior_ref} has digest {then}, not {old}'
         else:
@@ -287,7 +278,7 @@ def template_view(fn, record, prior):
            'escalation_category: <provenance|legal|systemic|other|none>',
            'review_kind: full',
            f'source_paths: {" ".join(record["source"]["translation_unit"])}',
-           'source_digest: <tu-sha256-v1 digest you computed>',
+           'source_digest: <digest you computed with the record method>',
            f'report_path: {fn["report"]}',
            'report_binding: <agree|disagree|missing>, <one line>',
            'checks:',
@@ -309,7 +300,7 @@ def unit_view(root, compiled, fns, notes, community=True, extras=None):
     first = next(iter(records.values()))
     unit = first['source']['translation_unit']
     try:
-        fresh = tu_digest(root, include_closure(root, compiled))
+        fresh = tu_digest(root, include_closure(root, compiled), first['source'].get('digest_method'))
     except (ValueError, OSError) as exc:
         fresh = f'cannot compute ({exc})'
     out.append(f'## unit {compiled}')
@@ -395,7 +386,7 @@ def function_view(root, fn, record, shown):
         out.append(f'naming findings: {len(naming) or "none"}; names: {named}')
         out += [f'  - {item}' for item in naming]
     current = record['source']['digest']
-    if review.get('source_digest') == current and state != STALE_UNIT:
+    if review_binds(review.get('source_digest_method'), review.get('source_digest'), record['source']) and state != STALE_UNIT:
         out.append('needs: nothing (review binds the current record)')
         return out
     if state == STALE_UNIT:

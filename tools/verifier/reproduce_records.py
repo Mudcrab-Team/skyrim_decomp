@@ -29,7 +29,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import pipeline  # noqa: E402
 import runners  # noqa: E402
-from source_digest import tu_digest  # noqa: E402  (pipeline puts tools/ on the path)
+from digest_v2 import tu_digest  # noqa: E402  (pipeline puts tools/ on the path)
 
 REPO = pipeline.REPO
 
@@ -101,7 +101,7 @@ def judge(rec, digest_now, report):
 def reproduce_unit(host, task, by_rva, out_root, log):
     started = time.monotonic()
     files, closure = pipeline.unit_manifest(task)
-    digest_now = tu_digest(REPO, closure)
+    digest_now = tu_digest(REPO, closure, next(iter(by_rva.values()))['source'].get('digest_method'))
     worker = runners.AgentHost(host, task, log=log)
     dest = Path(out_root) / task['task_id']
     stage = Path(out_root) / '.stage'

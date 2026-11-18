@@ -1,22 +1,11 @@
-// TESSound functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q1-s01-tesboundobject-tessound
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-1-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by gpt-5.6-luna-medium-1 (the model or person who writes the bodies), starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x388860, 3 bytes: TESSound::Clone3D
-//   RVA 0x388880, 9 bytes: TESSound::InitializeData
-//   RVA 0x388620, 25 bytes: TESSound::SetFormEditorID
-//   RVA 0x3888d0, 62 bytes: TESSound::~TESSound
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x388860 TESSound::Clone3D
+// 0x388880 TESSound::InitializeData
+// 0x388620 TESSound::SetFormEditorID
+// 0x3888d0 TESSound::~TESSound
 #include "TESSound.h"
 
 void SetEditorID(const char*, TESSound*);

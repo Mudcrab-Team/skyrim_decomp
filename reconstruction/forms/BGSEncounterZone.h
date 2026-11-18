@@ -1,9 +1,5 @@
-// BGSEncounterZone type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT):
-// include/RE/B/BGSEncounterZone.h. TESForm comes from the shared header TESForm.h.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSEncounterZone, ::InitializeData, ::SaveGame, ::LoadGame, ::Revert, ::InitItemImpl, ::data, ::gameData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSEncounterZone::~BGSEncounterZone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 0
 // BGSEncounterZone::GetLevel: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); non-virtual, returns the level the zone yields

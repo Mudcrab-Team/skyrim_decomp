@@ -1,41 +1,11 @@
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// BSFaceGenKeyframeMultiple declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bsfacegenkeyframemultiple
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Predicate implementation provenance and conservative sibling attribution are declared in the .cpp.
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: local stand-ins (no ancestor has a shared header).
 // BSFaceGenKeyframeMultiple: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSFaceGenKeyframe: STANDIN EXE_RTTI
 // BSFaceGenKeyframeMultiple::GetCustomName, BSFaceGenKeyframeMultiple::GetExpressionName, BSFaceGenKeyframeMultiple::GetPhonemeName: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
-// The image takes an index and returns a name pointer, so the declarations below follow the image.
 // BSFaceGenKeyframeMultiple::Unk_0E, BSFaceGenKeyframeMultiple::Unk_0B, BSFaceGenKeyframeMultiple::Unk_09, BSFaceGenKeyframeMultiple::Unk_08: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// The image's Unk_0E takes an index and returns a bool, and Unk_0B, Unk_09 and Unk_08 return values where the community declares void; the declarations below follow the image.
 // BSFaceGenKeyframe::~BSFaceGenKeyframe, unknown08: GUESS(low)
 // values, count, isUpdated, pad1D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // Unk_01 to Unk_07, Unk_0A, Unk_0C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); void placeholders that keep the image's vtable index of the call at 0x70

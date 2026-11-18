@@ -1,8 +1,6 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: reduced copy of the declarations needed from reconstruction/forms/TESQuest.h, source file SHA-256 3e1011e2ce64211f971c7c32affc5c14e125b4f4e0ee59a6a405e579b5372eb4, with the member layouts of the base classes and of TESQuest up to the quest data block restored; members after the data block and the virtual slots this unit does not call are left out.
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT), include/RE/T/TESQuest.h.
 // BaseFormComponent, BaseFormComponent::InitializeDataComponent, ::ClearDataComponent, ::CopyComponent: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESForm, TESForm::sourceFiles, ::formFlags, ::formID, ::inGameFormFlags, ::formType, ::pad1B, ::pad1C: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the TESForm slots 04 and up are not declared, this unit calls none
 // TESFileContainer, TESFileContainer::array, TESFileArray, TESFileArray::data, ::size: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); layout read as in the shared TESForm header

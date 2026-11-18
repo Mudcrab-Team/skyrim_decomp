@@ -1,14 +1,7 @@
-// TESGlobal::GetFormEditorID and SetFormEditorID, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x340be0, 19 bytes (GetFormEditorID).
-// RVA 0x340c00, 23 bytes (SetFormEditorID).
-// Evidence: findings/fifth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. GetFormEditorID and SetFormEditorID are both compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x340be0 TESGlobal::GetFormEditorID
+// 0x340c00 TESGlobal::SetFormEditorID
 #include "TESGlobal.h"
 
 const char* TESGlobal::GetFormEditorID() const

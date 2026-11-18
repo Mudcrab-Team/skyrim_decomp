@@ -1,7 +1,4 @@
-// Main declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-eb814be3
 // Source exposure: mixed (pinned target listing and sibling hints).
 // Main, Main::WorldRootCamera: GUESS(low)
 // Main fields: STANDIN GUESS(low)

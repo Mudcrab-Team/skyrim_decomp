@@ -25,7 +25,7 @@ class StampSafetyTests(unittest.TestCase):
             stamp.check_resume([record], root)
             with self.assertRaisesRegex(ValueError, 'missing source digest'):
                 stamp.check_resume([{'task': str(task)}], root)
-            header.write_text('#pragma once\n// changed\n')
+            header.write_text('#pragma once\nint changed;\n')
             with self.assertRaisesRegex(ValueError, 'source changed'):
                 stamp.check_resume([record], root)
 

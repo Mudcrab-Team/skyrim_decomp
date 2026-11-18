@@ -1,20 +1,10 @@
-// NiBillboardNode declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-nibillboardnode
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiNode.h for NiNode.
 // NiBillboardNode: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiBillboardNode::~NiBillboardNode, NiBillboardNode::IsEqual, NiBillboardNode::OnVisible, NiBillboardNode::LoadBinary, NiBillboardNode::SaveBinary, NiBillboardNode::UpdateWorldBound, NiBillboardNode::UpdateWorldData: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
-// Signature change from the community list: none. Fields of NiNode and NiAVObject are not
-// recovered in the shared headers, so the compared code reads them through FieldAt in the .cpp.
 // unk128, unknown12A: GUESS(low)
 // BaseIsEqual, UpdateVisibleHelper: GUESS(low); callees of the compared code, declared here so the
-// calls can be bound to their RVAs
 #pragma once
 
 #include <cstdint>

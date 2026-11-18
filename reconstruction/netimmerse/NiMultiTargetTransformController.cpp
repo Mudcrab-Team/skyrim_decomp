@@ -1,26 +1,17 @@
-// NiMultiTargetTransformController functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-nimultitargettransformcontroller
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/o2-fpfast.json (compile this file alone).
-// Drafted by Claude Haiku 5.5 (claude-haiku-5-5), starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0xf5de10, 5 bytes: NiMultiTargetTransformController::GetInterpolatorCount
-//   RVA 0xf5de20, 16 bytes: NiMultiTargetTransformController::GetInterpolatorID
-//   RVA 0xf5b520, 52 bytes: NiMultiTargetTransformController::~NiMultiTargetTransformController
-//   RVA 0xf5e280, 108 bytes: NiMultiTargetTransformController::GuaranteeTimeRange
-//   RVA 0xf5de40, 120 bytes: NiMultiTargetTransformController::GetInterpolatorIndex
-//   RVA 0xf5d7a0, 147 bytes: NiMultiTargetTransformController::LoadBinary
-//   RVA 0xf5d860, 147 bytes: NiMultiTargetTransformController::SaveBinary
-//   RVA 0xf5d900, 151 bytes: NiMultiTargetTransformController::IsEqual
-//   RVA 0xf5df30, 203 bytes: NiMultiTargetTransformController::ResetTimeExtrema
-//   RVA 0xf5e350, 308 bytes: NiMultiTargetTransformController::ProcessClone
+// Recipe: reconstruction/recipes/o2-fpfast.json
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xf5de10 NiMultiTargetTransformController::GetInterpolatorCount
+// 0xf5de20 NiMultiTargetTransformController::GetInterpolatorID
+// 0xf5b520 NiMultiTargetTransformController::~NiMultiTargetTransformController
+// 0xf5e280 NiMultiTargetTransformController::GuaranteeTimeRange
+// 0xf5de40 NiMultiTargetTransformController::GetInterpolatorIndex
+// 0xf5d7a0 NiMultiTargetTransformController::LoadBinary
+// 0xf5d860 NiMultiTargetTransformController::SaveBinary
+// 0xf5d900 NiMultiTargetTransformController::IsEqual
+// 0xf5df30 NiMultiTargetTransformController::ResetTimeExtrema
+// 0xf5e350 NiMultiTargetTransformController::ProcessClone
 #include "NiMultiTargetTransformController.h"
 
 

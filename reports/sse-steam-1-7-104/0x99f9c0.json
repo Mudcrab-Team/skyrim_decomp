@@ -338,8 +338,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/MapMoveHandlerStorageLayout.cpp",
-    "digest": "9cd8739c91790fb2f55b666ef2272a9df945304851b2b19f1718fa958d198df0",
-    "digest_method": "tu-sha256-v1",
+    "digest": "0fe98f7a2747b415f2e7fc01ee1239eb4caee82f2205fd584f2cd841410a8729",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "9cd8739c91790fb2f55b666ef2272a9df945304851b2b19f1718fa958d198df0",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
       "reconstruction/bsengine/MapInputHandlerStorageLayout.h",

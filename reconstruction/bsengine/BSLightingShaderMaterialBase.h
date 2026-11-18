@@ -1,54 +1,10 @@
-// BSLightingShaderMaterialBase type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Class, member and method names follow CharmedBaryon/CommonLibSSE-NG
-// b93280e832f263dbef44e44cbe2936622a02f91a (MIT): include/RE/B/BSLightingShaderMaterialBase.h,
-// BSShaderMaterial.h, NiBinaryStream.h, NiStream.h, NiSmartPointer.h, NiRefObject.h,
-// NiColor.h. The declarations are minimal stand-ins, with two exceptions. The
-// BSLightingShaderMaterialBase class declaration reproduces NG's full virtual and member list
-// from include/RE/B/BSLightingShaderMaterialBase.h (MIT). The NiBinaryStream ReadFn and WriteFn
 // aliases and the read, write, binary_read and binary_write bodies are adapted from NG b93280e
-// include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp under its MIT licence (asserts
-// dropped, binary_read and binary_write defined inline). NiRefObject's IncRefCount and
-// DecRefCount follow the logic of NG src/RE/N/NiRefObject.cpp, written here with compiler
-// intrinsics; they also closely parallel the inline NiRefObject reference-count bodies of
-// momusdigital/fnv_decomp 91e1b6e8 (no licence; used by maintainer decision,
-// docs/authorizations.md), which tools/check_origin.py reports at similarity 0.86 and 0.78. The
 // Sibling source lines below declare that parallel; they do not record a copy.
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none
-// other above its threshold (0.75) at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f
-// and momusdigital/fnv_decomp 91e1b6e8. NG's licence notice, from its LICENSE at b93280e, is
-// kept as it requires:
-//
-//   MIT License
-//
-//   Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-//   Permission is hereby granted, free of charge, to any person obtaining a copy
-//   of this software and associated documentation files (the "Software"), to deal
-//   in the Software without restriction, including without limitation the rights
-//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//   copies of the Software, and to permit persons to whom the Software is
-//   furnished to do so, subject to the following conditions:
-//
-//   The above copyright notice and this permission notice shall be included in all
-//   copies or substantial portions of the Software.
-//
-//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//   SOFTWARE.
-//
-// The vtable order comes from the image RTTI and vftables; the class sizes (0x38 and 0xA0) come
-// from the size argument of operator delete in each deleting destructor.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:27
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:31
-// Stand-ins: BSShaderMaterial (name from the image RTTI, layout from NG), NiSourceTexture,
-// NiRefObject, NiPointer, NiColor, NiBinaryStream, NiStream; BSTextureSet is only declared.
 // BSLightingShaderMaterialBase: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI; each declaration below carries its own label
 #pragma once
 

@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?InitItemImpl@TESFlora@@UEAAXXZ": {
+      "rva": 2546240,
+      "size": 60
+    },
+    "?Activate@TESFlora@@UEAA_NPEAVTESObjectREFR@@0EPEAVTESBoundObject@@H@Z": {
+      "rva": 2546320,
+      "size": 12
+    },
+    "?InitItemImpl@TESObjectACTI@@UEAAXXZ": {
+      "rva": 2596128,
+      "size": null
+    },
+    "?CopyFromForm@TESProduceForm@@QEAAXPEAVTESForm@@@Z": {
+      "rva": 2024704,
+      "size": null
+    },
+    "?SetFormFlag@TESForm@@QEAAX_N@Z": {
+      "rva": 1990832,
+      "size": null
+    },
+    "?Activate@TESProduceForm@@QEAA_NPEAVTESObjectREFR@@0@Z": {
+      "rva": 2024880,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?InitItemImpl@TESFlora@@UEAAXXZ",
+        "rva": "0x26da40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Activate@TESFlora@@UEAA_NPEAVTESObjectREFR@@0EPEAVTESBoundObject@@H@Z",
+        "rva": "0x26da90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitItemImpl@TESObjectACTI@@UEAAXXZ",
+        "rva": "0x279d20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyFromForm@TESProduceForm@@QEAAXPEAVTESForm@@@Z",
+        "rva": "0x1ee500",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetFormFlag@TESForm@@QEAAX_N@Z",
+        "rva": "0x1e60b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Activate@TESProduceForm@@QEAA_NPEAVTESObjectREFR@@0@Z",
+        "rva": "0x1ee5b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

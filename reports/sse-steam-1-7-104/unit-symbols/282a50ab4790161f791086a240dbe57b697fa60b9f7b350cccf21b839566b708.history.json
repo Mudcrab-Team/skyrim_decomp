@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/282a50ab4790161f791086a240dbe57b697fa60b9f7b350cccf21b839566b708.json",
+  "versions": [
+    {
+      "sha256": "282a50ab4790161f791086a240dbe57b697fa60b9f7b350cccf21b839566b708",
+      "base": null,
+      "added": [
+        "?GetName@MagicItemData@@UEAAPEBDXZ",
+        "?GetEquipState@MagicItemData@@UEAAIXZ",
+        "?GetFormNameOf@@YAPEBDPEAX@Z",
+        "?singleton@PlayerCharacter@@2PEAV1@EA",
+        "?GetPlayerEquipState@@YAIPEAVPlayerCharacter@@PEAXHH@Z"
+      ]
+    }
+  ]
+}

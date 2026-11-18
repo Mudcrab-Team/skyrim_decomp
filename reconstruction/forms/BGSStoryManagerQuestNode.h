@@ -1,11 +1,5 @@
-// BGSStoryManagerQuestNode type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT):
-// include/RE/B/BGSStoryManagerQuestNode.h, BGSStoryManagerNodeBase.h and BGSStoryManagerTreeForm.h.
-// TESForm comes from the shared header TESForm.h; the story-manager base chain, BSTArray and TESQuest
-// are stand-ins.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSStoryManagerQuestNode, ::Revert, ::quests, ::numQuestsToStart, ::padC4, ::childrenLastRun: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSStoryManagerQuestNode::unk60: GUESS(low); stands for perQuestFlags and perQuestHoursUntilReset (two BSTHashMap at 60 and 90 in NG), not modelled
 // BGSStoryManagerNodeBase, ::Flags, ::parent, ::previousSibling, ::maxQuests, ::flags, ::conditions, ::QConditions, ::InitializeData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

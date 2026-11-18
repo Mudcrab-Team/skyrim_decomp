@@ -1,20 +1,11 @@
-// BSGeometry functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bsgeometry
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/o2-fpfast.json (compile this file alone).
-// Drafted by claude-haiku-5-5 (haiku-202611122349-2), starting from a tools/skeleton.py skeleton.
-// Compared functions in this file:
-//   RVA 0xefc6e0, 49 bytes: BSGeometry::UpdateDownwardPass
-//   RVA 0xefc720, 56 bytes: BSGeometry::UpdateSelectedDownwardPass
-//   RVA 0xefc680, 75 bytes: BSGeometry::SetSelectiveUpdateFlags
-//   RVA 0xefc380, 121 bytes: BSGeometry::RegisterStreamables
+// Recipe: reconstruction/recipes/o2-fpfast.json
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xefc6e0 BSGeometry::UpdateDownwardPass
+// 0xefc720 BSGeometry::UpdateSelectedDownwardPass
+// 0xefc680 BSGeometry::SetSelectiveUpdateFlags
+// 0xefc380 BSGeometry::RegisterStreamables
 #include "BSGeometry.h"
 
 #include <cstdint>

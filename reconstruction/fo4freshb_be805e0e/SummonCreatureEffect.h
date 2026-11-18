@@ -1,7 +1,4 @@
-// SummonCreatureEffect declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-be805e0e
 // Source exposure: mixed (pinned target listing and sibling hints).
 // SummonCreatureEffect, SummonCreatureEffect::SetLocation: GUESS(low)
 // SummonCreatureEffect fields: STANDIN GUESS(low)

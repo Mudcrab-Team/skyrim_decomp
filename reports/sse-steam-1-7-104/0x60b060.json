@@ -381,8 +381,10 @@
   ],
   "source": {
     "compiled": "reconstruction/storage/StorageInit60b060.cpp",
-    "digest": "ae6e28c407a7b44333d1db2af6e5d781e572c121e5f80301bd238a2bb4b56a07",
-    "digest_method": "tu-sha256-v1",
+    "digest": "97c37d12670f588cce2b896df46f8134e9ac85384300963531249a34b70d65fa",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "ae6e28c407a7b44333d1db2af6e5d781e572c121e5f80301bd238a2bb4b56a07",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/storage/StorageInit60b060.cpp",
       "reconstruction/storage/StorageInit60b060.h"

@@ -8,6 +8,8 @@ A function is `matched` only if host 1 (the PR's `hash` check run) and host 2 (t
 compare of the changed units) both byte-match and the single review approves it. A leakgrep hit,
 a review `leak: yes` or a regression of an already matched function blocks the whole PR. A
 function that already fails on base is project debt: it never blocks and is never recorded.
+Accepted functions of a changed unit that the PR does not name (companions) are confirmed on both
+hosts and reviewed with it, and recorded in the same commit; one that fails blocks the merge.
 Per-head state lives in .local/pr-bot/ so a re-run resumes instead of repeating paid work.
 """
 import argparse
@@ -18,6 +20,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -41,6 +44,7 @@ REASONS = {
     'review': 'the review did not approve it',
     'record': 'it matched, but its record could not be written',
     'missing': 'a host or the review gave no result for it',
+    'debt': 'it already failed to match before this change',
 }
 RUNBOOK = 'docs/reviewer-runbook.md'
 PREAMBLE = """You are the single Reviewer for an outside pull request, with the same standards as the
@@ -97,8 +101,13 @@ def scope_problem(files):
     return None
 
 
-def decide(functions, host1, host2, review, leak_hits=(), leak='no'):
-    """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail."""
+def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=()):
+    """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail.
+
+    `companions` are already accepted functions of a unit the PR changes that the PR does not name.
+    Their records go stale with the unit, so each must be re-confirmed and re-approved against the
+    PR's version; one that is not blocks the merge, since merging would leave main red.
+    """
     if leak_hits or leak != 'no':
         return dict(blocked='leak', merge=False, verdicts={r: 'blocked' for r in functions})
     # A header change can break a matched function outside this PR's own list; the hash run names it too.
@@ -119,7 +128,15 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no'):
             verdicts[rva] = 'fail:host2'
         else:
             verdicts[rva] = 'fail:review'
-    return dict(blocked=None, merge='matched' in verdicts.values(), verdicts=verdicts)
+    companions = sorted(set(companions) & set(functions))
+    if any(verdicts[r] != 'matched' for r in companions):
+        return dict(blocked='companion', merge=False, verdicts=verdicts, companions=companions)
+    own = [r for r in functions if r not in companions]
+    return dict(blocked=None, merge=any(verdicts[r] == 'matched' for r in own), verdicts=verdicts,
+                companions=companions)
+
+
+CONFLICT_COMMENT = 'This PR conflicts with main; merge main into your branch and push.'
 
 
 def merge_command(number, sha, subject, body):
@@ -127,13 +144,34 @@ def merge_command(number, sha, subject, body):
             '--subject', subject, '--body', body]
 
 
-def squash_message(number, login, user_id, rvas):
+def squash_message(number, login, user_id, rvas, companions=()):
     """Bot-written, so the contributor's commit messages are never published; they are credited."""
     shown = ', '.join(f'0x{r:x}' for r in sorted(rvas))
     subject = f'Reconstruct {len(rvas)} function{"s" if len(rvas) != 1 else ""} ({shown}) (#{number})'
-    body = (f'Accepted after a byte match on two hosts and an approving review.\n\n'
+    again = (f'Re-confirmed on both hosts and re-approved, their unit having changed: '
+             f'{", ".join(f"0x{r:x}" for r in sorted(companions))}.\n\n') if companions else ''
+    body = (f'Accepted after a byte match on two hosts and an approving review.\n\n{again}'
             f'Co-authored-by: {login} <{user_id}+{login}@users.noreply.github.com>')
     return subject, body
+
+
+def review_notes(text, functions):
+    """{rva: [public lines]} from a review's why and naming findings, each through the publication filter."""
+    from check import naming_finding_problem
+    try:
+        rows = json.JSONDecoder().raw_decode(text[text.index('{'):])[0]['functions']
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return {}
+    out = {}
+    for rva in functions:
+        row = rows.get(f'0x{rva:x}') if isinstance(rows, dict) else None
+        if not isinstance(row, dict) or row.get('verdict') == 'approve':
+            continue
+        items = [row.get('why')] + (row.get('naming_findings') if isinstance(row.get('naming_findings'), list) else [])
+        lines = [i.strip() for i in items if isinstance(i, str) and i.strip() and not naming_finding_problem(i)]
+        if lines:
+            out[rva] = lines[:5]
+    return out
 
 
 def comment_body(sha, decision, leak_codes=()):
@@ -146,6 +184,18 @@ def comment_body(sha, decision, leak_codes=()):
     if decision['blocked'] == 'regression':
         return (f'{marker}\nThis change makes an already matched function stop matching, so it was not '
                 f'merged. Please keep the shared code compatible or touch only your own unit.')
+    if decision['blocked'] == 'companion':
+        verdicts = decision['verdicts']
+        lines = [marker, 'Thanks for the PR. It changes a unit that already holds accepted functions this PR does '
+                 'not name. Each of them has to byte-match on both hosts and pass review against your version of '
+                 'the unit before the merge, and these did not, so nothing was merged:']
+        for r in decision.get('companions', []):
+            if verdicts.get(r) != 'matched':
+                code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
+                lines.append(f'- 0x{r:x}: {REASONS.get(code, "it was not re-confirmed")}')
+        lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
+                     'again; the bot re-checks the new head.')
+        return '\n'.join(lines)
     lines = [f'{marker}', 'Thanks for the PR.']
     done = [r for r, v in decision['verdicts'].items() if v == 'matched']
     if done:
@@ -153,7 +203,11 @@ def comment_body(sha, decision, leak_codes=()):
     failed = {r: v.split(':', 1)[1] for r, v in decision['verdicts'].items() if v.startswith('fail:')}
     if failed:
         lines.append('Not accepted yet (they stay drafted; push a fix and the bot re-checks the new head):')
-        lines += [f'- 0x{r:x}: {REASONS[c]}' for r, c in sorted(failed.items())]
+        notes = decision.get('notes', {})
+        for r, c in sorted(failed.items()):
+            lines.append(f'- 0x{r:x}: {REASONS[c]}')
+            if c == 'review':
+                lines += [f'  - {n}' for n in notes.get(r, [])]
     return '\n'.join(lines)
 
 
@@ -241,6 +295,8 @@ class Bot:
         self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
                            **(config or {}))
         self.tree = self.work / 'tree'
+        # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
+        self.tools = Path(__file__).resolve().parent
 
     def run(self, argv, cwd=None, input=None, timeout=None, check=True):
         result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
@@ -304,19 +360,21 @@ class Bot:
 
     def leakgrep(self, base, head):
         """(hit, codes) from tools/leakgrep.py: exit code plus rule codes on stdout, never matched text."""
-        script = self.root / 'tools/leakgrep.py'
+        script = self.tools / 'leakgrep.py'
         if not script.is_file():
             if self.dry_run:
                 return False, []  # a replay may run before the tool is on this checkout; live never does
             raise Stop('leakgrep is not available')
-        result = self.run([sys.executable, script, '--base', base, '--head', head], check=False, timeout=120)
-        if result.returncode not in (0, 1):
+        result = self.run([sys.executable, script, '--base', base, '--head', head, '--repo', self.root,
+                           '--private-list', self.root / '.local/leakgrep-private.txt'], check=False, timeout=120)
+        # A crash also exits 1; only the summary line proves the scan ran.
+        if result.returncode not in (0, 1) or b'leakgrep: ' not in result.stdout:
             raise Stop('leakgrep did not complete')
         return result.returncode == 1, parse_leak_codes(result.stdout.decode(errors='replace'))
 
     def leakgrep_text(self, text):
         """True if leakgrep flags free text (a commit message), fed to it as an added-lines diff."""
-        script = self.root / 'tools/leakgrep.py'
+        script = self.tools / 'leakgrep.py'
         if not script.is_file():
             raise Stop('leakgrep is not available')
         diff = '+++ b/commit-message\n@@ -0,0 +1 @@\n' + ''.join('+' + line + '\n' for line in text.splitlines())
@@ -388,6 +446,12 @@ class Bot:
         recipe = re.search(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', text)
         recipe = recipe.group(0) if recipe else 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe_sha = hashlib.sha256((tree / recipe).read_bytes()).hexdigest() if (tree / recipe).is_file() else None
+        # The CI job compiles an RVA requested by a `// CI hash:` line with its default recipe, whatever
+        # recipe the unit names, so the second host's hash is compared with the recipe that job selects.
+        import ci_target_hash_check as ci_job
+        requested = {int(r, 16) for r, _ in ci_job.REQUEST.findall(text[:8192])}
+        ci_file = tree / ci_job.DEFAULT_RECIPE if rva in requested else tree / recipe
+        ci_recipe_sha = hashlib.sha256(ci_file.read_bytes()).hexdigest() if ci_file.is_file() else None
         report = None
         if evidence.get('report'):
             try:
@@ -413,7 +477,7 @@ class Bot:
         if row:
             lines.append(f'  second-host run {run.get("run_id")} (CI hash job, which compares the published target hashes) on head {str(run.get("head_sha"))[:12]}: {row.get("status")}; '
                          f'its source digest {"agrees" if row.get("source_sha256") == digest else "DIFFERS"}, '
-                         f'its recipe hash {"agrees" if row.get("recipe_sha256") == recipe_sha else "DIFFERS"}')
+                         f'its recipe hash {"agrees" if ci_recipe_sha is not None and row.get("recipe_sha256") == ci_recipe_sha else "DIFFERS"}')
         else:
             lines.append(f'  second-host run (CI hash job, which compares the published target hashes): {evidence.get("host1")}')
         return lines
@@ -424,7 +488,8 @@ class Bot:
         Both hosts' results are in before the review starts, because checklist item 3 asks whether
         the report binds this source and whether the second-host reproduction is present.
         """
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         tree, evidence = self.tree, evidence or {}
         changed = set(changed) if changed is not None else None
         data = json.loads((tree / 'data/progress.json').read_text())
@@ -457,6 +522,8 @@ class Bot:
                         cwd=tree, check=False, timeout=300)
         out += ['', '## Mechanical readiness lint (tools/lint_review_readiness.py on the unit files)',
                 lint.stdout.decode(errors='replace').strip() or 'clean',
+                '', '## Body origin (tools/check_origin.py)',
+                *self.body_origin([f for f in sorted(files) if changed is None or f in changed]),
                 '', '## Private reading', f'Function packs: {", ".join(packs) or "none found"}.',
                 'For the provenance comparison read .local/analysis/fnv_index.jsonl and the pinned FNV source '
                 'files it identifies. ' + EXPOSURE,
@@ -465,14 +532,37 @@ class Bot:
                 'PR changes in full; files marked unchanged from main were accepted with earlier functions, so read '
                 'them as context for how these functions use them, as the runbook does for the rest of a unit. The second-host run '
                 'required by item 3 is the CI hash job listed per function; a function listed as passing on both '
-                'hosts has both. The unit files are in the working directory at the paths above.']
+                'hosts has both. The unit files are in the working directory at the paths above. Provenance (item 2): a clean '
+                'body origin report plus your own spot check of the FNV index is enough when the unit claims no '
+                'adaptation; "unverified" alone is not a ground to reject.']
         return '\n'.join(out)
 
-    def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None):
+    def body_origin(self, files):
+        """Lines for the runbook's provenance item, which starts from the list of bodies like a community one."""
+        files = [f for f in files if f.startswith(SCOPE_PREFIX) and f.endswith(('.h', '.cpp'))]
+        if not files:
+            return ['no changed unit files to compare']
+        result = self.run([sys.executable, 'tools/check_origin.py', '--json', *files], cwd=self.tree,
+                          check=False, timeout=600)
+        if result.returncode:
+            return ['check_origin did not complete; the list is unavailable (not a finding)']
+        import check_origin
+        hits, pins = [], 'unknown'
+        for line in result.stdout.decode(errors='replace').splitlines():
+            if line.startswith('{'):
+                hits.append(json.loads(line))
+            elif line.startswith('check_origin: threshold') and ' compared with ' in line:
+                pins = line.split(' compared with ', 1)[1]
+        if not hits:
+            return [f'no same-named community/sibling body found (clone revisions: {pins})']
+        return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins})']
+
+    def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=()):
         diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction'], cwd=self.root).stdout.decode(errors='replace')
         context = self.review_context(units, set(functions), evidence, changed) if units else ''
         prompt = (PREAMBLE + '\n' + runbook_checklist(self.tree) + f'\n\nFunctions under review: '
                   f'{", ".join(f"0x{r:x}" for r in sorted(functions))}\n'
+                  f'{self.companion_note(companions)}'
                   f'leakgrep: {"HIT " + ",".join(grep[1]) if grep[0] else "clean"}\n\n{context}\n\n'
                   f'UNTRUSTED DIFF DATA:\n{diff}')
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
@@ -482,6 +572,45 @@ class Bot:
                   '--cd', self.tree, '--output-last-message', out, '-'], cwd=self.tree,
                  input=prompt.encode(), timeout=self.config['model_timeout'])
         return out.read_text()
+
+    @staticmethod
+    def companion_note(companions):
+        if not companions:
+            return ''
+        return ('Already accepted functions of units this PR changes, re-confirmed here because their earlier '
+                f'acceptance binds the old unit: {", ".join(f"0x{r:x}" for r in sorted(companions))}. Judge them '
+                'by the same checklist against the new unit text.\n')
+
+    def companions(self, units, files, functions):
+        """{unit: [rva]} of accepted functions the PR does not name whose acceptance the PR makes stale.
+
+        A matched function's record binds the digest of its unit's include closure, so any change to
+        that closure leaves the record stale, whether or not the PR lists the function. The unit is
+        known from the record, which also covers a changed header shared by several units.
+        """
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
+        tree = self.tree
+        changed = {f['filename'] for f in files}
+        target = json.loads((tree / 'builds/target.json').read_text())['build_id']
+        inventory = json.loads((tree / 'data/progress.json').read_text())
+        named, current, out = set(functions), {}, {}
+        for fn in inventory['functions']:
+            if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in named or not fn.get('report'):
+                continue
+            try:
+                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+            except (OSError, ValueError):
+                continue
+            unit = source.get('compiled')
+            if not unit or not (unit in units or changed & set(source.get('translation_unit') or ())):
+                continue
+            key = (unit, source.get('digest_method'))
+            if key not in current:
+                current[key] = tu_digest(tree, include_closure(tree, unit), key[1]) if (tree / unit).is_file() else None
+            if current[key] is not None and current[key] != source.get('digest'):
+                out.setdefault(unit, []).append(fn['rva'])
+        return {u: sorted(rs) for u, rs in out.items()}
 
     def mac_compare(self, units, tag):
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
@@ -518,28 +647,38 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         deadline = time.time() + self.config['hash_wait']
+        probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
+        unusable = set()  # runs that finished without a result, e.g. on a stale base lacking the tools
+        target = self.work / 'hash' / f'{number}-{head[:12]}'
         while True:
-            runs = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs')['check_runs']
-            run = next((r for r in runs if r['name'] in HASH_CHECKS and r['head_sha'] == head), None)
+            run = self.latest_hash_run(head, unusable)
             if run and run['status'] == 'completed':
-                break
-            if run is None:
+                run_id = re.search(r'/runs/(\d+)', run.get('details_url', ''))
+                if not run_id:
+                    raise Stop('hash check has no run')
+                meta = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs/{run_id.group(1)}')
+                if meta.get('head_sha') != head or str(meta.get('id')) != run_id.group(1):
+                    raise Stop('hash run belongs to another revision')
+                found = self.download_hash_result(run_id.group(1), target)
+                if found:
+                    break
+                # The fork's own run used the base it was opened against; a probe on this commit uses today's.
+                unusable.add(run.get('id', run.get('details_url')))
+                # A stale run that finished before the probe was requested says nothing about the probe's run,
+                # which has yet to start or finish; waiting for it is the point of the probe.
+                if probed_at is not None and (run.get('started_at') or '') >= probed_at:
+                    raise Stop('hash check left no result')
+                if probed_at is None:
+                    probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    self.probe_hash_run(number, head)
+            elif run is None:
                 self.approve_pending(head)
+                if probed_at is None:
+                    probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    self.probe_hash_run(number, head)
             if time.time() > deadline:
                 raise Stop('hash check has not finished')
             time.sleep(20)
-        run_id = re.search(r'/runs/(\d+)', run.get('details_url', ''))
-        if not run_id:
-            raise Stop('hash check has no run')
-        meta = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs/{run_id.group(1)}')
-        if meta.get('head_sha') != head or str(meta.get('id')) != run_id.group(1):
-            raise Stop('hash run belongs to another revision')
-        target = self.work / 'hash' / f'{number}-{head[:12]}'
-        target.mkdir(parents=True, exist_ok=True)
-        self.run(['gh', 'run', 'download', run_id.group(1), '-R', REPOSITORY, '-D', target], check=False)
-        found = sorted(target.rglob('hash-result.json'))
-        if not found:
-            raise Stop('hash check left no result')
         table = results_from_report(found[0])
         if run.get('conclusion') != 'success' and 'regressed' not in table.values():
             return {r: 'fail' for r in functions}  # a job that failed for any other reason confirms nothing
@@ -557,6 +696,72 @@ class Bot:
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
+
+    def latest_hash_run(self, head, unusable=()):
+        """The newest `hash` check run on the head, from every page: a head with many checks spills past page one."""
+        pages = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs?per_page=100', '--paginate', '--slurp')
+        runs = [r for page in (pages if isinstance(pages, list) else [pages]) for r in page['check_runs']]
+        mine = [r for r in runs if r['name'] in HASH_CHECKS and r['head_sha'] == head
+                and r.get('id', r.get('details_url')) not in unusable]
+        return max(mine, key=lambda r: r.get('started_at') or '', default=None)
+
+    def download_hash_result(self, run_id, target):
+        """hash-result.json files of a finished run; [] only when the run has no such artifact.
+
+        A listed artifact that will not download is an infrastructure failure, not a run without a result:
+        it must not mark the run unusable, or the loop falls back to an older run that never had one.
+        """
+        listing = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs/{run_id}/artifacts?per_page=100')
+        listed = isinstance(listing, dict) and any(
+            a.get('name') == 'hash-result' and not a.get('expired') for a in listing.get('artifacts', []))
+        for attempt in range(3 if listed else 1):
+            shutil.rmtree(target, ignore_errors=True)
+            target.mkdir(parents=True, exist_ok=True)
+            self.run(['gh', 'run', 'download', run_id, '-R', REPOSITORY, '-D', target], check=False)
+            found = sorted(target.rglob('hash-result.json'))
+            if found:
+                return found
+            if listed and attempt < 2:
+                time.sleep(self.config.get('download_retry_wait', 5))
+        if listed:
+            raise Stop('hash artifact is listed but did not download')
+        return []
+
+    def probe_hash_run(self, number, head):
+        """Get pr-check onto a head that has no run, from a draft PR in this repository on the same commit.
+
+        A PR opened before pr-check existed is tested against a stale merge ref that lacks the workflow,
+        and a fork head cannot be re-run without a push. The commit is already in this repository through
+        refs/pull/N/head, so a branch at it runs the workflow from the current base with no fork approval;
+        check runs belong to the commit, so the PR's own head then carries the `hash` run.
+        """
+        branch = f'probe/pr-{number}'
+        refs = f'repos/{REPOSITORY}/git/refs'
+        made = self.run(['gh', 'api', '-X', 'POST', refs, '-f', f'ref=refs/heads/{branch}', '-f', f'sha={head}'],
+                        check=False)
+        if made.returncode:
+            self.run(['gh', 'api', '-X', 'PATCH', f'{refs}/heads/{branch}', '-f', f'sha={head}', '-F', 'force=true'],
+                     check=False)
+        if not self.gh_json('pr', 'list', '-R', REPOSITORY, '--head', branch, '--state', 'open', '--json', 'number'):
+            self.run(['gh', 'pr', 'create', '-R', REPOSITORY, '--draft', '--base', 'main', '--head', branch,
+                      '--title', f'pr-check run for the head of #{number}',
+                      '--body', f'Runs pr-check on the same commit as #{number}. Closed by the bot when it is done.'],
+                     check=False)
+
+    def warm(self, pr):
+        """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
+        number, head = pr['number'], pr['headRefOid']
+        if State(self.work / 'state', number, head).get('done') or pr.get('mergeable') == 'CONFLICTING':
+            return
+        if self.latest_hash_run(head):
+            return
+        if scope_problem(self.changed_files(number)):
+            return
+        self.probe_hash_run(number, head)
+
+    def drop_probe(self, number):
+        # Deleting the head branch ends the probe PR; the bot has no code path that closes a PR itself.
+        self.run(['gh', 'api', '-X', 'DELETE', f'repos/{REPOSITORY}/git/refs/heads/probe/pr-{number}'], check=False)
 
     def approve_pending(self, head):
         """A fork's first workflow run waits for approval; the workflows hold no secrets."""
@@ -579,16 +784,25 @@ class Bot:
             wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
             if not wanted:
                 continue
-            if not str(info.get('symbols', '')).startswith('reports/'):
+            symbols = str(info.get('symbols', ''))
+            # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
+            if not symbols.startswith('reports/') or not (self.tree / symbols).is_file():
                 # The record must point at a public symbol map; bind freezes this unit's names into an
                 # immutable one without touching the shared map.
                 (task / 'bind-list.txt').write_text(f'{task}\n')
+                # bind fails the whole task for any unbound function, and a debt function of the unit that the
+                # PR does not accept is often one; bind only what is being recorded, then restore the full list.
+                full = info['functions']
+                narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
+                (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
                 bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
                                   '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+                info = json.loads((task / 'task.json').read_text())
+                (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
                 if bound.returncode:
                     failed |= wanted
                     continue
-                info = json.loads((task / 'task.json').read_text())
+                info = dict(info, functions=full)
             for fn in info['functions']:
                 rva = int(str(fn['rva']), 0)
                 if rva not in wanted:
@@ -619,9 +833,13 @@ class Bot:
         state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
         if state.get('done'):
             return state.data
+        if pr.get('mergeable') == 'CONFLICTING' and not state.get('merged'):
+            return self.conflicting(pr, state)
         started = time.time()
         files = state.once('scope', lambda: self.changed_files(number))
-        if scope_problem(files):
+        # No changed files means the PR's tree equals main's (all of it landed elsewhere): the landed path below
+        # marks it merged with credit instead of calling it out of scope.
+        if scope_problem(files) not in (None, 'empty'):
             decision = dict(blocked='scope', merge=False, verdicts={})
             state.set('decision', decision)
             return self.finish(pr, state, decision, started, comment='This PR changes files outside reconstruction/, '
@@ -638,13 +856,23 @@ class Bot:
             return self.finish(pr, state, decision, started, land=base, comment=(
                 'Everything in this PR is already on main through the PRs it was stacked on, so it is marked '
                 'merged with your credit. Thank you; your functions are recorded under the PR that landed them.'))
-        self.prepare_tree(base)
+        # Today's tools and inventory, with the PR's files on top: a PR cut long ago would otherwise be
+        # built and recorded with a base that lacks the record tooling.
+        tip = pinned or self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
+        self.prepare_tree(tip or base)
         self.overlay(head, files)
         units = state.once('units', lambda: self.units(files))
         functions = sorted({r for rs in units.values() for r in rs})
         if not functions or len(functions) > self.config['max_functions']:
             raise Rejected('functions')
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
+        # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
+        # before the companions were known are for a smaller set, so these stages use their own cache keys.
+        extra_units = state.once('companions', lambda: self.companions(units, files, functions))
+        extra = sorted({r for rs in extra_units.values() for r in rs})
+        check_units = {u: sorted(set(units.get(u, [])) | set(extra_units.get(u, []))) for u in {*units, *extra_units}}
+        everything = functions + extra
+        sfx = '-c' if extra else ''
         if grep[0]:
             decision = decide(functions, {}, {}, {}, leak_hits=grep[1] or ['hit'])
             state.set('decision', decision)
@@ -653,38 +881,44 @@ class Bot:
         tag = f'{number}-{head[:8]}'
 
         def mac():
-            return state.once('host2', lambda: {str(k): v for k, v in self.mac_compare(units, tag).items()})
+            return state.once('host2' + sfx, lambda: {str(k): v for k, v in
+                                                      self.mac_compare(check_units, tag).items()})
 
         def ci():
-            return state.once('host1', lambda: {str(k): v for k, v in
-                                                self.host1(number, head, functions, state, units).items()})
+            return state.once('host1' + sfx, lambda: {str(k): v for k, v in
+                                                      self.host1(number, head, everything, state,
+                                                                 check_units).items()})
         # Both hosts first: the Reviewer's binding check needs the comparator report and the CI result.
         with ThreadPoolExecutor(max_workers=2) as pool:
             f_mac, f_ci = pool.submit(mac), pool.submit(ci)
             host2 = {int(k): v for k, v in f_mac.result().items()}
             host1 = {int(k): v for k, v in f_ci.result().items()}
         host1 = self.settle_ci_debt(host1)
-        host2 = self.classify_debt(host2, host1, base, units, state)
+        host2 = self.classify_debt(host2, host1, base, check_units, state)
         self.overlay(head, files)
         # Only what both hosts passed can be accepted, so only that is worth a review call; a
         # regression blocks the whole PR whatever the review says.
-        passed = [r for r in functions if host1.get(r) == 'pass' and host2.get(r) == 'pass']
-        leak, verdict = 'no', {}
+        passed = [r for r in everything if host1.get(r) == 'pass' and host2.get(r) == 'pass']
+        leak, verdict, notes = 'no', {}, {}
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
-            text = state.once('review_text', lambda: self.review(number, head, base, passed, grep, units, evidence,
-                                                                  {f['filename'] for f in files}))
+            text = state.once('review_text' + sfx, lambda: self.review(
+                number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra))
             leak, verdict = parse_review(text, passed)
-        verdict = {r: verdict.get(r, 'reject') for r in functions}
-        decision = decide(functions, host1, host2, verdict, leak=leak)
+            notes = review_notes(text, passed)
+        verdict = {r: verdict.get(r, 'reject') for r in everything}
+        decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra)
         state.set('decision', decision)
+        decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
-            records, refused = self.build_records(f'{number}-{head[:8]}/records', units, set(matched), state)
+            records, refused = self.build_records(f'{number}-{head[:8]}/records', check_units, set(matched), state)
             if refused:
                 for rva in refused:
                     decision['verdicts'][rva] = 'fail:record'
-                decision['merge'] = 'matched' in decision['verdicts'].values()
+                decision['merge'] = 'matched' in [v for r, v in decision['verdicts'].items() if r not in extra]
+                if refused & set(extra):
+                    decision.update(blocked='companion', merge=False)
                 state.set('decision', decision)
             state.set('records', str(records))
         return self.finish(pr, state, decision, started)
@@ -740,13 +974,14 @@ class Bot:
         if self.dry_run:
             return summary
         if decision['merge'] and not state.get('merged'):
-            matched = [int(r) for r, v in verdicts.items() if v == 'matched']
+            again = {int(r) for r in decision.get('companions') or ()}
+            matched = [int(r) for r, v in verdicts.items() if v == 'matched' and int(r) not in again]
             login = pr['author']['login']
             uid = self.gh_json('api', f'users/{login}')['id']
-            merged = self.run(merge_command(number, head, *squash_message(number, login, uid, matched)), check=False)
+            merged = self.run(merge_command(number, head, *squash_message(number, login, uid, matched, again)),
+                              check=False)
             if merged.returncode:
-                state.data.clear()
-                raise Stop('merge refused (the head moved); starting over on the next tick')
+                return self.merge_refused(pr, state, summary)
             state.set('merged', True)
         if land and not state.get('merged'):
             outcome = self.merge_landed(pr, land)
@@ -765,8 +1000,35 @@ class Bot:
             body = comment or comment_body(head, dict(decision, verdicts={int(r): v for r, v in verdicts.items()}), leak_codes)
             self.run(['gh', 'pr', 'comment', str(number), '-R', REPOSITORY, '--body', body])
             state.set('commented', True)
+        self.drop_probe(number)
         state.set('done', True)
         return summary
+
+    def conflicting(self, pr, state):
+        """A PR that cannot merge is not worth a review and two host compares; tell the author once per head.
+
+        The state is per head, so a push that resolves the conflict gets a fresh look.
+        """
+        summary = dict(pr=pr['number'], head=pr['headRefOid'], blocked='conflict', merge=False, verdicts={})
+        if self.dry_run:
+            return summary
+        self.run(['gh', 'pr', 'comment', str(pr['number']), '-R', REPOSITORY, '--body', CONFLICT_COMMENT])
+        state.set('summary', summary)
+        state.set('commented', True)
+        state.set('done', True)
+        return summary
+
+    def merge_refused(self, pr, state, summary):
+        """`gh pr merge --match-head-commit` failed: say why, and keep the paid results unless the head moved."""
+        number, head = pr['number'], pr['headRefOid']
+        now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,mergeable,state')
+        if now.get('headRefOid') != head:
+            state.data.clear()
+            raise Stop('merge refused (the head moved); starting over on the next tick')
+        if now.get('mergeable') == 'CONFLICTING':
+            return self.conflicting(pr, state)
+        raise Stop(f'merge refused with the head unchanged (mergeable={now.get("mergeable")}, '
+                   f'state={now.get("state")}); results kept, retrying next tick')
 
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
@@ -782,23 +1044,31 @@ class Bot:
         state.set('recorded', True)
 
 
-def poll(bot, interval):
+def poll(bot, interval, restart_after=None):
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
         print('another pr_bot --poll holds the lock', file=sys.stderr)
         return 1
+    started = time.time()
     while True:
+        if restart_after and time.time() - started > restart_after:
+            return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
         try:
             prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
-                              'number,headRefOid,author,baseRefName,isDraft')
+                              'number,headRefOid,author,baseRefName,isDraft,mergeable')
         except (Stop, subprocess.SubprocessError, ValueError) as exc:
             print('poll: gh failed:', exc, file=sys.stderr)
             prs = []
+        prs = [pr for pr in prs if pr['author']['login'].casefold() != OWNER.casefold()
+               and pr['baseRefName'] == 'main' and not pr['isDraft']]
         for pr in prs:
-            if pr['author']['login'].casefold() == OWNER.casefold() or pr['baseRefName'] != 'main' or pr['isDraft']:
-                continue
+            try:
+                bot.warm(pr)
+            except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                print(f'pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr)
+        for pr in prs:
             try:
                 print(json.dumps(bot.process(pr)))
             except (Stop, Rejected, subprocess.SubprocessError, OSError, ValueError) as exc:
@@ -812,6 +1082,7 @@ def main(argv=None):
     p.add_argument('number', nargs='?', type=int)
     p.add_argument('--poll', action='store_true')
     p.add_argument('--interval', type=int, default=60)
+    p.add_argument('--restart-after', type=int, help='--poll: exit between cycles after this many seconds')
     p.add_argument('--dry-run', action='store_true', help='no merge, push or comment')
     p.add_argument('--head')
     p.add_argument('--base')
@@ -824,7 +1095,7 @@ def main(argv=None):
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
-        return poll(bot, a.interval)
+        return poll(bot, a.interval, a.restart_after)
     if a.command != 'pr' or not a.number:
         p.error('give `pr NUMBER` or --poll')
     pr = bot.gh_json('pr', 'view', str(a.number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')

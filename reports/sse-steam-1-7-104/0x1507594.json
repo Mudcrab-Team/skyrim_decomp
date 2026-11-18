@@ -380,8 +380,10 @@
   ],
   "source": {
     "compiled": "reconstruction/shaders/BSImagespaceShaderISDownsampleIgnoreBrightestThunkLayout.cpp",
-    "digest": "fa7de6eeea52a76be6f072b058a550ac9f2627619e6ebe90abea8ff5640b9fb4",
-    "digest_method": "tu-sha256-v1",
+    "digest": "bf9be4400561da3fa6eb07f25aa1cd1757bff007a347eabcfc39dc04f0c5fd43",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "fa7de6eeea52a76be6f072b058a550ac9f2627619e6ebe90abea8ff5640b9fb4",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/shaders/BSImagespaceShaderISDownsampleIgnoreBrightestThunkLayout.cpp",
       "reconstruction/shaders/BSImagespaceShaderISDownsampleIgnoreBrightestThunkLayout.h",

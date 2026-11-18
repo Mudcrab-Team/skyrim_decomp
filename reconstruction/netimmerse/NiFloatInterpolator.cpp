@@ -1,23 +1,13 @@
-// NiFloatInterpolator functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s04-niobject-nifloatinterpolator
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-2-selection.md
-// Recipe: reconstruction/recipes/o2-fpfast.json (compile this file alone).
-// Drafted by claude-haiku-5-5 (the model or person who writes the bodies), starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0xf617d0, 14 bytes: NiFloatInterpolator::GetKeyCount
-//   RVA 0xf617f0, 14 bytes: NiFloatInterpolator::GetKeyContent
-//   RVA 0xf61980, 14 bytes: NiFloatInterpolator::GuaranteeTimeRange
-//   RVA 0xf61820, 15 bytes: NiFloatInterpolator::GetKeyArray
-//   RVA 0xf61840, 15 bytes: NiFloatInterpolator::GetKeyStride
-//   RVA 0xf61860, 27 bytes: NiFloatInterpolator::GetChannelPosed
+// Recipe: reconstruction/recipes/o2-fpfast.json
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xf617d0 NiFloatInterpolator::GetKeyCount
+// 0xf617f0 NiFloatInterpolator::GetKeyContent
+// 0xf61980 NiFloatInterpolator::GuaranteeTimeRange
+// 0xf61820 NiFloatInterpolator::GetKeyArray
+// 0xf61840 NiFloatInterpolator::GetKeyStride
+// 0xf61860 NiFloatInterpolator::GetChannelPosed
 #include "NiFloatInterpolator.h"
 
 std::uint32_t NiFloatInterpolator::GetKeyCount(std::uint16_t a_channel) const

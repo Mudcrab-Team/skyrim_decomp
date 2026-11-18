@@ -1,7 +1,4 @@
-// Projectile declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-98611a0b
 // Source exposure: mixed (pinned target listing and sibling hints).
 // Projectile, Projectile::GetLinearVelocity: GUESS(low)
 // Projectile fields: STANDIN GUESS(low)

@@ -1,74 +1,46 @@
-// Build: sse-steam-1-7-104
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (pinned public data declarations and independent target RTTI/secondary slot/target binding).
-// Drafted by GPT-6.1 Sol; remaining shared owner-prefix recovery.
-// Labels: v2
 // Code origin: public data-only storage adaptations and original narrowed prefix composition. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{B/BSTArray.h,B/BSTEvent.h,B/BSAtomic.h,B/BSNavmesh.h,B/BSResourceNiBinaryStream.h,E/ExtraMagicCaster.h,I/IAIWorldLocationHandle.h,I/IPackageData.h,I/IPackageDataAIWorldLocationHandle.h,M/MagicCaster.h,M/MenuControls.h,M/Main.h,N/NavMesh.h,N/NiBinaryStream.h,P/PlayerInputHandler.h,T/TES.h,T/TESCameraState.h,S/SimpleAnimationGraphManagerHolder.h}; MIT.
 // Declaration source: powerof3/CommonLibSSE@654e55f7979c1733033d5dbef176e43827bac944 include/RE/{B/BSTask.h,I/IOTask.h,Q/QueuedFile.h,B/BSResourceEntryDB.h,B/BSTObjectDictionary.h,B/BSPathing.h,P/Pathing.h,F/FindTriangleForLocationFilterCheckDeltaZ.h}; GPL-3.0.
 // QueuedFile, BSTask, IOTask, PostFlushNotify, BSTObjectDictionary, BSPathing, BSPathingCellManager, FindTriangleForLocationFilterCheckDeltaZ: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // MagicCaster, SimpleAnimationGraphManagerHolder, TESCameraState, PlayerInputHandler, BSTEventSource, BSTEventSink, ICellAttachDetachEventSource, BSNavmesh, TESChildCell, BSResourceNiBinaryStream, NiBinaryStream, IPackageData, IAIWorldLocationHandle, IPackageDataAIWorldLocationHandle: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // New storage classes and contract names, identity tags, mirror fields and pointee names: GUESS(medium) STANDIN
-// Data follows the cited public declarations. Empty singleton/intermediate ancestry and unassessed methods are omitted. Public explicit padding fields are omitted; natural alignment gaps remain unclaimed. Generic contracts represent only actual independently RTTI-bound vptr prefixes, not complete original interfaces.
-// Each owner is ONLY its initial contiguous represented subobject prefix through the selected base. Later data/bases, total original size, methodsets/signatures, source identity, lifetimes, behavior and instantiability are unclaimed. A prefix may stop inside its final base. No allocation/deletion size supplies any field or base.
-// Every selected secondary table owner, COL offset, nonvirtual PMD, destructor slot and primary target is independently checked against the target. BSPathingCellManager preserves destructor slot10. Only listed compiler-emitted adjustors are compared; constructors and primary destruction remain outside the claim. Assertions prove represented layout only.
-// MIT License
-// 
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// RVA 0x5c2878; 9 bytes
-// RVA 0x5c2884; 9 bytes
-// RVA 0x44e980; 9 bytes
-// RVA 0x44eac8; 9 bytes
-// RVA 0x44e9d0; 9 bytes
-// RVA 0x450d90; 9 bytes
-// RVA 0x4537b4; 9 bytes
-// RVA 0x44ea9c; 9 bytes
-// RVA 0x4537a8; 9 bytes
-// RVA 0x152448; 9 bytes
-// RVA 0x25d680; 9 bytes
-// RVA 0x152374; 9 bytes
-// RVA 0x19ba40; 9 bytes
-// RVA 0xfd75e0; 9 bytes
-// RVA 0xbc6ad0; 9 bytes
-// RVA 0x434928; 9 bytes
-// RVA 0x11722b4; 9 bytes
-// RVA 0x7db01c; 9 bytes
-// RVA 0x7db028; 9 bytes
-// RVA 0x8fc464; 9 bytes
-// RVA 0x8fc470; 9 bytes
-// RVA 0x661a8c; 9 bytes
-// RVA 0x960b08; 9 bytes
-// RVA 0x4c02e8; 9 bytes
-// RVA 0x4c02f4; 9 bytes
-// RVA 0x5d97c0; 9 bytes
-// RVA 0x4deeb0; 9 bytes
-// RVA 0x4deebc; 9 bytes
-// RVA 0x19ba4c; 9 bytes
-// RVA 0x19ba64; 9 bytes
-// RVA 0x19ba88; 9 bytes
-// RVA 0x19ba94; 9 bytes
-// RVA 0x19baa0; 9 bytes
-// RVA 0x1b4400; 9 bytes
-// RVA 0x1b440c; 9 bytes
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x5c2878 represented public owner secondary destructor adjustor
+// 0x5c2884 represented public owner secondary destructor adjustor
+// 0x44e980 represented public owner secondary destructor adjustor
+// 0x44eac8 represented public owner secondary destructor adjustor
+// 0x44e9d0 represented public owner secondary destructor adjustor
+// 0x450d90 represented public owner secondary destructor adjustor
+// 0x4537b4 represented public owner secondary destructor adjustor
+// 0x44ea9c represented public owner secondary destructor adjustor
+// 0x4537a8 represented public owner secondary destructor adjustor
+// 0x152448 represented public owner secondary destructor adjustor
+// 0x25d680 represented public owner secondary destructor adjustor
+// 0x152374 represented public owner secondary destructor adjustor
+// 0x19ba40 represented public owner secondary destructor adjustor
+// 0xfd75e0 represented public owner secondary destructor adjustor
+// 0xbc6ad0 represented public owner secondary destructor adjustor
+// 0x434928 represented public owner secondary destructor adjustor
+// 0x11722b4 represented public owner secondary destructor adjustor
+// 0x7db01c represented public owner secondary destructor adjustor
+// 0x7db028 represented public owner secondary destructor adjustor
+// 0x8fc464 represented public owner secondary destructor adjustor
+// 0x8fc470 represented public owner secondary destructor adjustor
+// 0x661a8c represented public owner secondary destructor adjustor
+// 0x960b08 represented public owner secondary destructor adjustor
+// 0x4c02e8 represented public owner secondary destructor adjustor
+// 0x4c02f4 represented public owner secondary destructor adjustor
+// 0x5d97c0 represented public owner secondary destructor adjustor
+// 0x4deeb0 represented public owner secondary destructor adjustor
+// 0x4deebc represented public owner secondary destructor adjustor
+// 0x19ba4c represented public owner secondary destructor adjustor
+// 0x19ba64 represented public owner secondary destructor adjustor
+// 0x19ba88 represented public owner secondary destructor adjustor
+// 0x19ba94 represented public owner secondary destructor adjustor
+// 0x19baa0 represented public owner secondary destructor adjustor
+// 0x1b4400 represented public owner secondary destructor adjustor
+// 0x1b440c represented public owner secondary destructor adjustor
 #include "QueuedFileDataStorageLayout.h"
 namespace ResearchLayouts {
 RemainingOwner18f6150PrefixLayout::RemainingOwner18f6150PrefixLayout() = default;

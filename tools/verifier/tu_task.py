@@ -22,7 +22,8 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from source_digest import include_closure, recipe_flag_problem, tu_digest  # noqa: E402
+from source_digest import include_closure, recipe_flag_problem  # noqa: E402
+from digest_v2 import tu_digest  # noqa: E402
 
 
 def sha256(path):

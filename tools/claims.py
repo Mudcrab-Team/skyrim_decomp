@@ -380,17 +380,8 @@ def collect(root, public, family_roots=(), cluster_lists=()):
 
 
 def active_entries(root, public, family_roots=()):
-    """Only active flow batches renew; planned families and static reservations do not."""
-    root = Path(root)
-    if not (root / 'data/progress.json').is_file():
-        return []
-    build = public['target_build_id']
-    accepted = {f['rva'] for f in public['functions'] if f['build_id'] == build and f['status'] == 'matched'}
-    import flow
-    states = flow.function_states(root, flow.flow_dir(root), online=False, tolerate_review_path_errors=True)
-    active = {'queued', 'drafting', 'confirmed', 'review-pending'}
-    addresses = {rva(a) for a, state in states.items() if state.get('state') in active}
-    return [(a, a + 1) for a in addresses - accepted]
+    """Entries whose claim is renewed as active work; none are tracked locally, so every claim lapses on its own."""
+    return []
 
 
 def keep_alive(gh, issue, active, done, total):

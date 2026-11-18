@@ -10,7 +10,8 @@ import tempfile
 import contrib_screen
 import lint_reconstruction
 import lint_review_readiness
-from source_digest import include_closure, tu_digest, _repo_file
+from source_digest import include_closure, _repo_file
+from digest_v2 import tu_digest
 from local_paths import local_path, no_sibling_names
 
 UNIT = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
@@ -251,7 +252,7 @@ def project_reconfirmation(root, changed):
         if not changed.intersection(source['translation_unit']):
             continue
         try:
-            stale = tu_digest(root, include_closure(root, source['compiled'])) != source['digest']
+            stale = tu_digest(root, include_closure(root, source['compiled']), source.get('digest_method')) != source['digest']
         except (OSError, ValueError):
             stale = True  # the source preflight reports the closure fault; no acceptance is renewed
         if stale:

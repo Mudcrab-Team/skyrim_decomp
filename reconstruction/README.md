@@ -84,12 +84,14 @@ definitions, at which immutable revision and licence, informed the types. Label 
 as unverified. Say which functions in the unit are compared and which exist only to make it
 compile. Comments explain why, never when or at whose request.
 
-New units declare `Labels: v2` in their leading comment and write every name-origin label on a
+New units write every name-origin label on a
 line of the form `// <names>: <LABEL> [<LABEL>...][; note]`, LABEL being one of
 `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`, `GUESS` (optionally `GUESS(low|medium|high)`),
 `EXE_RTTI`, `STANDIN` (with the name's origin label beside it) or `OBSERVED`.
-`tools/lint_reconstruction.py` enforces the grammar in those files only; units written before it
-keep their free-form labels, because editing them would change their digests.
+`tools/lint_reconstruction.py` enforces the grammar in every unit file except eight legacy ones,
+whose free-form labels stay because editing them would change their digests. Headers are short:
+`Source exposure:`, the one-line SPDX notice for CommonLibSSE-NG declarations (full text in
+`licenses/CommonLibSSE-NG.txt`), the label lines and one `// 0x<rva> <Name>` line per compared function.
 
 ## Contents
 

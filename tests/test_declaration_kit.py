@@ -179,7 +179,7 @@ class PublishedKit(unittest.TestCase):
             with self.subTest(cls=cls):
                 self.assertEqual(lint.lint_file(ROOT, name, BUILD), [])
                 self.assertEqual(screen(blob, name), [])
-                self.assertIn(b'MIT License', blob)
+                self.assertTrue(b'MIT License' in blob or b'SPDX-License-Identifier: MIT (CommonLibSSE-NG' in blob)
                 self.assertIn(b'Copyright (c) 2018 Ryan-rsm-McKenzie', blob)
                 self.assertIn(b'COMMUNITY(', blob)
                 self.assertNotIn(b'EXE_RTTI', blob)

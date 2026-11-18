@@ -1,22 +1,25 @@
-// BSLightingShaderMaterialSnow functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s10-bslightingshadermaterialsnow
+// Code origin: SaveBinary and LoadBinary bodies written from the local listings; declarations added to the existing unit header.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-2-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by luna56-medium-n1 (the model or person who writes the bodies), starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x1528110, 6 bytes: BSLightingShaderMaterialSnow::GetFeature
-//   RVA 0x1528090, 46 bytes: BSLightingShaderMaterialSnow::CopyMembers
-//   RVA 0x1527fc0, 47 bytes: BSLightingShaderMaterialSnow::Ctor
-//   RVA 0x15280d0, 55 bytes: BSLightingShaderMaterialSnow::ComputeCRC32
-// Adapted bodies: none.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Adapted bodies: none
+// 0x1528120 BSLightingShaderMaterialSnow::SaveBinary
+// 0x1528160 BSLightingShaderMaterialSnow::LoadBinary
+// 0x1528110 BSLightingShaderMaterialSnow::GetFeature
+// 0x1528090 BSLightingShaderMaterialSnow::CopyMembers
+// 0x1527fc0 BSLightingShaderMaterialSnow::Ctor
+// 0x15280d0 BSLightingShaderMaterialSnow::ComputeCRC32
 #include "BSLightingShaderMaterialSnow.h"
+void BSLightingShaderMaterialSnow::SaveBinary(NiStream& a_stream)
+{
+    BSLightingShaderMaterialBase::SaveBinary(a_stream);
+    unknownA0.SaveStream(a_stream);
+}
+void BSLightingShaderMaterialSnow::LoadBinary(NiStream& a_stream)
+{
+    BSLightingShaderMaterialBase::LoadBinary(a_stream);
+    unknownA0.LoadStream(a_stream);
+}
 #include <new>
 
 // SnowDefaults: STANDIN GUESS(low)

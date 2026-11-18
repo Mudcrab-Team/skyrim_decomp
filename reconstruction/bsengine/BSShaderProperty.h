@@ -1,15 +1,5 @@
-// BSShaderProperty type declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Class, member and virtual names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT)
-// include/RE/B/BSShaderProperty.h, include/RE/N/NiStream.h and include/RE/N/NiBinaryStream.h.
-// Layout sizes and offsets are from the image. NiBinaryStream::binary_read and binary_write
 // are adapted from CharmedBaryon/CommonLibSSE-NG b93280e src/RE/N/NiBinaryStream.cpp (MIT).
-// tools/check_origin.py reports no further bodies above its threshold at CommonLibSSE-NG
-// b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// Shared header: ../netimmerse/NiObject.h supplies NiObject and NiRefObject.
-// NiObjectNET, NiProperty, NiShadeProperty, NiStream, NiBinaryStream, NiPoint2, BSShaderMaterial,
 // BSRenderPass, ForEachVisitor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSShaderProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // SetFlags, SetMaterial, DoClearRenderPasses, QMaterialAlpha, ForEachTexture, LoadBinary, SaveBinary: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -19,24 +9,7 @@
 // ClearRenderPass: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); GPL-3.0 applies to the name in this file
 // binary_read, binary_write: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; the image reads the function pointer at 0x10 or 0x18 and advances the position at 8
 // Adapted body: NiBinaryStream::binary_read, from CharmedBaryon/CommonLibSSE-NG b93280e src/RE/N/NiBinaryStream.cpp (MIT), with the
-// assert dropped; binary_write follows it. NG's licence notice from its LICENSE at b93280e:
-//   MIT License
-//   Copyright (c) 2018 Ryan-rsm-McKenzie
-//   Permission is hereby granted, free of charge, to any person obtaining a copy
-//   of this software and associated documentation files (the "Software"), to deal
-//   in the Software without restriction, including without limitation the rights
-//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//   copies of the Software, and to permit persons to whom the Software is
-//   furnished to do so, subject to the following conditions:
-//   The above copyright notice and this permission notice shall be included in all
-//   copies or substantial portions of the Software.
-//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//   SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiPoint2::LoadBinary, NiPoint2::SaveBinary: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); names and stream parameter forms from include/NiPoint2.h, the Skyrim callees are unnamed
 // g_shaderMaterialManager, ShaderMaterialManager, AcquireMaterial, ReleaseMaterial: GUESS(low); the image calls a method on a global with (material, flag, flag) and one with (material)
 #pragma once

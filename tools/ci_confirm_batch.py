@@ -20,7 +20,8 @@ import compare_internal
 import contrib
 import lint_reconstruction
 from pecoff import CoffObject
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 import target_hashes
 
 

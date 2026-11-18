@@ -1,12 +1,5 @@
-// BSFogProperty declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s04-niobject-bsfogproperty
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
-// the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiObjectNET.h for NiObjectNET.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSFogProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiProperty, NiFogProperty: STANDIN EXE_RTTI
 // BSFogProperty::~BSFogProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

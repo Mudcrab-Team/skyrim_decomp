@@ -1,15 +1,6 @@
-// NiExtraData type declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) include/RE/N/NiExtraData.h and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // include/RE/N/NiStream.h. No body is adapted from community or FNV sources; the lone
-// declarations are community ones. tools/check_origin.py reports none above its threshold.
-// NiRefObject and NiObject are stand-ins here (the shared NiObject.h cannot inline their
-// destructors); NiStream and BSFixedString are minimal
-// stand-ins declared below (NG include/RE/N/NiStream.h, include/RE/B/BSFixedString.h).
-// Vtable slot order and sizeof(NiExtraData) == 0x18 come from the image vftable and the size
-// argument of operator delete in the deleting destructor.
 // NiExtraData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 

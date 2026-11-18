@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?InitializeData@TESFurniture@@UEAAXXZ": {
+      "rva": 2547984,
+      "size": 20
+    },
+    "?Clone3D@TESFurniture@@UEAAPEAVNiAVObject@@PEAVTESObjectREFR@@@Z": {
+      "rva": 2551168,
+      "size": 55
+    },
+    "?InitializeData@TESObjectACTI@@UEAAXXZ": {
+      "rva": 2594640,
+      "size": null
+    },
+    "?Clone3D@TESBoundObject@@UEAAPEAVNiAVObject@@PEAVTESObjectREFR@@@Z": {
+      "rva": 2588160,
+      "size": null
+    },
+    "?g_furnitureCloneFlag@@3_NA": {
+      "rva": 34300208,
+      "size": null
+    },
+    "?Unk26f900@TESFurniture@@QEAAXPEAVNiAVObject@@@Z": {
+      "rva": 2554112,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?InitializeData@TESFurniture@@UEAAXXZ",
+        "rva": "0x26e110",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Clone3D@TESFurniture@@UEAAPEAVNiAVObject@@PEAVTESObjectREFR@@@Z",
+        "rva": "0x26ed80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitializeData@TESObjectACTI@@UEAAXXZ",
+        "rva": "0x279750",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Clone3D@TESBoundObject@@UEAAPEAVNiAVObject@@PEAVTESObjectREFR@@@Z",
+        "rva": "0x277e00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_furnitureCloneFlag@@3_NA",
+        "rva": "0x20b6130",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk26f900@TESFurniture@@QEAAXPEAVNiAVObject@@@Z",
+        "rva": "0x26f900",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

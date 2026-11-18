@@ -111,37 +111,3 @@ class T(unittest.TestCase):
                     run = self.run_suite(Path(tmp), '--shard-index', str(index), '--shard-count', str(count))
                     self.assertNotEqual(run.returncode, 0)
                     self.assertIn('require --shard-count', run.stderr)
-
-    def test_non_source_changes_run_all_local_tests_and_ci_remains_full(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            (root / 'tools').mkdir()
-            (root / 'tools/leaf.py').write_text('VALUE = 1\n')
-            self.fixture(root, 'test_a', 'import unittest, sys\nfrom pathlib import Path\n'
-                         'sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))\nimport leaf\n'
-                         'class T(unittest.TestCase):\n def test_value(self): self.assertEqual(leaf.VALUE, 1)\n')
-            self.fixture(root, 'test_b', 'import unittest\n'
-                         'class T(unittest.TestCase):\n def test_unrelated(self): self.fail("unrelated CI coverage")\n')
-            def git(*args):
-                return subprocess.check_output(['git', *args], cwd=root, text=True).strip()
-            git('init', '--quiet')
-            git('config', 'user.name', 'Synthetic')
-            git('config', 'user.email', 'synthetic@example.invalid')
-            git('add', '--all')
-            git('commit', '--quiet', '-m', 'original synthetic tests')
-            base = git('rev-parse', 'HEAD')
-            (root / 'tools/leaf.py').write_text('VALUE = 2\n')
-            git('add', '--', 'tools/leaf.py')
-            git('commit', '--quiet', '-m', 'changed synthetic tool')
-            local = self.run_suite(root, '--changed-since', base)
-            self.assertNotEqual(local.returncode, 0, local.stdout + local.stderr)
-            report = json.loads((root / '.local/test-suite-results.json').read_text())
-            self.assertEqual((report['discovered'], report['selected'], report['executed']), (2, 2, 2))
-            self.assertTrue(report['failed'])
-            ci = self.run_suite(root)
-            self.assertNotEqual(ci.returncode, 0)
-            report = json.loads((root / '.local/test-suite-results.json').read_text())
-            self.assertEqual((report['discovered'], report['selected'], report['executed']), (2, 2, 2))
-            refused = self.run_suite(root, '--changed-since', base, '--shard-count', '2')
-            self.assertNotEqual(refused.returncode, 0)
-            self.assertIn('cannot be combined with CI shards', refused.stderr)

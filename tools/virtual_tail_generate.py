@@ -10,7 +10,8 @@ from pathlib import Path
 import storage_free_return_generate as generator
 import virtual_tail_template_v1 as template
 from pecoff import CoffObject
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 
 def probe_extractor(directory):

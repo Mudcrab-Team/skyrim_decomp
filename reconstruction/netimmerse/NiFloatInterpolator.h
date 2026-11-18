@@ -1,12 +1,6 @@
-// NiFloatInterpolator declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s04-niobject-nifloatinterpolator
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiKeyBasedInterpolator.h for NiKeyBasedInterpolator.
 // NiFloatInterpolator: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiFloatInterpolator::GetKeyCount, NiFloatInterpolator::GetKeyContent, NiFloatInterpolator::GuaranteeTimeRange, NiFloatInterpolator::GetKeyArray, NiFloatInterpolator::GetKeyStride, NiFloatInterpolator::GetChannelPosed: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown28, unk18, unk20: GUESS(low)

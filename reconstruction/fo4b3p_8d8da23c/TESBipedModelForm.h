@@ -1,10 +1,5 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed.
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
-// Drafted by gpt-6.1-terra. Evidence: findings/ghidra-import.md
-// Adapted declarations: CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a, RE/T/TESBipedModelForm.h, TESModel.h, TESModelTextureSwap.h, TESModelRDT.h, TESTexture.h, TESIcon.h and RE/B/BGSMessageIcon.h, BaseFormComponent.h.
 // TESBipedModelForm, BaseFormComponent, TESModel, TESModelTextureSwap, TESModelRDT, TESTexture, TESIcon, BGSMessageIcon, worldModels, inventoryIcons, messageIcons, constraintTemplate: GUESS(low); target calls corroborate selected offsets and slots.
 /*
 MIT License
