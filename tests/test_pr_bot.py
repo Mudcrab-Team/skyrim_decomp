@@ -34,11 +34,35 @@ class DecisionTests(unittest.TestCase):
         self.assertFalse(self.table('pass', 'pass', 'reject')['merge'])
 
     def test_leak_or_grep_hit_blocks_the_whole_pr(self):
-        for kw in ({'leak': 'yes'}, {'leak_hits': ['R1']}):
+        for kw in ({'leak': 'yes'}, {'leak': 'unreadable'}, {'leak_hits': ['R1']}):
             d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'pass'}, {0x10: 'pass', 0x20: 'pass'},
                               {0x10: 'approve', 0x20: 'approve'}, **kw)
             self.assertEqual((d['blocked'], d['merge']), ('leak', False))
             self.assertEqual(set(d['verdicts'].values()), {'blocked'})
+
+    def test_a_leak_claim_blocks_only_with_recognised_evidence(self):
+        rows = {'0x10': {'verdict': 'approve', 'ground': 'none'}}
+        bare = json.dumps({'leak': 'yes', 'why': 'x', 'functions': rows})
+        self.assertEqual(pr_bot.parse_review(bare, [0x10]), ('no', {0x10: 'approve'}))
+        odd = json.dumps({'leak': 'yes', 'leak_evidence': ['style'], 'functions': rows})
+        self.assertEqual(pr_bot.parse_review(odd, [0x10])[0], 'no')
+        backed = json.dumps({'leak': 'yes', 'leak_evidence': ['decompiler-artifact'], 'functions': rows})
+        self.assertEqual(pr_bot.parse_review(backed, [0x10])[0], 'yes')
+        self.assertEqual(pr_bot.review_leak_evidence(backed), ['decompiler-artifact'])
+
+    def test_justified_cast_note_approves_and_comment_states_the_real_reason(self):
+        args = ([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'})
+        self.assertTrue(pr_bot.decide(*args, leak='no')['merge'])
+        review = pr_bot.decide(*args, leak='yes', leak_evidence=['copied-text'])
+        self.assertEqual((review['blocked'], review['leak_source']), ('leak', 'review'))
+        body = pr_bot.comment_body(HEAD, review)
+        self.assertIn('copied-text', body)
+        self.assertNotIn('held before any compile', body)
+        grep = pr_bot.decide(*args, leak_hits=['R1'])
+        self.assertIn('held before any compile', pr_bot.comment_body(HEAD, grep, ['R1']))
+        broken = pr_bot.decide(*args, leak='unreadable')
+        self.assertIn('bot fault', pr_bot.comment_body(HEAD, broken))
+        self.assertNotIn('held before any compile', pr_bot.comment_body(HEAD, broken))
 
     def test_regression_blocks_but_preexisting_debt_does_not(self):
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'regressed'}, {0x10: 'pass', 0x20: 'pass'},
@@ -66,7 +90,7 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual(pr_bot.review_notes('nonsense', [0x10]), {})
 
     def test_a_bad_review_answer_never_approves(self):
-        self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('yes', {}))
+        self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('unreadable', {}))
         leak, out = pr_bot.parse_review('x ' + GOOD, [0x10, 0x30])
         self.assertEqual((leak, out), ('no', {0x10: 'approve', 0x30: 'reject'}))
 
