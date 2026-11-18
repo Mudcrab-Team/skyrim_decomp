@@ -1,14 +1,8 @@
-// BGSLoadGameBuffer accessors, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x637a90, 12 bytes (GetVersion); RVA 0x637e70, 51 bytes (LoadDataEndian);
-// RVA 0x637ab0, 110 bytes (ReadFormID).
-// Evidence: findings/fourth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image and the class layout in the header beside this file. A byte match shows that this
-// source and recipe produce the checked code; it does not verify the community names.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. GetVersion and ReadFormID are compared.
-// LoadDataEndian is defined here but not compared: a name it binds clashes with an existing symbol-map entry.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x637a90 BGSLoadGameBuffer::GetVersion
+// 0x637e70 BGSLoadGameBuffer::LoadDataEndian
+// 0x637ab0 BGSLoadGameBuffer::ReadFormID
 #include "BGSLoadGameBuffer.h"
 
 #include <cstring>

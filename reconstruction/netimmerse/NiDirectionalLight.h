@@ -1,14 +1,6 @@
-// NiDirectionalLight declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-nidirectionallight
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: NiLightBase, a local stand-in of the NiLight 0x140 size. The shared NiAVObject cannot
-// hold the fields at 0x7C to 0x94 that the compared code reads, so they are declared here.
 // NiDirectionalLight: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiDirectionalLight::~NiDirectionalLight, NiDirectionalLight::UpdateWorldData, NiDirectionalLight::GetRTTI: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiLightBase, lightA, lightB, lightC, unk08, unk80, unk8C, unk98, copyA, copyB, copyC, unk14C: GUESS(low); names and layout inferred from the listings

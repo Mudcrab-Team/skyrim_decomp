@@ -1,25 +1,14 @@
-// NiColorInterpolator functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q1-s02-niobject-nicolorinterpolator
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-1-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by gpt-5.6-luna-medium-1 (the model or person who writes the bodies), starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0xf62970, 6 bytes: NiColorInterpolator::GetKeyType
-//   RVA 0xf62d80, 8 bytes: NiColorInterpolator::GetRTTI
-//   RVA 0xf62930, 14 bytes: NiColorInterpolator::GetKeyCount
-//   RVA 0xf62950, 14 bytes: NiColorInterpolator::GetKeyContent
-//   RVA 0xf62b50, 14 bytes: NiColorInterpolator::GuaranteeTimeRange
-//   RVA 0xf62980, 15 bytes: NiColorInterpolator::GetKeyArray
-//   RVA 0xf629a0, 15 bytes: NiColorInterpolator::GetKeyStride
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xf62970 NiColorInterpolator::GetKeyType
+// 0xf62d80 NiColorInterpolator::GetRTTI
+// 0xf62930 NiColorInterpolator::GetKeyCount
+// 0xf62950 NiColorInterpolator::GetKeyContent
+// 0xf62b50 NiColorInterpolator::GuaranteeTimeRange
+// 0xf62980 NiColorInterpolator::GetKeyArray
+// 0xf629a0 NiColorInterpolator::GetKeyStride
 #include "NiColorInterpolator.h"
 
 const NiRTTI NiRTTI_NiColorInterpolator{};

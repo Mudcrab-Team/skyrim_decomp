@@ -1,9 +1,5 @@
-// TESIdleForm type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and size follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESIdleForm.h.
-// The destructor is declared without a body in this unit: the deleting destructor calls the plain one
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // at RVA 0x3b6a20, which is bound by hint. The members are not recovered. Adapted bodies: none declared.
 // TESIdleForm, TESIdleForm::~TESIdleForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESIdleForm::InitItemImpl: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 13, RVA 0x3b7240

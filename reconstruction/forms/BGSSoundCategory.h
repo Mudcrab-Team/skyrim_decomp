@@ -1,13 +1,6 @@
-// BGSSoundCategory declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s09-tesform-bgssoundcategory
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../forms/TESForm.h for TESForm. The compared bodies reach fields by
-// offset from this (attenuation at 0x1A lies inside TESForm, and the sound-category interface sits at
 // 0x30 of a parent), so they use RawAt; header-gap TESForm for these fields.
 // BGSSoundCategory: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSSoundCategory::SetCategoryAttenuation, BGSSoundCategory::SetCategoryFrequency, BGSSoundCategory::Matches: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)

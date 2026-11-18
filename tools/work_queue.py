@@ -18,9 +18,9 @@ The queue lives in `.local/queue/small/` (or `--queue-dir`, or $SKYRIM_QUEUE_DIR
   first, and a rename succeeds for one caller only, so a takeover is atomic too.
 - `done/<unit>.json` marks a unit finished; `results.jsonl` gets every result line, stamped with
   the worker label, the profile, the unit, the claim time and the time, so pass rates and wall time
-  can be compared per model and profile afterwards (tools/friction.py).
+  can be compared per model and profile afterwards.
 - `releases.jsonl` lists claims given back with `release` (a session that asked `next` once too
-  often), so the friction report can count them.
+  often).
 - On a claim, near-miss files left in `<unit dir>/near-miss/` by an earlier session are moved to
   `near-miss/earlier-<time>/`: they were written against an older unit source and confused later
   sessions when left beside the new run's files. They stay readable there.

@@ -216,7 +216,7 @@ class PacketProbes(SiblingFixture, unittest.TestCase):
         filled = filled.replace('<list>', 'G2').replace('<git commit>', '0000000').replace('<yes|no>', 'no')
         block = (block.replace('<approve|reject|escalate>', 'approve')
                  .replace('<provenance|legal|systemic|other|none>', 'none')
-                 .replace('<tu-sha256-v1 digest you computed>', self.record['source']['digest'])
+                 .replace('<digest you computed with the record method>', self.record['source']['digest'])
                  .replace('<agree|disagree|missing>, <one line>', 'agree, synthetic')
                  .replace('<pass|fail>, <one line>', 'pass, synthetic')
                  .replace('<none, or one "  - <item>" line each below>', 'none')

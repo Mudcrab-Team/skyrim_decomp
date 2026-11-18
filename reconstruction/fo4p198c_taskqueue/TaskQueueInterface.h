@@ -1,10 +1,5 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed (local target analysis and permitted sibling).
 // Origin: independently reconstructed from target and sibling hints.
-// Drafted by gpt-6.1-terra
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // names: GUESS(low); signatures and type names are hypotheses.
 // TaskQueueInterface::QueueForceWeather: SIBLING(fo4-private@1b765c70, author-permission); adapted task construction.
 // TaskQueueInterface::QueueRemoveSpell: SIBLING(fo4-private@1b765c70, author-permission); adapted task construction.

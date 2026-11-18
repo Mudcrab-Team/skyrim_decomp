@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ExtraSoundStorageLayout.cpp",
-    "digest": "2a5aa82e8e21b95c8cd4104071bdcb2bd0dd3216d03326f6514c7d18ff7579c1",
-    "digest_method": "tu-sha256-v1",
+    "digest": "1c8f4fb0e86724cdf2ec945ac33eaec5eec11cecd03afb7eeb9aa59d7a0116bc",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "2a5aa82e8e21b95c8cd4104071bdcb2bd0dd3216d03326f6514c7d18ff7579c1",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSExtraDataStorageLayout.h",
       "reconstruction/bsengine/BSSoundHandleStorageLayout.h",

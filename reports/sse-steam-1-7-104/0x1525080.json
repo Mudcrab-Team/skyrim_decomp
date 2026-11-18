@@ -320,8 +320,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.cpp",
-    "digest": "fe150d6a912867e697fc8b971a1c734714a5cd65ef6b3700b8d260528299afd5",
-    "digest_method": "tu-sha256-v1",
+    "digest": "d67f462bc861b2b4cdbda84a4fd659a897a59172a256d60063ed234e3e9620ac",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "fe150d6a912867e697fc8b971a1c734714a5cd65ef6b3700b8d260528299afd5",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
       "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.cpp",

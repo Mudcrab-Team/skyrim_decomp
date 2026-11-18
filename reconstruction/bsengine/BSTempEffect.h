@@ -1,15 +1,7 @@
-// BSTempEffect type declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Class, member and virtual names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT)
-// include/RE/B/BSTempEffect.h. Layout sizes and offsets are from the image.
-// Base classes: NiRefObject and NiObject are declared here as stand-ins with inline destructors,
-// because the image inlines both into ~BSTempEffect and the shared netimmerse/NiObject.h declares
-// them out of line (header-gap NiObject, header-gap NiRefObject).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none in this header; BSTempEffect.cpp lists the one it has (Initialize, from
 // the FNV sibling). tools/check_origin.py reports none other above its threshold at
-// CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // TEMP_EFFECT_TYPE, BGSLoadGameBuffer, BGSSaveGameBuffer, TESObjectCELL: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSTempEffect: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // lifetime, cell, age, initialized, effectID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

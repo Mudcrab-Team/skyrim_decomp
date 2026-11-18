@@ -1,20 +1,4 @@
-// Actor functions for build sse-steam-1-7-104.
-// Labels: v2
-// Task: p177fb-449995c4
 // Source exposure: mixed (pinned target listing and sibling hints).
-// Evidence: findings/ghidra-import.md
-// RVA 0x6767b0, 8 bytes: Actor::ForceEditorLocation
-// RVA 0x6bdd90, 8 bytes: Actor::GetEditorLocation
-// RVA 0x687a20, 14 bytes: Actor::IsKnockedDown
-// RVA 0x686640, 12 bytes: Actor::GetClass
-// RVA 0x6c9090, 16 bytes: Actor::SetCombatGroup
-// RVA 0x6c9070, 17 bytes: Actor::GetCombatGroup
-// RVA 0x6c9850, 24 bytes: Actor::IsInCombat
-// RVA 0x6d5350, 36 bytes: Actor::IsInCastPowerList
-// RVA 0x692da0, 18 bytes: Actor::GetStartingAngle
-// RVA 0x692dc0, 30 bytes: Actor::GetStartingLocation
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by gpt-6.1-terra.
 // Origin: adapted sibling source and target listing.
 // Actor::ForceEditorLocation: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Actor.cpp:6004
@@ -34,6 +18,16 @@
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Actor.cpp:2676
 // Actor, Actor::ForceEditorLocation, Actor::GetEditorLocation, Actor::IsKnockedDown: GUESS(low)
 // Actor fields: STANDIN GUESS(low)
+// 0x6767b0 Actor::ForceEditorLocation
+// 0x6bdd90 Actor::GetEditorLocation
+// 0x687a20 Actor::IsKnockedDown
+// 0x686640 Actor::GetClass
+// 0x6c9090 Actor::SetCombatGroup
+// 0x6c9070 Actor::GetCombatGroup
+// 0x6c9850 Actor::IsInCombat
+// 0x6d5350 Actor::IsInCastPowerList
+// 0x692da0 Actor::GetStartingAngle
+// 0x692dc0 Actor::GetStartingLocation
 #include "Actor.h"
 void Actor::ForceEditorLocation(void* location) { editorLocation = location; }
 void* Actor::GetEditorLocation() const { return editorLocation; }

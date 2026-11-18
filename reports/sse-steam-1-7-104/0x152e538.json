@@ -346,8 +346,10 @@
   ],
   "source": {
     "compiled": "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.cpp",
-    "digest": "f7524217e6aa04717d5bf706b686a88814aa8edb9601137084326a56a4451604",
-    "digest_method": "tu-sha256-v1",
+    "digest": "760efcab801031f16d8d588f53b8c9aa3ea41ca6298f96ff8138b8cd817cfaf6",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "f7524217e6aa04717d5bf706b686a88814aa8edb9601137084326a56a4451604",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.cpp",
       "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.h",

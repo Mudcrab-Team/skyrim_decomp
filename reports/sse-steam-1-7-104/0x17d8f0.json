@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ExtraRefrPathStorageLayout.cpp",
-    "digest": "8ede5f0ff09fc6ad5506a1a4e3678e9c3f538549ca5daaf72c721202bbfcdb6f",
-    "digest_method": "tu-sha256-v1",
+    "digest": "b8aa67c04d6157226c07b692e0e0ec030d452499545c5b609e5fdc47c92e52d6",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "8ede5f0ff09fc6ad5506a1a4e3678e9c3f538549ca5daaf72c721202bbfcdb6f",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSExtraDataStorageLayout.h",
       "reconstruction/bsengine/BSFixedStringStorageLayout.h",

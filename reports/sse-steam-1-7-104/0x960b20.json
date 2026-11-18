@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ClickHandlerStorageLayout.cpp",
-    "digest": "e7cb7bfedf7605ccab839eda7a2691999b81dc6fe7540779c68a9a2e3b4facef",
-    "digest_method": "tu-sha256-v1",
+    "digest": "6c8c6d10400200f6df2295a047e287260c1677fa285d5d7a6f3e3ef99b29f8bb",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "e7cb7bfedf7605ccab839eda7a2691999b81dc6fe7540779c68a9a2e3b4facef",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
       "reconstruction/bsengine/ClickHandlerStorageLayout.cpp",

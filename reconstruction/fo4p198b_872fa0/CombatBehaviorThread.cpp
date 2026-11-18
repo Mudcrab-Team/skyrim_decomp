@@ -1,16 +1,11 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed
 // Origin: authorized sibling and public declarations
-// Drafted by gpt-6.1-terra
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // GPL-3.0: declarations adapted from powerof3/CommonLibSSE at 654e55f7979c1733033d5dbef176e43827bac944, include/RE/C/CombatBehaviorThread.h, CombatBehaviorStack.h, CombatBehaviorTreeNode.h and include/RE/B/BSTArray.h.
 // CombatBehaviorThread, CombatBehaviorStack, CombatBehaviorTreeNode: COMMUNITY(powerof3/CommonLibSSE@654e55f7979c1733033d5dbef176e43827bac944, GPL-3.0); declarations adapted
 // names: GUESS(low); method signatures and auxiliary names remain provisional
-// RVA 0x872fa0, 34 bytes: CombatBehaviorThread::Ascend
 // CombatBehaviorThread::Ascend: SIBLING(fo4-private@1b765c70, author-permission); adapted using target evidence
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorThread.cpp:108
+// 0x872fa0 CombatBehaviorThread::Ascend
 #include "CombatBehaviorThread.h"
 void CombatBehaviorThread::Ascend() {
     if (currentNode) {

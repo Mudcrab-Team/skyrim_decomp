@@ -149,7 +149,7 @@ Related tools outside this directory:
 
 - `tools/compare.py` (with `tools/pecoff.py`): the comparator, contract in
   `docs/comparator-contract.md`. Changing either file makes every match record stale.
-- `tools/source_digest.py`: the `tu-sha256-v1` digest of a translation unit, used as the source
+- `tools/source_digest.py` (`tu-sha256-v1`, raw bytes) and `tools/digest_v2.py` (`tu-sha256-v2`, prose comments ignored; the default for new records): the digest of a translation unit, used as the source
   revision by tasks, records and Reviewer records.
 - `tools/check.py`: the validator, including the match gate (`docs/verification.md`).
 - `tools/accept_function.py`: records a Reviewer `approve` and sets one inventory entry to

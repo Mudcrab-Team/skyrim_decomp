@@ -1,15 +1,4 @@
-// PlayerCharacter functions for build sse-steam-1-7-104.
-// Labels: v2
-// Task: p177fb-3394720c
 // Source exposure: mixed (pinned target listing and sibling hints).
-// Evidence: findings/ghidra-import.md
-// RVA 0x74c520, 11 bytes: PlayerCharacter::HasBeenAttacked
-// RVA 0x74c540, 17 bytes: PlayerCharacter::SetBeenAttacked
-// RVA 0x7423b0, 37 bytes: PlayerCharacter::GetCannibal
-// RVA 0x7423e0, 37 bytes: PlayerCharacter::GetVampireFeed
-// RVA 0x75d410, 17 bytes: PlayerCharacter::StartPowerAttackCoolDown
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by gpt-6.1-terra.
 // Origin: adapted sibling source and target listing.
 // PlayerCharacter::HasBeenAttacked: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/PlayerCharacter.cpp:773
@@ -23,6 +12,11 @@
 // PlayerCharacter fields: STANDIN GUESS(low)
 // PlayerCharacter::StartPowerAttackCoolDown: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/PlayerCharacter.cpp:2025
+// 0x74c520 PlayerCharacter::HasBeenAttacked
+// 0x74c540 PlayerCharacter::SetBeenAttacked
+// 0x7423b0 PlayerCharacter::GetCannibal
+// 0x7423e0 PlayerCharacter::GetVampireFeed
+// 0x75d410 PlayerCharacter::StartPowerAttackCoolDown
 #include "PlayerCharacter.h"
 bool PlayerCharacter::HasBeenAttacked() { return (flags >> 7) != 0; }
 void PlayerCharacter::SetBeenAttacked(bool value) { flags = (flags & 0x7f) | (value << 7); }

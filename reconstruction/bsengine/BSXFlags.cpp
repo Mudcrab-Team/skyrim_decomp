@@ -1,19 +1,9 @@
-// BSXFlags functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q1-s02-niobject-bsxflags
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-1-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5, starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0xfd2da0, 4 bytes: BSXFlags::CreateClone
-//   RVA 0xfd2de0, 19 bytes: BSXFlags::RegisterStreamables
-//   RVA 0xfd30c0, 62 bytes: BSXFlags::~BSXFlags
 // Adapted bodies: none.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xfd2da0 BSXFlags::CreateClone
+// 0xfd2de0 BSXFlags::RegisterStreamables
+// 0xfd30c0 BSXFlags::~BSXFlags
 #include "BSXFlags.h"
 
 // Not compared: defined so that the compiler emits the vftable and, beside it, the

@@ -316,8 +316,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/BSSkyShaderProperty.cpp",
-    "digest": "ed2f520105f89c061584389777d2b65d57133a432e4f1273f102d47ae226c158",
-    "digest_method": "tu-sha256-v1",
+    "digest": "1aa56e610f4dbd706a85d8364c2aa3b800736d251e5e6766c3098a5adf84d506",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "ed2f520105f89c061584389777d2b65d57133a432e4f1273f102d47ae226c158",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSShaderProperty.h",
       "reconstruction/bsengine/BSSkyShaderProperty.cpp",

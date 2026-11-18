@@ -1,20 +1,10 @@
-// BSLightingShaderMaterialFacegenTint functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s10-bslightingshadermaterialfacegentint
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-2-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5, starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x1526fc0, 6 bytes: BSLightingShaderMaterialFacegenTint::GetFeature
-//   RVA 0x1526e30, 48 bytes: BSLightingShaderMaterialFacegenTint::Ctor
-//   RVA 0x1526f20, 60 bytes: BSLightingShaderMaterialFacegenTint::CopyMembers
-//   RVA 0x1528ec0, 62 bytes: BSLightingShaderMaterialFacegenTint::~BSLightingShaderMaterialFacegenTint (scalar deleting destructor)
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x1526fc0 BSLightingShaderMaterialFacegenTint::GetFeature
+// 0x1526e30 BSLightingShaderMaterialFacegenTint::Ctor
+// 0x1526f20 BSLightingShaderMaterialFacegenTint::CopyMembers
+// 0x1528ec0 BSLightingShaderMaterialFacegenTint::~BSLightingShaderMaterialFacegenTint
 #include <new>
 #include "BSLightingShaderMaterialFacegenTint.h"
 

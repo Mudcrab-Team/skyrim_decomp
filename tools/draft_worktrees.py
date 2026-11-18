@@ -13,7 +13,9 @@ import sys
 import tempfile
 import uuid
 
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+
+from digest_v2 import tu_digest
 import sparse_checkouts as sparse
 
 
@@ -519,7 +521,7 @@ def accepted_baseline_emissions(tree, base, closure, symbols, final, bind):
         source = record.get('source', {})
         files = source.get('translation_unit', [])
         if (source.get('compiled') == final['compiled'] and files
-                and digest_at(tree, base, files) == source.get('digest')):
+                and digest_at(tree, base, files, source.get('digest_method')) == source.get('digest')):
             return existing_header_emissions(tree, base, closure, symbols, set(), bind,
                                              explicit_only=True)
     return set()

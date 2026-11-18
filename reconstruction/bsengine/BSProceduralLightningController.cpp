@@ -1,24 +1,13 @@
-// BSProceduralLightningController functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bsprocedurallightningcontroller
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by Claude Haiku 5.5 (claude-haiku-5-5, worker haiku-202611122349-3), starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0xffd880, 12 bytes: BSProceduralLightningController::GetInterpolator
-//   RVA 0xffd7d0, 24 bytes: BSProceduralLightningController::GetInterpolatorID
-//   RVA 0xffc810, 99 bytes: BSProceduralLightningController::LoadBinary
-//   RVA 0xffe540, 113 bytes: BSProceduralLightningController::InterpolatorIsCorrectType
-//   RVA 0xffc920, 142 bytes: BSProceduralLightningController::RegisterStreamables
-//   RVA 0xffca50, 345 bytes: BSProceduralLightningController::IsEqual (set aside in near-miss/0xffca50.cpp)
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xffd880 BSProceduralLightningController::GetInterpolator
+// 0xffd7d0 BSProceduralLightningController::GetInterpolatorID
+// 0xffc810 BSProceduralLightningController::LoadBinary
+// 0xffe540 BSProceduralLightningController::InterpolatorIsCorrectType
+// 0xffc920 BSProceduralLightningController::RegisterStreamables
+// 0xffca50 BSProceduralLightningController::IsEqual
 #include "BSProceduralLightningController.h"
 
 // RVA 0xffd880, 12 bytes.

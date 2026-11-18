@@ -3,21 +3,19 @@
   "code_section_sha256": "2b2924902cd1ad3b60bf27576f86a983864f80d482be4ba1c2dcb4873355682e",
   "escalation_category": "none",
   "function_id": "sse-steam-1-7-104-0x645130",
-  "naming_findings": [
-    "Inventory retains a placeholder; the unit uses the community slot name."
-  ],
+  "naming_findings": [],
   "previous_code_section_sha256": null,
   "previous_review_sha256": null,
   "previous_source_digest": null,
-  "review_date": "2026-11-14",
+  "review_date": "2026-11-18",
   "review_kind": "full",
   "review_record_schema": 3,
-  "review_sha256": "eda2853d39d503e37a93133c8ab112898bc183c48070866c74c05d16ecf1e1fd",
-  "review_task_id": "review-p85-priority-w2-5",
+  "review_sha256": "c7ef5ba0cbd059c727da8829351f71a9b4f3ae35547fb1cb4eb683b1fd780961",
+  "review_task_id": "pr-bot-129-178f4b1b",
   "reviewer_model": "gpt-6.1-terra",
   "rva": 6574384,
   "size": 3,
-  "source_digest": "07af29320d89a2e9790f5b1620c17a7edc6dca238265f65e87f085589bf32bec",
+  "source_digest": "51a2740f040bf959437c1d26df4d8975b3b571c60a7d9671ab0560b08ea9cbb3",
   "source_digest_method": "tu-sha256-v1",
   "verdict": "approve"
 }

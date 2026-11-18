@@ -10,7 +10,6 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 import check
-import flow_lane
 
 
 class PrivateWorkflowGuard(unittest.TestCase):
@@ -72,15 +71,6 @@ class PrivateWorkflowGuard(unittest.TestCase):
         with patch.object(check.subprocess, 'run', return_value=type('Result', (), {
                 'returncode': 0, 'stdout': str(self.root / '.git') + '\n'})()):
             self.assertEqual(check.private_workflow_terms(linked), ('syntheticprivatevalue',))
-
-    def test_lane_snapshot_carries_ignored_policy(self):
-        self.policy()
-        fdir = self.root / '.local/flow'
-        fdir.mkdir()
-        destination = self.root / 'candidate/.local/flow'
-        with patch.object(flow_lane, 'require_complete'), patch.object(flow_lane, 'running', return_value=False):
-            flow_lane.snapshot(fdir, destination)
-        self.assertEqual((destination.parent / self.config.name).read_bytes(), self.config.read_bytes())
 
 
 if __name__ == '__main__':

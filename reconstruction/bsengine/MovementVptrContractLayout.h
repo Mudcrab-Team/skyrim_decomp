@@ -1,42 +1,10 @@
-// Build: sse-steam-1-7-104
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (pinned community reference-count/movement-interface storage, independent target construction/RTTI/slot analysis).
-// Drafted by GPT-6.1 Sol; shared MovementAgent primary-storage prefix reuse.
-// Labels: v2
 // Code origin: original explicitly narrowed owner/interface views and defaulted construction, reusing the represented community-backed MovementAgent storage. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/B/BSIntrusiveRefCounted.h and include/RE/I/{IMovementInterface,IMovementState}.h; MIT.
 // BSIntrusiveRefCounted, IMovementInterface, IMovementState, _refCount: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MovementAgent, IPipelineStageInterface: EXE_RTTI
 // MovementVptrContractLayout, Identity, all owner names ending InterfacePrefixLayout and their StorageLayout mirrors: GUESS(medium) STANDIN
-// The primary24-byte MovementAgent storage is independently supported by constructor writes at8 and16 and the NullMovementState object RTTI; see its included declaration.
-// Each following represented contract is the actual target's eight-byte vptr prefix at a nonvirtual subobject start. The Identity tag only distinguishes those RTTI-bound subobjects; it introduces no storage or runtime value.
-// Fieldless interface ancestry is flattened; unassessed methods, any data beyond represented contract prefixes and all owner suffixes are omitted. Whole owner sizes, complete original definitions, instantiability and behavior remain unclaimed.
-// Independent target COLs place every represented secondary table consecutively at24+8*n; each selected slot0 points to an adjustor with the same owner/primary target.
-// The declaration introduces no byte arrays, padding or emission attributes. All sizes follow the known primary fields and represented vptr contracts; deletion-size arguments are not used.
-// Only listed ordinary compiler-emitted secondary destructor adjustors are compared. Constructor, primary destruction and movement behavior are outside the byte-match claim.
-// Layout size/offset assertions are not function passes or original-source identity claims.
-// MIT License
-// 
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include "MovementAgentPathFollowerStandardPrefixLayout.h"

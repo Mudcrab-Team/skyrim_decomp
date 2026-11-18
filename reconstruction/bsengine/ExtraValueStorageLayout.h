@@ -1,34 +1,8 @@
-// Build: sse-steam-1-7-104
 // Source exposure: mixed (community declarations, target RTTI bindings).
-// Drafted by GPT-6.1 Sol; p104b represented storage follow-up.
-// Labels: v2
 // ExtraValueStorageLayout: GUESS(medium) STANDIN; represented public storage alias.
 // Code origin: public data declarations and represented reference-count inheritance; no implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/B/BSIntrusiveRefCounted.h, BSTFreeList.h; S/SettingCollection.h, SimpleAllocMemoryPagePolicy.h; A/AttachLightHitEffectVisitor.h, ActorTargetCheck.h; F/FastTravelConfirmCallback.h; I/IFunction.h, IFuncCallQuery.h, IVirtualMachine.h, IMessageBoxCallback.h, IMemoryPagePolicy.h; D/DelayFunctor.h; B/BSAtomic.h.
-// Interface aliases retain only the observed primary reference-count base; omitted methods and original complete definitions are unassessed.
-// No opaque storage or allocation-sized filler is introduced. The value structs and FormID alias come from public named declarations.
-// Pointer pointees and ownership are unassessed. Unknown64-bit fields retain public declarations without assigning behavior.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declaration source: same pinned MIT CommonLibSSE-NG revision; BSExtraData.h, ExtraLeveledItem.h, ExtraOutfitItem.h, ExtraUniqueID.h, ExtraLightData.h, ExtraNavMeshPortal.h, ExtraPackageStartLocation.h, ExtraStartingPosition.h, NiPoint3.h and BSCoreTypes.h.
 #pragma once
 #include <cstdint>

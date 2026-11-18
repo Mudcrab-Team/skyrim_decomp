@@ -1,21 +1,9 @@
-// BSLightingShaderMaterialEnvmap functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bslightingshadermaterialenvmap
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by Claude Haiku 5.5 (claude-haiku-5-5), starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x1525020, 82 bytes: BSLightingShaderMaterialEnvmap::SaveBinary
-//   RVA 0x1525080, 82 bytes: BSLightingShaderMaterialEnvmap::LoadBinary
-//   RVA 0x1524ce0, 161 bytes: BSLightingShaderMaterialEnvmap::ComputeCRC32
-// Set aside in near-miss/ after two to five counted attempts each: 0x1524a60 Ctor, 0x1524f10
-// ReceiveValuesFromRootMaterial, 0x1524f80 GetTextures.
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x1525020 BSLightingShaderMaterialEnvmap::SaveBinary
+// 0x1525080 BSLightingShaderMaterialEnvmap::LoadBinary
+// 0x1524ce0 BSLightingShaderMaterialEnvmap::ComputeCRC32
 #include "BSLightingShaderMaterialEnvmap.h"
 
 // RVA 0x1525020, 82 bytes: the base writes its own fields, then this writes the float.

@@ -14,8 +14,9 @@ verifier hosts.
 
 A function counts as `matched` only after both host comparisons and one review; a local pass is a
 candidate. A function that fails stays a draft and the bot comment names a reason code. Fix it and
-push to the same branch. Batch several functions in a PR when you can; any classes are fine; a
-first PR or a single large function alone is fine.
+push to the same branch. Aim for about 20-60 functions per PR (60 is the per-PR cap), or fewer if they are large; one
+big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
+per class, since each PR costs a full verification and merge cycle.
 
 ## Tooling
 
@@ -37,7 +38,7 @@ and prepares a skeleton and a private pack. Then edit the unit under `reconstruc
 `compare` until it passes, and `submit` (it needs a fork remote; if none, ask the person to fork
 the repository on GitHub). When you show output publicly, add `--redact`.
 
-The contributor card has the source, label and stopping rules. The
+The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
 
@@ -81,3 +82,8 @@ source, because `compare` decides the match.
 
 Leave **Allow edits by maintainers** on and pull before continuing. Run `./sr feedback --json` at
 the start of each session; push fixes to the same branch and never force-push over reviewed commits.
+
+## Questions
+
+Ask in the project Discord: https://discord.gg/QufDpXhx88. The publication rules apply there too:
+no listings, pseudo-C, bytes or screenshots of them.

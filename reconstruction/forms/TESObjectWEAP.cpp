@@ -1,19 +1,9 @@
-// TESObjectWEAP functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q1-s01-tesboundobject-tesobjectweap
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-1-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5, starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x28e7f0, 19 bytes: TESObjectWEAP::GetObjectTypeName
-//   RVA 0x28e7b0, 24 bytes: TESObjectWEAP::GetDescriptionOwnerFile
-//   RVA 0x28e500, 52 bytes: TESObjectWEAP::~TESObjectWEAP
 // Adapted bodies: none.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x28e7f0 TESObjectWEAP::GetObjectTypeName
+// 0x28e7b0 TESObjectWEAP::GetDescriptionOwnerFile
+// 0x28e500 TESObjectWEAP::~TESObjectWEAP
 #include "TESObjectWEAP.h"
 
 // kObjectTypeNames: GUESS(low); the table of type name strings indexed by unk19D

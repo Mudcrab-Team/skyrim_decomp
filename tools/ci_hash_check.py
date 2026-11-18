@@ -17,7 +17,8 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import contrib
 from compare import check_relocation_layout, code_section_sha256, find_function
 from pecoff import CoffObject, Reject
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 SELF_TEST_RVAS = (contrib.SELF_TEST_RVA, 0x405a50, 0x1f3560)
 
@@ -51,7 +52,7 @@ def reference(root, rva):
     record = json.loads((root / fn['report']).read_text())
     source = record['source']
     closure = include_closure(root, source['compiled'])
-    if source['digest'] != tu_digest(root, closure) or sorted(source['translation_unit']) != sorted(closure):
+    if source['digest'] != tu_digest(root, closure, source['digest_method']) or sorted(source['translation_unit']) != sorted(closure):
         raise ValueError('self-test reference source is stale')
     reports = [run['report'] for run in record['runs']]
     if not reports or any(r['result'] != 'pass' or r['candidate']['code_sections'] != 1

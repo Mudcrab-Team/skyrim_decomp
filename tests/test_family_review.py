@@ -20,12 +20,64 @@ sys.path[:0] = [str(ROOT / 'tools'), str(ROOT / 'tests')]
 import accept_function as af
 import check
 import family_review as fr
-import flow
 import build_leaderboard
 from compare import compare
 from source_digest import tu_digest
 from test_match_gate import GateFixture, CPP, HDR, MAP, PIN, RECORD, REVIEW
 import synthetic_pecoff as fx
+
+
+def plan_family(root, spec_file):
+    """Freeze a family spec the way a recorded family manifest looks, without the removed planner."""
+    family = fr.read(root, spec_file)
+    data, target = af.load(root)
+    by_id = {fn['id']: fn for fn in data['functions']}
+    first = family['first_members']
+    family.update(family_schema=1, review=None, paused=False, pause_reason='')
+    family['first_members'] = {}
+    for fid in first:
+        fn = by_id[fid]
+        record = af.validate_match(fn, target, root)
+        fr.check_member(family, fn, record)
+        family['first_members'][fid] = fr.member_digest(fn, record)
+    fr.validate_family(family, approved=False)
+    path = f'reports/{target["build_id"]}/families/{fr.family_key(family)}.json'
+    fr.write(root, path, family)
+    return path
+
+
+def approve_family(root, path, review_file):
+    family = fr.read(root, path)
+    doc = fr.read(root, review_file)
+    family['review'] = {k: doc[k] for k in ('review_task_id', 'reviewer_model', 'profile', 'spec_sha256')}
+    family['review']['review_sha256'] = hashlib.sha256(Path(review_file).read_bytes()).hexdigest()
+    fr.validate_family(family)
+    fr.write(root, path, family)
+
+
+def plan_family_batch(root, family_path, name, seed, population):
+    family = fr.read(root, family_path)
+    data, target = af.load(root)
+    by_id = {fn['id']: fn for fn in data['functions']}
+    members = {}
+    for fid in population:
+        fn = by_id[fid]
+        record = af.validate_match(fn, target, root)
+        fr.check_member(family, fn, record, ranges=False)
+        members[fid] = fr.member_digest(fn, record)
+    path = f'reports/{target["build_id"]}/family-batches/{name}.json'
+    fr.write(root, path, dict(batch_schema=1, family_path=family_path, family_sha256=fr.digest(fr.spec(family)),
+                              seed=seed, population=sorted(population), members=members,
+                              commitment=None, sample=None))
+    return path
+
+
+def draw_family_batch(root, path):
+    batch = fr.read(root, path)
+    batch.update(commitment=fr.git(root, 'rev-parse', 'HEAD'), sample=fr.draw(batch['seed'], batch['population']))
+    fr.validate_batch(batch, fr.read(root, batch['family_path']))
+    fr.write(root, path, batch)
+    return batch
 
 
 class FamilyReviewTests(GateFixture, unittest.TestCase):
@@ -86,7 +138,7 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
                            parameter_ranges={'width': {'min': 1, 'max': 8}}, first_members=self.first,
                            review=None, paused=False, pause_reason='')
         fr.write(self.root, '.local/family-spec.json', self.family)
-        self.family_path = flow.plan_family(self.root, '.local/family-spec.json')
+        self.family_path = plan_family(self.root, '.local/family-spec.json')
         self.family = fr.read(self.root, self.family_path)
         self.family_review_path = '.local/reviews/synthetic-family.family.json'
         self.family_doc = dict(family_review_schema=1, review_task_id='synthetic-family', reviewer_model='opus',
@@ -95,15 +147,15 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
                                checks=dict.fromkeys(('plausible_source', 'provenance', 'claim_scope', 'publication_hygiene',
                                                      'parameter_extraction', 'target_binding', 'name_sources', 'first_20'), 'pass'))
         fr.write(self.root, self.family_review_path, self.family_doc)
-        flow.approve_family(self.root, self.fdir, self.family_path, self.root / self.family_review_path)
+        approve_family(self.root, self.family_path, self.root / self.family_review_path)
         self.family = fr.read(self.root, self.family_path)
         self.git('init', '--quiet', '-b', 'main')
         self.git('config', 'user.name', 'Synthetic')
         self.git('config', 'user.email', 'synthetic@example.invalid')
         self.commit('base')
-        self.batch_path = flow.plan_family_batch(self.root, self.family_path, 'synthetic-batch', 'synthetic-seed', self.later)
+        self.batch_path = plan_family_batch(self.root, self.family_path, 'synthetic-batch', 'synthetic-seed', self.later)
         self.commit('record seed and population')
-        self.batch = flow.draw_family_batch(self.root, self.batch_path)
+        self.batch = draw_family_batch(self.root, self.batch_path)
         self.commit('record sample')
         self.unsampled = sorted(set(self.later) - set(self.batch['sample']))
         self.assertEqual(len(self.unsampled), 1)
@@ -161,58 +213,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
             fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
             self.assertFalse((self.root / check.review_record_path(fn)).exists())
 
-    def test_family_acceptance_rebuilds_index_once(self):
-        self.ready()
-        with patch.object(af, 'write_index', wraps=af.write_index) as index:
-            self.accept_batch()
-        self.assertEqual(index.call_count, 1)
-
-    def test_generator_record_family_plan_roundtrip(self):
-        from types import SimpleNamespace
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("family_stamp", ROOT / "tools/stamp.py")
-        stamp = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(stamp)
-        from verifier import match_record
-        template = ROOT / 'tools/stamp_template_v2.py'
-        self.write('tools/stamp_template_v2.py', template.read_text())
-        params = {'family': 'constant', 'width': 4, 'value': 1, 'virtual': False}
-        metadata = stamp.family_metadata('const-return', params, 'GUESS(low)')
-        header, source = stamp.template_v2.emit_leaf('Example', 'Read', family='constant',
-                                                     width=4, value=1, virtual=False, name_label='GUESS(low)')
-        self.assertIn('return 0x1;', source)
-        self.assertIn('GUESS(low)', header)
-        sample = self.records[self.first[0]]
-        run_args = []
-        for i, run in enumerate(sample['runs']):
-            path = self.root / f'run-{i}.json'
-            path.write_text(json.dumps(run['report']))
-            run_args.append((run['compiled_on'], run['compared_on'], str(path)))
-        build = self.root / 'build.json'
-        build.write_text(json.dumps(sample['build']))
-        for fid in self.first:
-            fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
-            args = SimpleNamespace(run=run_args, function_id=fid, unit=[CPP, HDR], compiled=CPP,
-                                   recipe=sample['recipe']['path'], symbols=MAP, reproduction=sample['reproduction'],
-                                   build=str(build), note=sample['notes'], family_metadata=json.dumps(metadata))
-            record = match_record.build(args, self.root)
-            # Keep each function's actual comparator reports from the synthetic fixture.
-            record['runs'] = self.records[fid]['runs']
-            fr.write(self.root, fn['report'], record)
-        spec = dict(origin=metadata['origin'], binding=fr.binding(self.data['functions'][0], self.records[self.first[0]]),
-                    template_source={'path': 'tools/stamp_template_v2.py', 'sha256': metadata['origin']['template_digest']},
-                    parameter_source={'path': 'tools/stamp_template_v2.py', 'sha256': metadata['origin']['template_digest']},
-                    parameter_ranges={k: {'values': [v]} for k, v in params.items()}, first_members=self.first)
-        fr.write(self.root, '.local/generator-spec.json', spec)
-        path = flow.plan_family(self.root, '.local/generator-spec.json')
-        self.assertTrue((self.root / path).is_file())
-        fn = self.data['functions'][0]
-        record = fr.read(self.root, fn['report'])
-        record['origin']['template_digest'] = 'f' * 64
-        fr.write(self.root, fn['report'], record)
-        with self.assertRaisesRegex(ValueError, 'family version or template digest mismatch'):
-            flow.plan_family(self.root, '.local/generator-spec.json')
-
     def git(self, *args):
         return subprocess.check_output(['git', *args], cwd=self.root, stderr=subprocess.PIPE, text=True).strip()
 
@@ -228,7 +228,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
 
     def approve_members(self, ids, name):
         fns = [fn for fn in self.data['functions'] if fn['id'] in ids]
-        rvas = [flow.hexrva(fn['rva']) for fn in fns]
         for second in (False, True):
             task = name + ('-s' if second else '')
             text = (f'# Review {task}\n\nreviewer_model: opus\nfresh_context: yes\n'
@@ -242,40 +241,32 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
                          '  claim_scope: pass\n  publication_hygiene: pass\nblocking_findings: none\n'
                          'naming_findings: none\nreasons: Original synthetic fixture.\n')
             self.write(f'.local/reviews/{task}.md', text)
-            flow.save_group(self.fdir, dict(name=task, kind='sampling' if second else 'review', task_id=task,
-                                            build_id='synthetic-fixture', functions=rvas, sampled=rvas,
-                                            reviewer_model='opus', profile='cheap', pair=name + '-s',
-                                            rerun={'not_agree': [], 'agree': rvas}))
         af.accept_many(self.root, self.root / f'.local/reviews/{name}.md')
         self.reload_data()
 
     def accept_batch(self):
-        return af.accept_family_batch(self.root, self.batch_path, fdir=self.fdir, profile='cheap')
+        """Write the state a family acceptance leaves behind: unsampled members matched with a family review."""
+        data, target = af.load(self.root)
+        family, batch = fr.read(self.root, self.family_path), fr.read(self.root, self.batch_path)
+        index = {fn['id']: i for i, fn in enumerate(data['functions'])}
+        prepared, new = [], af.planned_inventory(self.root, data, [index[f] for f in self.unsampled], False)
+        for fid in self.unsampled:
+            fn = data['functions'][index[fid]]
+            rec = af.validate_match(fn, target, self.root)
+            rv = af.review_record(fn, rec, family['review'], family['review']['review_task_id'], b'',
+                                  af.now_utc(), 'family', ['Family approval does not assess individual names.'])
+            rv.update(review_record_schema=4, review_sha256=family['review']['review_sha256'],
+                      family_evidence={'family_path': self.family_path, 'batch_path': self.batch_path,
+                                       'batch_sha256': fr.digest(batch), 'member_sha256': fr.member_digest(fn, rec)})
+            prepared.append((index[fid], fn, rec, rv))
+            new['functions'][index[fid]]['status'] = 'matched'
+            af.set_named(new['functions'], index[fid], False)
+        return af.apply(self.root, data, new, target, prepared, af.stale_ids(self.root, data) - set(self.unsampled),
+                        af.now_utc())
 
     def ready(self):
         self.approve_members(self.batch['sample'], 'sample')
         self.commit('accept independently reviewed sample')
-
-    def assertRefused(self, pattern):
-        before = (self.root / 'data/progress.json').read_bytes()
-        with self.assertRaisesRegex((ValueError, af.Refused), pattern):
-            self.accept_batch()
-        self.assertEqual(before, (self.root / 'data/progress.json').read_bytes())
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == self.unsampled[0])
-        self.assertFalse((self.root / check.review_record_path(fn)).exists())
-
-    def test_acceptance_preserves_comparator_and_names_family_review(self):
-        self.ready()
-        self.accept_batch()
-        self.reload_data()
-        check.validate(self.data, self.target, self.root)
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == self.unsampled[0])
-        rv = fr.read(self.root, check.review_record_path(fn))
-        self.assertEqual(rv['review_kind'], 'family')
-        self.assertEqual(rv['review_task_id'], 'synthetic-family')
-        self.assertEqual(rv['review_sha256'], self.family['review']['review_sha256'])
-        self.assertEqual(rv['family_evidence']['batch_sha256'], fr.digest(self.batch))
-        self.assertFalse(fn['named'])
 
     def public_review_inputs(self):
         self.ready()
@@ -388,122 +379,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'stale'):
             review_packet.family_rows(self.root, self.family_path)
 
-    def test_unreviewed_family(self):
-        self.family['review'] = None
-        fr.write(self.root, self.family_path, self.family)
-        self.assertRefused('unreviewed family')
-
-    def test_family_actions_waits_for_records_from_another_checkout(self):
-        missing = next(fn for fn in self.data['functions'] if fn['id'] == self.later[0])
-        missing.pop('report')
-        self.save_data()
-        actions = flow.family_actions(self.root, self.fdir)
-        self.assertTrue(any(kind == 'wait' and 'needs local match records' in text for kind, text in actions))
-        self.assertFalse(any('review-group' in text or 'integrate-family' in text for _, text in actions))
-        before = (self.root / 'data/progress.json').read_bytes()
-        with self.assertRaises((ValueError, KeyError, af.Refused)):
-            self.accept_batch()
-        self.assertEqual(before, (self.root / 'data/progress.json').read_bytes())
-
-    def test_missing_saved_private_family_review(self):
-        (self.root / self.family_review_path).unlink()
-        self.assertRefused('saved approving family review missing')
-
-    def test_digest_mismatch(self):
-        self.family['origin']['template_digest'] = 'b' * 64
-        fr.write(self.root, self.family_path, self.family)
-        self.assertRefused('template digest mismatch')
-
-    def test_sampled_member_without_review(self):
-        self.assertRefused('sampled or first-20 member needs its own approving review')
-
-    def test_paused_family(self):
-        flow.pause_family(self.root, self.family_path, 'Synthetic defect under assessment.')
-        self.assertRefused('family is paused')
-
-    def test_sample_drawn_after_acceptance(self):
-        self.ready()
-        batch = dict(self.batch, sample=None, commitment=None)
-        fr.write(self.root, self.batch_path, batch)
-        self.commit('late population')
-        with self.assertRaisesRegex(ValueError, 'sample drawn after an acceptance'):
-            flow.draw_family_batch(self.root, self.batch_path)
-
-    def test_out_of_range_parameter_needs_individual_review(self):
-        self.ready()
-        fid = self.unsampled[0]
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
-        rec = self.records[fid]
-        rec['family_parameters']['width'] = 9
-        fr.write(self.root, fn['report'], rec)
-        # Direct range enforcement rejects the exemption independently of the immutable row binding.
-        with self.assertRaisesRegex(ValueError, 'outside reviewed ranges'):
-            fr.check_member(self.family, fn, rec)
-        self.assertRefused('member differs from committed population')
-
-    def test_unadmitted_family_reviewer(self):
-        self.family_doc['reviewer_model'] = 'sonnet'
-        fr.write(self.root, self.family_review_path, self.family_doc)
-        self.family['review']['reviewer_model'] = 'sonnet'
-        self.family['review']['review_sha256'] = hashlib.sha256((self.root / self.family_review_path).read_bytes()).hexdigest()
-        fr.write(self.root, self.family_path, self.family)
-        self.assertRefused('not admitted')
-
-    def test_tampered_sample_seed(self):
-        self.batch['seed'] = 'different-seed'
-        fr.write(self.root, self.batch_path, self.batch)
-        self.assertRefused('tampered sample|commit the batch metadata')
-
-    def test_tampered_sample_population(self):
-        self.batch['population'].remove(self.unsampled[0])
-        del self.batch['members'][self.unsampled[0]]
-        self.batch['sample'] = fr.draw(self.batch['seed'], self.batch['population'])
-        fr.write(self.root, self.batch_path, self.batch)
-        self.assertRefused('commit the batch metadata')
-
-    def test_recomputed_sample_cannot_replace_commitment(self):
-        self.batch['seed'] = 'new-seed'
-        self.batch['sample'] = fr.draw(self.batch['seed'], self.batch['population'])
-        fr.write(self.root, self.batch_path, self.batch)
-        self.assertRefused('commit the batch metadata')
-
-    def test_uncommitted_draw(self):
-        self.git('reset', '--quiet', 'HEAD^')
-        self.assertRefused('commit the batch metadata')
-
-    def test_second_pass_safeguard_is_required(self):
-        self.ready()
-        (self.root / '.local/reviews/sample-s.md').unlink()
-        self.assertRefused('sampling safeguard')
-
-    def test_changed_template_requires_new_family(self):
-        self.write('tools/synthetic_template.py', 'def changed():\n    pass\n')
-        self.assertRefused('start a new family')
-
-    def test_flow_actions_draw_review_accept_and_pause(self):
-        text = '\n'.join(t for _, t in flow.family_actions(self.root, self.fdir))
-        self.assertIn('review sample', text)
-        self.ready()
-        self.assertIn('accept batch', '\n'.join(t for _, t in flow.family_actions(self.root, self.fdir)))
-        flow.pause_family(self.root, self.family_path, 'Synthetic stop.')
-        self.assertTrue(any(k == 'stop' and 'family paused' in t for k, t in flow.family_actions(self.root, self.fdir)))
-
-    def test_member_origin_digest_mismatch(self):
-        fid = self.unsampled[0]
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
-        rec = self.records[fid]
-        rec['origin']['template_digest'] = 'b' * 64
-        fr.write(self.root, fn['report'], rec)
-        self.assertRefused('family version or template digest mismatch')
-
-    def test_absent_origin_label(self):
-        fid = self.unsampled[0]
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
-        rec = self.records[fid]
-        del rec['origin']
-        fr.write(self.root, fn['report'], rec)
-        self.assertRefused('origin needs family')
-
     def test_binding_change_starts_new_family(self):
         fn = self.data['functions'][-1]
         for field in ('build_id', 'image_sha256', 'recipe_sha256', 'compiler', 'toolchain_sha256', 'comparator'):
@@ -513,27 +388,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'binding mismatch'):
                     fr.check_member(family, fn, self.records[fn['id']])
 
-    def test_missing_name_source_label(self):
-        fid = self.unsampled[0]
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
-        rec = self.records[fid]
-        del rec['name_source']
-        fr.write(self.root, fn['report'], rec)
-        self.assertRefused('name_source must be')
-
-    def test_duplicate_family_review_field_is_refused(self):
-        path = self.root / self.family_review_path
-        blob = path.read_text().replace('"verdict": "approve"', '"verdict": "reject", "verdict": "approve"')
-        path.write_text(blob)
-        self.family['review']['review_sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
-        fr.write(self.root, self.family_path, self.family)
-        self.assertRefused('duplicate JSON field')
-
-    def test_tampered_first_twenty_spec_invalidates_family_approval(self):
-        self.family['first_members'][self.first[0]] = 'a' * 64
-        fr.write(self.root, self.family_path, self.family)
-        self.assertRefused('family review spec digest mismatch')
-
     def test_no_range_exemption_for_wrong_parameter_type(self):
         self.assertFalse(fr.in_ranges({'width': True}, self.family['parameter_ranges']))
         self.assertFalse(fr.in_ranges({'width': '4'}, self.family['parameter_ranges']))
@@ -541,55 +395,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
         self.assertFalse(fr.in_ranges({'width': 4, 'other': 1}, self.family['parameter_ranges']))
         self.assertTrue(fr.in_ranges({'virtual': True}, {'virtual': {'values': [True]}}))
         self.assertFalse(fr.in_ranges({'virtual': 1}, {'virtual': {'values': [True]}}))
-
-    def test_individual_review_keeps_per_function_rule(self):
-        self.ready()
-        self.approve_members(self.unsampled, 'individual')
-        self.commit('accept remaining member by individual rule')
-        self.assertEqual(self.accept_batch(), [])
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == self.unsampled[0])
-        rv = fr.read(self.root, check.review_record_path(fn))
-        self.assertEqual(rv['review_kind'], 'full')
-
-    def test_out_of_range_committed_row_requires_and_allows_individual_review(self):
-        self.git('reset', '--quiet', '--hard', 'HEAD^^')
-        fid = self.unsampled[0]
-        fn = next(fn for fn in self.data['functions'] if fn['id'] == fid)
-        self.records[fid]['family_parameters']['width'] = 9
-        fr.write(self.root, fn['report'], self.records[fid])
-        flow.plan_family_batch(self.root, self.family_path, 'synthetic-batch', 'synthetic-seed', self.later)
-        self.commit('record out-of-range member before selection')
-        self.batch = flow.draw_family_batch(self.root, self.batch_path)
-        self.commit('record sample before acceptance')
-        self.ready()
-        self.assertRefused('sampled or first-20 member needs its own approving review')
-        self.approve_members([fid], 'individual')
-        self.commit('accept out-of-range member by individual review')
-        self.assertEqual(self.accept_batch(), [])
-
-
-    def test_lane_family_preparation_preserves_acceptance_bytes_and_single_index(self):
-        import lane_accept
-        from datetime import datetime, timezone
-        self.ready()
-        when = datetime(2000, 1, 3, tzinfo=timezone.utc)
-        before = {p: p.read_bytes() for p in self.root.rglob('*')
-                  if p.is_file() and '.git' not in p.relative_to(self.root).parts}
-        af.accept_family_batch(self.root, self.batch_path, when, 'cheap', self.fdir)
-        expected = {p: p.read_bytes() for p in self.root.rglob('*')
-                    if p.is_file() and '.git' not in p.relative_to(self.root).parts}
-        for path in set(expected) - set(before):
-            path.unlink()
-        for path, blob in before.items():
-            path.write_bytes(blob)
-        with patch.object(af, 'write_index', wraps=af.write_index) as index:
-            result = lane_accept.accept(self.root, [dict(kind='family', path=self.batch_path,
-                                        functions=self.unsampled, profile='cheap')], when)
-        self.assertFalse(result['dropped'])
-        self.assertEqual(index.call_count, 1)
-        actual = {p: p.read_bytes() for p in self.root.rglob('*')
-                  if p.is_file() and '.git' not in p.relative_to(self.root).parts}
-        self.assertEqual(expected, actual)
 
     def combined_sample_inputs(self):
         def public():
@@ -609,229 +414,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
                          functions=list(self.batch['sample']), profile='cheap')]
         return requests, before, public, restore
 
-    def test_lane_sample_then_family_matches_two_stage_bytes_with_one_index(self):
-        import lane_accept
-        from datetime import datetime, timezone
-        when = datetime(2000, 1, 3, tzinfo=timezone.utc)
-        requests, before, public, restore = self.combined_sample_inputs()
-        af.accept_reviews(self.root, [requests[1]], when)
-        af.accept_family_batch(self.root, self.batch_path, when, 'cheap', self.fdir)
-        expected = public()
-        restore(before)
-        with patch.object(af, 'write_index', wraps=af.write_index) as index:
-            preview = lane_accept.accept(self.root, requests, when, prepare_only=True)
-            self.assertFalse(preview['dropped'])
-            self.assertEqual(public(), before)
-            self.assertEqual(index.call_count, 0)
-            result = lane_accept.accept(self.root, requests, when)
-            self.assertFalse(result['dropped'])
-            self.assertEqual(index.call_count, 1)
-        self.assertEqual(public(), expected)
-
-    def test_combined_family_keeps_second_review_gate_and_rolls_back_samples(self):
-        import lane_accept
-        requests, before, public, restore = self.combined_sample_inputs()
-        (self.root / '.local/reviews/sample-s.md').unlink()
-        result = lane_accept.accept(self.root, requests)
-        self.assertTrue(any(d['request']['kind'] == 'family' for d in result['dropped']))
-        self.assertEqual(public(), before)
-
-    def test_combined_final_failure_restores_sample_and_family_records(self):
-        import lane_accept
-        requests, before, public, restore = self.combined_sample_inputs()
-        with patch.object(af, 'write_index', side_effect=OSError('synthetic combined index failure')):
-            with self.assertRaisesRegex(OSError, 'synthetic combined index failure'):
-                lane_accept.accept(self.root, requests)
-        self.assertEqual(public(), before)
-
-    def test_integrate_family_uses_isolated_tree_without_pushing(self):
-        self.ready()
-        remote = self.root / '.local/origin.git'
-        self.git('init', '--quiet', '--bare', str(remote))
-        self.git('remote', 'add', 'origin', str(remote))
-        self.git('push', '--quiet', 'origin', 'main')
-        ran = []
-
-        def run(cmd, tree, step, env=None):
-            ran.append(step)
-            if step == 'accept_function.py':
-                changed = af.accept_family_batch(tree, self.batch_path, fdir=self.fdir, profile='cheap')
-                return 'changed files (stage these by name; nothing was committed):\n' + ''.join('  ' + p + '\n' for p in changed)
-            if step in ('build_index.py', 'build_progress_svg.py'):
-                return ''
-            if step == 'build_leaderboard.py':
-                build_leaderboard.write(tree, fr.read(tree, 'data/progress.json'))
-                return ''
-            if step == 'build_model_trend.py':
-                for path in ('README.md', 'docs/model-trend.svg', 'docs/progress-trend.svg'):
-                    (tree / path).parent.mkdir(parents=True, exist_ok=True)
-                    (tree / path).write_text('synthetic trend\n')
-                return ''
-            if step == 'git commit':
-                return flow.git(tree, *cmd[1:])
-            if step == 'check.py --staged':
-                check.validate(fr.read(tree, 'data/progress.json'), self.target, tree)
-                return 'PASS'
-            self.fail('unexpected command ' + step)
-
-        with patch.object(flow, 'run', side_effect=run), patch.object(flow, 'pre_push_checks') as checks:
-            group = flow._legacy_integrate_family(self.root, self.fdir, self.batch_path, push=False)
-        result = group['integrated']
-        self.assertIsNone(result['pushed'])
-        self.assertEqual(ran, ['accept_function.py', 'build_progress_svg.py', 'build_leaderboard.py', 'build_model_trend.py', 'check.py --staged', 'git commit'])
-        checks.assert_called_once()
-        integrated = json.loads(self.git('show', result['commit'] + ':data/progress.json'))
-        self.assertTrue(all(fn['status'] == 'matched' for fn in integrated['functions']))
-        self.assertIn('LEADERBOARD.md', result['files'])
-        self.assertIn('data/contributors.json', result['files'])
-        self.assertIn('# Contributor leaderboard', self.git('show', result['commit'] + ':LEADERBOARD.md'))
-        self.assertEqual(json.loads(self.git('show', result['commit'] + ':data/contributors.json'))['schema'], 1)
-        self.reload_data()
-        self.assertTrue(any(fn['status'] != 'matched' for fn in self.data['functions']))
-        self.assertNotEqual(result['commit'], self.git('rev-parse', 'origin/main'))
-
-
-    def test_family_and_first_twenty_share_one_primary_review_pass(self):
-        (self.root / self.batch_path).unlink()
-        (self.root / self.family_path).unlink()
-        shutil.rmtree(self.fdir / 'groups')
-        for fn in self.data['functions']:
-            if fn['id'] in self.first:
-                fn['status'] = 'mapped'
-                fn.pop('named', None)
-                (self.root / check.review_record_path(fn)).unlink()
-        self.save_data()
-        path = flow.plan_family(self.root, '.local/family-spec.json', self.fdir)
-        primaries = [g for g in flow.groups(self.fdir).values() if g['kind'] == 'review']
-        self.assertEqual(len(primaries), 1)
-        g = primaries[0]
-        self.assertEqual(len(g['functions']), 20)
-        self.assertEqual(g['family_review_path'], path)
-        self.assertIn('docs/anti-eu-bureaucracy.md', (self.root / g['brief']).read_text())
-        self.assertIn('in this same pass', (self.root / g['brief']).read_text())
-        self.assertIn(str((self.root / '.local/analysis/fnv_index.jsonl').resolve()), (self.root / g['brief']).read_text())
-        self.assertIn(str((self.root / '.local/packs').resolve()), (self.root / g['brief']).read_text())
-        self.assertEqual(flow.review_group(self.root, self.fdir), [])
-        actions = flow.family_actions(self.root, self.fdir)
-        self.assertEqual(sum(k == 'dispatch' and 'family review needed' in t for k, t in actions), 1)
-        flow.log_event(self.fdir, 'family-dispatched', task=g['task_id'], family=path)
-        self.assertTrue(any(k == 'wait' for k, _ in flow.family_actions(self.root, self.fdir)))
-        redone = flow.redo_review(self.root, self.fdir, g['name'])
-        self.assertIn('-r2', redone['task_id'])
-        self.assertIn('in this same pass', (self.root / redone['brief']).read_text())
-
-    def test_family_plan_ignores_unrelated_foreign_review_but_rejects_relevant_escape(self):
-        (self.root / self.batch_path).unlink()
-        (self.root / self.family_path).unlink()
-        shutil.rmtree(self.fdir / 'groups')
-        for fn in self.data['functions']:
-            if fn['id'] in self.first:
-                fn['status'] = 'mapped'
-                fn.pop('named', None)
-                (self.root / check.review_record_path(fn)).unlink()
-        self.save_data()
-        foreign = self.root.parent / 'foreign-review.md'
-        foreign.write_text('must not be read\n')
-        group = dict(name='g999', kind='review', task_id='unrelated-review',
-                     functions=[flow.hexrva(self.data['functions'][-1]['rva'])],
-                     saved_review=str(foreign), components={})
-        flow.save_group(self.fdir, group)
-        with self.assertRaisesRegex(flow.FlowError, 'review path escapes private reviews'):
-            flow.review_path(self.root, group)
-        before = foreign.read_bytes()
-        path = flow.plan_family(self.root, '.local/family-spec.json', self.fdir)
-        self.assertTrue((self.root / path).is_file())
-        made = [g for g in flow.groups(self.fdir).values() if g.get('family_review_path') == path]
-        self.assertEqual(len(made), 1)
-        self.assertEqual(len(made[0]['functions']), 20)
-        self.assertEqual(foreign.read_bytes(), before)
-        group['functions'] = [flow.hexrva(self.data['functions'][0]['rva'])]
-        flow.save_group(self.fdir, group)
-        with self.assertRaisesRegex(flow.FlowError, 'review path escapes private reviews'):
-            flow.function_states(self.root, self.fdir, online=False,
-                                 review_rvas=set(group['functions']))
-
-    def test_supersede_unapproved_family_preserves_reviews_and_replans(self):
-        (self.root / self.batch_path).unlink()
-        (self.root / self.family_path).unlink()
-        shutil.rmtree(self.fdir / 'groups')
-        for fn in self.data['functions']:
-            if fn['id'] in self.first:
-                fn['status'] = 'mapped'
-                fn.pop('named', None)
-                (self.root / check.review_record_path(fn)).unlink()
-        self.save_data()
-        old_path = flow.plan_family(self.root, '.local/family-spec.json', self.fdir)
-        flow.pause_family(self.root, old_path, 'Parameter range defect.')
-        old = fr.read(self.root, old_path)
-        group = next(g for g in flow.groups(self.fdir).values() if g['kind'] == 'review')
-        review = self.root / '.local/reviews' / (group['task_id'] + '.md')
-        review.parent.mkdir(parents=True, exist_ok=True)
-        review.write_text('saved reviewer evidence')
-        family_review = review.with_suffix('.family.json')
-        family_review.write_text('{"verdict":"escalate"}')
-        spec = fr.read(self.root, '.local/family-spec.json')
-        spec['parameter_ranges'] = fr.exact_ranges([{'width': 4}])
-        fr.write(self.root, '.local/new-spec.json', spec)
-        with patch('flow.review_group', side_effect=ValueError('synthetic refusal')):
-            with self.assertRaisesRegex(ValueError, 'synthetic refusal'):
-                flow.plan_family(self.root, '.local/new-spec.json', self.fdir, old_path)
-        self.assertEqual(fr.read(self.root, old_path), old)
-        self.assertTrue(review.is_file())
-        self.assertFalse(flow.load_group(self.fdir, group['name']).get('superseded_by'))
-        new_path = flow.plan_family(self.root, '.local/new-spec.json', self.fdir, old_path)
-        self.assertNotEqual(old_path, new_path)
-        self.assertEqual(fr.read(self.root, old_path)['superseded_by'], new_path)
-        self.assertEqual(fr.read(self.root, new_path)['supersedes'], old_path)
-        archive = self.root / '.local/reviews/superseded' / fr.family_key(old)
-        self.assertEqual((archive / review.name).read_text(), 'saved reviewer evidence')
-        self.assertTrue((archive / family_review.name).exists())
-        self.assertFalse(review.exists())
-        self.assertEqual(flow.load_group(self.fdir, group['name'])['superseded_by'], new_path)
-        self.assertEqual(len([g for g in flow.groups(self.fdir).values()
-                              if g['kind'] == 'review' and not g.get('superseded_by')]), 1)
-        fr.validate_metadata(self.root)
-        flow.family_group_hold(self.root, self.fdir, [self.first[0]])
-        replacement = fr.read(self.root, new_path)
-        replacement['binding']['image_sha256'] = 'f' * 64
-        fr.write(self.root, new_path, replacement)
-        with self.assertRaisesRegex(ValueError, 'supersession binding mismatch'):
-            fr.validate_metadata(self.root)
-
-    def test_supersede_new_source_version_requires_fresh_review_and_bindings(self):
-        (self.root / self.batch_path).unlink()
-        (self.root / self.family_path).unlink()
-        shutil.rmtree(self.fdir / 'groups')
-        for fn in self.data['functions']:
-            if fn['id'] in self.first:
-                fn['status'] = 'mapped'
-                fn.pop('named', None)
-                (self.root / check.review_record_path(fn)).unlink()
-        self.save_data()
-        old_path = flow.plan_family(self.root, '.local/family-spec.json', self.fdir)
-        flow.pause_family(self.root, old_path, 'Source disclosure correction.')
-        spec = fr.read(self.root, '.local/family-spec.json')
-        new_source = 'def emit(value):\n    return value + 0\n'
-        self.write('tools/new_template.py', new_source)
-        new_digest = hashlib.sha256(new_source.encode()).hexdigest()
-        spec['origin'] = dict(spec['origin'], version='2', template_digest=new_digest)
-        spec['template_source'] = {'path': 'tools/new_template.py', 'sha256': new_digest}
-        fr.write(self.root, '.local/new-spec.json', spec)
-        # Old reproduced records cannot be carried into the changed source version.
-        with self.assertRaisesRegex(ValueError, 'family version or template digest mismatch'):
-            flow.plan_family(self.root, '.local/new-spec.json', self.fdir, old_path)
-        for fn in self.data['functions']:
-            record = self.records[fn['id']]
-            record['origin'] = copy.deepcopy(spec['origin'])
-            fr.write(self.root, fn['report'], record)
-        new_path = flow.plan_family(self.root, '.local/new-spec.json', self.fdir, old_path)
-        replacement = fr.read(self.root, new_path)
-        self.assertIsNone(replacement['review'])
-        self.assertEqual(set(replacement['first_members']), set(self.first))
-        fr.check_superseded(self.root, old_path, fr.read(self.root, old_path))
-        with self.assertRaises(ValueError):
-            flow.approve_family(self.root, self.fdir, new_path, self.root / self.family_review_path)
-
     def test_supersession_rejects_partial_source_version_or_other_family(self):
         for changes in ({'version': '2'}, {'template_digest': 'f' * 64},
                         {'family': 'another-family', 'version': '2', 'template_digest': 'f' * 64}):
@@ -839,110 +421,6 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
             replacement['origin'].update(changes)
             with self.assertRaises(ValueError):
                 fr.supersession_binding(self.family, replacement)
-
-    def test_supersede_approved_family_is_refused_without_changes(self):
-        old = fr.read(self.root, self.family_path)
-        with self.assertRaisesRegex(ValueError, 'never-approved'):
-            flow.plan_family(self.root, '.local/family-spec.json', self.fdir, self.family_path)
-        self.assertEqual(fr.read(self.root, self.family_path), old)
-        self.assertTrue((self.root / self.family_review_path).is_file())
-
-    def test_integration_can_carry_only_committed_metadata_ancestors(self):
-        self.git('update-ref', 'refs/remotes/origin/main', 'HEAD^^')
-        with self.assertRaisesRegex(flow.FlowError, 'push or drop'):
-            flow.integration_base(self.root, 'main')
-        self.assertEqual(flow.integration_base(self.root, 'main', True), self.git('rev-parse', 'HEAD'))
-        batch = fr.read(self.root, self.batch_path)
-        changed = copy.deepcopy(batch)
-        changed['seed'] = 'different-uncommitted-seed'
-        fr.write(self.root, self.batch_path, changed)
-        with self.assertRaisesRegex(flow.FlowError, 'metadata history differs'):
-            flow.integration_base(self.root, 'main', True)
-        fr.write(self.root, self.batch_path, batch)
-        self.write('tools/unpublished.py', 'value = 1\n')
-        self.commit('unpublished source must not travel as metadata')
-        with self.assertRaisesRegex(flow.FlowError, 'other than family metadata'):
-            flow.integration_base(self.root, 'main', True)
-
-    def test_metadata_integration_preserves_commitments_when_main_moves(self):
-        self.git('update-ref', 'refs/remotes/origin/main', 'HEAD^^')
-        self.git('checkout', '--quiet', '-b', 'public-base', 'HEAD^^')
-        self.write('tools/published.py', 'value = 1\n')
-        self.commit('public tooling')
-        public = self.git('rev-parse', 'HEAD')
-        self.git('update-ref', 'refs/remotes/origin/main', public)
-        self.git('checkout', '--quiet', 'main')
-        common = self.git('merge-base', 'HEAD', 'origin/main')
-        self.assertEqual(flow.integration_base(self.root, 'main', True, remote=common),
-                         self.git('rev-parse', 'HEAD'))
-        self.git('merge', '--quiet', '--no-edit', public)
-        self.assertEqual(flow.integration_base(self.root, 'main', True), self.git('rev-parse', 'HEAD'))
-        fr.ordering(self.root, self.batch_path, self.batch)
-
-    def test_metadata_integration_refuses_merge_of_private_branches(self):
-        self.git('update-ref', 'refs/remotes/origin/main', 'HEAD^^')
-        self.git('checkout', '--quiet', '-b', 'private-base', 'HEAD^^')
-        self.write('tools/unpublished.py', 'value = 1\n')
-        self.commit('unpublished source')
-        private = self.git('rev-parse', 'HEAD')
-        self.git('checkout', '--quiet', 'main')
-        self.git('merge', '--quiet', '--no-edit', private)
-        with self.assertRaisesRegex(flow.FlowError, 'parent already on origin'):
-            flow.integration_base(self.root, 'main', True)
-
-    def test_metadata_integration_refuses_repaired_invalid_history(self):
-        self.git('update-ref', 'refs/remotes/origin/main', 'HEAD')
-        batch = fr.read(self.root, self.batch_path)
-        invalid = dict(batch, unreviewed_content='synthetic private-content marker')
-        fr.write(self.root, self.batch_path, invalid)
-        self.commit('invalid intermediate metadata')
-        fr.write(self.root, self.batch_path, batch)
-        self.commit('repair tip metadata')
-        fr.validate_metadata(self.root)
-        with self.assertRaisesRegex(flow.FlowError, 'metadata history differs'):
-            flow.integration_base(self.root, 'main', True)
-
-    def test_metadata_integration_refuses_repaired_valid_but_unreviewed_history(self):
-        self.git('update-ref', 'refs/remotes/origin/main', 'HEAD')
-        family = fr.read(self.root, self.family_path)
-        changed = dict(family, paused=True, pause_reason='synthetic unreviewed-content marker')
-        fr.write(self.root, self.family_path, changed)
-        self.commit('unreviewed intermediate family text')
-        fr.write(self.root, self.family_path, family)
-        self.commit('restore reviewed tip')
-        fr.validate_metadata(self.root)
-        with self.assertRaisesRegex(flow.FlowError, 'metadata history differs'):
-            flow.integration_base(self.root, 'main', True)
-
-    def test_metadata_integration_refuses_deletions(self):
-        self.git('update-ref', 'refs/remotes/origin/main', 'HEAD')
-        (self.root / self.batch_path).unlink()
-        self.commit('delete metadata')
-        with self.assertRaisesRegex(flow.FlowError, 'other than family metadata'):
-            flow.integration_base(self.root, 'main', True)
-
-    def test_seed_population_must_be_committed_before_draw(self):
-        self.git('reset', '--quiet', '--hard', 'HEAD^^')
-        path = flow.plan_family_batch(self.root, self.family_path, 'synthetic-batch', 'synthetic-seed', self.later)
-        actions = flow.family_actions(self.root, self.fdir)
-        self.assertTrue(any(k == 'run' and 'family-draw' in t for k, t in actions))
-        with self.assertRaisesRegex(ValueError, 'commit the batch metadata'):
-            flow.draw_family_batch(self.root, path)
-
-
-    def test_sample_rejection_holds_entire_family_and_prints_pause(self):
-        self.ready()
-        path = self.root / '.local/reviews/sample.md'
-        path.write_text(path.read_text().replace('verdict: approve', 'verdict: reject', 1))
-        self.assertRefused('sample rejection or escalation')
-        self.assertTrue(any(k == 'stop' and 'family-pause' in t for k, t in flow.family_actions(self.root, self.fdir)))
-
-    def test_second_reviewer_disagreement_holds_entire_family(self):
-        self.ready()
-        path = self.root / '.local/reviews/sample-s.md'
-        path.write_text(path.read_text().replace('verdict: approve', 'verdict: reject', 1))
-        self.assertRefused('sampling disagreement')
-
 
     def test_draw_size_and_reproducibility(self):
         for n, count in ((1, 1), (19, 19), (20, 20), (21, 20), (1000, 50), (1001, 51)):

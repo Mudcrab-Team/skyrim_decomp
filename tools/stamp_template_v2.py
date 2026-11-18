@@ -13,7 +13,8 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 
 IDENT = re.compile(r'[A-Za-z_][A-Za-z_0-9]*\Z')

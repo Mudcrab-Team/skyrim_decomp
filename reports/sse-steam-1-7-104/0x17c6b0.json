@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.cpp",
-    "digest": "94af0bc44f40a54677553537cbab4923f2fd405c01d5a2b38bcfbd445464f825",
-    "digest_method": "tu-sha256-v1",
+    "digest": "c5956528c630c5e45464000760d06cde27b2052d7d32bf9ad673dec383d2e72d",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "94af0bc44f40a54677553537cbab4923f2fd405c01d5a2b38bcfbd445464f825",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSExtraDataStorageLayout.h",
       "reconstruction/bsengine/BSSoundHandleStorageLayout.h",

@@ -26,7 +26,7 @@ import sys
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 from check import MATCH_RECORD_SCHEMA, ROOT, TOOLCHAIN_PIN, file_sha256, validate_match  # noqa: E402
-from source_digest import DIGEST_METHOD, tu_digest  # noqa: E402
+from digest_v2 import DIGEST_METHOD, tu_digest  # noqa: E402
 
 
 def build(args, root=ROOT):

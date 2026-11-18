@@ -334,8 +334,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ExtraStartingWorldOrCellStorageLayout.cpp",
-    "digest": "de562733c2351bff74d9cf754522aa8d75f4a72cf0652064fc7149fea564cdaa",
-    "digest_method": "tu-sha256-v1",
+    "digest": "f483b37f163b3f0ab92bce617c37af0706501507e119a19123c0e6144ef960c7",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "de562733c2351bff74d9cf754522aa8d75f4a72cf0652064fc7149fea564cdaa",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSExtraDataStorageLayout.h",
       "reconstruction/bsengine/ExtraStartingWorldOrCellStorageLayout.cpp",

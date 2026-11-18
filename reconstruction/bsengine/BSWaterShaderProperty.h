@@ -1,11 +1,5 @@
-// BSWaterShaderProperty declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bswatershaderproperty
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
 // the compared functions from the pinned image).
-// Base form: shared header ../bsengine/BSShaderProperty.h for BSShaderProperty, BSShaderMaterial,
-// BSRenderPass, NiStream and NiBinaryStream.
 // BSWaterShaderProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // DoClearRenderPasses, SaveBinary, LinkObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // waterFlags, unk8C, unk90, unkC0, unkD0: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG declares waterFlags as a 4-byte enumeration, unk8C as std::uint32_t, unk90 and unkD0 as std::uint64_t, unkC0 as BSRenderPass*; this file keeps unk90 and unkD0 as padding
@@ -15,29 +9,7 @@
 // MemoryManager, ScrapHeap: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG declares them in MemoryManager.h and ScrapHeap.h, only the members used are declared
 // MemoryManager::GetThreadScrapHeap: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares no argument, the image passes a zero second argument
 // ScrapHeap::Deallocate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// BSRenderPass::ClearRenderPass, BSShaderProperty::SetMaterial, BSShaderProperty::SaveBinary, BSShaderProperty::DoClearRenderPasses: names from the shared header; the image calls them directly, the base LinkObject is reached through BaseLinkObject
-// Public naming source notice:
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 
 #include <cstdint>

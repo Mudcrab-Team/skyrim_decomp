@@ -1,23 +1,12 @@
-// NiObjectNET members, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names and types from the header beside this file.
-// Evidence: findings/fourth-batch-selection.md.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone, /Gy required).
-// Compared: the constructor, LoadBinary, ProcessClone, RegisterStreamables, SaveBinary.
-// LinkObject (0xeea710) removed: 1 byte longer (test width of the link count) and prologue home slots differ.
-// RVA 0xeeb940, 50 bytes: NiObjectNET::NiObjectNET (constructor)
-// RVA 0xeea6c0, 59 bytes: NiObjectNET::LoadBinary
-// RVA 0xeeb8c0, 122 bytes: NiObjectNET::ProcessClone
-// RVA 0xeea7b0, 195 bytes: NiObjectNET::RegisterStreamables
-// RVA 0xeea880, 275 bytes: NiObjectNET::SaveBinary
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nimain/niobjectnet.cpp:54
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nimain/niobjectnet.cpp:85
-// LoadBinary and ProcessClone follow the shape of the FNV bodies above, with this
-// build's offsets and stream helpers. RegisterStreamables and SaveBinary are written from the listings.
 // LoadFixedString, LoadStep1, LoadStep2, SaveFixedString below: GUESS(low); the image gives these
-// stream helpers no community name.
+// 0xeeb940 NiObjectNET::ctor
+// 0xeea6c0 NiObjectNET::LoadBinary
+// 0xeeb8c0 NiObjectNET::ProcessClone
+// 0xeea7b0 NiObjectNET::RegisterStreamables
+// 0xeea880 NiObjectNET::SaveBinary
 #include "NiObjectNET.h"
 
 // Stream helpers without community names; free functions taking the stream first.

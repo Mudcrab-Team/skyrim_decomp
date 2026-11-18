@@ -27,6 +27,7 @@ import unit_build as ub  # noqa: E402
 import confirm_runners  # noqa: E402
 import pipeline  # noqa: E402
 import source_digest  # noqa: E402
+import digest_v2  # noqa: E402
 from test_unit_build import FAKE_CL, sha  # noqa: E402
 
 
@@ -583,7 +584,7 @@ class AgentEndToEnd(unittest.TestCase):
         (bindir / 'cl').write_text(FAKE_CL)
         (bindir / 'cl').chmod(0o755)
         files = {}
-        for name in ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py',
+        for name in ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
                      'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py'):
             files[name] = ROOT / name
         pins = src / 'tools/verifier/pinned.sha256'
@@ -697,7 +698,7 @@ class AgentEndToEnd(unittest.TestCase):
         transport = StubSsh(h)
         worker = runners.BatchHost(h, transport=transport, fresh_prep=True)
         alternative = self.tmp / 'other.cpp'
-        alternative.write_text('#include "Synth.h"\n// distinct unit\n')
+        alternative.write_text('#include "Synth.h"\nint distinct_unit;\n')
         units = [(dict(self.task, task_id=tid), dict(self.files, **({'reconstruction/synth/Synth.cpp': alternative}
                   if i else {}))) for i, tid in enumerate(ids)]
         results = worker.run(units, self.tmp / 'stage', {tid: self.tmp / 'dest' / tid for tid in ids})
@@ -711,9 +712,8 @@ class AgentEndToEnd(unittest.TestCase):
             self.assertEqual(code, 0, tid)
             source = self.files['reconstruction/synth/Synth.cpp'] if tid == 'unit-a' else self.tmp / 'other.cpp'
             names = ['reconstruction/synth/Synth.cpp', 'reconstruction/synth/Synth.h']
-            import hashlib
-            digests[tid] = hashlib.sha256(''.join(f'{sha(source if n.endswith(".cpp") else self.files[n])}  {n}\n'
-                                                    for n in sorted(names)).encode()).hexdigest()
+            digests[tid] = digest_v2.unit_digest(
+                {n: Path(source if n.endswith('.cpp') else self.files[n]).read_bytes() for n in names})
             result = json.loads((dest / 'result.json').read_text())
             self.assertEqual(result['source_revision'], digests[tid])
             report = json.loads((dest / f'0x{self.rva:x}' / 'report.json').read_text())
@@ -744,7 +744,7 @@ class AgentEndToEnd(unittest.TestCase):
         self.assertEqual(code, 0)
         report = json.loads((dest / f'0x{self.rva:x}' / 'report.json').read_text())
         self.assertEqual(report['result'], 'pass')
-        expected = source_digest.tu_digest(self.tmp / 'src', ['reconstruction/synth/Synth.cpp',
+        expected = digest_v2.tu_digest(self.tmp / 'src', ['reconstruction/synth/Synth.cpp',
                                                               'reconstruction/synth/Synth.h'])
         self.assertEqual(report['source']['source_revision'], expected)
 

@@ -1,11 +1,6 @@
-// BGSSceneAction declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s20-bgssceneaction-bgssceneaction
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
 // BGSSceneAction: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSSceneAction::Unk_0B, BGSSceneAction::Unk_10, BGSSceneAction::ClearFlags, BGSSceneAction::Unk_11, BGSSceneAction::Unk_02: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown08: GUESS(low)

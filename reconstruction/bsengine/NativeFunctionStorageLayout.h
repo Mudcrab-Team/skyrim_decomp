@@ -1,46 +1,10 @@
-// Build: sse-steam-1-7-104
 // Source exposure: mixed (pinned community declarations and local target analysis).
-// Drafted by GPT-6.1 Sol; p106 shared represented-layout recovery.
-// Labels: v2
-// NativeFunctionLayout, NativeFunctionBaseLayout, ScriptFunctionLayout, ScriptRefCountLayout,
 // ScriptStringLayout, ScriptTypeLayout, ScriptDescriptorLayout: GUESS(low) STANDIN
-// Fields through docString adapt the corresponding IFunction, NativeFunctionBase,
-// BSIntrusiveRefCounted and VDescTable declarations in the pinned community headers.
-// Source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a
-// Paths: include/RE/I/IFunction.h, include/RE/N/NativeFunctionBase.h,
-// include/RE/B/BSIntrusiveRefCounted.h, include/RE/V/VDescTable.h.
 // Field layouts: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Callback representation differs from the modern community NativeFunction declaration:
-// the pinned image's slot-21 methods test one pointer at offset 0x50, and its
-// dispatch methods call that pointer. The callback signature below is a guess.
 // NativeFunction and NativeLatentFunction owner spellings: EXE_RTTI
 // callback, Callback: GUESS(low)
-// No methods or original template argument identities are reconstructed here.
-// Shared base destructor visits string fields at 0x48, 0x20, 0x18, 0x10
-// and the descriptor table at 0x30. Size and offsets remain layout claims only.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted from published p106 represented declaration reconstruction/bsengine/NativeFunctionLayout.h.
-// Include spelling and local type names changed; all represented fields, bases, size and offset assertions retained.
 // ScriptRefCountStorageLayout, ScriptStringStorageLayout, ScriptTypeStorageLayout, ScriptDescriptorStorageLayout, ScriptFunctionStorageLayout, NativeFunctionBaseStorageLayout, NativeFunctionStorageLayout: GUESS(medium) STANDIN; compilation-local represented type aliases.
 #pragma once
 #include <cstdint>
