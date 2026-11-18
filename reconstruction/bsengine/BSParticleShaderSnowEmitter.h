@@ -1,11 +1,13 @@
 // Type declarations for the BSParticleShaderSnowEmitter translation unit (build sse-steam-1-7-104).
 //
 // Labels: v2
-// Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CommonLibSSE-NG (MIT); no external implementation body is copied, and the member offsets and types of the community-named members follow the community declaration.
+// Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CommonLibSSE-NG (MIT), and the member offsets and types of those names follow the community declaration; no external implementation body is copied.
 // Source exposure: binary-analysis (a local listing of the contributor's own copy of the pinned image).
 // Community names are unverified. Only the members the compared code needs are declared.
-// BSParticleShaderSnowEmitter, BSParticleShaderSnowEmitter::~BSParticleShaderSnowEmitter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSParticleShaderSnowEmitter, BSParticleShaderSnowEmitter::BSParticleShaderSnowEmitter, BSParticleShaderSnowEmitter::~BSParticleShaderSnowEmitter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSParticleShaderEmitter, BSParticleShaderEmitter::~BSParticleShaderEmitter, _refCount, _pad0C, property, emitterType, particleCount, alpha, generateReminder, maxParticleRatio, textureAnims, instanceData, ParticleData, TextureAnimInfo: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names, offsets and sizes as declared there (the NiRefObject members are flattened into BSParticleShaderEmitter), the pointer and enum types are guesses
+// ParticleData::XPos, ParticleData::YPos, ParticleData::ZPos, ParticleData::age, ParticleData::XVel, ParticleData::YVel, ParticleData::ZVel, ParticleData::lifeAdjust, ParticleData::rotationStart, ParticleData::rotationSpeed, ParticleData::speedMult, ParticleData::texCoordU, ParticleData::texCoordV, ParticleData::vertexX, ParticleData::vertexY: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); offsets follow the declared order, which puts the last four bytes at 0x2C to 0x2F where the community offset comments are stale
+// TextureAnimInfo::currentFrame, TextureAnimInfo::totalFrames: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declared as float and std::uint32_t there
 // unkED0, unkED8, unkEE0, unkEE8, unkEF0, unkEF8, unkF00, unkF08, unkF10, unkF18, unkF20, unkF28, unkF30, unkF38, unkF40, unkF48, unkF50, unkF58, unkF60, unkF68, unkF70, unkF78, unkF80, unkF88, unkF90, unkF98, unkFA0, unkFA8, unkFB0, unkFB8, unkFC0, unkFC8, unkFD0, unkFD8: GUESS(low); storage after the community members that no compared code reads
 // The MIT notice below covers only the names and declarations taken from
 // CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a; the other code in this file
