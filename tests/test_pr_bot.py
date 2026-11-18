@@ -3,11 +3,13 @@ import contextlib
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -1314,11 +1316,30 @@ class MappingLaneTests(unittest.TestCase):
                 out = ''.join(f' M {n}\n' for n in status).encode() if argv[:2] == ['git', 'status'] else b''
                 return subprocess.CompletedProcess(argv, 0, out, b'')
         bot = Tree(root=ROOT, work=self.work)
+        env = mock.patch.dict(os.environ, {'SR_TARGET_IMAGE': '/img/game.exe', 'SR_FUNCTION_TABLE': '/t/f.jsonl'})
+        env.start()
+        self.addCleanup(env.stop)
         status[:] = ['reconstruction/INDEX.md', 'docs/progress.svg']
         bot.regenerate(7)
         self.assertTrue(any(c[:2] == ['git', 'push'] for c in calls))
         add = [c for c in calls if c[:2] == ['git', 'add']][0]
         self.assertEqual(add[-2:], ['docs/progress.svg', 'reconstruction/INDEX.md'])
+        # The offers must be refreshed before the manifest that binds their digest, both before the commit.
+        scripts = [Path(c[1]).name for c in calls if len(c) > 1 and c[1].startswith('tools/')]
+        self.assertEqual(scripts[-2:], ['target_hash_offers.py', 'target_hashes.py'])
+        self.assertIn('/img/game.exe', [c for c in calls if c[1:2] == ['tools/target_hashes.py']][0])
+        self.assertLess(calls.index([c for c in calls if c[1:2] == ['tools/target_hashes.py']][0]),
+                        calls.index(add))
+        calls.clear()
+        status[:] = ['data/target-hashes/contributor-targets.json', 'data/target-hashes/sse-steam-1-7-104-part-003.json',
+                     'data/target-hashes/sse-steam-1-7-104.json']
+        bot.regenerate(7)
+        self.assertTrue(any(c[:2] == ['git', 'push'] for c in calls))
+        calls.clear()
+        status[:] = ['data/target-hashes/sub/x.json']
+        with self.assertRaises(pr_bot.Stop):
+            bot.regenerate(7)
+        self.assertFalse(any(c[:2] == ['git', 'push'] for c in calls))
         calls.clear()
         status[:] = ['reconstruction/INDEX.md', 'data/progress.json']
         with self.assertRaises(pr_bot.Stop):
@@ -1328,6 +1349,14 @@ class MappingLaneTests(unittest.TestCase):
         status[:] = []
         bot.regenerate(7)
         self.assertFalse(any(c[:2] in (['git', 'push'], ['git', 'commit']) for c in calls))
+        calls.clear()
+        env.stop()
+        with mock.patch.dict(os.environ):
+            os.environ.pop('SR_TARGET_IMAGE', None)
+            with self.assertRaises(pr_bot.Stop):
+                bot.regenerate(7)
+        self.assertEqual(calls, [])
+        env.start()
 
 
 class StickyCommentTests(unittest.TestCase):

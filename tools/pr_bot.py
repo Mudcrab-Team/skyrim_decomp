@@ -65,6 +65,14 @@ BATCH_LINE = ('Small request: please batch 20 to 60 functions in one PR next tim
 RUNBOOK = 'docs/reviewer-runbook.md'
 # Generated from data/progress.json; a mapping PR omits them and the bot regenerates them on main.
 GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/progress-map.svg'))
+# Per-function hashes of the newly mapped functions: test_target_hashes fails on main until they exist, and only
+# this machine holds the image they are computed from.
+TARGET_HASH_DIR = 'data/target-hashes/'
+
+
+def is_generated(name):
+    return name in GENERATED or (name.startswith(TARGET_HASH_DIR) and name.endswith('.json')
+                                 and '/' not in name[len(TARGET_HASH_DIR):])
 NAME_SOURCE_SHOWN = 240
 MAPPING_PREAMBLE = """You are the single Reviewer for a mapping-only pull request: it only adds `mapped` entries
 (RVA, size, name, name origin, name source, evidence file) to the function inventory. Nothing is
@@ -1280,18 +1288,27 @@ class Bot:
         """Rebuild the generated index and pictures on main after a mapping merge; push only those files.
 
         A mapping PR omits them (the check refuses a stale copy, and the PR's author cannot run the
-        generators against the merged tree), so the bot commits them right after the squash.
+        generators against the merged tree), so the bot commits them right after the squash. The target-hash
+        manifest is refreshed from the local image in the same commit, so a mapping merge never leaves main red.
         """
+        image = os.environ.get('SR_TARGET_IMAGE')
+        table = os.environ.get('SR_FUNCTION_TABLE') or str(self.root / '.local/analysis/functions.jsonl')
+        if not image:
+            raise Stop('SR_TARGET_IMAGE is not set; cannot refresh the target hashes')
         for attempt in range(3):
             self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
             self.run(['git', 'checkout', '--quiet', '--force', '-B', 'regen', 'origin/main'], cwd=self.tree)
-            self.run(['git', 'clean', '-fdq', 'reconstruction', 'docs'], cwd=self.tree, check=False)
+            self.run(['git', 'clean', '-fdq', 'reconstruction', 'docs', 'data/target-hashes'], cwd=self.tree, check=False)
             for script in ('build_index.py', 'build_progress_svg.py'):
                 self.run([sys.executable, f'tools/{script}'], cwd=self.tree, timeout=1800)
+            # Offers first: the manifest binds the offered inventory's digest.
+            self.run([sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table],
+                     cwd=self.tree, timeout=1800)
+            self.run([sys.executable, 'tools/target_hashes.py', '--image', image], cwd=self.tree, timeout=1800)
             names = self.run(['git', 'status', '--porcelain', '--untracked-files=no'],
                              cwd=self.tree).stdout.decode().splitlines()
             changed = {line[3:] for line in names}
-            if not changed <= GENERATED:
+            if not all(map(is_generated, changed)):
                 self.run(['git', 'reset', '--quiet', '--hard', 'origin/main'], cwd=self.tree)
                 raise Stop('regenerate changed files other than the generated ones')
             if not changed:

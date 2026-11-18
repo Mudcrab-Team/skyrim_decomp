@@ -109,6 +109,8 @@ these 50 public references twice against the same published target hashes. This 
 format across the accepted size range; it does not prove inferred masks for all unmatched code.
 The manifest is regenerated deliberately on a maintainer machine when inventory extents,
 normalization, comparator, pins or recipes change; CI never needs a game image.
+The PR bot refreshes it in its post-merge regenerate commit after a mapping-only PR, using
+`SR_TARGET_IMAGE` (and optionally `SR_FUNCTION_TABLE`) on its host, so main's hash test stays green.
 
 ## PR job and p123 integration
 
