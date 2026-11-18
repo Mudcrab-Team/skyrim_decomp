@@ -1,5 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image, with the class layout from the header beside this file. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT), and GetCellByPosition's from meh321/AddressLibraryDatabase 0379cb6. A byte match shows that this source and recipe produce the checked code; it does not verify the community method names or that the original source looked like this.
 // 0x30b710 TESWorldSpace::GetFormEditorID
 // 0x314930 TESWorldSpace::~TESWorldSpace
 // 0x30e8d0 TESWorldSpace::GetCellByPosition

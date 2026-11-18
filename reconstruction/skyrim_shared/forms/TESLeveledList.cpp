@@ -1,5 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // 0x1e88f0 TESLeveledList::GetMultCalc
 // 0x1e8930 TESLeveledList::GetUseAll
 // 0x1e8850 TESLeveledList::InitializeDataComponent

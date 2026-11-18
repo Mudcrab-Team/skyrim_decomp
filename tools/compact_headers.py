@@ -7,6 +7,8 @@ The compact header keeps what a reader or a validator needs and drops what the r
 the docs already say: the full MIT text becomes the one SPDX line, label lines, `Source exposure`,
 sibling and origin statements stay, a `.cpp` lists its compared functions as `// 0x<rva> <Name>`
 lines, and Build, Task, Labels, Evidence, default Recipe, Drafted by, disclaimers and other prose go.
+A kept statement wrapped over several lines keeps all of its text (`wraps_into`): the rest of a
+provenance field follows it as one line, and any other wrapped statement is joined into one line.
 
 Only comments change, and a file is written only when all of this holds, otherwise it is left
 as it is and reported:
@@ -43,6 +45,12 @@ ORIGIN_FIELD = re.compile(r'^\s*(?://+)?\s*(?:body origin|implementation origin|
 GENERATOR_ORIGIN = re.compile(r'//\s*Origin:\s*(\{.*\})\s*$')
 NOT_COMPARED = re.compile(r'not compared|callee|called function', re.I)
 RVA = re.compile(r'\bRVA 0x([0-9a-fA-F]+)')
+SENTENCE_END = ('.', ';', ':', '!', '?')
+# The start of a label line, `object: GUESS(low)` or `a, b: COMMUNITY(...)`.
+NAMES_THEN_COLON = re.compile(r'[A-Za-z_~:][\w:~<>]*(?:\s*,\s*[\w:~<>]+)*\s*:\s')
+# Words a wrapped header line ends on when the clause goes on in the next line.
+OPEN_ENDING = re.compile(r'(?:,|\b(?:a|an|and|are|as|at|be|between|but|by|for|from|in|into|is|its|nor|of|on|or|over|'
+                         r'per|than|that|the|their|through|to|under|via|was|were|which|whose|with|without))$', re.I)
 
 
 def norm(line):
@@ -73,6 +81,24 @@ def find_notice(lead, canon):
     if any('Permission is hereby granted' in line or 'THE SOFTWARE IS PROVIDED' in line for line in lead):
         return 'bad'
     return None
+
+
+def wraps_into(previous, line):
+    """True when `line` carries on the statement `previous` left unfinished: `previous` opened a
+    parenthesis it has not closed, or it ends without closing punctuation and `line` starts the way
+    only the middle of a sentence does (lower case, an opening bracket) or `previous` ends on a
+    comma or a word that cannot end a clause. A capitalised line after a finished-looking one
+    (`GUESS(low) STANDIN`, `Source exposure: binary-analysis`) is a new statement, not a wrap, and
+    so is a `name, name: LABEL` line unless the line above ends its list with a comma."""
+    before = norm(previous)
+    if before.count('(') > before.count(')'):
+        return True
+    after = norm(line)
+    if not before or not after or before.endswith(SENTENCE_END):
+        return False
+    if NAMES_THEN_COLON.match(after) and not before.endswith(','):
+        return False
+    return after[0].islower() or after[0] in '([{' or bool(OPEN_ENDING.search(before))
 
 
 def keep_line(line):
@@ -112,8 +138,12 @@ def rewrite(text, ext, names, canon):
     if notice == 'bad':
         return None, 'unrecognised-licence-text'
     out, previous_kept, gpl_seen = [], False, set()
-    rvas = []
+    # `glued`: lines that must stay right after the line above; `dropped`: the lines dropped since
+    # the last kept or blank line, in case a kept line turns out to finish one of their statements.
+    rvas, glued, dropped = [], set(), []
     for index, line in enumerate(lead):
+        if line.strip() in ('//', '') or (notice and notice[0] <= index < notice[1]):
+            dropped = []
         if notice and notice[0] <= index < notice[1]:
             if index == notice[0]:
                 out.append('// ' + lint.SPDX_MIT)
@@ -130,29 +160,60 @@ def rewrite(text, ext, names, canon):
                 out.append(f'// Origin: {data["family"]} v{data["version"]}')
             except (ValueError, KeyError, TypeError):
                 out.append(line)
-            previous_kept = False
+            previous_kept, dropped = False, []
             continue
-        # A wrapped statement: the kept line above opened a parenthesis it has not closed.
+        # A wrapped statement: the kept line above stops mid-sentence, so this line is the rest of
+        # it. Dropping it would leave a provenance field cut off in the middle of a clause.
         continuation = (previous_kept and line.strip() not in ('//', '// ') and not FIELD.match(line)
-                        and out[-1].count('(') > out[-1].count(')'))
+                        and 'SPDX-License-Identifier' not in out[-1] and not lint.COMPARED_LINE.match(out[-1].strip())
+                        and wraps_into(out[-1], line))
         recipe = KEEP_RECIPE.match(line.strip())
         if recipe and recipe.group(1) != lint.DEFAULT_RECIPE:
             out.append(f'// Recipe: {recipe.group(1).rstrip(".,;")}')
-            previous_kept = False
+            previous_kept, dropped = False, []
             continue
         if keep_line(line) and not digest_v2.is_provenance(line) and GPL_MENTION.search(line):
             if line[:40] in gpl_seen:
-                previous_kept = False
+                previous_kept, dropped = False, []
                 continue
             gpl_seen.add(line[:40])
         if keep_line(line) or continuation:
+            # The lines of one wrapped statement become one line where the digest allows it: a
+            # provenance line is hashed as written, so the rest of a wrapped provenance field
+            # becomes one more line, and any other statement is joined whole.
+            if continuation and not keep_line(line) and not digest_v2.is_provenance(out[-1]):
+                out[-1] = out[-1].rstrip() + ' ' + norm(line)
+                previous_kept = True
+                continue
+            if continuation and not keep_line(line):
+                glued.add(len(out))
+            elif (dropped and 'SPDX-License-Identifier' not in line and not lint.COMPARED_LINE.match(line.strip())
+                  and wraps_into(dropped[-1], line)):
+                # A kept line that starts mid-sentence: bring back the dropped start of the
+                # statement so the kept part is not read out of context.
+                start = len(dropped) - 1
+                while start and wraps_into(dropped[start - 1], dropped[start]):
+                    start -= 1
+                head = ' '.join([dropped[start].rstrip()] + [norm(x) for x in dropped[start + 1:]])
+                if digest_v2.is_provenance(line):
+                    out.append(head)
+                    glued.add(len(out))
+                else:
+                    line = head + ' ' + norm(line)
+            dropped = []
             out.append(line)
             previous_kept = True
         else:
+            if line.strip() not in ('//', ''):
+                dropped.append(line)
             previous_kept = False
     if notice is None and any('CharmedBaryon/CommonLibSSE-NG@' in line and 'COMMUNITY(' in line for line in lead) \
             and not any('SPDX-License-Identifier' in line for line in out):
-        out.insert(0 if not out else 1, '// ' + lint.SPDX_MIT)
+        # After the first statement, never between a wrapped statement's lines.
+        at = 0 if not out else 1
+        while at in glued:
+            at += 1
+        out.insert(at, '// ' + lint.SPDX_MIT)
     if ext == 'cpp':
         compared = []
         listed = {int(m.group(1), 16) for line in out for m in [re.match(r'//\s*0x([0-9a-fA-F]+)\b', line)] if m}

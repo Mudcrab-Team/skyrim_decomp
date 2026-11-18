@@ -1,8 +1,8 @@
 // Code origin: bodies written for this unit from the listings of the pinned image; names and
+// declarations from CommonLibSSE-NG, and the Ctor name from powerof3/CommonLibSSE. No community or sibling body is adapted.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
+// image). Declarations derived from powerof3/CommonLibSSE are GPL-3.0-or-later.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Declarations derived from powerof3/CommonLibSSE are GPL-3.0-or-later.
 // Recipe: reconstruction/recipes/o2-fpfast-root-includes.json
 // Adapted bodies: none
 // 0xefe1f0 NiPointLight::LoadBinary

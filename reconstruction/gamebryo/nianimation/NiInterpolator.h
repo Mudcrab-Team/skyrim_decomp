@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// include/RE/N/NiObject.h and include/RE/N/NiRefObject.h. No body here is adapted from a
+// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) include/RE/N/NiInterpolator.h, include/RE/N/NiObject.h and include/RE/N/NiRefObject.h. No body here is adapted from a community source; the only inline bodies are single returns or stores forced by the image.
 // The name Clone is taken from powerof3/CommonLibSSE 654e55f (GPL-3.0) include/RE/N/NiObject.h;
 // because of that one name this file states GPL-3.0 as its licence. It does not reproduce the
 // GPL-3.0 text.

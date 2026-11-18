@@ -1,5 +1,6 @@
 // ArmorRatingVisitorBase::Visit (COMMUNITY name), RVA 0x73ae00, 172 bytes.
 // Source exposure: mixed. Drafted by a model worker (claude-sonnet-5-5) from a local instruction
+// listing and decompiler output of the pinned image, with types from the header beside this file.
 // 0x73ad90 ArmorRatingVisitor::HaveNotVisitedArmor
 // 0x73ae00 ArmorRatingVisitorBase::Visit
 #include "ArmorRatingVisitor.h"

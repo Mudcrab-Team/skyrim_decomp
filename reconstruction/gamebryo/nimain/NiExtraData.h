@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// include/RE/N/NiStream.h. No body is adapted from community or FNV sources; the lone
+// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) include/RE/N/NiExtraData.h and include/RE/N/NiStream.h. No body is adapted from community or FNV sources; the lone declarations are community ones. tools/check_origin.py reports none above its threshold.
 // NiExtraData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 

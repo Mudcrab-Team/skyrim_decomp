@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // The names CreateDuplicateForm and IsParentForm come from powerof3/CommonLibSSE 654e55f, which is GPL-3.0; that licence applies to those declarations.
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
+// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // TESObjectCELL, GetbhkWorld, GetCoordinates, GetLocation, GetOwner: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // EnterReferenceListLock, ExitReferenceListLock, GetEncounterZone: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); names from the Address Library function table, no declaration in the community headers.
 // BaseFormComponent, TESForm, BGSEncounterZone, BGSLocation, bhkWorld, TESWorldSpace, LOADED_CELL_DATA, EXTERIOR_DATA, INTERIOR_DATA, ExtraDataList, BSSpinLock: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

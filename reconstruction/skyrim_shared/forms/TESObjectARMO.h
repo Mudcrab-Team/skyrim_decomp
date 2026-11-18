@@ -1,4 +1,5 @@
 // Code origin: names, bases, member offsets and sizes are adapted from the CharmedBaryon/CommonLibSSE-NG
+// (MIT) headers TESObjectARMO.h and the component headers it lists; the declarations are written by the contributor, the bodies are original, and the pinned image was read only for the compared functions.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

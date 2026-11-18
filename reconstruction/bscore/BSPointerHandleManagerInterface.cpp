@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local listing of the pinned image
+// with types from the header beside this file.
 // 0x240f50 BSPointerHandleManagerInterface::GetHandle
 #include "BSPointerHandleManagerInterface.h"
 

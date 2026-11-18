@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local instruction listing and
+// decompiler output of the pinned image, with types from the header beside this file.
 // 0xef8900 NiTimeController::ProcessClone
 #include "NiTimeController.h"
 

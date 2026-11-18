@@ -1,4 +1,5 @@
 // Code origin: declarations written for this unit from CommonLibSSE-NG names and layouts; the
+// stand-ins declare only what the compared code needs.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
+// with types from the header beside this file.
 // 0x1e36b0 TESForm::ClearData
 // 0x2e4ac0 TESForm::IsPersistent
 // 0x1e6010 TESForm::IsTemporaryFormID

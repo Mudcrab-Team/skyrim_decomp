@@ -1,6 +1,6 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with the class layout from the header beside this file. Names are from
 // CharmedBaryon/CommonLibSSE-NG b93280e (MIT); the powerof3 fork (GPL-3.0) uses the same ones.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // 0x2709b0 TESGrass::GetUnderwaterState
 // 0x270a30 TESGrass::SetUnderwaterState
 // 0x270900 TESGrass::GetDensity

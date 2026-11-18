@@ -3,6 +3,7 @@
 // Source exposure: mixed; binary-analysis and community declarations.
 // ResearchReturns, BSGeometryReturns: GUESS(low) STANDIN
 // Adapted bodies: none. Community declarations inform signatures only.
+// BSGeometry, BSMultiIndexTriShape, BSSkinnedDecalTriShape, AsMultiIndexTriShape,
 // AsSkinnedDecalTriShape: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetVisibleGroupsTriangleCount: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // Original reconstruction; no external implementation copied. A pass proves code only.

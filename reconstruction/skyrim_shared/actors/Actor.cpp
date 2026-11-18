@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local listing of the pinned image
+// with types from the header beside this file.
 // FindOutfitExtra: GUESS; callee of HasOutfitItems at RVA 0x1648b0.
 // 0x2e7fc0 Actor::HasOutfitItems
 // 0x6797a0 Actor::GetLevel

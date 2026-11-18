@@ -1,5 +1,6 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none
+// pinned image, with names from CommonLibSSE-NG b93280e (MIT).
+// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold at the pinned checkouts.
 // 0xf01650 BSResourceNiBinaryStream::tell
 // 0xf01600 BSResourceNiBinaryStream::good
 // 0xf016e0 BSResourceNiBinaryStream::set_endian_swap

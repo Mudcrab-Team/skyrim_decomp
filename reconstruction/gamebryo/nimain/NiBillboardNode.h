@@ -5,6 +5,7 @@
 // NiBillboardNode::~NiBillboardNode, NiBillboardNode::IsEqual, NiBillboardNode::OnVisible, NiBillboardNode::LoadBinary, NiBillboardNode::SaveBinary, NiBillboardNode::UpdateWorldBound, NiBillboardNode::UpdateWorldData: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // unk128, unknown12A: GUESS(low)
 // BaseIsEqual, UpdateVisibleHelper: GUESS(low); callees of the compared code, declared here so the
+// calls can be bound to their RVAs
 #pragma once
 
 #include <cstdint>

@@ -1,5 +1,6 @@
 // Licence: uses some member names from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image with
+// types from the header beside this file.
 // 0x692ea0 Character::GetRotationX
 // 0x73ad70 Character::Unk_C4
 // 0x73a760 Character::GetBiped2

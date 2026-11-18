@@ -1,10 +1,12 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// the compared functions from the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSShaderTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSTextureSet: STANDIN EXE_RTTI
 // BSShaderTextureSet::GetTexturePath: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // texturePaths: GUESS(low); element count is the padding that was split off, the target indexes it by Texture
 // Texture: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG nests it in BSTextureSet::Textures
+// as std::uint32_t, signed here because the target sign-extends the index (MOVSXD)
 #pragma once
 
 #include <cstdint>

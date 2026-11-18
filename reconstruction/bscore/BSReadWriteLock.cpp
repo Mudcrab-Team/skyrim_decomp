@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with the class layout from the header beside this file.
 // 0xce3510 BSReadWriteLock::UnlockForRead
 // 0xce3520 BSReadWriteLock::UnlockForWrite
 #include "BSReadWriteLock.h"

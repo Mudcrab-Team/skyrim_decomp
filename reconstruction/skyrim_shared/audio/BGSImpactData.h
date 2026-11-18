@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSImpactData, BGSImpactData::InitializeData, BGSImpactData::data, BGSImpactData::decalTextureSet, BGSImpactData::decalTextureSet2, BGSImpactData::sound1, BGSImpactData::sound2, BGSImpactData::hazard: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // IMPACT_DATA_DATA: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's enum types (ORIENTATION, SOUND_LEVEL, Flag, ImpactResult) are plain integers here
 // BGSTextureSet, BGSSoundDescriptorForm, BGSHazard: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque, only used by pointer

@@ -1,5 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // 0x340be0 TESGlobal::GetFormEditorID
 // 0x340c00 TESGlobal::SetFormEditorID
 #include "TESGlobal.h"

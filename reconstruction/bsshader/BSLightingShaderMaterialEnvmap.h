@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// the compared functions from the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSLightingShaderMaterialEnvmap: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialEnvmap::Ctor, BSLightingShaderMaterialEnvmap::SaveBinary, BSLightingShaderMaterialEnvmap::LoadBinary, BSLightingShaderMaterialEnvmap::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEnvmap::GetTextures, BSLightingShaderMaterialEnvmap::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

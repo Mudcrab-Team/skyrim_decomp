@@ -3,6 +3,7 @@
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: the two range predicates conservatively carry sibling attribution for the
+// homologous predicates considered during reconstruction. The initial draft did not record how much sibling influence it used; no independent-derivation claim is made here.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/facegen/bsfacegenkeyframe.cpp:59
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/facegen/bsfacegenkeyframe.cpp:82
 // Unk_0B, Unk_0E: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); implementation context only

@@ -1,5 +1,6 @@
 // Source exposure: community-headers
 // Drafted by GPT-6.1 Sol; p106 value layouts adapted from pinned community declarations.
+// BSFixedString, BSFixedStringCS, Color, NiPoint2, NiPoint3, NiColor, NiColorA,
 // NiPointer, BSTSmartPointer: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // entry, value: GUESS(medium)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

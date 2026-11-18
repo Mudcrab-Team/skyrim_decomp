@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// TestBit. Bodies adapted from community sources are listed above (none);
+// Adapted code: no body in this file is copied from a community source; the only inline bodies are the NiPointer assignment (the usual smart-pointer shape, as in NiObjectNET.h), the NiCloningProcess constructor and destructor (members and order read from the listing) and TestBit. Bodies adapted from community sources are listed above (none);
 // bhkCollisionObject: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque
 // COL_LAYER: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); 32-bit enum
 // SetCollisionLayer, SetCollisionLayerAndGroup, GetCollisionObject, UpdateRigidConstraints: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

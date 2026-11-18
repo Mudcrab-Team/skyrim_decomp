@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSDialogueBranch, BGSDialogueBranch::InitializeData, ::flags, ::pad24, ::quest, ::startingTopic: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESQuest, TESTopic: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque, only used by pointer
 #pragma once

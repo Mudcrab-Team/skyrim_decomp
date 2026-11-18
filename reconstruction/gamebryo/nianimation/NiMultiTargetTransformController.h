@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // NiMultiTargetTransformController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiInterpController: STANDIN EXE_RTTI
 // NiMultiTargetTransformController::GetInterpolatorCount, NiMultiTargetTransformController::GetInterpolatorID, NiMultiTargetTransformController::~NiMultiTargetTransformController, NiMultiTargetTransformController::GuaranteeTimeRange, NiMultiTargetTransformController::GetInterpolatorIndex, NiMultiTargetTransformController::LoadBinary, NiMultiTargetTransformController::SaveBinary, NiMultiTargetTransformController::IsEqual, NiMultiTargetTransformController::ResetTimeExtrema, NiMultiTargetTransformController::ProcessClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

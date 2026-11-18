@@ -1,5 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image, with types from the header beside this file.
 // NiExtraData::NiExtraData: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); name only, not compared
 // 0xef9880 NiExtraData::LoadBinary
 // 0xef9960 NiExtraData::IsEqual

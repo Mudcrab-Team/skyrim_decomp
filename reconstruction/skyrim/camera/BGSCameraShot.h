@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSCameraShot, BGSCameraShot::InitializeData, BGSCameraShot::~BGSCameraShot, BGSCameraShot::data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // CAMERA_SHOT_DATA: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's enum types are plain integers here
 // TESModel: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG slots 04 to 06 (GetModel, SetModel, GetAsModelTextureSwap) as placeholders; size 0x28

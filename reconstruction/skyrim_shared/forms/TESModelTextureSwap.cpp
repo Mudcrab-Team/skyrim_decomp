@@ -1,5 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listing of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // 0x1ecd70 TESModelTextureSwap::InitializeDataComponent
 #include "TESModelTextureSwap.h"
 

@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// the compared functions from the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // BSShaderAccumulator: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI

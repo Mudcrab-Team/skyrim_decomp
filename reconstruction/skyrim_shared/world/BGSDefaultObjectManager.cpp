@@ -1,9 +1,10 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with names from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) and the Address
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:121 (the empty destructor, shape only)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:112 (the constructor: form type, form ID, reset of the object array; the memset spelling follows ResetFormData at line 15)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:71 (InitItem: the resolve loop over the default object IDs)
 // ~BGSDefaultObjectManager, BGSDefaultObjectManager::BGSDefaultObjectManager: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); names and shape only, offsets and counts are this build's
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other
+// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold at the pinned revisions.
 // 0x38fa30 BGSDefaultObjectManager::GetLeftHandEquip
 // 0x38fa40 BGSDefaultObjectManager::GetRightHandEquip
 // 0x38fa60 BGSDefaultObjectManager::GetVoiceEquip

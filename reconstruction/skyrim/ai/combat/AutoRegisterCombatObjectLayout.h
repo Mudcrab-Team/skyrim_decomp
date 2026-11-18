@@ -2,6 +2,7 @@
 // Original declarations inferred from local RTTI; no external implementation copied.
 // AutoRegisterCombatObject, CombatInventoryItemMagicT: EXE_RTTI
 // AutoRegisterCombatObjectLayout: GUESS(medium) STANDIN
+// CombatInventoryItemMagic, CombatInventoryItemShout, CombatInventoryItemStaff,
 // CombatInventoryItemPotion, CombatInventoryItemScroll: EXE_RTTI
 // Product, Inventory, Caster: GUESS(medium); template-parameter spellings
 #pragma once

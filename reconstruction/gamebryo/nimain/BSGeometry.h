@@ -1,9 +1,11 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// the compared functions from the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSGeometry: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSGeometry::UpdateDownwardPass, BSGeometry::UpdateSelectedDownwardPass, BSGeometry::SetSelectiveUpdateFlags, BSGeometry::RegisterStreamables, BSGeometry::SaveBinary, BSGeometry::LoadBinary, BSGeometry::UpdateWorldBound, BSGeometry::ProcessClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiUpdateData, NiStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown110: GUESS(low)
+// Base-class calls and out-of-unit callees the compared code makes, declared only and bound by bind-hints.json: BaseUpdateDownwardPass, BaseUpdateSelectedDownwardPass, BaseSetSelectiveUpdateFlags, BaseRegisterStreamables, BaseSaveBinary, BaseLoadBinary,
 // UpdateBoundFromFlags: GUESS(low)
 // BSGeometryData110: GUESS(low); the object at +0x110, saved and loaded field by field
 #pragma once

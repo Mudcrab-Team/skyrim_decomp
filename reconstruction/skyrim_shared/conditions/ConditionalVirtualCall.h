@@ -1,8 +1,5 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: binary-analysis; original declarations and linkage unknown.
 // Adapted bodies: none; original bounded callback-dispatch template.
-// Reconstruction carries no general licence grant; see LEGAL.md and PROVENANCE.md.
 // ConditionalVirtualCall, invoke, object, conditional_call_state, conditional_call_callback: GUESS(low) STANDIN
 #pragma once
 struct ConditionalVirtualCall { virtual void invoke(unsigned int); };

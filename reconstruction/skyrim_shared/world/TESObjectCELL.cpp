@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
+// with types from the header beside this file.
 // The names CreateDuplicateForm and IsParentForm come from powerof3/CommonLibSSE 654e55f, which is GPL-3.0; that licence applies to those functions.
 // 0x2cbed0 TESObjectCELL::EnterReferenceListLock
 // 0x2be9b0 TESObjectCELL::GetbhkWorld

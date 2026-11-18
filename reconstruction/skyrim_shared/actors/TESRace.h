@@ -1,5 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Adapted bodies: BSFixedString::data and ::c_str from CharmedBaryon/CommonLibSSE-NG b93280e (MIT)
+// include/RE/B/BSFixedString.h; tools/check_origin.py reports none other above its threshold.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESRace, TESRace::~TESRace, ::GetPlayable, ::GetFormEditorID, ::data, ::bodyPartData, ::formEditorID, ::baseMoveTypes: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRace::GetBodyPartData, ::GetMovementType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)

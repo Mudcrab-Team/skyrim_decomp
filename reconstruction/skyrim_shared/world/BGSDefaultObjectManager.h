@@ -1,6 +1,7 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared in this header; tools/check_origin.py reports none above its
+// threshold at the pinned community and sibling revisions.
 // BaseFormComponent, TESForm, TESForm::InitializeData ... QAvailableInGame, TESForm::formFlags, ::formID, ::formType, ::sourceFiles: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the slot names 04 to 3A follow NG and only the slot order matters here
 // TESForm::LookupByID, TESForm::kInitialized: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the address is the one the Address Library names TESDataHandler::GetForm (id 14617)
 // BGSDefaultObjectManager, BGSDefaultObjectManager::InitItemImpl, ::Load, ::objects: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares objects with 0x1c3 entries, 0x174 here

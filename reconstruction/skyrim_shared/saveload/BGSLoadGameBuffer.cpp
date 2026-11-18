@@ -1,5 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image and the class layout in the header beside this file. A byte match shows that this source and recipe produce the checked code; it does not verify the community names.
 // 0x637a90 BGSLoadGameBuffer::GetVersion
 // 0x637e70 BGSLoadGameBuffer::LoadDataEndian
 // 0x637ab0 BGSLoadGameBuffer::ReadFormID

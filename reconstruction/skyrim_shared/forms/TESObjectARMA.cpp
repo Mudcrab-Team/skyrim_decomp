@@ -1,6 +1,7 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: TESObjectARMA::~TESObjectARMA, momusdigital/fnv_decomp@91e1b6e8,
+// src/fallout_shared/tesobjectarma.cpp, no license grant.
 // 0x27d3f8 TESObjectARMA::dtor
 #include "TESObjectARMA.h"
 

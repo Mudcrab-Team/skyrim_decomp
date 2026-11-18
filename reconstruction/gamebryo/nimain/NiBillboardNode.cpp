@@ -2,7 +2,8 @@
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none intended. The attempt origin check printed advice for the stream calls in
-// CharmedBaryon/CommonLibSSE-NG (MIT) and powerof3/CommonLibSSE (GPL-3.0); the bodies were written
+// LoadBinary and SaveBinary, similar to NiBinaryStream::write and binary_write in
+// CharmedBaryon/CommonLibSSE-NG (MIT) and powerof3/CommonLibSSE (GPL-3.0); the bodies were written from the listing and no upstream text was copied.
 // 0x41cc60 NiBillboardNode::~NiBillboardNode
 // 0xf02dc0 NiBillboardNode::IsEqual
 // 0xf041d0 NiBillboardNode::OnVisible
