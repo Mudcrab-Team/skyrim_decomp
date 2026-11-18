@@ -9,6 +9,7 @@
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the destructor is called out of line
 // value, unknown18: GUESS(low)
 // ms_totalObjects: GUESS(low); NG reaches the counter through GetTotalObjectCount()
+// unk18, unk20, unk28, unk30, unk38, unk40, unk48: GUESS(low); storage after event, not read by the compared code
 #pragma once
 
 #include <intrin.h>
@@ -47,6 +48,12 @@ public:
     // The destructor is implicit: it is the compared 0x44afe0 (scalar deleting destructor).
 
     BSFixedString event;           // 10
-    std::uint8_t  unknown18[0x38]; // 18
+    std::uint64_t unk18;  // 18
+    std::uint64_t unk20;  // 20
+    std::uint64_t unk28;  // 28
+    std::uint64_t unk30;  // 30
+    std::uint64_t unk38;  // 38
+    std::uint64_t unk40;  // 40
+    std::uint64_t unk48;  // 48
 };
 static_assert(sizeof(BGSAttackData) == 0x50, "BGSAttackData size");
