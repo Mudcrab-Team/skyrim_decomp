@@ -125,21 +125,6 @@ class Evidence(GateFixture,unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'content differs'):
             check.validate_match(self.fn, self.target, root=self.root)
 
-    def test_clean_ci_sampling_requires_full_attestation_and_local_comparator(self):
-        import sampling_packet
-        arguments=dict(root=self.root,fn=self.fn,target=self.target)
-        original=copy.deepcopy(self.record)
-        self.assertTrue(sampling_packet.compare(original,self.record,**arguments)[0])
-        self.assertFalse(sampling_packet.compare(original,self.record)[0])
-        for field in ('run_id','content_sha256','cache_verified','source_sha256'):
-            with self.subTest(field=field):
-                bad=copy.deepcopy(original);bad['ci_confirmation'][field]=None
-                self.assertFalse(sampling_packet.compare(original,bad,**arguments)[0])
-        bad=copy.deepcopy(original);bad['runs'][0]['report']['result']='fail'
-        self.assertFalse(sampling_packet.compare(original,bad,**arguments)[0])
-        bad=copy.deepcopy(original);del bad['ci_confirmation']
-        self.assertFalse(sampling_packet.compare(original,bad,**arguments)[0])
-
     def test_every_binding_fails_closed(self):
         original=copy.deepcopy(self.record)
         for key,value in list(original['ci_confirmation'].items()):

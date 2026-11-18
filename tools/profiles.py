@@ -10,12 +10,10 @@ Roles: `orchestrator` (drives docs/orchestrator-runbook.md), `drafter`, `reviewe
 (triage of near-misses and rejects, direction checks, tooling). A profile is an operating choice,
 never a match criterion: every profile's output passes the same comparator, two-host
 confirmation, lint and Reviewer gate (docs/verification.md). A Reviewer model the acceptance rule
-does not admit is refused by tools/flow.py whatever a profile says.
+does not admit is refused by tools/accept_function.py whatever a profile says.
 
 `cheap` is the default because weak-model drafting on the small card, skeleton and sheet kit passes
-the same gate at a fraction of the cost. The default stays conditional on that evidence: the
-friction report (tools/friction.py) shows the pass rate per profile and flags the cheap profile
-below `cheap_min_pass_rate`, and a direction check then recommends flipping the default back.
+the same gate at a fraction of the cost.
 """
 import argparse
 import json
@@ -23,7 +21,6 @@ from pathlib import Path
 
 DATA = json.loads((Path(__file__).resolve().parent / 'profiles.json').read_text())
 DEFAULT = DATA['default']
-CHEAP_MIN_PASS_RATE = DATA['cheap_min_pass_rate']
 PROFILES = DATA['profiles']
 ROLES = ('orchestrator', 'drafter', 'reviewer', 'strong')
 

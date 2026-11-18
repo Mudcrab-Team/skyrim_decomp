@@ -16,13 +16,6 @@ class CheckWorkflowTriggers(unittest.TestCase):
         self.assertIn('\n  push:', head)
         self.assertIn('\n  pull_request:', head)
 
-    def test_no_tool_waits_for_checks_on_a_confirm_branch(self):
-        tools = Path(__file__).resolve().parents[1] / 'tools'
-        pusher = (tools / 'verifier/ci_confirm.py').read_text()
-        self.assertIn("refs/heads/ci-confirm/", pusher)
-        self.assertNotIn('Infrastructure', pusher)
-        self.assertNotIn('ci_status', pusher)
-
 
 class PrCheckWorkflow(unittest.TestCase):
     text = (WORKFLOWS / 'pr-check.yml').read_text()

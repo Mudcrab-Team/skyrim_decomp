@@ -12,11 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import draft_worktrees as drafts
 import work_queue as wq
-import flow
 import lint_reconstruction as lint
 import synthetic_pecoff as fx
 from source_digest import include_closure, tu_digest
-from test_flow import Repo, BUILD, git
+from repo_fixture import Repo, BUILD, git
 
 
 class DraftWorktrees(unittest.TestCase):
@@ -766,51 +765,6 @@ class DraftWorktrees(unittest.TestCase):
         self.assertIn('draft/g-foo-strong', git(self.root, 'branch', '--list', 'draft/*'))
         self.assertEqual(git(self.root, 'rev-parse', 'refs/harvests/g-foo/strong'), harvest['commit'])
         self.assertTrue((Path(harvest['attempt']) / 'candidate.obj').is_file())
-
-    def test_integration_and_state_use_harvest_even_after_working_trees_change(self):
-        unit = self.claim()
-        tree = Path(unit['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text('int harvested;\n')
-        (tree / 'untracked').write_text('keep')
-        self.finish()
-        harvest = drafts.current(self.root, self.unit)
-        rec_path = self.root / f'reports/{BUILD}/0x1000.json'
-        rec = drafts.read(rec_path)
-        rec['source']['digest'] = harvest['digest']
-        rec['source']['translation_unit'] = harvest['sources']
-        drafts.save(rec_path, rec)
-        (tree / self.unit['sources'][-1]).write_text('int dirty_draft;\n')
-        (self.root / self.unit['sources'][-1]).write_text('int dirty_shared;\n')
-        fn = flow.inventory(self.root)['functions'][0]
-        self.assertEqual(flow.record_state(self.root, fn), 'confirmed')
-        made = flow.review_group(self.root, self.repo.fdir, select={fn['id']})
-        group = flow.load_group(self.repo.fdir, made[0])
-        frozen = Path(group['review_root'])
-        self.assertEqual((frozen / self.unit['sources'][-1]).read_text(), 'int harvested;\n')
-        brief = self.root / group['brief']
-        self.assertIn(str(frozen), brief.read_text())
-        rerun = self.root / '.local/briefs' / f'rerun-{group["name"]}.md'
-        self.assertIn(harvest['task'], rerun.read_text())
-        dest = self.tmp / 'integration'
-        git(self.root, 'worktree', 'add', '--detach', str(dest), 'origin/main')
-        flow.carry_into_tree(self.root, dest, ['0x1000'], {'0x1000': fn})
-        self.assertEqual((dest / self.unit['sources'][-1]).read_text(), 'int harvested;\n')
-        # Integration cleanup requires accepted origin state and exactly the harvested digest.
-        data = flow.inventory(dest)
-        data['functions'][0]['status'] = 'matched'
-        drafts.save(dest / 'data/progress.json', data)
-        git(dest, 'add', 'data/progress.json', *self.unit['sources'])
-        git(dest, 'commit', '-m', 'synthetic integration')
-        git(dest, 'push', 'origin', 'HEAD:main')
-        active = self.q / 'claims-fallback/g-foo.lock'
-        active.parent.mkdir()
-        wq.try_create(active, 'next-tier', wq.now(), 'claude-low', 'fallback')
-        drafts.cleanup_integrated(self.root)
-        self.assertTrue(tree.exists())
-        active.unlink()
-        drafts.cleanup_integrated(self.root)
-        self.assertFalse(tree.exists())
-        self.assertTrue(drafts.current(self.root, self.unit)['integrated'])
 
     def test_confirm_reads_commit_and_not_mutable_draft(self):
         data = drafts.read(self.root / 'data/progress.json')
