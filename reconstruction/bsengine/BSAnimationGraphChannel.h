@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSAnimationGraphChannel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSAnimationGraphChannel::~BSAnimationGraphChannel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSAnimationGraphChannelMember: GUESS(low); stand-in, the out-of-line destructor is bound by hint to RVA 0xEB1100

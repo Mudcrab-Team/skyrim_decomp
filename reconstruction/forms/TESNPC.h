@@ -1,12 +1,7 @@
-// TESNPC type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESNPC.h
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // and the vftables of the pinned image; the powerof3 fork (GPL-3.0) declares the same names.
 // BaseFormComponent, TESForm, TESObject, TESBoundObject, TESBoundAnimObject, TESActorBase: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT);
-// only class names, base chain, slot order and sizes are claimed; slot signatures other than the
-// compared ones are placeholders. Member names carved out of the padding follow the same headers.
 // BGSHeadPart, BGSVoiceType, BGSRelationship, TESRace, PlayerCharacter, HeadRelatedData, Sounds, FaceData, Layer, BSTArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 

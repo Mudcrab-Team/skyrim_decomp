@@ -1,20 +1,11 @@
-// TESForm member functions, build sse-steam-1-7-104.
-//
-// Labels: v2
-// Evidence: findings/fourth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
-// with types from the header beside this file.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Compared functions (RVA, size):
-//   ClearData          RVA 0x1e36b0,   3 bytes
-//   IsPersistent       RVA 0x2e4ac0,   9 bytes
-//   IsTemporaryFormID  RVA 0x1e6010,  15 bytes
-//   GetEnchantment     RVA 0x1e1fd0,  91 bytes
-//   SaveGame           RVA 0x1e5700,  91 bytes
-//   GetGoldValue       RVA 0x1f3560, 157 bytes
-//   LoadGame           RVA 0x1e5770, 185 bytes
-// A byte match shows this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x1e36b0 TESForm::ClearData
+// 0x2e4ac0 TESForm::IsPersistent
+// 0x1e6010 TESForm::IsTemporaryFormID
+// 0x1e1fd0 TESForm::GetEnchantment
+// 0x1e5700 TESForm::SaveGame
+// 0x1f3560 TESForm::GetGoldValue
+// 0x1e5770 TESForm::LoadGame
 #include "TESForm.h"
 
 #include <typeinfo>

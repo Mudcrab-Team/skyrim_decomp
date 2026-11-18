@@ -1,6 +1,5 @@
 // Source exposure: mixed (class and member names from community headers; sizes, offsets and the
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// compared functions from the pinned image).
 // BSLightingShaderMaterialMultiLayerParallax: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialMultiLayerParallax::~BSLightingShaderMaterialMultiLayerParallax, BSLightingShaderMaterialMultiLayerParallax::Ctor, BSLightingShaderMaterialMultiLayerParallax::GetTextures, BSLightingShaderMaterialMultiLayerParallax::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialMultiLayerParallax::ComputeCRC32, BSLightingShaderMaterialMultiLayerParallax::SaveBinary, BSLightingShaderMaterialMultiLayerParallax::LoadBinary: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once

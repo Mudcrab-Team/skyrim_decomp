@@ -1,12 +1,6 @@
-// TESBoundObject declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-tesboundobject
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Base form: shared header ../forms/TESForm.h for TESForm. The brief's other shared headers
-// (TESObjectREFR.h, ../actors/Actor.h, TESFile.h) each redefine TESForm or TESObjectREFR, so they
-// cannot be included with TESForm.h; header-gap TESObjectREFR, Actor and TESFile.
 // TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // CalculateDoFavor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetBipedObjectForm, SendActorItemEquippedEvent: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the community declarations are unknown, the signatures here come from the listings

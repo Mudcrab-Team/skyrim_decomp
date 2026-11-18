@@ -1,5 +1,4 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/tempeffects/bstempeffect.cpp:70
 // BSTempEffect::Initialize: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none

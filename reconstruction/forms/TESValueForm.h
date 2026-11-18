@@ -1,12 +1,6 @@
-// TESValueForm declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-tesvalueform
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: local stand-ins (no ancestor has a shared header).
 // TESValueForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BaseFormComponent: STANDIN EXE_RTTI
 // TESValueForm::ClearDataComponent, TESValueForm::InitializeDataComponent, TESValueForm::~TESValueForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

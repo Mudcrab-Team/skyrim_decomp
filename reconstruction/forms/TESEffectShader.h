@@ -1,8 +1,5 @@
-// TESEffectShader type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESEffectShader.h.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // The members of EffectShaderData and the layout after it are not claimed. Adapted bodies: none declared.
 // TESEffectShader, TESEffectShader::InitializeData, ::data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESEffectShader::InitItemImpl: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 13, RVA 0x26b760

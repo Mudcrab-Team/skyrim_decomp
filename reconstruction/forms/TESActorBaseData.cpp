@@ -1,20 +1,11 @@
-// TESActorBaseData: virtual accessors, ClearDataComponent and InitializeDataComponent, build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: batch5-s04-baseformcomponent-tesactorbasedata
-// RVA 0x1de5e0, 3 bytes (Unk_07);
-// RVA 0x1de5f0, 5 bytes (GetVoiceType);
-// RVA 0x1de5c0, 7 bytes (GetInvulnerable);
-// RVA 0x1de5d0, 9 bytes (GetIsGhost);
-// RVA 0x1dc630, 38 bytes (ClearDataComponent);
-// RVA 0x1dc5e0, 59 bytes (InitializeDataComponent);
-// Evidence: findings/fifth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listings of the
-// pinned image, with the class layout from the header beside this file. Names are from
-// CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. The functions listed above are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x1de5e0 TESActorBaseData::Unk_07
+// 0x1de5f0 TESActorBaseData::GetVoiceType
+// 0x1de5c0 TESActorBaseData::GetInvulnerable
+// 0x1de5d0 TESActorBaseData::GetIsGhost
+// 0x1dc630 TESActorBaseData::ClearDataComponent
+// 0x1dc5e0 TESActorBaseData::InitializeDataComponent
 #include "TESActorBaseData.h"
 
 // gDefaultBaseDisposition: GUESS(low); a byte global at 0x20780f8 copied into baseDisposition

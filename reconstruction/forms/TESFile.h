@@ -1,12 +1,6 @@
-// TESFile type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG
-// b93280e832f263dbef44e44cbe2936622a02f91a (MIT): include/RE/T/TESFile.h.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// TESFile, TESFile::OpenTES, ::Seek, ::SeekNextSubrecord, ::GetFormType, ::GetCurrentSubRecordType,
 // ::Duplicate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESFile::threadSafeParent, ::file, ::fileName, ::path, ::currentform, ::currentchunkID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESFile::actualChunkSize, ::filesize, ::fileOffset, ::formoffset, ::chunkoffset: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -14,9 +8,7 @@
 // TESFile::pad004, ::threadSafeFileMap, ::unk020, ::unk028, ::lockedFile, ::currRefOffset, ::pad4AC: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG declares unk020 as a 64-bit word (its upper half is unk024 here) and lockedFile as BSFile*
 // TESFile::pad02A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG splits the bytes 0x2A to 0x2F into pad02A and pad02C, merged here into one array
 // TESFile::unk018, ::unk029: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); 0x29 is
-// read as the flag that selects unk018 over file, 0x18 as a handle whose word at 0x24 is a position
 // FORM, NiFile, Main: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the
-// members and enumerators the compiled code needs; the object layouts are not claimed.
 // FORM::form, ::length, ::flags, ::formID, ::versionControl, ::formVersion, ::vcVersion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // Main::threadID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); compared with the current thread id
 // Main::singleton: GUESS; global pointer at RVA 0x3230530, which NG reads through Main::GetSingleton (RE::Offset::Main::Singleton).

@@ -1,21 +1,10 @@
-// TESObjectBOOK functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-tesobjectbook
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5 (worker haiku-202611122314-2).
-// Compared functions:
-//   RVA 0x27f830, 28 bytes: TESObjectBOOK::InitializeData
-//   RVA 0x280540, 77 bytes: TESObjectBOOK::LoadGame
-//   RVA 0x2804e0, 85 bytes: TESObjectBOOK::SaveGame
-// RVA 0x280210, 121 bytes: TESObjectBOOK::GetActivateText
-// Not compared in this unit yet: RVA 0x280760 ~TESObjectBOOK.
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x27f830 TESObjectBOOK::InitializeData
+// 0x280540 TESObjectBOOK::LoadGame
+// 0x2804e0 TESObjectBOOK::SaveGame
+// 0x280210 TESObjectBOOK::GetActivateText
 #include "TESObjectBOOK.h"
 
 // Not compared: defined so that the compiler emits the vftable (cookbook rule 14).

@@ -1,16 +1,9 @@
-// TESWorldSpace member functions, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x30b710, 22 bytes (GetFormEditorID);
-// RVA 0x314930, 52 bytes (~TESWorldSpace, the deleting destructor);
-// RVA 0x30e8d0, 129 bytes (GetCellByPosition); RVA 0x30d050, 136 bytes (FindInFileFast).
-// Evidence: findings/fourth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with the class layout from the header beside this file. Names are from
-// CharmedBaryon/CommonLibSSE-NG b93280e (MIT), and GetCellByPosition's from meh321/AddressLibraryDatabase 0379cb6. A byte match shows that this source and recipe produce the checked code; it
-// does not verify the community method names or that the original source looked like this.
-// The plain destructor and the base constructors are declared, not defined, in this unit.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. The functions above are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x30b710 TESWorldSpace::GetFormEditorID
+// 0x314930 TESWorldSpace::~TESWorldSpace
+// 0x30e8d0 TESWorldSpace::GetCellByPosition
+// 0x30d050 TESWorldSpace::FindInFileFast
 #include "TESWorldSpace.h"
 
 extern std::uint8_t kRecordFormType;

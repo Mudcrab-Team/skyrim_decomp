@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSLightingShaderMaterialHairTint: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialHairTint::~BSLightingShaderMaterialHairTint, BSLightingShaderMaterialHairTint::Ctor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // g_hairTintDefaultA, g_hairTintDefaultB: GUESS(low)

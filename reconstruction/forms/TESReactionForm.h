@@ -1,10 +1,4 @@
-// TESReactionForm type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESReactionForm.h
-// and the vftables of the pinned image. BaseFormComponent is a stand-in, labelled where it is declared; only class names, base
-// chain, slot order and sizes are claimed, slot signatures other than the compared one are placeholders.
 // TESReactionForm: EXE_RTTI; class name and base from the image RTTI
 #pragma once
 

@@ -1,8 +1,5 @@
-// TESShout type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESShout.h.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Layout of the bases between TESForm and the variations is not claimed. Adapted bodies: none declared.
 // TESShout, TESShout::Variation, ::variations, ::GetKnown, Variation::word, ::spell, ::recoveryTime, ::pad14: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESWordOfPower: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the TESForm base is needed

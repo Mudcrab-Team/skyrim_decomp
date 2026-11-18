@@ -1,24 +1,11 @@
-// Type declarations for the TESWorldSpace unit (build sse-steam-1-7-104).
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT)
-// and the meh321/AddressLibraryDatabase 0379cb6 name list (used with the author's permission as
-// reported by the maintainer).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// Every class other than TESWorldSpace is a minimal stand-in that declares only
-// the members and virtual slots the compared code needs; the layouts of the stand-ins are not
-// claimed to match the game. Unk_NN placeholders only keep the compared virtual slots at the
-// vtable offsets the image encodes (slot NN is the byte offset NN * 8). Members without a name
-// only keep the named members at the offsets the code reads.
 // TESWorldSpace, IsFormTypeChild, GetFormEditorID, SetFormEditorID, FindInFileFast, ClearData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // editorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetCellByPosition: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); Address Library id 20504, no declaration in either community header
 // BaseFormComponent, TESForm, TESFile, TESObjectCELL, BSString, NiPoint3: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // Seek, GetFormType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); RVAs 0x1cd860, 0x1cd7d0.
-// Callees and globals without a community name are bound to the RVA the image encodes; every
-// such name is only a guess about what the callee does.
 // GetOffsetData: GUESS(low); RVA 0x313020, the per-file offset record of a world space; a field at 0x18 is a file offset.
 // OffsetData: GUESS(low); what GetOffsetData returns, only the file offset is read.
 // IsRecordFileLoaded: GUESS(low); RVA 0x1ce3e0, a check on a plugin file before seeking in it.

@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSPCGamepadDeviceDelegate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSIInputDevice, BSInputDevice, BSGamepadDevice: STANDIN EXE_RTTI
 // BSPCGamepadDeviceDelegate::Reset, BSPCGamepadDeviceDelegate::Initialize, BSPCGamepadDeviceDelegate::Process: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

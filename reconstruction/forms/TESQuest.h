@@ -1,10 +1,5 @@
-// TESQuest type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT):
-// include/RE/T/TESQuest.h, BGSBaseAlias.h and BGSStoryManagerTreeForm.h. TESForm comes from the
-// shared header TESForm.h; the other classes here are minimal stand-ins.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESQuest, ::QConditions, ::GetFormEditorID, ::FinishLoadGame, ::InitializeData, ::instanceData, ::currentInstanceID, ::aliases, ::data, ::eventID, ::objConditions, ::currentStage, ::alreadyRun, ::formEditorID, ::startEventData, ::promoteTask, ::promotedRefs, ::pad054, ::pad0E4, ::pad22B, ::pad22C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESQuest::~TESQuest: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declared out of line, the target's deleting destructor calls the plain one
 // TESQuest::unk28, ::unk70, ::unkE8, ::unk110, ::unk220: GUESS(low); regions the compared code does not touch; TESFullName at 28 and the other members are not modelled

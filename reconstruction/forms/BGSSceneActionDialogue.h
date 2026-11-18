@@ -1,13 +1,6 @@
-// BGSSceneActionDialogue declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s20-bgssceneaction-bgssceneactiondialogue
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// header-gap BGSSceneAction: the shared header ../forms/BGSSceneAction.h is 0xA0 bytes, but the
-// compared deleting destructor frees 0x40 bytes, so this unit declares a 0x40-byte stand-in base.
 // BGSSceneActionDialogue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSSceneActionDialogue::GetEmotionType, BGSSceneActionDialogue::GetEmotionValue, BGSSceneActionDialogue::Loops, BGSSceneActionDialogue::FacesTarget, BGSSceneActionDialogue::Unk_0B, BGSSceneActionDialogue::~BGSSceneActionDialogue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSSceneActionBase, BGSSceneActionBase::Unk_0B, BGSSceneActionBase::unknown08, BGSSceneActionBase::unknown14: GUESS(low)
