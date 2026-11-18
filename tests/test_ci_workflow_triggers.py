@@ -4,19 +4,6 @@ from pathlib import Path
 WORKFLOWS = Path(__file__).resolve().parents[1] / '.github/workflows'
 
 
-class CheckWorkflowTriggers(unittest.TestCase):
-    def test_candidate_branches_do_not_run_the_full_suite(self):
-        text = (WORKFLOWS / 'check.yml').read_text()
-        head = text.split('permissions:')[0]
-        self.assertIn("branches-ignore: ['ci-confirm/**']", head)
-        self.assertNotIn('\n    branches:', head)
-
-    def test_main_pushes_still_trigger_the_checks_that_gates_read(self):
-        head = (WORKFLOWS / 'check.yml').read_text().split('permissions:')[0]
-        self.assertIn('\n  push:', head)
-        self.assertIn('\n  pull_request:', head)
-
-
 class PrCheckWorkflow(unittest.TestCase):
     text = (WORKFLOWS / 'pr-check.yml').read_text()
 

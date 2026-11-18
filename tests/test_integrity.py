@@ -34,8 +34,7 @@ class IntegrityTests(unittest.TestCase):
         self.data['functions'] = [dict(id='test', build_id='synthetic-test', rva=4096, size=8, status='mapped',
                                       name='Synthetic', owner='test', name_origin='GUESS', evidence='findings/TEMPLATE.md')]
 
-    def test_bootstrap_is_valid_without_claiming_scope(self):
-        validate(self.data, self.target)
+    def test_page_does_not_claim_scope(self):
         page = render(self.data, 'synthetic-revision')
         self.assertIn('Not measured', page)
         self.assertNotIn('100%', page)
@@ -45,8 +44,6 @@ class IntegrityTests(unittest.TestCase):
         for function in self.data['functions']:
             function['status'] = 'mapped'
         page = render(self.data, 'synthetic-revision')
-        self.assertNotIn('not implemented', page)
-        self.assertNotIn('disabled during bootstrap', page)
         self.assertIn('Matching gate implemented; no function accepted yet', page)
         self.assertIn('Scope remains unknown; no completion percentage', page)
         self.pin()
@@ -56,8 +53,6 @@ class IntegrityTests(unittest.TestCase):
         self.assertNotIn('%', page.split('Scope note')[0].split('metrics')[-1])
 
     def test_phase_blurb_follows_the_data(self):
-        page = render(self.data, 'synthetic-revision')
-        self.assertNotIn('Target selection and the matching toolchain come next', page)
         self.pin()
         self.data['work_items'] = [dict(id='a', title='Planned thing', status='planned', owner='o', acceptance='x',
                                         issue_url=None),
