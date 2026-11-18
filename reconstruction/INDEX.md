@@ -21227,7 +21227,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `bsengine/BSMultiBoundAABB` | `BSMultiBoundAABB::LoadBinary` (COMMUNITY) | `sse-steam-1-7-104` / `0xfce870` / 55 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfce870.json` | matched | full | checked |
 | `leaves/LeafForwardfce8b0` | `LeafForwardfce8b0::Forward` (GUESS) | `sse-steam-1-7-104` / `0xfce8b0` / 5 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfce8b0.json` | matched | family | open |
 | - | `BSMultiBoundAABB::RegisterStreamables` (COMMUNITY) | `sse-steam-1-7-104` / `0xfce8c0` / 19 | - | - | mapped | - | - |
-| `bsengine/BSMultiBoundAABB` | `BSMultiBoundAABB::GetType` (COMMUNITY) | `sse-steam-1-7-104` / `0xfceaa0` / 6 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfceaa0.json` | matched | full | open |
+| `bsengine/BSMultiBoundAABB` | `BSMultiBoundAABB::GetType` (COMMUNITY) | `sse-steam-1-7-104` / `0xfceaa0` / 6 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfceaa0.json` | matched | label-only | open |
 | `bsengine/BSMultiBoundAABB` | `BSMultiBoundAABB::SetCenter` (COMMUNITY) | `sse-steam-1-7-104` / `0xfceab0` / 18 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfceab0.json` | matched | full | - |
 | - | `BSMultiBoundAABB::Unk_28` (COMMUNITY) | `sse-steam-1-7-104` / `0xfceba0` / 276 | - | - | mapped | - | - |
 | - | `BSMultiBoundAABB::Unk_2A` (COMMUNITY) | `sse-steam-1-7-104` / `0xfcf0a0` / 163 | - | - | mapped | - | - |
