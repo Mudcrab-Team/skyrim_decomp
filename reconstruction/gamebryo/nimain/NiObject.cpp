@@ -1,6 +1,7 @@
 // Licence: uses the name Clone from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
-// IsEqual's body is adapted from CharmedBaryon/CommonLibSSE-NG b93280e src/RE/N/NiObject.cpp
+// IsEqual's body is adapted from CharmedBaryon/CommonLibSSE-NG b93280e src/RE/N/NiObject.cpp (MIT; the notice is in NiObject.h, and the header lists every adapted body).
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with names and types from the header beside this file.
 // 0xedca00 NiObject::ProcessClone
 // 0xedcb60 NiObject::StreamCanSkip
 // 0xedcb90 NiObject::GetGroup

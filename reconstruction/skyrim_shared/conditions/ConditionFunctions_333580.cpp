@@ -6,7 +6,7 @@
 // ConditionFunctions, ConditionFunctions::GetInWorldspace: GUESS(low); the static source container and original signature are unverified.
 // 0x333580 Condition::GetInWorldspace
 #include "ConditionFunctions_333580.h"
-#include "../../fo4p198c_bound/TESForm.h"
+#include "../forms/TESForm_1467c0.h"
 extern TESForm* GetReferenceWorldspace(TESForm*);
 extern int FindFormInList(TESForm*, TESForm*);
 extern void* conditionLogger;

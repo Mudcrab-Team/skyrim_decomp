@@ -6,7 +6,7 @@
 // ConditionFunctions, ConditionFunctions::GetDistance: GUESS(low); the static source container and original signature are unverified.
 // 0x330290 Condition::GetDistance
 #include "ConditionFunctions_330290.h"
-#include "../../fo4p198c_bound/TESForm.h"
+#include "../forms/TESForm_1467c0.h"
 extern float DistanceBetween(TESForm*, TESForm*, bool, bool);
 extern void* conditionLogger;
 extern const char distanceLogFormat[];

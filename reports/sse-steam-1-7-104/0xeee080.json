@@ -29,9 +29,9 @@
         "object_sha256": "ad873a4ef5ed2ddc3fdb6260139d3eadb62e4f6c60d6630acbc1d803eac1606a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiNode.h",
-          "reconstruction/netimmerse/NiSwitchNode.cpp",
-          "reconstruction/netimmerse/NiSwitchNode.h"
+          "reconstruction/gamebryo/nimain/NiNode_ee1560.h",
+          "reconstruction/gamebryo/nimain/NiSwitchNode.cpp",
+          "reconstruction/gamebryo/nimain/NiSwitchNode.h"
         ]
       }
     }
@@ -77,7 +77,7 @@
       "size": 110
     },
     "toolset": "MATCH",
-    "unit": "reconstruction/netimmerse/NiSwitchNode.cpp",
+    "unit": "reconstruction/gamebryo/nimain/NiSwitchNode.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0xeee080",
@@ -161,7 +161,7 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/netimmerse/NiSwitchNode.cpp",
+          "path": "reconstruction/gamebryo/nimain/NiSwitchNode.cpp",
           "source_revision": "972fe7ec19f05bbf7eedb8640c76be047ebb36687e7e210e176c927d03f6f8bc"
         },
         "symbol_map_sha256": "f9c2b06dbcd9955494f69e8150b81874d25d61fbf7dbe9fdf549a83f7db58a84",
@@ -174,13 +174,13 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiSwitchNode.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiSwitchNode.cpp",
     "digest": "972fe7ec19f05bbf7eedb8640c76be047ebb36687e7e210e176c927d03f6f8bc",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
-      "reconstruction/netimmerse/NiNode.h",
-      "reconstruction/netimmerse/NiSwitchNode.cpp",
-      "reconstruction/netimmerse/NiSwitchNode.h"
+      "reconstruction/gamebryo/nimain/NiNode_ee1560.h",
+      "reconstruction/gamebryo/nimain/NiSwitchNode.cpp",
+      "reconstruction/gamebryo/nimain/NiSwitchNode.h"
     ]
   },
   "submitter": "awarebayes",

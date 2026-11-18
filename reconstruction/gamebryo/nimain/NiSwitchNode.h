@@ -9,7 +9,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "NiNode.h"
+#include "NiNode_ee1560.h"
 
 template <class T> class NiPointer;
 

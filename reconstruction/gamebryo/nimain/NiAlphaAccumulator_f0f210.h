@@ -6,7 +6,7 @@
 // GeometryList: STANDIN COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // ListNode, Functionf0f210, CopyMembers: GUESS(low)
 #pragma once
-#include "netimmerse/NiObject.h"
+#include "gamebryo/nimain/NiObject.h"
 #include <cstdint>
 class NiCamera;
 class BSGeometry;

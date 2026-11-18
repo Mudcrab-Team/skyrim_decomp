@@ -1,7 +1,7 @@
 // Source exposure: mixed (community-headers, binary-analysis of the pinned image).
 // Licence: the class chain and slot names derive from CharmedBaryon/CommonLibSSE-NG (MIT) and
 // powerof3/CommonLibSSE (GPL-3.0, docs/authorizations.md); this header is GPL-3.0 as a result.
-// adapted from CharmedBaryon/CommonLibSSE-NG b93280e include/RE/N/NiBinaryStream.h and
+// Adapted code: the NiBinaryStream WriteFn alias and the write and binary_write bodies are adapted from CharmedBaryon/CommonLibSSE-NG b93280e include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp under its MIT licence (assert dropped, binary_write defined inline). NG's licence notice is the SPDX line below, with its full text in licenses/CommonLibSSE-NG.txt.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiTArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiTObjectArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

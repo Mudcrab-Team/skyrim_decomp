@@ -6,7 +6,7 @@
 // ConditionFunctions, ConditionFunctions::HasPerk: GUESS(low); the static source container and original signature are unverified.
 // 0x3394e0 Condition::HasPerk
 #include "ConditionFunctions_3394e0.h"
-#include "../../fo4p198c_bound/TESForm.h"
+#include "../forms/TESForm_1467c0.h"
 class TESObjectREFR; class BGSPerk;
 extern bool ActorHasPerk(TESObjectREFR*, BGSPerk*);
 extern void* conditionLogger;

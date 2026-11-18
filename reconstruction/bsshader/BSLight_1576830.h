@@ -4,7 +4,7 @@
 // BSLight, Function1576830, ApplyNode: GUESS(low)
 // BSLight: STANDIN GUESS(low)
 #pragma once
-#include "netimmerse/NiObject.h"
+#include "gamebryo/nimain/NiObject.h"
 class BSLight {
 public:
  void ApplyNode(NiNode*);

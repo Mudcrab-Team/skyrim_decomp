@@ -8,7 +8,7 @@
 // TESObject and TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
-#include "../../fo4p198c_bound/TESForm.h"
+#include "TESForm_1467c0.h"
 class NiAVObject; class TESObjectREFR; class TESWaterForm; class BGSVoiceType;
 class TESModel { public: static const char* GetModel(TESForm*); };
 class TESObject : public TESForm {

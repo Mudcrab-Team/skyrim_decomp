@@ -29,8 +29,8 @@
         "object_sha256": "08f45c87daf0eb103417a9c3c2130ee80e2f044d921ea6a98e9df1458782ecaa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPathingCell.cpp",
-          "reconstruction/bsengine/BSPathingCell.h"
+          "reconstruction/skyrim_shared/pathfinding/BSPathingCell.cpp",
+          "reconstruction/skyrim_shared/pathfinding/BSPathingCell.h"
         ]
       }
     }
@@ -173,12 +173,12 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSPathingCell.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/BSPathingCell.cpp",
     "digest": "89da189714bd5663eb4fe7d095ef7b6e9c317758bae32b2e2c642c17e1cf9900",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
-      "reconstruction/bsengine/BSPathingCell.cpp",
-      "reconstruction/bsengine/BSPathingCell.h"
+      "reconstruction/skyrim_shared/pathfinding/BSPathingCell.cpp",
+      "reconstruction/skyrim_shared/pathfinding/BSPathingCell.h"
     ]
   },
   "submitter": "taylorturnerit",
