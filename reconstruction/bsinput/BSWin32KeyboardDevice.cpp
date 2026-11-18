@@ -7,8 +7,10 @@
 // 0xe12bd0 BSWin32KeyboardDevice::Release
 // 0xe12c20 Leafe12c20::Invoke
 // 0xe12c30 Leafe12c30::Invoke
+// 0xd6ed70 BSWin32KeyboardDevice::~BSWin32KeyboardDevice
 #include "BSWin32KeyboardDevice.h"
 #include <cstring>
+BSWin32KeyboardDevice::~BSWin32KeyboardDevice() {}
 void BSWin32KeyboardDevice::Reset() { std::memset(keyState, 0, sizeof(keyState)); }
 void BSWin32KeyboardDevice::Release()
 {

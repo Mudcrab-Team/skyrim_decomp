@@ -7,8 +7,10 @@
 // 0xe7ad60 BSWin32GamepadDevice::Initialize
 // 0xe7b050 Leafe7b050::Invoke
 // 0xe7b080 Leafe7b080::Invoke
+// 0xe12430 BSWin32GamepadDevice::~BSWin32GamepadDevice
 #include "BSWin32GamepadDevice.h"
 #include <cstring>
+BSWin32GamepadDevice::~BSWin32GamepadDevice() {}
 void BSWin32GamepadDevice::Reset() { std::memset(state, 0, sizeof(state)); }
 void BSWin32GamepadDevice::Initialize()
 {

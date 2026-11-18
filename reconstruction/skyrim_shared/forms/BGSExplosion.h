@@ -1,7 +1,11 @@
 // Source exposure: mixed (community headers and pinned-image analysis).
 // Drafted by gpt-6.1-sol, Engineer p105 box3. Adapted bodies: none.
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSExplosion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// BGSExplosion::UnClone3D, TESObject::UnClone3D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); bodies written from the listing
+// TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
+// TESObjectREFR flag word at 0x144, bit 5: GUESS(low); the type stays opaque in this unit and only that word is read
 #pragma once
 #include <cstdint>
 #include <cstddef>
@@ -53,6 +57,8 @@ class FORM_GROUP;
 class BGSSaveFormBuffer;
 class BGSLoadFormBuffer;
 class EnchantmentItem;
+
+inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit) { return ((a_flags >> a_bit) & 1) != 0; }
 
 class BaseFormComponent {
 public:
@@ -245,11 +251,11 @@ inline BaseFormComponent::~BaseFormComponent() {}
 class BSFixedString { public: BSFixedString(); ~BSFixedString(); const char* value; };
 class TESFullName : public BaseFormComponent { public: ~TESFullName() override {} void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual std::uint32_t GetFullNameLength() const; virtual const char* GetFullName() const; BSFixedString fullName; };
 class TESModel : public BaseFormComponent { public: ~TESModel() override; void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual const char* GetModel() const; virtual void SetModel(const char*); virtual void* GetAsModelTextureSwap(); BSFixedString model; void* textures; std::uint32_t* addons; std::uint16_t numTextures,numAddons; };
-class TESObject : public TESForm {};
+class TESObject : public TESForm { public: virtual void UnClone3D(TESObjectREFR* a_ref); };
 class TESBoundObject : public TESObject { public: virtual ~TESBoundObject(); std::int16_t boundMin[3],boundMax[3]; };
 class BGSPreloadable : public BaseFormComponent { public:  void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual void Preload(); };
 class TESImageSpaceModifiableForm : public BaseFormComponent { public:  void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; void* imageSpaceModifier; };
 class TESEnchantableForm : public BaseFormComponent { public:  void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; void* formEnchanting; std::uint16_t castingType,amountofEnchantment; };
 struct BGSExplosionData { void* light; void* sound1; void* sound2; void* impactDataSet; void* impactPlacedObject; void* spawnProjectile; float force,damage,radius,imageSpaceRadius,verticalOffsetMult; std::uint32_t flags,soundLevel; };
-class BGSExplosion : public TESBoundObject, public TESFullName, public TESModel, public TESEnchantableForm, public BGSPreloadable, public TESImageSpaceModifiableForm { public: BGSExplosion(); ~BGSExplosion() override; void InitializeData() override; BGSExplosionData data; }; static_assert(sizeof(BGSExplosion)==0xE8,"explosion size");
+class BGSExplosion : public TESBoundObject, public TESFullName, public TESModel, public TESEnchantableForm, public BGSPreloadable, public TESImageSpaceModifiableForm { public: BGSExplosion(); ~BGSExplosion() override; void InitializeData() override; void UnClone3D(TESObjectREFR* a_ref); BGSExplosionData data; }; static_assert(sizeof(BGSExplosion)==0xE8,"explosion size");
 

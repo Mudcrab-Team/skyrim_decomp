@@ -3,6 +3,7 @@
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESCamera, TESCamera::~TESCamera, ::SetCameraRoot, ::Update, ::rotationInput, ::translationInput, ::zoomInput, ::cameraRoot, ::currentState, ::enabled, ::pad31, ::pad32, ::pad34: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESCamera::SetState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESCamera::GetNode: STANDIN GUESS(low); NG declares no such function, the name comes from the target's symbol context and its signature and body are written from the listing
 // NiPointer, NiPointer::operator=, NiRefObject, NiRefObject::DeleteThis, NiRefObject::_refCount, NiNode, BSTPoint2, BSTPoint3, BSTSmartPointer, TESCameraState: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to the members the code needs, NiNode only as a reference-counted target
 // NiRefObject::pad0C: GUESS(low)
@@ -13,6 +14,20 @@
 #include <intrin.h>
 
 class TESCameraState;
+
+// TESCameraState, TESCameraState::Begin, TESCameraState::End: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESCameraState::Release, TESCameraState::refCount, TESCameraState::unk0C: GUESS(low); slot 0, called with 1 when the last reference is dropped
+class TESCameraState
+{
+public:
+    virtual void Release(std::uint32_t a_free);  // 00
+    virtual void Begin();               // 01
+    virtual void End();                 // 02
+
+    std::uint32_t refCount;  // 08
+    std::uint32_t unk0C;     // 0C
+};
+static_assert(sizeof(TESCameraState) == 0x10, "TESCameraState size");
 
 class NiRefObject
 {
@@ -74,6 +89,23 @@ template <class T>
 class BSTSmartPointer
 {
 public:
+    BSTSmartPointer& operator=(T* a_rhs)
+    {
+        T* old = ptr;
+        if (a_rhs != old) {
+            if (a_rhs) {
+                // Locked refcount increment, as the compared assignment does.
+                _InterlockedIncrement(reinterpret_cast<volatile long*>(&a_rhs->refCount));
+            }
+            ptr = a_rhs;
+            // Locked refcount decrement with release, as the compared assignment does.
+            if (old && _InterlockedDecrement(reinterpret_cast<volatile long*>(&old->refCount)) == 0) {
+                old->Release(1);
+            }
+        }
+        return *this;
+    }
+
     T* ptr;  // 00
 };
 
@@ -84,6 +116,7 @@ public:
     virtual void SetCameraRoot(NiPointer<NiNode> a_root);  // 01
     virtual void Update();  // 02
     bool GetNode(NiPointer<NiNode>& a_out);  // compared: 0x558e10
+    void SetState(TESCameraState* a_state);  // compared: 0x558f90
 
     BSTPoint2                       rotationInput;     // 08
     BSTPoint3                       translationInput;  // 10

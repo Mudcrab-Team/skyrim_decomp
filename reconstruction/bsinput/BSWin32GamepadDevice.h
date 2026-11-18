@@ -4,6 +4,7 @@
 // BSWin32GamepadDevice: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSIInputDevice, BSInputDevice, BSGamepadDevice, BSPCGamepadDeviceDelegate: STANDIN EXE_RTTI
 // BSWin32GamepadDevice::Release, BSWin32GamepadDevice::SetRumble: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSWin32GamepadDevice::~BSWin32GamepadDevice: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); class name only, the body is empty
 // BSIInputDevice::~BSIInputDevice: GUESS(low)
 // BSWin32GamepadDevice::Reset, BSWin32GamepadDevice::Initialize: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names only, the bodies are written from the target listing
 // g_gamepadManager: GUESS(low); global pointer at address 0x31a5690 that Initialize calls through
@@ -79,6 +80,8 @@ extern GamepadManager* g_gamepadManager;
 class BSWin32GamepadDevice : public BSPCGamepadDeviceDelegate
 {
 public:
+    // noinline: the deleting destructor calls a separate destructor body at 0xe12230
+    __declspec(noinline) ~BSWin32GamepadDevice() override;  // compared: 0xe12430
     virtual void Release();  // compared: 0xe7b050
     virtual void SetRumble(float lValue, float rValue);  // compared: 0xe7b080
     virtual void Reset();  // compared: 0xe7b060

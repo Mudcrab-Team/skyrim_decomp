@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BaseFormComponent: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only class names, base chain,
 // slot order and sizes are claimed.
@@ -19,7 +20,7 @@ public:
 	// BaseFormComponent::ClearDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 2, target 0x15a97c8
 	virtual void ClearDataComponent();  // 02
 	// BaseFormComponent::CopyComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 3, target 0x145470
-	virtual void CopyComponent();  // 03
+	virtual void CopyComponent(BaseFormComponent* a_rhs);  // 03
 };
 static_assert(sizeof(BaseFormComponent) == 0x8, "layout");
 
@@ -72,6 +73,9 @@ struct PackageList
 	// Clear: GUESS(low); helper ClearDataComponent tail-calls on the list, target 0x4a2c50
 	void Clear();
 
+	// CopyPackages: GUESS(low); CopyComponent passes the other list here, target 0x4a2f10
+	void CopyPackages(const PackageList& a_rhs);
+
 	// unk00: GUESS(low); BSSimpleList<TESPackage*> in the community header, not modelled
 	void* unk00[2];  // 00
 };
@@ -89,7 +93,7 @@ public:
 	// TESAIForm::ClearDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 2, target 0x1de820, inherited name
 	void ClearDataComponent() override;  // 02
 	// TESAIForm::CopyComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 3, target 0x1de830, inherited name
-	void CopyComponent() override;  // 03
+	void CopyComponent(BaseFormComponent* a_rhs) override;  // 03
 
 	// aiData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 	AIDATA_GAME aiData;  // 08

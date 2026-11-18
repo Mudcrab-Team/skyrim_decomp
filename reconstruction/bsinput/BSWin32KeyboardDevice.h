@@ -7,6 +7,7 @@
 // BSIInputDevice::~BSIInputDevice: GUESS(low)
 // BSWin32KeyboardDevice::Reset, BSWin32KeyboardDevice::Release, BSDirectInputManager::ReleaseDevice: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names only, the bodies are written from the target listing
 // g_directInputManager: GUESS(low); global pointer at address 0x32309d0, the manager the device is released through
+// BSWin32KeyboardDevice::~BSWin32KeyboardDevice: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // device: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); member at 0x70 as declared there
 // keyState: GUESS(low); the key state buffer at 0x168, cleared as a whole by the compared body
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
@@ -21,7 +22,7 @@
 class BSIInputDevice
 {
 public:
-    virtual ~BSIInputDevice() = default;
+    virtual ~BSIInputDevice();
 };
 static_assert(sizeof(BSIInputDevice) == 0x8, "BSIInputDevice size");
 
@@ -60,6 +61,8 @@ extern BSDirectInputManager* g_directInputManager;
 class BSWin32KeyboardDevice : public BSKeyboardDevice
 {
 public:
+    // noinline: the deleting destructor must call the out-of-line destructor
+    virtual __declspec(noinline) ~BSWin32KeyboardDevice();
     virtual void Unk_09();  // compared: 0xe12c20
     virtual void Unk_0A();  // compared: 0xe12c30
     virtual void Reset();  // compared: 0xe12c00
