@@ -29,7 +29,14 @@ COMMENT_QUERY = '''query($id:ID!, $after:String) {
 }'''
 MAINTAINERS = {'OWNER', 'MEMBER', 'COLLABORATOR'}
 FAILED_CHECKS = {'failure', 'timed_out', 'cancelled', 'action_required', 'stale', 'startup_failure'}
-AUTOPILOT = re.compile(r'<!-- contrib-autopilot:(\d+):([0-9a-f]{40}):([^\s]+) -->')
+# The intake bot keeps one comment per PR that starts with this marker and is edited on every head.
+# Older bot comments carried the full head in the marker (`<!-- pr-bot sha=... -->`); the current form
+# names the head on its status line instead.
+STICKY = re.compile(r'\A\s*<!-- pr-bot(?: sha=([0-9a-f]{7,40}))? -->[^\n]*\n?')
+STATUS_LINE = re.compile(r'^Bot status for head ([0-9a-f]{7,40})\b[^\n]*\n?', re.M)
+BATCH_REQUEST = re.compile(r'^Small request: please batch\b[^\n]*$', re.M | re.I)
+# Outcomes that ask nothing of the contributor while the PR stays open.
+NO_ACTION = ('Nothing to report.', 'stays open for the maintainer')
 
 
 class Reader:
@@ -155,17 +162,16 @@ def summarize(pr, me, head, committed, threads, reviews, comments, checks, statu
     for row in comments:
         if author(row).casefold() == me.casefold():
             continue
-        marker = AUTOPILOT.search(row.get('body') or '')
+        sticky = parse_sticky(row.get('body') or '')
         maintainer = row.get('author_association') in MAINTAINERS
-        bot = bool(marker and int(marker[1]) == pr['number'] and
-                   (maintainer or (row.get('user') or {}).get('type') == 'Bot'))
+        bot = bool(sticky and (maintainer or (row.get('user') or {}).get('type') == 'Bot'))
         if not maintainer and not bot:
             continue
         item = comment(row)
-        # Replies acknowledge general discussion. A new push also supersedes old intake results.
+        # Replies acknowledge general discussion. A new push also supersedes the bot's result for the old head.
         action = item['new_since_reply']
         if bot:
-            action = action and marker[2] == head and not (marker[3].startswith('waiting-') or marker[3] == 'published')
+            action = action and same_head(sticky['head'], head) and bool(sticky['what_needs_changing'])
         issue_comments.append(dict(item, intake_bot=bot, needs_action=action))
     failures = []
     for check in checks:
@@ -226,24 +232,48 @@ def display(ctx, data):
                     ctx.say('    ' + item['url'])
 
 
-def parse_outcome(body):
-    needs = re.search(r'^### What needs changing\s*\n(.*?)(?=^### |\Z)', body, re.M | re.S)
-    agent = re.search(r'^<!-- agent-lessons:start -->\s*\n(.*?)\n<!-- agent-lessons:end -->', body, re.M | re.S)
-    if not needs or not agent:
-        raise Unavailable('Structured feedback is unavailable for this PR.')
-    return {'what_needs_changing': [line[2:] for line in needs.group(1).splitlines() if line.startswith('- ')],
-            'for_your_agent': agent.group(1)}
+def same_head(short, head):
+    return bool(short and head and len(short) >= 7 and head.startswith(short))
+
+
+def parse_sticky(body):
+    """The bot's sticky comment as {head, text, what_needs_changing, batch}; None for any other comment."""
+    marker = STICKY.match(body)
+    if not marker:
+        return None
+    rest = body[marker.end():]
+    status = STATUS_LINE.search(rest)
+    short = marker[1] or (status[1] if status else None)
+    if status:
+        rest = rest[:status.start()] + rest[status.end():]
+    batch = bool(BATCH_REQUEST.search(rest))
+    text = BATCH_REQUEST.sub('', rest).strip()
+    needs = []
+    for line in text.splitlines():
+        if line.startswith('- '):
+            needs.append(line[2:].strip())
+        elif line.lstrip().startswith('- ') and needs:
+            # A nested bullet is a reviewer note on the function above it.
+            needs[-1] += ' (' + line.lstrip()[2:].strip() + ')'
+    if not needs and text and not any(phrase in text for phrase in NO_ACTION) and not text.startswith('Merged and recorded'):
+        needs = [' '.join(text.split())]
+    return dict(head=short, text=text, what_needs_changing=needs, batch=batch)
 
 
 def collect_outcome(github, number):
+    """The bot's current result for one PR, only when it describes the PR's current head."""
     reader = Reader(github)
     pr = reader.read(f'repos/{reader.repo}/pulls/{number}')
     head = pr['head']['sha']
     comments = reader.pages(f'repos/{reader.repo}/issues/{number}/comments')
-    marker = f'<!-- contrib-autopilot:{number}:{head}:feedback -->'
     owner = reader.repo.split('/')[0].casefold()
-    matches = [row for row in comments if marker in (row.get('body') or '')
-               and author(row).casefold() == owner]
-    if not matches:
-        raise Unavailable('Structured feedback is unavailable for this PR revision.')
-    return parse_outcome(matches[-1]['body'])
+    stickies = [(row, parse_sticky(row.get('body') or '')) for row in comments if author(row).casefold() == owner]
+    stickies = [(row, sticky) for row, sticky in stickies if sticky]
+    if not stickies:
+        raise Unavailable('Bot feedback is unavailable for this PR: the bot has not commented on it.')
+    row, sticky = stickies[-1]
+    if not same_head(sticky['head'], head):
+        raise Unavailable('Bot feedback is unavailable for this PR revision: the bot has not finished the current head yet.')
+    return dict(number=number, head=head, url=row.get('html_url'), updated_at=updated(row),
+                needs_action=bool(sticky['what_needs_changing']), what_needs_changing=sticky['what_needs_changing'],
+                batch_request=sticky['batch'], text=sticky['text'])

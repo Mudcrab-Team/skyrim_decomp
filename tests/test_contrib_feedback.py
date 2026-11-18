@@ -28,6 +28,14 @@ def comment(who='maintainer', when=NEW, body='Please fix this.', association='OW
                 author_association=association, **extra)
 
 
+def sticky(short, text, batch=False):
+    """Synthetic body in the intake bot's sticky-comment layout."""
+    lines = ['<!-- pr-bot -->', f'Bot status for head {short} (this comment is updated in place on each push).', '', text]
+    if batch:
+        lines += ['', 'Small request: please batch 20 to 60 functions in one PR next time.']
+    return '\n'.join(lines)
+
+
 def review(state='CHANGES_REQUESTED', who='maintainer', when=NEW):
     return dict(id=2, user=dict(login=who), body='Please revise.', state=state, submitted_at=when,
                 commit_id=HEAD, html_url=URL + '#pullrequestreview-2')
@@ -92,21 +100,48 @@ class SummaryTests(unittest.TestCase):
         edited = summary(threads=[replied], comments=[comment(when='2026-01-05T00:00:00Z')])
         self.assertTrue(edited['needs_action'])
 
-    def test_autopilot_only_current_head_failure_is_actionable(self):
-        comments = []
-        for head, key in [(HEAD, 'intake'), (OLD, 'intake'), (HEAD, 'published'), (HEAD, 'waiting-timeout')]:
-            comments.append(comment(body=f'<!-- contrib-autopilot:1:{head}:{key} -->\nSynthetic result.'))
-        row = summary(comments=comments)
-        self.assertEqual([c['needs_action'] for c in row['issue_comments']], [True, False, False, False])
+    def test_bot_sticky_only_current_head_failure_is_actionable(self):
+        failing = ('Not accepted yet (they stay drafted; push a fix and the bot re-checks the new head):\n'
+                   '- 0x1000: the review did not approve it\n  - Synthetic reviewer note.')
+        bodies = [sticky(HEAD[:8], failing), sticky(OLD[:8], failing),
+                  sticky(HEAD[:8], 'Everything in this PR is already on main, but its commit history cannot be '
+                                   'merged as it is, so the PR stays open for the maintainer.'),
+                  f'<!-- pr-bot sha={HEAD} -->\nThis PR conflicts with main; merge main into your branch and push.',
+                  f'<!-- pr-bot sha={OLD} -->\nThis PR conflicts with main; merge main into your branch and push.']
+        row = summary(comments=[comment(body=b) for b in bodies])
+        self.assertEqual([c['needs_action'] for c in row['issue_comments']], [True, False, False, True, False])
         self.assertTrue(all(c['intake_bot'] for c in row['issue_comments']))
-        self.assertEqual(row['action_count'], 1)
+        self.assertEqual(row['action_count'], 2)
+
+    def test_bot_sticky_after_contributor_reply_is_history(self):
+        row = summary(comments=[comment(body=sticky(HEAD[:8], '- 0x1000: x')), comment('contributor', REPLY)])
+        self.assertFalse(row['issue_comments'][0]['needs_action'])
 
     def test_bot_markers_do_not_turn_arbitrary_outsiders_into_intake(self):
-        body = f'<!-- contrib-autopilot:1:{HEAD}:intake -->'
-        row = comment('outsider', body=body, association='NONE')
+        row = comment('outsider', body=sticky(HEAD[:8], '- 0x1000: x'), association='NONE')
         self.assertEqual(summary(comments=[row])['issue_comments'], [])
         row['user']['type'] = 'Bot'
         self.assertTrue(summary(comments=[row])['issue_comments'][0]['intake_bot'])
+
+    def test_marker_must_open_the_comment(self):
+        quoted = comment(body='> ' + sticky(HEAD[:8], '- 0x1000: x'))
+        self.assertFalse(summary(comments=[quoted])['issue_comments'][0]['intake_bot'])
+
+    def test_parse_sticky_fields(self):
+        body = sticky(HEAD[:8], 'Not accepted yet:\n- 0x1000: the review did not approve it\n  - Note A.\n'
+                                '- 0x2000: did not byte-match', batch=True)
+        got = feedback.parse_sticky(body)
+        self.assertEqual(got['head'], HEAD[:8])
+        self.assertTrue(got['batch'])
+        self.assertEqual(got['what_needs_changing'], ['0x1000: the review did not approve it (Note A.)',
+                                                      '0x2000: did not byte-match'])
+        self.assertNotIn('please batch', got['text'])
+        held = feedback.parse_sticky(sticky(HEAD[:8], 'This PR was held before any compile.'))
+        self.assertEqual(held['what_needs_changing'], ['This PR was held before any compile.'])
+        for text in ('Nothing to report.', 'Merged and recorded: 0x1000.'):
+            self.assertEqual(feedback.parse_sticky(sticky(HEAD[:8], text))['what_needs_changing'], [])
+        self.assertIsNone(feedback.parse_sticky('Please fix this.'))
+        self.assertIsNone(feedback.parse_sticky('<!-- contrib-autopilot:1:' + HEAD + ':feedback -->'))
 
     def test_checks_and_legacy_status_failures_are_both_reported(self):
         checks = [dict(name=c, conclusion=c, completed_at=NEW, html_url=URL)
@@ -310,6 +345,37 @@ class GhTests(unittest.TestCase):
         code, data = self.invoke()
         self.assertEqual(code, contrib.FAILED)
         self.assertEqual([t['id'] for t in data['pull_requests'][0]['review_threads']], ['thread-1', 'thread-2'])
+
+    def outcome(self):
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = contrib.main(['--json', 'feedback', '1'], ctx=self.ctx)
+        return code, json.loads(output.getvalue())
+
+    def test_outcome_reads_the_owner_sticky_for_the_current_head(self):
+        self.comments = [comment('example', body=sticky(OLD[:8], '- 0x1000: old')),
+                         comment('outsider', body=sticky(HEAD[:8], '- 0x1000: spoofed'), association='NONE'),
+                         comment('example', body=sticky(HEAD[:8], '- 0x1000: the review did not approve it'))]
+        code, data = self.outcome()
+        self.assertEqual(code, contrib.OK)
+        self.assertEqual(data['what_needs_changing'], ['0x1000: the review did not approve it'])
+        self.assertTrue(data['needs_action'])
+        self.assertEqual(data['head'], HEAD)
+
+    def test_outcome_accepts_the_legacy_sha_marker(self):
+        self.comments = [comment('example', body=f'<!-- pr-bot sha={HEAD} -->\nThis PR conflicts with main.')]
+        code, data = self.outcome()
+        self.assertEqual(code, contrib.OK)
+        self.assertEqual(data['what_needs_changing'], ['This PR conflicts with main.'])
+
+    def test_outcome_for_a_stale_head_or_no_sticky_is_unavailable(self):
+        for comments, words in (([comment('example', body=sticky(OLD[:8], '- 0x1000: x'))], 'current head'),
+                                ([comment('example')], 'not commented')):
+            with self.subTest(words=words):
+                self.comments = comments
+                code, data = self.outcome()
+                self.assertEqual(code, contrib.NETWORK)
+                self.assertIn(words, data['error'])
 
     def test_go_and_submit_print_advisory_without_changing_their_result(self):
         for command in ('go', 'submit'):

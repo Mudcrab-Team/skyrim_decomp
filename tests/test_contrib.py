@@ -1184,11 +1184,10 @@ class ContributorActionsTests(Base):
             self.assertFalse(any('drafter-card' in doc for doc in docs))
 
 class StructuredFeedbackParsingTests(unittest.TestCase):
-    def test_marker_delimited_lessons_and_findings(self):
+    def test_bot_sticky_findings(self):
         import contrib_feedback
-        body = ('### What needs changing\n- Fix the binding.\n\n### For your agent\n'
-                '<!-- agent-lessons:start -->\n- Check binding (docs/verification.md).\n'
-                '<!-- agent-lessons:end -->\n')
-        parsed = contrib_feedback.parse_outcome(body)
-        self.assertEqual(parsed['what_needs_changing'], ['Fix the binding.'])
-        self.assertEqual(parsed['for_your_agent'], '- Check binding (docs/verification.md).')
+        body = ('<!-- pr-bot -->\nBot status for head 0123abcd (updated in place).\n\n'
+                'Not accepted yet:\n- 0x1000: the review did not approve it\n  - Fix the binding.\n')
+        parsed = contrib_feedback.parse_sticky(body)
+        self.assertEqual(parsed['head'], '0123abcd')
+        self.assertEqual(parsed['what_needs_changing'], ['0x1000: the review did not approve it (Fix the binding.)'])
