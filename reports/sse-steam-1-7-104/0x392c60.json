@@ -29,8 +29,8 @@
         "object_sha256": "9e85623c89ace70a1a434f3eabceecc2f9de5c99122af417f6d33063af0a129f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSBaseAlias.cpp",
-          "reconstruction/forms/BGSBaseAlias.h"
+          "reconstruction/skyrim_shared/quest/BGSBaseAlias.cpp",
+          "reconstruction/skyrim_shared/quest/BGSBaseAlias.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "1a59071818aa8555916b3f25b01a2213e92f77ce23cf6ff704b853a70a1c807a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSBaseAlias.cpp",
-          "reconstruction/forms/BGSBaseAlias.h"
+          "reconstruction/skyrim_shared/quest/BGSBaseAlias.cpp",
+          "reconstruction/skyrim_shared/quest/BGSBaseAlias.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSBaseAlias.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSBaseAlias.cpp",
     "digest": "d74f749aeb64176bcf4370b78f054813f17baf12e16b9ff33c53ac6ddbb81d10",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f5c6acc01ae34a3875d6d84e9ee58d3f7bcc71828a817da28ac34df1997a2004",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSBaseAlias.cpp",
-      "reconstruction/forms/BGSBaseAlias.h"
+      "reconstruction/skyrim_shared/quest/BGSBaseAlias.cpp",
+      "reconstruction/skyrim_shared/quest/BGSBaseAlias.h"
     ]
   },
   "symbol_map": {

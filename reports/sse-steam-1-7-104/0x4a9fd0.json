@@ -29,8 +29,8 @@
         "object_sha256": "ee01248e76f1daa9e6e542b4974d65f67a155684fc88c2dee5f24c716b72c5c1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.cpp",
-          "reconstruction/bsengine/BSTempEffect.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "8770d93683a09c8cfea08b927290eb814f634b7c91d183744226ae4a5e274ad2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.cpp",
-          "reconstruction/bsengine/BSTempEffect.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTempEffect.cpp",
+    "compiled": "reconstruction/skyrim_shared/tempeffects/BSTempEffect.cpp",
     "digest": "db260a09bf6bae695466f77f27f359cb19380feefc74be50b6a40cbb1c9d0184",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1544859951137a05aee91c8507ba62b9dbbc83bd675cc8d01740abb3438d6ee7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTempEffect.cpp",
-      "reconstruction/bsengine/BSTempEffect.h"
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffect.cpp",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h"
     ]
   },
   "symbol_map": {

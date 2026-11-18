@@ -31,11 +31,11 @@
         "object_sha256": "eb4e925aae95c114a79ffafe3b5e91f68d59b625f98127aa6e085331058ca5b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/ChangeActor.cpp",
-          "reconstruction/actor207_1/ChangeActor.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ChangeActor.cpp",
+          "reconstruction/skyrim_shared/actors/ChangeActor.h"
         ]
       }
     }
@@ -188,17 +188,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/ChangeActor.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ChangeActor.cpp",
     "digest": "ab192233bb3cc71775534cc2061d077bab73df10bcc5a2f2efd7a9cbf0d0f0ea",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cfd10b2035e426452e0fd131dc59fd4c8d4159fe1f537afd2dd9cdee6478839d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/ChangeActor.cpp",
-      "reconstruction/actor207_1/ChangeActor.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ChangeActor.cpp",
+      "reconstruction/skyrim_shared/actors/ChangeActor.h"
     ]
   },
   "symbol_map": {

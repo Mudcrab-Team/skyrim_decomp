@@ -31,11 +31,11 @@
         "object_sha256": "189ba68df8afac672f1d53a14bc075e7d44de0b0d4f39cdd90273445f0e77830",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_2/PlayerCharacter.cpp",
-          "reconstruction/actor207_2/PlayerCharacter.h",
-          "reconstruction/actor207_2/PlayerCharacterMembers.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterMembers.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_7499e0.cpp",
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_7499e0.h"
         ]
       }
     }
@@ -188,17 +188,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_2/PlayerCharacter.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/PlayerCharacter_7499e0.cpp",
     "digest": "6c163d96b1e67b5cccf519ed5c0befcde863a649b7b3b6b5a37d1553d32892fa",
     "digest_method": "tu-sha256-v2",
     "run_digest": "46d2b16ea724bff00cb06fdab14fb7f96a9889d01b2293b9aa24e58f800a177d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_2/PlayerCharacter.cpp",
-      "reconstruction/actor207_2/PlayerCharacter.h",
-      "reconstruction/actor207_2/PlayerCharacterMembers.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterMembers.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacter_7499e0.cpp",
+      "reconstruction/skyrim_shared/actors/PlayerCharacter_7499e0.h"
     ]
   },
   "symbol_map": {

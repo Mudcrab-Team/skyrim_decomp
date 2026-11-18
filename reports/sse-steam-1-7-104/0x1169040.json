@@ -29,8 +29,8 @@
         "object_sha256": "1fcd5c754dd60bab45a1f9b2bbc906ab067598a4bada9523ce6dd900e58ce4ca",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSUIScaleformData.cpp",
-          "reconstruction/bsengine/BSUIScaleformData.h"
+          "reconstruction/bsscaleform/BSUIScaleformData.cpp",
+          "reconstruction/bsscaleform/BSUIScaleformData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "75896dc5edef69d281dd0fe937700de635264d1e84e828728e9f6b698fc0d42a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSUIScaleformData.cpp",
-          "reconstruction/bsengine/BSUIScaleformData.h"
+          "reconstruction/bsscaleform/BSUIScaleformData.cpp",
+          "reconstruction/bsscaleform/BSUIScaleformData.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSUIScaleformData.cpp",
+    "compiled": "reconstruction/bsscaleform/BSUIScaleformData.cpp",
     "digest": "7c9c1230feae2acd7d1ce39276759646d3ceef99cbad63bae57b01bab64b758c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "454047cfab5085f97c5a122b7669e8f94dd6dbf02f3b1dfd5cd93c66e6ab4122",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSUIScaleformData.cpp",
-      "reconstruction/bsengine/BSUIScaleformData.h"
+      "reconstruction/bsscaleform/BSUIScaleformData.cpp",
+      "reconstruction/bsscaleform/BSUIScaleformData.h"
     ]
   },
   "symbol_map": {

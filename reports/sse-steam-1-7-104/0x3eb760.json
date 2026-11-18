@@ -29,9 +29,9 @@
         "object_sha256": "ab56f22f9db5cef03947844306fe4d7e87cec08eaa15d96431a8a3844169171e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/TESRaceComponentPrefixLayout.cpp",
-          "reconstruction/forms/TESRaceComponentPrefixLayout.h"
+          "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "6d06a82320a9570f4397cfff08c95bdf496338b39fa876478a8d3163388ee865",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/TESRaceComponentPrefixLayout.cpp",
-          "reconstruction/forms/TESRaceComponentPrefixLayout.h"
+          "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRaceComponentPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.cpp",
     "digest": "d50fd8f0bfcfea0ce868d881f3a724d4f6f428b73cbdb7c5780f3504ff0de270",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3efbedf3ba4b3903f96f6cafbd76a24a6d841f41b36521bed1601db424b0f1d2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/TESRaceComponentPrefixLayout.cpp",
-      "reconstruction/forms/TESRaceComponentPrefixLayout.h"
+      "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/actors/TESRaceComponentPrefixLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,15 +29,15 @@
         "object_sha256": "086e8b0f677684990a15c213391b9e0535f6b756f7e2bf8812e6c980d1d3a715",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "bb52c1a054dfa861e4c7ae98ed84def340ff0036934d2a11256afbfb03db5e1c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -379,21 +379,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
     "digest": "31220208e5eab5c6c989e655e2d3665180abd4c969333af1edf02fe0a0cff64f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3fe030eb2504189bfc4a63b248585bdb03b1af18b7e00aa3ccd4da605638d0f8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderApplyReflectionsThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderApplyReflectionsThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

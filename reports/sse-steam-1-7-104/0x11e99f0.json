@@ -29,8 +29,8 @@
         "object_sha256": "4a2efd411b20afe43fb7c384f81dbb56249b95fa2fd0afb19bcb07b134916f0b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSNavmesh.cpp",
-          "reconstruction/bsengine/BSNavmesh.h"
+          "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
+          "reconstruction/skyrim_shared/pathfinding/BSNavmesh.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f4a49af11e8f0d238bddc4c0932e55bafc52f26e29c2b90d77188b4617d96c04",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSNavmesh.cpp",
-          "reconstruction/bsengine/BSNavmesh.h"
+          "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
+          "reconstruction/skyrim_shared/pathfinding/BSNavmesh.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSNavmesh.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
     "digest": "07ea92f3b76c27a8843c0b6c36123a132f535a5e3d5fbc2d2de94b8a8ca36a7d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1096bbff3f739ca7a354447813f4f338c7b180dd70cc9b43d724695464d1c8ce",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSNavmesh.cpp",
-      "reconstruction/bsengine/BSNavmesh.h"
+      "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
+      "reconstruction/skyrim_shared/pathfinding/BSNavmesh.h"
     ]
   },
   "symbol_map": {

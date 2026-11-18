@@ -29,9 +29,9 @@
         "object_sha256": "4f992d9d777dda52eac3ae60ec02d9e951a1ff2b3daf1bf5a54703bc9236338a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraActionStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraActionStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a8478a35c1649211e5112a3277488bb625c10ee036d8d0cde7c64c4d3232a904",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraActionStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraActionStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraActionStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.cpp",
     "digest": "fee8a2bec1c9b7ae015953945929d5b30c60f781ff70596d3d5c3807d4a0b5a6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6e94834240b9ae6124f760a4c407b5e6d451dfa2eff3fc8c138809d9823a809d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraActionStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraActionStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraActionStorageLayout.h"
     ]
   },
   "symbol_map": {

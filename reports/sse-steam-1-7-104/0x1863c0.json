@@ -29,8 +29,8 @@
         "object_sha256": "e9fe774969114a4a4b44c19eba845b613cf95ed8fa4941065026c46f63042561",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraOcclusionPlaneRefData.cpp",
-          "reconstruction/bsengine/ExtraOcclusionPlaneRefData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "7ba46e03c5c645bbbde48ad9ac39b3b95c3c29b86548c7b8e40ce554ac9f730c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraOcclusionPlaneRefData.cpp",
-          "reconstruction/bsengine/ExtraOcclusionPlaneRefData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraOcclusionPlaneRefData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.cpp",
     "digest": "f21d46d4fd9123ab8312afc51c6cfef3ed210ed2da64d810d941aaf4d6bf00ff",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4130fc37e5eb059015c473ca841364682afa4cac32b05e22173268dc3bf949a1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraOcclusionPlaneRefData.cpp",
-      "reconstruction/bsengine/ExtraOcclusionPlaneRefData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraOcclusionPlaneRefData.h"
     ]
   },
   "symbol_map": {

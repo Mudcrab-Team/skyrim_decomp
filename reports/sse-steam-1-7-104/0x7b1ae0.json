@@ -29,9 +29,9 @@
         "object_sha256": "c7a283a8dd8bffdfe7bd2e27abfdef4ebf7007eae66311b242f1466aa6848b52",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/HeldStateHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/HeldStateHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e378210ecc92863cada6655093196c7ca92604a603f08b379c5cc0dbc223e33d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/HeldStateHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/HeldStateHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/HeldStateHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.cpp",
     "digest": "2aa07ab80529c7048a49ccf56120a99e73c181e89cb3dbafb79aef0cb3ee1122",
     "digest_method": "tu-sha256-v2",
     "run_digest": "95a44110921a78a754d44c288e8ed7cf7a469e345fa88674ff0cbff8f69e8b50",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-      "reconstruction/bsengine/HeldStateHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/HeldStateHandlerStorageLayout.h"
+      "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

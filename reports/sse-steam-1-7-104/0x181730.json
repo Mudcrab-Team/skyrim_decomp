@@ -29,8 +29,8 @@
         "object_sha256": "9066f2ad2f636dfc0d78e28bb549f93946bc5c44de8b8b45e3d922977050b73a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraSoul.cpp",
-          "reconstruction/bsengine/ExtraSoul.h"
+          "reconstruction/skyrim_shared/extradata/ExtraSoul.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSoul.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "b7791eb305bdbf1057f9597b7404cec20de1b8eb4e5d7936b18aac215326db1c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraSoul.cpp",
-          "reconstruction/bsengine/ExtraSoul.h"
+          "reconstruction/skyrim_shared/extradata/ExtraSoul.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSoul.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraSoul.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraSoul.cpp",
     "digest": "b93170d17a1a872cc83219efd5b7ed56a1f03097f02ad2f08fcf8b3f690bdc8f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ccd65c9b53aaf6caa2a4437455a86406d9974fb8ea33bb3b328b98be704455b9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraSoul.cpp",
-      "reconstruction/bsengine/ExtraSoul.h"
+      "reconstruction/skyrim_shared/extradata/ExtraSoul.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraSoul.h"
     ]
   },
   "symbol_map": {

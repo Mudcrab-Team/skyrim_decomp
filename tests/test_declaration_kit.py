@@ -224,7 +224,8 @@ std::uint32_t flags;
 
     def test_index_reports_existing_header_gaps_without_editing(self):
         advice = hi.advice(ROOT, 'NiNode', 'AsNode', 3)
-        self.assertTrue(any('reconstruction/netimmerse/NiNode.h' in line and 'signature differs' in line for line in advice))
+        self.assertTrue(any('/NiNode.h' in line and 'declarations' not in line and 'signature differs' in line
+                            for line in advice))
         self.assertTrue(any('reconstruction/declarations/NiNode.h' in line for line in advice))
 
 

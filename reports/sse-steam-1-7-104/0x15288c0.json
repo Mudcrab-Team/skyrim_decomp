@@ -29,9 +29,9 @@
         "object_sha256": "ad1cac3a5b975ce0f1dd33a98e3d1df23a35ab33dd5addd23dc6aa464e691cdb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "27b4c4dd6368d0874644b80a5f06e66c31baad2b384767818762a1f4f9d6b89e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.cpp",
     "digest": "d7b85610e2d1ef8d0cbd230f290531ab16619bc684e0cd2d0b8f5c39f25df662",
     "digest_method": "tu-sha256-v2",
     "run_digest": "39050095b33ebd608699bc6e1e325d822553ecf297955274adc8c2248e5d25b1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialMultiLayerParallax.h"
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialMultiLayerParallax.h"
     ]
   },
   "symbol_map": {

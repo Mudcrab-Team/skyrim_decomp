@@ -29,9 +29,9 @@
         "object_sha256": "39c106313c59f38563b8e02582559c02a90399d556dc091a9c2ce3a4d063caac",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSEntryPointFunctionData.h",
-          "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.cpp",
-          "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.h"
+          "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionData.h",
+          "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.cpp",
+          "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ec8c121ee141018ae225f133180cf2cff2c1d294c3f8a0b5938dc7ed5386aea6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSEntryPointFunctionData.h",
-          "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.cpp",
-          "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.h"
+          "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionData.h",
+          "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.cpp",
+          "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.cpp",
+    "compiled": "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.cpp",
     "digest": "698b703ad118df7a067a948a299ea925c3003a282844f55c9d3c6722bf1f5e44",
     "digest_method": "tu-sha256-v2",
     "run_digest": "780bd04843f8362612db5f3c70fa74830fe51871816463e231dfdd49d7fd7e41",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSEntryPointFunctionData.h",
-      "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.cpp",
-      "reconstruction/forms/BGSEntryPointFunctionDataActivateChoice.h"
+      "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionData.h",
+      "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.cpp",
+      "reconstruction/skyrim_shared/perks/BGSEntryPointFunctionDataActivateChoice.h"
     ]
   },
   "symbol_map": {

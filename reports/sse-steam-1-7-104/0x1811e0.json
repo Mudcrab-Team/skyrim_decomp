@@ -29,8 +29,8 @@
         "object_sha256": "f0336836ee8de1a2bfdd5729e17ff685551a6e8793c0cbfec6c91b4eda0d6219",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraMapMarker.cpp",
-          "reconstruction/bsengine/ExtraMapMarker.h"
+          "reconstruction/skyrim_shared/extradata/ExtraMapMarker.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMapMarker.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "c873fe40cce06410e8fc8e50bedcc44e5d6dedec06de48841ba0e1442e8627ca",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraMapMarker.cpp",
-          "reconstruction/bsengine/ExtraMapMarker.h"
+          "reconstruction/skyrim_shared/extradata/ExtraMapMarker.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMapMarker.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraMapMarker.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraMapMarker.cpp",
     "digest": "d1a33889ebfa263cc700c17c2131a0755e0bdc90249089c0ef29aeea20404efe",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2ccb2b227194ed218ba156511e6f7c6d1bdbd31c3fccef2e1dc1282b9b7b2442",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraMapMarker.cpp",
-      "reconstruction/bsengine/ExtraMapMarker.h"
+      "reconstruction/skyrim_shared/extradata/ExtraMapMarker.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraMapMarker.h"
     ]
   },
   "symbol_map": {

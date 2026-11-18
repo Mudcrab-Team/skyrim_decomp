@@ -29,8 +29,8 @@
         "object_sha256": "b4b3967eab189f45db6f705fea55eca9992f0ced1c458f098fa576686479f70a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/magic/MagicItemFindKeywordFunctor.cpp",
-          "reconstruction/magic/MagicItemFindKeywordFunctor.h"
+          "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.cpp",
+          "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "439f17b31a5954315db0cb9b746dcd8b421bfd6bdb0b493616300beb843ee1b4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/magic/MagicItemFindKeywordFunctor.cpp",
-          "reconstruction/magic/MagicItemFindKeywordFunctor.h"
+          "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.cpp",
+          "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/magic/MagicItemFindKeywordFunctor.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.cpp",
     "digest": "878d8bd36d7544896db5f54682bd3a3f5c6761c5ea2bc82ca50f9c906cff5978",
     "digest_method": "tu-sha256-v2",
     "run_digest": "111f3703b91c5b33695102b7d1ebfe10f02f41fdd6fd4516a6c63a2d17d958db",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/magic/MagicItemFindKeywordFunctor.cpp",
-      "reconstruction/magic/MagicItemFindKeywordFunctor.h"
+      "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.cpp",
+      "reconstruction/skyrim_shared/magic/MagicItemFindKeywordFunctor.h"
     ]
   },
   "symbol_map": {

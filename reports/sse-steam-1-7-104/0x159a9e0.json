@@ -29,8 +29,8 @@
         "object_sha256": "0a02387b4f8e1b0fe9b3fe96ef5d8e41f8a92cfa2c1dfd28a19a677b8e6a277e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSaveDataSystemUtility.cpp",
-          "reconstruction/bsengine/BSSaveDataSystemUtility.h"
+          "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.cpp",
+          "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "cff2b47eb553e946da0a2636f872d573abea9fc0ec29b80769c39bbd41223469",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSaveDataSystemUtility.cpp",
-          "reconstruction/bsengine/BSSaveDataSystemUtility.h"
+          "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.cpp",
+          "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSSaveDataSystemUtility.cpp",
+    "compiled": "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.cpp",
     "digest": "b136a191f7da979e3ca63a76b86534dfabd14ce347244b1d474ba51ad3fddc34",
     "digest_method": "tu-sha256-v2",
     "run_digest": "74418637e0adc0088721b09611d34d68b558a1a93f5d836150c29dd5fba93b94",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSSaveDataSystemUtility.cpp",
-      "reconstruction/bsengine/BSSaveDataSystemUtility.h"
+      "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.cpp",
+      "reconstruction/skyrim_shared/saveload/BSSaveDataSystemUtility.h"
     ]
   },
   "symbol_map": {

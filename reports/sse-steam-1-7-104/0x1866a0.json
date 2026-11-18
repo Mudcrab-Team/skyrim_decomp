@@ -29,8 +29,8 @@
         "object_sha256": "d50a5d82a9ecdcce04b53225118943c5c8b9e11f2823deecdbf6bde8339626d5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCollisionData.cpp",
-          "reconstruction/bsengine/ExtraCollisionData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCollisionData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCollisionData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "fd10c98bb889c583b778051fcad17a8288c05138b1325257f265565303626bad",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCollisionData.cpp",
-          "reconstruction/bsengine/ExtraCollisionData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCollisionData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCollisionData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCollisionData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCollisionData.cpp",
     "digest": "fa26254684636b1c5f3e92446d5ee521a48a096dea8a1fdeb0e4e8eec04c6ce1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1f641100ed45040a69cfd5551d4140fd444428778ebd35f81b07d3269d49605a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCollisionData.cpp",
-      "reconstruction/bsengine/ExtraCollisionData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCollisionData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCollisionData.h"
     ]
   },
   "symbol_map": {

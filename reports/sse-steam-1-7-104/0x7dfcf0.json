@@ -29,14 +29,14 @@
         "object_sha256": "b7068ea66503aa4fbd1d7c6adba4c286f83dcfa0874cd1f2213fd9468a22cae0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/BhkNiCollisionObjectLayout.h",
-          "reconstruction/f004support/BhkPCollisionObjectLayout.h",
-          "reconstruction/f004support/NiCollisionObjectLayout.h",
-          "reconstruction/f004support/NiObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented7dfcf0.cpp",
-          "reconstruction/wrappers/F004Represented7dfcf0.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/BhkNiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/BhkPCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented7dfcf0.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented7dfcf0.h"
         ]
       },
       "winpc-native": {
@@ -55,14 +55,14 @@
         "object_sha256": "4bb037f20ccd6a30c13e58c5bd6a743fff2e1f32a1f58da81a3a53973e6df958",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/BhkNiCollisionObjectLayout.h",
-          "reconstruction/f004support/BhkPCollisionObjectLayout.h",
-          "reconstruction/f004support/NiCollisionObjectLayout.h",
-          "reconstruction/f004support/NiObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented7dfcf0.cpp",
-          "reconstruction/wrappers/F004Represented7dfcf0.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/BhkNiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/BhkPCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented7dfcf0.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented7dfcf0.h"
         ]
       }
     }
@@ -344,20 +344,20 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented7dfcf0.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented7dfcf0.cpp",
     "digest": "b1ba3c8c774d539f4cbe94631078de5df16f97793c4f10c295578b37e24d6cab",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4c4cf25c11d4dc00184aa497cac70a20fd7b0a1d94daa6e149ee2949151adf07",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSFixedStringLayout.h",
-      "reconstruction/f004support/BhkNiCollisionObjectLayout.h",
-      "reconstruction/f004support/BhkPCollisionObjectLayout.h",
-      "reconstruction/f004support/NiCollisionObjectLayout.h",
-      "reconstruction/f004support/NiObjectLayout.h",
-      "reconstruction/f004support/NiRefObjectLayout.h",
-      "reconstruction/wrappers/F004Represented7dfcf0.cpp",
-      "reconstruction/wrappers/F004Represented7dfcf0.h"
+      "reconstruction/unmapped/support/BSFixedStringLayout.h",
+      "reconstruction/unmapped/support/BhkNiCollisionObjectLayout.h",
+      "reconstruction/unmapped/support/BhkPCollisionObjectLayout.h",
+      "reconstruction/unmapped/support/NiCollisionObjectLayout.h",
+      "reconstruction/unmapped/support/NiObjectLayout.h",
+      "reconstruction/unmapped/support/NiRefObjectLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented7dfcf0.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented7dfcf0.h"
     ]
   },
   "symbol_map": {

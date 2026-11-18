@@ -29,9 +29,9 @@
         "object_sha256": "dc29d615800f49d5962695c91a422aa815eddf0ed33c095e84e82e54c562590b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHotkeyStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHotkeyStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "6b33a16904351bd8f97d47eda6a1199b763c2d29fbd0d183978644f06e12f8c1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHotkeyStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHotkeyStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHotkeyStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.cpp",
     "digest": "c07587be75d6375bd279d42a92ac9573ad9e36d91e5bc3be5b855cfc8ecf11a1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3f2adbee9200d8954b527d8cdf93b3f499eda96085dc8e18b1a4bd87fc01d868",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraHotkeyStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraHotkeyStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHotkeyStorageLayout.h"
     ]
   },
   "symbol_map": {

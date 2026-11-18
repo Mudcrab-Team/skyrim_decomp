@@ -29,9 +29,9 @@
         "object_sha256": "5cdc8167a2d12b1cdbf7fd81ce0aa5f93df9ecfc90bf97f1829dd0a78db38eca",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESWaterForm.cpp",
-          "reconstruction/forms/TESWaterForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/TESWaterForm.cpp",
+          "reconstruction/skyrim_shared/world/TESWaterForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "f58a41d0114fa635bab2526666aeb272108634b6ffffc1542b177527864e186d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESWaterForm.cpp",
-          "reconstruction/forms/TESWaterForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/TESWaterForm.cpp",
+          "reconstruction/skyrim_shared/world/TESWaterForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESWaterForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESWaterForm.cpp",
     "digest": "2a94d4a43ecffea9f2f9f25a166a58f254679e6ac62e70c7342e4989f0d191d5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a22c02e053eeacf49d56dea4112c57d665aa55e11e393a88b30a66736fccbc7b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESWaterForm.cpp",
-      "reconstruction/forms/TESWaterForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/TESWaterForm.cpp",
+      "reconstruction/skyrim_shared/world/TESWaterForm.h"
     ]
   },
   "symbol_map": {

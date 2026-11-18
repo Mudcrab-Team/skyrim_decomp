@@ -30,8 +30,8 @@
         "object_sha256": "ab5b6894b494a88571c5aba80ed42a96b3c7bf0ed2dcc3c6e83662c506af80e5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSCubeMapCamera.cpp",
-          "reconstruction/bsengine/BSCubeMapCamera.h",
+          "reconstruction/bsshader/BSCubeMapCamera.cpp",
+          "reconstruction/bsshader/BSCubeMapCamera.h",
           "reconstruction/declarations/NiAVObject.h",
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiObjectNET.h",
@@ -179,14 +179,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSCubeMapCamera.cpp",
+    "compiled": "reconstruction/bsshader/BSCubeMapCamera.cpp",
     "digest": "92c89288c209e68d4682fa06dacafb772c4ef5c987508f1c5bf085232d5318b3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1c37ac1597a4b1a057581e41df2efa978bd2e78989246898b896f197b4f3f175",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSCubeMapCamera.cpp",
-      "reconstruction/bsengine/BSCubeMapCamera.h",
+      "reconstruction/bsshader/BSCubeMapCamera.cpp",
+      "reconstruction/bsshader/BSCubeMapCamera.h",
       "reconstruction/declarations/NiAVObject.h",
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiObjectNET.h",

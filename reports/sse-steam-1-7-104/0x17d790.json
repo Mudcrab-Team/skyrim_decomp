@@ -29,9 +29,9 @@
         "object_sha256": "9990c5eb3758b7c96942b59a4bf2d8fc8e8c0acf44bee9980369e4819e955839",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRankStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRankStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "daeff5cc98540fc314c08398126aa3e7549e35e465e140ab26dd028aa97c2c70",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRankStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRankStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRankStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.cpp",
     "digest": "86db69482f664fc3a0706894d65bffa0307f34e66295429668b682e97ed7542f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0525ba6f70c244da473710ad3851f5e5400c700461f7fbee18eea855e6ed4183",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraRankStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraRankStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRankStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "ac56d1769652ffb077a42f4f93baab5d5bb517b71b79963f615b8401b7c5d455",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraOwnershipStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraOwnershipStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "63a9e54a6c38ef04799a7a80e8c748324e3651e4bfc2b2613464f7ce02d0f742",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraOwnershipStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraOwnershipStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraOwnershipStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.cpp",
     "digest": "b347d8cdb7a9335cd228254463d0d0cb9a1c30ee235443081ef2139815b68cd7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "dfd163cb4f882bdead1d038cac4a3617945d74cd7702d8aca9f03ecdab2d51ee",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraOwnershipStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraOwnershipStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraOwnershipStorageLayout.h"
     ]
   },
   "symbol_map": {

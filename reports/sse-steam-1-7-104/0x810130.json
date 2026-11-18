@@ -29,8 +29,8 @@
         "object_sha256": "4a8984043c95e5bc27c1748337056ea3464809e554aebc7bb34a1c5ee9e945e5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatAreaReference.cpp",
-          "reconstruction/fo4hints/CombatAreaReference.h"
+          "reconstruction/skyrim/ai/combat/CombatAreaReference.cpp",
+          "reconstruction/skyrim/ai/combat/CombatAreaReference.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "b50129aeefe6a0110fd52c3d962420fc8c131439b07a2648791fd197084bd232",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatAreaReference.cpp",
-          "reconstruction/fo4hints/CombatAreaReference.h"
+          "reconstruction/skyrim/ai/combat/CombatAreaReference.cpp",
+          "reconstruction/skyrim/ai/combat/CombatAreaReference.h"
         ]
       }
     }
@@ -363,14 +363,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/CombatAreaReference.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatAreaReference.cpp",
     "digest": "42ac08409f07d3917cbac72a15209d4b5ed9e401ffb6c3772e4dcd2a36d74df5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "741f6c9bdb26045ebf6810a522d120c6a3f5191e4dbcf0ebc984d855e6fd2595",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/CombatAreaReference.cpp",
-      "reconstruction/fo4hints/CombatAreaReference.h"
+      "reconstruction/skyrim/ai/combat/CombatAreaReference.cpp",
+      "reconstruction/skyrim/ai/combat/CombatAreaReference.h"
     ]
   },
   "symbol_map": {

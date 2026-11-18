@@ -29,8 +29,8 @@
         "object_sha256": "085d3585337dd715661b76fa7b1bc4d4d343d89bc8b4b72be6e0b5faf0076686",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSearchPath.cpp",
-          "reconstruction/bsengine/BSSearchPath.h"
+          "reconstruction/bssystem/BSSearchPath.cpp",
+          "reconstruction/bssystem/BSSearchPath.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "26f2e90b4791d71c4051d92cfd21314b3b25b9e0bb2f365368880b1dcb0545a5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSearchPath.cpp",
-          "reconstruction/bsengine/BSSearchPath.h"
+          "reconstruction/bssystem/BSSearchPath.cpp",
+          "reconstruction/bssystem/BSSearchPath.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSSearchPath.cpp",
+    "compiled": "reconstruction/bssystem/BSSearchPath.cpp",
     "digest": "09f312833b05af01150774bb7248b2d24f713dbb38dc714f06f587d3e6d8394a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d30d789a84f1c1d93d03b08be708511de4cae72f70d902d20c0c85b67b5259d7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSSearchPath.cpp",
-      "reconstruction/bsengine/BSSearchPath.h"
+      "reconstruction/bssystem/BSSearchPath.cpp",
+      "reconstruction/bssystem/BSSearchPath.h"
     ]
   },
   "symbol_map": {

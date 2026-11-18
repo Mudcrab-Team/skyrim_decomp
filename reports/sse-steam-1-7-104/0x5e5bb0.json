@@ -29,16 +29,16 @@
         "object_sha256": "a5629b056239e195ead8acb3406cf01b4cbfa95fe062bc8677d032615a5dd8c0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/ActiveEffectLayout.h",
-          "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/DemoralizeEffectLayout.h",
-          "reconstruction/represented_storage/F004Recovered5e5bb0.cpp",
-          "reconstruction/represented_storage/F004Recovered5e5bb0.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/ReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/TargetValueModifierEffectLayout.h",
-          "reconstruction/represented_storage/ValueModifierEffectLayout.h"
+          "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+          "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/DemoralizeEffectLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered5e5bb0.cpp",
+          "reconstruction/unmapped/represented/F004Recovered5e5bb0.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/TargetValueModifierEffectLayout.h",
+          "reconstruction/unmapped/represented/ValueModifierEffectLayout.h"
         ]
       },
       "winpc-native": {
@@ -57,16 +57,16 @@
         "object_sha256": "8bb7051c7945cb67efd23afc7436e5fde1b8605dfcd4cb23b33e99ba5c279299",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/ActiveEffectLayout.h",
-          "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/DemoralizeEffectLayout.h",
-          "reconstruction/represented_storage/F004Recovered5e5bb0.cpp",
-          "reconstruction/represented_storage/F004Recovered5e5bb0.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/ReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/TargetValueModifierEffectLayout.h",
-          "reconstruction/represented_storage/ValueModifierEffectLayout.h"
+          "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+          "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/DemoralizeEffectLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered5e5bb0.cpp",
+          "reconstruction/unmapped/represented/F004Recovered5e5bb0.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/TargetValueModifierEffectLayout.h",
+          "reconstruction/unmapped/represented/ValueModifierEffectLayout.h"
         ]
       }
     }
@@ -333,22 +333,22 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/represented_storage/F004Recovered5e5bb0.cpp",
+    "compiled": "reconstruction/unmapped/represented/F004Recovered5e5bb0.cpp",
     "digest": "1adb6a7a04dccc14f84566da6fc3fdadf776dde1a90978cb1e97d62701e95c78",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c84d476dbbecea6dfc2ba1635ddc7314e2f11e44223fe321e03342311dcf2e27",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/represented_storage/ActiveEffectLayout.h",
-      "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-      "reconstruction/represented_storage/BSSoundHandleLayout.h",
-      "reconstruction/represented_storage/DemoralizeEffectLayout.h",
-      "reconstruction/represented_storage/F004Recovered5e5bb0.cpp",
-      "reconstruction/represented_storage/F004Recovered5e5bb0.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h",
-      "reconstruction/represented_storage/ReferenceEffectControllerLayout.h",
-      "reconstruction/represented_storage/TargetValueModifierEffectLayout.h",
-      "reconstruction/represented_storage/ValueModifierEffectLayout.h"
+      "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+      "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+      "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+      "reconstruction/unmapped/represented/DemoralizeEffectLayout.h",
+      "reconstruction/unmapped/represented/F004Recovered5e5bb0.cpp",
+      "reconstruction/unmapped/represented/F004Recovered5e5bb0.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h",
+      "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h",
+      "reconstruction/unmapped/represented/TargetValueModifierEffectLayout.h",
+      "reconstruction/unmapped/represented/ValueModifierEffectLayout.h"
     ]
   },
   "symbol_map": {

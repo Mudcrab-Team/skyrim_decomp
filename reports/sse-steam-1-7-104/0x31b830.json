@@ -29,8 +29,8 @@
         "object_sha256": "116223fa20013e6f6c290bafaa03e2586348fda54b4a6b8a174bb18b4b3d4990",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSDefaultObjectManager.cpp",
-          "reconstruction/forms/BGSDefaultObjectManager.h"
+          "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.cpp",
+          "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6648dbe416c8f612c4c40ed6cf132554119a1896c2294f98f0d15aeb0277f485",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSDefaultObjectManager.cpp",
-          "reconstruction/forms/BGSDefaultObjectManager.h"
+          "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.cpp",
+          "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.h"
         ]
       }
     }
@@ -356,14 +356,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSDefaultObjectManager.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.cpp",
     "digest": "a2e8b1adba5f71a8314546e1de011b50f6548fa638f1b0f830f68849235b98bd",
     "digest_method": "tu-sha256-v2",
     "run_digest": "26d7a56cece5e1deda64289f0a3e0f7cea74d29e9e74ab3888766eef2526e946",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSDefaultObjectManager.cpp",
-      "reconstruction/forms/BGSDefaultObjectManager.h"
+      "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.cpp",
+      "reconstruction/skyrim_shared/world/BGSDefaultObjectManager.h"
     ]
   },
   "symbol_map": {

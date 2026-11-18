@@ -21,6 +21,7 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import posixpath
 import re
 import shutil
 import struct
@@ -35,6 +36,7 @@ sys.path.insert(0, str(HERE))
 from pecoff import (EH_HANDLERS, EH_LAYOUTS, FUNCINFO_MAGIC, TYPE_DESCRIPTOR_NAME, UNW_FLAG_CHAININFO,  # noqa: E402
                     UNW_FLAG_EHANDLER, UNW_FLAG_UHANDLER, CoffObject, PeImage, Reject, eh_size, unwind_header)
 import community_ids  # noqa: E402
+import unit_paths  # noqa: E402
 
 PACK_SCHEMA = 1
 TASK_SCHEMA = 1
@@ -1921,10 +1923,10 @@ def render_brief(task, packs):
     elif any(by_rva.get(f['rva'], {}).get('fp_equality_without_parity') for f in compared):
         risks.append('- A function shows the `/fp:fast` pattern under the default recipe: report it, do not '
                      'change the recipe.')
-    area = task['compiled'].split('/')[1]
-    if not regress and area_for(cls) != area:
-        risks.append(f'- Area `{area}/` is an owning-system choice (README rule 1), not the prefix rule; '
-                     'the maintainer confirms it before integration.')
+    area = posixpath.dirname(task['compiled']).removeprefix('reconstruction/')
+    if not regress and unit_paths.unit_dir(cls) != area:
+        risks.append(f'- Area `{area}/` is an owning-system choice (README rule 1), not the name rule of '
+                     'tools/unit_paths.py; the maintainer confirms it before integration.')
     risks.append('- Class and member names are COMMUNITY (unverified); enclosing-definition names may be wrong.')
     risks.append('- Declare other classes as minimal stand-ins in your header; do not edit other units.')
     lines += risks
@@ -2102,7 +2104,7 @@ def listing_traits(listing, function):
 def repository_headers(root=None):
     """{class: 'area/Class.h'} for every header under reconstruction/."""
     root = Path(root or REPO)
-    return {p.stem: p.relative_to(root / 'reconstruction').as_posix() for p in (root / 'reconstruction').glob('*/*.h')}
+    return {p.stem: p.relative_to(root / 'reconstruction').as_posix() for p in (root / 'reconstruction').rglob('*.h')}
 
 
 def shared_headers(cls, packs, headers, classes=None):
@@ -2337,9 +2339,9 @@ def plan_candidates(rows, accepted, existing_units, area_overrides, extend, opts
                 reject('method not declared in the NG class body (enclosing-name doubt)')
         info['functions'] = declared
         existing = existing_units.get(cls)
-        area = area_overrides.get(cls) or (existing.split('/')[1] if existing else None) or area_for(cls)
+        area = area_overrides.get(cls) or area_for(cls)
         info['area'] = area
-        info['unit'] = existing or (f'reconstruction/{area}/{cls}.cpp' if area else None)
+        info['unit'] = existing or (f'reconstruction/{unit_paths.unit_dir(cls) or area}/{cls}.cpp' if area else None)
         info['existing_unit'] = bool(existing)
         info['kind'] = class_kind(cls, area, bool(re.search(r'\bGetSingleton\s*\(', body)), bases_of(cls))
         info['eligible'] = len(declared)
@@ -2414,7 +2416,7 @@ def cmd_plan(args):
                and fn['evidence'] not in (args.reuse_evidence or [])}
     claimed |= open_claim_rvas()
     accepted = {fn['rva'] for fn in progress['functions'] if fn['status'] == 'matched'}
-    existing_units = {p.stem: p.relative_to(REPO).as_posix() for p in (REPO / 'reconstruction').glob('*/*.cpp')}
+    existing_units = {p.stem: p.relative_to(REPO).as_posix() for p in (REPO / 'reconstruction').rglob('*.cpp')}
     rows = []
     for rva in sorted(gmeta):
         fact = classify(img, addrlib, comms, rva, gmeta[rva], grefs.get(rva, []))
@@ -2720,7 +2722,7 @@ def cmd_plan_table(args):
     opts = {'classes': args.classes, 'total': args.total or 150, 'eh': args.eh, 'max_eh_states': args.max_eh_states,
             'min_functions': args.min_functions, 'max_function_bytes': args.max_function_bytes,
             'max_classes_per_area': args.max_classes_per_area, 'extend': args.extend,
-            'existing_units': sorted(p.stem for p in (REPO / 'reconstruction').glob('*/*.cpp'))}
+            'existing_units': sorted(p.stem for p in (REPO / 'reconstruction').rglob('*.cpp'))}
     order, picked, stats = plan_from_table(list(fns.values()), classes, claimed, opts)
     target = dict(target, ng_revision=cfg['ng_revision'], po3_revision=cfg.get('po3_revision', ''))
     out_dir = REPO / '.local/packs/_plan' / args.label
@@ -2733,8 +2735,8 @@ def cmd_plan_table(args):
         fs = sorted(picked.get(c, []), key=lambda r: (r['size'] or 0, r['rva']))
         if not fs:
             continue
-        unit = f'reconstruction/{area_for(c, classes)}/{c}.cpp'
-        existing = sorted((REPO / 'reconstruction').glob(f'*/{c}.cpp'))
+        unit = f'reconstruction/{unit_paths.unit_dir(c) or area_for(c, classes)}/{c}.cpp'
+        existing = sorted((REPO / 'reconstruction').rglob(f'{c}.cpp'))
         if existing:
             unit = existing[0].relative_to(REPO).as_posix()
         for r in fs:
@@ -2795,14 +2797,14 @@ def cmd_plan_cheap(args):
         census = json.loads(Path(path).read_text())
         for key in ('skip', 'm2_noh'):
             parked.update(census.get(key, []))
-    units = {p.stem for p in (REPO / 'reconstruction').glob('*/*.cpp')}
+    units = {p.stem for p in (REPO / 'reconstruction').rglob('*.cpp')}
     material = {p.name for p in (REPO / '.local/packs' / target['build_id'] / 'class').glob('*') if p.is_dir()}
     skip = units | open_task_classes(REPO / '.local/tasks') | material | set(args.exclude or [])
     sib = sibling_index(args.table) or {'by_rva': {}}
     fnv_rvas = set(sib['by_rva'])
     fnv_o2 = {rva for rva, hits in sib['by_rva'].items() if any(r.get('opt') == '/O2' for r, _ in hits)}
     catalogue = set(json.loads(Path(args.catalogue).read_text())) if args.catalogue else set()
-    headers = {p.stem for p in (REPO / 'reconstruction').glob('*/*.h')}
+    headers = {p.stem for p in (REPO / 'reconstruction').rglob('*.h')}
     rows = list(fns.values())
     # Only rows that pass the cheaper checks are scanned for thread-local reads.
     pre = [r for r in rows if not table_eligibility(r, classes, claimed, args.max_function_bytes)]
@@ -2827,7 +2829,7 @@ def cmd_plan_cheap(args):
                  'score': round(tk['score'], 2), 'units': []}
         for u in tk['units']:
             c = u['class']
-            unit = f'reconstruction/{area_for(c, classes)}/{c}.cpp'
+            unit = f'reconstruction/{unit_paths.unit_dir(c) or area_for(c, classes)}/{c}.cpp'
             group = f' group={tk["id"]}' if tk['kind'] == 'small' else ''
             for r in u['functions']:
                 lines.append(f'{target["build_id"]}  0x{r["rva"]:x}  {u["task_id"]}  {unit}{group} budget={u["budget"]}')
@@ -2932,13 +2934,13 @@ def cmd_packs(args):
         if len(units) > 1:
             raise SystemExit(f'task {task_id}: one task is one unit, got {sorted(units)}')
         cls = items[0][0]['identity']['owning_class'] or 'Unknown'
-        existing = sorted((REPO / 'reconstruction').glob(f'*/{cls}.cpp'))
+        existing = sorted((REPO / 'reconstruction').rglob(f'{cls}.cpp'))
         # A class already reconstructed keeps its unit: one pair per class (reconstruction/README.md).
         if not units and not existing and area_for(cls) is None:
             raise SystemExit(f'task {task_id}: no area rule covers class {cls}; name the unit in the list file '
                              '(reconstruction/README.md, "<area>")')
         unit = units.pop() if units else (existing[0].relative_to(REPO).as_posix() if existing
-                                          else f'reconstruction/{area_for(cls)}/{cls}.cpp')
+                                          else f'reconstruction/{unit_paths.unit_dir(cls) or area_for(cls)}/{cls}.cpp')
         group = next((g for g, ids in groups.items() if task_id in ids), None)
         root = REPO / '.local/tasks' / group if group else REPO / '.local/tasks'
         task_dirs.append(write_task(task_id, unit, recipes[task_id], [p for p, _ in items], target, root,

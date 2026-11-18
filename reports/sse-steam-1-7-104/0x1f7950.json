@@ -29,9 +29,9 @@
         "object_sha256": "bdcb3a957c5671c5d7955f5ed1d67da7bbb3afe2e27ba2f1a8cfc0c97014264d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSHandleRefObject.h",
-          "reconstruction/bsengine/BSInlineHost1f7950.cpp",
-          "reconstruction/bsengine/BSInlineHost1f7950.h"
+          "reconstruction/bscore/BSHandleRefObject.h",
+          "reconstruction/unmapped/wrappers/BSInlineHost1f7950.cpp",
+          "reconstruction/unmapped/wrappers/BSInlineHost1f7950.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "13c52fe5d61b3b82e74da91fce1c0254955050a14b89d765edc930bfe5ea33f8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSHandleRefObject.h",
-          "reconstruction/bsengine/BSInlineHost1f7950.cpp",
-          "reconstruction/bsengine/BSInlineHost1f7950.h"
+          "reconstruction/bscore/BSHandleRefObject.h",
+          "reconstruction/unmapped/wrappers/BSInlineHost1f7950.cpp",
+          "reconstruction/unmapped/wrappers/BSInlineHost1f7950.h"
         ]
       }
     }
@@ -328,15 +328,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSInlineHost1f7950.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/BSInlineHost1f7950.cpp",
     "digest": "71c75d813a3a7f480518ce99be5a656f5fff26334cc4cb618e60fa59fba21830",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a9352b927e477bbfd460e04eef46c57e9f917f341f5377f79a6b5f592505874c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSHandleRefObject.h",
-      "reconstruction/bsengine/BSInlineHost1f7950.cpp",
-      "reconstruction/bsengine/BSInlineHost1f7950.h"
+      "reconstruction/bscore/BSHandleRefObject.h",
+      "reconstruction/unmapped/wrappers/BSInlineHost1f7950.cpp",
+      "reconstruction/unmapped/wrappers/BSInlineHost1f7950.h"
     ]
   },
   "symbol_map": {

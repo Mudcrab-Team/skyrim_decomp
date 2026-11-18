@@ -29,8 +29,8 @@
         "object_sha256": "385ffc0f47f72e12c225054bceb887a85b09a2fa0fa3a057850e957cb2d67f43",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPCOrbisGamepadDevice.cpp",
-          "reconstruction/bsengine/BSPCOrbisGamepadDevice.h"
+          "reconstruction/bsinput/BSPCOrbisGamepadDevice.cpp",
+          "reconstruction/bsinput/BSPCOrbisGamepadDevice.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "17b800b5db2bd81d8016541efc1758f4f4bd847497a5154955b02c685187ae17",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPCOrbisGamepadDevice.cpp",
-          "reconstruction/bsengine/BSPCOrbisGamepadDevice.h"
+          "reconstruction/bsinput/BSPCOrbisGamepadDevice.cpp",
+          "reconstruction/bsinput/BSPCOrbisGamepadDevice.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSPCOrbisGamepadDevice.cpp",
+    "compiled": "reconstruction/bsinput/BSPCOrbisGamepadDevice.cpp",
     "digest": "8761dfb85a5f0c7d48f2389a5ddf2d0694e43e1e622e72afe7a2412401eacb12",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0588f4737d4a5ee99125434d36ded18d239f94ee0516241646e1ef9e34cb6a70",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSPCOrbisGamepadDevice.cpp",
-      "reconstruction/bsengine/BSPCOrbisGamepadDevice.h"
+      "reconstruction/bsinput/BSPCOrbisGamepadDevice.cpp",
+      "reconstruction/bsinput/BSPCOrbisGamepadDevice.h"
     ]
   },
   "symbol_map": {

@@ -29,15 +29,15 @@
         "object_sha256": "c7c6922c321fe536f15edbb302feb3bf52295ec86013d591b984e9ad59a8e82c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "02e3d05b6e2bb436ac7f116e03dfc3846adac34772021d23bf911123e9e00f19",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -349,21 +349,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
     "digest": "a3f12e77e98758221eed31bd4f579162118cd56352408c1d76ff81dee2601216",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3647972b12d08fee371d51d0349e8872dea942478b60664e9e6fda5361a3167a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderHDRTonemapBlendCinematicFadeThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

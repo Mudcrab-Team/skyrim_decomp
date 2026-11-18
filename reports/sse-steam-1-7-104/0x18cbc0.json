@@ -29,8 +29,8 @@
         "object_sha256": "c6a96f38b52cec79df743f315d816b464b03e9e07bd8808d365b9438baabf94a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraGroupConstraint.cpp",
-          "reconstruction/bsengine/ExtraGroupConstraint.h"
+          "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "0f5809e2804b4550e57984f39754082053a42ab21cc3b17ae3c0eacefd445096",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraGroupConstraint.cpp",
-          "reconstruction/bsengine/ExtraGroupConstraint.h"
+          "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraGroupConstraint.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.cpp",
     "digest": "0dcfee07f834a1d1cb3655e1d19eef4fcecab432f05e6b6bcee42c0f49441744",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a1fc49f2cdc9c96cdce276fde8f78e4b903cf8dd9c6d6662c91c74a2dc5f5ef3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraGroupConstraint.cpp",
-      "reconstruction/bsengine/ExtraGroupConstraint.h"
+      "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraGroupConstraint.h"
     ]
   },
   "symbol_map": {

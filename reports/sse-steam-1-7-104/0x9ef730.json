@@ -29,8 +29,8 @@
         "object_sha256": "f7457abfeac1fff2ca86f7033dd121d34f739c0c4f34742c99844d850e4c0876",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.cpp",
-          "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.h"
+          "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.cpp",
+          "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "55b4be162fbc8b062098072f6e8e3b6a0ba5937ef0cc2a4003390ab385f50458",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.cpp",
-          "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.h"
+          "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.cpp",
+          "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.cpp",
+    "compiled": "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.cpp",
     "digest": "29fe44535ad5173f07d52c879fd115d2fe997b690fd98e059bbe78650c8d03ba",
     "digest_method": "tu-sha256-v2",
     "run_digest": "53ec2471a93e0a39d71abcc1b452dd1ec03481d9faad1ef559887f38019d68ac",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.cpp",
-      "reconstruction/bsengine/SkyrimVMInterfacePrefixLayout.h"
+      "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.cpp",
+      "reconstruction/bsscript/SkyrimVMInterfacePrefixLayout.h"
     ]
   },
   "symbol_map": {

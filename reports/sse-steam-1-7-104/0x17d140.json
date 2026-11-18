@@ -29,9 +29,9 @@
         "object_sha256": "28852c9a1e0f7f14076ea2e6c804cc5d8f9573018aa444796e9c262d40daa9ac",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSExtraDataLayout.h",
-          "reconstruction/wrappers/F004Represented17d140.cpp",
-          "reconstruction/wrappers/F004Represented17d140.h"
+          "reconstruction/unmapped/support/BSExtraDataLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented17d140.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented17d140.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "7d64bfc539477d30cb05f58124cba45d4b6b4799bc6a57712efa75f5d336be08",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSExtraDataLayout.h",
-          "reconstruction/wrappers/F004Represented17d140.cpp",
-          "reconstruction/wrappers/F004Represented17d140.h"
+          "reconstruction/unmapped/support/BSExtraDataLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented17d140.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented17d140.h"
         ]
       }
     }
@@ -334,15 +334,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented17d140.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented17d140.cpp",
     "digest": "7b6f1397c3662dd70cc148ac3b5bcbf8ce892adc826ec47359f8cf1e2ec41e8e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4be0538c26c6bc08f8e1b8434812d0a00930ba8cac28d677c1d6ea785cdd3b72",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSExtraDataLayout.h",
-      "reconstruction/wrappers/F004Represented17d140.cpp",
-      "reconstruction/wrappers/F004Represented17d140.h"
+      "reconstruction/unmapped/support/BSExtraDataLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented17d140.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented17d140.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "6334ad4cc00915c391cdb76b140b2234591161b7040a84ff47132aca447b50e9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraTeleportNameStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraTeleportNameStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "37c77940e2eb88358a955b0a82ecc48f35b4daee08f22b9e0e22252287563768",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraTeleportNameStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraTeleportNameStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraTeleportNameStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.cpp",
     "digest": "666f83c9ead07c268c728ac9fe2854668220a95b323345c2ba2820f10dfd702b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7065d740ca44c50ffa027ac11b2ffdecaec8ea12a88c9cee9af998cb32542729",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraTeleportNameStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraTeleportNameStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraTeleportNameStorageLayout.h"
     ]
   },
   "symbol_map": {

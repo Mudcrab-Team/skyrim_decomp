@@ -29,8 +29,8 @@
         "object_sha256": "13e3b33f1e8ceb6fc1c647703ae619e049c6fde9290e1cbf299632b68a79e5c2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPersistentCell.cpp",
-          "reconstruction/bsengine/ExtraPersistentCell.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "890d8813d781048f0040ea133eb2a61e77cc5de6f5f831198753a309bc9eeca6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPersistentCell.cpp",
-          "reconstruction/bsengine/ExtraPersistentCell.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPersistentCell.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.cpp",
     "digest": "db7bfe213a848cd1c57ac5c0ff706cb277bff60a58788056121a0adfa249a322",
     "digest_method": "tu-sha256-v2",
     "run_digest": "22963e426f7af3cac0ba81c228b7b96254234b6ad779ddd17d1bb50514e6a4de",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraPersistentCell.cpp",
-      "reconstruction/bsengine/ExtraPersistentCell.h"
+      "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPersistentCell.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "db8b547a6833b22925c53e6a1e6936de0122e5f43b5247033b1d6c2844a2c921",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMusicSilenceTrack.cpp",
-          "reconstruction/forms/BGSMusicSilenceTrack.h"
+          "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.cpp",
+          "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "dc886722aa17873de595f01482b9696d69d512eb3cfdd3d30b5f6b90681788c1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMusicSilenceTrack.cpp",
-          "reconstruction/forms/BGSMusicSilenceTrack.h"
+          "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.cpp",
+          "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMusicSilenceTrack.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.cpp",
     "digest": "ab0c70cef226a361833998be8818b9827879478a13257f88511a62585d99292a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cd1bf0d147d9a7986508aea79a87f14322b7de2ad48be1a5c4b30a321f648f28",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMusicSilenceTrack.cpp",
-      "reconstruction/forms/BGSMusicSilenceTrack.h"
+      "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.cpp",
+      "reconstruction/skyrim_shared/audio/BGSMusicSilenceTrack.h"
     ]
   },
   "symbol_map": {

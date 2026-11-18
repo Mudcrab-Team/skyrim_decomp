@@ -29,9 +29,9 @@
         "object_sha256": "ec154eaab659a31548e3c48fe56bc7210393e734d1f8fad3a45f9e72f8759cc8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESIdleForm.cpp",
-          "reconstruction/forms/TESIdleForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESIdleForm.cpp",
+          "reconstruction/skyrim_shared/forms/TESIdleForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "dbc911f1d95627597100b4d2b1d2ca30cba763d46703248eaaedd54dfc6c9f99",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESIdleForm.cpp",
-          "reconstruction/forms/TESIdleForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESIdleForm.cpp",
+          "reconstruction/skyrim_shared/forms/TESIdleForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESIdleForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESIdleForm.cpp",
     "digest": "299b2ec47f57ce8f3c9526ded68c810d0f0e3e55c7dcb69c6a914407206609ef",
     "digest_method": "tu-sha256-v2",
     "run_digest": "80e9c9ab0680258ea3328ed9c7d718963134fabbb10a84c4dbb63e3cef346d75",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESIdleForm.cpp",
-      "reconstruction/forms/TESIdleForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/forms/TESIdleForm.cpp",
+      "reconstruction/skyrim_shared/forms/TESIdleForm.h"
     ]
   },
   "symbol_map": {

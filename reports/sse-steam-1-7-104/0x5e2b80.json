@@ -29,13 +29,13 @@
         "object_sha256": "03e1b24b671cd3bd6245acd0a5e12c491877d321c52b376702e66866568d7582",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/ActiveEffectLayout.h",
-          "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/F004Recovered5e2b80.cpp",
-          "reconstruction/represented_storage/F004Recovered5e2b80.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/ReferenceEffectControllerLayout.h"
+          "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+          "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered5e2b80.cpp",
+          "reconstruction/unmapped/represented/F004Recovered5e2b80.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "57f3fedc3ffb93921bc90e29bc068eb54f5871f4c5b83468902244e1165ead05",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/ActiveEffectLayout.h",
-          "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/F004Recovered5e2b80.cpp",
-          "reconstruction/represented_storage/F004Recovered5e2b80.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/ReferenceEffectControllerLayout.h"
+          "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+          "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered5e2b80.cpp",
+          "reconstruction/unmapped/represented/F004Recovered5e2b80.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h"
         ]
       }
     }
@@ -327,19 +327,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/represented_storage/F004Recovered5e2b80.cpp",
+    "compiled": "reconstruction/unmapped/represented/F004Recovered5e2b80.cpp",
     "digest": "65467a14d8e61ba87b6e5f382f7b6e59336e0f6ecb81ef541c7a74aef63c7a4c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8492c0b17c181391b6c3652869fc2767d95bb8c105ff42f3d36423bf338a32b7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/represented_storage/ActiveEffectLayout.h",
-      "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-      "reconstruction/represented_storage/BSSoundHandleLayout.h",
-      "reconstruction/represented_storage/F004Recovered5e2b80.cpp",
-      "reconstruction/represented_storage/F004Recovered5e2b80.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h",
-      "reconstruction/represented_storage/ReferenceEffectControllerLayout.h"
+      "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+      "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+      "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+      "reconstruction/unmapped/represented/F004Recovered5e2b80.cpp",
+      "reconstruction/unmapped/represented/F004Recovered5e2b80.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h",
+      "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h"
     ]
   },
   "symbol_map": {

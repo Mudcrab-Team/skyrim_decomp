@@ -32,8 +32,8 @@
         "repository_files_opened": [
           "reconstruction/declarations/BaseFormComponent.h",
           "reconstruction/declarations/TESForm.h",
-          "reconstruction/forms/TESObjectARMO.cpp",
-          "reconstruction/forms/TESObjectARMO.h"
+          "reconstruction/skyrim_shared/forms/TESObjectARMO.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectARMO.h"
         ]
       }
     }
@@ -175,7 +175,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESObjectARMO.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESObjectARMO.cpp",
     "digest": "bb1764649675044c4a5ece7dce73f7cfcb70b52b6035b934081347d7630cc515",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3d94dca2c48198c5173cb2f19340c879747321043f0d48fdefe90d2ed2e1b53e",
@@ -183,8 +183,8 @@
     "translation_unit": [
       "reconstruction/declarations/BaseFormComponent.h",
       "reconstruction/declarations/TESForm.h",
-      "reconstruction/forms/TESObjectARMO.cpp",
-      "reconstruction/forms/TESObjectARMO.h"
+      "reconstruction/skyrim_shared/forms/TESObjectARMO.cpp",
+      "reconstruction/skyrim_shared/forms/TESObjectARMO.h"
     ]
   },
   "submitter": "hinkiii",

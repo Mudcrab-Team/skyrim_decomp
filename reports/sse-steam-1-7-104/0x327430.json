@@ -29,9 +29,9 @@
         "object_sha256": "535add9b05c53d259edd26ab855b39f355995c9cc0ed5dec8218864be8fd73db",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMusicTrackFormWrapper.cpp",
-          "reconstruction/forms/BGSMusicTrackFormWrapper.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.cpp",
+          "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "2e6e2075c24115baf76998ba1d47d85f18e5874cd3bf351676280c46a276567e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMusicTrackFormWrapper.cpp",
-          "reconstruction/forms/BGSMusicTrackFormWrapper.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.cpp",
+          "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMusicTrackFormWrapper.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.cpp",
     "digest": "52aa14515a31791d387a7710e3bacb0ff8d5926c8edf65c962a8844d78dbcb7d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "eac8580500a575747fe9856cf61fc1afe259d3096f1669f31b493e2e6c0fb0e3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMusicTrackFormWrapper.cpp",
-      "reconstruction/forms/BGSMusicTrackFormWrapper.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.cpp",
+      "reconstruction/skyrim_shared/audio/BGSMusicTrackFormWrapper.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

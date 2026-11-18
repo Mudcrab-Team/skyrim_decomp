@@ -29,8 +29,8 @@
         "object_sha256": "a4458f04e02634cab0e1ece7fb14c19616771c3ef6ec651fc3c252fb5473800a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPointerHandleManagerInterface.cpp",
-          "reconstruction/bsengine/BSPointerHandleManagerInterface.h"
+          "reconstruction/bscore/BSPointerHandleManagerInterface.cpp",
+          "reconstruction/bscore/BSPointerHandleManagerInterface.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "83a74d709f7dd56f4a17d1af44fd16200e0962263f0d4c013ad9c552528452f9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPointerHandleManagerInterface.cpp",
-          "reconstruction/bsengine/BSPointerHandleManagerInterface.h"
+          "reconstruction/bscore/BSPointerHandleManagerInterface.cpp",
+          "reconstruction/bscore/BSPointerHandleManagerInterface.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSPointerHandleManagerInterface.cpp",
+    "compiled": "reconstruction/bscore/BSPointerHandleManagerInterface.cpp",
     "digest": "411dc33f68b37d2fe572941375e75896b8767af880e439e751160065119365eb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "60f60bfc23ca6d79a3551b4f02efd9d2ab5b7d0cc2408d14479aa79ca04352f2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSPointerHandleManagerInterface.cpp",
-      "reconstruction/bsengine/BSPointerHandleManagerInterface.h"
+      "reconstruction/bscore/BSPointerHandleManagerInterface.cpp",
+      "reconstruction/bscore/BSPointerHandleManagerInterface.h"
     ]
   },
   "symbol_map": {

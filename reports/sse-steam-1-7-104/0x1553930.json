@@ -29,9 +29,9 @@
         "object_sha256": "7b7e580540b4f1af7d26e184c4aa36d1a44bb8599bf39b011a938a00080233ef",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderProperty.h",
-          "reconstruction/bsengine/BSSkyShaderProperty.cpp",
-          "reconstruction/bsengine/BSSkyShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
+          "reconstruction/bsshader/BSSkyShaderProperty.cpp",
+          "reconstruction/bsshader/BSSkyShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -51,9 +51,9 @@
         "object_sha256": "3b375b56ddd68a068d50e0b6da5b1b0e46e73fbbd2bc96d23cef8b78566f60e8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderProperty.h",
-          "reconstruction/bsengine/BSSkyShaderProperty.cpp",
-          "reconstruction/bsengine/BSSkyShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
+          "reconstruction/bsshader/BSSkyShaderProperty.cpp",
+          "reconstruction/bsshader/BSSkyShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -315,15 +315,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSSkyShaderProperty.cpp",
+    "compiled": "reconstruction/bsshader/BSSkyShaderProperty.cpp",
     "digest": "1aa56e610f4dbd706a85d8364c2aa3b800736d251e5e6766c3098a5adf84d506",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ed2f520105f89c061584389777d2b65d57133a432e4f1273f102d47ae226c158",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShaderProperty.h",
-      "reconstruction/bsengine/BSSkyShaderProperty.cpp",
-      "reconstruction/bsengine/BSSkyShaderProperty.h",
+      "reconstruction/bsshader/BSShaderProperty.h",
+      "reconstruction/bsshader/BSSkyShaderProperty.cpp",
+      "reconstruction/bsshader/BSSkyShaderProperty.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

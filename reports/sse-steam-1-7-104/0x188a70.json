@@ -29,8 +29,8 @@
         "object_sha256": "045d24ab88db2cb3bd9e75c38b679f1323abbc1a7ae65746d06833d9b8061ab9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAliasInstanceArray.cpp",
-          "reconstruction/bsengine/ExtraAliasInstanceArray.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "a6afb36f76ec3926f443e1fce953038ca0e44a1476adbdc79cd3f1521b8b77e8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAliasInstanceArray.cpp",
-          "reconstruction/bsengine/ExtraAliasInstanceArray.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAliasInstanceArray.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.cpp",
     "digest": "40530e87ffd7d2ac194169a8612de30ea09fb3200f7bd378552665cebaeccf72",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f88749a601907ccad860b5edfb86d21f77b7708c8cd32623c2a53094f093935b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraAliasInstanceArray.cpp",
-      "reconstruction/bsengine/ExtraAliasInstanceArray.h"
+      "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAliasInstanceArray.h"
     ]
   },
   "symbol_map": {

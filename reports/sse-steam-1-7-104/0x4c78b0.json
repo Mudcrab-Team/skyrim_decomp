@@ -29,9 +29,9 @@
         "object_sha256": "ee586c88a260a1a4c5be3085062d13d8d10a537a274a7f8eb73951b30419aee8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/NavMeshInfoMap.cpp",
-          "reconstruction/forms/NavMeshInfoMap.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.cpp",
+          "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "634c740ba225e3a1e828c183f7420206f35b382ae652b15d67a66329a372f46d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/NavMeshInfoMap.cpp",
-          "reconstruction/forms/NavMeshInfoMap.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.cpp",
+          "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.h"
         ]
       }
     }
@@ -367,15 +367,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/NavMeshInfoMap.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.cpp",
     "digest": "751a8672e4c949e3d6352604ed00638de698fa04e1aee063426cedf25ede4d27",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8e8e481c99d84a287db05009bdba24aede753261be49623566f90b52d89bc1db",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/NavMeshInfoMap.cpp",
-      "reconstruction/forms/NavMeshInfoMap.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.cpp",
+      "reconstruction/skyrim_shared/pathfinding/NavMeshInfoMap.h"
     ]
   },
   "symbol_map": {

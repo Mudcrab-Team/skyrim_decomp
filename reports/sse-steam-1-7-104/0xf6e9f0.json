@@ -29,9 +29,9 @@
         "object_sha256": "4a0001aa809f4c6fc3b815e5892ad59a3f495e1c72e57b76313cffa2ac0620c0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiInterpolator.h",
-          "reconstruction/netimmerse/NiKeyBasedInterpolator.cpp",
-          "reconstruction/netimmerse/NiKeyBasedInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "b3042a74ac83a4a7b66b4e6557eec504cec2a91cff7ab984d4a9568d3ecf7384",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiInterpolator.h",
-          "reconstruction/netimmerse/NiKeyBasedInterpolator.cpp",
-          "reconstruction/netimmerse/NiKeyBasedInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiKeyBasedInterpolator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.cpp",
     "digest": "7d92d659e36c0879ae712856aa5a73ab857713e5a5c14436e8de08a114bc65ce",
     "digest_method": "tu-sha256-v2",
     "run_digest": "608c5a320115f3acebb14b2016870f443b7fbdb42fd8029428aa24260bbe19c3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiInterpolator.h",
-      "reconstruction/netimmerse/NiKeyBasedInterpolator.cpp",
-      "reconstruction/netimmerse/NiKeyBasedInterpolator.h"
+      "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+      "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.cpp",
+      "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h"
     ]
   },
   "symbol_map": {

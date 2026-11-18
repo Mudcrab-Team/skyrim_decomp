@@ -29,8 +29,8 @@
         "object_sha256": "6337b34f698f74246bb71ff15c7c3a4682f3b811e2a3666fc6825a7e6ab35cdb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraDroppedItemList.cpp",
-          "reconstruction/bsengine/ExtraDroppedItemList.h"
+          "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ff0c1b03467ba0c47fda13a395e8cf75cd0062a6acd0f82aa8f74a5dadfb1c3b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraDroppedItemList.cpp",
-          "reconstruction/bsengine/ExtraDroppedItemList.h"
+          "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraDroppedItemList.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.cpp",
     "digest": "0114b5442cebdac85aa7ba70d91b4c14ca899bfba335baa2eefa1dc41c95d7cb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0bfd76b9273dc766a5b0a99864a3321afe714c7ddbe1d861f9c2e5727bbae1c3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraDroppedItemList.cpp",
-      "reconstruction/bsengine/ExtraDroppedItemList.h"
+      "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraDroppedItemList.h"
     ]
   },
   "symbol_map": {

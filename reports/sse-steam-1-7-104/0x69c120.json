@@ -31,10 +31,10 @@
         "object_sha256": "08b3cc8155dd687e7bb529e2e53e6b8c72cf8b26573af0dd61a6e2e531c2698f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/HandleQuery.cpp",
-          "reconstruction/actor206_1/HandleQuery.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/HandleQuery.cpp",
+          "reconstruction/skyrim_shared/forms/HandleQuery.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "5e2491dd9225ae6571177d9c62d8d11f4360d61f6e564ee478e69017d3814711",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/HandleQuery.cpp",
-          "reconstruction/actor206_1/HandleQuery.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/HandleQuery.cpp",
+          "reconstruction/skyrim_shared/forms/HandleQuery.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_1/HandleQuery.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/HandleQuery.cpp",
     "digest": "c43f3843e1b3668c7977292ce1d7d60857fb0779335e4b7983baf643f942ac73",
     "digest_method": "tu-sha256-v2",
     "run_digest": "368e6ba20a7274ed1ddd2fb5b83a794eb5d4d6a6268472bf0aca8888869ad173",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_1/HandleQuery.cpp",
-      "reconstruction/actor206_1/HandleQuery.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/forms/HandleQuery.cpp",
+      "reconstruction/skyrim_shared/forms/HandleQuery.h"
     ]
   },
   "symbol_map": {

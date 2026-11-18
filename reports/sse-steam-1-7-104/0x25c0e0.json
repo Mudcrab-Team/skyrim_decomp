@@ -29,9 +29,9 @@
         "object_sha256": "3a493fe68aec2c684602481ddc3de646f3cadd6bee708ec1afb389eaf5b99ca1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAddonNode.cpp",
-          "reconstruction/forms/BGSAddonNode.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSAddonNode.cpp",
+          "reconstruction/skyrim_shared/world/BGSAddonNode.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "20b9eab428adfe531840b0071557b0f6fb14188b1471fb883c68c029e6086d19",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAddonNode.cpp",
-          "reconstruction/forms/BGSAddonNode.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSAddonNode.cpp",
+          "reconstruction/skyrim_shared/world/BGSAddonNode.h"
         ]
       }
     }
@@ -367,15 +367,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSAddonNode.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSAddonNode.cpp",
     "digest": "94ea06cbb03d9cf061e725734052ddf0dba0cb129103dce1e412856a4d58ecc9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9de010f896e32263febf9d05fc268f8799bc6eea2e73b6acca0b2b9713b09e10",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSAddonNode.cpp",
-      "reconstruction/forms/BGSAddonNode.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/BGSAddonNode.cpp",
+      "reconstruction/skyrim_shared/world/BGSAddonNode.h"
     ]
   },
   "symbol_map": {

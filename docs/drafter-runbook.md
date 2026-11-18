@@ -115,7 +115,7 @@ every other document are optional: an unread document is never a reason to stop.
    ```
    python3 tools/work_queue.py done <unit dir> \
      --result '{"rva": "0x4aa860", "result": "pass", "reason": "all-checks-passed", "attempts": 2}' \
-     --result '{"unit": "reconstruction/bsengine/X.cpp", "attempts": 2, "blocker": null, "friction": null}'
+     --result '{"unit": "reconstruction/bscore/X.cpp", "attempts": 2, "blocker": null, "friction": null}'
    ```
    `result` is `pass` only if the last attempt printed PASS for that RVA. `blocker` names the
    near-miss file or the problem; `friction` is one sentence on anything that slowed you, or null.
@@ -167,7 +167,7 @@ For an infrastructure stop, add one line: `stopped: <the exact message>`.
 
 ## Worked example (an accepted public unit)
 
-`reconstruction/netimmerse/NiInterpolator.cpp`, function `NiInterpolator::RegisterStreamables`
+`reconstruction/gamebryo/nianimation/NiInterpolator.cpp`, function `NiInterpolator::RegisterStreamables`
 (RVA `0xf6cbd0`, 5 bytes, matched). Its sheet showed a 5-byte function whose only reference is a
 jump (`JMP`, not `CALL`) to `NiObject::RegisterStreamables`, with `this` and the stream left in
 their registers. A jump at the end means the call is the last thing the function does and its

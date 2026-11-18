@@ -29,8 +29,8 @@
         "object_sha256": "59a95296680695a7faadfe684749af2204f36b8302bcb370a468a0b7791750c0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ResourceStreamBaseLayout.cpp",
-          "reconstruction/bsengine/ResourceStreamBaseLayout.h"
+          "reconstruction/bssystem/ResourceStreamBaseLayout.cpp",
+          "reconstruction/bssystem/ResourceStreamBaseLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "1e6ef3c4c29eaf5c6fa653220ce26506c46d92f27d083ed68421a2a125e5434b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ResourceStreamBaseLayout.cpp",
-          "reconstruction/bsengine/ResourceStreamBaseLayout.h"
+          "reconstruction/bssystem/ResourceStreamBaseLayout.cpp",
+          "reconstruction/bssystem/ResourceStreamBaseLayout.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ResourceStreamBaseLayout.cpp",
+    "compiled": "reconstruction/bssystem/ResourceStreamBaseLayout.cpp",
     "digest": "12a6e27fac1bb09baf0bfc063459987d186d7d1a915316cf2d9d2026b1336247",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c0bb7de170ada24fa989faa7e08c131be73dd11d79d12ab43d76d651af22df7f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ResourceStreamBaseLayout.cpp",
-      "reconstruction/bsengine/ResourceStreamBaseLayout.h"
+      "reconstruction/bssystem/ResourceStreamBaseLayout.cpp",
+      "reconstruction/bssystem/ResourceStreamBaseLayout.h"
     ]
   },
   "symbol_map": {

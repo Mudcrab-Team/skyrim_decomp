@@ -29,9 +29,9 @@
         "object_sha256": "48c8d5180df81d5daa41cc256083924694c03369d9f6c9cceeadf0bec3acd657",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSParticleShaderProperty.cpp",
-          "reconstruction/bsengine/BSParticleShaderProperty.h",
-          "reconstruction/bsengine/BSShaderProperty.h",
+          "reconstruction/bsshader/BSParticleShaderProperty.cpp",
+          "reconstruction/bsshader/BSParticleShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -51,9 +51,9 @@
         "object_sha256": "20c3ee12dfdd497bc45219a2fc8c77623e9ca664454a7f7efa0599c36ee8f896",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSParticleShaderProperty.cpp",
-          "reconstruction/bsengine/BSParticleShaderProperty.h",
-          "reconstruction/bsengine/BSShaderProperty.h",
+          "reconstruction/bsshader/BSParticleShaderProperty.cpp",
+          "reconstruction/bsshader/BSParticleShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -315,15 +315,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSParticleShaderProperty.cpp",
+    "compiled": "reconstruction/bsshader/BSParticleShaderProperty.cpp",
     "digest": "2aff0448e3933a9992b2c41fb5436397ae2aebc15453b82579a18ac54808ff52",
     "digest_method": "tu-sha256-v2",
     "run_digest": "89392af5a5ce926f8bddaaabb384761de54d09182a932129f02f3f245ea3d8cc",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSParticleShaderProperty.cpp",
-      "reconstruction/bsengine/BSParticleShaderProperty.h",
-      "reconstruction/bsengine/BSShaderProperty.h",
+      "reconstruction/bsshader/BSParticleShaderProperty.cpp",
+      "reconstruction/bsshader/BSParticleShaderProperty.h",
+      "reconstruction/bsshader/BSShaderProperty.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

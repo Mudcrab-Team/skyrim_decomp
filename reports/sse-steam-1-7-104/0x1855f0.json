@@ -29,8 +29,8 @@
         "object_sha256": "34669dcbf12a4997cd2128d482cc3bb1021186e70dad629655abf50796231489",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWeaponIdleSound.cpp",
-          "reconstruction/bsengine/ExtraWeaponIdleSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "fdd578d3dfc25ab0b068d059669dee85d13fe6e2d14dc207353926140e949652",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWeaponIdleSound.cpp",
-          "reconstruction/bsengine/ExtraWeaponIdleSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWeaponIdleSound.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.cpp",
     "digest": "c6211c192bb1f31adeb6995e35780842de9e98d84b152cc67337302611bbefe2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e93bcd0c422ac789e3eb2ac20e131c7bdc8c37a93e2c07dda4ae7d5799064fcf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraWeaponIdleSound.cpp",
-      "reconstruction/bsengine/ExtraWeaponIdleSound.h"
+      "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWeaponIdleSound.h"
     ]
   },
   "symbol_map": {

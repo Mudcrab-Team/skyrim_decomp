@@ -29,8 +29,8 @@
         "object_sha256": "125bb04b61df18385616b6a183be9b7bf4d8686a20a5d3058b7143496a5ec1a8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESHealthForm.cpp",
-          "reconstruction/forms/TESHealthForm.h"
+          "reconstruction/skyrim_shared/forms/TESHealthForm.cpp",
+          "reconstruction/skyrim_shared/forms/TESHealthForm.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "8d5872878f5a6fbc42ca802bbb03c4ed473e53f6961c16d6bdb92ac881dff507",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESHealthForm.cpp",
-          "reconstruction/forms/TESHealthForm.h"
+          "reconstruction/skyrim_shared/forms/TESHealthForm.cpp",
+          "reconstruction/skyrim_shared/forms/TESHealthForm.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESHealthForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESHealthForm.cpp",
     "digest": "1e31061fdc20cf827ee725dfd439fe698a56824d5f94943e6bfaecde82ab47d7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "134dbb5b301f1d4e1334cb14c6f49716040854e84db53587ce6ffe517fef1731",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESHealthForm.cpp",
-      "reconstruction/forms/TESHealthForm.h"
+      "reconstruction/skyrim_shared/forms/TESHealthForm.cpp",
+      "reconstruction/skyrim_shared/forms/TESHealthForm.h"
     ]
   },
   "symbol_map": {

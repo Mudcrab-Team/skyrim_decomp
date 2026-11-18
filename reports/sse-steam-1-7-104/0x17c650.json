@@ -29,9 +29,9 @@
         "object_sha256": "40ad2f9e4877c7ae790dd88aaad8faecf2ac270698a3d831e092f863529e003f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCombatStyleStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCombatStyleStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "7c85ac48ec4fc1161949f8cdae39459e0b0690192c933e7f4af31aa598a32993",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCombatStyleStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCombatStyleStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCombatStyleStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.cpp",
     "digest": "bfbfb91cab37732319491309e67b3889797731abece4695a421670b5d0eae3a3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b7410129e90f8119a0c09d76a6e17b3d749126b8a0a41637147092dd8019ca63",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCombatStyleStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCombatStyleStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCombatStyleStorageLayout.h"
     ]
   },
   "symbol_map": {

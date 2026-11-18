@@ -29,8 +29,8 @@
         "object_sha256": "4477aac71e3187c923cf84cb9d25aeb7c5f7f25eb65663b53dd6d7f1e47c541e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRefractionProperty.cpp",
-          "reconstruction/bsengine/ExtraRefractionProperty.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "b82f5961affd9fb52926f8c52c92639a975b55bcd1923532dedc64c4dce57f00",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRefractionProperty.cpp",
-          "reconstruction/bsengine/ExtraRefractionProperty.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRefractionProperty.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.cpp",
     "digest": "eb57a9a50adcacf93b4c2bc921e8609d2d84146964e7cc6986c138231dee3543",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a6d48c777a4d33747538e464182d0cfa05fa9e25a648896d782aa85b58f8fe8c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraRefractionProperty.cpp",
-      "reconstruction/bsengine/ExtraRefractionProperty.h"
+      "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRefractionProperty.h"
     ]
   },
   "symbol_map": {

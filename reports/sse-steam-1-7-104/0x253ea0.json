@@ -29,9 +29,9 @@
         "object_sha256": "cbf45476cb107c8b7b067b7f4cf8463b36fe55daff388435550d2fe888c78ccc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionData.h",
-          "reconstruction/forms/TESRegionDataWeather.cpp",
-          "reconstruction/forms/TESRegionDataWeather.h"
+          "reconstruction/skyrim_shared/world/TESRegionData.h",
+          "reconstruction/skyrim_shared/world/TESRegionDataWeather.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionDataWeather.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "9523bd7236006504527db80fd4f4d8bbaec863cd2659143606df8fa4c5633b03",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionData.h",
-          "reconstruction/forms/TESRegionDataWeather.cpp",
-          "reconstruction/forms/TESRegionDataWeather.h"
+          "reconstruction/skyrim_shared/world/TESRegionData.h",
+          "reconstruction/skyrim_shared/world/TESRegionDataWeather.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionDataWeather.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRegionDataWeather.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESRegionDataWeather.cpp",
     "digest": "74aa3f821ab5cd3addc3b0faa467a1f18653471f9ecce53fc8119b86d0218932",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e8c788e2e7fd47fcc627061058291f19f5712f29039d79e2f12624e94d9c34c6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESRegionData.h",
-      "reconstruction/forms/TESRegionDataWeather.cpp",
-      "reconstruction/forms/TESRegionDataWeather.h"
+      "reconstruction/skyrim_shared/world/TESRegionData.h",
+      "reconstruction/skyrim_shared/world/TESRegionDataWeather.cpp",
+      "reconstruction/skyrim_shared/world/TESRegionDataWeather.h"
     ]
   },
   "symbol_map": {

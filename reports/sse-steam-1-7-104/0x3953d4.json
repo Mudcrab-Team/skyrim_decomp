@@ -29,9 +29,9 @@
         "object_sha256": "722e39ad6a5a9d7435f715ab06e5fc61e1945b355e56c00d40653942212e1659",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSNoteComponentPrefixLayout.cpp",
-          "reconstruction/forms/BGSNoteComponentPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h"
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "b99fc7cf47c838040ec90d33f62ccb20b04faaf908c61cb73b1eb79a036b0ce6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSNoteComponentPrefixLayout.cpp",
-          "reconstruction/forms/BGSNoteComponentPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h"
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSNoteComponentPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.cpp",
     "digest": "77f1d7ff9060319ff6278c50aea2f078dc35d2cc0f64bd291af25a5cc7a38f74",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1cead24b41b48c3c9ba12d10399c0b8b851a50cf0d30cdb86614bb0e338d8102",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSNoteComponentPrefixLayout.cpp",
-      "reconstruction/forms/BGSNoteComponentPrefixLayout.h",
-      "reconstruction/forms/FormComponentLayout.h"
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/quest/BGSNoteComponentPrefixLayout.h"
     ]
   },
   "symbol_map": {

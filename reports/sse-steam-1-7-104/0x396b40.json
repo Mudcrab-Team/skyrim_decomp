@@ -32,8 +32,8 @@
         "repository_files_opened": [
           "reconstruction/declarations/BaseFormComponent.h",
           "reconstruction/declarations/TESForm.h",
-          "reconstruction/forms/BGSPerk.cpp",
-          "reconstruction/forms/BGSPerk.h"
+          "reconstruction/skyrim_shared/perks/BGSPerk.cpp",
+          "reconstruction/skyrim_shared/perks/BGSPerk.h"
         ]
       }
     }
@@ -175,7 +175,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSPerk.cpp",
+    "compiled": "reconstruction/skyrim_shared/perks/BGSPerk.cpp",
     "digest": "749b9d16c02b03b68cf02d17acd403c48e7daebe37245a08778551e9d456b0a5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3417adf6c264d0d706047d5c152d1ed18bfdae928b15c5208874f29976123031",
@@ -183,8 +183,8 @@
     "translation_unit": [
       "reconstruction/declarations/BaseFormComponent.h",
       "reconstruction/declarations/TESForm.h",
-      "reconstruction/forms/BGSPerk.cpp",
-      "reconstruction/forms/BGSPerk.h"
+      "reconstruction/skyrim_shared/perks/BGSPerk.cpp",
+      "reconstruction/skyrim_shared/perks/BGSPerk.h"
     ]
   },
   "submitter": "hinkiii",

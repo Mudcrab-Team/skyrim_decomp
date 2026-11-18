@@ -29,8 +29,8 @@
         "object_sha256": "ae6806d161ed66622b7c3450662bf5cfa13c806a95ace5ff97adaff20741e8fd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSceneActionDialogue.cpp",
-          "reconstruction/forms/BGSSceneActionDialogue.h"
+          "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.cpp",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f57c47a6cc718af3db7b292adbe54ac63360c3965e7a336efc47301249fa5aaa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSceneActionDialogue.cpp",
-          "reconstruction/forms/BGSSceneActionDialogue.h"
+          "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.cpp",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.h"
         ]
       }
     }
@@ -312,14 +312,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSSceneActionDialogue.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.cpp",
     "digest": "122ebfe1e632b6dbcc12188506afda36e960702181832aefcb5de657aaee7b3d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "20f0ba0fbd2361eb6792f4bbbc5a7a654e48a885fe7af13c0755e8c827f2ffa8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSSceneActionDialogue.cpp",
-      "reconstruction/forms/BGSSceneActionDialogue.h"
+      "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.cpp",
+      "reconstruction/skyrim_shared/quest/BGSSceneActionDialogue.h"
     ]
   },
   "symbol_map": {

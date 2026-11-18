@@ -29,9 +29,9 @@
         "object_sha256": "793845aa5be287734799d399a40ec9e693c2e447e302cbf2ac3f96b29cd05583",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.cpp",
-          "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.cpp",
+          "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a6669b64339f6418f753ddf4820f468fdbb2c6a1dc39dc62e436fbfb652f4c86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.cpp",
-          "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.cpp",
+          "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.cpp",
     "digest": "a7b9d0789c415ea8509fecd2f2c4bdc2736b5ceeb1a41909e7fe34377fe52447",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e2c9d0d002a727217d1ae4f4ccd59e0483c524321e8553b3b77acdeb2fd2548d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.cpp",
-      "reconstruction/bsengine/IGiftMenuScriptCallbackStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.cpp",
+      "reconstruction/skyrim/interface/IGiftMenuScriptCallbackStorageLayout.h"
     ]
   },
   "symbol_map": {

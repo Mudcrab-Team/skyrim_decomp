@@ -29,9 +29,9 @@
         "object_sha256": "c76256b860563c50d424fdf5fe6a4bdaa63126ebefe2dfcba21049a49494a17a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "cfe325316910bc39b132ff5c8ee32d481b9cb0b094a8cedbe3464dfa5f57ece6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       }
     }
@@ -335,15 +335,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.cpp",
     "digest": "2c18f77445049b00608a5ffba171936c35902fa211668ec38ab9c86c0d5d91a2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "272833470d9679902feee844a70c0e87ea4504a5d0dbda0c56ae757c5059944a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.cpp",
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterLightLayout.h",
-      "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.cpp",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterLightLayout.h",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
     ]
   },
   "symbol_map": {

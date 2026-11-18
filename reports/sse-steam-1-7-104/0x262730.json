@@ -29,9 +29,9 @@
         "object_sha256": "609f06c710b94889189cc26dddaf49fa698542c769366469402f0e5d68ae4df6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSHazard.cpp",
-          "reconstruction/forms/BGSHazard.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSHazard.cpp",
+          "reconstruction/skyrim_shared/forms/BGSHazard.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "15cfa2c44ae6e97e1b28362f902d6606e58a34d5d6a0d837bf027921d503c37f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSHazard.cpp",
-          "reconstruction/forms/BGSHazard.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSHazard.cpp",
+          "reconstruction/skyrim_shared/forms/BGSHazard.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSHazard.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSHazard.cpp",
     "digest": "eb5a93dd0cc963fcc923aa254552c4b5215eeae17925c8305a9b011a8d27ebaf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9ea8e47a0ced85d56afedb478a613579899ee40927b400962b26d2ddae28ff5e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSHazard.cpp",
-      "reconstruction/forms/BGSHazard.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/BGSHazard.cpp",
+      "reconstruction/skyrim_shared/forms/BGSHazard.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

@@ -29,15 +29,15 @@
         "object_sha256": "f4c92a9f8ea73f19e27ed46d8cebfe432d26a9cc03fde9241c02ebb8ef5881b3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "225df24f97e5c3cde5dd1f74878ce814ae3f0b283f8d297009f1c00ac866f805",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -349,21 +349,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
     "digest": "8830c1eeb46867c0b4a72fbf0d500f96a4c6e19697272d568ef34d1dd0d6a896",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7e9cda6bb4b3e26f58e0b2abb26fe8516a89c81b7d979e0f2b213f137fe98a1a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderHDRDownSample16LightAdaptThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

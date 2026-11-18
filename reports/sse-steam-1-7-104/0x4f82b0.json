@@ -29,8 +29,8 @@
         "object_sha256": "f795d2cb26b5b1ed65a2c88f97bc224827f978c87e19e159e0ceead9347cef55",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4fresh_8af09832/PathingRequestLOS.cpp",
-          "reconstruction/fo4fresh_8af09832/PathingRequestLOS.h"
+          "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.cpp",
+          "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "4405e5ab1396b6c89130fe537faca5e62b955e3cf490a062fffe4b1d62615941",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4fresh_8af09832/PathingRequestLOS.cpp",
-          "reconstruction/fo4fresh_8af09832/PathingRequestLOS.h"
+          "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.cpp",
+          "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.h"
         ]
       }
     }
@@ -318,14 +318,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4fresh_8af09832/PathingRequestLOS.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.cpp",
     "digest": "57be5125a877e5b08bcc3f0b7551d3556c18c8148d87d9e6bbee916e04c70b8f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "734093d29bc6084593b830f0e81052e265cf9ebb0dae1957b1c6c99ffbc79ad8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4fresh_8af09832/PathingRequestLOS.cpp",
-      "reconstruction/fo4fresh_8af09832/PathingRequestLOS.h"
+      "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.cpp",
+      "reconstruction/skyrim_shared/pathfinding/PathingRequestLOS.h"
     ]
   },
   "symbol_map": {

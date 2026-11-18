@@ -29,8 +29,8 @@
         "object_sha256": "fa66353732573bca2a460e5000849198d30ae0dc5086f46a277018ec20883553",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPlayerCrimeList.cpp",
-          "reconstruction/bsengine/ExtraPlayerCrimeList.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9e6fb9228dd52205c6703cf71a91495a087eb900cf7824619ddf090f8e7f69f0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPlayerCrimeList.cpp",
-          "reconstruction/bsengine/ExtraPlayerCrimeList.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPlayerCrimeList.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.cpp",
     "digest": "9deb687e43e13393096d2d3296dccd6cac8daaea3eedf1425583fc80e5ee07ea",
     "digest_method": "tu-sha256-v2",
     "run_digest": "559707d020cc2b6d9cfae8429524a2f251b6c2d03c7475627877e9c5be0e37af",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraPlayerCrimeList.cpp",
-      "reconstruction/bsengine/ExtraPlayerCrimeList.h"
+      "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPlayerCrimeList.h"
     ]
   },
   "symbol_map": {

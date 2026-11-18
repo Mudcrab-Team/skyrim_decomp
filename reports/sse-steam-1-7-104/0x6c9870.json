@@ -31,11 +31,11 @@
         "object_sha256": "600b24daa70ec1ef58bdcab18237e56e29ca31e3fa9e6ae7be5f5375c03451fe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/CombatActor.cpp",
-          "reconstruction/actor207_1/CombatActor.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h"
+          "reconstruction/skyrim/ai/combat/CombatActor.cpp",
+          "reconstruction/skyrim/ai/combat/CombatActor.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h"
         ]
       }
     }
@@ -188,17 +188,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/CombatActor.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatActor.cpp",
     "digest": "bc61adafbdaa86453085724713c8fe0ea109f50178710382a32db010a3e60fbe",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b4824a5a56fe2cce309255bcfa5898b92ee3cf654e0b9fc711dec609eb6c3d2e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/CombatActor.cpp",
-      "reconstruction/actor207_1/CombatActor.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h"
+      "reconstruction/skyrim/ai/combat/CombatActor.cpp",
+      "reconstruction/skyrim/ai/combat/CombatActor.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h"
     ]
   },
   "symbol_map": {

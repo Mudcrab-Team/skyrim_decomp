@@ -30,8 +30,8 @@
         "object_sha256": "6c493572b3925e3eb85b27a0283de26d41951e6fc392a987b401cc9f2be24091",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/Staticabb30.cpp",
-          "reconstruction/static/Staticabb30.h"
+          "reconstruction/unmapped/static/Staticabb30.cpp",
+          "reconstruction/unmapped/static/Staticabb30.h"
         ]
       },
       "winpc-native": {
@@ -51,8 +51,8 @@
         "object_sha256": "d39f1db2b73ea3acf2975e4ce49b21182a1a548cddfbae1a13657161ce2f3d74",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/Staticabb30.cpp",
-          "reconstruction/static/Staticabb30.h"
+          "reconstruction/unmapped/static/Staticabb30.cpp",
+          "reconstruction/unmapped/static/Staticabb30.h"
         ]
       }
     }
@@ -432,14 +432,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/static/Staticabb30.cpp",
+    "compiled": "reconstruction/unmapped/static/Staticabb30.cpp",
     "digest": "e76003488a064e9254c97126421fae90e506ec31563714812a3c15fb5d7dd8a6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3a1d51e278bdd7cd237490fd797f448be7ffaaf34cbbf0176b61b046a61c9b05",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/static/Staticabb30.cpp",
-      "reconstruction/static/Staticabb30.h"
+      "reconstruction/unmapped/static/Staticabb30.cpp",
+      "reconstruction/unmapped/static/Staticabb30.h"
     ]
   },
   "symbol_map": {

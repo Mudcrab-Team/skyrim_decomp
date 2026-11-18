@@ -29,8 +29,8 @@
         "object_sha256": "788cbb433d750722811f970cfa4bd42681b1874bdef8812ac7dc0a9df6d87f2e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/EffectSetting.cpp",
-          "reconstruction/forms/EffectSetting.h"
+          "reconstruction/skyrim_shared/magic/EffectSetting.cpp",
+          "reconstruction/skyrim_shared/magic/EffectSetting.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9cd5f17c58706f6e195881fb3897f2685b4749ac4c3c5b807503966cc894db45",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/EffectSetting.cpp",
-          "reconstruction/forms/EffectSetting.h"
+          "reconstruction/skyrim_shared/magic/EffectSetting.cpp",
+          "reconstruction/skyrim_shared/magic/EffectSetting.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/EffectSetting.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/EffectSetting.cpp",
     "digest": "2670e7ec65a0cfc3dc8f65729948ba68eb2b324725fdb8e2316b113d3e591fc5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0eaa049e7add4b9caa7141b0e259cf66e439cd21ac7151287ccabcc853c2e48e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/EffectSetting.cpp",
-      "reconstruction/forms/EffectSetting.h"
+      "reconstruction/skyrim_shared/magic/EffectSetting.cpp",
+      "reconstruction/skyrim_shared/magic/EffectSetting.h"
     ]
   },
   "symbol_map": {

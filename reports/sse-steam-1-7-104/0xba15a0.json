@@ -29,17 +29,17 @@
         "object_sha256": "d32e542309be09e811b88690007088f573d43a9b9237e8d6cfc4530515a1d5e8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AdditionalInterfacePrefixLayout.h",
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectREFRComponentPrefixLayout.h",
-          "reconstruction/havok/PhantomOverlapListenerPrefixLayout.cpp",
-          "reconstruction/havok/PhantomOverlapListenerPrefixLayout.h",
-          "reconstruction/netimmerse/NiRefObjectStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+          "reconstruction/bscore/AdditionalInterfacePrefixLayout.h",
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+          "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.cpp",
+          "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.h",
+          "reconstruction/gamebryo/nimain/NiRefObjectStorageLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -58,17 +58,17 @@
         "object_sha256": "a278086d8fb0c5fa2e8f1ad2c81a0715e2b2d8f3f6154dcb2c66cc548f801d38",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AdditionalInterfacePrefixLayout.h",
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectREFRComponentPrefixLayout.h",
-          "reconstruction/havok/PhantomOverlapListenerPrefixLayout.cpp",
-          "reconstruction/havok/PhantomOverlapListenerPrefixLayout.h",
-          "reconstruction/netimmerse/NiRefObjectStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+          "reconstruction/bscore/AdditionalInterfacePrefixLayout.h",
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+          "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.cpp",
+          "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.h",
+          "reconstruction/gamebryo/nimain/NiRefObjectStorageLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
         ]
       }
     }
@@ -335,23 +335,23 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/havok/PhantomOverlapListenerPrefixLayout.cpp",
+    "compiled": "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.cpp",
     "digest": "795b5ea0f92379ea936fd28e0bcf72af798d1f257934e33f7ebaa1ea1e976cc6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "274b436aa1e2a6e97f5d60678a3ab3e51c75596181531bf54373244e3412b04e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AdditionalInterfacePrefixLayout.h",
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/forms/TESObjectREFRComponentPrefixLayout.h",
-      "reconstruction/havok/PhantomOverlapListenerPrefixLayout.cpp",
-      "reconstruction/havok/PhantomOverlapListenerPrefixLayout.h",
-      "reconstruction/netimmerse/NiRefObjectStorageLayout.h",
-      "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-      "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+      "reconstruction/bscore/AdditionalInterfacePrefixLayout.h",
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+      "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.cpp",
+      "reconstruction/bshavok/PhantomOverlapListenerPrefixLayout.h",
+      "reconstruction/gamebryo/nimain/NiRefObjectStorageLayout.h",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h",
+      "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+      "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
     ]
   },
   "symbol_map": {

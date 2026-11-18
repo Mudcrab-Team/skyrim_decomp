@@ -29,8 +29,8 @@
         "object_sha256": "44fe81d383bd10460206199b0851b0aadde8b3a8239a3ed9dd77aa2c4a1f808e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderProperty.cpp",
-          "reconstruction/bsengine/BSShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.cpp",
+          "reconstruction/bsshader/BSShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "5bdcdb9fe828b52e34bff443db8295d2fc1320de70b3753ab6481c8b4eafc5c6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderProperty.cpp",
-          "reconstruction/bsengine/BSShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.cpp",
+          "reconstruction/bsshader/BSShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -319,14 +319,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSShaderProperty.cpp",
+    "compiled": "reconstruction/bsshader/BSShaderProperty.cpp",
     "digest": "dadbf5b76d7cb2d7f8873b19c71244746f08b268971036d2929c70c065e04b6b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d879ad66cf49644a0afb3a2bfb832fecde73fa9e25b7e061fb6b13bea37efc58",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShaderProperty.cpp",
-      "reconstruction/bsengine/BSShaderProperty.h",
+      "reconstruction/bsshader/BSShaderProperty.cpp",
+      "reconstruction/bsshader/BSShaderProperty.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

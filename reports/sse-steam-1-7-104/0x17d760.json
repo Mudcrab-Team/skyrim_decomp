@@ -29,9 +29,9 @@
         "object_sha256": "7fe324fd0341f753abf8ecda3b62eae1c99923d95b02fadffdb7df727ac61a23",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "f0e594f2543d960371ed85618e4bf655dcb75401df9efbdf7cb328519f0d81be",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.cpp",
     "digest": "001c6f73992f7a39b415f69aa5497e218c560e170ed6a82e0e848e0e527d31fe",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9bb8bdde218ae5f4fc70bdb730c6f8cd4970dd13757cf30fe5d02e3305e34f22",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraRandomTeleportMarkerStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarkerStorageLayout.h"
     ]
   },
   "symbol_map": {

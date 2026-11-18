@@ -29,10 +29,10 @@
         "object_sha256": "1074d69d4d45dfae14430262c67a4fb5cb55418c1869602ed1f8c7d113d04515",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSXFlags.cpp",
-          "reconstruction/bsengine/BSXFlags.h",
-          "reconstruction/netimmerse/NiExtraData.h",
-          "reconstruction/netimmerse/NiIntegerExtraData.h"
+          "reconstruction/gamebryo/nimain/BSXFlags.cpp",
+          "reconstruction/gamebryo/nimain/BSXFlags.h",
+          "reconstruction/gamebryo/nimain/NiExtraData.h",
+          "reconstruction/gamebryo/nimain/NiIntegerExtraData.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "042ab45130f6379c8525009033ea168c24dc9ab8704883ad01bafce32b3f32df",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSXFlags.cpp",
-          "reconstruction/bsengine/BSXFlags.h",
-          "reconstruction/netimmerse/NiExtraData.h",
-          "reconstruction/netimmerse/NiIntegerExtraData.h"
+          "reconstruction/gamebryo/nimain/BSXFlags.cpp",
+          "reconstruction/gamebryo/nimain/BSXFlags.h",
+          "reconstruction/gamebryo/nimain/NiExtraData.h",
+          "reconstruction/gamebryo/nimain/NiIntegerExtraData.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSXFlags.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSXFlags.cpp",
     "digest": "1dc0b14695b63dc5fa063726ac8bd7b1eccbb1c162d3509335561580a75a06d7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "18b58f011025ecdd0a51a5270ae296fd5894ec7b4ad2b4e264b383b0e6251c14",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSXFlags.cpp",
-      "reconstruction/bsengine/BSXFlags.h",
-      "reconstruction/netimmerse/NiExtraData.h",
-      "reconstruction/netimmerse/NiIntegerExtraData.h"
+      "reconstruction/gamebryo/nimain/BSXFlags.cpp",
+      "reconstruction/gamebryo/nimain/BSXFlags.h",
+      "reconstruction/gamebryo/nimain/NiExtraData.h",
+      "reconstruction/gamebryo/nimain/NiIntegerExtraData.h"
     ]
   },
   "symbol_map": {

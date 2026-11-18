@@ -29,8 +29,8 @@
         "object_sha256": "72f6c8d8b68588bcd3b07ffdcffbc3aa926c3f1be96d051270b0c0fe26906004",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESDescription.cpp",
-          "reconstruction/forms/TESDescription.h"
+          "reconstruction/skyrim_shared/forms/TESDescription.cpp",
+          "reconstruction/skyrim_shared/forms/TESDescription.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5afc429a0cb9449cbf35f9178ffa434db840a7263252831226326ef97d029e94",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESDescription.cpp",
-          "reconstruction/forms/TESDescription.h"
+          "reconstruction/skyrim_shared/forms/TESDescription.cpp",
+          "reconstruction/skyrim_shared/forms/TESDescription.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESDescription.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESDescription.cpp",
     "digest": "2b7206b759b882a8e972ba13507684cd1fb2a8def717855e0223a2bad6d12280",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bb01cab9e3f63a7ceb2fdb09d73455fdb992672b70840d5dd0ef57375cf5b23a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESDescription.cpp",
-      "reconstruction/forms/TESDescription.h"
+      "reconstruction/skyrim_shared/forms/TESDescription.cpp",
+      "reconstruction/skyrim_shared/forms/TESDescription.h"
     ]
   },
   "symbol_map": {

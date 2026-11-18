@@ -29,8 +29,8 @@
         "object_sha256": "3b15bfd2386f55148f01a11d8e99ddfe45d30058eba0c1d03112480459495867",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMultiBoundAABB.cpp",
-          "reconstruction/bsengine/BSMultiBoundAABB.h"
+          "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
+          "reconstruction/gamebryo/nimain/BSMultiBoundAABB.h"
         ]
       }
     }
@@ -171,14 +171,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSMultiBoundAABB.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
     "digest": "5ab33bedb6ec0c4aadbc35896693ad5371860d2032a7fa50116789b2372122f0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7735d4149231941024bd559254a04cfec65d9e30c42aa5f03c8a90eb98cf7938",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSMultiBoundAABB.cpp",
-      "reconstruction/bsengine/BSMultiBoundAABB.h"
+      "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
+      "reconstruction/gamebryo/nimain/BSMultiBoundAABB.h"
     ]
   },
   "submitter": "hinkiii",

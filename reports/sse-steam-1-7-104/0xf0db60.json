@@ -32,8 +32,8 @@
         "repository_files_opened": [
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiRefObject.h",
-          "reconstruction/netimmerse/NiSkinData.cpp",
-          "reconstruction/netimmerse/NiSkinData.h"
+          "reconstruction/gamebryo/nimain/NiSkinData.cpp",
+          "reconstruction/gamebryo/nimain/NiSkinData.h"
         ]
       }
     }
@@ -177,7 +177,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiSkinData.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiSkinData.cpp",
     "digest": "d2318a33cdb0107fcdf14659e739dc83deea5577552b306385e62cc7fb811644",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a5ce2e24171b5c0b37eae9ec6674f0bb7caee180b7d7d8332a68c712f76316bc",
@@ -185,8 +185,8 @@
     "translation_unit": [
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiRefObject.h",
-      "reconstruction/netimmerse/NiSkinData.cpp",
-      "reconstruction/netimmerse/NiSkinData.h"
+      "reconstruction/gamebryo/nimain/NiSkinData.cpp",
+      "reconstruction/gamebryo/nimain/NiSkinData.h"
     ]
   },
   "submitter": "hinkiii",

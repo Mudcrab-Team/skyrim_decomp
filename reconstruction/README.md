@@ -26,22 +26,27 @@ Read `LEGAL.md`, `PROVENANCE.md` and `docs/verification.md` before adding source
   set and rejects a record that omits or adds a file (`docs/verification.md`, "Match gate"). This stays the rule until the original
   translation units are evidenced (for example by RTTI or layout showing which classes shared an
   object); then a unit may hold several classes, as that evidence shows.
-- **`<area>`** (lowercase) is chosen by this rule, first match wins. CommonLibSSE-NG groups its
-  headers only alphabetically (`include/RE/A/...`), so its layout says nothing about areas; the
-  rule uses the owning system and the engine's own library prefixes instead:
-  1. an owning system the community headers make evident for the class, such as `inventory/` for
-     the `InventoryChanges` item visitors;
-  2. the class-name prefix: `Ni*` -> `netimmerse/` (the NetImmerse/Gamebryo scene-graph library),
-     `BS*` -> `bsengine/` (Bethesda's engine library), `TES*` and `BGS*` -> `forms/` (form and
-     reference types), `Actor`, `Character`, `PlayerCharacter` and `*Process` classes ->
-     `actors/`;
-  3. otherwise ask for a new prefix line here before adding the unit. There is no `misc/`: an
-     area chosen by default would only have to move later.
-  `tools/ghidra/export_pack.py` proposes the unit path by prefix, then uses an existing class
-  table owning area (`magic`, `forms` or `actors`) when known. An `other` area stays unresolved;
-  no default area is invented. Other rule 1 choices are given in the list file.
+- **`<area>`** is one or more lowercase folders, chosen from the closed list `AREAS` in
+  `tools/unit_paths.py`, which `tools/contrib.py`, the skeleton generator and the contributor intake
+  all read. The areas follow the engine's own layers, the way the FNV decompilation lays out its
+  folders: `gamebryo/` (the NetImmerse scene graph: `nimain`, `nianimation`, `niparticle`), the
+  Bethesda engine libraries (`bscore`, `bssystem`, `bsinput`, `bsmain`, `bsshader`, `bsaudio`,
+  `bshavok`, `bsscript`, `bsscaleform`), `skyrim_shared/` (data shared by the game's systems:
+  forms, actors, extra data, conditions, magic, pathfinding, world, quests and the like),
+  `skyrim/` (game logic: `ai`, `ai/combat`, `ai/movement`, `camera`, `controls`, `interface`,
+  `magic`, `papyrus`) and `thirdparty/` (middleware, kept apart). `place(class)` in
+  `tools/unit_paths.py` picks the area from the class name by ordered prefix rules; the few classes
+  it does not decide are listed in `data/unit-areas.json`. A class with no rule is not filed
+  anywhere by default: add a rule or an entry first. There is no `misc/`.
+  A second unit of a class that already has one is `<Class>_<lowest rva>.cpp` and `.h` beside it.
+  `declarations/` holds the published declaration kit and `recipes/` the compile recipes; neither
+  is an engine area. Folders of the earlier one-folder-per-class layout are still accepted for
+  units that were written against them and have not moved yet (`tools/migrate_layout.py` moves
+  them); no new unit is started there. A moved unit keeps its digests, and its earlier path stays
+  readable through `data/source-moves.json` for the comparator and CI evidence recorded at it.
+  `tools/ghidra/export_pack.py` proposes the unit path with the same rules.
 - **Owner-unknown compiler-generated static initialisers and teardowns.** Use
-  `reconstruction/static/`, grouping entries by the fixed 16-byte RVA interval containing
+  `reconstruction/unmapped/static/`, grouping entries by the fixed 16-byte RVA interval containing
   their entry address. Name the unit `Static<lowercase hexadecimal interval start>`, and
   put its declarations in the corresponding header. Each header states that the owning
   system is unknown and referenced object names are stand-ins unless otherwise labelled.
@@ -52,11 +57,11 @@ Read `LEGAL.md`, `PROVENANCE.md` and `docs/verification.md` before adding source
   (two units already declare their own `Actor`), it moves to one shared header in its own area;
   that move changes every affected unit's digest, so it is done together with their re-confirmation.
 - **Primitive leaf interval units.** Trivial empty and constant-return leaves whose original
-  signature or owner is unknown may use `reconstruction/leaves/Leaf<entry RVA>.h` and `.cpp`.
+  signature or owner is unknown may use `reconstruction/unmapped/leaves/Leaf<entry RVA>.h` and `.cpp`.
   These are explicitly labelled minimal source stand-ins, with no claim of original class
   ownership. Every method name and placeholder class is `GUESS(low) STANDIN`; public naming
   evidence is retained separately. The family rule and ordinary comparison/review gates apply.
-- **Census leaf ABI stand-ins.** `reconstruction/leaves/LeafForward<rva>` and
+- **Census leaf ABI stand-ins.** `reconstruction/unmapped/leaves/LeafForward<rva>` and
   `LeafAddress<rva>` pairs isolate externally bound direct forwarders and global-address
   accessors whose original ownership or signature is not established. The class, method and
   reference names are explicitly guessed stand-ins, not recovered ownership. Each unit compares

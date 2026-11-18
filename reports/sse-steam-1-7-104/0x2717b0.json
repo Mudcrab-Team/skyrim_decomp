@@ -29,9 +29,9 @@
         "object_sha256": "e171a4920abaf684a119c57eac3893740ed619623fb662b6bb9a1a690a247f61",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESLevCharacter.cpp",
-          "reconstruction/forms/TESLevCharacter.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESLevCharacter.cpp",
+          "reconstruction/skyrim_shared/forms/TESLevCharacter.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e61354a62f65018c331fb54e57395490afee856187774c02bbb92180f5aabb13",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESLevCharacter.cpp",
-          "reconstruction/forms/TESLevCharacter.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESLevCharacter.cpp",
+          "reconstruction/skyrim_shared/forms/TESLevCharacter.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESLevCharacter.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESLevCharacter.cpp",
     "digest": "816072023b8c4478038b2738e7cea466b0925e6fe0dfd2f58b4bfc78216178dd",
     "digest_method": "tu-sha256-v2",
     "run_digest": "51ab86fd18b247b21847f473d7541064e03039f368cc53e6d25720f4d5a8d1b3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESLevCharacter.cpp",
-      "reconstruction/forms/TESLevCharacter.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/forms/TESLevCharacter.cpp",
+      "reconstruction/skyrim_shared/forms/TESLevCharacter.h"
     ]
   },
   "symbol_map": {

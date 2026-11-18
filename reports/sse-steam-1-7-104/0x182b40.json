@@ -29,8 +29,8 @@
         "object_sha256": "a19c0f038efd6e9a07a3197b87bb0cfedb99c9e441d9663c4e63e2398bec9e32",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRandomTeleportMarker.cpp",
-          "reconstruction/bsengine/ExtraRandomTeleportMarker.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "267d1b89685a45e08645763e063fcd0e8e70718b8c5db73877e77ef4911b6d2b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRandomTeleportMarker.cpp",
-          "reconstruction/bsengine/ExtraRandomTeleportMarker.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRandomTeleportMarker.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.cpp",
     "digest": "8b9dd3c2063bc8ee4fb7eb933c966c834010288fc30cf65f4808378ff664342a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ee1038b69f980e62abf63ca874efa47ae08e591b1a0fe8b7a72de69fbbec9d2d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraRandomTeleportMarker.cpp",
-      "reconstruction/bsengine/ExtraRandomTeleportMarker.h"
+      "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRandomTeleportMarker.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "e7093affac328b5f9256ff9dd5b2f01c2935037aff8b404cfe2bf49b8a1899bc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Script.cpp",
-          "reconstruction/forms/Script.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/bsscript/Script.cpp",
+          "reconstruction/bsscript/Script.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "cca556ec3b844091ef23d99dbb8fab87bd096255bea56663242b615172e43a27",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Script.cpp",
-          "reconstruction/forms/Script.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/bsscript/Script.cpp",
+          "reconstruction/bsscript/Script.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/Script.cpp",
+    "compiled": "reconstruction/bsscript/Script.cpp",
     "digest": "585a9ca04ab6159239faf0dbd99360a0844a808afe0ed58a93d926739bf4e5a2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8471a93af01ebea1cf0edf175cd732d9db1388b57f47d9cdc79feadd50f893e3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/Script.cpp",
-      "reconstruction/forms/Script.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/bsscript/Script.cpp",
+      "reconstruction/bsscript/Script.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

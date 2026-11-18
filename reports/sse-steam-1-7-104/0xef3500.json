@@ -32,8 +32,8 @@
         "repository_files_opened": [
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiRefObject.h",
-          "reconstruction/netimmerse/NiSourceTexture.cpp",
-          "reconstruction/netimmerse/NiSourceTexture.h"
+          "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
+          "reconstruction/gamebryo/nimain/NiSourceTexture.h"
         ]
       }
     }
@@ -177,7 +177,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiSourceTexture.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
     "digest": "8202745aa23250e5a427a8b8bcca487918c6a0268e9fcc6aea782d79bcc68b0d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "01d2d87aadf3b8a7050710d413e502c6c1cc1f1a6b9e57db066ba99ab604feb1",
@@ -185,8 +185,8 @@
     "translation_unit": [
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiRefObject.h",
-      "reconstruction/netimmerse/NiSourceTexture.cpp",
-      "reconstruction/netimmerse/NiSourceTexture.h"
+      "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
+      "reconstruction/gamebryo/nimain/NiSourceTexture.h"
     ]
   },
   "submitter": "hinkiii",

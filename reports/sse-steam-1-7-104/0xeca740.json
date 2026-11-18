@@ -29,9 +29,9 @@
         "object_sha256": "f696b95a7bfe0f10a022d9f1fd77315a62cd6dd9f7b65e96c9c6374861a78eb8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ResourceAsyncStreamLayout.cpp",
-          "reconstruction/bsengine/ResourceAsyncStreamLayout.h",
-          "reconstruction/bsengine/ResourceStreamBaseLayout.h"
+          "reconstruction/bssystem/ResourceAsyncStreamLayout.cpp",
+          "reconstruction/bssystem/ResourceAsyncStreamLayout.h",
+          "reconstruction/bssystem/ResourceStreamBaseLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "51033dac6eb126c10b758d4a26038da8c66cc5198cc642ebb206cbdfb1a45320",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ResourceAsyncStreamLayout.cpp",
-          "reconstruction/bsengine/ResourceAsyncStreamLayout.h",
-          "reconstruction/bsengine/ResourceStreamBaseLayout.h"
+          "reconstruction/bssystem/ResourceAsyncStreamLayout.cpp",
+          "reconstruction/bssystem/ResourceAsyncStreamLayout.h",
+          "reconstruction/bssystem/ResourceStreamBaseLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ResourceAsyncStreamLayout.cpp",
+    "compiled": "reconstruction/bssystem/ResourceAsyncStreamLayout.cpp",
     "digest": "8c69b99c00bf85def72064419166b8e09b352184ee2594b8885ad96d12a27220",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f388dc41a3c05e794e7c636d0acf6d199cca84577b56b70a572b870a32121385",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ResourceAsyncStreamLayout.cpp",
-      "reconstruction/bsengine/ResourceAsyncStreamLayout.h",
-      "reconstruction/bsengine/ResourceStreamBaseLayout.h"
+      "reconstruction/bssystem/ResourceAsyncStreamLayout.cpp",
+      "reconstruction/bssystem/ResourceAsyncStreamLayout.h",
+      "reconstruction/bssystem/ResourceStreamBaseLayout.h"
     ]
   },
   "symbol_map": {

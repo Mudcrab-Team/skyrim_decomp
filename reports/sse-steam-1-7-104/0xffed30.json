@@ -29,9 +29,9 @@
         "object_sha256": "3b734aead486ca818d05349b740a6f28d8090c15a6331c19feadfdceb9e81428",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSInvMarker.cpp",
-          "reconstruction/bsengine/BSInvMarker.h",
-          "reconstruction/netimmerse/NiExtraData.h"
+          "reconstruction/gamebryo/nimain/BSInvMarker.cpp",
+          "reconstruction/gamebryo/nimain/BSInvMarker.h",
+          "reconstruction/gamebryo/nimain/NiExtraData.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e3ee45d250d7c12a204329d698815de137b59d7a1ecb5e87869ce330f180d7a7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSInvMarker.cpp",
-          "reconstruction/bsengine/BSInvMarker.h",
-          "reconstruction/netimmerse/NiExtraData.h"
+          "reconstruction/gamebryo/nimain/BSInvMarker.cpp",
+          "reconstruction/gamebryo/nimain/BSInvMarker.h",
+          "reconstruction/gamebryo/nimain/NiExtraData.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSInvMarker.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSInvMarker.cpp",
     "digest": "d209c361793808d57a5ce7542048cd64ff442007d17565d9169949e74594bba7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9ffb8fc9e98506f2b762e38757bd2ea36c0c9a3bc82d9637a7175a220181bf40",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSInvMarker.cpp",
-      "reconstruction/bsengine/BSInvMarker.h",
-      "reconstruction/netimmerse/NiExtraData.h"
+      "reconstruction/gamebryo/nimain/BSInvMarker.cpp",
+      "reconstruction/gamebryo/nimain/BSInvMarker.h",
+      "reconstruction/gamebryo/nimain/NiExtraData.h"
     ]
   },
   "symbol_map": {

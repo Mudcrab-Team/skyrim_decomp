@@ -29,8 +29,8 @@
         "object_sha256": "efe1ff7c1522cbe02c1867f88dbb94737448f3d7fed609aa232eb602fb481ddb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSAnimationGraphManager.cpp",
-          "reconstruction/bsengine/BSAnimationGraphManager.h"
+          "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.cpp",
+          "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "af8f6390caceb394ab31b0564d7fd278f228813ec4d26a9b8ba183628d70746f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSAnimationGraphManager.cpp",
-          "reconstruction/bsengine/BSAnimationGraphManager.h"
+          "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.cpp",
+          "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSAnimationGraphManager.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.cpp",
     "digest": "1928fa0c65f0fca9fef38982976dd849031e51682a579d7793d4bc09f3c01b03",
     "digest_method": "tu-sha256-v2",
     "run_digest": "044c54658829b84bc81aa674994fca5d8a2c1832057202cb444255fe572d7dc3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSAnimationGraphManager.cpp",
-      "reconstruction/bsengine/BSAnimationGraphManager.h"
+      "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.cpp",
+      "reconstruction/gamebryo/nianimation/BSAnimationGraphManager.h"
     ]
   },
   "symbol_map": {

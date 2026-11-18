@@ -29,8 +29,8 @@
         "object_sha256": "8c17485eac24c8cf3308b00d85d9ff850ba93818f5e688ba061f6577b69c9d24",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSParticleShaderObjectEmitter.cpp",
-          "reconstruction/bsengine/BSParticleShaderObjectEmitter.h"
+          "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.cpp",
+          "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3d00be1cebc0c49cdd03f4c8d1841385acd21fca8fd2afa188bd3ad0f3c60586",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSParticleShaderObjectEmitter.cpp",
-          "reconstruction/bsengine/BSParticleShaderObjectEmitter.h"
+          "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.cpp",
+          "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSParticleShaderObjectEmitter.cpp",
+    "compiled": "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.cpp",
     "digest": "e01598d4ba122e1789b59ea5a0ef05667d662cce5e265e8ea4a4a56fec118dea",
     "digest_method": "tu-sha256-v2",
     "run_digest": "158e3794ab490c23eccaec971695c9cdf4de2bda81f191f1dfa6bf6994305dca",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSParticleShaderObjectEmitter.cpp",
-      "reconstruction/bsengine/BSParticleShaderObjectEmitter.h"
+      "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.cpp",
+      "reconstruction/gamebryo/niparticle/BSParticleShaderObjectEmitter.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "2fcf449e6e62dc91adbf030f0aea81017894c53b1cb1c4200210dc9905d7aebd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESQuest.cpp",
-          "reconstruction/forms/TESQuest.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+          "reconstruction/skyrim_shared/quest/TESQuest.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "fe3b211c6703219f46adaab991cf40d982989d577e0623957c1691fe4c37d75e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESQuest.cpp",
-          "reconstruction/forms/TESQuest.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+          "reconstruction/skyrim_shared/quest/TESQuest.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESQuest.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/TESQuest.cpp",
     "digest": "37b182041b3df11bcee5cf72c6c4c4b33107165505e4dfb6bf69283135568870",
     "digest_method": "tu-sha256-v2",
     "run_digest": "de85a48c6ed5a94819401885b80c8248d6c6d08829634b9490179ae97efb8128",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESQuest.cpp",
-      "reconstruction/forms/TESQuest.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+      "reconstruction/skyrim_shared/quest/TESQuest.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "225c7fd39b4eae51378cc8ce368d503590aae703ae1fc16d088ebfcd2add91c5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSVoiceType.cpp",
-          "reconstruction/forms/BGSVoiceType.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSVoiceType.cpp",
+          "reconstruction/skyrim_shared/audio/BGSVoiceType.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e18c9b82c47032a33a41c55eca407c85cc54da32375c2e083d0bb3366d9c4274",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSVoiceType.cpp",
-          "reconstruction/forms/BGSVoiceType.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSVoiceType.cpp",
+          "reconstruction/skyrim_shared/audio/BGSVoiceType.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSVoiceType.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSVoiceType.cpp",
     "digest": "cdb501f3d946dcff24c15bd2cc85898e1826bf62cf22e8203c6f0d8e4dc8f410",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1d03d36cbdf1a53bb632220cde215a252726917171da6fbf7bd048db17fb35f4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSVoiceType.cpp",
-      "reconstruction/forms/BGSVoiceType.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/audio/BGSVoiceType.cpp",
+      "reconstruction/skyrim_shared/audio/BGSVoiceType.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

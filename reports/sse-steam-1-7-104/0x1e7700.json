@@ -29,8 +29,8 @@
         "object_sha256": "aa196696d9b9bcdd581ecfd3fb31aabfdc1ce6f9e803b3a92bfbb6a49df7acb2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMemStorage.cpp",
-          "reconstruction/bsengine/BSMemStorage.h"
+          "reconstruction/bscore/BSMemStorage.cpp",
+          "reconstruction/bscore/BSMemStorage.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2a79a6e1ff231be2321d125fd789d8d7d8503fd0b8d10bfdfb7ddf7221d5fd8c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMemStorage.cpp",
-          "reconstruction/bsengine/BSMemStorage.h"
+          "reconstruction/bscore/BSMemStorage.cpp",
+          "reconstruction/bscore/BSMemStorage.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSMemStorage.cpp",
+    "compiled": "reconstruction/bscore/BSMemStorage.cpp",
     "digest": "aff95cff1df4f8c7d36ff65ef4be2437adfb4554a1f94b51e2540c7070ab2fe1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bd8ad64f9816d2dea2b4d08852f27d3cb4f6cd91d7f0ef003e95635ea6b6226e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSMemStorage.cpp",
-      "reconstruction/bsengine/BSMemStorage.h"
+      "reconstruction/bscore/BSMemStorage.cpp",
+      "reconstruction/bscore/BSMemStorage.h"
     ]
   },
   "symbol_map": {

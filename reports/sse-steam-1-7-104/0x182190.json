@@ -29,8 +29,8 @@
         "object_sha256": "82a003de367bf31202c5d4f15ffae0d1e2f238272ba46aaa0e245ae736da230c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraUsedMarkers.cpp",
-          "reconstruction/bsengine/ExtraUsedMarkers.h"
+          "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ddc43d8d1a7ff64405f11205ad9f961d3bf31cb01ed80b62c2a6fbb9e9091490",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraUsedMarkers.cpp",
-          "reconstruction/bsengine/ExtraUsedMarkers.h"
+          "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraUsedMarkers.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.cpp",
     "digest": "1e1d079fdb17def9ec1907ee8ceb03c15fbe809dd835dedbe5af1399582be4fa",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2a32690151911e75cff792e7f01b14a21b5d856cf48aa1c65d5c73845320cce7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraUsedMarkers.cpp",
-      "reconstruction/bsengine/ExtraUsedMarkers.h"
+      "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraUsedMarkers.h"
     ]
   },
   "symbol_map": {

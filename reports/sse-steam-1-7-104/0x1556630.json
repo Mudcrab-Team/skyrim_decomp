@@ -29,9 +29,9 @@
         "object_sha256": "97c32ddaf04c95381f3affbd3e8437bc1fd8b308ede6ee243fabfd30249c213d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSEffectShaderMaterial.cpp",
-          "reconstruction/bsengine/BSEffectShaderMaterial.h",
-          "reconstruction/bsengine/BSShaderMaterial.h"
+          "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
+          "reconstruction/bsshader/BSEffectShaderMaterial.h",
+          "reconstruction/bsshader/BSShaderMaterial.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "3bd27f9fd16738ff07eb253d2282e59af3dd8617b0031d4c99a0fb2ca2eb27ff",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSEffectShaderMaterial.cpp",
-          "reconstruction/bsengine/BSEffectShaderMaterial.h",
-          "reconstruction/bsengine/BSShaderMaterial.h"
+          "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
+          "reconstruction/bsshader/BSEffectShaderMaterial.h",
+          "reconstruction/bsshader/BSShaderMaterial.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSEffectShaderMaterial.cpp",
+    "compiled": "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
     "digest": "47410208006dde8b68868ef783d0923fd8ecc3941b19f57265d7d86cf9d47d96",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7b511c6fcb6dc6e6de8e91fb4be94d6cc1ce4b41b72edc5f09c6bcb632290fc1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSEffectShaderMaterial.cpp",
-      "reconstruction/bsengine/BSEffectShaderMaterial.h",
-      "reconstruction/bsengine/BSShaderMaterial.h"
+      "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
+      "reconstruction/bsshader/BSEffectShaderMaterial.h",
+      "reconstruction/bsshader/BSShaderMaterial.h"
     ]
   },
   "symbol_map": {

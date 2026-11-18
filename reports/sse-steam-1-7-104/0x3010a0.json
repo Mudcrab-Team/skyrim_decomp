@@ -31,10 +31,10 @@
         "object_sha256": "cd71b555860119b3f233c161185512de92f00ce1149e96a7938526d54a653c7c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/REFRAdditionalTyped.cpp",
-          "reconstruction/actor206_2/REFRAdditionalTyped.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.cpp",
+          "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "0009c5e1c74207951e35630097dbab5446d386207fcec15914de7001f4a8bdd6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/REFRAdditionalTyped.cpp",
-          "reconstruction/actor206_2/REFRAdditionalTyped.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.cpp",
+          "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_2/REFRAdditionalTyped.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.cpp",
     "digest": "c4839204cc7c0c899bedb707f60f1f2b798e940bc68fbc8777813d36f72f468b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "241f1ca267a657bd5ceb424007b210370ef6a6c6f439d1a030d717f22a65ffc2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_2/REFRAdditionalTyped.cpp",
-      "reconstruction/actor206_2/REFRAdditionalTyped.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.cpp",
+      "reconstruction/skyrim_shared/refs/REFRAdditionalTyped.h"
     ]
   },
   "symbol_map": {

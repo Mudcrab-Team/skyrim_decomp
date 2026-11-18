@@ -29,14 +29,14 @@
         "object_sha256": "8a3235f0258a438954c079bfbe476966aaac8b95e578b9b9302d390c5580ac57",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/QueuedFileDataStorageLayout.cpp",
-          "reconstruction/bsengine/QueuedFileDataStorageLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/represented_storage/BSExtraDataLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bssystem/QueuedFileDataStorageLayout.cpp",
+          "reconstruction/bssystem/QueuedFileDataStorageLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h"
         ]
       },
       "winpc-native": {
@@ -55,14 +55,14 @@
         "object_sha256": "dd3f2ae8898c2355e87d41eb1010666b2d32ebaaa78f1336299045aa735f4f2a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/QueuedFileDataStorageLayout.cpp",
-          "reconstruction/bsengine/QueuedFileDataStorageLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/represented_storage/BSExtraDataLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bssystem/QueuedFileDataStorageLayout.cpp",
+          "reconstruction/bssystem/QueuedFileDataStorageLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h"
         ]
       }
     }
@@ -329,20 +329,20 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/QueuedFileDataStorageLayout.cpp",
+    "compiled": "reconstruction/bssystem/QueuedFileDataStorageLayout.cpp",
     "digest": "0a9050cc13cce23a4a908a545b756579e4008d0758a8896603820a8720ed274b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "24f7d7ced324beff8563611ef8c7bf501954ccdc373508d750ce34c28325ac57",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/QueuedFileDataStorageLayout.cpp",
-      "reconstruction/bsengine/QueuedFileDataStorageLayout.h",
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/represented_storage/BSExtraDataLayout.h",
-      "reconstruction/represented_storage/BSSoundHandleLayout.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/bssystem/QueuedFileDataStorageLayout.cpp",
+      "reconstruction/bssystem/QueuedFileDataStorageLayout.h",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+      "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h"
     ]
   },
   "symbol_map": {

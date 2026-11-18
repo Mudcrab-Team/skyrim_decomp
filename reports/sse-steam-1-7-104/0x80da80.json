@@ -29,8 +29,8 @@
         "object_sha256": "8300e7a26021354bfafa19818f1160056b86f13c9a61b6e6e284a89d918d48cf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatDisableAimController.cpp",
-          "reconstruction/fo4hints/CombatDisableAimController.h"
+          "reconstruction/skyrim/ai/combat/CombatDisableAimController.cpp",
+          "reconstruction/skyrim/ai/combat/CombatDisableAimController.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5df7f25fa09365802a859898a543e0fe34b100db6721be19f32b1e3966b198ec",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatDisableAimController.cpp",
-          "reconstruction/fo4hints/CombatDisableAimController.h"
+          "reconstruction/skyrim/ai/combat/CombatDisableAimController.cpp",
+          "reconstruction/skyrim/ai/combat/CombatDisableAimController.h"
         ]
       }
     }
@@ -363,14 +363,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/CombatDisableAimController.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatDisableAimController.cpp",
     "digest": "57ba81eeecc2b3a75f681441f923e3a2284d49d5a9a462b0b114c3e39bacb82c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7fd4cbd6b8d01bfefd496f146e00ee7792cc9a3c3e2b2e524c77764b590e9f1c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/CombatDisableAimController.cpp",
-      "reconstruction/fo4hints/CombatDisableAimController.h"
+      "reconstruction/skyrim/ai/combat/CombatDisableAimController.cpp",
+      "reconstruction/skyrim/ai/combat/CombatDisableAimController.h"
     ]
   },
   "symbol_map": {

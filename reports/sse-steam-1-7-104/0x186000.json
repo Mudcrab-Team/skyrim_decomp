@@ -29,8 +29,8 @@
         "object_sha256": "7dc2e5709067b540ba59b1362911848f49866c9a9eb064c318a9a776424a5f6f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAmmo.cpp",
-          "reconstruction/bsengine/ExtraAmmo.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAmmo.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAmmo.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "4966798a05b85e7e1195d91dd609e1931100c1264ee31f5a5a60e6bc75825bb9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAmmo.cpp",
-          "reconstruction/bsengine/ExtraAmmo.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAmmo.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAmmo.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAmmo.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAmmo.cpp",
     "digest": "881ee25a9a28c584f72d674bdb4c9cd738f57b596834f049ad596398e40a2643",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a29a2e4854c08547c94a4879902136d12f759dee0ef4d942610ea46c36a754f9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraAmmo.cpp",
-      "reconstruction/bsengine/ExtraAmmo.h"
+      "reconstruction/skyrim_shared/extradata/ExtraAmmo.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAmmo.h"
     ]
   },
   "symbol_map": {

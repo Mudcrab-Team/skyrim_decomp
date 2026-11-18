@@ -29,8 +29,8 @@
         "object_sha256": "e66837b1ea6531290ebfe084d7c63530f1e2bd1765e441e1c1d967a05e12ca12",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/Staticae280.cpp",
-          "reconstruction/static/Staticae280.h"
+          "reconstruction/unmapped/static/Staticae280.cpp",
+          "reconstruction/unmapped/static/Staticae280.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "38062652ba673780317cf20f99862eff4d8aadfddf7f8119488bf1a3218ef0d7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/Staticae280.cpp",
-          "reconstruction/static/Staticae280.h"
+          "reconstruction/unmapped/static/Staticae280.cpp",
+          "reconstruction/unmapped/static/Staticae280.h"
         ]
       }
     }
@@ -371,14 +371,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/static/Staticae280.cpp",
+    "compiled": "reconstruction/unmapped/static/Staticae280.cpp",
     "digest": "2a06843fafbc772e2dc4388c6e469a1bf23637f75114e329e3eca18ca120f33b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f8d994e5562f6bfd27aaaa576548c7f45f71453c3f3c279753682460250076d8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/static/Staticae280.cpp",
-      "reconstruction/static/Staticae280.h"
+      "reconstruction/unmapped/static/Staticae280.cpp",
+      "reconstruction/unmapped/static/Staticae280.h"
     ]
   },
   "symbol_map": {

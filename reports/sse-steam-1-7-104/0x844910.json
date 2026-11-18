@@ -29,12 +29,12 @@
         "object_sha256": "7110697d00254ddb78667011a88f94ed902775911d55227d6202863c61936a54",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/CombatInventoryItemLayout.h",
-          "reconstruction/actors/CombatInventoryItemMagicLayout.cpp",
-          "reconstruction/actors/CombatInventoryItemMagicLayout.h",
-          "reconstruction/actors/CombatObjectLayout.h",
-          "reconstruction/bsengine/BSFixedStringLayout.h",
-          "reconstruction/netimmerse/NiRefObjectLayout.h"
+          "reconstruction/bscore/BSFixedStringLayout.h",
+          "reconstruction/gamebryo/nimain/NiRefObjectLayout.h",
+          "reconstruction/skyrim/ai/combat/CombatInventoryItemLayout.h",
+          "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.cpp",
+          "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.h",
+          "reconstruction/skyrim/ai/combat/CombatObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -53,12 +53,12 @@
         "object_sha256": "44d0d40bbc3fcf47145549cbe394c45599e41be2fc15aeb17caf9681d0614e23",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/CombatInventoryItemLayout.h",
-          "reconstruction/actors/CombatInventoryItemMagicLayout.cpp",
-          "reconstruction/actors/CombatInventoryItemMagicLayout.h",
-          "reconstruction/actors/CombatObjectLayout.h",
-          "reconstruction/bsengine/BSFixedStringLayout.h",
-          "reconstruction/netimmerse/NiRefObjectLayout.h"
+          "reconstruction/bscore/BSFixedStringLayout.h",
+          "reconstruction/gamebryo/nimain/NiRefObjectLayout.h",
+          "reconstruction/skyrim/ai/combat/CombatInventoryItemLayout.h",
+          "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.cpp",
+          "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.h",
+          "reconstruction/skyrim/ai/combat/CombatObjectLayout.h"
         ]
       }
     }
@@ -339,18 +339,18 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actors/CombatInventoryItemMagicLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.cpp",
     "digest": "9f55497ff6fc8113297d75163c6be9c5fa10b966037c753ab61380919a7e23c6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fefc10c81bcc3c11a0968cbb423aa68e146de14978c5b09d99a3823da0a0ae6f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/CombatInventoryItemLayout.h",
-      "reconstruction/actors/CombatInventoryItemMagicLayout.cpp",
-      "reconstruction/actors/CombatInventoryItemMagicLayout.h",
-      "reconstruction/actors/CombatObjectLayout.h",
-      "reconstruction/bsengine/BSFixedStringLayout.h",
-      "reconstruction/netimmerse/NiRefObjectLayout.h"
+      "reconstruction/bscore/BSFixedStringLayout.h",
+      "reconstruction/gamebryo/nimain/NiRefObjectLayout.h",
+      "reconstruction/skyrim/ai/combat/CombatInventoryItemLayout.h",
+      "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.cpp",
+      "reconstruction/skyrim/ai/combat/CombatInventoryItemMagicLayout.h",
+      "reconstruction/skyrim/ai/combat/CombatObjectLayout.h"
     ]
   },
   "symbol_map": {

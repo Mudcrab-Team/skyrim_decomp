@@ -29,8 +29,8 @@
         "object_sha256": "6c44fd279bfb20f8477a17e1da09903d965766d7e3d25a46fb5fc506a3133586",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPerkEntry.cpp",
-          "reconstruction/forms/BGSPerkEntry.h"
+          "reconstruction/skyrim_shared/perks/BGSPerkEntry.cpp",
+          "reconstruction/skyrim_shared/perks/BGSPerkEntry.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "66bf954087031a3d3422e1bad4943c0d5b1fc99e26ba750ad2582cbe26e76422",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPerkEntry.cpp",
-          "reconstruction/forms/BGSPerkEntry.h"
+          "reconstruction/skyrim_shared/perks/BGSPerkEntry.cpp",
+          "reconstruction/skyrim_shared/perks/BGSPerkEntry.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSPerkEntry.cpp",
+    "compiled": "reconstruction/skyrim_shared/perks/BGSPerkEntry.cpp",
     "digest": "07adf8d0d299e6abff6d26eb9afeed44fc0a41c19a73662c10e1a233c6de31b5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "28b604db0d50acec9fd1cb70321170c03926970ea92119d09eb34cd00c83d4c2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSPerkEntry.cpp",
-      "reconstruction/forms/BGSPerkEntry.h"
+      "reconstruction/skyrim_shared/perks/BGSPerkEntry.cpp",
+      "reconstruction/skyrim_shared/perks/BGSPerkEntry.h"
     ]
   },
   "symbol_map": {

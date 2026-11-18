@@ -29,9 +29,9 @@
         "object_sha256": "2150f340f847578c7ec035b1fc88ac431c6eb09005182a8b1546e09f3c69f598",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "517926a9400fb1ef2080d85d88ad6c558a6caffc6d43dbfc2a7158719b0c79f1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterial.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterial.cpp",
     "digest": "c2eb5c8861439865c7c372c5bb587b82da6ac6339d5af72adc92b94e6b5bbba9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "228c25ca26487f6edf5b4f082cadd26ec8534678b7418620736a558bf8002130",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterial.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterial.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h"
+      "reconstruction/bsshader/BSLightingShaderMaterial.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterial.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h"
     ]
   },
   "symbol_map": {

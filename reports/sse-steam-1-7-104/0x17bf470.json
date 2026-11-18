@@ -29,8 +29,8 @@
         "object_sha256": "332d128cc699f4edb86db93a474e46835aa15fa415cdcac75ec30a7dad50cfc7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/SharedTeardown17bf470.cpp",
-          "reconstruction/static/SharedTeardown17bf470.h"
+          "reconstruction/unmapped/static/SharedTeardown17bf470.cpp",
+          "reconstruction/unmapped/static/SharedTeardown17bf470.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "20a988bb8c58f8f912688d598d271e7ebf80252e46b1550a161bfc389384b32f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/SharedTeardown17bf470.cpp",
-          "reconstruction/static/SharedTeardown17bf470.h"
+          "reconstruction/unmapped/static/SharedTeardown17bf470.cpp",
+          "reconstruction/unmapped/static/SharedTeardown17bf470.h"
         ]
       }
     }
@@ -367,14 +367,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/static/SharedTeardown17bf470.cpp",
+    "compiled": "reconstruction/unmapped/static/SharedTeardown17bf470.cpp",
     "digest": "68b5fdcea6b91edb9f81dc289d2f5f7df27751cecb0f533a0192a3e01a544323",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4603125c1dffa9db575445a5a53236427e1255f6516c729e5628c6b9c3ddeb30",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/static/SharedTeardown17bf470.cpp",
-      "reconstruction/static/SharedTeardown17bf470.h"
+      "reconstruction/unmapped/static/SharedTeardown17bf470.cpp",
+      "reconstruction/unmapped/static/SharedTeardown17bf470.h"
     ]
   },
   "symbol_map": {

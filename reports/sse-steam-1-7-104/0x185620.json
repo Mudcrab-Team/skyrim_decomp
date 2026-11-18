@@ -29,8 +29,8 @@
         "object_sha256": "2f1f1d96cb0e378e57dd4caac7f2c1b8c489021854c4355a243b3a9365e29884",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCanTalkToPlayer.cpp",
-          "reconstruction/bsengine/ExtraCanTalkToPlayer.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "8de9ccc394bba08462b8ff0c7363c602cbc91183e0431452f56ecfa38856287f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCanTalkToPlayer.cpp",
-          "reconstruction/bsengine/ExtraCanTalkToPlayer.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCanTalkToPlayer.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.cpp",
     "digest": "dc2ad5be32204b1779edb580706a2f2e62383e1d0cb570be3e11feb59b92921d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "110c21776f2ebb2a46e4506bfb10d113c1b6be22eec7c89348aea38f56d91500",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCanTalkToPlayer.cpp",
-      "reconstruction/bsengine/ExtraCanTalkToPlayer.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayer.h"
     ]
   },
   "symbol_map": {

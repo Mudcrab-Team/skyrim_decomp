@@ -29,8 +29,8 @@
         "object_sha256": "c9de97a184292f82ea45f906bd6856eafe5c0e74f519d7d90e8710d2d953f3a8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSISoundCategory.cpp",
-          "reconstruction/bsengine/BSISoundCategory.h"
+          "reconstruction/bsaudio/BSISoundCategory.cpp",
+          "reconstruction/bsaudio/BSISoundCategory.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "740b41426983f8f86afc23f9b411be05c9ae6dca4f7ed3f903c5a8bb86df6994",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSISoundCategory.cpp",
-          "reconstruction/bsengine/BSISoundCategory.h"
+          "reconstruction/bsaudio/BSISoundCategory.cpp",
+          "reconstruction/bsaudio/BSISoundCategory.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSISoundCategory.cpp",
+    "compiled": "reconstruction/bsaudio/BSISoundCategory.cpp",
     "digest": "246baf67fab4e19e9c79c8652ed99a6cccc9ea4b3d574f23748d9b927edbc122",
     "digest_method": "tu-sha256-v2",
     "run_digest": "715e13b2326ae9dd25af83df30636b943278bcb2078677a291ac6e1d2c1fb66c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSISoundCategory.cpp",
-      "reconstruction/bsengine/BSISoundCategory.h"
+      "reconstruction/bsaudio/BSISoundCategory.cpp",
+      "reconstruction/bsaudio/BSISoundCategory.h"
     ]
   },
   "symbol_map": {

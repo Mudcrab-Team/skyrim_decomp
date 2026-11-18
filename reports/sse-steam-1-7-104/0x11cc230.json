@@ -29,8 +29,8 @@
         "object_sha256": "2b86a8c90b11320d5a12a65c6467b6f71f8e6fdae43706fdcf4980702a199222",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/DeletingWrapper11cc230.cpp",
-          "reconstruction/leaves/DeletingWrapper11cc230.h"
+          "reconstruction/unmapped/leaves/DeletingWrapper11cc230.cpp",
+          "reconstruction/unmapped/leaves/DeletingWrapper11cc230.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "afac29bfc37a2828d975af210ea61647b41a5cb756d8a0b4582c92068fc14ae3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/DeletingWrapper11cc230.cpp",
-          "reconstruction/leaves/DeletingWrapper11cc230.h"
+          "reconstruction/unmapped/leaves/DeletingWrapper11cc230.cpp",
+          "reconstruction/unmapped/leaves/DeletingWrapper11cc230.h"
         ]
       }
     }
@@ -330,14 +330,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/leaves/DeletingWrapper11cc230.cpp",
+    "compiled": "reconstruction/unmapped/leaves/DeletingWrapper11cc230.cpp",
     "digest": "8807387d2920825c4e338339e0e49f997945b1ce04de090915d22db46f134d1e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cde34a0924a566e224bd2daefbb814169eac4c91b95e1b219c891f276bb0dbb3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/leaves/DeletingWrapper11cc230.cpp",
-      "reconstruction/leaves/DeletingWrapper11cc230.h"
+      "reconstruction/unmapped/leaves/DeletingWrapper11cc230.cpp",
+      "reconstruction/unmapped/leaves/DeletingWrapper11cc230.h"
     ]
   },
   "symbol_map": {

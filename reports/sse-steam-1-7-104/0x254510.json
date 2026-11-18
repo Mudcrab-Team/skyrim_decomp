@@ -29,9 +29,9 @@
         "object_sha256": "52458280ba6bc1e0869624574ac38bc8a647543c4fff00d9ad689e5c4b51d712",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionGrassObjectLayout.cpp",
-          "reconstruction/forms/TESRegionGrassObjectLayout.h",
-          "reconstruction/forms/TESRegionObjectBaseLayout.h"
+          "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.h",
+          "reconstruction/skyrim_shared/world/TESRegionObjectBaseLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "aa22016c330eb68991bc00944db7561fb387fbedb3f740a3e8405026ca79fff5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionGrassObjectLayout.cpp",
-          "reconstruction/forms/TESRegionGrassObjectLayout.h",
-          "reconstruction/forms/TESRegionObjectBaseLayout.h"
+          "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.h",
+          "reconstruction/skyrim_shared/world/TESRegionObjectBaseLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRegionGrassObjectLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.cpp",
     "digest": "ff90edeaabe148fb063b68926b35eed6a97db8d82b1eba7c0ebff17c2db7b391",
     "digest_method": "tu-sha256-v2",
     "run_digest": "81d8d27cd7128674a9f8c2ac06d1feae7fac5d79955dc95cb95ad34aec2b9164",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESRegionGrassObjectLayout.cpp",
-      "reconstruction/forms/TESRegionGrassObjectLayout.h",
-      "reconstruction/forms/TESRegionObjectBaseLayout.h"
+      "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.cpp",
+      "reconstruction/skyrim_shared/world/TESRegionGrassObjectLayout.h",
+      "reconstruction/skyrim_shared/world/TESRegionObjectBaseLayout.h"
     ]
   },
   "symbol_map": {

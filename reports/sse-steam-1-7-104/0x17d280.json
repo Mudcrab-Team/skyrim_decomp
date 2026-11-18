@@ -29,9 +29,9 @@
         "object_sha256": "51fbf16c2e51f3c7ace08784ce0d979d7bc6fd410347f5f0646dbe7343ab40aa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraModelSwapStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraModelSwapStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "6dd41be611ea7f8c335e576d23100d37f9431cdd05f056b252774b3f96fa6207",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraModelSwapStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraModelSwapStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraModelSwapStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.cpp",
     "digest": "d14b007e45a788f009f4847b7ed9af173faa2a96d7d7dfc9cd60a436e14569a9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b38ae06d12905d434ba9f3da47640158926f2b28b04270650adb82df0ecce5e6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraModelSwapStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraModelSwapStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraModelSwapStorageLayout.h"
     ]
   },
   "symbol_map": {

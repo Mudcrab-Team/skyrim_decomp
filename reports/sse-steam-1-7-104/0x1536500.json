@@ -29,9 +29,9 @@
         "object_sha256": "9121d7dd17ab9694f24ce2920225e2eb6f1ef7af68cae9330f48019836951962",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSParticleShaderCubeEmitter.cpp",
-          "reconstruction/bsengine/BSParticleShaderCubeEmitter.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/gamebryo/nimain/NiRefObject.h",
+          "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.cpp",
+          "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "0f05a5f1c32b803948a02aacfe74aa30b324bc296072818a5ba8e76510359642",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSParticleShaderCubeEmitter.cpp",
-          "reconstruction/bsengine/BSParticleShaderCubeEmitter.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/gamebryo/nimain/NiRefObject.h",
+          "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.cpp",
+          "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSParticleShaderCubeEmitter.cpp",
+    "compiled": "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.cpp",
     "digest": "55309b867329267cb29de60fbd215966e9b8024d07a956311be0226f7c55c333",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8efe86552030f1c61ece5d34314a2d720b5aa27be89eb53521ec658389567b76",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSParticleShaderCubeEmitter.cpp",
-      "reconstruction/bsengine/BSParticleShaderCubeEmitter.h",
-      "reconstruction/netimmerse/NiRefObject.h"
+      "reconstruction/gamebryo/nimain/NiRefObject.h",
+      "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.cpp",
+      "reconstruction/gamebryo/niparticle/BSParticleShaderCubeEmitter.h"
     ]
   },
   "symbol_map": {

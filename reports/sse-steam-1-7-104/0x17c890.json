@@ -29,9 +29,9 @@
         "object_sha256": "641ca67b961ec1b89c5aa97de3e55362ad9a09d44dbc77b3dfbd73efd5d6203f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "8f26120f6c16632222dc2024b33d375977c0409f3b01e829a68fdeec52888daf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.cpp",
     "digest": "525c86a29206a2c9e872b0022c19b1ef12645dabd0ba97c047bffcd1fed18040",
     "digest_method": "tu-sha256-v2",
     "run_digest": "087d788f9072dc368e4f314a7dd54fcf74ac344c3e5689ad708d7af27af5ac41",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraEncounterZoneStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraEncounterZoneStorageLayout.h"
     ]
   },
   "symbol_map": {

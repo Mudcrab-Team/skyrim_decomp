@@ -29,8 +29,8 @@
         "object_sha256": "883fbaf00920be8d0d91f1cd94e78986d936a73c4572749982bd525802ab2b86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraMagicLight.cpp",
-          "reconstruction/bsengine/ExtraMagicLight.h"
+          "reconstruction/skyrim_shared/extradata/ExtraMagicLight.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMagicLight.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3c2d2b2d062151dbda66d26cfc70eab2d2b363d76290e63dd1d050022135b5c1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraMagicLight.cpp",
-          "reconstruction/bsengine/ExtraMagicLight.h"
+          "reconstruction/skyrim_shared/extradata/ExtraMagicLight.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMagicLight.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraMagicLight.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraMagicLight.cpp",
     "digest": "43e6bba39fb24466a7223c8ea6e11ba2201f268482b6dc6f545180be9c3fe14a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6ac1a2be6f76f5c9a6afc2d67e67c8a94a1e44933fecd6d6cc3bd4e4636cb5a2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraMagicLight.cpp",
-      "reconstruction/bsengine/ExtraMagicLight.h"
+      "reconstruction/skyrim_shared/extradata/ExtraMagicLight.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraMagicLight.h"
     ]
   },
   "symbol_map": {

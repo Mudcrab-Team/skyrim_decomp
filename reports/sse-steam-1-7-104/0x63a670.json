@@ -29,8 +29,8 @@
         "object_sha256": "cd70c12017012f5fd64c61cfc757f14372a7a6ed1a472ae7fd89fe7040f4e94b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4s_63a670/LoadStorageWrapper.cpp",
-          "reconstruction/fo4b4s_63a670/LoadStorageWrapper.h"
+          "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.cpp",
+          "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f79a83e6f23b0787484ec79c4078423471d4c9bf1975ba1ef47c048dd87195a4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4s_63a670/LoadStorageWrapper.cpp",
-          "reconstruction/fo4b4s_63a670/LoadStorageWrapper.h"
+          "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.cpp",
+          "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4b4s_63a670/LoadStorageWrapper.cpp",
+    "compiled": "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.cpp",
     "digest": "6c7441c0d873cab59e3ba274251f9773b3af52cf5d712d42523dfe52feb1dbff",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4d8baeac155fbbc3ef20eae7d7450aa6684ab664cf5357435d1bd12e9524969a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4b4s_63a670/LoadStorageWrapper.cpp",
-      "reconstruction/fo4b4s_63a670/LoadStorageWrapper.h"
+      "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.cpp",
+      "reconstruction/skyrim_shared/saveload/LoadStorageWrapper_63a670.h"
     ]
   },
   "symbol_map": {

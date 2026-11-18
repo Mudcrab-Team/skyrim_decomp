@@ -29,16 +29,16 @@
         "object_sha256": "a1fe8aec4c2adc5dfd8f5f8cc4774218d1415a9825301b16744c5cb60a7f70a6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AdditionalInterfacePrefixLayout.cpp",
-          "reconstruction/bsengine/AdditionalInterfacePrefixLayout.h",
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectREFRComponentPrefixLayout.h",
-          "reconstruction/netimmerse/NiRefObjectStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+          "reconstruction/bscore/AdditionalInterfacePrefixLayout.cpp",
+          "reconstruction/bscore/AdditionalInterfacePrefixLayout.h",
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+          "reconstruction/gamebryo/nimain/NiRefObjectStorageLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -57,16 +57,16 @@
         "object_sha256": "e61bd2c1b5eb602957831810c9ff482f2244778282fbd3e4edfc9af349183a69",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AdditionalInterfacePrefixLayout.cpp",
-          "reconstruction/bsengine/AdditionalInterfacePrefixLayout.h",
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectREFRComponentPrefixLayout.h",
-          "reconstruction/netimmerse/NiRefObjectStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+          "reconstruction/bscore/AdditionalInterfacePrefixLayout.cpp",
+          "reconstruction/bscore/AdditionalInterfacePrefixLayout.h",
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+          "reconstruction/gamebryo/nimain/NiRefObjectStorageLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
         ]
       }
     }
@@ -333,22 +333,22 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/AdditionalInterfacePrefixLayout.cpp",
+    "compiled": "reconstruction/bscore/AdditionalInterfacePrefixLayout.cpp",
     "digest": "5af8ebc346d65ff21fffb8cecd0951a917ac5b8e511b32d13cdc7df8e227bc64",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a8a836f5f3cfd73116d40fae9e012c4b97060960570552ff7c641df880725890",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AdditionalInterfacePrefixLayout.cpp",
-      "reconstruction/bsengine/AdditionalInterfacePrefixLayout.h",
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/forms/TESObjectREFRComponentPrefixLayout.h",
-      "reconstruction/netimmerse/NiRefObjectStorageLayout.h",
-      "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-      "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+      "reconstruction/bscore/AdditionalInterfacePrefixLayout.cpp",
+      "reconstruction/bscore/AdditionalInterfacePrefixLayout.h",
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+      "reconstruction/gamebryo/nimain/NiRefObjectStorageLayout.h",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h",
+      "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+      "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
     ]
   },
   "symbol_map": {

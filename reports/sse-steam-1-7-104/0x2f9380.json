@@ -29,14 +29,14 @@
         "object_sha256": "9e44210d34c0295f2d279860fc0815db9046e52295b1d567331b46d4a474bf56",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/BhkRefObjectLayout.h",
-          "reconstruction/represented_storage/BhkSerializableLayout.h",
-          "reconstruction/represented_storage/BhkWorldObjectLayout.h",
-          "reconstruction/represented_storage/F004Recovered2f9380.cpp",
-          "reconstruction/represented_storage/F004Recovered2f9380.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/NiObjectLayout.h",
-          "reconstruction/represented_storage/NiRefObjectLayout.h"
+          "reconstruction/unmapped/represented/BhkRefObjectLayout.h",
+          "reconstruction/unmapped/represented/BhkSerializableLayout.h",
+          "reconstruction/unmapped/represented/BhkWorldObjectLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered2f9380.cpp",
+          "reconstruction/unmapped/represented/F004Recovered2f9380.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/NiObjectLayout.h",
+          "reconstruction/unmapped/represented/NiRefObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -55,14 +55,14 @@
         "object_sha256": "2644580c2ba705ed317ff81a0d41da2279723dd48335e9ebf12bbd7697156686",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/BhkRefObjectLayout.h",
-          "reconstruction/represented_storage/BhkSerializableLayout.h",
-          "reconstruction/represented_storage/BhkWorldObjectLayout.h",
-          "reconstruction/represented_storage/F004Recovered2f9380.cpp",
-          "reconstruction/represented_storage/F004Recovered2f9380.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/NiObjectLayout.h",
-          "reconstruction/represented_storage/NiRefObjectLayout.h"
+          "reconstruction/unmapped/represented/BhkRefObjectLayout.h",
+          "reconstruction/unmapped/represented/BhkSerializableLayout.h",
+          "reconstruction/unmapped/represented/BhkWorldObjectLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered2f9380.cpp",
+          "reconstruction/unmapped/represented/F004Recovered2f9380.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/NiObjectLayout.h",
+          "reconstruction/unmapped/represented/NiRefObjectLayout.h"
         ]
       }
     }
@@ -329,20 +329,20 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/represented_storage/F004Recovered2f9380.cpp",
+    "compiled": "reconstruction/unmapped/represented/F004Recovered2f9380.cpp",
     "digest": "a78e900eab1c21f138fe90015ab77c44d6b6ee35045ad11c2693199eaae3c7dd",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ef6d6ab1aace52229545ffd9d8e6b9b3c595050e2de237c7a28da63aae45ff6d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/represented_storage/BhkRefObjectLayout.h",
-      "reconstruction/represented_storage/BhkSerializableLayout.h",
-      "reconstruction/represented_storage/BhkWorldObjectLayout.h",
-      "reconstruction/represented_storage/F004Recovered2f9380.cpp",
-      "reconstruction/represented_storage/F004Recovered2f9380.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h",
-      "reconstruction/represented_storage/NiObjectLayout.h",
-      "reconstruction/represented_storage/NiRefObjectLayout.h"
+      "reconstruction/unmapped/represented/BhkRefObjectLayout.h",
+      "reconstruction/unmapped/represented/BhkSerializableLayout.h",
+      "reconstruction/unmapped/represented/BhkWorldObjectLayout.h",
+      "reconstruction/unmapped/represented/F004Recovered2f9380.cpp",
+      "reconstruction/unmapped/represented/F004Recovered2f9380.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h",
+      "reconstruction/unmapped/represented/NiObjectLayout.h",
+      "reconstruction/unmapped/represented/NiRefObjectLayout.h"
     ]
   },
   "symbol_map": {

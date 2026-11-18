@@ -29,8 +29,8 @@
         "object_sha256": "df86f58865bf0ffbf84416a054a6f313b29f88f0d02d9813a5f67cccb57c5995",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/CombatBehaviorTreeNodeLayout.cpp",
-          "reconstruction/actors/CombatBehaviorTreeNodeLayout.h"
+          "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.cpp",
+          "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "919506bfad284b8cb2ec26c56269c3ce977837379ecfd324383a133334f993f8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/CombatBehaviorTreeNodeLayout.cpp",
-          "reconstruction/actors/CombatBehaviorTreeNodeLayout.h"
+          "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.cpp",
+          "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.h"
         ]
       }
     }
@@ -332,14 +332,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actors/CombatBehaviorTreeNodeLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.cpp",
     "digest": "b38d1aacf039e9bbfc807e997b98eb7709b285f0f14f8f99f33e5deb0b9092ef",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7053963bd75373cf5b3a13220c0c83eead5e96e7600e9c2ca54f47e3b647d57f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/CombatBehaviorTreeNodeLayout.cpp",
-      "reconstruction/actors/CombatBehaviorTreeNodeLayout.h"
+      "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.cpp",
+      "reconstruction/skyrim/ai/combat/CombatBehaviorTreeNodeLayout.h"
     ]
   },
   "symbol_map": {

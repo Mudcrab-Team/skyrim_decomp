@@ -29,8 +29,8 @@
         "object_sha256": "e45453c7f41037d9b9581fd733db77fa640f3eb7e0d0e4ec6d4d5569f2caf9b5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/NativeFunctionLayout.cpp",
-          "reconstruction/bsengine/NativeFunctionLayout.h"
+          "reconstruction/skyrim/papyrus/NativeFunctionLayout.cpp",
+          "reconstruction/skyrim/papyrus/NativeFunctionLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "e65322aaf960295b6ff1992cff7d93d3803aa3d9946b4efbfa0f3e6801c7d8cd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/NativeFunctionLayout.cpp",
-          "reconstruction/bsengine/NativeFunctionLayout.h"
+          "reconstruction/skyrim/papyrus/NativeFunctionLayout.cpp",
+          "reconstruction/skyrim/papyrus/NativeFunctionLayout.h"
         ]
       }
     }
@@ -332,14 +332,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/NativeFunctionLayout.cpp",
+    "compiled": "reconstruction/skyrim/papyrus/NativeFunctionLayout.cpp",
     "digest": "4bbe1471e82e120647ef8ddd28ac009ae338e4ed392574d03a5a6f533eaf30ad",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e1c5c44b2dec22ade37040d1ccd2d8c49d636efdefe21bf6a38abbcfc3043a0f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/NativeFunctionLayout.cpp",
-      "reconstruction/bsengine/NativeFunctionLayout.h"
+      "reconstruction/skyrim/papyrus/NativeFunctionLayout.cpp",
+      "reconstruction/skyrim/papyrus/NativeFunctionLayout.h"
     ]
   },
   "symbol_map": {

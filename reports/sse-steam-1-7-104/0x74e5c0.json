@@ -31,10 +31,10 @@
         "object_sha256": "6f4653ae413f8e66abd4ee0bc370f75386b8dfc77425285ac89e7c3ee28a79d6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_3_component/PlayerCharacter.cpp",
-          "reconstruction/actor207_3_component/PlayerCharacter.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_74e5c0.cpp",
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_74e5c0.h"
         ]
       }
     }
@@ -187,16 +187,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_3_component/PlayerCharacter.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/PlayerCharacter_74e5c0.cpp",
     "digest": "ea8749210beafd246eae1fa55a4dda2b59603e9c1cf776ae9c9d87babd4d58a0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7c21bcee102f993a5fa058f2da7ae92c527c436ab2f515823e09df961c6be988",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_3_component/PlayerCharacter.cpp",
-      "reconstruction/actor207_3_component/PlayerCharacter.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacter_74e5c0.cpp",
+      "reconstruction/skyrim_shared/actors/PlayerCharacter_74e5c0.h"
     ]
   },
   "symbol_map": {

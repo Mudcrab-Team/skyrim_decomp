@@ -29,8 +29,8 @@
         "object_sha256": "343eeb51f999b5d4624aaf0b3bc188909852b6cda5c05be8d66c6301d6fb6159",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CompressedArchiveFile.cpp",
-          "reconstruction/bsengine/CompressedArchiveFile.h"
+          "reconstruction/bssystem/CompressedArchiveFile.cpp",
+          "reconstruction/bssystem/CompressedArchiveFile.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ab600973af7b71b6de3f3fa7533199332270b777a813a8a78b978cfd97153642",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CompressedArchiveFile.cpp",
-          "reconstruction/bsengine/CompressedArchiveFile.h"
+          "reconstruction/bssystem/CompressedArchiveFile.cpp",
+          "reconstruction/bssystem/CompressedArchiveFile.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/CompressedArchiveFile.cpp",
+    "compiled": "reconstruction/bssystem/CompressedArchiveFile.cpp",
     "digest": "8d318caf2734e577f7119f5db5bc915f7800b6f37ed98cf02cb21ddbb1845eaa",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9f3489de70cf8270079f8787c0686249ed38b744626c8cb4ecb3ac9f4b291ade",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/CompressedArchiveFile.cpp",
-      "reconstruction/bsengine/CompressedArchiveFile.h"
+      "reconstruction/bssystem/CompressedArchiveFile.cpp",
+      "reconstruction/bssystem/CompressedArchiveFile.h"
     ]
   },
   "symbol_map": {

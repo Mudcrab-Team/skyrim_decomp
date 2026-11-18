@@ -29,8 +29,8 @@
         "object_sha256": "bb69fe8bd85516db85b8b20cff51d7d3e78146278b4815c0518d247d385f493e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AlchemyItem.cpp",
-          "reconstruction/forms/AlchemyItem.h"
+          "reconstruction/skyrim_shared/magic/AlchemyItem.cpp",
+          "reconstruction/skyrim_shared/magic/AlchemyItem.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2a9293f57f0a35c99d182a638e9b807ad20ac0bba13cb60f4ed8aac4ae1df9cc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AlchemyItem.cpp",
-          "reconstruction/forms/AlchemyItem.h"
+          "reconstruction/skyrim_shared/magic/AlchemyItem.cpp",
+          "reconstruction/skyrim_shared/magic/AlchemyItem.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/AlchemyItem.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/AlchemyItem.cpp",
     "digest": "c170c92eb30582d032e9432a214fa85c268ae2877e20c363eb0c323cff47fa0e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f4ca024c110319e150d9e689557ec5bac3d9b8f815587f5ac3028b2e5bf00e84",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/AlchemyItem.cpp",
-      "reconstruction/forms/AlchemyItem.h"
+      "reconstruction/skyrim_shared/magic/AlchemyItem.cpp",
+      "reconstruction/skyrim_shared/magic/AlchemyItem.h"
     ]
   },
   "symbol_map": {

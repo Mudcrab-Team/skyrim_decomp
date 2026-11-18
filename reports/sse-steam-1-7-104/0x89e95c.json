@@ -29,9 +29,9 @@
         "object_sha256": "45c7b0716ce26b7d72f9e42d0831e82323d749f368171a7349740a8904a95a56",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterPathFleeLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterPathFleeLayout.h",
-          "reconstruction/bsengine/PathRegistrationBasesLayout.h"
+          "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.cpp",
+          "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.h",
+          "reconstruction/skyrim/ai/movement/PathRegistrationBasesLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "f5fcf2132f07bd174bf11b2d692aa85b7322cf16da93f1ea7dece45366a5175e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterPathFleeLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterPathFleeLayout.h",
-          "reconstruction/bsengine/PathRegistrationBasesLayout.h"
+          "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.cpp",
+          "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.h",
+          "reconstruction/skyrim/ai/movement/PathRegistrationBasesLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/AutoRegisterPathFleeLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.cpp",
     "digest": "9e5d688aeeb76523f232509bc6cf463210cd7d4c7ebaf84d3e88891ed5db43f3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b4e449a54f733c87b44d2b9eac061b1d9501a9a6719702da98d7ad5dee67a1f4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AutoRegisterPathFleeLayout.cpp",
-      "reconstruction/bsengine/AutoRegisterPathFleeLayout.h",
-      "reconstruction/bsengine/PathRegistrationBasesLayout.h"
+      "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.cpp",
+      "reconstruction/skyrim/ai/movement/AutoRegisterPathFleeLayout.h",
+      "reconstruction/skyrim/ai/movement/PathRegistrationBasesLayout.h"
     ]
   },
   "symbol_map": {

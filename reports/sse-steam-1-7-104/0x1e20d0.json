@@ -29,8 +29,8 @@
         "object_sha256": "3f0b61ef33f31fad866a9a12198fef82661dce176f3b0ca7eb6cf81ada68aa8d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESEnchantableForm.cpp",
-          "reconstruction/forms/TESEnchantableForm.h"
+          "reconstruction/skyrim_shared/magic/TESEnchantableForm.cpp",
+          "reconstruction/skyrim_shared/magic/TESEnchantableForm.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "35f5b2d9a6fa13b2bb12a389c8b4f18e8dac5f4e4d54d5ba402bf280f8d71941",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESEnchantableForm.cpp",
-          "reconstruction/forms/TESEnchantableForm.h"
+          "reconstruction/skyrim_shared/magic/TESEnchantableForm.cpp",
+          "reconstruction/skyrim_shared/magic/TESEnchantableForm.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESEnchantableForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/TESEnchantableForm.cpp",
     "digest": "bbb38d08685243176495f78b991a80f43b56689f87d5888097d16f5d04fc033e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3fe5e5be23afa35657ff98ed04c4fe29282d4113fe39b8c15a83607e8f5bf94f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESEnchantableForm.cpp",
-      "reconstruction/forms/TESEnchantableForm.h"
+      "reconstruction/skyrim_shared/magic/TESEnchantableForm.cpp",
+      "reconstruction/skyrim_shared/magic/TESEnchantableForm.h"
     ]
   },
   "symbol_map": {

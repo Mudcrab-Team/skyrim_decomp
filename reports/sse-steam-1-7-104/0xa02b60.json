@@ -31,8 +31,8 @@
         "object_sha256": "b91081a524f738348e64d6ca22077d8d6b691e3a3e7280aa467e6d4d15cd0bdf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/ScriptActor.cpp",
-          "reconstruction/actor207_1/ScriptActor.h"
+          "reconstruction/bsscript/ScriptActor.cpp",
+          "reconstruction/bsscript/ScriptActor.h"
         ]
       }
     }
@@ -185,14 +185,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/ScriptActor.cpp",
+    "compiled": "reconstruction/bsscript/ScriptActor.cpp",
     "digest": "bf64d0adc24243495ec017107ff71955c05c2145bdddac8501aaac8e6a8fddd0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "872df63cb51ff97d96fb83563fe5835c872388269bd7a55550c04b349e0daadf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/ScriptActor.cpp",
-      "reconstruction/actor207_1/ScriptActor.h"
+      "reconstruction/bsscript/ScriptActor.cpp",
+      "reconstruction/bsscript/ScriptActor.h"
     ]
   },
   "symbol_map": {

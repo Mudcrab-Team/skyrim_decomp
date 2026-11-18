@@ -29,8 +29,8 @@
         "object_sha256": "3669d08f484d14cd96fd62d25465179752d1d5b0d345adeffef4a885de32cc7a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPreloadable.cpp",
-          "reconstruction/forms/BGSPreloadable.h"
+          "reconstruction/skyrim_shared/forms/BGSPreloadable.cpp",
+          "reconstruction/skyrim_shared/forms/BGSPreloadable.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "61275b13bb2a090dacdded83bbbe150faa549dddabec0cec00f804a79805673c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPreloadable.cpp",
-          "reconstruction/forms/BGSPreloadable.h"
+          "reconstruction/skyrim_shared/forms/BGSPreloadable.cpp",
+          "reconstruction/skyrim_shared/forms/BGSPreloadable.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSPreloadable.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSPreloadable.cpp",
     "digest": "fddae05c5524137c19b07c79982d5eae87214b8aeb1517590b9d8844550d0427",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b3c57c31d00685bd2bdbec5948f863816311b2ecbbf11c14d55ab5ed87cc86c2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSPreloadable.cpp",
-      "reconstruction/forms/BGSPreloadable.h"
+      "reconstruction/skyrim_shared/forms/BGSPreloadable.cpp",
+      "reconstruction/skyrim_shared/forms/BGSPreloadable.h"
     ]
   },
   "symbol_map": {

@@ -29,15 +29,15 @@
         "object_sha256": "226db0404d867929368644fc72dca0fa98eb627598b9c319eb607af06092a19f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/QueuedFileDataStorageLayout.h",
-          "reconstruction/bsengine/ThirdPersonInputPrefixLayout.cpp",
-          "reconstruction/bsengine/ThirdPersonInputPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/represented_storage/BSExtraDataLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bssystem/QueuedFileDataStorageLayout.h",
+          "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.cpp",
+          "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "963e425419999ca401431fffbb3f6d7e97253672894e688ce52b2e243bf63742",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/QueuedFileDataStorageLayout.h",
-          "reconstruction/bsengine/ThirdPersonInputPrefixLayout.cpp",
-          "reconstruction/bsengine/ThirdPersonInputPrefixLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/represented_storage/BSExtraDataLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bssystem/QueuedFileDataStorageLayout.h",
+          "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.cpp",
+          "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h"
         ]
       }
     }
@@ -331,21 +331,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ThirdPersonInputPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.cpp",
     "digest": "b6f641454f8e131b1d0d046e737e4c12ba1659a4e4df79a68d5ce99ae37704b2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "935d98944cdb03d9fd801de7af726e5a71197a869dbfbe3c736fa087fc36f406",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/QueuedFileDataStorageLayout.h",
-      "reconstruction/bsengine/ThirdPersonInputPrefixLayout.cpp",
-      "reconstruction/bsengine/ThirdPersonInputPrefixLayout.h",
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/represented_storage/BSExtraDataLayout.h",
-      "reconstruction/represented_storage/BSSoundHandleLayout.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/bssystem/QueuedFileDataStorageLayout.h",
+      "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.cpp",
+      "reconstruction/skyrim/controls/ThirdPersonInputPrefixLayout.h",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+      "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h"
     ]
   },
   "symbol_map": {

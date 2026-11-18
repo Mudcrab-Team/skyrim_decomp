@@ -29,8 +29,8 @@
         "object_sha256": "4aab998690a9cb31f834712c1958b73da8d3ef3c928036906c8e227620565739",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/MasterFilePathingStreamGetSize.cpp",
-          "reconstruction/fo4hints/MasterFilePathingStreamGetSize.h"
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.cpp",
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6fca7767041a3eb369880ba41643bf937bf6f7abb035a961237c4395b76b584a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/MasterFilePathingStreamGetSize.cpp",
-          "reconstruction/fo4hints/MasterFilePathingStreamGetSize.h"
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.cpp",
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.h"
         ]
       }
     }
@@ -318,14 +318,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/MasterFilePathingStreamGetSize.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.cpp",
     "digest": "8a2d32aeb997c1700059e4b79a368c5202f3652349a8884c3285ae43c4186107",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5f4a97e9a518452baeb9296581205263815f05b19879bb187e82cc61c6178e1e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/MasterFilePathingStreamGetSize.cpp",
-      "reconstruction/fo4hints/MasterFilePathingStreamGetSize.h"
+      "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.cpp",
+      "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamGetSize.h"
     ]
   },
   "symbol_map": {

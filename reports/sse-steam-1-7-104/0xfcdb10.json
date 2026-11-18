@@ -29,8 +29,8 @@
         "object_sha256": "11cf81a29c0b2ba6e0f9b2906ed32ad2d71f5d84ba2e88f325dc436380b94e5a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMultiBoundRoom.cpp",
-          "reconstruction/bsengine/BSMultiBoundRoom.h"
+          "reconstruction/gamebryo/nimain/BSMultiBoundRoom.cpp",
+          "reconstruction/gamebryo/nimain/BSMultiBoundRoom.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2aad74e8e68a3abc0d06bcc95034096115d437d7472a9edca977fc861e15d69d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMultiBoundRoom.cpp",
-          "reconstruction/bsengine/BSMultiBoundRoom.h"
+          "reconstruction/gamebryo/nimain/BSMultiBoundRoom.cpp",
+          "reconstruction/gamebryo/nimain/BSMultiBoundRoom.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSMultiBoundRoom.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSMultiBoundRoom.cpp",
     "digest": "3fbd2c79928622f2eacf10783f8360efb85499a0af18d831588aad20fe50715a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "35631a9d62684fa6c9de5aa1ef3066a01fb6c81b1da57adcce5b1301a95562e7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSMultiBoundRoom.cpp",
-      "reconstruction/bsengine/BSMultiBoundRoom.h"
+      "reconstruction/gamebryo/nimain/BSMultiBoundRoom.cpp",
+      "reconstruction/gamebryo/nimain/BSMultiBoundRoom.h"
     ]
   },
   "symbol_map": {

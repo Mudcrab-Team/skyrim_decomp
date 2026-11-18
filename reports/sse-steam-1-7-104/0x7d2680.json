@@ -29,8 +29,8 @@
         "object_sha256": "7cc6cdfad5368ae148604479baff24fb34f0e185152cbfda95d07a158c04c7b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/DeletingLeaf7d2680.cpp",
-          "reconstruction/leaves/DeletingLeaf7d2680.h"
+          "reconstruction/unmapped/leaves/DeletingLeaf7d2680.cpp",
+          "reconstruction/unmapped/leaves/DeletingLeaf7d2680.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "29de78e55cb800bed4af4d8074bfb2cb02aa746685ebd25982a452f0cb203522",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/DeletingLeaf7d2680.cpp",
-          "reconstruction/leaves/DeletingLeaf7d2680.h"
+          "reconstruction/unmapped/leaves/DeletingLeaf7d2680.cpp",
+          "reconstruction/unmapped/leaves/DeletingLeaf7d2680.h"
         ]
       }
     }
@@ -330,14 +330,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/leaves/DeletingLeaf7d2680.cpp",
+    "compiled": "reconstruction/unmapped/leaves/DeletingLeaf7d2680.cpp",
     "digest": "f761964cd786ae1ca63111ad9edf55ccc4db68518a938d94dab6c68182a93486",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4668ffbc11b1f71ba4377f5aedd42e39ff16e873d2b9b24e37b8622ff62cc822",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/leaves/DeletingLeaf7d2680.cpp",
-      "reconstruction/leaves/DeletingLeaf7d2680.h"
+      "reconstruction/unmapped/leaves/DeletingLeaf7d2680.cpp",
+      "reconstruction/unmapped/leaves/DeletingLeaf7d2680.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "d20f85550f65c8f5656571bc6cf4d96df7eba9bf1a7741b399e3a2d157c98c0a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESModelTextureSwap.cpp",
-          "reconstruction/forms/TESModelTextureSwap.h"
+          "reconstruction/skyrim_shared/forms/TESModelTextureSwap.cpp",
+          "reconstruction/skyrim_shared/forms/TESModelTextureSwap.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "fb667e6028c48c711f7a1aa907f71a1b8c1550f7cf1ab63f0554eec0bcb6d97f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESModelTextureSwap.cpp",
-          "reconstruction/forms/TESModelTextureSwap.h"
+          "reconstruction/skyrim_shared/forms/TESModelTextureSwap.cpp",
+          "reconstruction/skyrim_shared/forms/TESModelTextureSwap.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESModelTextureSwap.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESModelTextureSwap.cpp",
     "digest": "7bbc24d0727b54196f9a7e8727fcccccfe307627c5e2e1eaf97fe180e42ede13",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e65ead5cf10d8907df301c6aeb3004f2b27fc40f6e4f9ed533ce4e6e3a198926",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESModelTextureSwap.cpp",
-      "reconstruction/forms/TESModelTextureSwap.h"
+      "reconstruction/skyrim_shared/forms/TESModelTextureSwap.cpp",
+      "reconstruction/skyrim_shared/forms/TESModelTextureSwap.h"
     ]
   },
   "symbol_map": {

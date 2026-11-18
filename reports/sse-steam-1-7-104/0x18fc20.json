@@ -29,9 +29,9 @@
         "object_sha256": "912197ee07eccd1d09fbf7429a97eda349c3166669776a8079d21ad39c91ab43",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraSoulStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraSoulStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "9c01dbc56b14cb69aeba3aa1b3b5fb22b8c7abacbfb6cadce8fbc00c44ac1247",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraSoulStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraSoulStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraSoulStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.cpp",
     "digest": "3ce43bf0df1f8b32a8825924dbc7a8b94ebeea0b3524747159f0dff216952978",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6e6673e37fb1a4dfeb8e9408fafd3aff7970b380a7782fe1ddc015fc76f94b7f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraSoulStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraSoulStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraSoulStorageLayout.h"
     ]
   },
   "symbol_map": {

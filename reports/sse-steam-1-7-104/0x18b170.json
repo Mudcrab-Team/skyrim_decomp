@@ -29,8 +29,8 @@
         "object_sha256": "83305d9789aa171d976f72a23837bf07f2202131939c7499251980f9b9fce80c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraHorse.cpp",
-          "reconstruction/bsengine/ExtraHorse.h"
+          "reconstruction/skyrim_shared/extradata/ExtraHorse.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHorse.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "4dd56ff8265c31b53eae18af4c46458fb98aef59d7e40081f8b3e727fae547b9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraHorse.cpp",
-          "reconstruction/bsengine/ExtraHorse.h"
+          "reconstruction/skyrim_shared/extradata/ExtraHorse.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHorse.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHorse.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHorse.cpp",
     "digest": "8dfcfaf88522b870decee93c51de9dc4d0f2a8ffc651e7fd4ca5c823820d2790",
     "digest_method": "tu-sha256-v2",
     "run_digest": "be57fae8545956698f302fcec6de1fd326c037b4c07a77e5040c72e0d7d23376",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraHorse.cpp",
-      "reconstruction/bsengine/ExtraHorse.h"
+      "reconstruction/skyrim_shared/extradata/ExtraHorse.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHorse.h"
     ]
   },
   "symbol_map": {

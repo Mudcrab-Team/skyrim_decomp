@@ -29,8 +29,8 @@
         "object_sha256": "9a0cc0e48916d7a0c03db2406e20f21d2e1a482469ef94880a32e9b9e690dd2f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraActivateLoopSound.cpp",
-          "reconstruction/bsengine/ExtraActivateLoopSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "51bb4847c7ee00bda81f74bba5193d6ba49e8714ae0c709344303b1ff1dec269",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraActivateLoopSound.cpp",
-          "reconstruction/bsengine/ExtraActivateLoopSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraActivateLoopSound.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.cpp",
     "digest": "51dca0c83ffa2b757a39192615e54ce23c0bf488cddfbfd2985f4eff64fb4ed4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0dd2aabfa2eea0c1683c4f940332aeb88a23640addc8b36e0170aad176fe5acb",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraActivateLoopSound.cpp",
-      "reconstruction/bsengine/ExtraActivateLoopSound.h"
+      "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraActivateLoopSound.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "d23a7bb2ae727112a599ae3d31753ddcfe5647224b6aa4a7ef9d3bcfe14d76c2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSEncounterZone.cpp",
-          "reconstruction/forms/BGSEncounterZone.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSEncounterZone.cpp",
+          "reconstruction/skyrim_shared/world/BGSEncounterZone.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "32376b051d8cd53273e3bc2abd0360bf8667db8670f479c17346a4629dd1c9e5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSEncounterZone.cpp",
-          "reconstruction/forms/BGSEncounterZone.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSEncounterZone.cpp",
+          "reconstruction/skyrim_shared/world/BGSEncounterZone.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSEncounterZone.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSEncounterZone.cpp",
     "digest": "4ed5d93486435a475e112c43010a6c606f008fec0537267dd59890faa4d2aae2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ef343e1f166f2aff5ab021b30ed82c069650d82a1523d4866943a9396835eea8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSEncounterZone.cpp",
-      "reconstruction/forms/BGSEncounterZone.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/BGSEncounterZone.cpp",
+      "reconstruction/skyrim_shared/world/BGSEncounterZone.h"
     ]
   },
   "symbol_map": {

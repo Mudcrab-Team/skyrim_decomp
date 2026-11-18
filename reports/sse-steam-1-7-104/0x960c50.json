@@ -29,10 +29,10 @@
         "object_sha256": "d47553f709cee436705c1c8ecdc12fbfb38e04ec33f0e407664e676ab8468f3e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-          "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "287875332179bb305cb63c4b1e9c4ee4fb6d438d406c9e290526d7d117a50e36",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-          "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.cpp",
     "digest": "d1eb65f4ce51f02e50fde42bdefeadc4facb1e9342e0a80c5de4c7a6366b4265",
     "digest_method": "tu-sha256-v2",
     "run_digest": "62f4b593518b6154f520f51970497ad691f62703199f60b3ac9bf3338d570786",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-      "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/QuickSaveLoadHandlerStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

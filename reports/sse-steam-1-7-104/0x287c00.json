@@ -29,11 +29,11 @@
         "object_sha256": "0f866945bbf6a1cbd9a82aca617563b9db2eaca0e73432fe01608b23835b5508",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/ConcreteFormFactoryLayout.h",
-          "reconstruction/fields/ConcreteObjectFormFactoryLayout.h",
-          "reconstruction/fields/FieldLeaf287c00.cpp",
-          "reconstruction/fields/FieldLeaf287c00.h",
-          "reconstruction/fields/IFormFactoryLayout.h"
+          "reconstruction/unmapped/fields/ConcreteFormFactoryLayout.h",
+          "reconstruction/unmapped/fields/ConcreteObjectFormFactoryLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf287c00.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf287c00.h",
+          "reconstruction/unmapped/fields/IFormFactoryLayout.h"
         ]
       },
       "winpc-native": {
@@ -52,11 +52,11 @@
         "object_sha256": "df4754a4f558a1c2a05a601711c0027a61a7bfb4834c50d07011db02139e1d0b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/ConcreteFormFactoryLayout.h",
-          "reconstruction/fields/ConcreteObjectFormFactoryLayout.h",
-          "reconstruction/fields/FieldLeaf287c00.cpp",
-          "reconstruction/fields/FieldLeaf287c00.h",
-          "reconstruction/fields/IFormFactoryLayout.h"
+          "reconstruction/unmapped/fields/ConcreteFormFactoryLayout.h",
+          "reconstruction/unmapped/fields/ConcreteObjectFormFactoryLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf287c00.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf287c00.h",
+          "reconstruction/unmapped/fields/IFormFactoryLayout.h"
         ]
       }
     }
@@ -346,17 +346,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf287c00.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf287c00.cpp",
     "digest": "2150a7052bacaa4187e40ef2a4a2af249eb91614ec833eec2cc94287ad6ff04e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d91d83c48d3c07c1cd5a5cf9db0828508f8cdee0c134bc6689a0546d862d509a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/ConcreteFormFactoryLayout.h",
-      "reconstruction/fields/ConcreteObjectFormFactoryLayout.h",
-      "reconstruction/fields/FieldLeaf287c00.cpp",
-      "reconstruction/fields/FieldLeaf287c00.h",
-      "reconstruction/fields/IFormFactoryLayout.h"
+      "reconstruction/unmapped/fields/ConcreteFormFactoryLayout.h",
+      "reconstruction/unmapped/fields/ConcreteObjectFormFactoryLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf287c00.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf287c00.h",
+      "reconstruction/unmapped/fields/IFormFactoryLayout.h"
     ]
   },
   "symbol_map": {

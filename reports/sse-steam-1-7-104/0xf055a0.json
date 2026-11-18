@@ -34,8 +34,8 @@
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiObjectNET.h",
           "reconstruction/declarations/NiRefObject.h",
-          "reconstruction/netimmerse/NiParticles.cpp",
-          "reconstruction/netimmerse/NiParticles.h"
+          "reconstruction/gamebryo/niparticle/NiParticles.cpp",
+          "reconstruction/gamebryo/niparticle/NiParticles.h"
         ]
       }
     }
@@ -177,7 +177,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiParticles.cpp",
+    "compiled": "reconstruction/gamebryo/niparticle/NiParticles.cpp",
     "digest": "bb94f77a17ce8c8f0a64c8d952a765dca557e2a41f8cf0635f2987f8748d66cb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f29f3071ecafdf4686938a36f8a5e7bc1ce958121b0282b5168eaa3d9362c30a",
@@ -187,8 +187,8 @@
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiObjectNET.h",
       "reconstruction/declarations/NiRefObject.h",
-      "reconstruction/netimmerse/NiParticles.cpp",
-      "reconstruction/netimmerse/NiParticles.h"
+      "reconstruction/gamebryo/niparticle/NiParticles.cpp",
+      "reconstruction/gamebryo/niparticle/NiParticles.h"
     ]
   },
   "submitter": "hinkiii",

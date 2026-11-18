@@ -29,8 +29,8 @@
         "object_sha256": "3ad3b000f030f5913cafd34b8486068923895ca0d060a30a36b24bcbc68c6e39",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/TableStoreLeaf84d670.cpp",
-          "reconstruction/leaves/TableStoreLeaf84d670.h"
+          "reconstruction/unmapped/leaves/TableStoreLeaf84d670.cpp",
+          "reconstruction/unmapped/leaves/TableStoreLeaf84d670.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3182a45731f420543b94dafcab3eb140a25a6d46f773f9a63681bdbecc43eb98",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/TableStoreLeaf84d670.cpp",
-          "reconstruction/leaves/TableStoreLeaf84d670.h"
+          "reconstruction/unmapped/leaves/TableStoreLeaf84d670.cpp",
+          "reconstruction/unmapped/leaves/TableStoreLeaf84d670.h"
         ]
       }
     }
@@ -333,14 +333,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/leaves/TableStoreLeaf84d670.cpp",
+    "compiled": "reconstruction/unmapped/leaves/TableStoreLeaf84d670.cpp",
     "digest": "f759422b44f50a16d2c24fe20492f58f8278690f6923cc7fdb0729a320f066b9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "818f2f85ea8ef99f02c9a5b6f2dd91224fbde6af51c7017e8af17ed9770d83e2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/leaves/TableStoreLeaf84d670.cpp",
-      "reconstruction/leaves/TableStoreLeaf84d670.h"
+      "reconstruction/unmapped/leaves/TableStoreLeaf84d670.cpp",
+      "reconstruction/unmapped/leaves/TableStoreLeaf84d670.h"
     ]
   },
   "symbol_map": {

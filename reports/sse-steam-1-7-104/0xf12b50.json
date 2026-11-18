@@ -29,9 +29,9 @@
         "object_sha256": "4b098f558cf104ebcaf32cb8bde7d4c80264a45a114d04a60f0e5e481828360f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiExtraData.h",
-          "reconstruction/netimmerse/NiIntegersExtraData.cpp",
-          "reconstruction/netimmerse/NiIntegersExtraData.h"
+          "reconstruction/gamebryo/nimain/NiExtraData.h",
+          "reconstruction/gamebryo/nimain/NiIntegersExtraData.cpp",
+          "reconstruction/gamebryo/nimain/NiIntegersExtraData.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "053eaf70599387742b6eb1eb46a9db4af05a2ce8f976be18e50d39633b027f4c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiExtraData.h",
-          "reconstruction/netimmerse/NiIntegersExtraData.cpp",
-          "reconstruction/netimmerse/NiIntegersExtraData.h"
+          "reconstruction/gamebryo/nimain/NiExtraData.h",
+          "reconstruction/gamebryo/nimain/NiIntegersExtraData.cpp",
+          "reconstruction/gamebryo/nimain/NiIntegersExtraData.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiIntegersExtraData.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiIntegersExtraData.cpp",
     "digest": "941fdb150c0480b4c04f1ea5e7f632c17ca948358a76374496b7a45651232f7b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b945826cbcaaac0a3fb72e28052950bc8dbb9d15e9161fec7785e851406f51de",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiExtraData.h",
-      "reconstruction/netimmerse/NiIntegersExtraData.cpp",
-      "reconstruction/netimmerse/NiIntegersExtraData.h"
+      "reconstruction/gamebryo/nimain/NiExtraData.h",
+      "reconstruction/gamebryo/nimain/NiIntegersExtraData.cpp",
+      "reconstruction/gamebryo/nimain/NiIntegersExtraData.h"
     ]
   },
   "symbol_map": {

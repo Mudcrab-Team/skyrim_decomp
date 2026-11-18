@@ -29,8 +29,8 @@
         "object_sha256": "1ccc71ce224b689552d81b013443c0d8882df0aea270f973f4d1a11d54be0cfc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraShouldWear.cpp",
-          "reconstruction/bsengine/ExtraShouldWear.h"
+          "reconstruction/skyrim_shared/extradata/ExtraShouldWear.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraShouldWear.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "1c59f86f863eb94b4b75ad431407bb3b09d4edeb31da05c9adeabfa7fd533b41",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraShouldWear.cpp",
-          "reconstruction/bsengine/ExtraShouldWear.h"
+          "reconstruction/skyrim_shared/extradata/ExtraShouldWear.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraShouldWear.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraShouldWear.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraShouldWear.cpp",
     "digest": "af161e6c9d665bb36e4e00a4911430c5f4899f3daba170202a3b230cb6e51177",
     "digest_method": "tu-sha256-v2",
     "run_digest": "25cb3b8583b22d3338860f9557ea0c9fcaf375c1d60ad76f7d8bf746e5fea7c0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraShouldWear.cpp",
-      "reconstruction/bsengine/ExtraShouldWear.h"
+      "reconstruction/skyrim_shared/extradata/ExtraShouldWear.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraShouldWear.h"
     ]
   },
   "symbol_map": {

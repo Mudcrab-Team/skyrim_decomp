@@ -29,8 +29,8 @@
         "object_sha256": "5887d6a4b63fee2d2a843e09058efd9668e954be80c87d64a0ad41b5faafc749",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderAccumulator.cpp",
-          "reconstruction/bsengine/BSShaderAccumulator.h",
+          "reconstruction/bsshader/BSShaderAccumulator.cpp",
+          "reconstruction/bsshader/BSShaderAccumulator.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "6a21e4a57423ca3c7d268fc51746f4504d34f967490eedbf1197d2b132f44d31",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderAccumulator.cpp",
-          "reconstruction/bsengine/BSShaderAccumulator.h",
+          "reconstruction/bsshader/BSShaderAccumulator.cpp",
+          "reconstruction/bsshader/BSShaderAccumulator.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -319,14 +319,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSShaderAccumulator.cpp",
+    "compiled": "reconstruction/bsshader/BSShaderAccumulator.cpp",
     "digest": "a971059a3e4e43b21708e6e8b7518da2343e3de568356945c17897b6c4dcc7af",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a8f44bfae88cad04b5fff7f0be4ca7502240428492ecc6d5ef20a6c0271f7355",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShaderAccumulator.cpp",
-      "reconstruction/bsengine/BSShaderAccumulator.h",
+      "reconstruction/bsshader/BSShaderAccumulator.cpp",
+      "reconstruction/bsshader/BSShaderAccumulator.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

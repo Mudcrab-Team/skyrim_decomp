@@ -29,8 +29,8 @@
         "object_sha256": "6cbbddf5aff575781e7f1370abe142b86deb7f13b69539af530762af16f720fc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/inventory/ArmorRatingVisitor.cpp",
-          "reconstruction/inventory/ArmorRatingVisitor.h"
+          "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp",
+          "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "58dd00c865805228e808d7579921ff23975bbd559ec235bed13817b2c76452a3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/inventory/ArmorRatingVisitor.cpp",
-          "reconstruction/inventory/ArmorRatingVisitor.h"
+          "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp",
+          "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/inventory/ArmorRatingVisitor.cpp",
+    "compiled": "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp",
     "digest": "bc3703c0aed9a6c5e687ff8f7e215f6372fceab26fa2fd9a805f48ef1ecafaef",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3371d64b2a138191c579d45b8b18cd8ce8b258c8377dd7aaeb50a24b6ecd0e22",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/inventory/ArmorRatingVisitor.cpp",
-      "reconstruction/inventory/ArmorRatingVisitor.h"
+      "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp",
+      "reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.h"
     ]
   },
   "symbol_map": {

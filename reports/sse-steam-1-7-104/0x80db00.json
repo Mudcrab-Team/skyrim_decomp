@@ -29,8 +29,8 @@
         "object_sha256": "a08409e469eb546a91c51d5cfeac6cb0665427a6b92cb24e7ec00019407bfe06",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatMeleeAimController.cpp",
-          "reconstruction/fo4hints/CombatMeleeAimController.h"
+          "reconstruction/skyrim/ai/combat/CombatMeleeAimController.cpp",
+          "reconstruction/skyrim/ai/combat/CombatMeleeAimController.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5e42f955d9fff2ef1d3869825102510a507aa69d8937ca7badf0c5e280cf904e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatMeleeAimController.cpp",
-          "reconstruction/fo4hints/CombatMeleeAimController.h"
+          "reconstruction/skyrim/ai/combat/CombatMeleeAimController.cpp",
+          "reconstruction/skyrim/ai/combat/CombatMeleeAimController.h"
         ]
       }
     }
@@ -363,14 +363,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/CombatMeleeAimController.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatMeleeAimController.cpp",
     "digest": "10fd27b181fc77eba61293b23acfc5d92d1e581e4f28e0c33f4e3851262018bf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5f6e3e384d197d2cbdadd93b762959b202573043166447f0b7eb2ebd8c2b7783",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/CombatMeleeAimController.cpp",
-      "reconstruction/fo4hints/CombatMeleeAimController.h"
+      "reconstruction/skyrim/ai/combat/CombatMeleeAimController.cpp",
+      "reconstruction/skyrim/ai/combat/CombatMeleeAimController.h"
     ]
   },
   "symbol_map": {

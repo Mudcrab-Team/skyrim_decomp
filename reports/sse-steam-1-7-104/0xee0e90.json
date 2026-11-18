@@ -31,10 +31,10 @@
         "object_sha256": "07840b10481bf6e84e90ecefca526cee51bc7f6067ab98b67697dcec564aa30e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/netimmerse/NiObjectNET.h",
-          "reconstruction/small202_2f8b0afa/NiAVObject.cpp",
-          "reconstruction/small202_2f8b0afa/NiAVObject.h"
+          "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.cpp",
+          "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.h",
+          "reconstruction/gamebryo/nimain/NiObjectNET.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "1e7f6d714afecd2caa7f715a2a827a1922f9faca4eb5702c4336c575b5381d82",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/netimmerse/NiObjectNET.h",
-          "reconstruction/small202_2f8b0afa/NiAVObject.cpp",
-          "reconstruction/small202_2f8b0afa/NiAVObject.h"
+          "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.cpp",
+          "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.h",
+          "reconstruction/gamebryo/nimain/NiObjectNET.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       }
     }
@@ -326,16 +326,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/small202_2f8b0afa/NiAVObject.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.cpp",
     "digest": "5ea8fc391eee025001ea98a9acef57a5ad38d96ea855c4f944a9ada177c9ec41",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6becdb325a88c30c00b6c26790c6729029b71c7fa8ce43574af940cefbc4f36f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiObject.h",
-      "reconstruction/netimmerse/NiObjectNET.h",
-      "reconstruction/small202_2f8b0afa/NiAVObject.cpp",
-      "reconstruction/small202_2f8b0afa/NiAVObject.h"
+      "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.cpp",
+      "reconstruction/gamebryo/nimain/NiAVObject_ee0e90.h",
+      "reconstruction/gamebryo/nimain/NiObjectNET.h",
+      "reconstruction/netimmerse/NiObject.h"
     ]
   },
   "symbol_map": {

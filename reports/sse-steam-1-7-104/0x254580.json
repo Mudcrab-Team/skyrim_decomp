@@ -29,10 +29,10 @@
         "object_sha256": "e2b63f6a0bf6fa99391bceadcdf663c8c3bc5a0acb278ae4f1f4636a97e5e967",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaf254580.cpp",
-          "reconstruction/fields/FieldLeaf254580.h",
-          "reconstruction/fields/TESRegionGrassObjectLayout.h",
-          "reconstruction/fields/TESRegionObjectBaseLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaf254580.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf254580.h",
+          "reconstruction/unmapped/fields/TESRegionGrassObjectLayout.h",
+          "reconstruction/unmapped/fields/TESRegionObjectBaseLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "fe4ed8f284d9efa05c5390973f5b59d905c608bb3e1353c5a0d757df69bcdfd5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaf254580.cpp",
-          "reconstruction/fields/FieldLeaf254580.h",
-          "reconstruction/fields/TESRegionGrassObjectLayout.h",
-          "reconstruction/fields/TESRegionObjectBaseLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaf254580.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf254580.h",
+          "reconstruction/unmapped/fields/TESRegionGrassObjectLayout.h",
+          "reconstruction/unmapped/fields/TESRegionObjectBaseLayout.h"
         ]
       }
     }
@@ -344,16 +344,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf254580.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf254580.cpp",
     "digest": "cf99566a0141498321e05be0a57e0c10c27f2b37a65be9083c609133c2384b14",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f71dc8bd0f3d7e652880513ee9ca2da35d6b1fc94cc3e782ed93ed155fb1b06c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/FieldLeaf254580.cpp",
-      "reconstruction/fields/FieldLeaf254580.h",
-      "reconstruction/fields/TESRegionGrassObjectLayout.h",
-      "reconstruction/fields/TESRegionObjectBaseLayout.h"
+      "reconstruction/unmapped/fields/FieldLeaf254580.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf254580.h",
+      "reconstruction/unmapped/fields/TESRegionGrassObjectLayout.h",
+      "reconstruction/unmapped/fields/TESRegionObjectBaseLayout.h"
     ]
   },
   "symbol_map": {

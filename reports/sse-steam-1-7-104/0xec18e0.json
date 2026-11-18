@@ -29,8 +29,8 @@
         "object_sha256": "eb3ba557b4e640950f22ddf3c7db2ad08c4a9eddb4ad52735b098f29cecef38e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSCounterStorage.cpp",
-          "reconstruction/bsengine/BSCounterStorage.h"
+          "reconstruction/bscore/BSCounterStorage.cpp",
+          "reconstruction/bscore/BSCounterStorage.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ca92c200b89b7aa01aad39767fffa712b6a9ab132d554a092b0cf285323f7130",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSCounterStorage.cpp",
-          "reconstruction/bsengine/BSCounterStorage.h"
+          "reconstruction/bscore/BSCounterStorage.cpp",
+          "reconstruction/bscore/BSCounterStorage.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSCounterStorage.cpp",
+    "compiled": "reconstruction/bscore/BSCounterStorage.cpp",
     "digest": "e415f09871c41bf7ff311c7a85b19c3c2af861cfd7aa887ea87e1e7e0b32df25",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6dcbb282ecd92847a1c9228a0bc113c711cf7da3bfc97983ad5880f5a3f34f68",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSCounterStorage.cpp",
-      "reconstruction/bsengine/BSCounterStorage.h"
+      "reconstruction/bscore/BSCounterStorage.cpp",
+      "reconstruction/bscore/BSCounterStorage.h"
     ]
   },
   "symbol_map": {

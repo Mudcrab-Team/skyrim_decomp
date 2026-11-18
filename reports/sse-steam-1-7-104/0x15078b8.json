@@ -29,15 +29,15 @@
         "object_sha256": "a04bbdd824655973bfc1081fd873cc74f10ae2e11ca1e75493a9c4865b044205",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "4961ac707a75d811c73e12c3a5288cc8bbcc7f15fe4dea81a93adbf23ed4db3f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -349,21 +349,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
     "digest": "a312c6853be2b3938858b1aace9897aeea3c914e545346c5e2c4ac2bbecad4d7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f4a39a42210856462b0815cf4f26b4a650e7637ee26933e5f1e6cdcf89efe83a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderISVolumetricLightingBlurHCSThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

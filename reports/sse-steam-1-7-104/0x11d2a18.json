@@ -29,9 +29,9 @@
         "object_sha256": "5b834cc89dce0cc2fb7e46c425531ef8d0d351eba2f97d8214f44f5ab9bd81a1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.cpp",
-          "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.cpp",
+          "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "83c76605ba9911aa4b44a446d3617e73510982938791a8c55aebeadc7e1642ed",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.cpp",
-          "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.cpp",
+          "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.cpp",
     "digest": "89f0f5653f589b8de6021031594ce4e9ab52c52e20f2d98ca9de10b0b201a50d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "af0048891b3c71a5b8a061cf6f455c35de4a9991a37ada7c19e473050dbaa2e3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.cpp",
-      "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.cpp",
+      "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.h"
     ]
   },
   "symbol_map": {

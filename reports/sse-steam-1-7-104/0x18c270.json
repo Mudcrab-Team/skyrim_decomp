@@ -29,8 +29,8 @@
         "object_sha256": "bf3fe69fdbf7102c91bcd501764fa2930cca27d93e17d3a25cc37b390b8fdd2d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellGrassData.cpp",
-          "reconstruction/bsengine/ExtraCellGrassData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2b912789d3eaae568b8ef479caa29041447e6081c46d75fa5f307f2ace6c0b66",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellGrassData.cpp",
-          "reconstruction/bsengine/ExtraCellGrassData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellGrassData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.cpp",
     "digest": "6a8d43c5213c344b610af04f057ac00c75cf7926d0aa033d44826dd36f67bce3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0a158126fb825c7c3949577dfc02d7c6c94c6fd58b9ade0327ecbf0197710abf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCellGrassData.cpp",
-      "reconstruction/bsengine/ExtraCellGrassData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellGrassData.h"
     ]
   },
   "symbol_map": {
