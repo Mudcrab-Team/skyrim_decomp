@@ -24,7 +24,8 @@ import compare_internal as internal
 import static_context_resource_template_v2 as template
 import symbol_map
 from pecoff import CoffObject, PeImage
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 
 def extract(rows, image_base, cluster, actions, action_rows):

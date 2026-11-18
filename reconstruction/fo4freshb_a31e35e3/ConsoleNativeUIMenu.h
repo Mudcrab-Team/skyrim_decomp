@@ -1,7 +1,4 @@
-// ConsoleNativeUIMenu declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-a31e35e3
 // Source exposure: mixed (pinned target listing and sibling hints).
 // ConsoleNativeUIMenu, ConsoleNativeUIMenu::ProcessMessage: GUESS(low)
 // ConsoleNativeUIMenu fields: STANDIN GUESS(low)

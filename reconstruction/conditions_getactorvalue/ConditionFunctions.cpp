@@ -1,13 +1,10 @@
-// Build: sse-steam-1-7-104; RVA 0x3308c0; 173 bytes
-// Labels: v2
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: independently reconstructed from target observations and public declarations.
-// Drafted by gpt-6.1-terra
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // ActorValueOwner::GetActorValue and actor layout: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted in ValueActor.h.
 // names: GUESS(low); names and signatures are tentative.
 // ConditionFunctions, ConditionFunctions::GetActorValue: GUESS(low); the static source container and original signature are unverified.
+// 0x3308c0 Condition::GetActorValue
 #include "ConditionFunctions.h"
 #include "Actor.h"
 extern const char* ActorValueName(unsigned int);

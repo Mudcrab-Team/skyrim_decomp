@@ -1,8 +1,6 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: reduced copy of the declarations needed from reconstruction/forms/BGSLocation.h, source file SHA-256 ca6d12b9583c3b8c9c2a986de4daf467be7803e524e976275f872b5528e373f5, with the member layouts of the base classes and of BGSLocation restored from the community headers; only methods this unit does not call are left out.
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // BaseFormComponent, BaseFormComponent::InitializeDataComponent, ::ClearDataComponent, ::CopyComponent: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESForm, TESForm::sourceFiles, ::formFlags, ::formID, ::inGameFormFlags, ::formType, ::pad1B, ::pad1C: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the TESForm slots 04 and up are not declared, this unit calls none
 // TESFileContainer, TESFileContainer::array, TESFileArray, TESFileArray::data, ::size: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); layout read as in the shared TESForm header

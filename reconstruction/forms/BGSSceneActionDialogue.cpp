@@ -1,22 +1,12 @@
-// BGSSceneActionDialogue functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s20-bgssceneaction-bgssceneactiondialogue
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-2-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5, starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x3ab280, 4 bytes: BGSSceneActionDialogue::GetEmotionType
-//   RVA 0x3ab290, 4 bytes: BGSSceneActionDialogue::GetEmotionValue
-//   RVA 0x3ab530, 7 bytes: BGSSceneActionDialogue::Loops
-//   RVA 0x3ab2a0, 9 bytes: BGSSceneActionDialogue::FacesTarget
-//   RVA 0x3abcf0, 19 bytes: BGSSceneActionDialogue::Unk_0B
-//   RVA 0x3ab1c0, 43 bytes: BGSSceneActionDialogue::~BGSSceneActionDialogue (scalar deleting destructor)
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x3ab280 BGSSceneActionDialogue::GetEmotionType
+// 0x3ab290 BGSSceneActionDialogue::GetEmotionValue
+// 0x3ab530 BGSSceneActionDialogue::Loops
+// 0x3ab2a0 BGSSceneActionDialogue::FacesTarget
+// 0x3abcf0 BGSSceneActionDialogue::Unk_0B
+// 0x3ab1c0 BGSSceneActionDialogue::~BGSSceneActionDialogue
 #include "BGSSceneActionDialogue.h"
 
 template <class T>

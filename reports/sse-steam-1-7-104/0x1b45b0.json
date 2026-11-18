@@ -342,8 +342,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/FirstPersonCameraDataStorageLayout.cpp",
-    "digest": "c182dc6899c89a51265ebe61fde35f37f43f4e4607ad8ffee820040364ad9a3c",
-    "digest_method": "tu-sha256-v1",
+    "digest": "804acfba18ad3a03147b6d4879ec7062e330bc607b9b38e4c44e730c1f6b2d8a",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "c182dc6899c89a51265ebe61fde35f37f43f4e4607ad8ffee820040364ad9a3c",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/actors/CombatPathRequestPointerStorageLayout.h",
       "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",

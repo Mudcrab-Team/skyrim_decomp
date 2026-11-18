@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/NeedToUpdateCreationClubCallbackStorageLayout.cpp",
-    "digest": "351b40c4544c2875a807a2a54fc4b159e3563a0a05849ced1dc905c605293dce",
-    "digest_method": "tu-sha256-v1",
+    "digest": "74b57d2a38148a1d5a92b5acb253fd5fb9a6c1705f7688b6ef8db36fd6bd9563",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "351b40c4544c2875a807a2a54fc4b159e3563a0a05849ced1dc905c605293dce",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
       "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.h",

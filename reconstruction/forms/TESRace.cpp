@@ -1,18 +1,10 @@
-// TESRace accessors and destructor, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x3ebda0, 10 bytes (GetPlayable).
-// RVA 0x3e6250, 22 bytes (GetBodyPartData).
-// RVA 0x3ebd80, 22 bytes (GetFormEditorID).
-// RVA 0x3e64a0, 24 bytes (GetMovementType).
-// RVA 0x3eb840, 52 bytes (scalar deleting destructor of TESRace).
-// Evidence: findings/fifth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. The functions above other than GetFormEditorID are compared.
-// GetFormEditorID is defined here but not compared: a name it binds clashes with an existing symbol-map entry.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x3ebda0 TESRace::GetPlayable
+// 0x3e6250 TESRace::GetBodyPartData
+// 0x3ebd80 TESRace::GetFormEditorID
+// 0x3e64a0 TESRace::GetMovementType
+// 0x3eb840 TESRace::~TESRace
 #include "TESRace.h"
 
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value

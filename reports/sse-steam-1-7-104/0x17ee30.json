@@ -312,8 +312,10 @@
   ],
   "source": {
     "compiled": "reconstruction/magic/MagicTarget.cpp",
-    "digest": "8e157f2cc0eb2c1b2484384ac1f3fa67cab74a2b5b75fc252e02ed922c5fd60f",
-    "digest_method": "tu-sha256-v1",
+    "digest": "1cd685888bc48aa55e402e21a92b120059546ca6c4efc2d01efdb6ed2c819740",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "8e157f2cc0eb2c1b2484384ac1f3fa67cab74a2b5b75fc252e02ed922c5fd60f",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/magic/MagicTarget.cpp",
       "reconstruction/magic/MagicTarget.h"

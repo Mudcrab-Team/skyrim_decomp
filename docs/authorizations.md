@@ -207,3 +207,5 @@ Limits:
 - Leak screening is a deterministic grep over added lines plus the single review; a model cannot
   override a grep hit. Only the maintainer's `leakgrep-override` label does.
 - No exposure scope changes: this note grants no new model access to game-derived material.
+
+Reviewer rule narrowed on opaque storage (maintainer decision by awarebayes, relayed by the orchestrator and recorded here by an Engineer). The 2026-11-14 rule banned opaque storage used to force allocation size and required the represented layout. It now reads: named unknown members (for example `std::uint64_t unk10;`) at their offsets are acceptable for regions the reviewed function does not access. A Reviewer rejects only when a field the function reads or writes is hidden in opaque storage, a byte array or filler, or when one big array stands in for the whole class. The change is in the plausibility item of `docs/reviewer-runbook.md`, the contributor lesson text, and the bot's review comment now carries each rejected function's reason. The comparator, validator and match definition are unchanged.

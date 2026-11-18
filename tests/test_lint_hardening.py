@@ -7,10 +7,12 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import check_labels  # noqa: E402
+import lint_reconstruction  # noqa: E402
 from lint_reconstruction import lint_file  # noqa: E402
 
 HEAD = '// Thing, build b. Source exposure: black-box. Names: GUESS.\n'
@@ -31,7 +33,10 @@ class LintLicenceTests(unittest.TestCase):
             root = Path(tmp)
             (root / name).parent.mkdir(parents=True)
             (root / name).write_text(text)
-            return lint_file(root, name, 'b')
+            # Licence and sibling rules apply to every file; the label grammar is switched off for these
+            # synthetic free-form headers by listing the file as a legacy one.
+            with patch.object(lint_reconstruction, 'FREEFORM_LABEL_FILES', frozenset({name})):
+                return lint_file(root, name, 'b')
 
     def body(self, label):
         return f'struct Thing {{\n    // Get: {label}\n    int Get();\n}};\n'

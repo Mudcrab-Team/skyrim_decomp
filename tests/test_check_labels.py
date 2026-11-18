@@ -353,8 +353,9 @@ public:
                 self.assertEqual(results[0], results[2])
         self.assertEqual(codes, {0, 1})
 
-    def test_files_without_v2_labels_are_skipped(self):
-        h = self.root / 'reconstruction/area/Old.h'
+    def test_free_form_legacy_files_are_skipped(self):
+        h = self.root / 'reconstruction/netimmerse/NiTimeController.h'
+        h.parent.mkdir(parents=True, exist_ok=True)
         h.write_text(f'// Widget::flags1: {self.label()}\n')
         self.assertEqual(check_labels.check([h], self.checkouts, root=self.root), [])
 

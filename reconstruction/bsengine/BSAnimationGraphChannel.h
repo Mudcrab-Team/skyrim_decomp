@@ -1,9 +1,5 @@
-// BSAnimationGraphChannel declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-n-bsanimationgraphchannel
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
-// the compared functions from the pinned image).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSAnimationGraphChannel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSAnimationGraphChannel::~BSAnimationGraphChannel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSAnimationGraphChannelMember: GUESS(low); stand-in, the out-of-line destructor is bound by hint to RVA 0xEB1100

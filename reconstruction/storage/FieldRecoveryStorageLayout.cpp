@@ -1,50 +1,19 @@
-// Build: sse-steam-1-7-104
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (pinned community data storage and independent target field-operation/subobject analysis).
-// Drafted by GPT-6.1 Sol; typed field recovery after component-prefix recovery.
-// Labels: v2
 // Code origin: adapted community storage declarations, existing original represented-field template bodies and a defaulted owner constructor. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{T/TESObjectREFR.h,B/BGSBodyPartData.h,B/BGSBodyPartDefs.h,H/hkpCharacterProxy.h,H/hkArray.h,H/hkVector4.h,N/NonActorMagicTarget.h,B/BSExtraData.h,M/MagicTarget.h,B/BSTList.h}; MIT.
 // TESObjectREFR, OBJ_REFR, BGSBodyPartData, hkpCharacterProxy, hkArray, hkVector4, NonActorMagicTarget, BSExtraData, MagicTarget, BSSimpleList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // All ResearchLayouts names ending Layout, PrefixLayout or StorageLayout, storage-only member names and physical views: GUESS(medium) STANDIN
-// The reference data first pointer at64, body-parts array at80, character-proxy arrays at32/48/64/80 and vector at96, and non-actor target/list fields follow the pinned public declarations; exact target load/address operations independently agree.
-// FieldLeaf source containers add no storage and claim no recovered original method signature. Actor name comes from a community anchor; the Explosion ownership hint is not an independently established class identity.
 // Explosion ownership hint: GUESS(low) STANDIN
-// NonActorMagicTarget has a public64-byte storage model and a separately represented MagicTarget-relative48-byte view: target/list absolute40/48 correspond to relative24/32. Independent target secondary COL16 and exact slots2/7 establish the this context. Scroll's selected getter similarly belongs to its menu-display subobject and reads the public pointer at relative8; no complete ScrollItem layout is claimed.
-// These are storage views only. Pointee definitions, original ownership/lifetimes, unassessed method sets, source identity and original instantiability remain unclaimed. Public explicit padding fields are omitted; natural gaps remain unassessed.
-// Typed pointer arrays are actual public container/member storage, never raw code or padding arrays. No deletion-size argument supplies fields or bases. A layout assertion alone is not a function pass.
-// Only the listed trivial pointer/address operations and one compiler-generated secondary destructor adjustor are compared. Other methods and all construction/destruction behavior remain outside the byte-match claim.
-// MIT License
-// 
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// RVA 0x69dcd0; 5 bytes
-// RVA 0x7e5160; 5 bytes
-// RVA 0x38b6a0; 5 bytes
-// RVA 0xb9dd70; 5 bytes
-// RVA 0xb9ddd0; 5 bytes
-// RVA 0x17ee20; 5 bytes
-// RVA 0x5d98f0; 5 bytes
-// RVA 0x155350; 5 bytes
-// RVA 0x17bf28; 9 bytes
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x69dcd0 represented typed field operation
+// 0x7e5160 represented typed field operation
+// 0x38b6a0 represented typed field operation
+// 0xb9dd70 represented typed field operation
+// 0xb9ddd0 represented typed field operation
+// 0x17ee20 represented typed field operation
+// 0x5d98f0 represented typed field operation
+// 0x155350 represented typed field operation
+// 0x17bf28 NonActorMagicTarget secondary destructor adjustor
 #include "FieldRecoveryStorageLayout.h"
 namespace ResearchLayouts {
 NonActorMagicTargetRecoveredLayout::NonActorMagicTargetRecoveredLayout() = default;

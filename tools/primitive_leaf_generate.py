@@ -20,7 +20,8 @@ from pecoff import PeImage, CoffObject
 import runners
 import unit_build
 import symbol_map
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 import primitive_leaf_template_v1 as template
 
 

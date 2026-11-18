@@ -1,17 +1,10 @@
-// NiExtraData::LoadBinary, IsEqual, RegisterStreamables and ~NiExtraData, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0xef9880, 43 bytes: LoadBinary
-// RVA 0xef9960, 61 bytes: IsEqual
-// RVA 0xef98d0, 68 bytes: RegisterStreamables
-// RVA 0xef9c50, 83 bytes: ~NiExtraData (scalar deleting destructor)
-// Evidence: findings/fourth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with types from the header beside this file.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json; all four functions are compared.
-// The constructor is defined only so the vftable and the deleting destructor are emitted.
-// A byte match does not verify the community method names or the original source shape.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // NiExtraData::NiExtraData: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); name only, not compared
+// 0xef9880 NiExtraData::LoadBinary
+// 0xef9960 NiExtraData::IsEqual
+// 0xef98d0 NiExtraData::RegisterStreamables
+// 0xef9c50 NiExtraData::~NiExtraData
 #include "NiExtraData.h"
 
 NiExtraData::NiExtraData()

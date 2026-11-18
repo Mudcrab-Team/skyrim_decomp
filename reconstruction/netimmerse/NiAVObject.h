@@ -1,22 +1,6 @@
-// Type declarations for the NiAVObject translation unit (build sse-steam-1-7-104).
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) include/RE/N/NiAVObject.h,
-// NiObjectNET.h, NiCollisionObject.h, NiNode.h, NiTransform.h, NiCloningProcess.h,
-// bhkCollisionObject.h and the BSTHashMap layout; AddressLibraryDatabase 0379cb6 names
-// two clone-process cleanup callees and BSFixedString::Copy. Members, slots and sizes were
-// checked against the listings. NiObject comes from the shared NiObject.h.
-// header-gap NiRTTI: the shared NiObject.h declares only the name pointer of NiRTTI; the parent
-// link at offset 8 is read through the local view NiRTTILink instead.
-// Stand-ins declared here (not edited elsewhere): BSFixedString, NiPointer, NiPoint3, NiMatrix3,
-// NiTransform, NiBound, NiObjectNET, NiCollisionObject, NiNode, NiExtraData, bhkCollisionObject,
-// CloneHashMap, NiCloningProcess.
-// Adapted code: no body in this file is copied from a community source; the only inline bodies
-// are the NiPointer assignment (the usual smart-pointer shape, as in NiObjectNET.h), the
-// NiCloningProcess constructor and destructor (members and order read from the listing) and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TestBit. Bodies adapted from community sources are listed above (none);
-// tools/check_origin.py reports none other above its threshold at the pinned checkouts.
 // bhkCollisionObject: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque
 // COL_LAYER: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); 32-bit enum
 // SetCollisionLayer, SetCollisionLayerAndGroup, GetCollisionObject, UpdateRigidConstraints: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

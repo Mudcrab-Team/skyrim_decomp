@@ -51,6 +51,20 @@ class DecisionTests(unittest.TestCase):
         self.assertTrue(d['merge'])
         self.assertNotIn('0x20', pr_bot.comment_body(HEAD, d))
 
+    def test_rejection_comment_carries_filtered_review_reasons(self):
+        text = json.dumps({'functions': {
+            '0x10': {'verdict': 'reject', 'ground': 'plausibility', 'why': 'Accessed field hidden in a byte array.',
+                     'naming_findings': ['Placeholder member names.', 'bytes 0x48 0x89 0x5c 0x24 0x08 leak']},
+            '0x20': {'verdict': 'approve', 'why': 'fine'}}})
+        notes = pr_bot.review_notes(text, [0x10, 0x20])
+        self.assertEqual(notes, {0x10: ['Accessed field hidden in a byte array.', 'Placeholder member names.']})
+        d = pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'reject'})
+        body = pr_bot.comment_body(HEAD, dict(d, notes=notes))
+        self.assertIn('the review did not approve it', body)
+        self.assertIn('  - Accessed field hidden in a byte array.', body)
+        self.assertNotIn('0x48', body)
+        self.assertEqual(pr_bot.review_notes('nonsense', [0x10]), {})
+
     def test_a_bad_review_answer_never_approves(self):
         self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('yes', {}))
         leak, out = pr_bot.parse_review('x ' + GOOD, [0x10, 0x30])
@@ -107,6 +121,7 @@ class FakeBot(pr_bot.Bot):
         self.landed = None
         self.refused = set()
         self.history = None
+        self.extra = {}
 
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -138,15 +153,19 @@ class FakeBot(pr_bot.Bot):
     def leakgrep(self, base, head):
         return self.grep
 
+    def companions(self, units, files, functions):
+        return self.extra
+
     def review(self, number, head, base, functions, *a):
         self.calls.append(['review', sorted(functions)])
         return self.review_text
 
     def mac_compare(self, units, tag):
-        self.calls.append(['mac'])
+        self.calls.append(['mac', units])
         return dict(self.h2)
 
     def host1(self, number, head, functions, state=None, units=None):
+        self.calls.append(['host1', sorted(functions), units])
         return dict(self.h1)
 
     def classify_debt(self, host2, *a):
@@ -156,6 +175,7 @@ class FakeBot(pr_bot.Bot):
         return host1
 
     def build_records(self, *a):
+        self.calls.append(['build_records', a[1], sorted(a[2])])
         return Path('/nonexistent'), set(self.refused)
 
     def record(self, pr, state, rvas):
@@ -201,6 +221,58 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual((len(bot.seen('review')), len(bot.seen('mac'))), (1, 1))
         self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 1)
 
+    def test_a_conflicting_pr_is_told_once_per_head_and_costs_no_review_or_compare(self):
+        bot = FakeBot(self.work)
+        pr = dict(PR, mergeable='CONFLICTING')
+        out = bot.process(pr)
+        self.assertEqual((out['blocked'], out['merge']), ('conflict', False))
+        bot.process(pr)
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+        self.assertIn('merge main into your branch', bot.seen('gh', 'pr', 'comment')[0][-1])
+        for stage in ('review', 'mac', 'host1', 'changed_files'):
+            self.assertEqual(bot.seen(stage), [])
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        warmed = len(bot.calls)
+        bot.warm(pr)
+        self.assertEqual(len(bot.calls), warmed)
+
+    def test_a_new_head_after_a_conflict_is_processed_normally(self):
+        bot = FakeBot(self.work)
+        bot.process(dict(PR, mergeable='CONFLICTING'))
+        out = bot.process(dict(PR, headRefOid='b' * 40, mergeable='MERGEABLE'))
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 1)
+
+    def test_a_merge_refusal_for_a_conflict_comments_once_and_does_not_redo_the_pipeline(self):
+        bot = FakeBot(self.work)
+        bot.merge_ok = False
+        bot.gh_json = lambda *a: {'id': 99, 'headRefOid': HEAD, 'state': 'OPEN', 'mergeable': 'CONFLICTING'}
+        bot.process(PR)
+        bot.process(PR)
+        self.assertEqual((len(bot.seen('review')), len(bot.seen('mac')), len(bot.seen('gh', 'pr', 'merge'))), (1, 1, 1))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+
+    def test_a_merge_refusal_with_the_head_unchanged_keeps_the_cached_results_and_retries_only_the_merge(self):
+        bot = FakeBot(self.work)
+        bot.merge_ok = False
+        bot.gh_json = lambda *a: {'id': 99, 'headRefOid': HEAD, 'state': 'OPEN', 'mergeable': 'UNKNOWN'}
+        for _ in range(2):
+            with self.assertRaises(pr_bot.Stop):
+                bot.process(PR)
+        self.assertEqual((len(bot.seen('review')), len(bot.seen('mac')), len(bot.seen('host1'))), (1, 1, 1))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 2)
+        bot.merge_ok = True
+        bot.process(PR)
+        self.assertEqual((len(bot.seen('review')), len(bot.seen('mac'))), (1, 1))
+
+    def test_a_merge_refusal_because_the_head_moved_is_not_reported_as_a_conflict(self):
+        bot = FakeBot(self.work)
+        bot.merge_ok = False
+        bot.gh_json = lambda *a: {'id': 99, 'headRefOid': 'c' * 40, 'state': 'OPEN', 'mergeable': 'MERGEABLE'}
+        with self.assertRaises(pr_bot.Stop):
+            bot.process(PR)
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+
     def test_only_what_both_hosts_passed_is_reviewed_and_nothing_else_costs_a_call(self):
         bot = FakeBot(self.work, h2={0x10: 'pass', 0x20: 'fail'})
         out = bot.process(PR)
@@ -222,6 +294,16 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual(out['blocked'], 'scope')
         self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
         self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+
+    def test_a_pr_with_no_changed_files_is_marked_landed_not_called_out_of_scope(self):
+        bot = FakeBot(self.work, files=[])
+        bot.landed = []
+        out = bot.process(PR)
+        self.assertIsNone(out['blocked'])
+        self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
+        comment = bot.seen('gh', 'pr', 'comment')
+        self.assertEqual(len(comment), 1)
+        self.assertNotIn('outside reconstruction', comment[0][-1])
 
     def test_grep_hit_blocks_before_any_model_or_host_call(self):
         bot = FakeBot(self.work, grep=(True, ['LG01']))
@@ -331,6 +413,162 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual(len(bot.seen('record')), 1)
 
 
+WITH_COMPANION = json.dumps({'leak': 'no', 'functions': {
+    f'0x{r:x}': {'verdict': 'approve', 'ground': 'none'} for r in (0x10, 0x20, 0x30)}})
+
+
+class CompanionProcessTests(unittest.TestCase):
+    """Accepted functions of a changed unit that the PR does not name are confirmed with it or block it."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def bot(self, **kw):
+        kw.setdefault('review', WITH_COMPANION)
+        kw.setdefault('h1', {0x10: 'pass', 0x20: 'pass', 0x30: 'pass'})
+        kw.setdefault('h2', {0x10: 'pass', 0x20: 'pass', 0x30: 'pass'})
+        bot = FakeBot(self.work, **kw)
+        bot.extra = {'reconstruction/a/B.cpp': [0x30]}
+        return bot
+
+    def test_decide_blocks_on_a_companion_that_is_not_matched_and_ignores_it_for_the_merge_floor(self):
+        ok = {0x10: 'pass', 0x30: 'pass'}
+        done = pr_bot.decide([0x10, 0x30], ok, ok, {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
+        self.assertEqual((done['blocked'], done['merge'], done['companions']), (None, True, [0x30]))
+        only = pr_bot.decide([0x10, 0x30], {0x10: 'fail', 0x30: 'pass'}, ok, {0x10: 'approve', 0x30: 'approve'},
+                             companions=[0x30])
+        self.assertEqual((only['blocked'], only['merge']), (None, False))
+        for review in ('reject', None):
+            bad = pr_bot.decide([0x10, 0x30], ok, ok, {0x10: 'approve', 0x30: review}, companions=[0x30])
+            self.assertEqual((bad['blocked'], bad['merge']), ('companion', False))
+        debt = pr_bot.decide([0x10, 0x30], ok, {0x10: 'pass', 0x30: 'preexisting-fail'},
+                             {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
+        self.assertEqual((debt['blocked'], debt['merge']), ('companion', False))
+
+    def test_companions_are_confirmed_on_both_hosts_reviewed_recorded_and_credited_apart(self):
+        bot = self.bot()
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched', '0x30': 'matched'})
+        self.assertEqual(bot.seen('mac')[0][1], {'reconstruction/a/B.cpp': [0x10, 0x20, 0x30]})
+        self.assertEqual(bot.seen('host1')[0][1], [0x10, 0x20, 0x30])
+        self.assertEqual(bot.seen('review'), [['review', [0x10, 0x20, 0x30]]])
+        self.assertEqual(bot.seen('build_records')[0][2], [0x10, 0x20, 0x30])
+        self.assertEqual(bot.seen('record'), [['record', [0x10, 0x20, 0x30]]])
+        merge = bot.seen('gh', 'pr', 'merge')[0]
+        subject = merge[merge.index('--subject') + 1]
+        self.assertIn('Reconstruct 2 functions (0x10, 0x20)', subject)
+        self.assertIn('0x30', merge[merge.index('--body') + 1])
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+
+    def test_a_companion_that_stops_matching_blocks_the_merge_with_a_comment_naming_it(self):
+        bot = self.bot(h2={0x10: 'pass', 0x20: 'pass', 0x30: 'fail'})
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('companion', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        self.assertEqual(bot.seen('record'), [])
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x30', body)
+        self.assertNotIn('0x10', body)
+        self.assertIn('did not byte-match', body)
+
+    def test_a_companion_the_reviewer_rejects_blocks_the_merge(self):
+        no = json.loads(WITH_COMPANION)
+        no['functions']['0x30']['verdict'] = 'reject'
+        bot = self.bot(review=json.dumps(no))
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['verdicts']['0x30']), ('companion', 'fail:review'))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+
+    def test_a_companion_without_a_ci_row_is_a_failure_not_a_pass(self):
+        bot = self.bot(h1={0x10: 'pass', 0x20: 'pass'})
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'companion')
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+
+    def test_a_companion_whose_record_cannot_be_built_blocks_before_the_merge(self):
+        bot = self.bot()
+        bot.refused = {0x30}
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('companion', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        self.assertEqual(bot.seen('record'), [])
+
+    def test_a_pr_with_no_companions_is_unchanged(self):
+        bot = FakeBot(self.work)
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(bot.seen('record'), [['record', [0x10, 0x20]]])
+
+    def test_results_cached_without_companions_are_not_reused_for_a_set_that_has_them(self):
+        bot = self.bot()
+        state = pr_bot.State(self.work / 'state', 7, HEAD)
+        state.set('host2', {'16': 'pass', '32': 'pass'})
+        state.set('host1', {'16': 'pass', '32': 'pass'})
+        state.set('review_text', GOOD)
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts']['0x30'], 'matched')
+        self.assertEqual(len(bot.seen('mac')), 1)
+
+
+class CompanionDiscoveryTests(unittest.TestCase):
+    """Bot.companions reads the inventory and records to find accepted functions a PR makes stale."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.tree = Path(self.tmp.name)
+        self.write('builds/target.json', json.dumps({'build_id': 'b'}))
+        self.write('reconstruction/a/B.cpp', '#include "B.h"\nint f() { return 1; }\n')
+        self.write('reconstruction/a/B.h', '// RVA 0x10\nint f();\n')
+        self.write('reconstruction/c/D.cpp', '#include "../a/B.h"\nint g() { return 2; }\n')
+        self.write('reconstruction/e/F.cpp', 'int h() { return 3; }\n')
+        self.fns = []
+        bot = pr_bot.Bot(root=ROOT, work=self.tree / '.w')
+        bot.tree = self.tree
+        self.bot = bot
+
+    def write(self, name, text):
+        (self.tree / name).parent.mkdir(parents=True, exist_ok=True)
+        (self.tree / name).write_text(text)
+
+    def accept(self, rva, unit, status='matched', digest=None):
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
+        closure = include_closure(self.tree, unit)
+        report = f'reports/b/0x{rva:x}.json'
+        self.write(report, json.dumps({'source': {'compiled': unit, 'translation_unit': closure,
+                                                  'digest': digest or tu_digest(self.tree, closure)}}))
+        self.fns.append({'build_id': 'b', 'rva': rva, 'status': status, 'report': report})
+        self.write('data/progress.json', json.dumps({'functions': self.fns}))
+
+    def find(self, changed, units, named=(0x10,)):
+        files = [{'filename': n, 'status': 'modified'} for n in changed]
+        return self.bot.companions(units, files, named)
+
+    def test_an_accepted_function_of_a_changed_unit_with_a_stale_digest_is_a_companion(self):
+        self.accept(0x10, 'reconstruction/a/B.cpp')
+        self.accept(0x11, 'reconstruction/a/B.cpp', digest='0' * 64)
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}),
+                         {'reconstruction/a/B.cpp': [0x11]})
+
+    def test_a_function_the_pr_names_or_that_is_not_matched_or_whose_digest_is_current_is_not(self):
+        self.accept(0x10, 'reconstruction/a/B.cpp', digest='0' * 64)
+        self.accept(0x12, 'reconstruction/a/B.cpp', status='drafted', digest='0' * 64)
+        self.accept(0x13, 'reconstruction/a/B.cpp')
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}), {})
+
+    def test_a_unit_that_only_includes_the_changed_header_is_found_through_its_record(self):
+        self.accept(0x20, 'reconstruction/c/D.cpp', digest='0' * 64)
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}),
+                         {'reconstruction/c/D.cpp': [0x20]})
+
+    def test_an_unrelated_unit_is_left_alone(self):
+        self.accept(0x30, 'reconstruction/e/F.cpp', digest='0' * 64)
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}), {})
+
+
 class LeakgrepContractTests(unittest.TestCase):
     OUTPUT = ('reconstruction/a/B.cpp:3 asm-mnemonic\nreconstruction/a/B.h:10 include-outside-roots\n'
               'reconstruction/a/B.h:11 asm-mnemonic\nleakgrep: 3 hit(s)\n')
@@ -342,9 +580,8 @@ class LeakgrepContractTests(unittest.TestCase):
 
     def test_exit_code_one_is_a_hit_and_two_is_an_infrastructure_failure(self):
         bot = pr_bot.Bot(root=ROOT)
-        bot.root = Path(tempfile.mkdtemp())
-        (bot.root / 'tools').mkdir()
-        (bot.root / 'tools/leakgrep.py').write_text('')
+        bot.tools = Path(tempfile.mkdtemp())
+        (bot.tools / 'leakgrep.py').write_text('')
         for code, out, expect in ((1, self.OUTPUT, (True, ['asm-mnemonic', 'include-outside-roots', 'asm-mnemonic'])),
                                   (0, 'leakgrep: 0 hit(s)\n', (False, []))):
             bot.run = lambda argv, **kw: subprocess.CompletedProcess(argv, code, out.encode(), b'')
@@ -353,8 +590,17 @@ class LeakgrepContractTests(unittest.TestCase):
         with self.assertRaises(pr_bot.Stop):
             bot.leakgrep(BASE, HEAD)
 
+    def test_a_crash_that_exits_one_without_the_summary_is_not_a_leak(self):
+        bot = pr_bot.Bot(root=ROOT)
+        bot.tools = Path(tempfile.mkdtemp())
+        (bot.tools / 'leakgrep.py').write_text('')
+        bot.run = lambda argv, **kw: subprocess.CompletedProcess(argv, 1, b'', b'Traceback')
+        with self.assertRaises(pr_bot.Stop):
+            bot.leakgrep(BASE, HEAD)
+
     def test_live_mode_fails_closed_without_leakgrep_and_replay_does_not(self):
         bot = pr_bot.Bot(root=Path(tempfile.mkdtemp()))
+        bot.tools = Path(tempfile.mkdtemp())
         with self.assertRaises(pr_bot.Stop):
             bot.leakgrep(BASE, HEAD)
         bot.dry_run = True
@@ -394,14 +640,20 @@ class Host1Tests(unittest.TestCase):
                       'target-result.json': {'head_sha': HEAD, 'base_sha': BASE, 'toolset': 'MATCH',
                                              'compiler_pins_sha256': 'e' * 64, 'functions': [
                                                  {'rva': '0x10', 'unit': 'reconstruction/a/B.cpp', 'status': 'pass'}]}}
+        self.artifacts = []
         bot = pr_bot.Bot(root=ROOT, work=self.work)
         bot.run = self.fake_run
         bot.gh_json = self.gh
         bot.config['hash_wait'] = 0
+        bot.config['download_retry_wait'] = 0
         self.bot = bot
 
     def gh(self, *args):
-        return {'check_runs': [self.job]} if args[1].endswith('/check-runs') else self.meta
+        if '/check-runs' in args[1]:
+            return {'check_runs': self.jobs if hasattr(self, 'jobs') else [self.job]}
+        if '/artifacts' in args[1]:
+            return {'artifacts': self.artifacts}
+        return self.meta
 
     def fake_run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -438,10 +690,101 @@ class Host1Tests(unittest.TestCase):
         got, _ = self.host1()
         self.assertEqual(got, {0x10: 'regressed', 0x20: 'pass'})
 
+    def test_a_head_without_a_run_gets_a_probe_branch_and_draft_pr_once(self):
+        calls = []
+        self.job['name'] = 'other'
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if '/check-runs' in a[1] else ([] if a[0] == 'pr' else {'workflow_runs': []})
+        with self.assertRaises(pr_bot.Stop):
+            self.host1()
+        branch = [c for c in calls if c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c]
+        self.assertEqual(len(branch), 1)
+        self.assertIn('ref=refs/heads/probe/pr-7', branch[0])
+        self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
+        self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
+
+    def test_warm_probes_only_a_head_with_no_run_and_in_scope(self):
+        probed = []
+        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        self.bot.changed_files = lambda number: [{'filename': 'reconstruction/a/B.cpp'}]
+        pr = {'number': 7, 'headRefOid': HEAD}
+        self.bot.warm(pr)
+        self.assertEqual(probed, [])  # the head already has a hash run
+        self.job['name'] = 'other'
+        self.bot.warm(pr)
+        self.assertEqual(probed, [7])
+        self.bot.changed_files = lambda number: [{'filename': 'tools/x.py'}]
+        self.bot.warm(pr)
+        self.assertEqual(probed, [7])
+
+    def test_a_finished_run_without_a_result_triggers_one_probe_then_stops(self):
+        calls = []
+        self.files.pop('hash-result.json')
+        self.job['id'] = 1
+        base_run = self.bot.run
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or base_run(argv, **kw)
+        orig = self.bot.gh_json
+        self.bot.gh_json = lambda *a: [] if a[0] == 'pr' else orig(*a)
+        with self.assertRaises(pr_bot.Stop):
+            self.host1()
+        self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
+
     def test_a_missing_artifact_is_retried_not_trusted(self):
         self.files.pop('hash-result.json')
         with self.assertRaises(pr_bot.Stop):
             self.host1()
+
+    def wait_with(self, on_sleep):
+        self.bot.config['hash_wait'] = 60
+        real_sleep = pr_bot.time.sleep
+        pr_bot.time.sleep = on_sleep
+        self.addCleanup(setattr, pr_bot.time, 'sleep', real_sleep)
+
+    def test_a_stale_run_ahead_of_the_probe_does_not_end_the_wait(self):
+        # The fork's own run (stale base, no artifact) finishes before the probe's run has appeared.
+        probed = []
+        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        self.bot.approve_pending = lambda head: None
+        self.job.update(id=1, conclusion='failure', started_at='2000-01-01T00:00:00Z')
+        self.files.pop('hash-result.json')
+        later = dict(self.job, id=2, conclusion='success', started_at='2999-01-01T00:00:00Z')
+        stale = self.job
+
+        def on_sleep(seconds):
+            self.jobs = [stale, later]  # the probe's run shows up while the bot waits
+            self.files['hash-result.json'] = {'0x10': 'pass', '0x20': 'pass'}
+        self.wait_with(on_sleep)
+        got, _ = self.host1()
+        self.assertEqual(got, {0x10: 'pass', 0x20: 'pass'})
+        self.assertEqual(probed, [7])
+
+    def test_a_probe_run_without_a_result_is_a_real_stop(self):
+        self.bot.probe_hash_run = lambda number, head: None
+        self.bot.approve_pending = lambda head: None
+        self.job.update(id=1, started_at='2000-01-01T00:00:00Z')
+        self.files.pop('hash-result.json')
+        later = dict(self.job, id=2, started_at='2999-01-01T00:00:00Z')
+        stale = self.job
+
+        def on_sleep(seconds):
+            self.jobs = [stale, later]
+        self.wait_with(on_sleep)
+        with self.assertRaisesRegex(pr_bot.Stop, 'left no result'):
+            self.host1()
+
+    def test_a_listed_artifact_that_will_not_download_is_not_a_run_without_a_result(self):
+        self.artifacts = [{'name': 'hash-result', 'expired': False}]
+        self.files.pop('hash-result.json')
+        probed = []
+        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        with self.assertRaisesRegex(pr_bot.Stop, 'did not download'):
+            self.host1()
+        self.assertEqual(probed, [])
+
+    def test_check_runs_are_read_from_every_page(self):
+        pages = [{'check_runs': [dict(self.job, name='tests (0)')]}, {'check_runs': [self.job]}]
+        self.bot.gh_json = lambda *a: pages
+        self.assertEqual(self.bot.latest_hash_run(HEAD)['name'], 'hash')
 
 
 class NewFunctionRecordTests(unittest.TestCase):
@@ -476,9 +819,13 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.calls.append(argv)
         code = 0
         if argv[1].endswith('bind.py'):
+            self.bound_rvas = [f['rva'] for f in json.loads((self.task / 'task.json').read_text())['functions']]
             code = self.bind_code
             if not code:
-                self.set_task('reports/b/unit-symbols/' + 'c' * 64 + '.json')
+                public = 'reports/b/unit-symbols/' + 'c' * 64 + '.json'
+                (self.tree / public).parent.mkdir(parents=True, exist_ok=True)
+                (self.tree / public).write_text('{}')
+                self.set_task(public)
         if argv[1] == '-c':
             rva = json.loads((Path(argv[4]) / 'task.json').read_text())['functions'][0]['rva']
             if self.record_ok[int(rva, 0)]:
@@ -505,10 +852,25 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertTrue(sub['symbols'].startswith('reports/b/unit-symbols/'))
         self.assertEqual(len(self.seen('wine_confirm.py')), 2)
 
+    def test_only_the_functions_being_recorded_are_bound_so_a_debt_function_cannot_refuse_them(self):
+        out, failed = self.build({0x10})
+        self.assertEqual((failed, self.bound_rvas), (set(), ['0x10']))
+        self.assertEqual([f['rva'] for f in json.loads((self.task / 'task.json').read_text())['functions']],
+                         ['0x10', '0x20'])
+
     def test_an_already_public_map_is_not_rebound(self):
-        self.set_task('reports/b/unit-symbols/' + 'd' * 64 + '.json')
+        public = 'reports/b/unit-symbols/' + 'd' * 64 + '.json'
+        (self.tree / public).parent.mkdir(parents=True, exist_ok=True)
+        (self.tree / public).write_text('{}')
+        self.set_task(public)
         self.build()
         self.assertEqual(self.seen('bind.py'), [])
+
+    def test_a_public_map_lost_with_a_rebuilt_tree_is_bound_again(self):
+        self.set_task('reports/b/unit-symbols/' + 'e' * 64 + '.json')
+        out, failed = self.build()
+        self.assertEqual(failed, set())
+        self.assertEqual(len(self.seen('bind.py')), 1)
 
     def test_a_failed_bind_refuses_every_function_of_the_unit_without_confirming_any(self):
         self.bind_code = 1
@@ -612,6 +974,7 @@ class ReviewContextTests(unittest.TestCase):
             (self.tree / name).parent.mkdir(parents=True, exist_ok=True)
             (self.tree / name).write_text(text)
         self.prompts = []
+        self.origin_out = b'check_origin: threshold 0.75; compared with a/b@1234567\ncheck_origin: 0 hit(s), 0 non-trivial\n'
         bot = pr_bot.Bot(root=ROOT, work=self.tree / '.w')
         bot.tree = self.tree
         bot.run = self.fake_run
@@ -623,10 +986,13 @@ class ReviewContextTests(unittest.TestCase):
             self.prompts.append(kw['input'].decode())
             Path(argv[argv.index('--output-last-message') + 1]).write_text('{}')
         out = b'reconstruction/a/B.h: check provenance: missing origin\n' if 'lint_review_readiness.py' in ' '.join(argv) else b''
+        if 'check_origin.py' in ' '.join(argv):
+            out = self.origin_out
         return subprocess.CompletedProcess(argv, 0, out, b'')
 
     def evidence(self, **report):
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         digest = tu_digest(self.tree, include_closure(self.tree, 'reconstruction/a/B.cpp'))
         recipe = self.tree / 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe.parent.mkdir(parents=True, exist_ok=True)
@@ -648,12 +1014,49 @@ class ReviewContextTests(unittest.TestCase):
         self.assertNotIn('DIFFER', prompt)
         self.assertIn('second-host run 555 (CI hash job, which compares the published target hashes) on head ' + HEAD[:12] + ': pass; its source digest agrees, its recipe hash agrees', prompt)
 
+    def test_the_prompt_lists_body_origin_hits_or_says_none_were_found(self):
+        units = {'reconstruction/a/B.cpp': [0x10]}
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, self.evidence())
+        self.assertIn('## Body origin (tools/check_origin.py)\nno same-named community/sibling body found '
+                      '(clone revisions: a/b@1234567)', self.prompts[0])
+        self.assertIn('"unverified" alone is not a ground to reject', self.prompts[0])
+        hit = {'function': 'B::f', 'repo': 'x/ng', 'revision': 'abc', 'path': 'src/B.cpp', 'upstream_line': 3,
+               'similarity': 0.9, 'trivial': False, 'declared': False, 'fork_of': None}
+        self.origin_out = b'check_origin: threshold 0.75; compared with x/ng@abc\n' + json.dumps(hit).encode() + b'\n'
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, self.evidence())
+        self.assertIn('B::f ~ x/ng@abc src/B.cpp:3 similarity 0.90 (adapted; header does NOT name it', self.prompts[1])
+
     def test_the_sheet_marks_which_files_the_pr_changed_and_which_are_unchanged_context(self):
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, self.evidence(),
                         {'reconstruction/a/B.cpp'})
         prompt = self.prompts[0]
         self.assertIn('reconstruction/a/B.cpp (changed by this PR), reconstruction/a/B.h (unchanged from main)', prompt)
         self.assertIn('Review the files this PR changes in full', prompt)
+
+    def declare_other_recipe(self, hint):
+        other = self.tree / 'reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json'
+        other.parent.mkdir(parents=True, exist_ok=True)
+        other.write_text('{"x": 1}')
+        head = '// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json\n' + hint
+        (self.tree / 'reconstruction/a/B.cpp').write_text(head + '#include "B.h"\nint f() { return 1; }\n')
+        evidence = self.evidence()
+        return evidence
+
+    def test_a_requested_rva_is_compared_with_the_default_recipe_the_ci_job_selects(self):
+        evidence = self.declare_other_recipe('// CI hash: 0x10 ?f@@YAHXZ\n')
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash agrees', self.prompts[0])
+
+    def test_an_unrequested_rva_must_match_the_recipe_the_unit_names(self):
+        evidence = self.declare_other_recipe('')
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
+
+    def test_a_requested_rva_with_another_recipe_hash_still_differs(self):
+        evidence = self.declare_other_recipe('// CI hash: 0x10 ?f@@YAHXZ\n')
+        evidence[0x10]['row']['recipe_sha256'] = hashlib.sha256(b'other').hexdigest()
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
 
     def test_a_report_for_other_source_or_compiler_is_shown_as_differing(self):
         bad = self.evidence(source={'source_revision': '0' * 64, 'path': 'reconstruction/a/B.cpp'})

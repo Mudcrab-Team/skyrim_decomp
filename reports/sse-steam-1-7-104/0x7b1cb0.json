@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/RunHandlerStorageLayout.cpp",
-    "digest": "0820d74c2402a8cedc4d7d5c8c88cad2090be84f3c5f3939626b42521ada44a5",
-    "digest_method": "tu-sha256-v1",
+    "digest": "fc8fa631f7e8deafd9a9c29955de82b93f6b43298d23551a82c63e10ae0dc451",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "0820d74c2402a8cedc4d7d5c8c88cad2090be84f3c5f3939626b42521ada44a5",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
       "reconstruction/bsengine/HeldStateHandlerStorageLayout.h",

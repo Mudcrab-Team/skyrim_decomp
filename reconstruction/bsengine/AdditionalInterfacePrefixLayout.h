@@ -1,40 +1,9 @@
-// Build: sse-steam-1-7-104
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (pinned community storage declarations and independent target RTTI/secondary-slot analysis).
-// Drafted by GPT-6.1 Sol; reuse of recovered form/reference/menu/interface prefixes.
-// Labels: v2
 // Code origin: adapted community storage declarations and original narrowed prefix construction; no external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{T/TESProduceForm.h,S/SimpleAnimationGraphManagerHolder.h,M/MenuEventHandler.h,I/IMapCameraCallbacks.h,H/hkReferencedObject.h,H/hkpBroadPhaseCastCollector.h,H/hkpEntityListener.h,H/hkpPhantomListener.h,H/hkpWorldPostSimulationListener.h}; MIT.
 // TESProduceForm, SimpleAnimationGraphManagerHolder, MenuEventHandler, IMapCameraCallbacks, hkReferencedObject, hkpBroadPhaseCastCollector, hkpEntityListener, hkpPhantomListener, hkpWorldPostSimulationListener: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // All ResearchLayouts names ending Layout, PrefixLayout or StorageLayout, Identity tags and physical mirror member names: GUESS(medium) STANDIN
-// New typed data groups follow the named public declarations. Smart-pointer/enumeration storage, pointee definitions and original lifetimes are unassessed. The four public produce-chance array entries are represented by a four-byte named seasonal field group, not arbitrary padding.
-// Generic contracts represent actual RTTI-bound fieldless vptr prefixes. Identity tags introduce no storage/runtime value. IMapCameraCallbacks preserves its two public slots before destructor slot2; only its destructor adjustor is compared.
-// Each owner models its initial known contiguous subobject prefix through the last selected subobject. Intermediate fieldless ancestry and unassessed methods are omitted. Later components, singleton/event-source bases, owner fields, full original definition, source identity, lifetimes and instantiability/behavior remain unclaimed.
-// Public explicit padding fields are omitted; alignment gaps remain unassessed. No original field/base is inferred from deletion size.
-// Every represented subobject start and selected virtual destructor slot/primary target is independently corroborated by target RTTI/table analysis. Only listed compiler-generated secondary destructor adjustors are compared.
-// Constructors, primary destruction and other operations remain outside the match claim. Typed size/offset assertions are layout checks, not function passes. No raw byte array, helper body or emission attribute is introduced.
-// MIT License
-// 
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

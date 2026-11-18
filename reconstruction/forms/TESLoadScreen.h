@@ -1,9 +1,5 @@
-// TESLoadScreen type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESLoadScreen.h.
-// The shape of ClearData follows the sibling's TESLoadScreen::ClearData (clear the screen data, then the
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // base form). Layouts of the stand-ins are not claimed. Adapted bodies: none declared.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/tesloadscreen.cpp:89 (shape only; the target clears a condition list and a camera path model)
 // TESLoadScreen, TESLoadScreen::ClearData, ::conditions, ::loadNIFData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

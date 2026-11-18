@@ -1,26 +1,18 @@
-// Build: sse-steam-1-7-104
 // Source exposure: mixed (original target-binary storage evidence and authorized game-code sibling role hints).
-// Drafted by GPT-6.1 Sol; callback factory bounded-text and link storage recovery.
-// Labels: v2
 // Code origin: original data declarations recovered from target constructors/import contracts and vtable-bound field accesses; no external implementation body reused.
 // ConcreteEventCallbackFactory, IEventCallbackFactory: EXE_RTTI
 // ConcreteEventCallbackFactory: SIBLING(fo4-private@1b765c70, author-permission)
-// Sibling role hint: fo4-private@1b765c70 src/Shared/TESForms/Character/BGSSceneActionTimer.cpp line11 instantiates a named callback factory. No sibling layout, offset or body is transferred.
 // EventFactoryNameLinkStorageLayout, name, next: GUESS(medium) STANDIN
-// Five target static initializers assign each original RTTI-bound vptr at0, zero the object link at88, and call the imported strncpy_s with destination this+8, capacity80, maximum copy79. Buffer length80 comes from this actual bounded-character-copy contract. Actual primary slot2 returns the buffer address8, slot3 loads link88; slot4 chain insertion stores an argument object pointer at88 and registration traverses slot3.
-// This initial96-byte storage view covers the vptr,80-character bounded text buffer and object link. Original complete owner size, virtual method sets, signatures, ownership, destruction and registration behavior remain unclaimed. Layout assertions establish this view only, never a function match. No deletion/allocation size supplies storage.
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// RVA 0x3acd70;5 bytes
-// RVA 0x3acd80;5 bytes
-// RVA 0x3f0f50;5 bytes
-// RVA 0x3f0f60;5 bytes
-// RVA 0x3e1480;5 bytes
-// RVA 0x3e1490;5 bytes
-// RVA 0x3ada70;5 bytes
-// RVA 0x3ada80;5 bytes
-// RVA 0x3a5f10;5 bytes
-// RVA 0x3a5f20;5 bytes
+// 0x3acd70 represented callback factory text/link getter
+// 0x3acd80 represented callback factory text/link getter
+// 0x3f0f50 represented callback factory text/link getter
+// 0x3f0f60 represented callback factory text/link getter
+// 0x3e1480 represented callback factory text/link getter
+// 0x3e1490 represented callback factory text/link getter
+// 0x3ada70 represented callback factory text/link getter
+// 0x3ada80 represented callback factory text/link getter
+// 0x3a5f10 represented callback factory text/link getter
+// 0x3a5f20 represented callback factory text/link getter
 #include "EventFactoryNameLinkStorageLayout.h"
 // Build: sse-steam-1-7-104; RVA 0x3acd70; 5 bytes
 // Evidence: findings/ghidra-import.md

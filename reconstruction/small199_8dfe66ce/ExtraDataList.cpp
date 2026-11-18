@@ -1,21 +1,15 @@
-// ExtraDataList, build sse-steam-1-7-104.
-// Labels: v2
 // Inferred names: GUESS(low)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction informed by CommonLibSSE-NG declarations (MIT).
 // Source exposure: mixed (local binary analysis and pinned public declarations).
-// Drafted by gpt-6.1-terra; signed-field prefix and accessor revised by gpt-6.1-sol.
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Names, signatures and layout remain inferred; only checked bytes are claimed.
-// Compared functions:
-// RVA 0x162410, 37 bytes: ExtraDataList::Function162410.
-// RVA 0x164e20, 38 bytes: ExtraDataList::Function164e20.
-// RVA 0x16fe90, 40 bytes: ExtraDataList::Function16fe90.
-// RVA 0x1700c0, 40 bytes: ExtraDataList::Function1700c0.
-// RVA 0x1690d0, 42 bytes: ExtraDataList::Function1690d0.
-// RVA 0x169100, 42 bytes: ExtraDataList::Function169100.
-// RVA 0x170c50, 42 bytes: ExtraDataList::Function170c50.
 // ExtraDataList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// 0x162410 ExtraDataList::Function162410
+// 0x164e20 ExtraDataList::Function164e20
+// 0x16fe90 ExtraDataList::Function16fe90
+// 0x1700c0 ExtraDataList::Function1700c0
+// 0x1690d0 ExtraDataList::Function1690d0
+// 0x169100 ExtraDataList::Function169100
+// 0x170c50 ExtraDataList::Function170c50
 
 // MIT License
 // 

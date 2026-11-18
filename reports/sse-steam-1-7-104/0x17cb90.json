@@ -334,8 +334,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ExtraGlobalStorageLayout.cpp",
-    "digest": "03f096da30984b1556329a8dd9d57f38e336f692d77b01ce9c14757d4aafee8f",
-    "digest_method": "tu-sha256-v1",
+    "digest": "16d04475325c6892d1931643badf43a39cdefd79e026d65ca27f0c8967128c1a",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "03f096da30984b1556329a8dd9d57f38e336f692d77b01ce9c14757d4aafee8f",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSExtraDataStorageLayout.h",
       "reconstruction/bsengine/ExtraGlobalStorageLayout.cpp",

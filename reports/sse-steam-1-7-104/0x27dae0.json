@@ -1,0 +1,199 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "d591556efe2ede0dee03b59d9c4ef0b6249c75e0b70371698d9f5f77dfbb876d",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/declarations/BaseFormComponent.h",
+          "reconstruction/declarations/TESForm.h",
+          "reconstruction/forms/TESObjectARMO.cpp",
+          "reconstruction/forms/TESObjectARMO.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "875d87a7c84c224994ac765672edbf4b52a27da5",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "79bc0df2873d3f0084241dac68744c6a99d31c65",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "e2bf54a698a1ca39cc800f0d6f7c1cc4a6b8e6dd78741caebd5fdc870ca80f39",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "82f699ab5ef23d32d66d01189f5767e13f676d924833fd396f2ed67edb76e2a0",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44306358757,
+    "rva": "0x27dae0",
+    "schema": 2,
+    "source_sha256": "3d94dca2c48198c5173cb2f19340c879747321043f0d48fdefe90d2ed2e1b53e",
+    "status": "pass",
+    "symbols": [
+      "?InitializeData@TESObjectARMO@@UEAAXXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "e2bf54a698a1ca39cc800f0d6f7c1cc4a6b8e6dd78741caebd5fdc870ca80f39",
+      "normalized_sha256": "82f699ab5ef23d32d66d01189f5767e13f676d924833fd396f2ed67edb76e2a0",
+      "rva": 2611936,
+      "size": 20
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/forms/TESObjectARMO.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x27dae0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "d85c83c67a30d2d424b618d7134363c449d3baa96e96ef67a0eed9ce70c70c2c",
+          "code_sections": 1,
+          "object_sha256": "d591556efe2ede0dee03b59d9c4ef0b6249c75e0b70371698d9f5f77dfbb876d"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 20,
+          "code_bytes_total": 20,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 2611936,
+          "size": 20,
+          "symbol": "?InitializeData@TESObjectARMO@@UEAAXXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/forms/TESObjectARMO.cpp",
+          "source_revision": "3d94dca2c48198c5173cb2f19340c879747321043f0d48fdefe90d2ed2e1b53e"
+        },
+        "symbol_map_sha256": "675b960a27641b7c6465ed0bf140246521d7d13a6437a5cea085face77397a31",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x27dae0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/forms/TESObjectARMO.cpp",
+    "digest": "bb1764649675044c4a5ece7dce73f7cfcb70b52b6035b934081347d7630cc515",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "3d94dca2c48198c5173cb2f19340c879747321043f0d48fdefe90d2ed2e1b53e",
+    "run_digest_method": "tu-sha256-v1",
+    "translation_unit": [
+      "reconstruction/declarations/BaseFormComponent.h",
+      "reconstruction/declarations/TESForm.h",
+      "reconstruction/forms/TESObjectARMO.cpp",
+      "reconstruction/forms/TESObjectARMO.h"
+    ]
+  },
+  "submitter": "hinkiii",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/675b960a27641b7c6465ed0bf140246521d7d13a6437a5cea085face77397a31.json",
+    "sha256": "675b960a27641b7c6465ed0bf140246521d7d13a6437a5cea085face77397a31"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/e490c8e53c5ca422594f22e80c409be7f2012faba20421e0a177409decf01652.json",
+  "versions": [
+    {
+      "sha256": "e490c8e53c5ca422594f22e80c409be7f2012faba20421e0a177409decf01652",
+      "base": null,
+      "added": [
+        "?GetFeature@BSLightingShaderMaterialSnow@@UEBA?AW4Feature@BSShaderMaterial@@XZ",
+        "?CopyMembers@BSLightingShaderMaterialSnow@@UEAAXPEAVBSShaderMaterial@@@Z",
+        "?Ctor@BSLightingShaderMaterialSnow@@QEAAPEAV1@XZ",
+        "?ComputeCRC32@BSLightingShaderMaterialSnow@@UEAAIXZ",
+        "??_7BSLightingShaderMaterialSnow@@6B@",
+        "?g_snowDefaults@@3USnowData@BSLightingShaderMaterialSnow@@A",
+        "?SnowCRCSeed@@YAIXZ",
+        "?CRC32Size@@YAXPEAIPEBXI@Z",
+        "?BaseCopyHelper@@YAXPEAVBSLightingShaderMaterialBase@@PEAVBSShaderMaterial@@@Z",
+        "??0BSLightingShaderMaterialBase@@QEAA@XZ",
+        "?SaveBinary@BSLightingShaderMaterialSnow@@UEAAXAEAVNiStream@@@Z",
+        "?LoadBinary@BSLightingShaderMaterialSnow@@UEAAXAEAVNiStream@@@Z",
+        "?SaveBinary@BSLightingShaderMaterialBase@@UEAAXAEAVNiStream@@@Z",
+        "?SaveStream@SnowData@BSLightingShaderMaterialSnow@@QEAAXAEAVNiStream@@@Z",
+        "?LoadBinary@BSLightingShaderMaterialBase@@UEAAXAEAVNiStream@@@Z",
+        "?LoadStream@SnowData@BSLightingShaderMaterialSnow@@QEAAXAEAVNiStream@@@Z"
+      ]
+    }
+  ]
+}

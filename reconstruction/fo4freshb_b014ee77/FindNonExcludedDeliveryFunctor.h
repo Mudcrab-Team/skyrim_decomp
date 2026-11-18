@@ -1,7 +1,4 @@
-// FindNonExcludedDeliveryFunctor declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-b014ee77
 // Source exposure: mixed (pinned target listing and sibling hints).
 // FindNonExcludedDeliveryFunctor, FindNonExcludedDeliveryFunctor::MatchCondition: GUESS(low)
 // FindNonExcludedDeliveryFunctor fields: STANDIN GUESS(low)

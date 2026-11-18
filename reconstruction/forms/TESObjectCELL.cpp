@@ -1,23 +1,12 @@
-// TESObjectCELL member functions, build sse-steam-1-7-104.
-//
-// Labels: v2
-// Evidence: findings/fourth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
-// with types from the header beside this file.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
 // The names CreateDuplicateForm and IsParentForm come from powerof3/CommonLibSSE 654e55f, which is GPL-3.0; that licence applies to those functions.
-// Compared functions (RVA, size):
-//   EnterReferenceListLock RVA 0x2cbed0, 14 bytes
-//   GetbhkWorld            RVA 0x2be9b0, 26 bytes
-//   GetCoordinates         RVA 0x2bc660, 34 bytes
-//   ExitReferenceListLock  RVA 0x2cbef0, 78 bytes
-//   GetEncounterZone       RVA 0x2be700, 79 bytes
-//   GetOwner               RVA 0x2be530, 148 bytes
-//   GetLocation            RVA 0x2bb180, 320 bytes; passes attempts, but no match record yet: the
-//     repository symbol map holds its name unsized, and sizing that entry would invalidate others
-// SetFormEditorID, ClearData and Revert are not part of this unit yet (thread-local guard).
-// A byte match shows this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x2cbed0 TESObjectCELL::EnterReferenceListLock
+// 0x2be9b0 TESObjectCELL::GetbhkWorld
+// 0x2bc660 TESObjectCELL::GetCoordinates
+// 0x2cbef0 TESObjectCELL::ExitReferenceListLock
+// 0x2be700 TESObjectCELL::GetEncounterZone
+// 0x2be530 TESObjectCELL::GetOwner
+// 0x2bb180 TESObjectCELL::GetLocation
 #include "TESObjectCELL.h"
 
 void TESObjectCELL::EnterReferenceListLock()

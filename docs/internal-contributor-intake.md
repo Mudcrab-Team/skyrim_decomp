@@ -15,7 +15,8 @@ same point as a Drafter's worktree branch.
    pull request that edits the workflow can change what it checks. The Engineer's local re-run in
    step 2 is the authoritative intake.
 2. **Automatic pick-up and Engineer screen.** `tools/contrib_autopilot.py run-once`, called
-   every ten minutes, selects the oldest non-draft PR per contributor. Only
+   every ten minutes, takes every non-draft PR (round-robin across contributors) and works up to
+   `workers` of them at once; a contributor's PRs never wait on one another. Only
    `reconstruction/<area>/<Class>.{h,cpp}` targeting main is eligible; other PRs receive
    `needs-maintainer` and a sanitized explanation. It fetches
    `git fetch origin pull/<n>/head:contrib/pr-<n>` and runs main's
@@ -30,13 +31,20 @@ same point as a Drafter's worktree branch.
    agent's job, the Reviewer is a fresh admitted run, and the verifier stays deterministic.
    The maintainer accepts the residual risk of compiling untrusted C++ on the verifier hosts
    after the automated screens.** This changes no acceptance, lint, validator or comparator rule.
+   When main moves during intake, the frozen private clone is advanced in place if main changed only
+   under `reconstruction/`, `reports/`, `data/`, `findings/`, `docs/` or `site/`, none of the PR's files,
+   include closure or submitted report paths changed, and intake, function discovery and companions
+   reproduce their cached answers. The AI screen, export and binds are then kept. Otherwise the
+   intake restarts and only its small evidence files (diff, history, screen text) are archived.
 3. **Confirmation.** The project's existing `tools/ghidra/export_pack.py` writes private unit
    task directories; the ordinary attempt/bind path resolves symbols. Every outside PR uses
    **the project's Wine host** as its first verifier and **CI** as its second verifier.
    Intake derives an isolated Wine/CI runner profile automatically, including for clean sampling
    reruns; it neither probes nor wakes a maintainer PC. The shared internal runner configuration
    is unchanged. A fresh Wine preparation hashes the toolchain again and supplies full comparator evidence;
-   cached drafting attempts are insufficient. CI compiles twice
+   cached drafting attempts are insufficient. One CI dispatch confirms every unit of
+   a PR whose functions all pass on the Wine host; units with a failing function fall back to
+   per-function confirmation so one bad function never blocks the others. CI compiles twice
    with the pinned toolchain and validates the published target and complete object-content
    commitments under the authorized CI-host rule in verification.md. Missing target hashes,
    compiler problems and CI failures remain blockers. The contributor's local summary is never

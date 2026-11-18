@@ -1,19 +1,9 @@
-// MagicCaster member functions, build sse-steam-1-7-104.
-// Labels: v2
-//
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
-// with types from the header beside this file; labels revised by claude-opus-5-5 against the
-// pinned community checkouts.
-// Evidence: findings/third-batch-selection.md.
-// Recipe: reconstruction/recipes/o2-fpfast.json; all four functions below are compared.
-// The /fp:fast recipe is used because GetCurrentSpellCost and PlayReleaseSound compare floats for
-// equality without the parity branch /fp:precise emits; the target has none (selection note "F").
-//   MagicCaster::GetCurrentSpellCost  RVA 0x5c2cc0, 57 bytes
-//   MagicCaster::InterruptCast        RVA 0x5caae0, 104 bytes
-//   MagicCaster::FindPickTarget       RVA 0x5cef10, 163 bytes
-//   MagicCaster::PlayReleaseSound     RVA 0x5cdf50, 165 bytes
-// Names come from the header; the two unnamed callees (ContinueFindPickTarget, ApplySoundEvent)
-// are guessed names (labelled in MagicCaster.h) bound by RVA hint. A byte match would not verify the names or the original source.
+// Recipe: reconstruction/recipes/o2-fpfast.json
+// 0x5c2cc0 MagicCaster::GetCurrentSpellCost
+// 0x5caae0 MagicCaster::InterruptCast
+// 0x5cef10 MagicCaster::FindPickTarget
+// 0x5cdf50 MagicCaster::PlayReleaseSound
 #include "MagicCaster.h"
 
 Actor* MagicCaster::GetCasterAsActor() const

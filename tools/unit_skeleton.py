@@ -29,7 +29,7 @@ import textwrap
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lint_reconstruction import SKELETON_MARKER  # noqa: E402,F401 (re-exported for the CLIs and tests)
+from lint_reconstruction import DEFAULT_RECIPE, SKELETON_MARKER  # noqa: E402,F401 (re-exported for the CLIs and tests)
 
 BODY_MARKER = 'SKELETON_TODO_BODY'
 MODEL_MARKER = 'SKELETON_TODO_MODEL'
@@ -812,29 +812,20 @@ def render_unit(unit, drafted_by=None, repo=None):
 
     gpl = any(is_gpl(label) for label in labels)
     label_lines = [f'// {", ".join(names)}: {label}' for label, names in labels.items() if names]
-    from declaration_kit import MIT_NOTICE, GPL_NOTICE
+    from declaration_kit import GPL_NOTICE
+    from lint_reconstruction import SPDX_MIT
     notices = list(unit.get('notices', []))
-    for text, needed in ((MIT_NOTICE, p['inline_base'] or any('CommonLibSSE' in label for label in labels)),
+    for text, needed in ((SPDX_MIT, p['inline_base'] or any('CommonLibSSE' in label for label in labels)),
                          (GPL_NOTICE, gpl)):
         notice_text = '\n'.join('// ' + line if line else '//' for line in text.splitlines())
         if needed and not any(notice_text in n for n in notices):
             notices.append(notice_text)
     header = [
-        f'// {cls} declarations for build {build}.',
-        '//',
-        '// Labels: v2',
-        f'// Task: {task_id}',
+        ('// Source exposure: mixed (community headers; compared functions from the pinned image).'
+         if not p['facts'] else '// Source exposure: mixed (community declarations and the contributor-owned pack).'),
         *origin_lines,
-        ('// Source exposure: mixed (names and declarations from community headers; base classes, sizes and'
-         if not p['facts'] else '// Source exposure: mixed (community declarations and the contributor-owned pack;'),
-        ('// the compared functions from the pinned image).' if not p['facts'] else
-         '// bases, sizes and slots are community hypotheses).'),
-        *(['// Sizes and slots are community hypotheses: verify C1-C5 locally before drafting.',
-           '// Size agreement alone proves neither fields nor ownership.'] if p['facts'] else []),
         *([GPL_NOTE] if gpl else []),
         *notices,
-        '// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and',
-        '// community names are unverified.',
         *base_form_lines(p),
         *label_lines,
         '#pragma once',
@@ -871,28 +862,17 @@ def render_unit(unit, drafted_by=None, repo=None):
                    'in that order if a compared function needs them (cookbook rule 25).', '']
     header += blocks + cls_block
 
-    compared = [f'//   RVA 0x{(int(str(m["fn"]["rva"]), 16) if isinstance(m["fn"]["rva"], str) else m["fn"]["rva"]):x}, '
-                f'{m["fn"]["size"]} bytes: {m["fn"].get("community_name")}' for m in p['members']]
+    compared = [f'// 0x{(int(str(m["fn"]["rva"]), 16) if isinstance(m["fn"]["rva"], str) else m["fn"]["rva"]):x} '
+                f'{m["fn"].get("community_name")}' for m in p['members']]
     source = [
-        f'// {cls} functions for build {build}.',
-        '//',
-        '// Labels: v2',
-        f'// Task: {task_id}',
+        '// Source exposure: mixed (community headers; the pinned image listing).',
         *origin_lines,
-        '// Source exposure: mixed (names and declarations from community headers; the listing of the pinned',
-        '// image).',
         *([GPL_NOTE] if gpl else []),
         *notices,
-        f'// Evidence: {evidence or "SKELETON_TODO_EVIDENCE (the findings/ file the brief names)"}',
-        f'// Recipe: {recipe} (compile this file alone).',
-        f'// Drafted by {drafted_by or MODEL_MARKER + " (the model or person who writes the bodies)"}, starting from',
-        '// a tools/skeleton.py skeleton.',
-        '// Compared functions:',
+        *([f'// Recipe: {recipe}'] if recipe != DEFAULT_RECIPE else []),
         *compared,
         f'// Adapted bodies: {ORIGIN_MARKER} (write "none" when attempt prints no "origin advice" line;',
         '// otherwise name each adapted body, its upstream file, revision and licence).',
-        '// A byte match shows that this source and recipe produce the checked code; it does not verify the',
-        '// community names or that the original source looked like this.',
         f'#include "{cls}.h"',
         '',
         '\n\n'.join(defs),

@@ -1,14 +1,6 @@
-// NiInterpolator declaration for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) include/RE/N/NiInterpolator.h,
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // include/RE/N/NiObject.h and include/RE/N/NiRefObject.h. No body here is adapted from a
-// community source; the only inline bodies are single returns or stores forced by the image.
-// NiRefObject and NiObject are stand-ins declared in this header (not the shared NiObject.h):
-// the target inlines the NiRefObject destructor into NiInterpolator's deleting destructor, so
-// NiRefObject's destructor must be an inline body here. Vtable slot order comes from the image
-// RTTI and vftable; sizeof(NiInterpolator) == 0x18 from the operator delete size argument.
 // The name Clone is taken from powerof3/CommonLibSSE 654e55f (GPL-3.0) include/RE/N/NiObject.h;
 // because of that one name this file states GPL-3.0 as its licence. It does not reproduce the
 // GPL-3.0 text.

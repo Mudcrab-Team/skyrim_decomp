@@ -322,8 +322,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/BSLightingShaderMaterialParallaxOcc.cpp",
-    "digest": "5a37a212901c9bd2f5c04c31d27d1d886b311af34f5157a05cae9492e15008f7",
-    "digest_method": "tu-sha256-v1",
+    "digest": "92c260972685afd467bafe67f347b87e6f060d2c8c915156dbf3240d23cfeba5",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "5a37a212901c9bd2f5c04c31d27d1d886b311af34f5157a05cae9492e15008f7",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSLightingShaderMaterial.h",
       "reconstruction/bsengine/BSLightingShaderMaterialBase.h",

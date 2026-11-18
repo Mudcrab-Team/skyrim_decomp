@@ -1,12 +1,5 @@
-// Build: sse-steam-1-7-104
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: binary-analysis; no external implementation source reused.
 // Code origin: original reconstruction from binary analysis.
-// Drafted by GPT-6.1 Sol (template and generator).
-// Only initialize and its EH cleanup are compared; referenced implementations are bindings.
-// Object identity, signature and adapter purpose are inferred, not recovered original names.
-// Labels: v2
 // StorageInit7c61a0, AdapterBase, Adapter, owner, acquire, grow, release, initialize: GUESS(low) STANDIN
 // storage_helper, count, storage, object: GUESS(low) STANDIN
 #pragma once

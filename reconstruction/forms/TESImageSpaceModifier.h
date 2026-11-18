@@ -1,10 +1,5 @@
-// TESImageSpaceModifier type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESImageSpaceModifier.h
-// and include/RE/B/BSString.h. The destructor is declared without a body in this unit: the deleting
-// destructor calls the plain one at RVA 0x2a6d30, bound by hint. Members before the editor ID are not recovered.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared.
 // TESImageSpaceModifier, TESImageSpaceModifier::GetFormEditorID, ::SetFormEditorID, ::~TESImageSpaceModifier, ::formEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESImageSpaceModifier::unk20: GUESS(low); stands for the members from 0x20 to 0x2CF

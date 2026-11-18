@@ -13,7 +13,8 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 import stamp_template_v2 as template_v2
 
 

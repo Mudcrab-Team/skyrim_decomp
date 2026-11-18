@@ -334,8 +334,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/MenuEventHandlerStorageLayout.cpp",
-    "digest": "8bd6510b53a91185a03797598645e4ff2789576af161a4d612d44f4d57238e5d",
-    "digest_method": "tu-sha256-v1",
+    "digest": "0a96421e715f60a87cbef9ee7fa7989bb43f41c16e804751d1371b434b65322d",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "8bd6510b53a91185a03797598645e4ff2789576af161a4d612d44f4d57238e5d",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
       "reconstruction/bsengine/MenuEventHandlerStorageLayout.cpp",

@@ -1,18 +1,12 @@
-// TESFile::OpenTES, GetCurrentSubRecordType, GetFormType, SeekNextSubrecord, Duplicate, Seek,
-// build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x1ca460, 36 bytes (OpenTES); RVA 0x1cdc10, 47 bytes (GetCurrentSubRecordType);
-// RVA 0x1cd7d0, 72 bytes (GetFormType); RVA 0x1cdc60, 167 bytes (SeekNextSubrecord);
-// RVA 0x1ce7e0, 188 bytes (Duplicate); RVA 0x1cd860, 409 bytes (Seek).
-// Evidence: findings/third-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with the class layout from the header beside this file. SeekNextSubrecord,
-// Duplicate and Seek were finished by claude-opus-5-5 from the Drafter's near-misses.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. All six functions are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // GetCurrentThreadId, GetLastError, FormatMessageA, LocalFree: STANDIN OBSERVED; Win32 imports of the image, declared locally
+// 0x1ca460 TESFile::OpenTES
+// 0x1cdc10 TESFile::GetCurrentSubRecordType
+// 0x1cd7d0 TESFile::GetFormType
+// 0x1cdc60 TESFile::SeekNextSubrecord
+// 0x1ce7e0 TESFile::Duplicate
+// 0x1cd860 TESFile::Seek
 #include "TESFile.h"
 
 #include <cstring>

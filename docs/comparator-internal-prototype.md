@@ -12,7 +12,7 @@ It adds refusals; it does not mask references or select a byte prefix.
 
 An internal task has `task_schema: 2` and `internal_identity` with exactly these fields:
 
-- `identity_schema: 1`, `source_digest_method: "tu-sha256-v1"`, `source_revision`, `source_path`;
+- `identity_schema: 1`, `source_digest_method: "tu-sha256-v1"` (the comparator's own constant; its source hash covers `tools/source_digest.py`, so the label stays even when `source_revision` is a v2 digest), `source_revision`, `source_path`;
 - `object_sha256`: this run's complete object hash, also required by the build record;
 - `symbol_type: 32`, `storage_class: 3`: COFF function type and static storage;
 - `section_number`, `section_name`, `entry_offset: 0`;

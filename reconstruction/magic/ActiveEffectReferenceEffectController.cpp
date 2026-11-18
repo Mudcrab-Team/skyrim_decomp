@@ -1,24 +1,14 @@
-// ActiveEffectReferenceEffectController functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-c2-s11-referenceeffectcontroll-activeef-419a131a48fa
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-upstream-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5, starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x5dc6d0, 10 bytes: ActiveEffectReferenceEffectController::GetElapsedTime
-//   RVA 0x5dc7f0, 13 bytes: ActiveEffectReferenceEffectController::GetNoInitialFlare
-//   RVA 0x5dc760, 15 bytes: ActiveEffectReferenceEffectController::GetSourcePosition
-//   RVA 0x5dc810, 26 bytes: ActiveEffectReferenceEffectController::GetEffectPersists
-//   RVA 0x5dc830, 26 bytes: ActiveEffectReferenceEffectController::GetGoryVisuals
-//   RVA 0x5dc990, 56 bytes: ActiveEffectReferenceEffectController::GetHitEffectShader
-//   RVA 0x5dc950, 57 bytes: ActiveEffectReferenceEffectController::GetHitEffectArt
-//   RVA 0x5dc660, 61 bytes: ActiveEffectReferenceEffectController::SetTarget
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x5dc6d0 ActiveEffectReferenceEffectController::GetElapsedTime
+// 0x5dc7f0 ActiveEffectReferenceEffectController::GetNoInitialFlare
+// 0x5dc760 ActiveEffectReferenceEffectController::GetSourcePosition
+// 0x5dc810 ActiveEffectReferenceEffectController::GetEffectPersists
+// 0x5dc830 ActiveEffectReferenceEffectController::GetGoryVisuals
+// 0x5dc990 ActiveEffectReferenceEffectController::GetHitEffectShader
+// 0x5dc950 ActiveEffectReferenceEffectController::GetHitEffectArt
+// 0x5dc660 ActiveEffectReferenceEffectController::SetTarget
 #include "ActiveEffectReferenceEffectController.h"
 
 float ActiveEffectReferenceEffectController::GetElapsedTime()

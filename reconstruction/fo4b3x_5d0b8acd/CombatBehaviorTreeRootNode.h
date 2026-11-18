@@ -1,10 +1,5 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
-// Drafted by gpt-6.1-terra.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // Declarations from powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944, include/RE/C/CombatBehaviorTreeNode.h; GPL-3.0.
 // CombatBehaviorTreeNode: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // CombatBehaviorTreeWrapperNode, CombatBehaviorTreeRootNode, node: GUESS(low); derived layout inferred from target accesses and community base.

@@ -18,11 +18,6 @@ import agent_identity
 import attempt_progress as progress
 import align
 import contrib
-import flow
-import flow_lane
-import flow_tooling
-import friction
-import lane_accept
 import profiles
 import work_queue as queue
 
@@ -38,84 +33,17 @@ def load_attempt():
 class Recovery(unittest.TestCase):
     def test_specific_next_actions_are_short_and_actionable(self):
         cases = [
-            ('stale lane tooling', ('origin/main', 'rebase', 'Queued items are kept')),
-            ('push lane already running', ('not a stall', '--wait-lane')),
             ('stale header', ('re-confirm', 'confirmation-pinned maps', 'symbol_map.path')),
             ('missing symbol map or report inputs', ('confirmation-pinned map', 'record_refresh', 'source.translation_unit')),
-            ('not an inventory entry on origin', ('mapped-only', 'same lane item', 'enrollments', 'p152')),
             ('insufficient free disk space', ('Free disk space', 'retry', 'private configuration')),
         ]
         for message, expected in cases:
             with self.subTest(message=message):
-                output = str(flow.FlowError(message))
+                output = agent_advice.explain(message)
                 for text in expected:
                     self.assertIn(text, output)
                 self.assertEqual(output.count('\n'), 1)
                 self.assertEqual(agent_advice.explain(output), output)
-
-    def test_lane_lock_refusal_and_wait_both_explain_waiting(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            with flow_lane.lane_lock(Path(tmp)):
-                with self.assertRaisesRegex(flow.FlowError, 'not a stall.*--wait-lane'):
-                    with flow_lane.lane_lock(Path(tmp)):
-                        self.fail('lock contention must still refuse')
-            output = io.StringIO()
-            with contextlib.redirect_stderr(output), flow_lane.lane_lock(Path(tmp), wait=True):
-                pass
-            self.assertIn('not a stall', output.getvalue())
-            self.assertIn('--wait-lane', output.getvalue())
-
-    def test_disk_floor_still_refuses_with_generic_advice(self):
-        with tempfile.TemporaryDirectory() as tmp, patch.object(flow_lane.shutil, 'disk_usage') as usage:
-            usage.return_value.free = 1
-            with self.assertRaisesRegex(flow.FlowError, 'private configuration'):
-                flow_lane.disk_preflight(Path(tmp), 3)
-
-    def test_stale_runtime_names_update_rebase_and_preserved_queue(self):
-        with patch.object(flow, 'git', return_value=''), \
-             patch.object(flow, 'lane_tool_sources', return_value={'tools/synthetic.py': 'new'}), \
-             patch.object(flow, 'LANE_TOOL_SOURCES', {'tools/synthetic.py': 'new'}):
-            with self.assertRaises(flow.FlowError) as refused:
-                flow_lane.require_base_tools(Path('/synthetic'), base='synthetic-base')
-        for text in ('origin/main', 'rebase', 'Queued items are kept', '--root'):
-            self.assertIn(text, str(refused.exception))
-
-    def test_tooling_publisher_explains_swallowed_busy_refusals_once(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            directory = Path(tmp)
-            item = dict(id='synthetic', state='queued', revision='synthetic-revision')
-            result = dict(item, state='done', run='synthetic-run')
-            receipt = dict(id='synthetic-run', state='done', integrated=dict(pushed='synthetic-time'))
-            queued = directory / 'lane/tooling-queue/synthetic.json'
-            run = directory / 'lane/runs/synthetic-run.json'
-            flow_lane.write(queued, item)
-            def advance(*args, **kwargs):
-                if advance.calls < 2:
-                    advance.calls += 1
-                    raise flow.FlowError('push lane already running')
-                flow_lane.write(queued, result)
-                flow_lane.write(run, receipt)
-            advance.calls = 0
-            output = io.StringIO()
-            with patch.object(flow_tooling, 'enqueue', return_value=item), \
-                 patch.object(flow_lane, 'run_lane', side_effect=advance), \
-                 patch.object(flow_tooling.time, 'sleep'), contextlib.redirect_stderr(output):
-                published = flow_tooling.publish(directory, directory, 'main', 0, sys.executable, None, False)
-            self.assertEqual(published['state'], 'done')
-            self.assertEqual(output.getvalue().count('not a stall'), 1)
-            self.assertIn('--wait-lane', output.getvalue())
-            self.assertIn('Queued items are kept', output.getvalue())
-
-    def test_lane_dropped_member_keeps_reason_and_adds_next(self):
-        request = dict(kind='review', functions=['0x1000'])
-        data = dict(functions=[])
-        with patch.object(lane_accept.af, 'load', return_value=(data, {})), \
-             patch.object(lane_accept.af, 'inventory_index'), patch.object(lane_accept.af, 'stale_ids', return_value=set()), \
-             patch.object(lane_accept.af, 'accept_reviews', side_effect=ValueError('missing report inputs')):
-            result = lane_accept._accept(Path('/synthetic'), [request], timings={})
-        self.assertEqual(result['accepted'], [])
-        self.assertEqual(result['dropped'][0]['reason'], 'missing report inputs')
-        self.assertIn('confirmation-pinned map', result['dropped'][0]['next'])
 
     def test_argument_errors_and_unclassified_contributor_errors_have_next_steps(self):
         output = io.StringIO()
@@ -161,17 +89,6 @@ class Attribution(unittest.TestCase):
             github.assert_not_called()
             self.assertIn('--model', json.loads(output.getvalue())['next'])
             self.assertFalse(ctx.private.exists())
-
-    def test_friction_reports_missing_function_count_without_inventing_models(self):
-        records = [dict(rva='0x1000', worker=None), dict(rva='0x2000', model='actual-model'),
-                   dict(rva='0x3000', worker='legacy-model-1'), dict(unit='unit', worker=None)]
-        with tempfile.TemporaryDirectory() as tmp, \
-             patch.object(flow, 'queue_results', return_value=records), \
-             patch.object(flow, 'queue_units', return_value=[]):
-            report = friction.summarise(tmp)
-        self.assertEqual(report['missing_model_functions'], 1)
-        self.assertIn('Functions with no model or agent recorded: 1', friction.render(report))
-        self.assertIn('actual-model', report['by_model'])
 
 
 class Progress(unittest.TestCase):

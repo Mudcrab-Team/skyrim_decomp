@@ -1,11 +1,5 @@
-// BGSLoadGameBuffer, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (community headers and local instruction listings of the pinned image).
-// Layout and names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT), checked against the listings.
-// Stand-ins: BGSNumericIDIndex (name and members from NG include/RE/B/BGSNumericIDIndex.h) and
-// BGSSaveLoadGame (name from NG include/RE/B/BGSSaveLoadGame.h; only the singleton pointer and the
-// one method GetVersion calls are declared).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSLoadGameBuffer: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 

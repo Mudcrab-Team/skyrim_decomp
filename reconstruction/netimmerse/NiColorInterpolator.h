@@ -1,12 +1,6 @@
-// NiColorInterpolator declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q1-s02-niobject-nicolorinterpolator
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiKeyBasedInterpolator.h for NiKeyBasedInterpolator.
 // NiColorInterpolator: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiColorInterpolator::GetKeyType, NiColorInterpolator::GetRTTI, NiColorInterpolator::GetKeyCount, NiColorInterpolator::GetKeyContent, NiColorInterpolator::GuaranteeTimeRange, NiColorInterpolator::GetKeyArray, NiColorInterpolator::GetKeyStride: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiRTTI: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

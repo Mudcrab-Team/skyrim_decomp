@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RenderCubemap@BSCubeMapCamera@@UEAAXW4FaceEnableFlags@@_N11@Z": {
+      "rva": 22387296,
+      "size": 14
+    },
+    "?RenderCubemapFaces@@YAXPEAVBSCubeMapCamera@@W4FaceEnableFlags@@_N22@Z": {
+      "rva": 22388384,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RenderCubemap@BSCubeMapCamera@@UEAAXW4FaceEnableFlags@@_N11@Z",
+        "rva": "0x1559a60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RenderCubemapFaces@@YAXPEAVBSCubeMapCamera@@W4FaceEnableFlags@@_N22@Z",
+        "rva": "0x1559ea0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

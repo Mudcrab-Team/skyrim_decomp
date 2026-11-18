@@ -329,8 +329,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/BSInlineHost512d70.cpp",
-    "digest": "7c59f5d2bb791860542fbd7fdf8b722c3601e485ee28aa4b5ba8967a0256e59f",
-    "digest_method": "tu-sha256-v1",
+    "digest": "2ce35c31c469bb9fb7badb966334f6cd921b0f93bcb8debd941ba57316278004",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "7c59f5d2bb791860542fbd7fdf8b722c3601e485ee28aa4b5ba8967a0256e59f",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSHandleRefObject.h",
       "reconstruction/bsengine/BSInlineHost512d70.cpp",

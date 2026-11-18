@@ -133,20 +133,6 @@ class ClaimsTests(unittest.TestCase):
                             claims.sync(self.root, fake.client)
                 self.assertEqual(fake.writes, [('comment', 8)])
 
-    def test_active_entries_exclude_planned_families(self):
-        import flow
-        (self.root / 'data').mkdir()
-        (self.root / 'data/progress.json').write_text(json.dumps(PUBLIC))
-        family = self.root / 'reports' / BUILD / 'families'
-        family.mkdir(parents=True)
-        (family / 'plan.json').write_text('{}')
-        states = {'0x1000': {'state': 'queued'}, '0x1020': {'state': 'rejected'},
-                  '0x2000': {'state': 'review-pending'}, '0x3000': {'state': 'pushed'}}
-        with patch.object(claims, 'planned_family', return_value={0x4000}), \
-                patch.object(flow, 'function_states', return_value=states):
-            entries = claims.active_entries(self.root, PUBLIC)
-        self.assertEqual(set(entries), {(0x1000, 0x1001), (0x2000, 0x2001)})
-
     def test_comment_and_linked_pr_extend_lapse(self):
         issue = raw(old=True)
         def api(_):
@@ -357,8 +343,7 @@ class ClaimsTests(unittest.TestCase):
         clusters = self.root / 'clusters.json'
         clusters.write_text(json.dumps({'build_id': BUILD, 'clusters': [{'members': ['0x3000', '0x3010'],
                             'ranges': [{'start': '0x3000', 'end': '0x3020'}]}]}))
-        import flow
-        with patch.object(flow, 'function_states', return_value={'0x2000': {'state': 'confirmed'}}):
+        with patch.object(claims, 'active_entries', return_value=[(0x2000, 0x2001)]):
             build, groups = claims.collect(self.root, PUBLIC, cluster_lists=[clusters])
         self.assertEqual(build, BUILD)
         self.assertEqual(groups, [([(0x2000, 0x2001)], {})])

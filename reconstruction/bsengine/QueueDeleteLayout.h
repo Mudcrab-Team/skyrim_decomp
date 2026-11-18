@@ -1,35 +1,10 @@
-// Build: sse-steam-1-7-104
 // Source exposure: mixed (community declarations and local target binding).
-// Drafted by GPT-6.1 Sol; p104b handle and queue layouts.
-// Labels: v2
 // Code origin: data declarations adapted from pinned public CommonLibSSE-NG headers. No implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/B/BSPointerHandle.h, BSTMessageQueue.h, BSExtraData.h; I/IUIMessageData.h, S/SyncQueueObj.h and the corresponding named handle-owner headers.
-// Aliased fields represent storage and inheritance; no complete original definition, omitted methods, pointee ownership or template-argument recovery is claimed.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // QueueDeleteLayout: GUESS(medium) STANDIN; public queue interface alias.
 // lock, numEntries, pushIdx, popIdx: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // entries: GUESS(medium) STANDIN; pointer-valued raw queue slots, with lifetime/ownership management unassessed.
-// The public byte arena is represented as typed pointer slots for pointer-valued entries; no allocation-size array is introduced.
 #pragma once
 #include <cstdint>
 #include <cstddef>

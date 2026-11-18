@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?InitializeData@BGSTalkingActivator@@UEAAXXZ": {
+      "rva": 2519520,
+      "size": 16
+    },
+    "?GetObjectVoiceType@BGSTalkingActivator@@UEBAPEAVBGSVoiceType@@XZ": {
+      "rva": 2520736,
+      "size": 8
+    },
+    "?SetObjectVoiceType@BGSTalkingActivator@@UEAAXPEAVBGSVoiceType@@@Z": {
+      "rva": 2521104,
+      "size": 8
+    },
+    "?InitializeData@TESObjectACTI@@UEAAXXZ": {
+      "rva": 2594640,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?InitializeData@BGSTalkingActivator@@UEAAXXZ",
+        "rva": "0x2671e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetObjectVoiceType@BGSTalkingActivator@@UEBAPEAVBGSVoiceType@@XZ",
+        "rva": "0x2676a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetObjectVoiceType@BGSTalkingActivator@@UEAAXPEAVBGSVoiceType@@@Z",
+        "rva": "0x267810",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitializeData@TESObjectACTI@@UEAAXXZ",
+        "rva": "0x279750",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

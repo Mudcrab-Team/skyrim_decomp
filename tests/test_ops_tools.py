@@ -1,5 +1,5 @@
-"""Tests for the queue's release, profile stamping and near-miss set-aside, the profile data,
-and the friction report. All inputs are synthetic."""
+"""Tests for the queue's release, profile stamping and near-miss set-aside, the profile data
+and the disk admission floor. All inputs are synthetic."""
 import contextlib
 import io
 import json
@@ -8,41 +8,21 @@ import shutil
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 sys.path.insert(0, str(ROOT / 'tests'))
-import friction  # noqa: E402
 import profiles  # noqa: E402
+import resource_admission as disk  # noqa: E402
 import work_queue as wq  # noqa: E402
-from test_flow import BUILD, review_text  # noqa: E402
 
 
 def write_queue(qdir, n):
     qdir.mkdir(parents=True, exist_ok=True)
     lines = [f'.local/tasks/g/g-u{i}\treconstruction/misc/U{i}.h,reconstruction/misc/U{i}.cpp\t0x{i + 1:x}000\t3' for i in range(n)]
     (qdir / 'queue.tsv').write_text('\n'.join(lines) + '\n')
-
-
-class FallbackFriction(unittest.TestCase):
-    def test_first_and_fallback_rates_are_separate(self):
-        import friction
-        from unittest.mock import patch
-        with tempfile.TemporaryDirectory() as tmp:
-            records = [
-                {'rva': '0x1', 'result': 'fail', 'worker': 'haiku-1', 'profile': 'claude-low', 'queue_unit': 'u'},
-                {'rva': '0x1', 'result': 'pass', 'worker': 'terra-1', 'profile': 'claude-low', 'queue_unit': 'u', 'tier': 'fallback'},
-                {'rva': '0x2', 'result': 'fail', 'worker': 'sol-1', 'profile': 'claude-low', 'queue_unit': 'u', 'tier': 'strong'},
-            ]
-            with patch.object(friction.flow, 'queue_results', return_value=records), \
-                 patch.object(friction.flow, 'queue_units', return_value=[]):
-                report = friction.summarise(tmp)
-            self.assertEqual(report['by_tier']['first']['pass_rate'], 0)
-            self.assertEqual(report['by_tier']['fallback']['pass_rate'], 1)
-            self.assertEqual(report['by_profile']['claude-low']['functions'], 1)
-            self.assertEqual(report['by_profile']['claude-low/fallback']['functions'], 1)
-            self.assertEqual(report['by_tier']['strong']['functions'], 1)
-            self.assertEqual(report['by_model']['sol/strong']['functions'], 1)
 
 
 class QueueAdditions(unittest.TestCase):
@@ -141,48 +121,21 @@ class Profiles(unittest.TestCase):
         self.assertIn('[default]', out.getvalue())
 
 
-class Friction(unittest.TestCase):
-    def setUp(self):
-        self.tmp = Path(tempfile.mkdtemp()).resolve()
-        q = self.tmp / '.local/queue/small'
-        q.mkdir(parents=True)
-        (q / 'queue.tsv').write_text('')
-        recs = [
-            {'worker': 'haiku-1', 'profile': 'cheap', 'queue_unit': 'u1', 'rva': '0x1', 'result': 'pass', 'attempts': 2},
-            {'worker': 'haiku-1', 'profile': 'cheap', 'queue_unit': 'u1', 'rva': '0x2', 'result': 'fail', 'attempts': 3,
-             'reason': 'function-size-mismatch size 20/19'},
-            {'worker': 'haiku-1', 'profile': 'cheap', 'queue_unit': 'u1', 'unit': 'a.cpp', 'claimed': '2026-01-01T00:00:00Z',
-             'recorded': '2026-01-01T00:10:00Z', 'friction': 'stale near-miss file'},
-            {'worker': 'luna56-medium-1', 'queue_unit': 'u2', 'rva': '0x3', 'result': 'fail', 'attempts': 3,
-             'reason': 'function-size-mismatch size 31/30'},
-            {'worker': 'luna56-medium-1', 'queue_unit': 'u2', 'unit': 'b.cpp'},
-        ]
-        (q / 'results.jsonl').write_text(''.join(json.dumps(r) + '\n' for r in recs))
-        rv = self.tmp / '.local/reviews'
-        rv.mkdir(parents=True)
-        (rv / 'review-x.md').write_text(review_text('review-x', [(0x10, 4, 'd' * 64, 'reject', 'none')]))
+class DiskAdmission(unittest.TestCase):
+    def admit(self, free_gb, **kw):
+        with patch.object(disk.shutil, 'disk_usage', return_value=SimpleNamespace(free=int(free_gb * 1e9))):
+            return disk.admit(Path.cwd(), 'synthetic job', **kw)
 
-    def tearDown(self):
-        shutil.rmtree(self.tmp)
+    def test_soft_floor_refuses_unless_overridden(self):
+        with self.assertRaisesRegex(ValueError, 'low disk space'), contextlib.redirect_stderr(io.StringIO()):
+            self.admit(5)
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.admit(5, allow_low_disk=True)
+        self.admit(5, soft_gb=4)
 
-    def test_report_counts_per_profile_and_model(self):
-        rep = friction.summarise(self.tmp, now=0)
-        cheap = rep['by_profile']['cheap']
-        # The luna lines carry no profile; the queue directory says cheap.
-        self.assertEqual((cheap['functions'], cheap['passed']), (3, 1))
-        self.assertEqual(rep['by_model']['haiku']['median_minutes_per_unit'], 10.0)
-        self.assertEqual(rep['by_model']['luna56-medium']['abandoned_units'], 1)
-        self.assertEqual(rep['top_failure_messages'][0], ('fail: function-size-mismatch size N/N', 2))
-        self.assertIn(('check provenance failed', 1), rep['rejects_by_reason'])
-        self.assertIsNotNone(rep['cheap_flag'])  # 1/3 is below the threshold
-        self.assertIn('below', friction.render(rep))
-
-    def test_write_logs_the_event(self):
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            friction.main(['--root', str(self.tmp), '--write'])
-        fdir = self.tmp / '.local/flow'
-        self.assertEqual(len(list(fdir.glob('friction-*.md'))), 1)
-        self.assertIn('"event": "friction"', (fdir / 'events.jsonl').read_text())
+    def test_hard_floor_cannot_be_overridden(self):
+        with self.assertRaisesRegex(ValueError, 'insufficient free disk'):
+            self.admit(2.9, hard_gb=0, soft_gb=0, allow_low_disk=True)
 
 
 if __name__ == '__main__':

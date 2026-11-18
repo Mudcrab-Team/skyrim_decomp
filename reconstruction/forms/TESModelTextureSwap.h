@@ -1,11 +1,4 @@
-// TESModelTextureSwap type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESModelTextureSwap.h
-// and the vftables of the pinned image. BaseFormComponent and TESModel are stand-ins, labelled where
-// they are declared; only class names, base chain, slot
-// order and sizes are claimed, slot signatures other than the compared ones are placeholders.
 // TESModelTextureSwap: EXE_RTTI; class name and base from the image RTTI
 #pragma once
 

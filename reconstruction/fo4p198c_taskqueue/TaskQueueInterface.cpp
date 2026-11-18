@@ -1,18 +1,15 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed (local target analysis and permitted sibling).
 // Origin: independently reconstructed from target and sibling hints.
-// Drafted by gpt-6.1-terra
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // names: GUESS(low); signatures and type names are hypotheses.
-// RVA 0x669110, 43 bytes; RVA 0x668fd0, 44 bytes; RVA 0x6695d0, 46 bytes.
 // TaskQueueInterface::QueueForceWeather: SIBLING(fo4-private@1b765c70, author-permission); adapted task construction.
 // TaskQueueInterface::QueueRemoveSpell: SIBLING(fo4-private@1b765c70, author-permission); adapted task construction.
 // TaskQueueInterface::QueueActorDisarm: SIBLING(fo4-private@1b765c70, author-permission); adapted task construction.
 // Sibling source: fo4-private@1b765c70 src/Game/Misc/TaskQueueInterface.cpp:1134
 // Sibling source: fo4-private@1b765c70 src/Game/Misc/TaskQueueInterface.cpp:1022
 // Sibling source: fo4-private@1b765c70 src/Game/Misc/TaskQueueInterface.cpp:1476
+// 0x669110 TaskQueueInterface::QueueForceWeather
+// 0x668fd0 TaskQueueInterface::QueueRemoveSpell
+// 0x6695d0 TaskQueueInterface::QueueActorDisarm
 #include "TaskQueueInterface.h"
 void TaskQueueInterface::QueueForceWeather(TESWeather* weather, bool overrideWeather) {
     BSPackedTask task;

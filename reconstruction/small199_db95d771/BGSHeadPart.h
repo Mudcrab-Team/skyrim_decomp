@@ -1,14 +1,7 @@
-// BGSHeadPart, build sse-steam-1-7-104.
-// Labels: v2
 // Inferred names: GUESS(low)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction informed by CommonLibSSE-NG declarations (MIT).
 // Source exposure: mixed (local binary analysis and pinned public declarations).
-// Drafted by gpt-6.1-terra.
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Names, signatures and layout remain inferred; only checked bytes are claimed.
-// Compared functions:
-// RVA 0x390a20, 38 bytes: BGSHeadPart::sub.
 // BGSHeadPart: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 
 // MIT License
