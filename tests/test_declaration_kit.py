@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import re
 import unittest
 from unittest.mock import patch
 
@@ -224,8 +225,9 @@ std::uint32_t flags;
 
     def test_index_reports_existing_header_gaps_without_editing(self):
         advice = hi.advice(ROOT, 'NiNode', 'AsNode', 3)
-        self.assertTrue(any('/NiNode.h' in line and 'declarations' not in line and 'signature differs' in line
-                            for line in advice))
+        # The class is split over several units; whichever NiNode header the index reads, a gap in it is reported.
+        self.assertTrue(any(re.search(r'/NiNode(_[0-9a-f]+)?\.h', line) and 'reconstruction/declarations/' not in line
+                            and ('signature differs' in line or 'missing here' in line) for line in advice))
         self.assertTrue(any('reconstruction/declarations/NiNode.h' in line for line in advice))
 
 
