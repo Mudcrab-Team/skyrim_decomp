@@ -110,13 +110,14 @@ def main(argv=None):
     p.add_argument('--base')
     p.add_argument('--head')
     p.add_argument('--diff', type=Path, help='read a unified diff from a file ("-" for stdin) instead of git')
+    p.add_argument('--repo', type=Path, default=ROOT, help='checkout holding the history of --base and --head')
     p.add_argument('--private-list', type=Path, default=PRIVATE_LIST)
     a = p.parse_args(argv)
     if a.diff:
         diff = sys.stdin.read() if str(a.diff) == '-' else a.diff.read_text(errors='replace')
     elif a.base and a.head:
         diff = subprocess.run(['git', 'diff', '--no-renames', '--no-color', '-U0', '--diff-algorithm=minimal',
-                               a.base + '...' + a.head, '--'], cwd=ROOT, capture_output=True, check=True
+                               a.base + '...' + a.head, '--'], cwd=a.repo, capture_output=True, check=True
                               ).stdout.decode('utf-8', 'replace')
     else:
         p.error('give --base and --head, or --diff')
