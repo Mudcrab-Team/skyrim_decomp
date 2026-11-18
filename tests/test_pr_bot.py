@@ -438,6 +438,19 @@ class Host1Tests(unittest.TestCase):
         got, _ = self.host1()
         self.assertEqual(got, {0x10: 'regressed', 0x20: 'pass'})
 
+    def test_a_head_without_a_run_gets_a_probe_branch_and_draft_pr_once(self):
+        calls = []
+        self.job['name'] = 'other'
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if a[1].endswith('/check-runs') else ([] if a[0] == 'pr' else {'workflow_runs': []})
+        with self.assertRaises(pr_bot.Stop):
+            self.host1()
+        branch = [c for c in calls if c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c]
+        self.assertEqual(len(branch), 1)
+        self.assertIn('ref=refs/heads/probe/pr-7', branch[0])
+        self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
+        self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
+
     def test_a_missing_artifact_is_retried_not_trusted(self):
         self.files.pop('hash-result.json')
         with self.assertRaises(pr_bot.Stop):

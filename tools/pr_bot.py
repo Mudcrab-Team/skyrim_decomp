@@ -518,6 +518,7 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         deadline = time.time() + self.config['hash_wait']
+        probed = False
         while True:
             runs = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs')['check_runs']
             run = next((r for r in runs if r['name'] in HASH_CHECKS and r['head_sha'] == head), None)
@@ -525,6 +526,9 @@ class Bot:
                 break
             if run is None:
                 self.approve_pending(head)
+                if not probed:
+                    self.probe_hash_run(number, head)
+                    probed = True
             if time.time() > deadline:
                 raise Stop('hash check has not finished')
             time.sleep(20)
@@ -557,6 +561,31 @@ class Bot:
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
+
+    def probe_hash_run(self, number, head):
+        """Get pr-check onto a head that has no run, from a draft PR in this repository on the same commit.
+
+        A PR opened before pr-check existed is tested against a stale merge ref that lacks the workflow,
+        and a fork head cannot be re-run without a push. The commit is already in this repository through
+        refs/pull/N/head, so a branch at it runs the workflow from the current base with no fork approval;
+        check runs belong to the commit, so the PR's own head then carries the `hash` run.
+        """
+        branch = f'probe/pr-{number}'
+        refs = f'repos/{REPOSITORY}/git/refs'
+        made = self.run(['gh', 'api', '-X', 'POST', refs, '-f', f'ref=refs/heads/{branch}', '-f', f'sha={head}'],
+                        check=False)
+        if made.returncode:
+            self.run(['gh', 'api', '-X', 'PATCH', f'{refs}/heads/{branch}', '-f', f'sha={head}', '-F', 'force=true'],
+                     check=False)
+        if not self.gh_json('pr', 'list', '-R', REPOSITORY, '--head', branch, '--state', 'open', '--json', 'number'):
+            self.run(['gh', 'pr', 'create', '-R', REPOSITORY, '--draft', '--base', 'main', '--head', branch,
+                      '--title', f'pr-check run for the head of #{number}',
+                      '--body', f'Runs pr-check on the same commit as #{number}. Closed by the bot when it is done.'],
+                     check=False)
+
+    def drop_probe(self, number):
+        # Deleting the head branch ends the probe PR; the bot has no code path that closes a PR itself.
+        self.run(['gh', 'api', '-X', 'DELETE', f'repos/{REPOSITORY}/git/refs/heads/probe/pr-{number}'], check=False)
 
     def approve_pending(self, head):
         """A fork's first workflow run waits for approval; the workflows hold no secrets."""
@@ -765,6 +794,7 @@ class Bot:
             body = comment or comment_body(head, dict(decision, verdicts={int(r): v for r, v in verdicts.items()}), leak_codes)
             self.run(['gh', 'pr', 'comment', str(number), '-R', REPOSITORY, '--body', body])
             state.set('commented', True)
+        self.drop_probe(number)
         state.set('done', True)
         return summary
 
