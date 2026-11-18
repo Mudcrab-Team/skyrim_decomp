@@ -1,24 +1,17 @@
-// BGSDefaultObjectManager: constructor, destructor, InitItemImpl and the equip-slot accessors,
-// build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) and the Address
-// Library name list. A byte match shows that this source and recipe produce the checked code; it
-// does not verify the community method names or that the original source looked like this.
-// RVA 0x38fa30, 10 bytes (GetLeftHandEquip); RVA 0x38fa40, 10 bytes (GetRightHandEquip);
-// RVA 0x38fa60, 10 bytes (GetVoiceEquip); RVA 0x5d5b70, 29 bytes (GetEquipSlot);
-// RVA 0x31bd50, 62 bytes (deleting destructor); RVA 0x31b830, 85 bytes (constructor);
-// RVA 0x31bad0, 226 bytes (InitItemImpl).
-// Evidence: findings/fourth-batch-selection.md.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:121 (the empty destructor, shape only)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:112 (the constructor: form type, form ID, reset of the object array; the memset spelling follows ResetFormData at line 15)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:71 (InitItem: the resolve loop over the default object IDs)
 // ~BGSDefaultObjectManager, BGSDefaultObjectManager::BGSDefaultObjectManager: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); names and shape only, offsets and counts are this build's
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none other
-// above its threshold at the pinned revisions.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. The six functions other than InitItemImpl are compared.
-// InitItemImpl is defined here but not compared: a name it binds clashes with an existing symbol-map entry.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x38fa30 BGSDefaultObjectManager::GetLeftHandEquip
+// 0x38fa40 BGSDefaultObjectManager::GetRightHandEquip
+// 0x38fa60 BGSDefaultObjectManager::GetVoiceEquip
+// 0x5d5b70 BGSDefaultObjectManager::GetEquipSlot
+// 0x31bd50 BGSDefaultObjectManager::~BGSDefaultObjectManager
+// 0x31b830 BGSDefaultObjectManager::ctor
+// 0x31bad0 BGSDefaultObjectManager::InitItemImpl
 #include "BGSDefaultObjectManager.h"
 
 #include <cstring>

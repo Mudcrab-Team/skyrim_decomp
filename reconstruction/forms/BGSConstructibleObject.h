@@ -1,12 +1,6 @@
-// BGSConstructibleObject declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-bgsconstructibleobject
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../forms/TESForm.h for TESForm (sizeof 0x20).
 // BGSConstructibleObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSConstructibleObject::ClearData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSCraftingSubobject, BGSCraftingSubobject::Slot00, Slot01, Slot02, sub20, unk08: GUESS(low); the names are invented, the layout follows the listing

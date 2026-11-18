@@ -1,14 +1,6 @@
-// Type declarations for the BSDirectInputManager translation unit (build sse-steam-1-7-104).
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Class name, method names and the member at 08 follow CharmedBaryon/CommonLibSSE-NG
-// b93280e832f263dbef44e44cbe2936622a02f91a (MIT): include/RE/B/BSDirectInputManager.h.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// GUID, DIDEVICEOBJECTDATA, IDirectInput8A and IDirectInputDevice8A are
-// minimal stand-ins; their vtable slots are the ones the compared code calls.
-//
 // BSDirectInputManager: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // CreateDeviceWithGUID GetDeviceState GetDeviceData ReleaseDevice diInterface: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GUID DIDEVICEOBJECTDATA IDirectInput8A IDirectInputDevice8A: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

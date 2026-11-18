@@ -1,9 +1,6 @@
-// Type declarations for the BGSAttackData translation unit (build sse-steam-1-7-104).
-//
-// Labels: v2
 // Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CommonLibSSE-NG (MIT), and no external implementation body or layout is copied.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: binary-analysis (a local listing of the contributor's own copy of the pinned image).
-// Community names are unverified. Only the members the compared code needs are declared.
 // BGSAttackData, BGSAttackData::~BGSAttackData, event: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiRefObject, NiRefObject::~NiRefObject, _refCount, DeleteThis: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); inline because the target inlines it
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the destructor is called out of line

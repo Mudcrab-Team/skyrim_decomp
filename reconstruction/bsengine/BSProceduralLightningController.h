@@ -1,15 +1,6 @@
-// BSProceduralLightningController declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bsprocedurallightningcontroller
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiTimeController.h for NiTimeController.
-// NiInterpolator.h is not included: its NiObject is a different class from the one in
-// NiTimeController.h, so both cannot be in one translation unit (header-gap NiInterpolator).
 // BSProceduralLightningController: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiInterpController: STANDIN EXE_RTTI
 // BSProceduralLightningController::GetInterpolator, BSProceduralLightningController::GetInterpolatorID, BSProceduralLightningController::TargetIsRequiredType, BSProceduralLightningController::LoadBinary, BSProceduralLightningController::InterpolatorIsCorrectType, BSProceduralLightningController::RegisterStreamables, BSProceduralLightningController::IsEqual: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)

@@ -1,12 +1,6 @@
-// BSUtilityShader declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-bsutilityshader
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiRefObject.h for NiRefObject.
 // BSUtilityShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSShader: STANDIN EXE_RTTI
 // BSUtilityShader::RestoreMaterial: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)

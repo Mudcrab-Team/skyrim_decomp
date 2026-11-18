@@ -1,44 +1,11 @@
-// BSMultiBoundAABB declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bsmultiboundaabb
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: inline stand-ins. The compared deleting destructor does the NiRefObject cleanup itself
-// (it stores that vftable and decrements the object counter), so NiRefObject and NiObject are
-// declared here with inline destructors instead of including the shared NiObject.h, whose
-// out-of-line destructors would add a call.
 // Code origin: declarations generated from a tools/skeleton.py skeleton and extended by hand from the local listings; names follow the community headers.
 // BSMultiBoundAABB: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSMultiBoundShape: STANDIN EXE_RTTI
 // BSMultiBoundAABB::GetLength, BSMultiBoundAABB::~BSMultiBoundAABB, BSMultiBoundAABB::LoadBinary, BSMultiBoundAABB::Unk_2B, BSMultiBoundAABB::GetWithinPoint, BSMultiBoundAABB::Unk_2A, BSMultiBoundAABB::Unk_28: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Signature changes from the community list: Unk_2B, Unk_2A and Unk_28 take a pointer or a
-// reference argument because the compared code reads or writes through RDX.
 // unknown10, unknown18, unknown28, unknown38: GUESS(low)
-// Public naming source notice:
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSMultiBoundAABB::RegisterStreamables, BSMultiBoundAABB::SetCenter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names only, the bodies are written from the target listing
 // RegisterStreamablesBase: GUESS(low); address 0xfe4f30, takes the object and the stream and returns a byte that RegisterStreamables turns into a bool
 #pragma once

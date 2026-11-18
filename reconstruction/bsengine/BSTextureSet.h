@@ -1,15 +1,6 @@
-// BSTextureSet declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-bstextureset
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: inline stand-ins. The compared deleting destructor does the NiRefObject cleanup itself
-// (it stores that vftable and decrements the object counter), so NiRefObject and NiObject are
-// declared here with inline destructors instead of including the shared NiObject.h, whose
-// out-of-line destructors would add a call.
 // BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSTextureSet::GetRTTI, BSTextureSet::~BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiRTTI_BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's RTTI table name, declared here as a data object and bound by RVA in bind-hints.json

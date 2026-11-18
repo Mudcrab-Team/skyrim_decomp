@@ -1,13 +1,6 @@
-// BSLightingShaderMaterialFacegenTint declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s10-bslightingshadermaterialfacegentint
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../bsengine/BSLightingShaderMaterial.h for BSLightingShaderMaterial,
-// whose constructor and CopyMembers are out-of-line calls in the compared code (0x15235f0, 0x15237e0).
 // BSLightingShaderMaterialFacegenTint: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialFacegenTint::GetFeature, BSLightingShaderMaterialFacegenTint::Ctor, BSLightingShaderMaterialFacegenTint::CopyMembers, BSLightingShaderMaterialFacegenTint::~BSLightingShaderMaterialFacegenTint: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSShaderPair: GUESS(low); two adjacent tint components copied together

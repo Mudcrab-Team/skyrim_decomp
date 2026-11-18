@@ -1,41 +1,10 @@
-// IngredientItem declarations for build sse-steam-1-7-104 (standalone unit for GetData2, IsFood and InitChunk).
-// Labels: v2
-// Task: contrib-ingredientitem
 // Code origin: declarations written by hand from the local listings and the community headers; the bodies are in the matching .cpp.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by Hinkiii, assisted by claude-sonnet-5-5.
-// RVA 0x14f8a0, 29 bytes: IngredientItem::InitChunk
-// RVA 0x14fd00, 8 bytes: IngredientItem::GetData2
-// RVA 0x14fd60, 25 bytes: IngredientItem::IsFood
 // IngredientItem::GetData2, IngredientItem::IsFood, IngredientItem::InitChunk: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names only, the bodies are written from the target listing
 // GetData: GUESS(low); virtual slot 0x6C (byte offset 0x360), returns the record whose flags IsFood reads
 // Unk_NN: GUESS(low); placeholders that only keep GetData at the vtable offset the image encodes
 // IngredientData, cost, flags: STANDIN GUESS(low); the first two members of the record at 0x130 (cost, flags)
-// The MIT notice below covers only the names and declarations taken from
-// CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a; the other code in this file
-// is covered by the repository licence and the provenance labels above.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // unk08, unk10, unk18, unk20, unk28, unk30, unk38, unk40, unk48, unk50, unk58, unk60, unk68, unk70, unk78, unk80, unk88, unk90, unk98, unkA0, unkA8, unkB0, unkB8, unkC0, unkC8, unkD0, unkD8, unkE0, unkE8, unkF0, unkF8, unk100, unk108, unk110, unk118, unk120, unk128: GUESS(low); storage not read by the compared code
 #pragma once
 #include <cstdint>

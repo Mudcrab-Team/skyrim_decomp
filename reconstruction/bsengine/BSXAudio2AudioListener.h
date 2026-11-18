@@ -1,13 +1,6 @@
-// BSXAudio2AudioListener declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s22-bsaudiolistener-bsxaudio2audiolistener
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../bsengine/BSAudioListener.h for BSAudioListener.
 // BSXAudio2AudioListener: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // BSXAudio2AudioListener::Unk_01: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // BSXAudio2AudioListener::Unk_06: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); the parameter is read from the listing (a pointer to three dwords)

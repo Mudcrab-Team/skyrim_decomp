@@ -1,11 +1,5 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
-// Drafted by gpt-6.1-terra.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
-// Adapted declarations: CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a, RE/B/BGSSoundOutput.h, BSISoundOutputModel.h, BaseFormComponent.h and RE/T/TESForm.h.
 // BGSSoundOutput, TESForm, BSISoundOutputModel, data, type: GUESS(low); adjusted target access corroborates the selected field.
 /*
 MIT License

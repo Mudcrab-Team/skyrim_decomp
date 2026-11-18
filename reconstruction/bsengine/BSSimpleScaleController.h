@@ -1,39 +1,7 @@
-// BSSimpleScaleController declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-bssimplescalecontroller
 // Code origin: names, bases, slot order and member layout adapted from CharmedBaryon/CommonLibSSE-NG (MIT)
-// BSSimpleScaleController.h and NiTimeController.h; declarations written by the contributor, body original.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses: verify C1-C5 locally before drafting.
-// Size agreement alone proves neither fields nor ownership.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// The MIT notice above covers only the names and declarations attributed to
-// CharmedBaryon/CommonLibSSE-NG in this file, not the rest of the project.
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header declarations/NiObject.h for NiObject.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSSimpleScaleController, BSSimpleScaleController::TargetIsRequiredType, BSSimpleScaleController::~BSSimpleScaleController, BSSimpleScaleController::GetRTTI, BSSimpleScaleController::CreateClone, BSSimpleScaleController::Update, NiTimeController::~NiTimeController, NiTimeController::GetRTTI, NiTimeController::LoadBinary, NiTimeController::LinkObject, NiTimeController::RegisterStreamables, NiTimeController::SaveBinary, NiTimeController::IsEqual, NiTimeController::ProcessClone, NiTimeController::Start, NiTimeController::Stop, NiTimeController::Update, NiTimeController::SetTarget, NiTimeController::IsTransformController, NiTimeController::IsVertexController, NiTimeController::ComputeScaledTime, NiTimeController::OnPreDisplay, NiTimeController::IsStreamable, NiTimeController::TargetIsRequiredType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiTimeController, NiObjectNET: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiTimeController::flags, frequency, phase, loKeyTime, hiKeyTime, startTime, lastTime, weightedLastTime, scaledTime, target, next, BSSimpleScaleController::scale3D, refScale, scaleAnimDuration, NiRTTI::name, NiRTTI_NiAVObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)

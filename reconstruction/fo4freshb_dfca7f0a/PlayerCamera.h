@@ -1,7 +1,4 @@
-// PlayerCamera declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-dfca7f0a
 // Source exposure: mixed (pinned target listing and sibling hints).
 // PlayerCamera, PlayerCamera::SetSittingRotation: GUESS(low)
 // PlayerCamera fields: STANDIN GUESS(low)

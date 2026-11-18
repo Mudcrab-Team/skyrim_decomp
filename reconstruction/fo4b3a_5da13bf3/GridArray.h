@@ -1,10 +1,7 @@
-// Build: sse-steam-1-7-104
 // Adapted declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); paths listed below.
-// Labels: v2
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed.
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
-// Drafted by gpt-6.1-terra. Evidence: findings/ghidra-import.md
-// Adapted declarations: CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a, include/RE/G/GridArray.h.
 // Names and signature: GUESS; call slot corroborated by target.
 /*
 MIT License

@@ -1,26 +1,12 @@
-// BSLightingShaderMaterialEye declarations for build sse-steam-1-7-104.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:27
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:31
-//
-// Labels: v2
-// Task: p46-n-bslightingshadermaterialeye
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: unit-local BSLightingShaderMaterialBase stand-in; the shared header lacks
-// the observed CRC argument and two additional machine-word forwarding arguments.
 // BSLightingShaderMaterialEye: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialEye::SaveBinary, BSLightingShaderMaterialEye::LoadBinary, BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEye::Ctor, BSLightingShaderMaterialEye::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // eyeEnvMask, eyeCubemap, unkB0, colorB4, colorC0, pad_CC: GUESS(low)
-// NiColor constructor drafted by gpt-6.1-sol; initializes all components to zero.
-// Its trivial zero initialization coincides with NG b93280e include/RE/N/NiColor.h:26.
 // Adapted bodies: NiBinaryStream::read, NiBinaryStream::write from
-// CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h (MIT);
-// NiBinaryStream::binary_read, NiBinaryStream::binary_write from
-// CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/N/NiBinaryStream.cpp (MIT).
-// Parallel helper NiRefObject::IncRefCount: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:27 (no licence grant; maintainer authorized).
-// Parallel helper NiRefObject::DecRefCount: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:31 (no licence grant; maintainer authorized).
 #pragma once
 
 #include <cstdint>

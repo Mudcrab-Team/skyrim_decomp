@@ -1,29 +1,18 @@
-// BGSReverbParameters functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-bgsreverbparameters
 // Code origin: Bodies for the DoGet accessors and InitializeData written from the local listings; declarations added to the existing unit header.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-small-2-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by Hinkiii, assisted by claude-sonnet-5-5, starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x328e60, 8 bytes: BGSReverbParameters::DoGetRoomLevel
-//   RVA 0x328e70, 8 bytes: BGSReverbParameters::DoGetRoomHFLevel
-//   RVA 0x328ec0, 8 bytes: BGSReverbParameters::DoGetReflectionLevel
-//   RVA 0x328ef0, 8 bytes: BGSReverbParameters::DoGetReverbLevel
-//   RVA 0x328f20, 12 bytes: BGSReverbParameters::DoGetDiffusion
-//   RVA 0x328f40, 12 bytes: BGSReverbParameters::DoGetDensity
-//   RVA 0x328f60, 12 bytes: BGSReverbParameters::DoGetHFReference
-//   RVA 0x328e80, 20 bytes: BGSReverbParameters::DoGetDecayTime
-//   RVA 0x328ea0, 20 bytes: BGSReverbParameters::DoGetDecayHFRatio
-//   RVA 0x328ed0, 20 bytes: BGSReverbParameters::DoGetReflectionDelay
-//   RVA 0x328bf0, 22 bytes: BGSReverbParameters::InitializeData
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x328e60 BGSReverbParameters::DoGetRoomLevel
+// 0x328e70 BGSReverbParameters::DoGetRoomHFLevel
+// 0x328ec0 BGSReverbParameters::DoGetReflectionLevel
+// 0x328ef0 BGSReverbParameters::DoGetReverbLevel
+// 0x328f20 BGSReverbParameters::DoGetDiffusion
+// 0x328f40 BGSReverbParameters::DoGetDensity
+// 0x328f60 BGSReverbParameters::DoGetHFReference
+// 0x328e80 BGSReverbParameters::DoGetDecayTime
+// 0x328ea0 BGSReverbParameters::DoGetDecayHFRatio
+// 0x328ed0 BGSReverbParameters::DoGetReflectionDelay
+// 0x328bf0 BGSReverbParameters::InitializeData
 #include "BGSReverbParameters.h"
 int BGSReverbParameters::DoGetRoomLevel() const { return data.roomFilter * 100; }
 int BGSReverbParameters::DoGetRoomHFLevel() const { return data.roomHFFilter * 100; }

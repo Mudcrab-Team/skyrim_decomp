@@ -1,11 +1,6 @@
-// BGSCameraShot type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT). TESForm comes from
-// the shared header; only the members and slots the compared code needs are declared here.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Bodies adapted from community sources: none; tools/check_origin.py reports none above its
-// threshold at the pinned checkouts.
 // BGSCameraShot, BGSCameraShot::InitializeData, BGSCameraShot::~BGSCameraShot, BGSCameraShot::data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // CAMERA_SHOT_DATA: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's enum types are plain integers here
 // TESModel: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG slots 04 to 06 (GetModel, SetModel, GetAsModelTextureSwap) as placeholders; size 0x28
@@ -13,7 +8,6 @@
 // TESImageSpaceModifiableForm, TESImageSpaceModifiableForm::imageSpaceModifying: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); BaseFormComponent base and one pointer, size 0x10
 // BGSCameraShot::unk84: GUESS(low); opaque bytes for pad84 and the unk88 to unkB8 members (offset 0x84 to 0xC0)
 // BGSCameraShot::BGSCameraShot: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); name only, defined only so the unit emits the vftables and the deleting destructor
-// BGSCameraShot::~BGSCameraShot: declared and not defined so that the deleting destructor calls the plain one; bound by hint to 0x3189e0
 #pragma once
 
 #include <cstdint>

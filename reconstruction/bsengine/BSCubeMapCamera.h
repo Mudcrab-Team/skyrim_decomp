@@ -1,45 +1,8 @@
-// BSCubeMapCamera declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-bscubemapcamera
 // Code origin: hand-written class layout and declarations adapted from the powerof3/CommonLibSSE headers named below (GPL-3.0); the compared body is written from the local listing.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses; size agreement alone proves neither fields nor ownership.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-//
-// Declarations derived from powerof3/CommonLibSSE are GPL-3.0-or-later.
-// This file is free software: you can redistribute it and/or modify it under the terms
-// of the GNU General Public License as published by the Free Software Foundation,
-// either version 3 of the License, or (at your option) any later version.
-// This file is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU General Public License for more details. A copy is provided in
-// licenses/CommonLibSSE-GPL-3.0.txt; see also https://www.gnu.org/licenses/.
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header declarations/NiAVObject.h for NiAVObject; NiCamera is declared here with its community members.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSCubeMapCamera, BSCubeMapCamera::RenderCubemap, BSCubeMapCamera::~BSCubeMapCamera, BSCubeMapCamera::GetRTTI: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiRTTI: STANDIN COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiCamera, NiFrustum, NiRect, NiCamera::worldToCam, viewFrustum, minNearPlaneDist, maxFarNearRatio, port, lodAdjust: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)

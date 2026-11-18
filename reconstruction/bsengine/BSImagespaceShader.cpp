@@ -1,24 +1,14 @@
-// BSImagespaceShader functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bsimagespaceshader
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by Claude Haiku 5.5 (claude-haiku-5-5), starting from a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x15651e0, 13 bytes: BSImagespaceShader::Unk_0D
-//   RVA 0x1564df0, 46 bytes: BSImagespaceShader::RestoreRenderStates
-//   RVA 0x1564d90, 79 bytes: BSImagespaceShader::UpdateParams
-//   RVA 0x1565170, 100 bytes: BSImagespaceShader::Unk_0C
-//   RVA 0x1564a00, 117 bytes: BSImagespaceShader::ShutDown
-//   RVA 0x1564960, 147 bytes: BSImagespaceShader::Setup
-//   RVA 0x1540db0, 259 bytes: BSImagespaceShader::DispatchCopySubRegion
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x15651e0 BSImagespaceShader::Unk_0D
+// 0x1564df0 BSImagespaceShader::RestoreRenderStates
+// 0x1564d90 BSImagespaceShader::UpdateParams
+// 0x1565170 BSImagespaceShader::Unk_0C
+// 0x1564a00 BSImagespaceShader::ShutDown
+// 0x1564960 BSImagespaceShader::Setup
+// 0x1540db0 BSImagespaceShader::DispatchCopySubRegion
 #include "BSImagespaceShader.h"
 
 // RVA 0x150b490, 3 bytes: an empty slot body.

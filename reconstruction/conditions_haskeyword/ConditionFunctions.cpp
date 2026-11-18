@@ -1,13 +1,10 @@
-// Build: sse-steam-1-7-104; RVA 0x33a010; 118 bytes
-// Labels: v2
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: independently reconstructed from target observations and public declarations.
-// Drafted by gpt-6.1-terra
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // TESObjectREFR::HasKeywordHelper: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declaration in included header.
 // names: GUESS(low); names and signatures are tentative.
 // ConditionFunctions, ConditionFunctions::HasKeyword: GUESS(low); the static source container and original signature are unverified.
+// 0x33a010 Condition::HasKeyword
 #include "ConditionFunctions.h"
 #include "../fo4p198c_refr/TESObjectREFR.h"
 extern void* conditionLogger;

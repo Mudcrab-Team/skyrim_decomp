@@ -1,9 +1,7 @@
-// Build: sse-steam-1-7-104
 // Adapted declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); paths listed below.
-// Labels: v2
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed.
 // Code origin: declarations adapted from the community headers and extended by hand from the local listings.
-// Adapted declarations: CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a, include/RE/A/ActiveEffect.h, ActiveEffectReferenceEffectController.h and RE/R/ReferenceEffectController.h.
 // Declarations and field names: GUESS; selected offsets and call slots corroborated by target.
 /*
 MIT License

@@ -1,39 +1,8 @@
-// Typed receiver prefixes for build sse-steam-1-7-104.
-// Labels: v2
 // ActorTargetPrefix: STANDIN GUESS(medium); typed partial receiver view, not a complete object.
 // Origin: original declarations adapted from pinned community member declarations.
 // Source exposure: mixed (target access/RTTI observations and community headers).
-// Drafted by gpt-6.1-sol.
-// Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// No functions are defined or compared by this header.
-// Prefix anchors are target-bound; unaccessed intervening members remain community hypotheses.
-// No complete Actor, Character or PlayerCharacter size or ownership is asserted.
-// Source: include/RE/{T/TESForm.h,T/TESObjectREFR.h,A/Actor.h,A/ActorState.h,
-// A/ActorValueOwner.h,M/MagicTarget.h,E/ExtraDataList.h,N/NiRefObject.h}.
-// CommonLibSSE-NG pin b93280e832f263dbef44e44cbe2936622a02f91a; MIT.
-// Full upstream licence follows.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>
