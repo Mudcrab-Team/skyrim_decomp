@@ -241,6 +241,8 @@ class Bot:
         self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
                            **(config or {}))
         self.tree = self.work / 'tree'
+        # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
+        self.tools = Path(__file__).resolve().parent
 
     def run(self, argv, cwd=None, input=None, timeout=None, check=True):
         result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
@@ -304,7 +306,7 @@ class Bot:
 
     def leakgrep(self, base, head):
         """(hit, codes) from tools/leakgrep.py: exit code plus rule codes on stdout, never matched text."""
-        script = self.root / 'tools/leakgrep.py'
+        script = self.tools / 'leakgrep.py'
         if not script.is_file():
             if self.dry_run:
                 return False, []  # a replay may run before the tool is on this checkout; live never does
@@ -316,7 +318,7 @@ class Bot:
 
     def leakgrep_text(self, text):
         """True if leakgrep flags free text (a commit message), fed to it as an added-lines diff."""
-        script = self.root / 'tools/leakgrep.py'
+        script = self.tools / 'leakgrep.py'
         if not script.is_file():
             raise Stop('leakgrep is not available')
         diff = '+++ b/commit-message\n@@ -0,0 +1 @@\n' + ''.join('+' + line + '\n' for line in text.splitlines())
