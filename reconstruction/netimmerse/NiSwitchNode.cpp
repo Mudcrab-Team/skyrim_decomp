@@ -16,6 +16,9 @@
 // Other bodies are original reconstructions by v-macrev, assisted by claude-opus-5-5,
 // from a local listing of the contributor's own pinned image. Integration repair by
 // awarebayes, assisted by gpt-6.1-sol, corrects provenance and defers four update bodies.
+// The four update and bound bodies were rewritten by v-macrev, assisted by claude-opus-5-5, from the
+// same listing. Their bound copy calls the engine's bound setter, SetCenterAndRadius, named and
+// called as in the FNV decompilation (the label is at the helper). No sibling body is copied.
 // Compared functions:
 //   RVA 0xeed530, 82 bytes: NiSwitchNode::IsEqual
 //   RVA 0xeee380, 4 bytes: NiSwitchNode::AsSwitchNode
@@ -24,12 +27,20 @@
 //   RVA 0xeed3c0, 160 bytes: NiSwitchNode::LoadBinary
 //   RVA 0xeedae0, 161 bytes: NiSwitchNode::SetAt1
 //   RVA 0xeee100, 170 bytes: NiSwitchNode::OnVisible
-// CI hash: 0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
+//   RVA 0xeee080, 110 bytes: NiSwitchNode::UpdateWorldBound
+//   RVA 0xeedf20, 339 bytes: NiSwitchNode::UpdateRigidDownwardPass
+//   RVA 0xeedc40, 341 bytes: NiSwitchNode::UpdateDownwardPass
+//   RVA 0xeedda0, 363 bytes: NiSwitchNode::UpdateSelectedDownwardPass
+// CI hash:0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
 // CI hash: 0xeed490 ?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
 // CI hash: 0xeed6e0 ?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z
 // CI hash: 0xeed3c0 ?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
 // CI hash: 0xeedae0 ?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z
 // CI hash: 0xeee100 ?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z
+// CI hash: 0xeee080 ?UpdateWorldBound@NiSwitchNode@@UEAAXXZ
+// CI hash: 0xeedf20 ?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
+// CI hash: 0xeedc40 ?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
+// CI hash: 0xeedda0 ?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
 // Adapted bodies: StreamRead, StreamBinaryRead (CommonLibSSE-NG, cited above).
 // A byte match shows that this source and recipe produce the checked code; it does not verify the
 // community names or that the original source looked like this.
@@ -194,5 +205,158 @@ void NiSwitchNode::OnVisible(NiCullingProcess& a_process, std::int32_t)
 			}
 			child->Cull(&a_process, -1);
 		}
+	}
+}
+
+// AssignPoint: GUESS(low); NiPoint3 assignment, component by component, as the NiPoint3 stand-in in
+// NiAVObject.h defines its operator=; the NiPoint3 stand-in in NiNode.h declares no operator.
+static inline void AssignPoint(NiPoint3& a_dst, const NiPoint3& a_src)
+{
+	a_dst.x = a_src.x;
+	a_dst.y = a_src.y;
+	a_dst.z = a_src.z;
+}
+
+// SetCenterAndRadius: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); the engine's NiBound
+// setter (centre, then radius), written as a free function because the NiBound stand-in in
+// NiNode.h declares no members.
+static inline void SetCenterAndRadius(NiBound& a_bound, const NiPoint3& a_center, float a_radius)
+{
+	AssignPoint(a_bound.center, a_center);
+	a_bound.radius = a_radius;
+}
+
+// UpdateControllerList: GUESS(low); runs each controller of this node's list on the update data.
+static inline void UpdateControllerList(NiSwitchNode* a_node, NiUpdateData& a_data)
+{
+	for (NiTimeController* controller = a_node->controllers; controller; controller = controller->next) {
+		controller->Update(a_data);
+	}
+}
+
+// RVA 0xeee080, 110 bytes.
+void NiSwitchNode::UpdateWorldBound()
+{
+	if (flags & 1) {
+		std::int32_t idx = index;
+		if (idx >= 0) {
+			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
+			if (child) {
+				SetCenterAndRadius(worldBound, child->worldBound.center, child->worldBound.radius);
+				return;
+			}
+		}
+		worldBound.radius = 0.0f;
+	} else {
+		NiNode::UpdateWorldBound();
+	}
+}
+
+// RVA 0xeedc40, 341 bytes.
+void NiSwitchNode::UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
+{
+	if (static_cast<std::uint8_t>(a_data.flags) & 1) {
+		flags |= 2;
+	} else {
+		flags &= ~2;
+	}
+	savedTime = a_data.time;
+	if (flags & 1) {
+		++revID;
+		if (static_cast<std::uint8_t>(a_data.flags) & 1) {
+			UpdateControllerList(this, a_data);
+		}
+		UpdateWorldData(&a_data);
+		std::int32_t idx = index;
+		if (idx >= 0) {
+			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
+			if (child) {
+				child->UpdateDownwardPass(a_data, a_arg2);
+				SwitchTableSet(&childRevID, index, &revID);
+				SetCenterAndRadius(worldBound, child->worldBound.center, child->worldBound.radius);
+			}
+		}
+	} else {
+		NiNode::UpdateDownwardPass(a_data, a_arg2);
+	}
+}
+
+// RVA 0xeedda0, 363 bytes.
+void NiSwitchNode::UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
+{
+	savedTime = a_data.time;
+	if (flags & 1) {
+		++revID;
+		bool dirty = (static_cast<std::uint8_t>(a_data.flags) & 1) != 0;
+		if (TestBit(FlagWord(), 3)) {
+			a_data.flags |= 1;
+		} else {
+			a_data.flags &= ~1u;
+		}
+		if (a_data.flags & 1) {
+			UpdateControllerList(this, a_data);
+		}
+		if (dirty) {
+			a_data.flags |= 1;
+		} else {
+			a_data.flags &= ~1u;
+		}
+		UpdateWorldData(&a_data);
+		std::int32_t idx = index;
+		if (idx >= 0) {
+			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
+			if (child) {
+				std::uint32_t childFlags = child->FlagWord();
+				if (TestBit(childFlags, 1)) {
+					NiChildSlots* slots = reinterpret_cast<NiChildSlots*>(child);
+					if (TestBit(childFlags, 4)) {
+						slots->UpdateRigidDownwardPass(a_data, a_arg2);
+					} else {
+						slots->UpdateSelectedDownwardPass(a_data, a_arg2);
+					}
+				}
+				SwitchTableSet(&childRevID, index, &revID);
+				SetCenterAndRadius(worldBound, child->worldBound.center, child->worldBound.radius);
+			}
+		}
+	} else {
+		NiNodeUpdateSelectedDownwardPass(this, a_data, a_arg2);
+	}
+}
+
+// RVA 0xeedf20, 339 bytes.
+void NiSwitchNode::UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)
+{
+	savedTime = a_data.time;
+	if (flags & 1) {
+		++revID;
+		bool dirty = (static_cast<std::uint8_t>(a_data.flags) & 1) != 0;
+		if (TestBit(FlagWord(), 3)) {
+			a_data.flags |= 1;
+		} else {
+			a_data.flags &= ~1u;
+		}
+		if (a_data.flags & 1) {
+			UpdateControllerList(this, a_data);
+		}
+		if (dirty) {
+			a_data.flags |= 1;
+		} else {
+			a_data.flags &= ~1u;
+		}
+		UpdateWorldData(&a_data);
+		std::int32_t idx = index;
+		if (idx >= 0) {
+			NiAVObject* child = children._data[static_cast<std::uint32_t>(idx)];
+			if (child) {
+				if (TestBit(child->FlagWord(), 1)) {
+					reinterpret_cast<NiChildSlots*>(child)->UpdateRigidDownwardPass(a_data, a_arg2);
+				}
+				SwitchTableSet(&childRevID, index, &revID);
+				SetCenterAndRadius(worldBound, child->worldBound.center, child->worldBound.radius);
+			}
+		}
+	} else {
+		NiNodeUpdateRigidDownwardPass(this, a_data, a_arg2);
 	}
 }
