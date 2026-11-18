@@ -8056,7 +8056,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `skyrim_shared/forms/TESModel` | `TESModel::GetModel` (COMMUNITY) | `sse-steam-1-7-104` / `0x146780` / 5 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x146780.json` | matched | delta | open |
 | `skyrim_shared/forms/TESForm` | `TESForm::IsHeadingMarker` (COMMUNITY) | `sse-steam-1-7-104` / `0x1467a0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x1467a0.json` | matched | full | open |
 | `unmapped/leaves/LeafAddress1467b0` | `LeafAddress1467b0::Address` (GUESS) | `sse-steam-1-7-104` / `0x1467b0` / 8 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x1467b0.json` | matched | family | open |
-| - | `TESBoundObject::GetObjectVoiceType` (COMMUNITY) | `sse-steam-1-7-104` / `0x1467c0` / 3 | - | - | mapped | - | - |
+| `fo4p198c_bound/TESBoundObject` | `TESBoundObject::GetObjectVoiceType` (COMMUNITY) | `sse-steam-1-7-104` / `0x1467c0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x1467c0.json` | matched | full | - |
 | `skyrim_shared/forms/TESObject` | `TESObject::GetRefCount` (COMMUNITY) | `sse-steam-1-7-104` / `0x146810` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x146810.json` | matched | full | open |
 | `unmapped/leaves/Leaf146830` | `Leaf146830::Invoke` (GUESS) | `sse-steam-1-7-104` / `0x146830` / 6 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x146830.json` | matched | full | checked |
 | `skyrim_shared/forms/TESObject` | `TESObject::GetWaterType` (COMMUNITY) | `sse-steam-1-7-104` / `0x146840` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x146840.json` | matched | full | open |
