@@ -122,11 +122,22 @@ class FakeBot(pr_bot.Bot):
         self.refused = set()
         self.history = None
         self.extra = {}
+        self.comments = []  # the PR's issue comments as {id, login, body}
+        self.sizes = {}
 
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
         self.calls.append(argv)
         out = BASE.encode() if argv[:2] == ['git', 'merge-base'] else b''
+        if argv[:3] == ['gh', 'pr', 'comment']:
+            self.comments.append({'id': 1000 + len(self.comments), 'login': pr_bot.OWNER, 'body': argv[-1]})
+        elif argv[:3] == ['gh', 'api', '--paginate'] and argv[-1].endswith('/comments'):
+            out = ''.join(json.dumps(c) + '\n' for c in self.comments).encode()
+        elif argv[:4] == ['gh', 'api', '-X', 'PATCH']:
+            cid = int(argv[4].rsplit('/', 1)[1])
+            for c in self.comments:
+                if c['id'] == cid:
+                    c['body'] = argv[-1].split('=', 1)[1]
         code = 1 if argv[:3] == ['gh', 'pr', 'merge'] and not self.merge_ok else 0
         return subprocess.CompletedProcess(argv, code, out, b'')
 
@@ -152,6 +163,9 @@ class FakeBot(pr_bot.Bot):
 
     def leakgrep(self, base, head):
         return self.grep
+
+    def header_sizes(self, units):
+        return dict(self.sizes)
 
     def companions(self, units, files, functions):
         return self.extra
@@ -1096,6 +1110,92 @@ class ReviewContextTests(unittest.TestCase):
             '0x10': {'verdict': 'approve', 'ground': 'none', 'why': 'fine'},
             '0x20': {'verdict': 'reject', 'ground': 'binding', 'why': 'header disagrees'}}}), [0x10, 0x20, 0x30])
         self.assertEqual((leak, got), ('no', {0x10: 'approve', 0x20: 'reject', 0x30: 'reject'}))
+
+
+
+class StickyCommentTests(unittest.TestCase):
+    """Each PR carries at most one bot comment, edited in place on every head and verdict."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_new_heads_edit_the_one_comment_and_show_only_the_current_head(self):
+        bot = FakeBot(self.work, h2={0x10: 'fail', 0x20: 'fail'})
+        bot.process(PR)
+        bot.process(dict(PR, headRefOid='c' * 40))
+        bot.process(dict(PR, headRefOid='d' * 40, mergeable='CONFLICTING'))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+        self.assertEqual(len(bot.seen('gh', 'api', '-X', 'PATCH')), 2)
+        self.assertEqual(len(bot.comments), 1)
+        body = bot.comments[0]['body']
+        self.assertTrue(body.startswith(pr_bot.STICKY))
+        self.assertIn('dddddddd', body)
+        self.assertNotIn('cccccccc', body)
+        self.assertNotIn('did not byte-match', body)
+        self.assertIn('merge main into your branch', body)
+
+    def test_a_reset_state_for_the_same_head_does_not_post_again(self):
+        bot = FakeBot(self.work, h2={0x10: 'fail', 0x20: 'fail'})
+        bot.process(PR)
+        for f in (self.work / 'state').iterdir():
+            f.unlink()
+        bot.process(PR)
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+        self.assertEqual(bot.seen('gh', 'api', '-X', 'PATCH'), [])  # same body: nothing to edit
+
+    def test_a_legacy_bot_comment_is_adopted_and_other_comments_are_left_alone(self):
+        bot = FakeBot(self.work, h2={0x10: 'fail', 0x20: 'fail'})
+        bot.comments = [{'id': 1, 'login': 'alice', 'body': '<!-- pr-bot --> not the bot'},
+                        {'id': 2, 'login': pr_bot.OWNER, 'body': '<!-- pr-bot sha=' + 'e' * 40 + ' -->\nold'},
+                        {'id': 3, 'login': pr_bot.OWNER, 'body': 'A note from the maintainer.'}]
+        bot.process(PR)
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+        patch = bot.seen('gh', 'api', '-X', 'PATCH')
+        self.assertEqual([c[4].rsplit('/', 1)[1] for c in patch], ['2'])
+        self.assertEqual(bot.comments[0]['body'], '<!-- pr-bot --> not the bot')
+        self.assertEqual(bot.comments[2]['body'], 'A note from the maintainer.')
+
+    def test_a_clean_merge_posts_nothing_but_clears_an_earlier_rejection(self):
+        bot = FakeBot(self.work)
+        bot.process(PR)
+        self.assertEqual((bot.comments, bot.seen('gh', 'api', '-X', 'PATCH')), ([], []))
+        other = FakeBot(self.work / 'n')
+        other.comments = [{'id': 5, 'login': pr_bot.OWNER, 'body': pr_bot.STICKY + '\nNot accepted yet'}]
+        other.process(PR)
+        self.assertEqual(other.seen('gh', 'pr', 'comment'), [])
+        self.assertIn('Merged and recorded: 0x10, 0x20.', other.comments[0]['body'])
+        self.assertNotIn('Not accepted', other.comments[0]['body'])
+
+    def test_the_batching_request_is_a_line_in_the_sticky_comment(self):
+        bot = FakeBot(self.work)
+        bot.sizes = {0x10: 40, 0x20: 60}
+        bot.process(PR)
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+        body = bot.comments[0]['body']
+        self.assertIn('Merged and recorded', body)
+        self.assertIn(pr_bot.BATCH_LINE, body)
+
+    def test_batching_asks_only_small_prs_of_known_size(self):
+        self.assertTrue(pr_bot.wants_batching([1, 2], {1: 40, 2: 40}))
+        self.assertFalse(pr_bot.wants_batching([1], {1: 50000}))
+        self.assertFalse(pr_bot.wants_batching([1, 2], {1: 40}))
+        many = list(range(pr_bot.BATCH_MIN))
+        self.assertFalse(pr_bot.wants_batching(many, {r: 4 for r in many}))
+        self.assertFalse(pr_bot.wants_batching([], {}))
+
+    def test_the_bot_posts_comments_only_through_the_sticky_helper(self):
+        source = (ROOT / 'tools/pr_bot.py').read_text()
+        self.assertEqual(source.count("'gh', 'pr', 'comment'"), 1)
+        self.assertNotRegex(source, r"pr', 'review'|/reviews")
+
+    def test_header_sizes_reads_the_unit_headers_in_the_prepared_tree(self):
+        bot = pr_bot.Bot(root=ROOT, work=self.work)
+        unit = bot.tree / 'reconstruction/a/B.cpp'
+        unit.parent.mkdir(parents=True)
+        unit.write_text('// RVA 0x10, 40 bytes, A::f\n// RVA 0x20, 8 bytes, A::g\n')
+        self.assertEqual(bot.header_sizes({'reconstruction/a/B.cpp': [0x10, 0x20]}), {0x10: 40, 0x20: 8})
 
 
 if __name__ == '__main__':
