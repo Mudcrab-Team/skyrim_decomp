@@ -3,7 +3,7 @@
 // Code origin: IsEqual and its small accessor helpers retain the earlier project draft; the other bodies are original reconstructions by v-macrev, assisted by claude-opus-5-5, from a local listing of the contributor's own pinned image. The bound copy calls SetCenterAndRadius as named and called in the FNV decompilation (label at the helper); no sibling body is copied.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // StreamRead, StreamBinaryRead: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/N/NiBinaryStream.h (read) and src/RE/N/NiBinaryStream.cpp (binary_read).
-// Adapted bodies: StreamRead, StreamBinaryRead (CommonLibSSE-NG, cited above).
+// Adapted bodies: StreamRead, StreamBinaryRead (CommonLibSSE-NG, MIT; its notice is the SPDX line above, full text in licenses/CommonLibSSE-NG.txt).
 // 0xeed530 NiSwitchNode::IsEqual
 // 0xeee380 NiSwitchNode::AsSwitchNode
 // 0xeed490 NiSwitchNode::SaveBinary
