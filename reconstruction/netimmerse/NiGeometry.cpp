@@ -5,6 +5,9 @@
 // Code origin: Reconstruction by v-macrev with Codex assistance from pinned-image analysis,
 // with the reserved-field write structure in SaveBinary adapted from the cited sibling.
 // Source exposure: mixed (community declarations, sibling context, and local analysis of the pinned image).
+// NiGeometry::SaveBinary, NiGeometry::RegisterStreamables, NiGeometry::SetSelectiveUpdateFlags: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); SaveBinary adapts the reserved-field write structure, the other two were consulted for context
+// The MIT notice below covers only the material adapted from CharmedBaryon/CommonLibSSE-NG@b93280e (MIT).
+// It does not cover the sibling-derived material labelled above, which carries no licence grant.
 // MIT License
 //
 // Copyright (c) 2018 Ryan-rsm-McKenzie

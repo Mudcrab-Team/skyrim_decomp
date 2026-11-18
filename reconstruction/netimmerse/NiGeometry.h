@@ -7,6 +7,8 @@
 // Adapted bodies: NiBinaryStream::write and NiBinaryStream::binary_write, from CharmedBaryon/CommonLibSSE-NG
 // at b93280e (MIT), include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp.
 // The writer is inlined in this view and assumes a configured output callback.
+// The MIT notice below covers only the material adapted from CharmedBaryon/CommonLibSSE-NG@b93280e (MIT).
+// It does not cover any sibling-derived material; this header declares none.
 // MIT License
 //
 // Copyright (c) 2018 Ryan-rsm-McKenzie
