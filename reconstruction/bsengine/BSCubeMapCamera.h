@@ -2,7 +2,6 @@
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSCubeMapCamera, BSCubeMapCamera::RenderCubemap, BSCubeMapCamera::~BSCubeMapCamera, BSCubeMapCamera::GetRTTI: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiRTTI: STANDIN COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiCamera, NiFrustum, NiRect, NiCamera::worldToCam, viewFrustum, minNearPlaneDist, maxFarNearRatio, port, lodAdjust: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)

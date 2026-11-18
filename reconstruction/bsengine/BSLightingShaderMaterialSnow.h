@@ -1,10 +1,10 @@
 // Code origin: declarations extended by hand from the local listings; names follow the community headers.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // BSLightingShaderMaterialSnow: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialSnow::GetFeature, BSLightingShaderMaterialSnow::CopyMembers, BSLightingShaderMaterialSnow::Ctor, BSLightingShaderMaterialSnow::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknownA0: GUESS(low)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSLightingShaderMaterialSnow::SaveBinary, BSLightingShaderMaterialSnow::LoadBinary: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names only, the bodies are written from the target listing
 // SnowData::SaveStream, SnowData::LoadStream: GUESS(low); addresses 0xef32b0 and 0xef31c0, called on the member at offset 0xA0 with the stream
 #pragma once

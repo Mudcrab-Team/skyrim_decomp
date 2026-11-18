@@ -1,13 +1,7 @@
-// TESTopicInfo type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESTopicInfo.h.
-// LoadGame and Revert follow the shape of the sibling's same-named methods (call the base form's
-// method, then set or clear the said-once flag from a change flag bit).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/testopicinfo.cpp:286
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/testopicinfo.cpp:294
-// The other members are not recovered. tools/check_origin.py reports no other body above its threshold.
 // TESTopicInfo, TESTopicInfo::LoadGame, ::Revert, ::parentTopic, ::dataInfo, ::infoIndex, ::saidOnce: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESTopicInfo::objConditions: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; a pointer-sized block here, NG declares TESCondition
 // TESTopicInfo::unk3B: GUESS(low); stands for favorLevel, data, fileOffset and the padding up to 0x48

@@ -1,8 +1,8 @@
 // Source exposure: community-headers
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Drafted by GPT-6.1 Sol; p106 value layouts adapted from pinned community declarations.
 // NiPointer, BSTSmartPointer: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // entry, value: GUESS(medium)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSFixedStringCSLayout, BSFixedStringLayout, BSTSmartPointerLayout, ColorLayout, CombatInventoryItemSlotLayout, NiColorALayout, NiColorLayout, NiPoint2Layout, NiPoint3Layout, NiPointerLayout: GUESS(medium) STANDIN; represented layout type names
 // Code origin: represented declaration from reconstruction/bsengine/BSFixedStringLayout.h; only include spelling changed.
 #pragma once

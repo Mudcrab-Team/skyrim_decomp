@@ -1,9 +1,9 @@
 // Source exposure: mixed (pinned community storage declarations and independent target RTTI/secondary-slot analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: adapted community storage declarations and original narrowed prefix construction; no external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{T/TESProduceForm.h,S/SimpleAnimationGraphManagerHolder.h,M/MenuEventHandler.h,I/IMapCameraCallbacks.h,H/hkReferencedObject.h,H/hkpBroadPhaseCastCollector.h,H/hkpEntityListener.h,H/hkpPhantomListener.h,H/hkpWorldPostSimulationListener.h}; MIT.
 // TESProduceForm, SimpleAnimationGraphManagerHolder, MenuEventHandler, IMapCameraCallbacks, hkReferencedObject, hkpBroadPhaseCastCollector, hkpEntityListener, hkpPhantomListener, hkpWorldPostSimulationListener: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // All ResearchLayouts names ending Layout, PrefixLayout or StorageLayout, Identity tags and physical mirror member names: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

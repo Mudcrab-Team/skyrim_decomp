@@ -1,6 +1,6 @@
 // Source exposure: mixed (community headers and pinned-image analysis).
-// Origin: community declarations and target analysis.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Origin: community declarations and target analysis.
 // TESSoulGem: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 #include <cstdint>

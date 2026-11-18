@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/H/HorseCameraState.h, include/RE/T/ThirdPersonState.h, include/RE/T/TESCameraState.h, include/RE/P/PlayerInputHandler.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); target callees and signatures are inferred independently from the target call sequence.
 #pragma once
 struct NiPoint3 { float x,y,z; }; struct NiPoint2 { float x,y; }; struct NiQuaternion { float w,x,y,z; }; class TESCamera; class NiAVObject; class NiNode; class BGSLoadFormBuffer;

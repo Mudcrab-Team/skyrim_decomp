@@ -3,7 +3,6 @@
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // Source exposure: mixed; drafted by gpt-6.1-terra. Evidence: findings/ghidra-import.md.
 // Partial declarations adapted from CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT, AIProcess.h, HighProcessData.h, MiddleHighProcessData.h, InventoryEntryData.h, BSPointerHandle.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

@@ -1,7 +1,7 @@
 // Code origin: hand-written class layout and declarations adapted from the CharmedBaryon/CommonLibSSE-NG headers named below; the compared body is written from the local listing.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSAttackDataMap, BGSAttackDataMap::GetAttackData, BGSAttackDataMap::~BGSAttackDataMap: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSTHashMap, BGSAttackData, BSFixedString, TESRace, BGSAttackDataMap::attackDataMap, BGSAttackDataMap::defaultDataRace: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSTHashMap::_pad00, BSTHashMap::_pad08, BSTHashMap::_capacity, BSTHashMap::_free, BSTHashMap::_good, BSTHashMap::_sentinel, BSTHashMap::_allocator, BSTHashMap::_entries: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); BSTScatterTable and its allocator flattened, non-template

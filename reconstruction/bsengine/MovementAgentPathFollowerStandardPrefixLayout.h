@@ -1,10 +1,10 @@
 // Source exposure: mixed (pinned community intrusive-reference and movement-interface declarations; independent target RTTI/construction/slot analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: adapted field/interface declarations and original narrowed prefix construction; no external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/B/BSIntrusiveRefCounted.h and include/RE/I/{IMovementInterface,IMovementState}.h; MIT.
 // BSIntrusiveRefCounted, _refCount, IMovementInterface, IMovementState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MovementAgent, MovementAgentPathFollowerStandard, IPipelineStageInterface, IMovementPlannerAgent, IMovementPathManagerAgent, IMovementQueryPathFollowing, IMovementSetPathFollowing, IMovementPlayIdleResult, IMovementHandlerAgent, NullMovementState: EXE_RTTI
 // MovementAgentStoragePrefixLayout, MovementInterfacePrefixLayout, MovementStatePrefixLayout, PipelineStagePrefixLayout, MovementPlannerPrefixLayout, MovementPathManagerPrefixLayout, MovementQueryPathFollowingPrefixLayout, MovementSetPathFollowingPrefixLayout, MovementIdleResultPrefixLayout, MovementHandlerPrefixLayout, MovementAgentPathFollowerStandardPrefixLayout, MovementAgentPathFollowerStandardPrefixStorageLayout, state: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

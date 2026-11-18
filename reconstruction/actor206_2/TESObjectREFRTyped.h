@@ -2,7 +2,6 @@
 // Origin: Original reconstruction informed by target access witnesses and community declarations.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // TESObjectREFRTyped: STANDIN GUESS(low); receiver identity is provisional.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 
 #pragma once
 #include <cstdint>

@@ -1,8 +1,8 @@
 // Source exposure: community-headers
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: data-only storage adaptation, no external method bodies.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{A/ActorValues.h,M/MagicSystem.h,B/BSTList.h,H/hkRefPtr.h,B/BSPointerHandle.h,N/NiPoint3.h,B/BSSoundHandle.h,N/NiSmartPointer.h,B/BSTSmartPointer.h,B/BSTArray.h,M/MaterialIDs.h}; MIT.
 // ActorValue, MATERIAL_ID, CastingSource, NiPointer, hkRefPtr, BSSimpleList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 #include <cstddef>

@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/C/CombatInventoryItemMagic.h, CombatInventoryItem.h, CombatObject.h and RE/N/NiRefObject.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); setting identity and type are inferred from target.
 #pragma once
 class TESForm; class BGSEquipSlot;

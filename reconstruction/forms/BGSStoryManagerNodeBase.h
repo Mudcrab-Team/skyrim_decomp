@@ -1,10 +1,5 @@
-// BGSStoryManagerNodeBase type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT):
-// include/RE/B/BGSStoryManagerNodeBase.h and BGSStoryManagerTreeForm.h. TESForm comes from the shared
-// header TESForm.h; BGSStoryManagerTreeForm, BGSStoryManagerTreeVisitor and TESCondition are stand-ins.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSStoryManagerNodeBase, ::Flags, ::parent, ::previousSibling, ::maxQuests, ::flags, ::conditions, ::QConditions, ::InitializeData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSStoryManagerNodeBase::Flags::nodeFlags, ::questFags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); plain 16-bit integers here, NG wraps them in stl::enumeration
 // BGSStoryManagerTreeForm, ::QChildCount, ::GetChild, ::QConditions, ::AcceptVisitor, ::lastVisitorID, ::pad24: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

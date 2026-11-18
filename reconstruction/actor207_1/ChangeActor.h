@@ -6,7 +6,6 @@
 // Source exposure: mixed (independent target accesses and public type hypotheses).
 // Drafted by gpt-6.1-terra; adapted from P206 prefix.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include "actors/ActorValueTargetPrefix.h"

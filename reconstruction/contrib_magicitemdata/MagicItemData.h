@@ -1,4 +1,5 @@
 // Code origin: declarations extended by hand from the local listings; names follow the community headers.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
@@ -9,7 +10,6 @@
 // PlayerCharacter::singleton: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); global at address 0x3230778
 // GetFormNameOf: GUESS(low); address 0x1e8460, TESForm::GetFormName reached with the form in the first argument
 // GetPlayerEquipState: GUESS(low); address 0x940fc0, takes the player, the form and two zero arguments
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // unk08, unk10: GUESS(low); storage before data18, not read by the compared code
 #pragma once
 

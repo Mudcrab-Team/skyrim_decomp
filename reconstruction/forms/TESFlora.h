@@ -1,34 +1,7 @@
-// TESFlora declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-tesflora
 // Code origin: names, bases, virtual slots and member offsets from CharmedBaryon/CommonLibSSE-NG b93280e (MIT); the bodies are written from the listing of the pinned image
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses: verify C1-C5 locally before drafting.
-// Size agreement alone proves neither fields nor ownership.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// The MIT notice above covers only the names and declarations taken from CommonLibSSE-NG.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESFlora, TESFlora::Activate, ::InitItemImpl, ::~TESFlora, ::Load, ::GetActivateText, ::CalculateDoFavor, TESObjectACTI and its virtual overrides and members (soundLoop, soundActivate, waterForm, flags), TESBoundAnimObject, TESBoundObject, TESBoundObject::boundData, TESObject, TESForm and its virtual functions and members (sourceFiles, formFlags, formID, inGameFormFlags, formType), TESForm::IsInitialized (name only, the body tests record flag bit 3 as written here): COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESProduceForm, TESProduceForm::harvestSound, ::produceItem, ::produceChance: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG derives TESFlora from TESProduceForm at C8, here it is a member at C8 so that its address is the subobject address
 // TESFullName, TESModel, TESModelTextureSwap, BGSDestructibleObjectForm, BGSOpenCloseForm, BGSKeywordForm and their members: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); secondary bases of TESObjectACTI flattened into members at their NG offsets

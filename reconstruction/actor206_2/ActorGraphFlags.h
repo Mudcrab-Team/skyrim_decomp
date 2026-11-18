@@ -2,7 +2,6 @@
 // Origin: Original reconstruction informed by target access witnesses and community declarations.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // ActorGraphFlags, GraphHolder, KeyTable, GraphKey, GetKeyTable, SetBool, Function673cc0, Function6aec10: STANDIN GUESS(low); inferred from receiver offsets and target calls.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 
 #pragma once
 #include <cstdint>

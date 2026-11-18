@@ -1,9 +1,9 @@
 // Origin: copied represented declaration from reconstruction/actors/CombatInventoryItemLayout.h; only include spellings changed.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: declarations adapted from the pinned community header identified below.
 // Source exposure: community-headers (layout reconciled with target allocation sizes separately).
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/C/CombatInventoryItem.h; MIT.
 // CombatInventoryItem: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // CombatInventoryItemLayout: GUESS(medium) STANDIN; represented layout type names
 #pragma once
 #include <cstdint>

@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: independently decoded target and anonymous sibling; declarations adapted from community headers.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); adapted from include/RE/B/BSFaceGenNiNode.h, include/RE/N/NiNode.h, include/RE/N/NiAVObject.h, include/RE/N/NiObjectNET.h, include/RE/N/NiRefObject.h, include/RE/N/NiTArray.h, include/RE/N/NiTransform.h and include/RE/N/NiBound.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); signatures and helper identities require review.
 #pragma once
 struct NiPoint3 { float x,y,z; }; struct NiMatrix3 { float entry[3][3]; }; struct NiTransform { NiMatrix3 rotate; NiPoint3 translate; float scale; }; struct NiBound { NiPoint3 center; float radius; };

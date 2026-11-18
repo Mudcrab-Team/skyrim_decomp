@@ -4,7 +4,6 @@
 // ExtraLevCreaModifier::GetMultiplier: SIBLING(fo4-private@1b765c70, author-permission); adapted lookup; target uses a member rather than the sibling parameter.
 // Sibling source: fo4-private@1b765c70 src/Shared/ExtraData/ExtraDataObjects.cpp:725
 // ExtraLevCreaModifier, BSExtraData, Setting: COMMUNITY(Ryan-rsm-McKenzie/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); declarations from include/RE/E/ExtraLevCreaModifier.h, include/RE/B/BSExtraData.h and include/RE/S/Setting.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 class BSExtraData { public: virtual ~BSExtraData(); BSExtraData* next; };

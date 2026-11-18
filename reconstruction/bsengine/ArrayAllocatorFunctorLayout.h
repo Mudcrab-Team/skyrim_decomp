@@ -1,8 +1,8 @@
 // Source exposure: mixed (community declarations and pinned image analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // IAllocatorFunctor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // ArrayAllocatorFunctorLayout, allocator: GUESS(medium) STANDIN
 // BSTArrayAllocatorFunctor: EXE_RTTI
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 #include <cstddef>

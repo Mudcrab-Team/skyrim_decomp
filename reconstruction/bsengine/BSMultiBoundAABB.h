@@ -1,11 +1,11 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
 // Code origin: declarations generated from a tools/skeleton.py skeleton and extended by hand from the local listings; names follow the community headers.
 // BSMultiBoundAABB: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSMultiBoundShape: STANDIN EXE_RTTI
 // BSMultiBoundAABB::GetLength, BSMultiBoundAABB::~BSMultiBoundAABB, BSMultiBoundAABB::LoadBinary, BSMultiBoundAABB::Unk_2B, BSMultiBoundAABB::GetWithinPoint, BSMultiBoundAABB::Unk_2A, BSMultiBoundAABB::Unk_28: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown10, unknown18, unknown28, unknown38: GUESS(low)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSMultiBoundAABB::RegisterStreamables, BSMultiBoundAABB::SetCenter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names only, the bodies are written from the target listing
 // RegisterStreamablesBase: GUESS(low); address 0xfe4f30, takes the object and the stream and returns a byte that RegisterStreamables turns into a bool
 #pragma once

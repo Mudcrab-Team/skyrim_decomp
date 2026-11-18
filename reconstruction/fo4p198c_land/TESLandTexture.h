@@ -1,10 +1,10 @@
 // Source exposure: mixed (local target analysis and permitted sibling).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: independently reconstructed from target and sibling hints.
 // names: GUESS(low); signatures and type names are hypotheses.
 // TESLandTexture::InitializeData: SIBLING(fo4-private@1b765c70, author-permission); adapted initialization.
 // Sibling source: fo4-private@1b765c70 src/Shared/TESForms/World/TESLandTexture.cpp:27
 // TESLandTexture and members: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include "TESForm.h"
 #include <cstdint>

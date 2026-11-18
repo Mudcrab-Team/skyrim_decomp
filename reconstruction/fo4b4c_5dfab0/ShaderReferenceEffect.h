@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/S/ShaderReferenceEffect.h, RE/R/ReferenceEffect.h, RE/B/BSTempEffect.h, BSTArray.h, BSSoundHandle.h, and RE/N/NiRefObject.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); names and method signatures require independent review.
 #pragma once
 class NiAVObject; class NiSourceTexture; class TESBoundObject; class TESEffectShader; class BSEffectShaderData; class TESObjectCELL; class ReferenceEffectController;

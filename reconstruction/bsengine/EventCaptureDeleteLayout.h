@@ -1,7 +1,6 @@
 // Source exposure: mixed (community declarations and local binary analysis).
 // Code origin: interface and reference-count declarations adapted from the pinned public headers; derived scalar declarations originally inferred from target member accesses. No implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/B/BSTEvent.h and BSIntrusiveRefCounted.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // EventCaptureDeleteLayout: GUESS(medium) STANDIN; public fieldless event interface alias.
 #pragma once
 #include <cstdint>

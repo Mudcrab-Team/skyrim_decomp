@@ -2,7 +2,6 @@
 // ExtraValueStorageLayout: GUESS(medium) STANDIN; represented public storage alias.
 // Code origin: public data declarations and represented reference-count inheritance; no implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/B/BSIntrusiveRefCounted.h, BSTFreeList.h; S/SettingCollection.h, SimpleAllocMemoryPagePolicy.h; A/AttachLightHitEffectVisitor.h, ActorTargetCheck.h; F/FastTravelConfirmCallback.h; I/IFunction.h, IFuncCallQuery.h, IVirtualMachine.h, IMessageBoxCallback.h, IMemoryPagePolicy.h; D/DelayFunctor.h; B/BSAtomic.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declaration source: same pinned MIT CommonLibSSE-NG revision; BSExtraData.h, ExtraLeveledItem.h, ExtraOutfitItem.h, ExtraUniqueID.h, ExtraLightData.h, ExtraNavMeshPortal.h, ExtraPackageStartLocation.h, ExtraStartingPosition.h, NiPoint3.h and BSCoreTypes.h.
 #pragma once
 #include <cstdint>

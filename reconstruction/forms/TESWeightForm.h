@@ -1,11 +1,4 @@
-// TESWeightForm type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESWeightForm.h
-// and the vftables of the pinned image. BaseFormComponent is a stand-in, labelled where
-// it is declared; only class names, base
-// chain, slot order and sizes are claimed, slot signatures other than the compared ones are placeholders.
 // TESWeightForm: EXE_RTTI; class name and base from the image RTTI
 #pragma once
 

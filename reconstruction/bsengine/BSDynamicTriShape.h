@@ -1,7 +1,7 @@
 // Code origin: names, bases, virtual slots and member offsets from CharmedBaryon/CommonLibSSE-NG b93280e (MIT); the two bodies are written from the listing of the pinned image
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSDynamicTriShape, BSDynamicTriShape::IsEqual, ::AsDynamicTriShape, ::GetRTTI, ::CreateClone, ::LoadBinary, ::LinkObject, ::RegisterStreamables, ::SaveBinary: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSDynamicTriShape::dynamicData, ::lock, ::dataSize, ::frameCount, ::unk178, ::unk17C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSGeometry, BSGeometry::properties, ::skinInstance, ::rendererData, ::unk20, ::vertexDesc, ::modelBound, ::type, ::pad31, ::pad32, ::pad34 and its virtual overrides: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

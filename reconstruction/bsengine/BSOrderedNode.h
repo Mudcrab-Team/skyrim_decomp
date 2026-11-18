@@ -1,7 +1,7 @@
 // Code origin: hand-written class layouts and declarations adapted from the CharmedBaryon/CommonLibSSE-NG headers named below; the compared bodies are written from the local listings.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSOrderedNode, BSOrderedNode::RegisterStreamables, BSOrderedNode::OnVisible, BSOrderedNode::~BSOrderedNode, BSOrderedNode::GetRTTI, BSOrderedNode::CreateClone, BSOrderedNode::LoadBinary, BSOrderedNode::LinkObject, BSOrderedNode::SaveBinary, BSOrderedNode::IsEqual, BSOrderedNode::UpdateDownwardPass, BSOrderedNode::UpdateSelectedDownwardPass, BSNiNode::~BSNiNode, BSNiNode::GetRTTI, BSNiNode::CreateClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSNiNode: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiBound, NiPoint3: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

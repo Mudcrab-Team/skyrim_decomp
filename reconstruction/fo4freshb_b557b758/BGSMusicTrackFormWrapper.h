@@ -1,8 +1,8 @@
 // Origin: declarations adapted from labelled pinned community headers and target-specific partial declarations.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (pinned target listing and community declarations).
 // BSIMusicTrack, BSIMusicTrack::DoUpdate, BSIMusicTrack::DoPlay, BSIMusicTrack::DoPause, BSIMusicTrack::DoFinish, BSIMusicTrack::GetDurationImpl, BSIMusicTrack::GetType, BSIMusicTrack::TestCanPlay, BSIMusicTrack::GetMusicStatus, BSIMusicTrack::DoSetDuckingAttenuation, BSIMusicTrack::DoClearDucking: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declared in NG slot order.
 // BGSMusicTrackFormWrapper, track: GUESS(low)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 class BSIMusicTrack {

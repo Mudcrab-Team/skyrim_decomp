@@ -1,8 +1,8 @@
 // Code origin: original drafting by Hinkiii with claude-sonnet-5-5 from a local listing of the pinned image; class layout, member names and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // declarations adapted from CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT).
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSSmallBlockAllocator, BSSmallBlockAllocator::TryAllocateImpl, BSSmallBlockAllocator::ContainsBlockImpl, BSSmallBlockAllocator::Size, BSSmallBlockAllocator::~BSSmallBlockAllocator, BSSmallBlockAllocator::GetMemoryStats, BSSmallBlockAllocator::AllocateAlignImpl, BSSmallBlockAllocator::DeallocateAlignImpl, IMemoryStoreBase::~IMemoryStoreBase, IMemoryStoreBase::Size, IMemoryStoreBase::GetMemoryStats, IMemoryStoreBase::ContainsBlockImpl, IMemoryStore::~IMemoryStore, IMemoryStore::AllocateAlignImpl, IMemoryStore::DeallocateAlignImpl, IMemoryStore::TryAllocateImpl: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // IMemoryStoreBase, IMemoryStore, MemoryStats: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // BSCriticalSection, CRITICAL_SECTION, BSSmallBlockAllocatorUtil::FreeBlock, BSSmallBlockAllocatorUtil::BlockPage, BSSmallBlockAllocatorUtil::Pool, BlockPageInternal, BSSmallBlockAllocator::Pool, BSSmallBlockAllocator::MegaBlockPage: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)

@@ -1,12 +1,4 @@
-// BGSMovableStatic type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/B/BGSMovableStatic.h
-// and the vftables of the pinned image. TESForm and BaseFormComponent come from the shared
-// header TESForm.h. TESFullName, BGSDestructibleObjectForm, TESBoundObject and TESObjectSTAT are
-// stand-ins, labelled where they are declared; only class names, base
-// chain, slot order and sizes are claimed.
 // BGSMovableStatic: EXE_RTTI; bases in the order of the image's vftables
 #pragma once
 

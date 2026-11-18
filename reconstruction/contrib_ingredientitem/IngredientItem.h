@@ -1,10 +1,10 @@
 // Code origin: declarations written by hand from the local listings and the community headers; the bodies are in the matching .cpp.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
 // IngredientItem::GetData2, IngredientItem::IsFood, IngredientItem::InitChunk: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names only, the bodies are written from the target listing
 // GetData: GUESS(low); virtual slot 0x6C (byte offset 0x360), returns the record whose flags IsFood reads
 // Unk_NN: GUESS(low); placeholders that only keep GetData at the vtable offset the image encodes
 // IngredientData, cost, flags: STANDIN GUESS(low); the first two members of the record at 0x130 (cost, flags)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // unk08, unk10, unk18, unk20, unk28, unk30, unk38, unk40, unk48, unk50, unk58, unk60, unk68, unk70, unk78, unk80, unk88, unk90, unk98, unkA0, unkA8, unkB0, unkB8, unkC0, unkC8, unkD0, unkD8, unkE0, unkE8, unkF0, unkF8, unk100, unk108, unk110, unk118, unk120, unk128: GUESS(low); storage not read by the compared code
 #pragma once
 #include <cstdint>

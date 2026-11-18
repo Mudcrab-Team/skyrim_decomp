@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/A/Actor.h, ActorState.h, ActorValueOwner.h, RE/T/TESObjectREFR.h, TESForm.h, RE/E/ExtraDataList.h, RE/M/MagicTarget.h, RE/B/BSHandleRefObject.h, BSAtomic.h, BSTEvent.h, RE/T/TESNPC.h, TESActorBase.h, TESActorBaseData.h, TESContainer.h, TESSpellList.h, TESAIForm.h, TESFullName.h, TESRaceForm.h, RE/B/BGSKeywordForm.h, BGSAttackDataForm.h, BGSPerkRankArray.h, BGSSkinForm.h, BGSDestructibleObjectForm.h and RE/I/IAnimationGraphManagerHolder.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); representation follows pinned community AE declarations and target this adjustment.
 #pragma once
 #include <cstddef>

@@ -1,10 +1,10 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: independently decoded target, anonymous sibling and public declarations.
 // TESWaterSystem::RemoveLODWater: SIBLING(fo4-private@1b765c70, author-permission); adapted to target observations.
 // Sibling source: fo4-private@1b765c70 src/Shared/Water/TESWater.cpp:159
 // NiObject, NiAVObject, NiNode: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); declarations adapted from include/RE/N/NiObject.h, include/RE/N/NiObjectNET.h, include/RE/N/NiAVObject.h and include/RE/N/NiNode.h.
 // names: GUESS(low); names and original signatures are tentative.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 class NiRTTI; class NiNode; class NiSwitchNode; class BSFadeNode; class BSMultiBoundNode; class BSGeometry; class NiTriStrips; class BSTriShape; class BSSegmentedTriShape; class BSSubIndexTriShape; class BSDynamicTriShape; class NiGeometry; class NiTriBasedGeom; class NiTriShape; class NiParticles; class BSLines; class bhkNiCollisionObject; class bhkBlendCollisionObject; class bhkAttachmentCollisionObject; class bhkRigidBody; class bhkLimitedHingeConstraint; class NiCloningProcess; class NiStream; class NiObjectGroup; class NiControllerManager; class NiUpdateData; class PerformOpFunc; class NiAlphaProperty; class BSFixedString; class NiCullingProcess; class NiAVObject; template<class T> class NiPointer;

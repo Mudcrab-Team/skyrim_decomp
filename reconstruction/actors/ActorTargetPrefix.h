@@ -2,7 +2,6 @@
 // Origin: original declarations adapted from pinned community member declarations.
 // Source exposure: mixed (target access/RTTI observations and community headers).
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

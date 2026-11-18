@@ -1,9 +1,9 @@
 // Source exposure: mixed (pinned community declarations and local target analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ScriptStringLayout, ScriptTypeLayout, ScriptDescriptorLayout: GUESS(low) STANDIN
 // Field layouts: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NativeFunction and NativeLatentFunction owner spellings: EXE_RTTI
 // callback, Callback: GUESS(low)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: represented declaration from reconstruction/bsengine/NativeFunctionLayout.h; only include spelling changed.
 #pragma once
 #include <cstdint>

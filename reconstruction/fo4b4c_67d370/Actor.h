@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/B/bhkCharacterController.h, BSBound.h, BSTEvent.h, BSTArray.h and RE/H/hkStepInfo.h, hkpCharacterControl.h, hkpCharacterContext.h, hkReferencedObject.h, RE/N/NiExtraData.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); scene global and method identity inferred from target.
 #pragma once
 #include <cstddef>

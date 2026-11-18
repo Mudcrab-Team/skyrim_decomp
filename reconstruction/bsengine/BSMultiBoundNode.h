@@ -1,7 +1,7 @@
 // Code origin: names, bases, slot order and member layout adapted from CharmedBaryon/CommonLibSSE-NG (MIT)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSMultiBoundNode, BSMultiBoundNode::IsEqual, BSMultiBoundNode::~BSMultiBoundNode, BSMultiBoundNode::GetRTTI, BSMultiBoundNode::AsMultiBoundNode, BSMultiBoundNode::CreateClone, BSMultiBoundNode::LoadBinary, BSMultiBoundNode::LinkObject, BSMultiBoundNode::RegisterStreamables, BSMultiBoundNode::SaveBinary, BSMultiBoundNode::UpdateDownwardPass, BSMultiBoundNode::UpdateWorldBound, BSMultiBoundNode::OnVisible, BSMultiBoundNode::UpdateUpwardPass, BSMultiBoundNode::GetMultiBoundRoom, BSMultiBoundNode::QPointWithin, BSMultiBoundNode::Unk_40, BSMultiBoundNode::Unk_41, BSNiNode::~BSNiNode, BSNiNode::GetRTTI, BSNiNode::CreateClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSNiNode, BSMultiBoundRoom, NiPoint3: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // multiBound, cullingMode, lastAccumTime: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)

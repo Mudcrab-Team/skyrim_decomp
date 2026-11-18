@@ -1,10 +1,10 @@
 // Source exposure: mixed.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: Original reconstruction informed by target access witnesses and community declarations.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // REFRAdditionalTyped: STANDIN GUESS(low); receiver and signatures inferred from accesses.
 // ExtraDataList, TESBoundObject, TESObjectREFR: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // Record, State, Value, FindRecord, FindState, Resolve, Lookup, GetA, GetB, Read, DefaultValue, Function2e6a40, Function2f6310, Function301130, Function3010a0, Function3010e0: GUESS(low); inferred from target accesses and calls.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 
 #pragma once
 #include <cstdint>

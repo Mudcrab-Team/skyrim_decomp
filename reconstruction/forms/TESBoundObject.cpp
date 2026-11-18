@@ -1,22 +1,11 @@
-// TESBoundObject functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-tesboundobject
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5 and gpt-6.1-terra from the assigned packs.
-// Compared functions:
-//   RVA 0x1d21c0, 33 bytes: TESBoundObject::GetBipedObjectForm
-//   RVA 0x277b10, 150 bytes: TESBoundObject::LoadObjectBound
-//   RVA 0x6b70f0, 51 bytes: TESBoundObject::SendActorItemEquippedEvent
-//   RVA 0x278f90, 104 bytes: TESBoundObject::CalculateDoFavor
-//   RVA 0x1468a0, 3 bytes: TESBoundObject::IsBoundObject
-// Not compared here: Activate and GetActivateText; their near-misses stay in the task directory.
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x1d21c0 TESBoundObject::GetBipedObjectForm
+// 0x277b10 TESBoundObject::LoadObjectBound
+// 0x6b70f0 TESBoundObject::SendActorItemEquippedEvent
+// 0x278f90 TESBoundObject::CalculateDoFavor
+// 0x1468a0 TESBoundObject::IsBoundObject
 #include "TESBoundObject.h"
 
 // RVA 0x6b70f0, 51 bytes

@@ -1,7 +1,7 @@
 // Source exposure: mixed (community headers and pinned-image analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: original reconstruction; declarations adapted from the pinned MIT community headers.
 // Origin: community declarations and target analysis.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // EffectSetting: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSReferenceEffect, BGSDualCastData, TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); adapted from include/RE/B/BGSReferenceEffect.h, include/RE/B/BGSDualCastData.h and include/RE/T/TESBoundObject.h.
 #pragma once

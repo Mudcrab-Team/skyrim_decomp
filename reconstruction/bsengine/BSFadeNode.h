@@ -1,7 +1,7 @@
 // Code origin: names, bases, virtual slots and member offsets from CharmedBaryon/CommonLibSSE-NG b93280e (MIT); the bodies are written from the listing of the pinned image
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSFadeNode, BSFadeNode::BSFadeNode (NG's ctor), ::~BSFadeNode, ::GetRTTI, ::AsFadeNode, ::CreateClone, ::LoadBinary, ::LinkObject, ::RegisterStreamables, ::SaveBinary, ::IsEqual, ::UpdateSelectedDownwardPass, ::OnVisible, ::AsTreeNode, ::AsLeafAnimNode, and the members unk128, unk12C, currentFade, unk134, unk138, unk13C, unk140, unk144, unk148, unk14C, unk150, unk152, unk153, unk154, unk155, unk156: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiNode, NiNode::NiNode, NiNode::children and NiNode's virtual overrides: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); defined here because the shared declarations/NiNode.h keeps the children array as opaque storage and has no constructor
 // NiTObjectArray, NiTArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to the 0x18 byte layout for pointer elements, field names are low-confidence guesses

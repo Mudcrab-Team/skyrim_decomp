@@ -1,7 +1,7 @@
 // Code origin: original drafting by Hinkiii with claude-sonnet-5-5 from a local listing of the pinned image; names, members and declarations
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSDecalNode, BGSDecalNode::CreateClone, BGSDecalNode::AttachDecal, BGSDecalNode::~BGSDecalNode, BGSDecalNode::GetRTTI, BGSDecalNode::ProcessClone, BGSDecalNode::OnVisible, BGSDecalNode::Unk_3E: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // BSTempEffect, BSTArray, NiPointer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // BSTArray::_data, BSTArray::_capacity, BSTArray::_size, BGSDecalNode::decals, BGSDecalNode::isSkinned, BSTempEffect::Get3D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)

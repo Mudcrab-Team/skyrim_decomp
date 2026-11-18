@@ -1,4 +1,5 @@
 // Code origin: declarations extended by hand from the local listings; names follow the community headers.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // BSWin32GamepadDevice: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -9,7 +10,6 @@
 // g_gamepadManager: GUESS(low); global pointer at address 0x31a5690 that Initialize calls through
 // GamepadManager, Unk_ceed20: GUESS(low); address 0xceed20, called on that pointer with zero
 // state: GUESS(low); the 0x50-byte buffer at offset 0xD8 that Reset and Initialize clear as a whole
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // unk08, unk10, unk18, unk20, unk28, unk30, unk38, unk40, unk48, unk50, unk58, unk60, unk68: GUESS(low); storage not read by the compared code
 // unk70, unk78, unk80, unk88, unk90, unk98, unkA0, unkA8, unkB0, unkB8, unkC0, unkC8: GUESS(low); storage not read by the compared code
 // unkD0: GUESS(low); storage not read by the compared code

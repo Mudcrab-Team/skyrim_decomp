@@ -1,4 +1,5 @@
 // Source exposure: mixed (local target analysis, public declarations and permitted sibling).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: reconstructed from target and sibling hints.
 // names: GUESS(low); signatures and type names are hypotheses.
 // IngredientItem::CopyMagicItemData: SIBLING(fo4-private@1b765c70, author-permission); adapted data copying.
@@ -8,7 +9,6 @@
 // Sibling source: fo4-private@1b765c70 src/Shared/Magic/IngredientItem.cpp:258
 // Sibling source: fo4-private@1b765c70 src/Shared/Magic/IngredientItem.cpp:250
 // IngredientItem and bases: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 class BGSLoadFormBuffer;

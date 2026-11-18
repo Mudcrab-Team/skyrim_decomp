@@ -1,4 +1,5 @@
 // Source exposure: mixed (local target analysis, public declarations and permitted sibling).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: independently reconstructed from target and sibling hints.
 // names: GUESS(low); signatures and type names are hypotheses.
 // FlameProjectile::Handle3DLoaded: SIBLING(fo4-private@1b765c70, author-permission); adapted flag update.
@@ -7,7 +8,6 @@
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/FlameProjectile.cpp:99
 // Source exposure: mixed (community headers and pinned-image analysis).
 // Drafted by gpt-6.1-sol, Engineer p105 box3. Adapted bodies: none.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // FlameProjectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 #include <cstdint>

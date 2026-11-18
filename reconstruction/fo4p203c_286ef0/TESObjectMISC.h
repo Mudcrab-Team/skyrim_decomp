@@ -4,7 +4,6 @@
 // TESObjectMISC::LoadGame: SIBLING(fo4-private@1b765c70, author-permission); adapted behavior.
 // Sibling source: fo4-private@1b765c70 src/Shared/TESForms/Objects/TESObjectMISC.cpp:241
 // TESObjectMISC, TESForm, TESObject, TESBoundObject, TESFullName, TESModel, TESModelTextureSwap, TESTexture, TESIcon, TESValueForm, BaseFormComponent: COMMUNITY(Ryan-rsm-McKenzie/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); declarations from include/RE/T/TESObjectMISC.h, TESForm.h, TESObject.h, TESBoundObject.h, TESFullName.h, TESModel.h, TESModelTextureSwap.h, TESTexture.h, TESIcon.h, TESValueForm.h and include/RE/B/BaseFormComponent.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 class BGSLoadFormBuffer;

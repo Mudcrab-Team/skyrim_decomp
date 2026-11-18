@@ -1,4 +1,5 @@
 // Source exposure: mixed (community and authorized sibling declarations, local binary analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: value declarations adapted from CommonLibSSE-NG; bounding-volume, sphere, capsule and half-space declarations adapted from the authorized FNV sibling source. Box scalar declarations are originally inferred from target member accesses. No implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/N/NiPoint3.h, NiBound.h, NiPlane.h.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6 include/NiBoundingVolume.h
@@ -10,7 +11,6 @@
 // center, radius, normal, constant, x, y, z: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // axisDirection, halfLength, segmentOrigin, segmentDirection, boundRadius, halfSpacePlane: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
 // DeletePoint3, DeleteSphere, DeletePlane, sphere: GUESS(medium) STANDIN; aliases for the cited value declarations.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 namespace ResearchLayouts {

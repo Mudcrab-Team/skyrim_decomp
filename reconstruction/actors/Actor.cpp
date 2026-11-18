@@ -1,13 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local listing of the pinned image
 // FindOutfitExtra: GUESS; callee of HasOutfitItems at RVA 0x1648b0.
-// 0x2e7fc0 Actor::HasOutfitItems
-// 0x6797a0 Actor::GetLevel
-// 0x6cb920 Actor::IsAttacking
-// 0x6d7750 Actor::HasShout
-// 0x6af1b0 Actor::GetMoveDirectionRelativeToFacing
-// 0x6d92b0 Actor::GetVoiceRecoveryTime
-// 0x687c20 Actor::IsInRagdollState
-// 0x6c5440 Actor::GetActorValueModifier
 #include "Actor.h"
 
 std::uint16_t Actor::GetLevel() const

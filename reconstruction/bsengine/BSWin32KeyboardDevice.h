@@ -1,4 +1,5 @@
 // Code origin: declarations extended by hand from the local listings; names follow the community headers.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // BSWin32KeyboardDevice: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -9,7 +10,6 @@
 // g_directInputManager: GUESS(low); global pointer at address 0x32309d0, the manager the device is released through
 // device: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); member at 0x70 as declared there
 // keyState: GUESS(low); the key state buffer at 0x168, cleared as a whole by the compared body
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // unk08, unk10, unk18, unk20, unk28, unk30, unk38, unk40, unk48, unk50, unk58, unk60, unk68: GUESS(low); storage not read by the compared code
 // unk78, unk80, unk88, unk90, unk98, unkA0, unkA8, unkB0, unkB8, unkC0, unkC8, unkD0, unkD8, unkE0, unkE8, unkF0, unkF8, unk100, unk108, unk110, unk118, unk120, unk128, unk130, unk138, unk140, unk148, unk150, unk158, unk160: GUESS(low); storage not read by the compared code
 // unk368: GUESS(low); storage not read by the compared code

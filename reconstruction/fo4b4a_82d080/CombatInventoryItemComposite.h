@@ -4,7 +4,6 @@
 // CombatInventoryItemComposite::IsValid: SIBLING(fo4-private@1b765c70, author-permission); adapted behavior.
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatInventoryItem.cpp:150
 // CombatInventoryItem: COMMUNITY(Ryan-rsm-McKenzie/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); declarations from include/RE/C/CombatInventoryItem.h, include/RE/C/CombatObject.h and include/RE/N/NiRefObject.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 class NiRefObject { public: virtual ~NiRefObject(); unsigned int refCount; };
 class CombatObject : public NiRefObject {};

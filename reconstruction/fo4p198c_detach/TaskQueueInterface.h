@@ -1,4 +1,5 @@
 // Source exposure: mixed (local target analysis, public declarations and permitted sibling).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: reconstructed from target and sibling hints.
 // names: GUESS(low); signatures and type names are hypotheses.
 // TaskQueueInterface::QueueNodeDetach: SIBLING(fo4-private@1b765c70, author-permission); adapted task construction.
@@ -6,7 +7,6 @@
 // Sibling source: fo4-private@1b765c70 src/Game/Misc/TaskQueueInterface.cpp:213
 // Sibling source: fo4-private@1b765c70 src/Game/Misc/TaskQueueInterface.cpp:432
 // NiRefObject and BSHandleRefObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted reference-count declarations.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include "TESForm.h"
 #include <cstdint>

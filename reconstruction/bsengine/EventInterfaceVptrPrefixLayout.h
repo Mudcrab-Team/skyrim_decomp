@@ -1,9 +1,9 @@
 // Source exposure: mixed (pinned public interface/reference/menu storage and independent target RTTI/slot analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: adapted community storage declarations and original narrowed prefix construction; no external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{B/BSTEvent.h,B/BSIntrusiveRefCounted.h,G/GRefCountImpl.h,G/GFxFunctionHandler.h,F/FxDelegateHandler.h,J/JournalTab.h,J/Journal_SystemTab.h,I/IMenu.h,I/IVirtualMachine.h}; MIT.
 // BSTEventSink, BSTSingletonSDM, FxDelegateHandler, JournalTab, IMenu, GFxFunctionHandler, IVirtualMachine, BSIntrusiveRefCounted: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // All ResearchLayouts names ending Layout, PrefixLayout or StorageLayout, Contract and Identity tags, and physical mirror member names: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

@@ -1,10 +1,10 @@
 // Source exposure: mixed (pinned community reference-count/movement-interface storage, independent target construction/RTTI/slot analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: original explicitly narrowed owner/interface views and defaulted construction, reusing the represented community-backed MovementAgent storage. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/B/BSIntrusiveRefCounted.h and include/RE/I/{IMovementInterface,IMovementState}.h; MIT.
 // BSIntrusiveRefCounted, IMovementInterface, IMovementState, _refCount: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MovementAgent, IPipelineStageInterface: EXE_RTTI
 // MovementVptrContractLayout, Identity, all owner names ending InterfacePrefixLayout and their StorageLayout mirrors: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include "MovementAgentPathFollowerStandardPrefixLayout.h"

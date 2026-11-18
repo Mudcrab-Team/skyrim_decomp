@@ -1,4 +1,5 @@
 // Recipe: reconstruction/recipes/represented-magic-wrapper-o2.json
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (pinned complete public data and independent target primary RTTI/call operands).
 // Code origin: public data-only adaptations; ordinary compiler deleting wrappers, complete destructor bodies external. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{S/SettingCollection.h,S/SettingCollectionList.h,I/INISettingCollection.h,I/INIPrefSettingCollection.h,R/RegSettingCollection.h,B/BSShaderProperty.h,S/ShaderReferenceEffect.h,B/BSTArray.h,B/BSSoundHandle.h}; MIT.
@@ -6,7 +7,6 @@
 // SettingCollection, SettingCollectionList, INISettingCollection, INIPrefSettingCollection, RegSettingCollection, BSShaderProperty, ShaderReferenceEffect, RenderPassArray: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSDistantTreeShaderProperty: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // New storage names, member aliases and pointee names: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 #include <cstddef>

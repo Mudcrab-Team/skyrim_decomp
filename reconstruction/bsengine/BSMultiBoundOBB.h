@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
 // BSMultiBoundOBB: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSMultiBoundShape, BSMultiBoundAABB: STANDIN EXE_RTTI
@@ -8,7 +9,6 @@
 // unknown10, unknown18, unknown40, unknown64: GUESS(low)
 // BSMultiBoundOBBData: GUESS(low); serialized member storage in this stand-in.
 // unknown65: GUESS(low); padding after the compared flag field.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 
 #include <intrin.h>

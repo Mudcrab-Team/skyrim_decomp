@@ -1,10 +1,10 @@
 // Source exposure: mixed (pinned community interface declarations and target RTTI/secondary-slot analysis).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: adapted community interface declarations; original owner prefix and defaulted construction. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/I/IFreezeQuery.h, include/RE/I/IStackCallbackSaveInterface.h and include/RE/B/BSTEvent.h; MIT.
 // IFreezeQuery, IStackCallbackSaveInterface, BSTEventSink, BSEventNotifyControl, GetIsFrozen, Unk_01, Unk_02, ProcessEvent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SkyrimVM: EXE_RTTI
 // SkyrimVMInterfacePrefixLayout, SkyrimVMFreezeQueryLayout, SkyrimVMStackSaveLayout, SkyrimVMEventSinkLayout, SkyrimVMEventSourceLayout, SkyrimVMEventTag, SkyrimVMVptrPrefixStorageLayout: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 namespace ResearchLayouts {

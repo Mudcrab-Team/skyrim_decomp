@@ -1,7 +1,7 @@
 // Code origin: original drafting by Hinkiii with claude-sonnet-5-5 from a local listing of the pinned image; names, members and declarations
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSMultiBoundShape, BSMultiBoundShape::GetWithinPoint, BSMultiBoundShape::ctor, BSMultiBoundShape::~BSMultiBoundShape, BSMultiBoundShape::GetRTTI, BSMultiBoundShape::CreateClone, BSMultiBoundShape::LoadBinary, BSMultiBoundShape::LinkObject, BSMultiBoundShape::RegisterStreamables, BSMultiBoundShape::SaveBinary, BSMultiBoundShape::IsEqual, BSMultiBoundShape::GetType, BSMultiBoundShape::GetLength, BSMultiBoundShape::Unk_27, BSMultiBoundShape::Unk_28, BSMultiBoundShape::Unk_29, BSMultiBoundShape::Unk_2A, BSMultiBoundShape::Unk_2B, BSMultiBoundShape::SetCenter, BSMultiBoundShape::Unk_2E: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // NiPoint3: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // BSMultiBoundShape::unk10, BSMultiBoundShape::pad14: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)

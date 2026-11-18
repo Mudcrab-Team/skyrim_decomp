@@ -1,7 +1,7 @@
 // Code origin: original reconstruction; declarations adapted from pinned MIT community headers.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (community headers and pinned-image analysis).
 // Drafted by gpt-6.1-sol, Engineer p105 box3. Adapted bodies: none.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // GMemoryHeap: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // HeapSlot1, HeapSlot2, HeapSlot3, HeapSlot4, HeapSlot5, HeapSlot6, HeapSlot7, HeapSlot8, HeapSlot9, HeapSlot10, HeapSlot11, GlobalHeap: GUESS(low)
 class GMemoryHeap { public: virtual ~GMemoryHeap(); virtual void HeapSlot1(); virtual void HeapSlot2(); virtual void HeapSlot3(); virtual void HeapSlot4(); virtual void HeapSlot5(); virtual void HeapSlot6(); virtual void HeapSlot7(); virtual void HeapSlot8(); virtual void HeapSlot9(); virtual void HeapSlot10(); virtual void HeapSlot11(); virtual void Free(void*); };

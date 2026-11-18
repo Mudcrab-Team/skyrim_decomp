@@ -1,7 +1,7 @@
 // Source exposure: mixed (community declarations and local target binding).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: data declarations adapted from pinned public CommonLibSSE-NG headers. No implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/B/BSPointerHandle.h, BSTMessageQueue.h, BSExtraData.h; I/IUIMessageData.h, S/SyncQueueObj.h and the corresponding named handle-owner headers.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // HandleExtraDeleteLayout, HandleUIRoot, HandleSyncRoot, HandleReferenceCount, HandleNativeValue: GUESS(medium) STANDIN; represented public data aliases.
 // _handle, _refCount, next, unk08, unk0C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once

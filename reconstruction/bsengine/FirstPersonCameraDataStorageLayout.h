@@ -1,11 +1,11 @@
 // Source exposure: mixed (public complete data declarations and independent primary RTTI/call operand bindings).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: public data-only adaptations and ordinary compiler deleting-wrapper emission. No external implementation body reused; complete destructors remain external.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{F/FirstPersonState.h,F/FreeCameraState.h,T/ThirdPersonState.h,N/NiPoint2.h,N/NiPoint3.h,N/NiQuaternion.h,C/Color.h,S/Setting.h,G/GFxValue.h,G/GPtr.h,H/HUDObject.h,H/HUDChargeMeter.h,B/BSTempEffectDebris.h,B/BGSPackageDataLocation.h,B/BGSNamedPackageData.h,B/BGSPackageDataPointerTemplate.h,B/BGSTextureModel.h}; MIT.
 // Declaration source: powerof3/CommonLibSSE@654e55f7979c1733033d5dbef176e43827bac944 include/RE/{A/AutoVanityState.h,F/FurnitureCameraState.h,C/CombatPath.h}; GPL-3.0.
 // FirstPersonState, FreeCameraState, ThirdPersonState, Setting, GFxValue, HUDObject, HUDChargeMeter, BSTempEffectDebris, BGSPackageDataLocation, BGSNamedPackageData, BGSPackageDataPointerTemplate, BGSTextureModel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // AutoVanityState, FurnitureCameraState, CombatPath: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // New storage class names, fields and pointee names: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 #include <cstddef>

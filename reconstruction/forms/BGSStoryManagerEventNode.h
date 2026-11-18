@@ -1,10 +1,5 @@
-// BGSStoryManagerEventNode type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT):
-// include/RE/B/BGSStoryManagerEventNode.h, BGSStoryManagerBranchNode.h, BGSStoryManagerNodeBase.h and BGSStoryManagerTreeForm.h.
-// TESForm comes from the shared header TESForm.h; the story-manager base chain, BSTArray and BGSRegisteredStoryEvent are stand-ins.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSStoryManagerEventNode, ::InitializeData, ::GetFormEditorID, ::event: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSRegisteredStoryEvent: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's struct is 0x28 bytes, only the name accessor is declared
 // BGSRegisteredStoryEvent::GetName: GUESS(low); the target tail-jumps (0x532f30) with the event pointer as this; NG reads event->name.c_str() inline

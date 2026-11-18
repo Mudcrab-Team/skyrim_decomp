@@ -1,11 +1,11 @@
 // Source exposure: mixed (pinned public data declarations and independent target RTTI/secondary slot/target binding).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: public data-only storage adaptations and original narrowed prefix composition. No external implementation body reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{B/BSTArray.h,B/BSTEvent.h,B/BSAtomic.h,B/BSNavmesh.h,B/BSResourceNiBinaryStream.h,E/ExtraMagicCaster.h,I/IAIWorldLocationHandle.h,I/IPackageData.h,I/IPackageDataAIWorldLocationHandle.h,M/MagicCaster.h,M/MenuControls.h,M/Main.h,N/NavMesh.h,N/NiBinaryStream.h,P/PlayerInputHandler.h,T/TES.h,T/TESCameraState.h,S/SimpleAnimationGraphManagerHolder.h}; MIT.
 // Declaration source: powerof3/CommonLibSSE@654e55f7979c1733033d5dbef176e43827bac944 include/RE/{B/BSTask.h,I/IOTask.h,Q/QueuedFile.h,B/BSResourceEntryDB.h,B/BSTObjectDictionary.h,B/BSPathing.h,P/Pathing.h,F/FindTriangleForLocationFilterCheckDeltaZ.h}; GPL-3.0.
 // QueuedFile, BSTask, IOTask, PostFlushNotify, BSTObjectDictionary, BSPathing, BSPathingCellManager, FindTriangleForLocationFilterCheckDeltaZ: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // MagicCaster, SimpleAnimationGraphManagerHolder, TESCameraState, PlayerInputHandler, BSTEventSource, BSTEventSink, ICellAttachDetachEventSource, BSNavmesh, TESChildCell, BSResourceNiBinaryStream, NiBinaryStream, IPackageData, IAIWorldLocationHandle, IPackageDataAIWorldLocationHandle: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // New storage classes and contract names, identity tags, mirror fields and pointee names: GUESS(medium) STANDIN
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include <cstdint>

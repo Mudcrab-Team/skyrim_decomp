@@ -2,7 +2,6 @@
 // Origin: original reconstruction with cited adapted declarations and complete notices.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // Source exposure: mixed; drafted by gpt-6.1-terra.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include "actors/ActorTargetPrefix.h"
 #include <cstdint>

@@ -1,7 +1,7 @@
 // Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
 // Declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/A/Actor.h, ActorState.h, ActorValueOwner.h, RE/T/TESObjectREFR.h, TESForm.h, RE/E/ExtraDataList.h, RE/M/MagicTarget.h, RE/B/BSHandleRefObject.h, BSAtomic.h, BSTEvent.h and RE/I/IAnimationGraphManagerHolder.h.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // names: GUESS(low); target callees and signatures are inferred independently from the target call sequence.
 #pragma once
 class TESFileArray; class TESBoundObject {}; class TESNPC : public TESBoundObject {}; class PerkEntryVisitor; class Actor; class TESFaction { public: unsigned GetCrimeGoldValue(TESNPC*) const; void SetCrimeGoldValue(TESNPC*, unsigned); void ModCrimeGoldValue(TESNPC*, int); }; class TESObjectCELL; class LOADED_REF_DATA; class BSExtraData; class SpellDispelData; class AIProcess { public: void SetCurrentActionComplete(bool); void ClearMovementStopped(); bool HasBeenAttacked() const; void ForEachPerkEntry(unsigned char, PerkEntryVisitor&) const; void ApplyPerksFromBase(Actor*); void EndDeferredKill(bool, Actor&); bool HasPerkEntries(unsigned char) const; };

@@ -1,8 +1,8 @@
 // Source exposure: mixed; Drafted by gpt-6.1-sol.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // Origin: original reconstruction; types adapted from pinned public MIT declarations.
 // NiPoint3: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 namespace P207SolRetry {
 // P207SolRetry: GUESS(low); namespace isolates private partial declarations.

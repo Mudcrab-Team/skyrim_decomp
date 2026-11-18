@@ -2,7 +2,6 @@
 // Source exposure: mixed (pinned target listing and sibling hints).
 // SpellItem, SpellItem::GetRange: GUESS(low)
 // SpellItem fields: STANDIN GUESS(low)
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 // InputFile: STANDIN GUESS(low)

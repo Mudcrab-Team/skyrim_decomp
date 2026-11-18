@@ -1,13 +1,6 @@
-// TESObjectBOOK declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-tesobjectbook
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Base form: shared header ../forms/TESForm.h for TESForm and its buffer types (BGSLoadFormBuffer,
-// BGSSaveFormBuffer, BGSLoadGameBuffer, BGSSaveGameBuffer). The other shared buffer headers
-// (BGSLoadGameBuffer.h, BGSSaveFormBuffer.h) redefine TESForm and the buffers, so they cannot be
-// included with TESForm.h; header-gap BGSLoadGameBuffer and BGSSaveFormBuffer.
 // TESObjectBOOK: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // InitializeData, LoadGame, SaveGame: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares OBJ_BOOK data, a 0x10-byte struct, and this file declares its first eight bytes

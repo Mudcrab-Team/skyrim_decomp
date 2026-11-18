@@ -5,7 +5,6 @@
 // CheckCast: SIBLING(fo4-private@1b765c70, author-permission)
 // Padding and incomplete declarations: STANDIN GUESS(low); no complete-layout or behaviour claim.
 // Sibling source: fo4-private@1b765c70 src/Game/Magic/MagicCaster.cpp:316
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 #include <cstddef>

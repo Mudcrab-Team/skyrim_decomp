@@ -3,7 +3,6 @@
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/B/BSTArray.h; represented starting point reconstruction/bsengine/ArrayAllocatorFunctorLayout.h from p106.
 // AllocatorLeafInterface, ArrayAllocatorLeafLayout: GUESS(medium) STANDIN; aliases with unrecovered concrete template arguments.
 // allocator: GUESS(medium); allocator object reference at offset8, not allocation-size storage.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
 #include <cstddef>

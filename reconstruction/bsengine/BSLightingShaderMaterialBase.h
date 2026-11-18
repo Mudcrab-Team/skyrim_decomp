@@ -1,8 +1,8 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // aliases and the read, write, binary_read and binary_write bodies are adapted from NG b93280e
 // Sibling source lines below declare that parallel; they do not record a copy.
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:27
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bsshader/boltshader.cpp:31
 // BSLightingShaderMaterialBase: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI; each declaration below carries its own label
