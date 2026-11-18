@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSUtilityShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSShader: STANDIN EXE_RTTI
 // BSUtilityShader::RestoreMaterial: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)

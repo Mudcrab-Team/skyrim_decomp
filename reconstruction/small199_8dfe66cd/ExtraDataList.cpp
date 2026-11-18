@@ -1,26 +1,19 @@
-// ExtraDataList, build sse-steam-1-7-104.
-// Labels: v2
 // Inferred names: GUESS(low)
 // Origin: original reconstruction informed by CommonLibSSE-NG declarations (MIT).
 // Source exposure: mixed (local binary analysis and pinned public declarations).
-// Drafted by gpt-6.1-terra.
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Names, signatures and layout remain inferred; only checked bytes are claimed.
-// Compared functions:
-// RVA 0x163960, 35 bytes: ExtraDataList::Function163960.
-// RVA 0x1693b0, 37 bytes: ExtraDataList::Function1693b0.
-// RVA 0x16e440, 37 bytes: ExtraDataList::Function16e440.
-// RVA 0x171e60, 37 bytes: ExtraDataList::Function171e60.
-// RVA 0x1648c0, 42 bytes: ExtraDataList::GetTemper.
-// RVA 0x164920, 42 bytes: ExtraDataList::Function164920.
-// RVA 0x164950, 42 bytes: ExtraDataList::GetCharge.
-// RVA 0x1649b0, 42 bytes: ExtraDataList::Function1649b0.
-// RVA 0x1649e0, 42 bytes: ExtraDataList::Function1649e0.
-// RVA 0x164a10, 42 bytes: ExtraDataList::Function164a10.
-// RVA 0x170dc0, 42 bytes: ExtraDataList::Function170dc0.
-// RVA 0x171cf0, 42 bytes: ExtraDataList::Function171cf0.
 // ExtraDataList: GUESS(low)
+// 0x163960 ExtraDataList::Function163960
+// 0x1693b0 ExtraDataList::Function1693b0
+// 0x16e440 ExtraDataList::Function16e440
+// 0x171e60 ExtraDataList::Function171e60
+// 0x1648c0 ExtraDataList::GetTemper
+// 0x164920 ExtraDataList::Function164920
+// 0x164950 ExtraDataList::GetCharge
+// 0x1649b0 ExtraDataList::Function1649b0
+// 0x1649e0 ExtraDataList::Function1649e0
+// 0x164a10 ExtraDataList::Function164a10
+// 0x170dc0 ExtraDataList::Function170dc0
+// 0x171cf0 ExtraDataList::Function171cf0
 
 // MIT License
 // 

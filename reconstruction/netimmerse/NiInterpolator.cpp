@@ -1,20 +1,11 @@
-// NiInterpolator for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Compared: ResolveDependencies, RegisterStreamables, GetActiveTimeRange, GetRTTI,
-// GetSequenceInterpolator and the scalar deleting destructor:
-// RVA 0xf6cda0, 50 bytes: NiInterpolator::~NiInterpolator (scalar deleting destructor)
-// RVA 0xf6cd40, 3 bytes: NiInterpolator::ResolveDependencies
-// RVA 0xf6cbd0, 5 bytes: NiInterpolator::RegisterStreamables
-// RVA 0xf6ccf0, 8 bytes: NiInterpolator::GetActiveTimeRange
-// RVA 0xf6cde0, 8 bytes: NiInterpolator::GetRTTI
-// RVA 0xf6cd10, 35 bytes: NiInterpolator::GetSequenceInterpolator
-// Drafted by claude-sonnet-5-5.
-// Task: batch4-niinterpolator
-// Evidence: findings/fourth-batch-selection.md
 // Bodies adapted from community sources: none; tools/check_origin.py is run by attempt.
+// 0xf6cda0 NiInterpolator::~NiInterpolator
+// 0xf6cd40 NiInterpolator::ResolveDependencies
+// 0xf6cbd0 NiInterpolator::RegisterStreamables
+// 0xf6ccf0 NiInterpolator::GetActiveTimeRange
+// 0xf6cde0 NiInterpolator::GetRTTI
+// 0xf6cd10 NiInterpolator::GetSequenceInterpolator
 #include "NiInterpolator.h"
 
 // RVA 0xf6cda0, 50 bytes: scalar deleting destructor; a constructor is defined so the vftable is emitted

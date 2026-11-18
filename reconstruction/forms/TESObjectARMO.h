@@ -1,38 +1,7 @@
-// TESObjectARMO declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-tesobjectarmo
 // Code origin: names, bases, member offsets and sizes are adapted from the CharmedBaryon/CommonLibSSE-NG
-// (MIT) headers TESObjectARMO.h and the component headers it lists; the declarations are written by the
-// contributor, the bodies are original, and the pinned image was read only for the compared functions.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses: verify C1-C5 locally before drafting.
-// Size agreement alone proves neither fields nor ownership.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// The MIT notice above covers only the names and declarations attributed to
-// CharmedBaryon/CommonLibSSE-NG in this file, not the rest of the project.
-// Base form: shared header declarations/TESForm.h for TESForm.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESObjectARMO, TESObjectARMO::InitializeData, TESObjectARMO::GetDefaultKeyword, TESObjectARMO::Load, TESObjectARMO::SaveGame, TESObjectARMO::LoadGame, TESObjectARMO::InitItemImpl, TESObjectARMO::GetDescriptionOwnerFile, TESObjectARMO::Copy, TESObjectARMO::armorRating, TESObjectARMO::armorAddons, TESObjectARMO::templateArmor, TESObject::~TESObject, TESObject::IsObject, TESObject::GetRefCount, TESObject::Unk_3B, TESObject::IsBoundAnimObject, TESObject::GetWaterType, TESObject::IsAutoCalc, TESObject::SetAutoCalc, TESObject::Clone3D, TESObject::UnClone3D, TESObject::IsMarker, TESObject::IsOcclusionMarker, TESObject::ReplaceModel, TESObject::IncRef, TESObject::DecRef, TESObject::LoadGraphics, TESBoundObject::~TESBoundObject, TESBoundObject::LoadObjectBound, TESBoundObject::IsBoundObject, TESBoundObject::Activate, TESBoundObject::Clone3D, TESBoundObject::ReplaceModel, TESBoundObject::SetObjectVoiceType, TESBoundObject::GetObjectVoiceType, TESBoundObject::GetActivateText, TESBoundObject::CalculateDoFavor, TESBoundObject::HandleRemoveItemFromContainer, TESBoundObject::OnRemove3D, TESBoundObject::OnCheckModels, TESBoundObject::OnCopyReference, TESBoundObject::OnFinishScale, TESBoundObject::boundData, BIPED_MODEL::armorType, BIPED_MODEL::bipedObjectSlots, BGSBipedObjectForm::bipedModelData, TESEnchantableForm::formEnchanting, TESEnchantableForm::amountofEnchantment, TESEnchantableForm::pad14, BGSKeywordForm::GetDefaultKeyword: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // TESObject, TESBoundObject, TESFullName, TESRaceForm, TESEnchantableForm, TESValueForm, TESWeightForm, BGSDestructibleObjectForm, BGSPickupPutdownSounds, TESBipedModelForm, BGSEquipType, BGSBipedObjectForm, BGSBlockBashData, BGSKeywordForm, TESDescription, TESModel, TESModelTextureSwap, TESModelRDT, TESTexture, TESIcon, BGSMessageIcon, BSFixedString, BSTArray, BGSKeyword, TESWaterForm, NiAVObject, BGSVoiceType, BSString, Actor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // TESValueForm::SaveGame, TESValueForm::LoadGame, ResolveOwnerFile: GUESS(low)

@@ -1,36 +1,7 @@
-// NiParticles declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-niparticles
 // Code origin: hand-written class layouts and declarations adapted from the CharmedBaryon/CommonLibSSE-NG headers named below; the compared bodies are written from the local listings.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses; size agreement alone proves neither fields nor ownership.
-// The MIT licence below covers only the names and declarations attributed to CommonLibSSE-NG here.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header declarations/NiAVObject.h for NiAVObject.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiParticles, NiParticles::AsParticlesGeom, NiParticles::RegisterStreamables, NiParticles::~NiParticles, NiParticles::GetRTTI, NiParticles::CreateClone, NiParticles::LoadBinary, NiParticles::LinkObject, NiParticles::SaveBinary, NiParticles::IsEqual, BSGeometry::~BSGeometry, BSGeometry::GetRTTI, BSGeometry::AsGeometry, BSGeometry::LoadBinary, BSGeometry::LinkObject, BSGeometry::RegisterStreamables, BSGeometry::SaveBinary, BSGeometry::IsEqual, BSGeometry::ProcessClone, BSGeometry::PostLinkObject, BSGeometry::AttachProperty, BSGeometry::SetSelectiveUpdateFlags, BSGeometry::UpdateDownwardPass, BSGeometry::UpdateSelectedDownwardPass, BSGeometry::UpdateRigidDownwardPass, BSGeometry::UpdateWorldBound, BSGeometry::OnVisible, BSGeometry::AsMultiIndexTriShape, BSGeometry::AsSkinnedDecalTriShape, BSGeometry::Unk_37: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSGeometry, BSMultiIndexTriShape, BSSkinnedDecalTriShape: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiParticlesData, NiBound, NiPoint3, NiProperty, NiSkinInstance: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

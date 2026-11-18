@@ -1,10 +1,5 @@
-// TESEyes type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESEyes.h.
-// The layout of the members beyond TESForm is not claimed; the bases at 0x20 and 0x30 are
-// represented by an opaque block so that the flags byte sits at 0x40.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared.
 // TESEyes, TESEyes::InitializeData, TESEyes::flags, TESEyes::pad41: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once

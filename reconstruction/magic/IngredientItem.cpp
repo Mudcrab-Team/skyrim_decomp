@@ -1,21 +1,10 @@
-// IngredientItem functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-ingredientitem
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/p92-unit-supply-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5, starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x14fd30, 3 bytes: IngredientItem::GetDelivery
-//   RVA 0x14fce0, 6 bytes: IngredientItem::GetCastingType
-//   RVA 0x14fcf0, 6 bytes: IngredientItem::GetChunkID
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x14fd30 IngredientItem::GetDelivery
+// 0x14fce0 Leaf14fce0::Invoke
+// 0x14fcf0 Leaf14fcf0::Invoke
 #include "IngredientItem.h"
 
 MagicSystem::Delivery IngredientItem::GetDelivery() const

@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSBound: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSBound::LoadBinary, BSBound::CreateClone, BSBound::GetRTTI: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSBoundLoader, BSBoundLoader::Load, loaderA, loaderB: GUESS(low); names invented, Load is bound by address through bind-hints.json

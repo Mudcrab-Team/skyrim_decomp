@@ -1,14 +1,7 @@
-// Build: sse-steam-1-7-104
-// Evidence: findings/ghidra-import.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: binary-analysis; no external implementation source reused.
 // Code origin: original reconstruction from binary analysis.
-// Drafted by GPT-6.1 Sol (template and generator).
-// Only initialize and its EH cleanup are compared; referenced implementations are bindings.
-// Object identity, signature and adapter purpose are inferred, not recovered original names.
-// Labels: v2
-// RVA 0x82bb00; 63 bytes
-// Origin: {"family": "storage-adapter-initializer", "template_digest": "5d5d963708e78e848f76cf2e50440ab0c4ba1d15a3d873e691883f42a0735ee8", "version": "2"}
+// Origin: storage-adapter-initializer v2
+// 0x82bb00 StorageInit82bb00::initialize
 #include "StorageInit82bb00.h"
 unsigned StorageInit82bb00::initialize(void* object)
 {

@@ -1,17 +1,6 @@
-// NiObjectNET declaration for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) include/RE/N/NiObjectNET.h,
-// include/RE/N/NiStream.h, include/RE/N/NiBinaryStream.h, include/RE/N/NiExtraData.h and
-// include/RE/N/NiTimeController.h. Members, slots and sizes were checked against the listings.
-// Stand-ins declared here (not edited elsewhere): BSFixedString, NiPointer, NiBinaryStream,
-// NiStream, NiExtraData, NiTimeController. NiObject comes from the shared NiObject.h.
-// Adapted code: no body in this file is copied from a community source; the only inline body is
-// the NiPointer assignment, which follows the usual smart-pointer shape and the listing.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Bodies adapted from community sources are listed above (none); tools/check_origin.py reports
-// none other above its threshold at the pinned checkouts.
-// Vtable slot order and sizeof(NiObjectNET) == 0x30 come from the image RTTI and vftable.
 // NiObjectNET: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 

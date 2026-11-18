@@ -1,5 +1,4 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none
 // 0xf01650 BSResourceNiBinaryStream::tell
 // 0xf01600 BSResourceNiBinaryStream::good

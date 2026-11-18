@@ -1,15 +1,7 @@
-// TESCombatStyle::InitItemImpl and ~TESCombatStyle, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x26a160, 18 bytes (InitItemImpl).
-// RVA 0x26a890, 62 bytes (scalar deleting destructor of TESCombatStyle).
-// Evidence: findings/fifth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. The destructor is compared.
-// InitItemImpl is defined here but not compared: a name it binds clashes with an existing symbol-map entry.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x26a160 TESCombatStyle::InitItemImpl
+// 0x26a890 TESCombatStyle::~TESCombatStyle
 #include "TESCombatStyle.h"
 
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value

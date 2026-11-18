@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSImagespaceShaderBlur3: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSShader, BSImagespaceShader: STANDIN EXE_RTTI
 // BSImagespaceShaderBlur3::~BSImagespaceShaderBlur3, BSImagespaceShaderBlur3::Unk_0D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the listing shows Unk_0D returns a six-pointer table through a hidden pointer (the community excerpt says void)

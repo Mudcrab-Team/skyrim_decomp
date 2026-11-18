@@ -1,38 +1,7 @@
-// BGSPerk declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-bgsperk
 // Code origin: original drafting by Hinkiii with claude-sonnet-5-5 from a local listing of the pinned image; names, bases, members and declarations
-// from CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT); no body is copied from any source.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses: verify C1-C5 locally before drafting.
-// Size agreement alone proves neither fields nor ownership.
-// The MIT licence below covers only the names and declarations taken from CommonLibSSE-NG, not any other content of this file.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header declarations/TESForm.h for TESForm.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSPerk, BGSPerk::InitializeData, BGSPerk::~BGSPerk, BGSPerk::ClearData, BGSPerk::Load, BGSPerk::InitItemImpl: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // TESFullName, TESDescription, TESTexture, TESIcon, TESCondition, BSFixedString, BSTArray, BGSPerkEntry, PerkData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // TESFullName::fullName, TESDescription::fileOffset, TESDescription::descriptionText, TESTexture::textureName, PerkData::trait, PerkData::level, PerkData::numRanks, PerkData::playable, PerkData::hidden, BGSPerk::data, BGSPerk::pad55, BGSPerk::pad56, BGSPerk::perkConditions, BGSPerk::perkEntries, BGSPerk::nextPerk: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)

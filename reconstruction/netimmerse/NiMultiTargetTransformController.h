@@ -1,12 +1,6 @@
-// NiMultiTargetTransformController declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-nimultitargettransformcontroller
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../netimmerse/NiTimeController.h for NiTimeController.
 // NiMultiTargetTransformController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiInterpController: STANDIN EXE_RTTI
 // NiMultiTargetTransformController::GetInterpolatorCount, NiMultiTargetTransformController::GetInterpolatorID, NiMultiTargetTransformController::~NiMultiTargetTransformController, NiMultiTargetTransformController::GuaranteeTimeRange, NiMultiTargetTransformController::GetInterpolatorIndex, NiMultiTargetTransformController::LoadBinary, NiMultiTargetTransformController::SaveBinary, NiMultiTargetTransformController::IsEqual, NiMultiTargetTransformController::ResetTimeExtrema, NiMultiTargetTransformController::ProcessClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

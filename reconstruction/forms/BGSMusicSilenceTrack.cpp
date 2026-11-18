@@ -1,21 +1,11 @@
-// BGSMusicSilenceTrack functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bgsmusicsilencetrack
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by claude-haiku-5-5 (worker haiku-202611122314-2).
-// Compared functions:
-//   RVA 0x325bc0, 6 bytes: BGSMusicSilenceTrack::GetDurationImpl
-//   RVA 0x325b80, 8 bytes: BGSMusicSilenceTrack::DoFinish
-//   RVA 0x325b50, 34 bytes: BGSMusicSilenceTrack::DoPause
-//   RVA 0x325af0, 90 bytes: BGSMusicSilenceTrack::DoPlay
-//   RVA 0x3259f0, 147 bytes: BGSMusicSilenceTrack::Load
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x325bc0 BGSMusicSilenceTrack::GetDurationImpl
+// 0x325b80 BGSMusicSilenceTrack::DoFinish
+// 0x325b50 BGSMusicSilenceTrack::DoPause
+// 0x325af0 BGSMusicSilenceTrack::DoPlay
+// 0x3259f0 BGSMusicSilenceTrack::Load
 #include "BGSMusicSilenceTrack.h"
 
 // RVA 0x325bc0, 6 bytes

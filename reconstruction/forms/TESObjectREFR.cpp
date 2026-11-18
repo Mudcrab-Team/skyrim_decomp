@@ -1,34 +1,18 @@
-// TESObjectREFR member functions, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Licence: uses the GetEncounterZone and BGSEncounterZone names from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
-// Callee and global names from meh321/AddressLibraryDatabase are used with the author's permission.
-// Evidence: findings/third-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
-// with types from the header beside this file.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Functions in this unit (RVA, size); all are compared except Get3D2:
-//   GetScale           RVA 0x2e6f30, 68 bytes
-//   GetCurrentLocation RVA 0x2f3b70, 117 bytes
-//   GetCalcLevel       RVA 0x300b90, 143 bytes
-//   GetTransform       RVA 0x2eee20, 152 bytes
-//   CanBeMoved         RVA 0x2e73a0, 84 bytes
-//   HasQuestObject     RVA 0x2e5a60, 86 bytes
-//   GetReferenceName   RVA 0x2f0b30, 9 bytes
-//   GetTeleportData    RVA 0x301090, 9 bytes
-//   GetContainer       RVA 0x2e8660, 38 bytes
-//   GetWorldSpace      RVA 0x2f3e00, 52 bytes
-//   Get3D2             RVA 0x2ebce0, 55 bytes
-//   GetDistanceBetweenSquared RVA 0x2f41e0, 165 bytes
-// Get3D2 binds two thread-local entries the symbol map does not hold yet, which the map refuses
-// without restaling every record, so it has no match record. GetInventoryChanges (0x22b2c0) is
-// declared but not defined here: a definition in this unit is inlined into HasQuestObject.
-// CanBeMoved and HasQuestObject were finished by claude-opus-5-5 from the Drafter's near-misses.
-// The six functions after them were drafted by claude-sonnet-5-5 (task batch4-tesobjectrefr).
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none other
-// above its threshold at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// A byte match shows this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x2e6f30 TESObjectREFR::GetScale
+// 0x2f3b70 TESObjectREFR::GetCurrentLocation
+// 0x300b90 TESObjectREFR::GetCalcLevel
+// 0x2eee20 TESObjectREFR::GetTransform
+// 0x2e73a0 TESObjectREFR::CanBeMoved
+// 0x2e5a60 TESObjectREFR::HasQuestObject
+// 0x2f0b30 TESObjectREFR::GetReferenceName
+// 0x301090 TESObjectREFR::GetTeleportData
+// 0x2e8660 TESObjectREFR::GetContainer
+// 0x2f3e00 TESObjectREFR::GetWorldSpace
+// 0x2ebce0 TESObjectREFR::Get3D2
+// 0x2f41e0 TESObjectREFR::GetDistanceBetweenSquared
 #include "TESObjectREFR.h"
 
 #include <limits>

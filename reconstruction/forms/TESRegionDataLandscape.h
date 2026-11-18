@@ -1,34 +1,7 @@
-// TESRegionDataLandscape declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-tesregiondatalandscape
 // Code origin: names, bases, virtual slots and member offsets are taken from CharmedBaryon/CommonLibSSE-NG
-// b93280e (MIT); the bodies are written from the listing of the pinned image, not copied from any source.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Size agreement alone proves neither fields nor ownership.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// The MIT notice above covers only the names and declarations taken from CommonLibSSE-NG.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESRegionDataLandscape, TESRegionDataLandscape::IsLoaded, ::GetIconFileName, ::Unk_05, ::~TESRegionDataLandscape, ::GetType, ::CopyFrom, ::LoadIcon, ::SetIconFileName, ::icon: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRegionData, TESRegionData::Type, ::GetType, ::ConstructSelf, ::CopyFrom, ::LoadData, ::LoadDataHeader, ::dataHeader: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); defined here because the shared forms/TESRegionData.h lacks slots 3-7
 // TESRegionData::DataHeader: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's flag enumeration is reduced to a byte

@@ -1,35 +1,6 @@
-// TESRace type declaration, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESRace.h and
-// include/RE/B/BSFixedString.h; GetBodyPartData and GetMovementType are names from meh321/AddressLibraryDatabase.
-// The destructor is declared without a body in this unit: the deleting destructor calls the plain one
-// at RVA 0x3e3350, bound by hint. Members not read by the compared code are opaque blocks.
 // Adapted bodies: BSFixedString::data and ::c_str from CharmedBaryon/CommonLibSSE-NG b93280e (MIT)
-// include/RE/B/BSFixedString.h; tools/check_origin.py reports none other above its threshold.
-// Licence notice of CharmedBaryon/CommonLibSSE-NG at b93280e (LICENSE):
-//   MIT License
-//
-//   Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-//   Permission is hereby granted, free of charge, to any person obtaining a copy
-//   of this software and associated documentation files (the "Software"), to deal
-//   in the Software without restriction, including without limitation the rights
-//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//   copies of the Software, and to permit persons to whom the Software is
-//   furnished to do so, subject to the following conditions:
-//
-//   The above copyright notice and this permission notice shall be included in all
-//   copies or substantial portions of the Software.
-//
-//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//   SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESRace, TESRace::~TESRace, ::GetPlayable, ::GetFormEditorID, ::data, ::bodyPartData, ::formEditorID, ::baseMoveTypes: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRace::GetBodyPartData, ::GetMovementType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // RACE_DATA, RACE_DATA::flags: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares an enumeration over uint32, here a plain word

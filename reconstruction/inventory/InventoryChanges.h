@@ -1,15 +1,7 @@
-// Type declarations for the InventoryChanges translation unit (build sse-steam-1-7-104).
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG
-// b93280e832f263dbef44e44cbe2936622a02f91a (MIT): include/RE/I/InventoryChanges.h,
-// include/RE/I/InventoryEntryData.h, include/RE/B/BGSOutfit.h.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
-// The declarations below are minimal stand-ins that reproduce only what the compared functions use.
 // InventoryChanges, IItemChangeVisitor, InventoryEntryData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Names are unverified. Only the layouts the functions read were checked against the image.
 #pragma once
 
 #include <cstdint>

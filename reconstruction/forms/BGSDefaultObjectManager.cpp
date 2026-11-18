@@ -4,7 +4,6 @@
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/bgsdefaultobjectmanager.cpp:71 (InitItem: the resolve loop over the default object IDs)
 // ~BGSDefaultObjectManager, BGSDefaultObjectManager::BGSDefaultObjectManager: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); names and shape only, offsets and counts are this build's
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none other
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // 0x38fa30 BGSDefaultObjectManager::GetLeftHandEquip
 // 0x38fa40 BGSDefaultObjectManager::GetRightHandEquip
 // 0x38fa60 BGSDefaultObjectManager::GetVoiceEquip

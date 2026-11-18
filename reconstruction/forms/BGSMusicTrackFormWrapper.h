@@ -1,12 +1,6 @@
-// BGSMusicTrackFormWrapper declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p92-s-bgsmusictrackformwrapper
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../forms/TESForm.h for TESForm.
 // BGSMusicTrackFormWrapper: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSMusicTrackFormWrapper::InitItemImpl: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSMusicTrackFormWrapper::~BGSMusicTrackFormWrapper: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the compared thunk at RVA 0x327554 adjusts this by 0x20 and jumps to the complete destructor at RVA 0x327560, bound by hint

@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSTextureSet::GetRTTI, BSTextureSet::~BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiRTTI_BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's RTTI table name, declared here as a data object and bound by RVA in bind-hints.json

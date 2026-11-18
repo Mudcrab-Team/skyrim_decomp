@@ -1,13 +1,7 @@
-// BGSProcedureTreeConditionalItem declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-a-bgsproceduretreeconditionalitem
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: local stand-ins (no ancestor has a shared header).
 // BGSProcedureTreeConditionalItem: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // IProcedureTreeItem: STANDIN EXE_RTTI
 // BGSProcedureTreeConditionalItem::Load: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

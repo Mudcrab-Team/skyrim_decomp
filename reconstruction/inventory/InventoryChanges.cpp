@@ -1,24 +1,12 @@
-// Build sse-steam-1-7-104. Compared functions:
-//   RVA 0x22b710, 11 bytes: out-of-line destructor of an ItemFilter-like interface. The code
-//     contradicts the community name InventoryChanges::GetItemCount: it only stores a vftable
-//     pointer and returns.
-//   RVA 0x233f90, 44 bytes: InitOutfitItems.
-//   RVA 0x2372c0, 58 bytes: VisitInventory.
-//   RVA 0x237300, 262 bytes: VisitWornItems.
 // InitOutfitItems, VisitInventory, VisitWornItems: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // GetWeaponSlotMask, OccupiesWornSlot: GUESS; file-local helpers with no address of their own
 // InventoryUtils::ItemFilter::~ItemFilter: GUESS(low)
-//
-// Labels: v2
-// Evidence: findings/third-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local instruction listing and
-// decompiler output of the pinned image, with types from the header beside this file.
-// VisitWornItems was finished by claude-opus-5-5 from the Drafter's near-miss.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone, /Gy required).
-// Compared: the functions listed above. The destructor of the ItemFilter stand-in exists so that
-// class has a vftable.
+// 0x22b710 InventoryUtils::ItemFilter::~ItemFilter
+// 0x233f90 InventoryChanges::InitOutfitItems
+// 0x2372c0 InventoryChanges::VisitInventory
+// 0x237300 InventoryChanges::VisitWornItems
 #include "InventoryChanges.h"
 
 // The community name for RVA 0x22b710 (InventoryChanges::GetItemCount) does not fit a function

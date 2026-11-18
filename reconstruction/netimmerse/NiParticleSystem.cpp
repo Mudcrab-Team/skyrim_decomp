@@ -1,48 +1,17 @@
-// NiParticleSystem functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-niparticlesystem
 // Code origin: bodies written for this unit from the listings of the pinned image; names and
-// declarations from CommonLibSSE-NG. No community or sibling body is adapted.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// Evidence: findings/fifth-batch-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json (compile this file alone).
-// Drafted by v-macrev, assisted by claude-opus-5-5, starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0xf98f50, 127 bytes: NiParticleSystem::LoadBinary
-//   RVA 0xf99260, 89 bytes: NiParticleSystem::RegisterStreamables
-//   RVA 0xf992c0, 193 bytes: NiParticleSystem::SaveBinary
-//   RVA 0xf99390, 192 bytes: NiParticleSystem::IsEqual
-//   RVA 0xf99a30, 96 bytes: NiParticleSystem::UpdateDownwardPass
-//   RVA 0xf99aa0, 109 bytes: NiParticleSystem::UpdateSelectedDownwardPass
-//   RVA 0xf99ba0, 68 bytes: NiParticleSystem::SetSelectiveUpdateFlags
-//   RVA 0xf9a140, 67 bytes: NiParticleSystem::~NiParticleSystem
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0xf98f50 NiParticleSystem::LoadBinary
+// 0xf99260 NiParticleSystem::RegisterStreamables
+// 0xf992c0 NiParticleSystem::SaveBinary
+// 0xf99390 NiParticleSystem::IsEqual
+// 0xf99a30 NiParticleSystem::UpdateDownwardPass
+// 0xf99aa0 NiParticleSystem::UpdateSelectedDownwardPass
+// 0xf99ba0 NiParticleSystem::SetSelectiveUpdateFlags
+// 0xf9a140 NiParticleSystem::~NiParticleSystem
 #include "NiParticleSystem.h"
 
 // kSelectiveUpdate, kSelectiveUpdateTransforms, kSelectiveUpdateController, kSelectiveUpdateRigid: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NiAVObject flag bits

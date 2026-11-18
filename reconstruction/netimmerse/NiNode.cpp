@@ -1,17 +1,14 @@
-// NiNode: LoadBinary, LinkObject, RegisterStreamables, SaveBinary, IsEqual, OnVisible; build sse-steam-1-7-104.
-//
-// Labels: v2
 // Licence: uses some member names from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
-// RVA 0xee1560, 58 bytes (LoadBinary); RVA 0xee15a0, 168 bytes (LinkObject);
-// RVA 0xee1650, 123 bytes (RegisterStreamables); RVA 0xee16e0, 189 bytes (SaveBinary);
-// RVA 0xee17b0, 161 bytes (IsEqual); RVA 0xee2cc0, 144 bytes (OnVisible).
-// Evidence: findings/fourth-batch-selection.md.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings and
-// decompiler output of the pinned image, with the class layout from the header beside this file.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. Six functions are drafted here; the constructor and UpdateDownwardPass are not.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // NiNode::LoadBinary, NiNode::LinkObject, NiNode::RegisterStreamables, NiNode::SaveBinary, NiNode::IsEqual, NiNode::OnVisible: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// 0xee1560 NiNode::LoadBinary
+// 0xee15a0 NiNode::LinkObject
+// 0xee1650 NiNode::RegisterStreamables
+// 0xee16e0 NiNode::SaveBinary
+// 0xee17b0 NiNode::IsEqual
+// 0xee2cc0 NiNode::OnVisible
 #include "NiNode.h"
 
 void NiNode::LoadBinary(NiStream& a_stream)

@@ -1,6 +1,5 @@
-// TESWordOfPower represented declarations, build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original reconstruction
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed; pinned public declarations and local analysis.
 // TESWordOfPower: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once

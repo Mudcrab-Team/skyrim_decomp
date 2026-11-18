@@ -1,13 +1,7 @@
-// Projectile declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-c2-s06-projectile-projectile
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../forms/TESForm.h for TESForm.
 // Projectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObjectREFR: STANDIN EXE_RTTI
 // Projectile::GetActorCause, Projectile::Set3D, Projectile::GetPowerSpeedMult, Projectile::IsPermanent, Projectile::GetGravity, Projectile::SetActorCause, Projectile::HasKeywordHelper, Projectile::Update3D: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
@@ -18,7 +12,6 @@
 // KeywordChecker, KeywordChecker::HasKeyword: GUESS(low); the subobject at +0x40 of the holder, with the keyword test at vtable offset 0x20; slots 0x00 to 0x03 are placeholders
 // KeywordHolder, KeywordHolder::checker: GUESS(low); the holder pointed to at +0x160
 // ProjectileInfo, ProjectileInfo::flags80, ProjectileInfo::gravity84: GUESS(low); the record at +0x40, with the flag dword at +0x80 that GetGravity tests at bit 17 and the float at +0x84
-// TESDataHandler::singleton, TESDataHandler::IsTemporaryFormID: taken from the shared TESForm.h, which labels them there (meh321/AddressLibraryDatabase@0379cb6, permission for the callee at RVA 0x1c3680)
 // g_updateDelta: GUESS(low); the global float at RVA 0x219e5f0 that Update3D passes as the delta
 // TESObjectREFR::vslot3B to vslot6F: GUESS(low); placeholder virtual slots so that Get3D sits at vtable offset 0x380
 // TESObjectREFR::Get3D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG declares it in TESObjectREFR; the virtual that Update3D calls at vtable offset 0x380 and reads a pointer from

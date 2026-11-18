@@ -1,5 +1,4 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // 0xce3510 BSReadWriteLock::UnlockForRead
 // 0xce3520 BSReadWriteLock::UnlockForWrite
 #include "BSReadWriteLock.h"

@@ -1,12 +1,6 @@
-// TESBoundAnimObject declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: q2-s03-tesboundobject-tesboundanimobject
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../forms/TESForm.h for TESForm.
 // TESBoundAnimObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject, TESBoundObject: STANDIN EXE_RTTI
 // TESBoundAnimObject::~TESBoundAnimObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
