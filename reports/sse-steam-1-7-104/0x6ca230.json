@@ -31,10 +31,10 @@
         "object_sha256": "11d829dcd85dad90b4b27d2e3f85ddd4d546018af88ddf91bdd62c51c38eca55",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/Shield.cpp",
-          "reconstruction/actor206_1/Shield.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/Shield.cpp",
+          "reconstruction/skyrim_shared/forms/Shield.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "de80553994be1d9606028d72533bc31156e3942f0446ffde6590c674d900b130",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/Shield.cpp",
-          "reconstruction/actor206_1/Shield.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/Shield.cpp",
+          "reconstruction/skyrim_shared/forms/Shield.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_1/Shield.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/Shield.cpp",
     "digest": "a69c06d31d84045c3fb4a6d51f8c6d5693df3cd1e2dfe5f0881dc9eebac77cf3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "06b94aacae6c0ab4f28276d7c593b387c06d8fa1c7ffff2a267abf22881ecbad",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_1/Shield.cpp",
-      "reconstruction/actor206_1/Shield.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/forms/Shield.cpp",
+      "reconstruction/skyrim_shared/forms/Shield.h"
     ]
   },
   "symbol_map": {

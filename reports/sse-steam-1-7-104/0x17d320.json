@@ -29,9 +29,9 @@
         "object_sha256": "1e97779db2bc0ace3f75f4e13b68af4d6dd48482f37745d7b0fcf6b8372e9726",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "0bfa19638d75bf52d89efa465049ff60a197c155335a84457982c68d46229943",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.cpp",
     "digest": "b91448a71a41e555522b5319d0854cd9e267663fe624a645eff28b0ee0c52614",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3619c413a2b2b155b0dec3fc4c3aa7a6b61d50ebd8dee8af2125d5c6aaa0feae",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraMultiBoundRefStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraMultiBoundRefStorageLayout.h"
     ]
   },
   "symbol_map": {

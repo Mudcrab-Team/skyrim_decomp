@@ -29,9 +29,9 @@
         "object_sha256": "40249307f8c5ebe17e74ca4c0b9360bcbfa4a277b8c3151e0cc6d606dcc9f958",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeafa2b170.cpp",
-          "reconstruction/fields/FieldLeafa2b170.h",
-          "reconstruction/fields/NativeFunctionLayout.h"
+          "reconstruction/unmapped/fields/FieldLeafa2b170.cpp",
+          "reconstruction/unmapped/fields/FieldLeafa2b170.h",
+          "reconstruction/unmapped/fields/NativeFunctionLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e0836d949fa718980fc806edf691e305bb42ef188c5f1d4fba39728b530b9056",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeafa2b170.cpp",
-          "reconstruction/fields/FieldLeafa2b170.h",
-          "reconstruction/fields/NativeFunctionLayout.h"
+          "reconstruction/unmapped/fields/FieldLeafa2b170.cpp",
+          "reconstruction/unmapped/fields/FieldLeafa2b170.h",
+          "reconstruction/unmapped/fields/NativeFunctionLayout.h"
         ]
       }
     }
@@ -338,15 +338,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeafa2b170.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeafa2b170.cpp",
     "digest": "c863e11a34ab7ef2b7f7de3a8601f1212ac87204bc34960b2de5d9135f175a31",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3d6db6c2f1fa66536bd47ba61007b4b5bafaca0b4926f2961465f9d59496c320",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/FieldLeafa2b170.cpp",
-      "reconstruction/fields/FieldLeafa2b170.h",
-      "reconstruction/fields/NativeFunctionLayout.h"
+      "reconstruction/unmapped/fields/FieldLeafa2b170.cpp",
+      "reconstruction/unmapped/fields/FieldLeafa2b170.h",
+      "reconstruction/unmapped/fields/NativeFunctionLayout.h"
     ]
   },
   "symbol_map": {

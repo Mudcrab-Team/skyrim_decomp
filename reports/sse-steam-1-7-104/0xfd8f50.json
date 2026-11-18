@@ -29,9 +29,9 @@
         "object_sha256": "3c2c980c797f73f0a97b2ec8fb372042ca443845c68ce604848a6868823e4a38",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWindModifier.cpp",
-          "reconstruction/bsengine/BSWindModifier.h",
-          "reconstruction/netimmerse/NiPSysModifier.h"
+          "reconstruction/gamebryo/nianimation/BSWindModifier.cpp",
+          "reconstruction/gamebryo/nianimation/BSWindModifier.h",
+          "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "809e9eedd052fd96bc56a265fec4bc1725cde79bf17a51d7e9b0da749d4d0c86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWindModifier.cpp",
-          "reconstruction/bsengine/BSWindModifier.h",
-          "reconstruction/netimmerse/NiPSysModifier.h"
+          "reconstruction/gamebryo/nianimation/BSWindModifier.cpp",
+          "reconstruction/gamebryo/nianimation/BSWindModifier.h",
+          "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSWindModifier.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BSWindModifier.cpp",
     "digest": "e910193934d070ebecedbd26e69ba01cd2ad8b52d346cc6d7ca2e79173a6ba51",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3cb25154be7fca50acaa45663bd1896de09559849329851d659eb14ddefd8cb4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSWindModifier.cpp",
-      "reconstruction/bsengine/BSWindModifier.h",
-      "reconstruction/netimmerse/NiPSysModifier.h"
+      "reconstruction/gamebryo/nianimation/BSWindModifier.cpp",
+      "reconstruction/gamebryo/nianimation/BSWindModifier.h",
+      "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
     ]
   },
   "symbol_map": {

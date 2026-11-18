@@ -29,14 +29,14 @@
         "object_sha256": "f979339cf05ed1056a07099ba7c7445c5b42b2282c94995038fe4404d5942d84",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198e_5c6900/ActiveEffectLayout.h",
-          "reconstruction/fo4p198e_5c6900/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5c6900/BSSoundHandleLayout.h",
-          "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.cpp",
-          "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.h",
-          "reconstruction/fo4p198e_5c6900/LayoutValueTypes.h",
-          "reconstruction/fo4p198e_5c6900/ReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5c6900/ValueModifierEffectLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleLayout_5c6900.h",
+          "reconstruction/skyrim/magic/ActiveEffectLayout_5c6900.h",
+          "reconstruction/skyrim/magic/DualValueModifierEffect.cpp",
+          "reconstruction/skyrim/magic/DualValueModifierEffect.h",
+          "reconstruction/skyrim/magic/ValueModifierEffectLayout.h",
+          "reconstruction/skyrim/papyrus/LayoutValueTypes_5c6900.h",
+          "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5c6900.h",
+          "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5c6900.h"
         ]
       },
       "winpc-native": {
@@ -55,14 +55,14 @@
         "object_sha256": "ce37abb7cd43298c3c74640781e815471c39c101857939a433b65c81240dadac",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198e_5c6900/ActiveEffectLayout.h",
-          "reconstruction/fo4p198e_5c6900/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5c6900/BSSoundHandleLayout.h",
-          "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.cpp",
-          "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.h",
-          "reconstruction/fo4p198e_5c6900/LayoutValueTypes.h",
-          "reconstruction/fo4p198e_5c6900/ReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5c6900/ValueModifierEffectLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleLayout_5c6900.h",
+          "reconstruction/skyrim/magic/ActiveEffectLayout_5c6900.h",
+          "reconstruction/skyrim/magic/DualValueModifierEffect.cpp",
+          "reconstruction/skyrim/magic/DualValueModifierEffect.h",
+          "reconstruction/skyrim/magic/ValueModifierEffectLayout.h",
+          "reconstruction/skyrim/papyrus/LayoutValueTypes_5c6900.h",
+          "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5c6900.h",
+          "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5c6900.h"
         ]
       }
     }
@@ -329,20 +329,20 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.cpp",
+    "compiled": "reconstruction/skyrim/magic/DualValueModifierEffect.cpp",
     "digest": "c9d14739924aa97122df2623f8d68f1f49016fec2185cf93c67c414d8e60930e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9153a38a2f44307ea6760cb7cbdc59bf27d89f9639d3ff857d6be2a68265112a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198e_5c6900/ActiveEffectLayout.h",
-      "reconstruction/fo4p198e_5c6900/ActiveEffectReferenceEffectControllerLayout.h",
-      "reconstruction/fo4p198e_5c6900/BSSoundHandleLayout.h",
-      "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.cpp",
-      "reconstruction/fo4p198e_5c6900/DualValueModifierEffect.h",
-      "reconstruction/fo4p198e_5c6900/LayoutValueTypes.h",
-      "reconstruction/fo4p198e_5c6900/ReferenceEffectControllerLayout.h",
-      "reconstruction/fo4p198e_5c6900/ValueModifierEffectLayout.h"
+      "reconstruction/bsaudio/BSSoundHandleLayout_5c6900.h",
+      "reconstruction/skyrim/magic/ActiveEffectLayout_5c6900.h",
+      "reconstruction/skyrim/magic/DualValueModifierEffect.cpp",
+      "reconstruction/skyrim/magic/DualValueModifierEffect.h",
+      "reconstruction/skyrim/magic/ValueModifierEffectLayout.h",
+      "reconstruction/skyrim/papyrus/LayoutValueTypes_5c6900.h",
+      "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5c6900.h",
+      "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5c6900.h"
     ]
   },
   "symbol_map": {

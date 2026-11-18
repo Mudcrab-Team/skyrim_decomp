@@ -29,8 +29,8 @@
         "object_sha256": "3090738df698a1140f181eab417cb427048c48b93e811335940b18a50d1bb0f5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSISoundDescriptor.cpp",
-          "reconstruction/bsengine/BSISoundDescriptor.h"
+          "reconstruction/bsaudio/BSISoundDescriptor.cpp",
+          "reconstruction/bsaudio/BSISoundDescriptor.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "78ed67be42958d0d44889cb4c40dc3d06a2389564ae2ae6bee9b18605563a796",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSISoundDescriptor.cpp",
-          "reconstruction/bsengine/BSISoundDescriptor.h"
+          "reconstruction/bsaudio/BSISoundDescriptor.cpp",
+          "reconstruction/bsaudio/BSISoundDescriptor.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSISoundDescriptor.cpp",
+    "compiled": "reconstruction/bsaudio/BSISoundDescriptor.cpp",
     "digest": "b5df1e4a84de48fecec8dd90acb6bcebd978624207063f65512fcf65b0d9fa1a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6ea56dcd4e3724780f0254e918a2a4105246e7c2e7bf0a38fd5aaa4d86751427",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSISoundDescriptor.cpp",
-      "reconstruction/bsengine/BSISoundDescriptor.h"
+      "reconstruction/bsaudio/BSISoundDescriptor.cpp",
+      "reconstruction/bsaudio/BSISoundDescriptor.h"
     ]
   },
   "symbol_map": {

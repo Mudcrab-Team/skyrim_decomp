@@ -29,8 +29,8 @@
         "object_sha256": "34adbcd80771ae8eec79171ff8955c06ed045d417512598f6195087881041a35",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/Sky.cpp",
-          "reconstruction/fo4hints/Sky.h"
+          "reconstruction/skyrim_shared/sky/Sky.cpp",
+          "reconstruction/skyrim_shared/sky/Sky.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d06b985396fb102b45e0b30be5ef316e7499a0ee3c81cecc74eb71f015f74e1c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/Sky.cpp",
-          "reconstruction/fo4hints/Sky.h"
+          "reconstruction/skyrim_shared/sky/Sky.cpp",
+          "reconstruction/skyrim_shared/sky/Sky.h"
         ]
       }
     }
@@ -312,14 +312,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/Sky.cpp",
+    "compiled": "reconstruction/skyrim_shared/sky/Sky.cpp",
     "digest": "153fabdf74d725792b72a388c5bd9ddcc780d8001b4bf66e4d2392b4c4fc5a26",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d391ae1b1547b06f5deac2a1b9411a697caaa8210d1bfa067298b3a0566d38fe",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/Sky.cpp",
-      "reconstruction/fo4hints/Sky.h"
+      "reconstruction/skyrim_shared/sky/Sky.cpp",
+      "reconstruction/skyrim_shared/sky/Sky.h"
     ]
   },
   "symbol_map": {

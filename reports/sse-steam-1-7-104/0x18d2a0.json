@@ -29,8 +29,8 @@
         "object_sha256": "e7f77a13f25ef7505e9f5bf51e42db5a1520837b259b78db6eea6d274713e855",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraMagicCaster.cpp",
-          "reconstruction/bsengine/ExtraMagicCaster.h"
+          "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5908e3abdf151057058d65836c5724917933e90c3a830f8f664b328ae66c31bd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraMagicCaster.cpp",
-          "reconstruction/bsengine/ExtraMagicCaster.h"
+          "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraMagicCaster.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.cpp",
     "digest": "409a03f0824fb34038c36c4fcdaf2028bfba0f432daeb15ca7a79bb1d8ef6ff6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "04520e14ca42405020b6a179612fdd58884a40decbbe1b16d356b798cf5af266",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraMagicCaster.cpp",
-      "reconstruction/bsengine/ExtraMagicCaster.h"
+      "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraMagicCaster.h"
     ]
   },
   "symbol_map": {

@@ -31,8 +31,8 @@
         "object_sha256": "967a069171a95ea837a22f8c4e7ef918e87df6b386c1adeb7b7ead0f8cce8202",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_3_dispatch/Dispatcher.cpp",
-          "reconstruction/actor207_3_dispatch/Dispatcher.h"
+          "reconstruction/bscore/Dispatcher.cpp",
+          "reconstruction/bscore/Dispatcher.h"
         ]
       }
     }
@@ -185,14 +185,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_3_dispatch/Dispatcher.cpp",
+    "compiled": "reconstruction/bscore/Dispatcher.cpp",
     "digest": "f01e80185e4c6a4a27fda3e7967ef128111a85507a4f24560102a1ce27000cf5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bdc6a111026bdb59ed95be10b270b519ac14b677db2a6ec916d87319a782ad88",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_3_dispatch/Dispatcher.cpp",
-      "reconstruction/actor207_3_dispatch/Dispatcher.h"
+      "reconstruction/bscore/Dispatcher.cpp",
+      "reconstruction/bscore/Dispatcher.h"
     ]
   },
   "symbol_map": {

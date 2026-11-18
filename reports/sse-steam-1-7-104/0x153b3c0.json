@@ -29,8 +29,8 @@
         "object_sha256": "fe7d83cb1ec3e045ed32c0033bb678c8a5cfd637325d8ae50df77a676e7c1fab",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderTextureSet.cpp",
-          "reconstruction/bsengine/BSShaderTextureSet.h",
+          "reconstruction/bsshader/BSShaderTextureSet.cpp",
+          "reconstruction/bsshader/BSShaderTextureSet.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "7aafbbe4f74ea32b0d3475ab49a0da8861f45cddf1e3be77bff8dcefce5200b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderTextureSet.cpp",
-          "reconstruction/bsengine/BSShaderTextureSet.h",
+          "reconstruction/bsshader/BSShaderTextureSet.cpp",
+          "reconstruction/bsshader/BSShaderTextureSet.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -313,14 +313,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSShaderTextureSet.cpp",
+    "compiled": "reconstruction/bsshader/BSShaderTextureSet.cpp",
     "digest": "8ff49043dd233422a00617150ccb63d3480a6fb3379cb118f2fc4baf7c807207",
     "digest_method": "tu-sha256-v2",
     "run_digest": "60f1f8ab6434281045436caf894697695e8f81c2f4b5bac3149215cea3b0fc7a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShaderTextureSet.cpp",
-      "reconstruction/bsengine/BSShaderTextureSet.h",
+      "reconstruction/bsshader/BSShaderTextureSet.cpp",
+      "reconstruction/bsshader/BSShaderTextureSet.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

@@ -29,9 +29,9 @@
         "object_sha256": "67c188d25429c740c08da9ffa645d7b360de2cbc88e1b05419e9484e8e7ca3c1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSReferenceEffect.cpp",
-          "reconstruction/forms/BGSReferenceEffect.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "45221586c170cecbfe5fa8dbc0ac9a78e5db43c1b170f12a93640907c029734f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSReferenceEffect.cpp",
-          "reconstruction/forms/BGSReferenceEffect.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSReferenceEffect.cpp",
+    "compiled": "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.cpp",
     "digest": "54240e1d90b5182ea5ef2a5933b3d70ba2088e13663a0f023e701182c33480e1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "48c4406dc5c71c95140513f2921a2c56e5a80ab3b3b789863cdbc7f8b6455322",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSReferenceEffect.cpp",
-      "reconstruction/forms/BGSReferenceEffect.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.cpp",
+      "reconstruction/skyrim_shared/tempeffects/BGSReferenceEffect.h"
     ]
   },
   "symbol_map": {

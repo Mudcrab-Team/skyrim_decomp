@@ -31,10 +31,10 @@
         "object_sha256": "dbfbe5c9502d7c08aef85a75c83207f7fc330304c5a35b383fc2cf308e22cbf4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/LimbActor.cpp",
-          "reconstruction/actor207_1/LimbActor.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/LimbActor.cpp",
+          "reconstruction/skyrim_shared/actors/LimbActor.h"
         ]
       }
     }
@@ -187,16 +187,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/LimbActor.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/LimbActor.cpp",
     "digest": "224c7d2ae33d24da0688d6affd878578407555c5d0b86f21b79a86e3fddafd8a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "492fac95808bcdd1ee201ce7a55358afd534dc5da71f0b16bd501ea29ca5ddec",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/LimbActor.cpp",
-      "reconstruction/actor207_1/LimbActor.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/LimbActor.cpp",
+      "reconstruction/skyrim_shared/actors/LimbActor.h"
     ]
   },
   "symbol_map": {

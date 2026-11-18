@@ -29,8 +29,8 @@
         "object_sha256": "251d00ab83179850a746dfba0e41ae9f142fe6f1393b469ce2914ad72f95441a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRoom.cpp",
-          "reconstruction/bsengine/ExtraRoom.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRoom.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRoom.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "7814f7f02cffe199f1228df77d1e45761e797c4d14054ce7faf97b4f615334b3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRoom.cpp",
-          "reconstruction/bsengine/ExtraRoom.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRoom.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRoom.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRoom.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRoom.cpp",
     "digest": "2b59a01d54cb18a5d8a6143ae00ee7bdb6c2d1ad84d27a15492d5314403cf8af",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6786bba308153e5870f1954a29d5380833dce9e2439ca29374acae09c5c00740",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraRoom.cpp",
-      "reconstruction/bsengine/ExtraRoom.h"
+      "reconstruction/skyrim_shared/extradata/ExtraRoom.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRoom.h"
     ]
   },
   "symbol_map": {

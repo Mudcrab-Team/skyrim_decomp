@@ -29,9 +29,9 @@
         "object_sha256": "474871bd113d74844c78d512d93627b369bb96ba60dae9d1c0b2b5d4ed27d7f2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.cpp",
-          "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.cpp",
+          "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "310c0b1a1755e736a2e3e7c5e2d0759c44ba02f80177216bda2a8090fd7b9d48",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.cpp",
-          "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.cpp",
+          "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.cpp",
     "digest": "6a39524f273fc9701595ee00142e5bcd219962b25819c5c18e5babe16cab7456",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3906eedc95c75b59b16921c3de0879630d53123bac210de03bf5ab9b80cd265e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.cpp",
-      "reconstruction/bsengine/IHandlerFunctorRepresentedLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.cpp",
+      "reconstruction/skyrim/controls/IHandlerFunctorRepresentedLayout.h"
     ]
   },
   "symbol_map": {

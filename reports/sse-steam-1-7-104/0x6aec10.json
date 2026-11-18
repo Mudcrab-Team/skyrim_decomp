@@ -31,10 +31,10 @@
         "object_sha256": "51f53751f98681551f11cf7bb381e031e2fcc18943f886d657bd5696d6a47d39",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/ActorGraphFlags.cpp",
-          "reconstruction/actor206_2/ActorGraphFlags.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorGraphFlags.cpp",
+          "reconstruction/skyrim_shared/actors/ActorGraphFlags.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "faf805417e76ab7a7e565328af398adfc3c68491105fca56995e18f7705a9a69",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/ActorGraphFlags.cpp",
-          "reconstruction/actor206_2/ActorGraphFlags.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorGraphFlags.cpp",
+          "reconstruction/skyrim_shared/actors/ActorGraphFlags.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_2/ActorGraphFlags.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ActorGraphFlags.cpp",
     "digest": "6f175bacffe4ee56c1089fe3eb8770ef7ef6646689946fc60ee68653d9fb50c8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1f3c668cae43caa5805be1c48529b56fd4247f4181fffc402d9820a624c6007e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_2/ActorGraphFlags.cpp",
-      "reconstruction/actor206_2/ActorGraphFlags.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorGraphFlags.cpp",
+      "reconstruction/skyrim_shared/actors/ActorGraphFlags.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
     ]
   },
   "symbol_map": {

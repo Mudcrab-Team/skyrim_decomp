@@ -29,8 +29,8 @@
         "object_sha256": "ca78a44f057e2711acd38d45cb79cbe37adf835cf7e75b3e17fd09b71f624427",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSXAudio2DataSrc.cpp",
-          "reconstruction/bsengine/BSXAudio2DataSrc.h"
+          "reconstruction/bsaudio/BSXAudio2DataSrc.cpp",
+          "reconstruction/bsaudio/BSXAudio2DataSrc.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d1c0cbea4fbec695d467c94f96e92c30900e20d1cced5d37138502649769bf9e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSXAudio2DataSrc.cpp",
-          "reconstruction/bsengine/BSXAudio2DataSrc.h"
+          "reconstruction/bsaudio/BSXAudio2DataSrc.cpp",
+          "reconstruction/bsaudio/BSXAudio2DataSrc.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSXAudio2DataSrc.cpp",
+    "compiled": "reconstruction/bsaudio/BSXAudio2DataSrc.cpp",
     "digest": "f59834c60b37d18c377341ce6e036bbb9c461b6e96cf43ad7781a0ce1950f2db",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fcdc00fef1b4360c6f7671b7f3d931fac118fe43a61d2186e1317ee53634c312",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSXAudio2DataSrc.cpp",
-      "reconstruction/bsengine/BSXAudio2DataSrc.h"
+      "reconstruction/bsaudio/BSXAudio2DataSrc.cpp",
+      "reconstruction/bsaudio/BSXAudio2DataSrc.h"
     ]
   },
   "symbol_map": {

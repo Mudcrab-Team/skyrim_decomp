@@ -29,9 +29,9 @@
         "object_sha256": "eb15f696da7b61e4939c741781347b3fbc0fb53b5ce609326c061bfc43e6b36d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/LockedArray_6c1970.h",
-          "reconstruction/bsengine/LockedSource_F063_6c1970.cpp",
-          "reconstruction/bsengine/LockedSource_F063_6c1970.h"
+          "reconstruction/unmapped/buffers/LockedArray_6c1970.h",
+          "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.cpp",
+          "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e18aa37f458314b325b703f65db2d6e7179ebad59ae92921e4870df74ee75cbc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/LockedArray_6c1970.h",
-          "reconstruction/bsengine/LockedSource_F063_6c1970.cpp",
-          "reconstruction/bsengine/LockedSource_F063_6c1970.h"
+          "reconstruction/unmapped/buffers/LockedArray_6c1970.h",
+          "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.cpp",
+          "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.h"
         ]
       }
     }
@@ -377,15 +377,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/LockedSource_F063_6c1970.cpp",
+    "compiled": "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.cpp",
     "digest": "c1df22de0596d3a2c0a36b054f8ee58ad5f41914d870ce373eee9419b0913c51",
     "digest_method": "tu-sha256-v2",
     "run_digest": "13f79ed227065107a347fd56a53d94360a790c8ca7dc6b4b799715db997bc4d7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/LockedArray_6c1970.h",
-      "reconstruction/bsengine/LockedSource_F063_6c1970.cpp",
-      "reconstruction/bsengine/LockedSource_F063_6c1970.h"
+      "reconstruction/unmapped/buffers/LockedArray_6c1970.h",
+      "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.cpp",
+      "reconstruction/unmapped/buffers/LockedSource_F063_6c1970.h"
     ]
   },
   "symbol_map": {

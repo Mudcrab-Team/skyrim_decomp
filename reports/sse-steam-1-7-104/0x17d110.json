@@ -29,9 +29,9 @@
         "object_sha256": "9457c7012033e14d9091a7de6d07d0be39596ae9521d96510d04d2ed07220e56",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "945e48541863bfbdf4af6ac347b0c2f4085c419df5493ac41e5cfbfcbae20668",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.cpp",
     "digest": "5b15961a3e1c5c385d9d1ea35fa336ca7c073ac19ee700a1d5be451bc80e21b4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "369ba58c4ed028645c0755342eee4ec263f842d0c635072393ee903993229eee",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraLocationRefTypeStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraLocationRefTypeStorageLayout.h"
     ]
   },
   "symbol_map": {

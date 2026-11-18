@@ -29,8 +29,8 @@
         "object_sha256": "1a396f8b0280932a4644620197ad625664a5d281a1841fcf3480f1f284496f52",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellSkyRegion.cpp",
-          "reconstruction/bsengine/ExtraCellSkyRegion.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "695c5c6dee1b8f65265ab0a35f7f8498e28cf6b31b414a57864577d087517fea",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellSkyRegion.cpp",
-          "reconstruction/bsengine/ExtraCellSkyRegion.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellSkyRegion.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.cpp",
     "digest": "f25a8f769960038b8bcb3110808befe0abc7bd2547c606d2cce5308e8cdc5544",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5eb66e47e83bb6b5b1d61b1000bd13b5d4e790745f0a6fb9b3e93b35d347936f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCellSkyRegion.cpp",
-      "reconstruction/bsengine/ExtraCellSkyRegion.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegion.h"
     ]
   },
   "symbol_map": {

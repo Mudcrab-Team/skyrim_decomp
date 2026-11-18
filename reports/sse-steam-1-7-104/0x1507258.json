@@ -29,15 +29,15 @@
         "object_sha256": "b08c5b49180ad7734b4e7720e58f2992709848007818e625ca10e77008a0083d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "4d27be7b0f6f71475545b26109d4ec2fe8d6f8136b3c0508f14f17108074d5b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -349,21 +349,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
     "digest": "c7ab6b25e158e3281df16b42817609ab01155f97516b635e8a74a499abf9eb27",
     "digest_method": "tu-sha256-v2",
     "run_digest": "86540d36c3f7d3fb0a2c2d2bc76f1abfb05c9b241e9122824f2f4e04cb89b2b8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderCopyDynamicFetchDisabledThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

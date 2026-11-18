@@ -29,10 +29,10 @@
         "object_sha256": "fba11264a796c0c9ea96092986f429ffbb2b7f6d1f918a8a07355baafd3d1e1c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFile.cpp",
-          "reconstruction/bsengine/BSFile.h",
-          "reconstruction/netimmerse/NiBinaryStream.h",
-          "reconstruction/netimmerse/NiFile.h"
+          "reconstruction/bssystem/BSFile.cpp",
+          "reconstruction/bssystem/BSFile.h",
+          "reconstruction/bssystem/NiBinaryStream.h",
+          "reconstruction/bssystem/NiFile.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "6fae1b4f0761bb6ae5c55ff380553e9d7d897570844c33df3072cb1699db6de6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFile.cpp",
-          "reconstruction/bsengine/BSFile.h",
-          "reconstruction/netimmerse/NiBinaryStream.h",
-          "reconstruction/netimmerse/NiFile.h"
+          "reconstruction/bssystem/BSFile.cpp",
+          "reconstruction/bssystem/BSFile.h",
+          "reconstruction/bssystem/NiBinaryStream.h",
+          "reconstruction/bssystem/NiFile.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSFile.cpp",
+    "compiled": "reconstruction/bssystem/BSFile.cpp",
     "digest": "fd7409cac1678e94e49d83c219f9518c4a55937e338a0b987aaf43dd2edba911",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bba6ff677190f59e032dcc2e1cfd3b372cc7c66aeacef9ff9b2f507636db07bf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSFile.cpp",
-      "reconstruction/bsengine/BSFile.h",
-      "reconstruction/netimmerse/NiBinaryStream.h",
-      "reconstruction/netimmerse/NiFile.h"
+      "reconstruction/bssystem/BSFile.cpp",
+      "reconstruction/bssystem/BSFile.h",
+      "reconstruction/bssystem/NiBinaryStream.h",
+      "reconstruction/bssystem/NiFile.h"
     ]
   },
   "symbol_map": {

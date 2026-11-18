@@ -29,8 +29,8 @@
         "object_sha256": "62336aba6e0991c7b32d0fa77f4bef94e0efd2d6cb942f2556014d420c46bc06",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraValueStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraValueStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "e7113557cb71b382cab4e35f7a6a262f064d681eadf17080c3592ec161cf2c0d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraValueStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraValueStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraValueStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.cpp",
     "digest": "b16fd7c290fe700faf73015b131d6c0400a6a0e2761165be3b589cd1a80c2931",
     "digest_method": "tu-sha256-v2",
     "run_digest": "482749d4f478984305443b0231c412f21b6885c08719da1b50689a6fb9f473c7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraValueStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraValueStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraValueStorageLayout.h"
     ]
   },
   "symbol_map": {

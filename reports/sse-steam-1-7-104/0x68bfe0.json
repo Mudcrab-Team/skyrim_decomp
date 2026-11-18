@@ -31,13 +31,13 @@
         "object_sha256": "b95e01b7c1dc4794651628eeef65cbf2de046e0af941e9183c5dfadb81445d2a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/ConditionalNotify.cpp",
-          "reconstruction/actor206_sol/ConditionalNotify.h",
-          "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+          "reconstruction/skyrim_shared/conditions/ConditionalNotify.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionalNotify.h"
         ]
       },
       "winpc-native": {
@@ -58,13 +58,13 @@
         "object_sha256": "822b069535b689c33189ba0552ad7da377c2fc4fa13d5875fb4a2f10012e39f1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/ConditionalNotify.cpp",
-          "reconstruction/actor206_sol/ConditionalNotify.h",
-          "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+          "reconstruction/skyrim_shared/conditions/ConditionalNotify.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionalNotify.h"
         ]
       }
     }
@@ -337,19 +337,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_sol/ConditionalNotify.cpp",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionalNotify.cpp",
     "digest": "9c9341cf43ada3b556f5788acbb39447449944e160bb7b0b93e20233e07293f1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "aa0d651c020d0e8120c2a69aa842197cbe526f461f9d94bd3c2d7388d4dded9e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_sol/ConditionalNotify.cpp",
-      "reconstruction/actor206_sol/ConditionalNotify.h",
-      "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h",
+      "reconstruction/skyrim_shared/conditions/ConditionalNotify.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionalNotify.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "4861dda8b2cc876e02dd22c8a8ee1049229ddfbc0c68544c01ab13d302807471",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSRelationship.cpp",
-          "reconstruction/forms/BGSRelationship.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/perks/BGSRelationship.cpp",
+          "reconstruction/skyrim_shared/perks/BGSRelationship.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "617627ba945f2624f454ac17c41578b65cf15bdf12163675781f4421fefbab17",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSRelationship.cpp",
-          "reconstruction/forms/BGSRelationship.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/perks/BGSRelationship.cpp",
+          "reconstruction/skyrim_shared/perks/BGSRelationship.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSRelationship.cpp",
+    "compiled": "reconstruction/skyrim_shared/perks/BGSRelationship.cpp",
     "digest": "93d11d6204b4ddcba9f1848f9090bbb8548391e27406ef31f54936c473aa4ee0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1654243d7299028c21954257c36aaf24efd64bbfa7a09156133f954049c6f6a4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSRelationship.cpp",
-      "reconstruction/forms/BGSRelationship.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/perks/BGSRelationship.cpp",
+      "reconstruction/skyrim_shared/perks/BGSRelationship.h"
     ]
   },
   "symbol_map": {

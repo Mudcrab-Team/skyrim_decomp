@@ -1,0 +1,31 @@
+// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// BSLightingShaderMaterialFacegenTint: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// BSLightingShaderMaterialFacegenTint::GetFeature, BSLightingShaderMaterialFacegenTint::Ctor, BSLightingShaderMaterialFacegenTint::CopyMembers, BSLightingShaderMaterialFacegenTint::~BSLightingShaderMaterialFacegenTint: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSShaderPair: GUESS(low); two adjacent tint components copied together
+// fieldA0, fieldA8, unknownAC: GUESS(low)
+#pragma once
+
+#include <cstdint>
+#include "BSLightingShaderMaterial.h"
+
+struct BSShaderPair
+{
+    float first;   // 00
+    float second;  // 04
+};
+
+class BSLightingShaderMaterialFacegenTint : public BSLightingShaderMaterial
+{
+public:
+    BSLightingShaderMaterialFacegenTint();
+    virtual Feature GetFeature() const;  // compared: 0x1526fc0
+    BSLightingShaderMaterialFacegenTint* Ctor();  // compared: 0x1526e30
+    virtual void CopyMembers(BSShaderMaterial* a_other);  // compared: 0x1526f20
+    virtual ~BSLightingShaderMaterialFacegenTint() {}  // compared: 0x1528ec0 (scalar deleting destructor)
+
+    BSShaderPair fieldA0;  // A0
+    std::uint32_t fieldA8;  // A8
+    std::uint8_t unknownAC[0x4];  // AC
+};
+static_assert(sizeof(BSLightingShaderMaterialFacegenTint) == 0xB0, "BSLightingShaderMaterialFacegenTint size");

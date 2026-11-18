@@ -29,8 +29,8 @@
         "object_sha256": "6f7606785ec68093b8d90e83d8f005b5e282d75313c60c75beb2036a539a5920",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPathingRequest.cpp",
-          "reconstruction/bsengine/BSPathingRequest.h"
+          "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.cpp",
+          "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ac0f11b4e41397f0b0db1df20c501dfd73873827bae0d62364844c5d6ad82b81",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPathingRequest.cpp",
-          "reconstruction/bsengine/BSPathingRequest.h"
+          "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.cpp",
+          "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSPathingRequest.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.cpp",
     "digest": "73f7e0f637307fb9bde4884961a7604cb7bd1ac3edabb0ae7d87dcf66c9c3490",
     "digest_method": "tu-sha256-v2",
     "run_digest": "990bae0efebfb75a6aaea5217b668c3ef4300f6a7addb6e7c5b1e308d129b32e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSPathingRequest.cpp",
-      "reconstruction/bsengine/BSPathingRequest.h"
+      "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.cpp",
+      "reconstruction/skyrim_shared/pathfinding/BSPathingRequest.h"
     ]
   },
   "symbol_map": {

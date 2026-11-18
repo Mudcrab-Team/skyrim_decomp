@@ -29,8 +29,8 @@
         "object_sha256": "392382033093089e55117581c22a096c4c6a3db2778867cd52f9ddb5c48a3076",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198b_75d450/PlayerCharacter.cpp",
-          "reconstruction/fo4p198b_75d450/PlayerCharacter.h"
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.cpp",
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "cce246cdf9322a022e93316f8cb8aadaa2fecb8c826a4c15c3ef397f3d7fb195",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198b_75d450/PlayerCharacter.cpp",
-          "reconstruction/fo4p198b_75d450/PlayerCharacter.h"
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.cpp",
+          "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198b_75d450/PlayerCharacter.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.cpp",
     "digest": "8cd774faf418ac8d19aab554ce26c0bc7659884593897a11cb7a667faefc181b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3a61755b1efb13c43f8d6a6827130eb4ca7b4653fe3b2f57886be01a59bab164",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198b_75d450/PlayerCharacter.cpp",
-      "reconstruction/fo4p198b_75d450/PlayerCharacter.h"
+      "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.cpp",
+      "reconstruction/skyrim_shared/actors/PlayerCharacter_75d450.h"
     ]
   },
   "symbol_map": {

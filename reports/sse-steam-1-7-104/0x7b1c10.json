@@ -29,9 +29,9 @@
         "object_sha256": "538e23391861bad08ac360e5ae1511b5c6c98900d127f47176746d07ccf700f8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/MovementHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/MovementHandlerStorageLayout.h"
+          "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "bae9fba5354329cd1c88867ba268064b9ae80a25005cee89c2f31b535dbac30f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/MovementHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/MovementHandlerStorageLayout.h"
+          "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MovementHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.cpp",
     "digest": "bcb19efec1c420a989925b3e1e2462a938ea89525944fe1bbfa8f4f0f06ee6e5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "26ce8368420b5c9c854cd11d6353dc8630cd0780cfdc044065aebfe0c0195b72",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-      "reconstruction/bsengine/MovementHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/MovementHandlerStorageLayout.h"
+      "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/ai/movement/MovementHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "d429f3d37f7f7438fd6fe30c9b7357d081daa767f66a42fbf114bf0c8c591a18",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiGeometryData.cpp",
-          "reconstruction/netimmerse/NiGeometryData.h",
+          "reconstruction/gamebryo/nimain/NiGeometryData.cpp",
+          "reconstruction/gamebryo/nimain/NiGeometryData.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "f16e1ef90fcb530a6d3a0186384cc84810bd31bb4ff61e0365ab6f7f75f65d3c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiGeometryData.cpp",
-          "reconstruction/netimmerse/NiGeometryData.h",
+          "reconstruction/gamebryo/nimain/NiGeometryData.cpp",
+          "reconstruction/gamebryo/nimain/NiGeometryData.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -314,14 +314,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiGeometryData.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiGeometryData.cpp",
     "digest": "fd23b7d1c354c1dee4799c0b6207b6d68dca3b2b4b3ef1815e5a6e810d562b7b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4e98725307bf8c58ffb604595f2d2ff1f31110507e043a4124f87e9e4577b17a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiGeometryData.cpp",
-      "reconstruction/netimmerse/NiGeometryData.h",
+      "reconstruction/gamebryo/nimain/NiGeometryData.cpp",
+      "reconstruction/gamebryo/nimain/NiGeometryData.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

@@ -29,8 +29,8 @@
         "object_sha256": "6b0cd45960bbbf297a5664163316caab78630b119b5782907c13a877f890233b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESCamera.cpp",
-          "reconstruction/forms/TESCamera.h"
+          "reconstruction/skyrim/camera/TESCamera.cpp",
+          "reconstruction/skyrim/camera/TESCamera.h"
         ]
       }
     }
@@ -171,14 +171,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESCamera.cpp",
+    "compiled": "reconstruction/skyrim/camera/TESCamera.cpp",
     "digest": "4bca0b1577fef8d4c65f6eb9a1b988ccdd1ebaa209736e023f74a53c12f69892",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b36f99ebb7db91c675ffd2f3d992bdef668fd42530820862cca28c247224f6cd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESCamera.cpp",
-      "reconstruction/forms/TESCamera.h"
+      "reconstruction/skyrim/camera/TESCamera.cpp",
+      "reconstruction/skyrim/camera/TESCamera.h"
     ]
   },
   "submitter": "hinkiii",

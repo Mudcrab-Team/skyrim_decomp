@@ -10,11 +10,12 @@ import tempfile
 import contrib_screen
 import lint_reconstruction
 import lint_review_readiness
+import unit_paths
 from source_digest import include_closure, _repo_file
 from digest_v2 import tu_digest
 from local_paths import local_path, no_sibling_names
 
-UNIT = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
+UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 
 
 def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
@@ -180,6 +181,8 @@ def intake_problems(ctx, rows, head=None, details=None):
             problems.append(diagnostic(f'{name}: outside contributor scope (reconstruction/<area>/<Class>.h or .cpp only)'))
         elif status == 'D':
             problems.append(diagnostic(f'{name}: deleting a unit file is for maintainers'))
+        elif status == 'A' and not unit_paths.area_accepted(UNIT.fullmatch(name).group(1)):
+            problems.append(diagnostic(f'{name}: area is not one of the unit areas in tools/unit_paths.py'))
         else:
             names.append(name)
     if not names:

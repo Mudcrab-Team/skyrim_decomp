@@ -29,8 +29,8 @@
         "object_sha256": "5270deef3e1d7460fe155692e0bba50fd7c22b3fd23f8b87ea8b37b6614ba692",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/InputEventStorageLayout.cpp",
-          "reconstruction/bsengine/InputEventStorageLayout.h"
+          "reconstruction/bsinput/InputEventStorageLayout.cpp",
+          "reconstruction/bsinput/InputEventStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "08ea099707a9f0ff8b169f01f1974f788cd438d835f2fa5f3b7d62679b3453a1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/InputEventStorageLayout.cpp",
-          "reconstruction/bsengine/InputEventStorageLayout.h"
+          "reconstruction/bsinput/InputEventStorageLayout.cpp",
+          "reconstruction/bsinput/InputEventStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/InputEventStorageLayout.cpp",
+    "compiled": "reconstruction/bsinput/InputEventStorageLayout.cpp",
     "digest": "5fab62d6f862951bb67ceaae341979dc4f366d8c55a6d681c361d6b1b07d0bd5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "40eacbf07c84a2748c45fb292fbaea68845df812fba427e9a19f76f6460caa87",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/InputEventStorageLayout.cpp",
-      "reconstruction/bsengine/InputEventStorageLayout.h"
+      "reconstruction/bsinput/InputEventStorageLayout.cpp",
+      "reconstruction/bsinput/InputEventStorageLayout.h"
     ]
   },
   "symbol_map": {

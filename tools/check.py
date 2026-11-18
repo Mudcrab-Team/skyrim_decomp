@@ -17,6 +17,7 @@ from compare import COMPARATOR_VERSION, CONTRACT_VERSION, REPORT_SCHEMA, compara
 from source_digest import INCLUDE_ROOTS, recipe_flag_problem
 from digest_v2 import DIGEST_METHOD, DIGEST_METHODS, review_binds, run_revision, run_digest_problem, tu_digest
 from check_source_digest import include_closure, source_digest_cache
+import source_moves
 from lint_reconstruction import lint_tree
 import cost_ledger
 import revision_cache
@@ -280,6 +281,7 @@ def check_match(fn, target, root=None):
     compiled_on, compared_on, symbols = set(), set(), set()
     object_hosts = {}
     current_comparator = engine.comparator_source_sha256()
+    accepted_paths = source_moves.accepted_paths(compiled, root)
     for run in runs:
         require(isinstance(run, dict) and text(run.get('compiled_on')) and text(run.get('compared_on')),
                 'Match record: each run names the host that compiled and the host that compared')
@@ -302,10 +304,13 @@ def check_match(fn, target, root=None):
                 and ident.get('rva') == fn['rva'] and ident.get('size') == fn['size'] and text(ident.get('symbol')),
                 'Match record: report function identity differs from the inventory entry')
         if internal:
+            # The identity's map_key hashes the path the unit had when it was compared, so a unit that
+            # moved since keeps its old path there (tools/source_moves.py).
+            claimed = (ident.get('internal_identity') or {}).get('source_path')
             try:
                 compare_internal.check_internal_identity({
                     'task_schema': 2, 'symbol': ident['symbol'], 'internal_identity': ident.get('internal_identity'),
-                    'source_revision': digest, 'source_path': compiled})
+                    'source_revision': digest, 'source_path': claimed if claimed in accepted_paths else compiled})
             except compare_internal.Reject as exc:
                 raise ValueError(f'Match record: invalid internal identity: {exc.detail}') from None
             identity = ident['internal_identity']
@@ -317,7 +322,7 @@ def check_match(fn, target, root=None):
             require('internal_identity' not in ident, 'Match record: internal identity needs schema 3')
             symbols.add(ident['symbol'])
         src = report.get('source') or {}
-        require(src.get('source_revision') == digest and src.get('path') == compiled,
+        require(src.get('source_revision') == digest and src.get('path') in accepted_paths,
                 'Match record: report was produced from other source than the integrated file')
         tgt = report.get('target') or {}
         require(tgt.get('image_sha256') == tgt.get('expected_image_sha256') == target['image_sha256'],

@@ -29,8 +29,8 @@
         "object_sha256": "0b452b3408a79772119824530d2a50bc5a256a33f267146d6a4e16ed0ed0c93f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraNavMeshPortal.cpp",
-          "reconstruction/bsengine/ExtraNavMeshPortal.h"
+          "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "929c88bc354a7116b36ef463528b187d81c9c968ed9020b599b96c3749f0bffd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraNavMeshPortal.cpp",
-          "reconstruction/bsengine/ExtraNavMeshPortal.h"
+          "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraNavMeshPortal.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.cpp",
     "digest": "9e4d635d172ca284efc44faa7c8e991572f54ede30c298023c4dbd8166e7f709",
     "digest_method": "tu-sha256-v2",
     "run_digest": "db62ad5bf1cdf76771a174a88e57e1318bfaef76bf8f1daea9bd08b55b42467b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraNavMeshPortal.cpp",
-      "reconstruction/bsengine/ExtraNavMeshPortal.h"
+      "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraNavMeshPortal.h"
     ]
   },
   "symbol_map": {

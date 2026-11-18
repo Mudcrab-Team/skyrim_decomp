@@ -31,10 +31,10 @@
         "object_sha256": "7f478bd54cffd7a51e349149e5af72a455c6a470191384561cfdcb0f7649f73c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/VirtualREFRRetry.cpp",
-          "reconstruction/actor206_2/VirtualREFRRetry.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/refs/VirtualREFRRetry.cpp",
+          "reconstruction/skyrim_shared/refs/VirtualREFRRetry.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "73b74ab77af5437521cfe15947be5ef9c0553bd01dc197b71be87f5158a257de",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/VirtualREFRRetry.cpp",
-          "reconstruction/actor206_2/VirtualREFRRetry.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/refs/VirtualREFRRetry.cpp",
+          "reconstruction/skyrim_shared/refs/VirtualREFRRetry.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_2/VirtualREFRRetry.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/VirtualREFRRetry.cpp",
     "digest": "cdec50be995f235840c2d3c325c4b5ba32b8ddf1edceb9a20cbf6508f086f8f0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "aa40b6d69b63912eb888c7a9f3148a269e0dcf3c946fa783f5676982d1869acb",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_2/VirtualREFRRetry.cpp",
-      "reconstruction/actor206_2/VirtualREFRRetry.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/refs/VirtualREFRRetry.cpp",
+      "reconstruction/skyrim_shared/refs/VirtualREFRRetry.h"
     ]
   },
   "symbol_map": {

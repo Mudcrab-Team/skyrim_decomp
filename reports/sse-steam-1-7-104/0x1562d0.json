@@ -29,8 +29,8 @@
         "object_sha256": "325ba656f388e8c90fa5b033db827e3a136b881a466ce64b4f7aa24b99f2e601",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellAcousticSpace.cpp",
-          "reconstruction/bsengine/ExtraCellAcousticSpace.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "20f27cdc6f07c9931f7567be66ae80aa65255c4590dc4da494db6af521034918",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellAcousticSpace.cpp",
-          "reconstruction/bsengine/ExtraCellAcousticSpace.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellAcousticSpace.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.cpp",
     "digest": "1e0c5fd30d8a2d80423d27b3271e3a5773b56d0ae2570dbed23cc9ab2a04cd37",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5a7855f21597a9096d8446b360ac91867a0d3c9bf40fec7abd9d8647c0bc1ff5",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCellAcousticSpace.cpp",
-      "reconstruction/bsengine/ExtraCellAcousticSpace.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellAcousticSpace.h"
     ]
   },
   "symbol_map": {

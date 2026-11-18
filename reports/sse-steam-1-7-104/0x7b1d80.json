@@ -29,9 +29,9 @@
         "object_sha256": "53dcb4a086ec6419bf474b6a3e45fe006b2a5e2df9779432a91b6eb9f7e2d98c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/SneakHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/SneakHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/SneakHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/SneakHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "fe3cc795a8549332e148f4d6c2a0750656bbffb3b8d2b55dfa17d147cfb1f370",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/SneakHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/SneakHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/SneakHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/SneakHandlerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/SneakHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/SneakHandlerStorageLayout.cpp",
     "digest": "2112939e5e20d54156bb60f42c7571a05936c6152f93b596a238b653d0e71399",
     "digest_method": "tu-sha256-v2",
     "run_digest": "292a5ed1ba4aeda1276228f4942a7b4dc7e4077605ade93201c661fc060f28ae",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-      "reconstruction/bsengine/SneakHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/SneakHandlerStorageLayout.h"
+      "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/SneakHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/SneakHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

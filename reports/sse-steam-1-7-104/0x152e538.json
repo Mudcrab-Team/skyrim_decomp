@@ -29,13 +29,13 @@
         "object_sha256": "f9ed3bc5bf8c37cbacd2b3e2c413280cc2082efc63e089e1f8d2373e6a26eacf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.cpp",
-          "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.cpp",
+          "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "f59f8ee585d16e8dbac3c67366044cc65c453d6610e2b164a7d9aba7bd6b074f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.cpp",
-          "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.cpp",
+          "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -345,19 +345,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.cpp",
     "digest": "760efcab801031f16d8d588f53b8c9aa3ea41ca6298f96ff8138b8cd817cfaf6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f7524217e6aa04717d5bf706b686a88814aa8edb9601137084326a56a4451604",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.cpp",
-      "reconstruction/shaders/BSBloodSplatterShaderThunkLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.cpp",
+      "reconstruction/bsshader/BSBloodSplatterShaderThunkLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

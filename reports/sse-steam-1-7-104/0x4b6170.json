@@ -29,8 +29,8 @@
         "object_sha256": "434ddf1c2b4eeed0b6f191da299182df5331ae44fd3689731526171a78e9dcd6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffectWeaponBlood.cpp",
-          "reconstruction/bsengine/BSTempEffectWeaponBlood.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "168025121dbc0c44ac20fbcc9f4e3e45e34eee694a9ceb1f6ed1185befc866a1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffectWeaponBlood.cpp",
-          "reconstruction/bsengine/BSTempEffectWeaponBlood.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTempEffectWeaponBlood.cpp",
+    "compiled": "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.cpp",
     "digest": "4e508dfd2b4913a8bd706d411065605a8e82bd5a7420f21a7b8a402932e92e9e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ec0b56adbd3b2cd370ac28e57b863c0745e6b0e0bfef87a6c06e54532629b502",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTempEffectWeaponBlood.cpp",
-      "reconstruction/bsengine/BSTempEffectWeaponBlood.h"
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.cpp",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectWeaponBlood.h"
     ]
   },
   "symbol_map": {

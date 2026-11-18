@@ -29,9 +29,9 @@
         "object_sha256": "2c6ecb740cf532cfa3ebaf463764b8a9075cf0ea694fa73e99541b01a6263ce1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AIWorldLocationLayout.h",
-          "reconstruction/forms/AIWorldRefRadiusLayout.cpp",
-          "reconstruction/forms/AIWorldRefRadiusLayout.h"
+          "reconstruction/skyrim/ai/AIWorldLocationLayout.h",
+          "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.cpp",
+          "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "6673fcb4494736bfd2132c6ce951a3118def79c0783fdc9af5490707dec12cd4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AIWorldLocationLayout.h",
-          "reconstruction/forms/AIWorldRefRadiusLayout.cpp",
-          "reconstruction/forms/AIWorldRefRadiusLayout.h"
+          "reconstruction/skyrim/ai/AIWorldLocationLayout.h",
+          "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.cpp",
+          "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/AIWorldRefRadiusLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.cpp",
     "digest": "0296efb29dd1aea65762cdf5e1e32a4b578c87d1842a10ea6941b77515360c92",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e63c608a45c2b0db70de92243e38a92e5bd099f3072c660519b2347d763256bf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/AIWorldLocationLayout.h",
-      "reconstruction/forms/AIWorldRefRadiusLayout.cpp",
-      "reconstruction/forms/AIWorldRefRadiusLayout.h"
+      "reconstruction/skyrim/ai/AIWorldLocationLayout.h",
+      "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.cpp",
+      "reconstruction/skyrim/ai/AIWorldRefRadiusLayout.h"
     ]
   },
   "symbol_map": {

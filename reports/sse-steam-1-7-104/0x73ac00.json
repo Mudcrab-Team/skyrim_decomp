@@ -29,8 +29,8 @@
         "object_sha256": "4d5d68e76a8ada38f70440b5a210565b223ac123e2a0f5307cc3f17d2d84d113",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/InventoryVisitorCaptureBase.cpp",
-          "reconstruction/bsengine/InventoryVisitorCaptureBase.h"
+          "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.cpp",
+          "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "efa6852ce324cb7edde39b088bafeff4dad696c62ccdec13bb7c0af3f8deec66",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/InventoryVisitorCaptureBase.cpp",
-          "reconstruction/bsengine/InventoryVisitorCaptureBase.h"
+          "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.cpp",
+          "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/InventoryVisitorCaptureBase.cpp",
+    "compiled": "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.cpp",
     "digest": "c678611abd4f1fc72f6d39b9c6ca22cbd76a4918e6ff5a402630864621a94ac7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "53a47e268cb58123a87116346a1a9eeb728834c35e3f92dc50fb91baffa65e8c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/InventoryVisitorCaptureBase.cpp",
-      "reconstruction/bsengine/InventoryVisitorCaptureBase.h"
+      "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.cpp",
+      "reconstruction/skyrim_shared/inventory/InventoryVisitorCaptureBase.h"
     ]
   },
   "symbol_map": {

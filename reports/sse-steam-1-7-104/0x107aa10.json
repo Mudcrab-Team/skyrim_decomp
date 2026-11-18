@@ -29,9 +29,9 @@
         "object_sha256": "c1fe402738dc6a29702a77956cd93a7f28e22e75a50f20bfb3dd413df5094c62",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSHandleRefObject.h",
-          "reconstruction/bsengine/BSInlineHost107aa10.cpp",
-          "reconstruction/bsengine/BSInlineHost107aa10.h"
+          "reconstruction/bscore/BSHandleRefObject.h",
+          "reconstruction/unmapped/wrappers/BSInlineHost107aa10.cpp",
+          "reconstruction/unmapped/wrappers/BSInlineHost107aa10.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "5a6a538fe5982a264153d1d1a03908d07352fc0f8eddcc77f47b68728cf4ffcb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSHandleRefObject.h",
-          "reconstruction/bsengine/BSInlineHost107aa10.cpp",
-          "reconstruction/bsengine/BSInlineHost107aa10.h"
+          "reconstruction/bscore/BSHandleRefObject.h",
+          "reconstruction/unmapped/wrappers/BSInlineHost107aa10.cpp",
+          "reconstruction/unmapped/wrappers/BSInlineHost107aa10.h"
         ]
       }
     }
@@ -328,15 +328,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSInlineHost107aa10.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/BSInlineHost107aa10.cpp",
     "digest": "d7e654f5214ce40eda7f722ab3c74d4931ded8bbe9c7a81710094a003afd8beb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bbfedf525ae0156ba8bba5bdc4a025736c29e26941235737094dfcead5826a01",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSHandleRefObject.h",
-      "reconstruction/bsengine/BSInlineHost107aa10.cpp",
-      "reconstruction/bsengine/BSInlineHost107aa10.h"
+      "reconstruction/bscore/BSHandleRefObject.h",
+      "reconstruction/unmapped/wrappers/BSInlineHost107aa10.cpp",
+      "reconstruction/unmapped/wrappers/BSInlineHost107aa10.h"
     ]
   },
   "symbol_map": {

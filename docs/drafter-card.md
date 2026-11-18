@@ -57,14 +57,15 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   translation-unit boundary. If the callee is not compared in the unit, declare it without
   defining it instead. Remove the attribute when no caller in the unit is left (cookbook rule 27).
 - One class per `reconstruction/<area>/<Class>.{h,cpp}`; the area follows the rule in
-  `reconstruction/README.md` (`Ni*` netimmerse, `BS*` bsengine, `TES*`/`BGS*` forms, actor
-  classes actors, or the owning system your brief names). The .cpp includes its header as
+  `reconstruction/README.md` (`python3 tools/unit_paths.py <Class>` prints it, for example
+  `gamebryo/nimain` for `Ni*` scene-graph classes or `skyrim_shared/forms` for `TES*` forms, or the
+  area your brief names). The .cpp includes its header as
   `#include "<Class>.h"`.
 - Other classes the function uses may be declared in your header as minimal stand-ins (only the
   members and virtual slots the code needs). Say in the header comment which declarations are
   stand-ins and where each name comes from. Do not edit another unit to share a class.
 - If the brief lists a shared header, use a same-directory name or a reconstruction-root path
-  such as `"forms/TESForm.h"`. Cross-area includes require the additive `-reconstruction` recipe
+  such as `"skyrim_shared/forms/TESForm.h"`. Cross-area includes require the additive `-reconstruction` recipe
   variant with `/I reconstruction`; new skeletons select it without changing existing accepted
   recipes. Never use parent-directory include paths. If a shared header lacks a member or slot,
   declare your own stand-in and report `header-gap <Class>` in your result line.

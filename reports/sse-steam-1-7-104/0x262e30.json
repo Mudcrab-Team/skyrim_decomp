@@ -29,9 +29,9 @@
         "object_sha256": "cbeeba07132f6d52f04308b114f470560c485e1613ae36120be4d63cb81193c9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSLensFlare.cpp",
-          "reconstruction/forms/BGSLensFlare.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSLensFlare.cpp",
+          "reconstruction/skyrim_shared/world/BGSLensFlare.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "140a3902bcb5cada4d330d60afa80d17a6bf6dc88fc110910d67516a4c56866a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSLensFlare.cpp",
-          "reconstruction/forms/BGSLensFlare.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSLensFlare.cpp",
+          "reconstruction/skyrim_shared/world/BGSLensFlare.h"
         ]
       }
     }
@@ -361,15 +361,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSLensFlare.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSLensFlare.cpp",
     "digest": "dde2890a32ec797c7f01153f32ba1325214e994118a850ee7928504ebaf28496",
     "digest_method": "tu-sha256-v2",
     "run_digest": "25484a4c46e44821d4e95abd52077b57afcedd637fe28aecde5934736384e5c4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSLensFlare.cpp",
-      "reconstruction/forms/BGSLensFlare.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/BGSLensFlare.cpp",
+      "reconstruction/skyrim_shared/world/BGSLensFlare.h"
     ]
   },
   "symbol_map": {

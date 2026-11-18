@@ -29,10 +29,10 @@
         "object_sha256": "70789bc011d50bc3eaa2d6fea7dbd46064ad811daefb2fa4270e670f21fb6d90",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSFixedStringStorageLayout.h",
-          "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.cpp",
-          "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.h"
+          "reconstruction/bscore/BSFixedStringStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "062cb53c31376126d5812511f04e98a5ba40dd9972b0db684f3019d0d06521bf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSFixedStringStorageLayout.h",
-          "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.cpp",
-          "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.h"
+          "reconstruction/bscore/BSFixedStringStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.cpp",
     "digest": "4fcde14ceafc7e4d38d6fd1e06c1178de257aee35b135c9e5aa3ecd2cee001cb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8497db11a33ac62e12bc17f66a2e4c912d4e190699eab63347f56c5defaddbdd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/BSFixedStringStorageLayout.h",
-      "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.cpp",
-      "reconstruction/bsengine/MultiBoundMarkerDataStorageLayout.h"
+      "reconstruction/bscore/BSFixedStringStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/MultiBoundMarkerDataStorageLayout.h"
     ]
   },
   "symbol_map": {

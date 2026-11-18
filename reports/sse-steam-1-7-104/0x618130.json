@@ -29,8 +29,8 @@
         "object_sha256": "fe18a1ebd915261f6e0ca52643c4fd5b3b5c39615adb48e8b89ec4a83bae4556",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.cpp",
-          "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.h"
+          "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.cpp",
+          "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f532f3d39deb6c533d7d99ad779045bbb1f90e665ae53748e95b400a53d1b6fe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.cpp",
-          "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.h"
+          "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.cpp",
+          "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.h"
         ]
       }
     }
@@ -318,14 +318,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.cpp",
+    "compiled": "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.cpp",
     "digest": "6628e11ba9cfa5a89fb2652713550c797823bb32990fdf616dcbca40479dce99",
     "digest_method": "tu-sha256-v2",
     "run_digest": "dc0d0c287f7f0f50fcfb7b50d602c8aa60de236db1ee30bbcb7eecfa1937ff9c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.cpp",
-      "reconstruction/fo4fresh_51f5aa41/BGSSaveLoadGame.h"
+      "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.cpp",
+      "reconstruction/skyrim_shared/saveload/BGSSaveLoadGame.h"
     ]
   },
   "symbol_map": {

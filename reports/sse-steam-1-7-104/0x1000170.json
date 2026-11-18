@@ -29,8 +29,8 @@
         "object_sha256": "44bf24aba0fca4fcfc642078b77648c99b67112bfa103fafdd2a5550acd014bf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSReference.cpp",
-          "reconstruction/bsengine/BSReference.h"
+          "reconstruction/bscore/BSReference.cpp",
+          "reconstruction/bscore/BSReference.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "8361fb0fb61c08321396977265ab983dd0e09f5fc5c0bb8c7e02e0d95d8c2903",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSReference.cpp",
-          "reconstruction/bsengine/BSReference.h"
+          "reconstruction/bscore/BSReference.cpp",
+          "reconstruction/bscore/BSReference.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSReference.cpp",
+    "compiled": "reconstruction/bscore/BSReference.cpp",
     "digest": "a0a92fbd903f3b43eb3d8f40cd8a683f565a1ab76738ce5a717a89941d658a0e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b34c9d0826b051395eb816ff68606298412085f276ea48ba6a82dcfd22393b4c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSReference.cpp",
-      "reconstruction/bsengine/BSReference.h"
+      "reconstruction/bscore/BSReference.cpp",
+      "reconstruction/bscore/BSReference.h"
     ]
   },
   "symbol_map": {

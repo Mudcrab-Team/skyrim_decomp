@@ -29,9 +29,9 @@
         "object_sha256": "25d04b6c496cb9a90baa810ac30fca2f8698c286f1b66dfc193d8fa7e50029d5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSLocation.cpp",
-          "reconstruction/forms/BGSLocation.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSLocation.cpp",
+          "reconstruction/skyrim_shared/world/BGSLocation.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "b4a828414417f41406f5adcd9cef5675419263eecf7566654b3002e36e1b0816",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSLocation.cpp",
-          "reconstruction/forms/BGSLocation.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSLocation.cpp",
+          "reconstruction/skyrim_shared/world/BGSLocation.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSLocation.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSLocation.cpp",
     "digest": "953ee0dd3b0469e475d5e6150314b4ccad509c624648fe226106793585554e85",
     "digest_method": "tu-sha256-v2",
     "run_digest": "93b7e924380084f38870471421168665ff533e28fb42deb612a735665788ee36",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSLocation.cpp",
-      "reconstruction/forms/BGSLocation.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/BGSLocation.cpp",
+      "reconstruction/skyrim_shared/world/BGSLocation.h"
     ]
   },
   "symbol_map": {

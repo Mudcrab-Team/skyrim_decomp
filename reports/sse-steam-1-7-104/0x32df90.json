@@ -29,8 +29,8 @@
         "object_sha256": "1dff917349ee9f43a9844d283247987971af61bb0e6da54de7cd07ab2c6fc77d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTextureSet.cpp",
-          "reconstruction/bsengine/BSTextureSet.h"
+          "reconstruction/bsshader/BSTextureSet.cpp",
+          "reconstruction/bsshader/BSTextureSet.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2ef906b9fbb055c47678326eb76eaaf0de73676fd0a7142cd7496742424192db",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTextureSet.cpp",
-          "reconstruction/bsengine/BSTextureSet.h"
+          "reconstruction/bsshader/BSTextureSet.cpp",
+          "reconstruction/bsshader/BSTextureSet.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTextureSet.cpp",
+    "compiled": "reconstruction/bsshader/BSTextureSet.cpp",
     "digest": "49389bf6775a78a185d1517c33f8da5e17c5e1b508218d1192b53b0cf5f3e82b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "45f5a1e5e5f399e2d4eac7ddce900f208c3b9ffd0424ea30623410d9ca36b4bc",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTextureSet.cpp",
-      "reconstruction/bsengine/BSTextureSet.h"
+      "reconstruction/bsshader/BSTextureSet.cpp",
+      "reconstruction/bsshader/BSTextureSet.h"
     ]
   },
   "symbol_map": {

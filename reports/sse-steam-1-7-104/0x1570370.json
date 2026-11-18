@@ -30,13 +30,13 @@
         "object_sha256": "9470cd0a43ef7a23468e148709bf7fb3d7da2d413d0ae36008158ea056c6cb0b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOrderedNode.cpp",
-          "reconstruction/bsengine/BSOrderedNode.h",
           "reconstruction/declarations/NiAVObject.h",
           "reconstruction/declarations/NiNode.h",
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiObjectNET.h",
-          "reconstruction/declarations/NiRefObject.h"
+          "reconstruction/declarations/NiRefObject.h",
+          "reconstruction/gamebryo/nimain/BSOrderedNode.cpp",
+          "reconstruction/gamebryo/nimain/BSOrderedNode.h"
         ]
       }
     }
@@ -180,19 +180,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSOrderedNode.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSOrderedNode.cpp",
     "digest": "4ef999f49aaae61525071155d3958fd6dd00359cb882f20fbbe7737ecd73d5eb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9f3fcfbc1755c39540705b951953ea9bf157267b3fbf5a5fd50e41cef6da895c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSOrderedNode.cpp",
-      "reconstruction/bsengine/BSOrderedNode.h",
       "reconstruction/declarations/NiAVObject.h",
       "reconstruction/declarations/NiNode.h",
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiObjectNET.h",
-      "reconstruction/declarations/NiRefObject.h"
+      "reconstruction/declarations/NiRefObject.h",
+      "reconstruction/gamebryo/nimain/BSOrderedNode.cpp",
+      "reconstruction/gamebryo/nimain/BSOrderedNode.h"
     ]
   },
   "submitter": "hinkiii",

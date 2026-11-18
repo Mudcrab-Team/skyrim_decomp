@@ -29,8 +29,8 @@
         "object_sha256": "55050c77f19570f686bc3a824ba7c481305d699238dfdad3c67f5692ccdad002",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/unknown/ConditionalVirtualCall.cpp",
-          "reconstruction/unknown/ConditionalVirtualCall.h"
+          "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d19366b3b27fceda77ff1cad74c6732216ef1179d2e2b7ea15514f37e60c426d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/unknown/ConditionalVirtualCall.cpp",
-          "reconstruction/unknown/ConditionalVirtualCall.h"
+          "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/unknown/ConditionalVirtualCall.cpp",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.cpp",
     "digest": "53bfc8c773d7a2ee186b1fb4b5ffde74438517b7ec4386ca53300d27036cb551",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fd3c60e48ae66880cdd6ed77e57287e558f9039979081bd5b12c59b595852ae2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/unknown/ConditionalVirtualCall.cpp",
-      "reconstruction/unknown/ConditionalVirtualCall.h"
+      "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionalVirtualCall.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "14b117b95e9ee7ce03642c4da294da0323b24f79ed39d66fc5b1dd4c147c4106",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRunOncePacks.cpp",
-          "reconstruction/bsengine/ExtraRunOncePacks.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6c6537ae3e86b2d4f59733eabb59e1789a662d3c97c6636cc0f76fb9e4ca5239",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRunOncePacks.cpp",
-          "reconstruction/bsengine/ExtraRunOncePacks.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRunOncePacks.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.cpp",
     "digest": "b281a83133472e88f15cd7f04d73b4686e2937ed3d9a9c57756f43d413d8bb0a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ed84212e3172eab7955817afbf5af2fadd2b793e76031c9d09c3a772053c6203",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraRunOncePacks.cpp",
-      "reconstruction/bsengine/ExtraRunOncePacks.h"
+      "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRunOncePacks.h"
     ]
   },
   "symbol_map": {

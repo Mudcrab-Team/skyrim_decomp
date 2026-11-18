@@ -29,8 +29,8 @@
         "object_sha256": "a57a309423cd125b64955ea5cc89ad174cadf6b5496a857e52480ef426ee6a68",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraEmittanceSource.cpp",
-          "reconstruction/bsengine/ExtraEmittanceSource.h"
+          "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "33561bb1b1ff81ab34288b7e5a428cb9b3dbf20f80a2c4f060826d5e9ff20f25",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraEmittanceSource.cpp",
-          "reconstruction/bsengine/ExtraEmittanceSource.h"
+          "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraEmittanceSource.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.cpp",
     "digest": "3be1f3c52ec31dd3b80514f06f1a0586792d040cdd3a574c3ddcc454a6ec74f5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0a0b4cbaed0d396c3c37a5c1523e7445c813f20000351a71c0213383c564621f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraEmittanceSource.cpp",
-      "reconstruction/bsengine/ExtraEmittanceSource.h"
+      "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraEmittanceSource.h"
     ]
   },
   "symbol_map": {

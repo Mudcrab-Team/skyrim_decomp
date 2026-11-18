@@ -29,9 +29,9 @@
         "object_sha256": "080ba79ab430e1a2afd6c31fe3ec999f88d0a2f7349a50e0053e4172251e7d4f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.cpp",
-          "reconstruction/forms/RaceComponentLayout.h"
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.cpp",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "01cc7eed39612f6903c337f4cfb881ef5f6f0d91b16105266c5ce6803895a5b5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.cpp",
-          "reconstruction/forms/RaceComponentLayout.h"
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.cpp",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/RaceComponentLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/RaceComponentLayout.cpp",
     "digest": "7eaafa68eba79ebf90775b2a3d90b6be87db9c23e0c001d5f27781a6ee7b2cae",
     "digest_method": "tu-sha256-v2",
     "run_digest": "81445a8af726252fae8f6677769911ad979809b175dd49529892e462b04bdcb9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.cpp",
-      "reconstruction/forms/RaceComponentLayout.h"
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.cpp",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h"
     ]
   },
   "symbol_map": {

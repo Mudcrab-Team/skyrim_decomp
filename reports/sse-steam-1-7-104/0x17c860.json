@@ -29,9 +29,9 @@
         "object_sha256": "a7cc5f71e71eea4d2026ac2745890a4a8208ce8c49ff9475b7a2de8c4ba7ad3e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraEnchantmentStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraEnchantmentStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "4cab17c969ebbfe2bfb97a99beb8cd3b644a0bcc5c562fab6145caaf5710639b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraEnchantmentStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraEnchantmentStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraEnchantmentStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.cpp",
     "digest": "73dd4b9885a6ff020f0d4b4280e864cf757aad53dc3f1d98d80dc9820be30f73",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0d44ee72515ad4814cca2213f48e412aa9adef7aa0c59d4cf3ed6f22a5161825",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraEnchantmentStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraEnchantmentStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraEnchantmentStorageLayout.h"
     ]
   },
   "symbol_map": {

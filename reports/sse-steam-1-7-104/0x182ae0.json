@@ -29,8 +29,8 @@
         "object_sha256": "e3dd9cc792ea9b1450c44029f0564d678edd4197a03d70e379938fd51d8c24c5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraEnableStateChildren.cpp",
-          "reconstruction/bsengine/ExtraEnableStateChildren.h"
+          "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "825279f44e3481a3a9a51a9e0cf582df56d17a32d81308cad0a0d7d6c7b6e122",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraEnableStateChildren.cpp",
-          "reconstruction/bsengine/ExtraEnableStateChildren.h"
+          "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraEnableStateChildren.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.cpp",
     "digest": "a61fbb13d9fd017e90d9d1d58176b2e8326286abfdfc7353eff178bf98e1b4c6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8fdc673c6479764fb86c234998930caf46190703f49a0901d071a6999a22bf97",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraEnableStateChildren.cpp",
-      "reconstruction/bsengine/ExtraEnableStateChildren.h"
+      "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraEnableStateChildren.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "3acdef057114e8ed24ca1dd8ac8d9cf14ac5e54e8a820c7eb0f543943dfbc08e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraTresPassPackage.cpp",
-          "reconstruction/bsengine/ExtraTresPassPackage.h"
+          "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6f6d9fef421d0d648bd412efa87ad4362fc6b55ec901f18a55dd52f3465c432f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraTresPassPackage.cpp",
-          "reconstruction/bsengine/ExtraTresPassPackage.h"
+          "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraTresPassPackage.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.cpp",
     "digest": "04a59aaaaa82f62f444993fdf31c6f81f7824bcb111682e90f8f95fb0bc9d302",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3a96aa40bce2b6d614ae9acc66f3922dc1062e2bf34b4a4ae0b55e0090223432",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraTresPassPackage.cpp",
-      "reconstruction/bsengine/ExtraTresPassPackage.h"
+      "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraTresPassPackage.h"
     ]
   },
   "symbol_map": {

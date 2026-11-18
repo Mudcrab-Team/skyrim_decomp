@@ -29,9 +29,9 @@
         "object_sha256": "bcf93e28056d49b93121a9cf09004c870d397241c9a5cc7dde577991bd47b1ec",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "d8eaa637e84064caa9747e0b3447b3918050694deda322efe5265fbe7f5bab17",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.cpp",
     "digest": "ddcbe762962ab0985cd2bebb8f6c93faa6cfcf67c71e12c9b5be3409b74e2075",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cfe13f8cdc028f8a83c1a56c38063daa86592105e9c8cffa8efec0dadd479fff",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraPatrolRefInUseDataStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPatrolRefInUseDataStorageLayout.h"
     ]
   },
   "symbol_map": {

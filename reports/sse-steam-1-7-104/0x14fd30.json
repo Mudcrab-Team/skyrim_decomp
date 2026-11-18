@@ -29,8 +29,8 @@
         "object_sha256": "08fd49144fe97a03a1c16f26040c59e2bf4a33f7c740bfc7c534e23cb684f9b2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/magic/IngredientItem.cpp",
-          "reconstruction/magic/IngredientItem.h"
+          "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.cpp",
+          "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "acac3982b10cf830617ec7700627b77f11c48d808142f4d9a901855f1672971e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/magic/IngredientItem.cpp",
-          "reconstruction/magic/IngredientItem.h"
+          "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.cpp",
+          "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/magic/IngredientItem.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.cpp",
     "digest": "f6ba1b977230435757da16d8e0aea581d53f4e068a48a6cc0708c79ec051500f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "86899bf6486236bfc71c762ae756739f326c7bd0cdf880aa7b89d80add7e9e68",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/magic/IngredientItem.cpp",
-      "reconstruction/magic/IngredientItem.h"
+      "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.cpp",
+      "reconstruction/skyrim_shared/magic/IngredientItem_14fd30.h"
     ]
   },
   "symbol_map": {

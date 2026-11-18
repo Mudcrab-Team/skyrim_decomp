@@ -29,9 +29,9 @@
         "object_sha256": "ead684ed3810a80bd15352d37bc93bb347d5caa6e119518bcc889795f040d7d4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Hazard.cpp",
-          "reconstruction/forms/Hazard.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/Hazard.cpp",
+          "reconstruction/skyrim_shared/refs/Hazard.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "4d83a0aaff60f098a0b751497b9aa3550b4ab2ccd27e1dee2894506d7ec1b349",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Hazard.cpp",
-          "reconstruction/forms/Hazard.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/Hazard.cpp",
+          "reconstruction/skyrim_shared/refs/Hazard.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/Hazard.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/Hazard.cpp",
     "digest": "a8f24b5a37e2a9392654abfbf3132d3e7308af51cf059683d07ac8668f7a12a3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "353a5e4d533c93dab1727bd3c7ab0a1293affed987309fdd5d67ce4eb62b32f1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/Hazard.cpp",
-      "reconstruction/forms/Hazard.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/refs/Hazard.cpp",
+      "reconstruction/skyrim_shared/refs/Hazard.h"
     ]
   },
   "symbol_map": {

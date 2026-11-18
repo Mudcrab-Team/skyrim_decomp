@@ -29,14 +29,14 @@
         "object_sha256": "0368770dff5405697327ab0705d0f38ab4e0d3eac6d8b13cc7246c93300f9123",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/ActiveEffectLayout.h",
-          "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/ExtraStorageValueTypesLayout.h",
-          "reconstruction/represented_storage/F004Recovered5c64a0.cpp",
-          "reconstruction/represented_storage/F004Recovered5c64a0.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/ReferenceEffectControllerLayout.h"
+          "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+          "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/ExtraStorageValueTypesLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered5c64a0.cpp",
+          "reconstruction/unmapped/represented/F004Recovered5c64a0.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h"
         ]
       },
       "winpc-native": {
@@ -55,14 +55,14 @@
         "object_sha256": "a23eda41ee6cc7eee2e20f9b05f2bf0b35349a1f864a065aa953737c415ec949",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/ActiveEffectLayout.h",
-          "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/represented_storage/BSSoundHandleLayout.h",
-          "reconstruction/represented_storage/ExtraStorageValueTypesLayout.h",
-          "reconstruction/represented_storage/F004Recovered5c64a0.cpp",
-          "reconstruction/represented_storage/F004Recovered5c64a0.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h",
-          "reconstruction/represented_storage/ReferenceEffectControllerLayout.h"
+          "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+          "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+          "reconstruction/unmapped/represented/ExtraStorageValueTypesLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered5c64a0.cpp",
+          "reconstruction/unmapped/represented/F004Recovered5c64a0.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h",
+          "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h"
         ]
       }
     }
@@ -329,20 +329,20 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/represented_storage/F004Recovered5c64a0.cpp",
+    "compiled": "reconstruction/unmapped/represented/F004Recovered5c64a0.cpp",
     "digest": "21ee7063f6b06b06506bb3fa342076a211a52d5bd55c738dbc08ef28075d987c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2206186a1bcae61e764ebe65fa69d202527692406d84d7975932fbbc5295e386",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/represented_storage/ActiveEffectLayout.h",
-      "reconstruction/represented_storage/ActiveEffectReferenceEffectControllerLayout.h",
-      "reconstruction/represented_storage/BSSoundHandleLayout.h",
-      "reconstruction/represented_storage/ExtraStorageValueTypesLayout.h",
-      "reconstruction/represented_storage/F004Recovered5c64a0.cpp",
-      "reconstruction/represented_storage/F004Recovered5c64a0.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h",
-      "reconstruction/represented_storage/ReferenceEffectControllerLayout.h"
+      "reconstruction/unmapped/represented/ActiveEffectLayout.h",
+      "reconstruction/unmapped/represented/ActiveEffectReferenceEffectControllerLayout.h",
+      "reconstruction/unmapped/represented/BSSoundHandleLayout.h",
+      "reconstruction/unmapped/represented/ExtraStorageValueTypesLayout.h",
+      "reconstruction/unmapped/represented/F004Recovered5c64a0.cpp",
+      "reconstruction/unmapped/represented/F004Recovered5c64a0.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h",
+      "reconstruction/unmapped/represented/ReferenceEffectControllerLayout.h"
     ]
   },
   "symbol_map": {

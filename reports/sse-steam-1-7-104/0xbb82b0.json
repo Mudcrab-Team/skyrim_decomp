@@ -29,8 +29,8 @@
         "object_sha256": "d34a25321af3fa9380d4c5006f43314665f299470f351815d6d4bb247663501b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSInterpValueModifier.cpp",
-          "reconstruction/bsengine/BSInterpValueModifier.h"
+          "reconstruction/gamebryo/nianimation/BSInterpValueModifier.cpp",
+          "reconstruction/gamebryo/nianimation/BSInterpValueModifier.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "631d1d33b795ca0c12f0f2cf28c160585a9bb5d815998c960c442ca79cb4f5e3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSInterpValueModifier.cpp",
-          "reconstruction/bsengine/BSInterpValueModifier.h"
+          "reconstruction/gamebryo/nianimation/BSInterpValueModifier.cpp",
+          "reconstruction/gamebryo/nianimation/BSInterpValueModifier.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSInterpValueModifier.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BSInterpValueModifier.cpp",
     "digest": "e1f76ffb8511a609373a4012ce73f8df6dc967c25c4a708b463c35e574b32b5b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6f6861378ec2193fb4565e680bec72107071b7300031d22dc228f69ee75b95f4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSInterpValueModifier.cpp",
-      "reconstruction/bsengine/BSInterpValueModifier.h"
+      "reconstruction/gamebryo/nianimation/BSInterpValueModifier.cpp",
+      "reconstruction/gamebryo/nianimation/BSInterpValueModifier.h"
     ]
   },
   "symbol_map": {

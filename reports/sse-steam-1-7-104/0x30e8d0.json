@@ -29,8 +29,8 @@
         "object_sha256": "a3d54293feb214d57c649b705df36eafed3a82aacfdae0c1b98c6b750c52a76e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESWorldSpace.cpp",
-          "reconstruction/forms/TESWorldSpace.h"
+          "reconstruction/skyrim_shared/world/TESWorldSpace.cpp",
+          "reconstruction/skyrim_shared/world/TESWorldSpace.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "91ca15cdce34e96f6d98145e04ed07b01e7545e9b995ceb7d15a0aea9baa4499",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESWorldSpace.cpp",
-          "reconstruction/forms/TESWorldSpace.h"
+          "reconstruction/skyrim_shared/world/TESWorldSpace.cpp",
+          "reconstruction/skyrim_shared/world/TESWorldSpace.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESWorldSpace.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESWorldSpace.cpp",
     "digest": "97776c4a4da0449808225a9e879366d54034ec919742cc9a49847db7eec9bc9c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3b6eb4c20cbaa3288f887a69c899c696cd702097ba2de56b05e5225494dfdacf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESWorldSpace.cpp",
-      "reconstruction/forms/TESWorldSpace.h"
+      "reconstruction/skyrim_shared/world/TESWorldSpace.cpp",
+      "reconstruction/skyrim_shared/world/TESWorldSpace.h"
     ]
   },
   "symbol_map": {

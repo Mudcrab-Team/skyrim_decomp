@@ -29,8 +29,8 @@
         "object_sha256": "0174af1eead746f3dfba5441098c50fca1e34dd8a841cfbe0a6ce6dc1585c797",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CommunityLeafStorageLayout.cpp",
-          "reconstruction/bsengine/CommunityLeafStorageLayout.h"
+          "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.cpp",
+          "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "64cf7c935ab67bc6179faf6e55ddef7d07cf807a06bc39b6aeb963903e246e0a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CommunityLeafStorageLayout.cpp",
-          "reconstruction/bsengine/CommunityLeafStorageLayout.h"
+          "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.cpp",
+          "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/CommunityLeafStorageLayout.cpp",
+    "compiled": "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.cpp",
     "digest": "e387ecfa14797a8efd7de5d60ce7799e0a20211d6d8d0876055396b72b7e5f38",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ad737494f9c8fd3aad1aef5eb9f41712b51c1c69001dd5c048a11e532ca724fe",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/CommunityLeafStorageLayout.cpp",
-      "reconstruction/bsengine/CommunityLeafStorageLayout.h"
+      "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.cpp",
+      "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.h"
     ]
   },
   "symbol_map": {

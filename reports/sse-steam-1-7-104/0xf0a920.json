@@ -32,8 +32,8 @@
         "repository_files_opened": [
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiRefObject.h",
-          "reconstruction/netimmerse/NiAVObjectPalette.cpp",
-          "reconstruction/netimmerse/NiAVObjectPalette.h"
+          "reconstruction/gamebryo/nimain/NiAVObjectPalette.cpp",
+          "reconstruction/gamebryo/nimain/NiAVObjectPalette.h"
         ]
       }
     }
@@ -177,7 +177,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiAVObjectPalette.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiAVObjectPalette.cpp",
     "digest": "b58184d538679a3a74eecb47b05753929d6492631ccfc7959073549b144ef9e7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6fe7d3fd40540d3cce267a8ca8d528f1b26412f9ec188011d903303e7cb5f607",
@@ -185,8 +185,8 @@
     "translation_unit": [
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiRefObject.h",
-      "reconstruction/netimmerse/NiAVObjectPalette.cpp",
-      "reconstruction/netimmerse/NiAVObjectPalette.h"
+      "reconstruction/gamebryo/nimain/NiAVObjectPalette.cpp",
+      "reconstruction/gamebryo/nimain/NiAVObjectPalette.h"
     ]
   },
   "submitter": "hinkiii",

@@ -29,9 +29,9 @@
         "object_sha256": "d0d30807faa25f41a40a517ce799a0cbc1d683b7b8fe39e2687f50a4f7fcb4b8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FlameProjectile.cpp",
-          "reconstruction/forms/FlameProjectile.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/FlameProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/FlameProjectile.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a4f68d1cf0c48e7d7b3e90d7ef7f4b94f04d946042c42773e5959b49de1c6e1d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FlameProjectile.cpp",
-          "reconstruction/forms/FlameProjectile.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/FlameProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/FlameProjectile.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/FlameProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/FlameProjectile.cpp",
     "digest": "095ae65346bb93cd690d2e482aca3bf31c414d84ee8cde45b65ac5eabcceb034",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ea52e113ab68a1618f4752720b1036bf307d1c9f5e97493adc09388b885124a6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/FlameProjectile.cpp",
-      "reconstruction/forms/FlameProjectile.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/refs/FlameProjectile.cpp",
+      "reconstruction/skyrim_shared/refs/FlameProjectile.h"
     ]
   },
   "symbol_map": {

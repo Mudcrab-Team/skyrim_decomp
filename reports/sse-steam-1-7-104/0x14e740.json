@@ -29,8 +29,8 @@
         "object_sha256": "1ba96ae62c8255179a55b88fe915828e9ac67b8c0ad50e76756dda2aab90f94f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/EnchantmentItem.cpp",
-          "reconstruction/forms/EnchantmentItem.h"
+          "reconstruction/skyrim_shared/magic/EnchantmentItem.cpp",
+          "reconstruction/skyrim_shared/magic/EnchantmentItem.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "84e5132cc4100d9acbb3f82e7250ca8014aaaf41d330a35fa5e2264b9bfc7de1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/EnchantmentItem.cpp",
-          "reconstruction/forms/EnchantmentItem.h"
+          "reconstruction/skyrim_shared/magic/EnchantmentItem.cpp",
+          "reconstruction/skyrim_shared/magic/EnchantmentItem.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/EnchantmentItem.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/EnchantmentItem.cpp",
     "digest": "aa4d99f754abc1c5cd8561fb7a6570294f39b4c46e7a304fa97b14ee9ce53bc5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "20c199fd350af7dbc066e3fd1afb8e59a42f0bc921bc6dc5645ab7b30a55f27b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/EnchantmentItem.cpp",
-      "reconstruction/forms/EnchantmentItem.h"
+      "reconstruction/skyrim_shared/magic/EnchantmentItem.cpp",
+      "reconstruction/skyrim_shared/magic/EnchantmentItem.h"
     ]
   },
   "symbol_map": {

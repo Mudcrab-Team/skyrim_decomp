@@ -29,8 +29,8 @@
         "object_sha256": "81a313cf4baa2c0b48751325bbf4b16b3544e09d60690f342581ed4ada5cd6f2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOcclusionBox.cpp",
-          "reconstruction/bsengine/BSOcclusionBox.h"
+          "reconstruction/gamebryo/nimain/BSOcclusionBox.cpp",
+          "reconstruction/gamebryo/nimain/BSOcclusionBox.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ece8e779f2ee6e904d06bbdda9111c7c1df51d473e96e55b3439d0e108eec29d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOcclusionBox.cpp",
-          "reconstruction/bsengine/BSOcclusionBox.h"
+          "reconstruction/gamebryo/nimain/BSOcclusionBox.cpp",
+          "reconstruction/gamebryo/nimain/BSOcclusionBox.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSOcclusionBox.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSOcclusionBox.cpp",
     "digest": "9a8a4735e4be2ea529c70fa23ca27155f85aac711f5fe0ae3746fe12b8d6b7e2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8bc0190c5727a4994a283717075ac1d7bdeb0cf54b60554a526b2030e7b16520",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSOcclusionBox.cpp",
-      "reconstruction/bsengine/BSOcclusionBox.h"
+      "reconstruction/gamebryo/nimain/BSOcclusionBox.cpp",
+      "reconstruction/gamebryo/nimain/BSOcclusionBox.h"
     ]
   },
   "symbol_map": {

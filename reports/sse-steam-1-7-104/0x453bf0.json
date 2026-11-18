@@ -29,8 +29,8 @@
         "object_sha256": "d0264b55132d6437218925a3c6a9e53a87134b1196dcb6aac032fdd1f52903be",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPackageDataRef.cpp",
-          "reconstruction/forms/BGSPackageDataRef.h"
+          "reconstruction/skyrim/ai/BGSPackageDataRef.cpp",
+          "reconstruction/skyrim/ai/BGSPackageDataRef.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "0d159797f65c152438f82b5075a9b17722812593c44a7c825cf5992f6371a135",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPackageDataRef.cpp",
-          "reconstruction/forms/BGSPackageDataRef.h"
+          "reconstruction/skyrim/ai/BGSPackageDataRef.cpp",
+          "reconstruction/skyrim/ai/BGSPackageDataRef.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSPackageDataRef.cpp",
+    "compiled": "reconstruction/skyrim/ai/BGSPackageDataRef.cpp",
     "digest": "13dcb15ed7d8b6ba00a6e9b4a9ea2886d2be8ccdb752963e84a6deb2beda8afb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "14eb544db18d75cf287ce1c90cab5051ad56b2cbffc0815631c2fc882028070d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSPackageDataRef.cpp",
-      "reconstruction/forms/BGSPackageDataRef.h"
+      "reconstruction/skyrim/ai/BGSPackageDataRef.cpp",
+      "reconstruction/skyrim/ai/BGSPackageDataRef.h"
     ]
   },
   "symbol_map": {

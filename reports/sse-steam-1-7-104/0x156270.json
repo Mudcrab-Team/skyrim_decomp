@@ -29,8 +29,8 @@
         "object_sha256": "ed0bfeae181274bc37ef8c5c0998e4a81bc032b6e5f19af13eabb5a789947d93",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraProcessMiddleLow.cpp",
-          "reconstruction/bsengine/ExtraProcessMiddleLow.h"
+          "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "149d4920024343d8af37ba536ed33b7f6b0f0b13bdcc6cc629b3ae35d0575dab",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraProcessMiddleLow.cpp",
-          "reconstruction/bsengine/ExtraProcessMiddleLow.h"
+          "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraProcessMiddleLow.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.cpp",
     "digest": "46189dfda78f14d0b1b037b073135f884ce44febb518d6a6a6aada34ef06ed9d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3c82d3f3dfa2b89091f866e811623bcab011f33e3d65cf9dbffb73e5954ed066",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraProcessMiddleLow.cpp",
-      "reconstruction/bsengine/ExtraProcessMiddleLow.h"
+      "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraProcessMiddleLow.h"
     ]
   },
   "symbol_map": {

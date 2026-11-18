@@ -29,9 +29,9 @@
         "object_sha256": "c3fe4987455dbcab3444fed7bc6619f6ec12721c03538c18c873d1f4f2acf8b2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getquestcompleted/ConditionFunctions.cpp",
-          "reconstruction/conditions_getquestcompleted/ConditionFunctions.h",
-          "reconstruction/conditions_getquestcompleted/TESQuest.h"
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.h",
+          "reconstruction/skyrim_shared/quest/TESQuest_332260.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "8a1107a414dde66f00a5f04b74a4d52ebf6a0a2f25a35b3a2ccdd2fa387a74d3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getquestcompleted/ConditionFunctions.cpp",
-          "reconstruction/conditions_getquestcompleted/ConditionFunctions.h",
-          "reconstruction/conditions_getquestcompleted/TESQuest.h"
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.h",
+          "reconstruction/skyrim_shared/quest/TESQuest_332260.h"
         ]
       }
     }
@@ -322,15 +322,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/conditions_getquestcompleted/ConditionFunctions.cpp",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.cpp",
     "digest": "bc97b91b66bceb15780b0c01237f978f87493d7f30ca0e890819ba05216c9ccb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "89601596cb2b591cb6fe78a73ac4a77e3ad0e35f56fede84a4abfcc87b633879",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/conditions_getquestcompleted/ConditionFunctions.cpp",
-      "reconstruction/conditions_getquestcompleted/ConditionFunctions.h",
-      "reconstruction/conditions_getquestcompleted/TESQuest.h"
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_332260.h",
+      "reconstruction/skyrim_shared/quest/TESQuest_332260.h"
     ]
   },
   "symbol_map": {

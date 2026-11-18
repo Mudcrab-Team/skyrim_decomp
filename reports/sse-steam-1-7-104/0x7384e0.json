@@ -30,11 +30,11 @@
         "object_sha256": "c247695a11157181190afc90dfd3aadd42202ce3bcb41b7dc6345a0b2f390a53",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSimpleScaleController.cpp",
-          "reconstruction/bsengine/BSSimpleScaleController.h",
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiObjectNET.h",
-          "reconstruction/declarations/NiRefObject.h"
+          "reconstruction/declarations/NiRefObject.h",
+          "reconstruction/gamebryo/nianimation/BSSimpleScaleController.cpp",
+          "reconstruction/gamebryo/nianimation/BSSimpleScaleController.h"
         ]
       }
     }
@@ -178,17 +178,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSSimpleScaleController.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BSSimpleScaleController.cpp",
     "digest": "ba0c5444ddef2fa4adeb9090cd01680bd2b10cb914651746bf6a2f6bb0f0fe4d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ef0a3937f1608dc7cfafcc5786033af32a71d344dc297c2dc256e4396bebb334",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSSimpleScaleController.cpp",
-      "reconstruction/bsengine/BSSimpleScaleController.h",
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiObjectNET.h",
-      "reconstruction/declarations/NiRefObject.h"
+      "reconstruction/declarations/NiRefObject.h",
+      "reconstruction/gamebryo/nianimation/BSSimpleScaleController.cpp",
+      "reconstruction/gamebryo/nianimation/BSSimpleScaleController.h"
     ]
   },
   "submitter": "hinkiii",

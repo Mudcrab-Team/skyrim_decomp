@@ -29,13 +29,13 @@
         "object_sha256": "99870cfd309973d1a1328951c51d61dae8d171c90169b8a5c56fb680240044ac",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198e_5e73c0/ActiveEffectLayout.h",
-          "reconstruction/fo4p198e_5e73c0/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e73c0/BSSoundHandleLayout.h",
-          "reconstruction/fo4p198e_5e73c0/LayoutValueTypes.h",
-          "reconstruction/fo4p198e_5e73c0/ReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.cpp",
-          "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.h"
+          "reconstruction/bsaudio/BSSoundHandleLayout_5e73c0.h",
+          "reconstruction/skyrim/magic/ActiveEffectLayout_5e73c0.h",
+          "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.cpp",
+          "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.h",
+          "reconstruction/skyrim/papyrus/LayoutValueTypes_5e73c0.h",
+          "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e73c0.h",
+          "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5e73c0.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "14b39ec3389fac471ff5766d8d3e1edf492e3c75ed6af45a892f75ef8cb234d3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198e_5e73c0/ActiveEffectLayout.h",
-          "reconstruction/fo4p198e_5e73c0/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e73c0/BSSoundHandleLayout.h",
-          "reconstruction/fo4p198e_5e73c0/LayoutValueTypes.h",
-          "reconstruction/fo4p198e_5e73c0/ReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.cpp",
-          "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.h"
+          "reconstruction/bsaudio/BSSoundHandleLayout_5e73c0.h",
+          "reconstruction/skyrim/magic/ActiveEffectLayout_5e73c0.h",
+          "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.cpp",
+          "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.h",
+          "reconstruction/skyrim/papyrus/LayoutValueTypes_5e73c0.h",
+          "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e73c0.h",
+          "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5e73c0.h"
         ]
       }
     }
@@ -327,19 +327,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.cpp",
+    "compiled": "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.cpp",
     "digest": "9ebc7df2986abed0b62629eb0800e9a30f0b0963d492370e0d2ed2dfeff3d865",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d3af2253d455a0461e8627716527ab29a3931e91b3087e5a7d036c2d8a150e7e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198e_5e73c0/ActiveEffectLayout.h",
-      "reconstruction/fo4p198e_5e73c0/ActiveEffectReferenceEffectControllerLayout.h",
-      "reconstruction/fo4p198e_5e73c0/BSSoundHandleLayout.h",
-      "reconstruction/fo4p198e_5e73c0/LayoutValueTypes.h",
-      "reconstruction/fo4p198e_5e73c0/ReferenceEffectControllerLayout.h",
-      "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.cpp",
-      "reconstruction/fo4p198e_5e73c0/ValueModifierEffect.h"
+      "reconstruction/bsaudio/BSSoundHandleLayout_5e73c0.h",
+      "reconstruction/skyrim/magic/ActiveEffectLayout_5e73c0.h",
+      "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.cpp",
+      "reconstruction/skyrim/magic/ValueModifierEffect_5e73c0.h",
+      "reconstruction/skyrim/papyrus/LayoutValueTypes_5e73c0.h",
+      "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e73c0.h",
+      "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5e73c0.h"
     ]
   },
   "symbol_map": {

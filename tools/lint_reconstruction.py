@@ -68,6 +68,7 @@ rejecting source whose content is raw bytes in any spelling (docs/verification.m
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+import posixpath
 import re
 import sys
 
@@ -75,13 +76,18 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, logical_lines, quoted_includes  # noqa: E402
 from digest_v2 import LABEL_WORD  # noqa: E402
+import unit_paths  # noqa: E402
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 COMPARED_LINE = re.compile(r'^//[ \t]*0x[0-9a-fA-F]+(?:[ \t]|$)', re.M)
 EXPOSURE = ('black-box', 'community-headers', 'binary-analysis', 'mixed')
 NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'GUESS', 'EXE_RTTI', 'OBSERVED')
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
-SOURCE = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+# The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
+# single-level layout is accepted too while units written against it are still landing.
+SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+# A second unit of a split class is named `<Class>_<lowest rva>`; the class it declares is the base.
+SPLIT_TAG = re.compile(r'_[0-9a-f]{3,8}$')
 CODEGEN_DECLSPEC = r'naked|code_seg|allocate|safebuffers'
 ASM = r'__asm__|__asm|_asm|asm'
 # Applied to the whole spliced text with no comment or literal state, so nothing can be hidden
@@ -123,11 +129,12 @@ DECLSPEC = re.compile(r'(?<![A-Za-z0-9_])__declspec\s*\(')
 # reopen accepted matches. A `Labels: v2` line is still accepted but carries no information.
 LABELS_VERSION = re.compile(r'\bLabels:\s*v(\d+)\b')
 FREEFORM_LABEL_FILES = frozenset((
-    'reconstruction/netimmerse/NiTimeController.h', 'reconstruction/netimmerse/NiTimeController.cpp',
-    'reconstruction/inventory/ArmorRatingVisitor.h', 'reconstruction/inventory/ArmorRatingVisitor.cpp',
-    'reconstruction/bsengine/BSPointerHandleManagerInterface.h',
-    'reconstruction/bsengine/BSPointerHandleManagerInterface.cpp',
-    'reconstruction/bsengine/BSTimer.h', 'reconstruction/bsengine/BSTimer.cpp'))
+    'reconstruction/gamebryo/nianimation/NiTimeController.h', 'reconstruction/gamebryo/nianimation/NiTimeController.cpp',
+    'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.h',
+    'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp',
+    'reconstruction/bscore/BSPointerHandleManagerInterface.h',
+    'reconstruction/bscore/BSPointerHandleManagerInterface.cpp',
+    'reconstruction/bscore/BSTimer.h', 'reconstruction/bscore/BSTimer.cpp'))
 
 
 def label_grammar_applies(name, text):
@@ -158,9 +165,9 @@ INT_LITERAL = re.compile(r'(?<![\w.])(0[xX][0-9A-Fa-f]+|\d+)[uUlL]*(?![\w.])')
 CHAR_LITERAL = re.compile(r"(?:u8|u|U|L)?'(\\x[0-9A-Fa-f]+|\\[0-7]{1,3}|\\.|[^'\\\n])'")
 BRACED = re.compile(r'\{([^{}]*)\}', re.S)
 INCLUDE_NAME = re.compile(r'[A-Za-z0-9_][A-Za-z0-9_.+-]*(?:/[A-Za-z0-9_][A-Za-z0-9_.+-]*)*')
-# Legacy accepted units can spell one parent step to another reconstruction area. New units
+# Accepted units spell a header in another area by walking up from their own folder. New units
 # use same-directory or reconstruction-root paths (docs/drafter-card.md).
-SHARED_HEADER = re.compile(r'\.\./[a-z][a-z0-9_]*/[A-Z][A-Za-z0-9_]*\.h')
+SHARED_HEADER = re.compile(r'(?:\.\./)+(?:[a-z][a-z0-9_]*/)+[A-Z][A-Za-z0-9_]*\.h')
 PRAGMA_LINE = re.compile(r'^[ \t]*#[ \t]*pragma\b(.*)$', re.M)
 # Placeholders of tools/skeleton.py (unit_skeleton.py): the stub body and the header fields the
 # Drafter has to fill. Any spelling that starts with the prefix counts, so a new placeholder is
@@ -560,6 +567,8 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
     if not m:
         return [f'{name}: sources are reconstruction/<area>/<Class>.h or .cpp (lowercase area, one class per pair)']
     area, cls, ext = m.groups()
+    if '/' in area and area not in unit_paths.AREAS:
+        return [f'{name}: area {area} is not one of tools/unit_paths.py AREAS']
     blob = (root / name).read_bytes()
     try:
         text = blob.decode('utf-8')
@@ -575,7 +584,8 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
         # The compiler opens an include before the verifier's /showIncludes check can refuse it, so a
         # name that could reach a host file (drive letter, backslash, absolute or parent path) is
         # refused here, before any compile of contributed source.
-        shared = kind == '"' and SHARED_HEADER.fullmatch(target)
+        shared = (kind == '"' and SHARED_HEADER.fullmatch(target)
+                  and posixpath.normpath(posixpath.join(posixpath.dirname(name), target)).startswith('reconstruction/'))
         if not shared and (not INCLUDE_NAME.fullmatch(target) or '..' in target.split('/')):
             problems.append(f'{name}: include name {target!r} must be a plain relative path '
                             '(letters, digits, _ . + - and /; no drive, backslash, leading / or ..), '
@@ -627,8 +637,9 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
     else:
         if not any(re.search(rf'\b{o}\b', header) for o in NAME_ORIGINS):
             problems.append(f'{name}: header comment must label name origin ({", ".join(NAME_ORIGINS)})')
-        if not re.search(rf'\b(?:class|struct)\s+{re.escape(cls)}\b(?!\s*;)', spliced):
-            problems.append(f'{name}: header must declare class {cls}')
+        declared = (cls, SPLIT_TAG.sub('', cls))
+        if not any(re.search(rf'\b(?:class|struct)\s+{re.escape(c)}\b(?!\s*;)', spliced) for c in declared):
+            problems.append(f'{name}: header must declare class {declared[-1]}')
     return problems
 
 

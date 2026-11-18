@@ -29,8 +29,8 @@
         "object_sha256": "29ef726862e3e18c79c1f9c7ef799a1c3c92da133beb8497088764e2335bac1f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPrimitive.cpp",
-          "reconstruction/bsengine/ExtraPrimitive.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPrimitive.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPrimitive.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2dac246be0d2f8d56b43ca225be50a82e82af62c34e73ef2bc96881dd639cc05",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPrimitive.cpp",
-          "reconstruction/bsengine/ExtraPrimitive.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPrimitive.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPrimitive.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPrimitive.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPrimitive.cpp",
     "digest": "23ae60f80087a9ed7d07174e07a49b7ee949d74e36bda083e92bb6e8ddbeabd1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "516c5a9743987b430c9e20dfd33dcd94c61fe3b2e216b34722299ce555ab6ba1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraPrimitive.cpp",
-      "reconstruction/bsengine/ExtraPrimitive.h"
+      "reconstruction/skyrim_shared/extradata/ExtraPrimitive.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPrimitive.h"
     ]
   },
   "symbol_map": {

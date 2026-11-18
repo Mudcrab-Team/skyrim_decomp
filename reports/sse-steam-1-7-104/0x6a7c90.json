@@ -31,13 +31,13 @@
         "object_sha256": "05f5a109a2d84cce3cc86c515bf39e2af73da89d0a133ac0405d39faf6e3b9c4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/ActorWalkCache.cpp",
-          "reconstruction/actor206_sol/ActorWalkCache.h",
-          "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorWalkCache.cpp",
+          "reconstruction/skyrim_shared/actors/ActorWalkCache.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       },
       "winpc-native": {
@@ -58,13 +58,13 @@
         "object_sha256": "ba0f5aeb7821f7be56abcb197583b8efdea5cf6dad37743a00d167e5be2f76ff",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/ActorWalkCache.cpp",
-          "reconstruction/actor206_sol/ActorWalkCache.h",
-          "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorWalkCache.cpp",
+          "reconstruction/skyrim_shared/actors/ActorWalkCache.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       }
     }
@@ -331,19 +331,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_sol/ActorWalkCache.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ActorWalkCache.cpp",
     "digest": "3cdbfac7f226e4122985c03c06df73f9e2b6bd5f768d216c6e11d882f4781e60",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1a40d6ad2970184e747680bff8b9e5e493cbaefa3623f27615c68ff6bb4c8912",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_sol/ActorWalkCache.cpp",
-      "reconstruction/actor206_sol/ActorWalkCache.h",
-      "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorWalkCache.cpp",
+      "reconstruction/skyrim_shared/actors/ActorWalkCache.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
     ]
   },
   "symbol_map": {

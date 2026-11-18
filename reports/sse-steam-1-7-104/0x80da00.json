@@ -29,8 +29,8 @@
         "object_sha256": "bab61b84402a58fff779027feeba5c3f944166e06752721ea935a32a847a587a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatAimController.cpp",
-          "reconstruction/fo4hints/CombatAimController.h"
+          "reconstruction/skyrim/ai/combat/CombatAimController_80da00.cpp",
+          "reconstruction/skyrim/ai/combat/CombatAimController_80da00.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3386d04d0fa7ef1a344f6c99f232a6dce85dfdd1abb24f1784d3b36883b6a6bc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatAimController.cpp",
-          "reconstruction/fo4hints/CombatAimController.h"
+          "reconstruction/skyrim/ai/combat/CombatAimController_80da00.cpp",
+          "reconstruction/skyrim/ai/combat/CombatAimController_80da00.h"
         ]
       }
     }
@@ -363,14 +363,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/CombatAimController.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatAimController_80da00.cpp",
     "digest": "23ea8408e3c9224da7bbca05e2848d46cb8da7a300a3dd71caaa2a171caf0a73",
     "digest_method": "tu-sha256-v2",
     "run_digest": "775cc7e0bd9412cf65ff26467e56a88201e88530641e42110dc71588a283b3cc",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/CombatAimController.cpp",
-      "reconstruction/fo4hints/CombatAimController.h"
+      "reconstruction/skyrim/ai/combat/CombatAimController_80da00.cpp",
+      "reconstruction/skyrim/ai/combat/CombatAimController_80da00.h"
     ]
   },
   "symbol_map": {

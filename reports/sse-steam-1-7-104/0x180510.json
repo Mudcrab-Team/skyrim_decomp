@@ -29,8 +29,8 @@
         "object_sha256": "abbe98c4d6d16c094595b93c41fd8ea0b726178ff0704bff9bd5d5d0bd87afb2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAnimGraphManager.cpp",
-          "reconstruction/bsengine/ExtraAnimGraphManager.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "4b8f04ab1b35254506b024828b871a035bf985213c4cf8d0351e9d169063f72e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAnimGraphManager.cpp",
-          "reconstruction/bsengine/ExtraAnimGraphManager.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAnimGraphManager.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.cpp",
     "digest": "4b638429ddbb2bcb97b4a8ed327bbe408376455f9fe508f22305cc1bb8054d67",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ccc8ddb6458d805de41264245d70dadb750f45cfa51e5fc895a2124da163c226",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraAnimGraphManager.cpp",
-      "reconstruction/bsengine/ExtraAnimGraphManager.h"
+      "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAnimGraphManager.h"
     ]
   },
   "symbol_map": {

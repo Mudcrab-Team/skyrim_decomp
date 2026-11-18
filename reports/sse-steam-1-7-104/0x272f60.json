@@ -32,8 +32,8 @@
         "repository_files_opened": [
           "reconstruction/declarations/BaseFormComponent.h",
           "reconstruction/declarations/TESForm.h",
-          "reconstruction/forms/TESLevSpell.cpp",
-          "reconstruction/forms/TESLevSpell.h"
+          "reconstruction/skyrim_shared/magic/TESLevSpell.cpp",
+          "reconstruction/skyrim_shared/magic/TESLevSpell.h"
         ]
       }
     }
@@ -179,7 +179,7 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESLevSpell.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/TESLevSpell.cpp",
     "digest": "f1b2ccaf162056ee1f32fa791d07e1b0031ef22f31726447239896b81c089892",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3488ec045f1deb1f8b7945dcb540cf345024ae4d7291665d8ead3b83328789c5",
@@ -187,8 +187,8 @@
     "translation_unit": [
       "reconstruction/declarations/BaseFormComponent.h",
       "reconstruction/declarations/TESForm.h",
-      "reconstruction/forms/TESLevSpell.cpp",
-      "reconstruction/forms/TESLevSpell.h"
+      "reconstruction/skyrim_shared/magic/TESLevSpell.cpp",
+      "reconstruction/skyrim_shared/magic/TESLevSpell.h"
     ]
   },
   "submitter": "hinkiii",

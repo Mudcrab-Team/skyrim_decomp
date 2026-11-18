@@ -29,9 +29,9 @@
         "object_sha256": "05468caeff315309c5c73ec6c4efab9d38a9e915cd1c61f8d8ad4211bc116856",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "accb594f06c2011490b78e92989bfa1526202bedcc80dc957f55505581dea0ff",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       }
     }
@@ -335,15 +335,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
     "digest": "d18f286b5d7567dcdcb3264f5add261cd694b04948e41a7a9a1743b74230c745",
     "digest_method": "tu-sha256-v2",
     "run_digest": "99d66003ffd51363cd5993e4830b045dfd434f721df544027e728a11a5edc212",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterDisarmLayout.h",
-      "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.cpp",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterDisarmLayout.h",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
     ]
   },
   "symbol_map": {

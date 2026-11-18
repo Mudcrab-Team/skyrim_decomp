@@ -29,8 +29,8 @@
         "object_sha256": "e6d4d2293785d751e6e6e5113211ec63f7febc6d1c2b054235dccf975bea5965",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiPoint3Interpolator.cpp",
-          "reconstruction/netimmerse/NiPoint3Interpolator.h"
+          "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "74413903003ada4bdcb8022371171c2cab6c9a99d50df56afe6e8f57a9f87870",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiPoint3Interpolator.cpp",
-          "reconstruction/netimmerse/NiPoint3Interpolator.h"
+          "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiPoint3Interpolator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.cpp",
     "digest": "1810b5ec44f330827b10d1a31e9c9601c388be525821a83e19ce3f11c38ae9c4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2b9729c908ca0b8ee9c6bbd858331ad59ee81c788e263c9ec26601afdd8b9042",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiPoint3Interpolator.cpp",
-      "reconstruction/netimmerse/NiPoint3Interpolator.h"
+      "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.cpp",
+      "reconstruction/gamebryo/nianimation/NiPoint3Interpolator.h"
     ]
   },
   "symbol_map": {

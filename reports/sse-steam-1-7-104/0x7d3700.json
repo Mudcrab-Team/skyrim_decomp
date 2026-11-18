@@ -29,9 +29,9 @@
         "object_sha256": "dd7ee428374ec551d530aa762ac573bd11e1617f2d3e10c5382e9b848ea371ea",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedBulkLayout.h",
-          "reconstruction/bsengine/IHandlerFunctorBulkLayout.cpp",
-          "reconstruction/bsengine/IHandlerFunctorBulkLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedBulkLayout.h",
+          "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.cpp",
+          "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "27fc38f4a93ceed34047e6d2022c70a4695627a42bc4c649d81209f4a3e2293f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedBulkLayout.h",
-          "reconstruction/bsengine/IHandlerFunctorBulkLayout.cpp",
-          "reconstruction/bsengine/IHandlerFunctorBulkLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedBulkLayout.h",
+          "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.cpp",
+          "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/IHandlerFunctorBulkLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.cpp",
     "digest": "25ecb5c89a650519a2e719179809ae09a2b7971ce31ba12b2fc5213b11aeb43d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3fe808f36485ffe76db11239c4e9980837f60076787a4daa9444de2c617d2d9e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedBulkLayout.h",
-      "reconstruction/bsengine/IHandlerFunctorBulkLayout.cpp",
-      "reconstruction/bsengine/IHandlerFunctorBulkLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedBulkLayout.h",
+      "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.cpp",
+      "reconstruction/skyrim/controls/IHandlerFunctorBulkLayout.h"
     ]
   },
   "symbol_map": {

@@ -31,11 +31,11 @@
         "object_sha256": "455183fd8782ff68a6481841a2f4cb94a03aa6e034c55338b8ae2635fc0f5cb1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_solretry/ActorForward.cpp",
-          "reconstruction/actor207_solretry/ActorForward.h",
-          "reconstruction/actor207_solretry/NiPoint3.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/gamebryo/nimain/NiPoint3.h",
+          "reconstruction/skyrim_shared/actors/ActorForward.cpp",
+          "reconstruction/skyrim_shared/actors/ActorForward.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
         ]
       }
     }
@@ -188,17 +188,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_solretry/ActorForward.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ActorForward.cpp",
     "digest": "4f4768febae7e30c37918f22727ac91f793ff9e1990a2c87675996134a8a5163",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5748e09b976e7c4b4c3b1d49baa0913a824d6c3be3e8f20215aa43448145a2d5",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_solretry/ActorForward.cpp",
-      "reconstruction/actor207_solretry/ActorForward.h",
-      "reconstruction/actor207_solretry/NiPoint3.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/gamebryo/nimain/NiPoint3.h",
+      "reconstruction/skyrim_shared/actors/ActorForward.cpp",
+      "reconstruction/skyrim_shared/actors/ActorForward.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
     ]
   },
   "symbol_map": {

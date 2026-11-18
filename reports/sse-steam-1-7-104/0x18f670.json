@@ -29,9 +29,9 @@
         "object_sha256": "fcd4166987d4c5de7e0b93cb7d6799b6a1683cb284edfffbf48470f457c27c9a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraPersistentCellStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraPersistentCellStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a5c5021722e90a5ee86431537a5a99fee259c5f901c68c619f2bc7bd37f061e8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraPersistentCellStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraPersistentCellStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPersistentCellStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.cpp",
     "digest": "379c31213250bb3eae8d2021b94018cbbe501656178912e0392c7efd2c9c3c4d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "85f2114445cde36e7dfdf78e0fb39efc0c3d0531bbb333158ec0ee5df18cd4a8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraPersistentCellStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraPersistentCellStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPersistentCellStorageLayout.h"
     ]
   },
   "symbol_map": {

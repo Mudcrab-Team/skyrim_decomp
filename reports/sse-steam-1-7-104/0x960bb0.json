@@ -29,10 +29,10 @@
         "object_sha256": "05edbd90066a276b78fd6cd5688e525f57a5c4104b74f818cb198b37a0550662",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/FavoritesHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/FavoritesHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "9ae27c8dad83a4ff2f79d2832cfc7565ba52f418617c4dad6382dacaced0522f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/FavoritesHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/FavoritesHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/FavoritesHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.cpp",
     "digest": "ac698dc1b33134a09ed62ecfd8f97481498f57d1e53d51a8203e41f221502f0f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "64db9e0397e7a807d13a2d05c903d5b9122a84817724ccabc0efcd668ffa0325",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/FavoritesHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/FavoritesHandlerStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/FavoritesHandlerStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

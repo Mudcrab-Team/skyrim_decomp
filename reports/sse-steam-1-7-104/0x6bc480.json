@@ -29,8 +29,8 @@
         "object_sha256": "1e013ac2fe7c4d2b611e88fbb2778ab31bfa583ccefc58bc0bdc9d9093ee30af",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/MovementMessageCaptureBase.cpp",
-          "reconstruction/bsengine/MovementMessageCaptureBase.h"
+          "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.cpp",
+          "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d566038a08dc9a0d0cbf1dd70fa2e671f17034341072ce3b7a9559e3c3c8443e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/MovementMessageCaptureBase.cpp",
-          "reconstruction/bsengine/MovementMessageCaptureBase.h"
+          "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.cpp",
+          "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MovementMessageCaptureBase.cpp",
+    "compiled": "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.cpp",
     "digest": "ec380cd5e101d55904d010e9ad7a2bc2a55b433412bea215709abead9a7e1528",
     "digest_method": "tu-sha256-v2",
     "run_digest": "52df61f2c329efa402589ecdceb9be8b09e5cdcb621d13b47c88302b47a6fb51",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/MovementMessageCaptureBase.cpp",
-      "reconstruction/bsengine/MovementMessageCaptureBase.h"
+      "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.cpp",
+      "reconstruction/skyrim/ai/movement/MovementMessageCaptureBase.h"
     ]
   },
   "symbol_map": {

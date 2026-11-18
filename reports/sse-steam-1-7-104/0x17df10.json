@@ -29,9 +29,9 @@
         "object_sha256": "e6c15a284fee1ed6d1f7f92a9f496c89f2ecaea5ad2a1db2476ebb613fa5c2bf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraWornStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraWornStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "5c09666ed07898ccea2fcb421ad91d02fdb8d532ff299d21e47382180a267df6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraWornStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraWornStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWornStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.cpp",
     "digest": "08f63498fdda415f9a26c15eb8e6bd89f8f6aeebd884087e0cadad49b148c449",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6b081e4ef4ff3ceb784a20304fa26f0c3a1ca9e5e2d7ef36d4bb44a361de569d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraWornStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraWornStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWornStorageLayout.h"
     ]
   },
   "symbol_map": {

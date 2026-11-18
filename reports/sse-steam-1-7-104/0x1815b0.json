@@ -29,8 +29,8 @@
         "object_sha256": "385dff2a613aa6655769689f530e2a1bf51bfd8a203e4727f729152e645e8d91",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWorn.cpp",
-          "reconstruction/bsengine/ExtraWorn.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWorn.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWorn.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "03b88178338557e138890d522eb5470830ae06e93b1a074b2ba80a4d7b19e5b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWorn.cpp",
-          "reconstruction/bsengine/ExtraWorn.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWorn.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWorn.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWorn.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWorn.cpp",
     "digest": "15733d3551d1f86140653915490b7cee39397272a5ea1d106c7b69a6dc436a21",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e8de2836659c8b38f4d2a928f9e21afa76a2c63f529e3902de130bf628d2aea9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraWorn.cpp",
-      "reconstruction/bsengine/ExtraWorn.h"
+      "reconstruction/skyrim_shared/extradata/ExtraWorn.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWorn.h"
     ]
   },
   "symbol_map": {

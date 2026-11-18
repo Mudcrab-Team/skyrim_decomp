@@ -29,8 +29,8 @@
         "object_sha256": "ac948c0f0a96a7b9ac5f7b27b98e2c56e61c43a6ff2c19c43d7e943bcdd268e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSAudioListener.cpp",
-          "reconstruction/bsengine/BSAudioListener.h"
+          "reconstruction/bsaudio/BSAudioListener.cpp",
+          "reconstruction/bsaudio/BSAudioListener.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "c7a4cf99441703df089631c19531f146df7da3a12ba04503237432d44d3d7c07",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSAudioListener.cpp",
-          "reconstruction/bsengine/BSAudioListener.h"
+          "reconstruction/bsaudio/BSAudioListener.cpp",
+          "reconstruction/bsaudio/BSAudioListener.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSAudioListener.cpp",
+    "compiled": "reconstruction/bsaudio/BSAudioListener.cpp",
     "digest": "3a736bbc8aa30e2aaaa98ca721d9c88d05bf713879f64a84a0e30ddc9f7d5db2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3d224b85a8556a4e95211f4c297515b987937057c790668d7cb0590197bf2184",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSAudioListener.cpp",
-      "reconstruction/bsengine/BSAudioListener.h"
+      "reconstruction/bsaudio/BSAudioListener.cpp",
+      "reconstruction/bsaudio/BSAudioListener.h"
     ]
   },
   "symbol_map": {

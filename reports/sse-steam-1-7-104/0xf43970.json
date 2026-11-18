@@ -29,9 +29,9 @@
         "object_sha256": "9d7ae0b5447073e8cb6209a0f857ed1873f75336cab96810b69cece55ea00248",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaff43970.cpp",
-          "reconstruction/fields/FieldLeaff43970.h",
-          "reconstruction/fields/NiIntersectorFieldLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaff43970.cpp",
+          "reconstruction/unmapped/fields/FieldLeaff43970.h",
+          "reconstruction/unmapped/fields/NiIntersectorFieldLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "dbe3b9724595df0081104d2d909abe8e135a85cdf07dee94e10dedbec434b8cd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaff43970.cpp",
-          "reconstruction/fields/FieldLeaff43970.h",
-          "reconstruction/fields/NiIntersectorFieldLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaff43970.cpp",
+          "reconstruction/unmapped/fields/FieldLeaff43970.h",
+          "reconstruction/unmapped/fields/NiIntersectorFieldLayout.h"
         ]
       }
     }
@@ -345,15 +345,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaff43970.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaff43970.cpp",
     "digest": "eb6115938c3fc17122a9adc1146af4cbebcd813c4b6d3733348bfd8a0f4c64aa",
     "digest_method": "tu-sha256-v2",
     "run_digest": "038d7658432717e1a0eee074abdc29207a65b9dac4852cca3c0fcb45c09fa4e6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/FieldLeaff43970.cpp",
-      "reconstruction/fields/FieldLeaff43970.h",
-      "reconstruction/fields/NiIntersectorFieldLayout.h"
+      "reconstruction/unmapped/fields/FieldLeaff43970.cpp",
+      "reconstruction/unmapped/fields/FieldLeaff43970.h",
+      "reconstruction/unmapped/fields/NiIntersectorFieldLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "b1bae285a7f36e0fe0db6d307cc766518e194a75400cb6d63be9b8bfe5e1c82c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAttachRef.cpp",
-          "reconstruction/bsengine/ExtraAttachRef.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAttachRef.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAttachRef.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5b2fc654b231409f2ca859bdb607e3d25f1c16f672aad2ebf4ebd4afa6912568",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAttachRef.cpp",
-          "reconstruction/bsengine/ExtraAttachRef.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAttachRef.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAttachRef.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAttachRef.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAttachRef.cpp",
     "digest": "f021cee8d7894b60d50dad6ce89449d7d80b08a783b13742ac8ec41bf1e53864",
     "digest_method": "tu-sha256-v2",
     "run_digest": "65277ec39b22c0d1c30e5c9812d2e67e19dbe1645700c20b8a0fd247ab71c44c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraAttachRef.cpp",
-      "reconstruction/bsengine/ExtraAttachRef.h"
+      "reconstruction/skyrim_shared/extradata/ExtraAttachRef.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAttachRef.h"
     ]
   },
   "symbol_map": {

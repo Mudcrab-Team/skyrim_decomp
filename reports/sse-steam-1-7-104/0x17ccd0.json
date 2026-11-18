@@ -29,9 +29,9 @@
         "object_sha256": "fbb7c67e91bae4e31f782ec9d8e9e1ad27585cfb750dadaf9f923c5e4b0979c9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHealthStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHealthStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "f9174077209a726e73b1a5d4d742125ba40dde4c4286907d21671572b500c840",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHealthStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHealthStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHealthStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.cpp",
     "digest": "bab345d45a9b6f16d0da2d1b00d86c613c149639c42e04b9b14cd311e148696d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bbe8af50e8d718255c55a6747c3e9f41a4fdc9d596a5b0b14a3d163a1d81ffc0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraHealthStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraHealthStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHealthStorageLayout.h"
     ]
   },
   "symbol_map": {

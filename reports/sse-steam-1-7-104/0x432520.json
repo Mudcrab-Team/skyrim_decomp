@@ -29,8 +29,8 @@
         "object_sha256": "7b01c3db864f88fdfbcb6d6fe8c56cd78e9f92db61051d3d8df4bc2c171c2014",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFaceGenKeyframeMultiple.cpp",
-          "reconstruction/bsengine/BSFaceGenKeyframeMultiple.h"
+          "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.cpp",
+          "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5cb732fcc764c7c1f5161b08e8a5f9e2ab9710f9bbcfe8f939741c5fc8eed992",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFaceGenKeyframeMultiple.cpp",
-          "reconstruction/bsengine/BSFaceGenKeyframeMultiple.h"
+          "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.cpp",
+          "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSFaceGenKeyframeMultiple.cpp",
+    "compiled": "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.cpp",
     "digest": "5a342841795a18b3aa84dfdaf9d4b3d57606448fd6e91bb1a780cfef95dc5ac2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1567278f9b691d8931c2bb76202a24882944156ae91aa492c19df4e144554b1e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSFaceGenKeyframeMultiple.cpp",
-      "reconstruction/bsengine/BSFaceGenKeyframeMultiple.h"
+      "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.cpp",
+      "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeMultiple.h"
     ]
   },
   "symbol_map": {

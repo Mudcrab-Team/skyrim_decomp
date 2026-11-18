@@ -29,8 +29,8 @@
         "object_sha256": "d15557de739518416223a02fa7c62332eb781c711f8f45d4b265836f093429aa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/inventory/InventoryChanges.cpp",
-          "reconstruction/inventory/InventoryChanges.h"
+          "reconstruction/skyrim_shared/inventory/InventoryChanges.cpp",
+          "reconstruction/skyrim_shared/inventory/InventoryChanges.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3e28f957163daefd04502a9699ba9dbf9169ffbf9818aa87bc3abe649720e49a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/inventory/InventoryChanges.cpp",
-          "reconstruction/inventory/InventoryChanges.h"
+          "reconstruction/skyrim_shared/inventory/InventoryChanges.cpp",
+          "reconstruction/skyrim_shared/inventory/InventoryChanges.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/inventory/InventoryChanges.cpp",
+    "compiled": "reconstruction/skyrim_shared/inventory/InventoryChanges.cpp",
     "digest": "608cfb4fc4a3342489b35659ad5bfddfeb82ba86f80599bfd58eb5f1aa2b153f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "557232ff881dccf6de549a1f8b07dcb6ba193cd0df42c36fe9d8c4520e40d829",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/inventory/InventoryChanges.cpp",
-      "reconstruction/inventory/InventoryChanges.h"
+      "reconstruction/skyrim_shared/inventory/InventoryChanges.cpp",
+      "reconstruction/skyrim_shared/inventory/InventoryChanges.h"
     ]
   },
   "symbol_map": {

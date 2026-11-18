@@ -29,13 +29,13 @@
         "object_sha256": "d25a60d820613abd760a896acb3548b086c1f308d0bad9ff0915dbe977af2ccf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSEffectShaderThunkLayout.cpp",
-          "reconstruction/shaders/BSEffectShaderThunkLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSEffectShaderThunkLayout.cpp",
+          "reconstruction/bsshader/BSEffectShaderThunkLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "3e8bc36d1cbf90fbca1ae8ad6b786bf7f2669820a6cbfe7b09da6689ae184ac4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSEffectShaderThunkLayout.cpp",
-          "reconstruction/shaders/BSEffectShaderThunkLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSEffectShaderThunkLayout.cpp",
+          "reconstruction/bsshader/BSEffectShaderThunkLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -345,19 +345,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSEffectShaderThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSEffectShaderThunkLayout.cpp",
     "digest": "59b0bbdbc1df62c720f906e846042b519e910c9a1fae3c46c3314f8628e229e4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c338e644ff2fb0257ecd6bca2e24f7e76180dccbcc66a9838735d76302916fce",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSEffectShaderThunkLayout.cpp",
-      "reconstruction/shaders/BSEffectShaderThunkLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSEffectShaderThunkLayout.cpp",
+      "reconstruction/bsshader/BSEffectShaderThunkLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

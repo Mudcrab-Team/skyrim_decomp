@@ -29,9 +29,9 @@
         "object_sha256": "341e28b69e856fef969cc825871111a03423fbd685e0aa5b5dc7a637b92c095c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSScene.cpp",
-          "reconstruction/forms/BGSScene.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/BGSScene.cpp",
+          "reconstruction/skyrim_shared/quest/BGSScene.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "969591be05649da8f8e2146a7d7f4b5049314de86dd3c7f32d13867f7c1e42f7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSScene.cpp",
-          "reconstruction/forms/BGSScene.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/BGSScene.cpp",
+          "reconstruction/skyrim_shared/quest/BGSScene.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSScene.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSScene.cpp",
     "digest": "c3315f1909002dba01d9a2e7478099b8634c6c6d532dc783ef87805485a69754",
     "digest_method": "tu-sha256-v2",
     "run_digest": "09228b20ce8f8a90a124fee2951a19aad141bdd2b015f7715ea894d60a7d9115",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSScene.cpp",
-      "reconstruction/forms/BGSScene.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/quest/BGSScene.cpp",
+      "reconstruction/skyrim_shared/quest/BGSScene.h"
     ]
   },
   "symbol_map": {

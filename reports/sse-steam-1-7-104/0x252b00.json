@@ -29,8 +29,8 @@
         "object_sha256": "66bf41758d47dd39bf97ba3b1e0142f267d5d2814c83d11adb9fb9495d6b8e45",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionDataObjects.cpp",
-          "reconstruction/forms/TESRegionDataObjects.h"
+          "reconstruction/skyrim_shared/world/TESRegionDataObjects.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionDataObjects.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9b382fe23945df52f4d6005916fc9dd3d16d0ae81290391a7fd14d3ee77cea43",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionDataObjects.cpp",
-          "reconstruction/forms/TESRegionDataObjects.h"
+          "reconstruction/skyrim_shared/world/TESRegionDataObjects.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionDataObjects.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRegionDataObjects.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESRegionDataObjects.cpp",
     "digest": "29f01afe6e15c6bfbe93ed101ab09e1a6278959e794a2ee6f0f09c0398eb9071",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e64d01b2652371ca5b6af824b7e2fc332e4734d1480d8e63a25fb0bd4aef1d33",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESRegionDataObjects.cpp",
-      "reconstruction/forms/TESRegionDataObjects.h"
+      "reconstruction/skyrim_shared/world/TESRegionDataObjects.cpp",
+      "reconstruction/skyrim_shared/world/TESRegionDataObjects.h"
     ]
   },
   "symbol_map": {

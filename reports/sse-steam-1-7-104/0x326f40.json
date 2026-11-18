@@ -29,8 +29,8 @@
         "object_sha256": "a509c12dce9a1b76fd014b93a5dc6629b905747612005d4b30780554db7afb88",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIMusicTrack.cpp",
-          "reconstruction/bsengine/BSIMusicTrack.h"
+          "reconstruction/bsaudio/BSIMusicTrack.cpp",
+          "reconstruction/bsaudio/BSIMusicTrack.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2a93e34563fb92785a72bab26c018390ffdfab1ba168838de2a280b1cdbbf9f1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIMusicTrack.cpp",
-          "reconstruction/bsengine/BSIMusicTrack.h"
+          "reconstruction/bsaudio/BSIMusicTrack.cpp",
+          "reconstruction/bsaudio/BSIMusicTrack.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSIMusicTrack.cpp",
+    "compiled": "reconstruction/bsaudio/BSIMusicTrack.cpp",
     "digest": "a26b05cfe859c9dccc63b0ce4ccd1faf2465c1cae650b0b67d5f271bf2cc6ece",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b3916f076f149354e1fe3c7d492d4920b6ba26f168382dfc0baa75f79b2f1cc1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIMusicTrack.cpp",
-      "reconstruction/bsengine/BSIMusicTrack.h"
+      "reconstruction/bsaudio/BSIMusicTrack.cpp",
+      "reconstruction/bsaudio/BSIMusicTrack.h"
     ]
   },
   "symbol_map": {

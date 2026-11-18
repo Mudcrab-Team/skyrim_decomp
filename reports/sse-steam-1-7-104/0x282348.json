@@ -29,10 +29,10 @@
         "object_sha256": "4275b4b65815871a7725aced96b7e5db86c3d8fa98cbd2fb6f8f71f326ab89e7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
-          "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.h"
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "206370126702505f404de679ebeea13831ea86164a01a8fae05377e5d68f0757",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
-          "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.h"
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.h"
         ]
       }
     }
@@ -340,16 +340,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
     "digest": "209697a182a9517b1e548ad38f1d448f2e164e5ea305adf7dd13e7c444d7b306",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4b9a5add81825a105ab2017ccaae719c57edc364fa23ca74668733b1a4572b93",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
-      "reconstruction/forms/TESObjectCONTLargeFormPrefixLayout.h"
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/forms/TESObjectCONTLargeFormPrefixLayout.h"
     ]
   },
   "symbol_map": {

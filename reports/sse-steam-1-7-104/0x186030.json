@@ -29,8 +29,8 @@
         "object_sha256": "18b941e848071bf59dd51edc20977dced61a0b60198744961eb737e62c96ac26",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCombatStyle.cpp",
-          "reconstruction/bsengine/ExtraCombatStyle.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "c56e5a5282969d936a71515621d9d9b76c5c4104252f348b4a5bf69b924eecdc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCombatStyle.cpp",
-          "reconstruction/bsengine/ExtraCombatStyle.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCombatStyle.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.cpp",
     "digest": "8d5939de28cd4db04e93535674faabf2d75690e5c7079d11bf862e6cf544d0a9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "88f393e5bf1e1937f5b6ec83052d0f01051cd089ed502029393096b63215c198",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCombatStyle.cpp",
-      "reconstruction/bsengine/ExtraCombatStyle.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCombatStyle.h"
     ]
   },
   "symbol_map": {

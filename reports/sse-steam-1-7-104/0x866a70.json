@@ -31,10 +31,10 @@
         "object_sha256": "a9a8f4be5f2aa39119d45b8832ff70182cba5b2c1e7c5a20acb14188a2017239",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_3/TESForm.cpp",
-          "reconstruction/actor207_3/TESForm.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/TESForm_866a70.cpp",
+          "reconstruction/skyrim_shared/forms/TESForm_866a70.h"
         ]
       }
     }
@@ -187,16 +187,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_3/TESForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESForm_866a70.cpp",
     "digest": "57b7a9d807c290727d0f2f14d8f3f624a69823d5de0bd7cf05602459ae93f605",
     "digest_method": "tu-sha256-v2",
     "run_digest": "61db4f2a7b033d361715fe50e34f2f2fba3eb81fe98c182b5dab687497167e6a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_3/TESForm.cpp",
-      "reconstruction/actor207_3/TESForm.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/forms/TESForm_866a70.cpp",
+      "reconstruction/skyrim_shared/forms/TESForm_866a70.h"
     ]
   },
   "symbol_map": {

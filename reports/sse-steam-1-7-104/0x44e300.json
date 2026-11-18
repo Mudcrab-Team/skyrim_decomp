@@ -29,8 +29,8 @@
         "object_sha256": "91f29dc290a179f2c47a8a26abbfa6b0f4b346007315bdda0ab35c5ee9cdf7e6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPackageDataLocationWrapper.cpp",
-          "reconstruction/forms/BGSPackageDataLocationWrapper.h"
+          "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.cpp",
+          "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "629b373d88e923c92805229af28b20ffc1cb9755d1bfc4e89cb01ea254331fc4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPackageDataLocationWrapper.cpp",
-          "reconstruction/forms/BGSPackageDataLocationWrapper.h"
+          "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.cpp",
+          "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSPackageDataLocationWrapper.cpp",
+    "compiled": "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.cpp",
     "digest": "fd7cdb2bba318278131ea56bf6769caa231fc1f2b3b25659de345834b97733c9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f79dd6f2104cf724932ae934a1f46132b428b0aeb354d82bf0703536f3b88580",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSPackageDataLocationWrapper.cpp",
-      "reconstruction/forms/BGSPackageDataLocationWrapper.h"
+      "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.cpp",
+      "reconstruction/skyrim/ai/BGSPackageDataLocationWrapper.h"
     ]
   },
   "symbol_map": {

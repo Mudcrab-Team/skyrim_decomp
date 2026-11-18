@@ -29,8 +29,8 @@
         "object_sha256": "04a130ff6a80b9065785be0bea45a904f7d2ac1fb7b6b02a93e6eab209413394",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSNiAllocator.cpp",
-          "reconstruction/bsengine/BSNiAllocator.h"
+          "reconstruction/bscore/BSNiAllocator.cpp",
+          "reconstruction/bscore/BSNiAllocator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "a7437585b6ede218e4b9781f55f3d3446e27dc56a291d329507501a0bbaaed0b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSNiAllocator.cpp",
-          "reconstruction/bsengine/BSNiAllocator.h"
+          "reconstruction/bscore/BSNiAllocator.cpp",
+          "reconstruction/bscore/BSNiAllocator.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSNiAllocator.cpp",
+    "compiled": "reconstruction/bscore/BSNiAllocator.cpp",
     "digest": "869ec1f19f3f3cbea4ccb6cbc1f361d9d568e3974bf5d2afdbf1666cff3d2bc9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ff8b3dc969dabf93f2dd51fda0a0dbcc1151d2472a733314a77e9e5796c67256",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSNiAllocator.cpp",
-      "reconstruction/bsengine/BSNiAllocator.h"
+      "reconstruction/bscore/BSNiAllocator.cpp",
+      "reconstruction/bscore/BSNiAllocator.h"
     ]
   },
   "symbol_map": {

@@ -29,10 +29,10 @@
         "object_sha256": "c285f6c7f480d53ecf2e16c28b7ebee278c8bf3f033f7f438425a7b6cdb665c7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSHandleRefObject.h",
-          "reconstruction/bsengine/BSInlineHost8bb800.cpp",
-          "reconstruction/bsengine/BSInlineHost8bb800.h",
-          "reconstruction/bsengine/BSReleaseOwner.h"
+          "reconstruction/bscore/BSHandleRefObject.h",
+          "reconstruction/bscore/BSReleaseOwner.h",
+          "reconstruction/unmapped/wrappers/BSInlineHost8bb800.cpp",
+          "reconstruction/unmapped/wrappers/BSInlineHost8bb800.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "f0b0e21527f3d26049af7dc26a8b775447a0c766fe515925a2f9f9194a061937",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSHandleRefObject.h",
-          "reconstruction/bsengine/BSInlineHost8bb800.cpp",
-          "reconstruction/bsengine/BSInlineHost8bb800.h",
-          "reconstruction/bsengine/BSReleaseOwner.h"
+          "reconstruction/bscore/BSHandleRefObject.h",
+          "reconstruction/bscore/BSReleaseOwner.h",
+          "reconstruction/unmapped/wrappers/BSInlineHost8bb800.cpp",
+          "reconstruction/unmapped/wrappers/BSInlineHost8bb800.h"
         ]
       }
     }
@@ -363,16 +363,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSInlineHost8bb800.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/BSInlineHost8bb800.cpp",
     "digest": "39b5e1a426df35452c306b6c3d7fc3e50970bec50a8ab30730f689f6ccc9bce0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6d88dbec9e8583142833f5f4ffd754762be54942b17f477bb214994eaaf4f1f3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSHandleRefObject.h",
-      "reconstruction/bsengine/BSInlineHost8bb800.cpp",
-      "reconstruction/bsengine/BSInlineHost8bb800.h",
-      "reconstruction/bsengine/BSReleaseOwner.h"
+      "reconstruction/bscore/BSHandleRefObject.h",
+      "reconstruction/bscore/BSReleaseOwner.h",
+      "reconstruction/unmapped/wrappers/BSInlineHost8bb800.cpp",
+      "reconstruction/unmapped/wrappers/BSInlineHost8bb800.h"
     ]
   },
   "symbol_map": {

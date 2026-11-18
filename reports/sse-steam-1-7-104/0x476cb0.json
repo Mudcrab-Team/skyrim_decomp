@@ -29,8 +29,8 @@
         "object_sha256": "74552b28798afde7a71b77dff8d0acf3ff945f7dc10e46b3317e7316727834d0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSProcedureUnlock.cpp",
-          "reconstruction/forms/BGSProcedureUnlock.h"
+          "reconstruction/skyrim/ai/BGSProcedureUnlock.cpp",
+          "reconstruction/skyrim/ai/BGSProcedureUnlock.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "87698d96f052e8b764b410ee4347796545e600be5a41ca2e0f99ea79c42c41a8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSProcedureUnlock.cpp",
-          "reconstruction/forms/BGSProcedureUnlock.h"
+          "reconstruction/skyrim/ai/BGSProcedureUnlock.cpp",
+          "reconstruction/skyrim/ai/BGSProcedureUnlock.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSProcedureUnlock.cpp",
+    "compiled": "reconstruction/skyrim/ai/BGSProcedureUnlock.cpp",
     "digest": "1ec3bd06dbcf1da9aa30f0f461b995c0515b37bc07e29fe886d8ac9c39ca31e7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7caf0440f5422eb30d66df5ec5f7fbb35d1ca76a5aea26b95c4ed9145bac3ce0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSProcedureUnlock.cpp",
-      "reconstruction/forms/BGSProcedureUnlock.h"
+      "reconstruction/skyrim/ai/BGSProcedureUnlock.cpp",
+      "reconstruction/skyrim/ai/BGSProcedureUnlock.h"
     ]
   },
   "symbol_map": {

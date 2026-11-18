@@ -29,9 +29,9 @@
         "object_sha256": "bc58fc742d2cd809b2d7ea5ab98f368767700024d8da1ce19244a0f4b69623e9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/IUIMessageDataStorageLayout.h",
-          "reconstruction/bsengine/ModManagerDataStorageLayout.cpp",
-          "reconstruction/bsengine/ModManagerDataStorageLayout.h"
+          "reconstruction/bscore/ModManagerDataStorageLayout.cpp",
+          "reconstruction/bscore/ModManagerDataStorageLayout.h",
+          "reconstruction/bsscaleform/IUIMessageDataStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "dc96030108893f1c9f4f4d5a1be64e7137424fe287de5fcff83a54eff9543ffc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/IUIMessageDataStorageLayout.h",
-          "reconstruction/bsengine/ModManagerDataStorageLayout.cpp",
-          "reconstruction/bsengine/ModManagerDataStorageLayout.h"
+          "reconstruction/bscore/ModManagerDataStorageLayout.cpp",
+          "reconstruction/bscore/ModManagerDataStorageLayout.h",
+          "reconstruction/bsscaleform/IUIMessageDataStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ModManagerDataStorageLayout.cpp",
+    "compiled": "reconstruction/bscore/ModManagerDataStorageLayout.cpp",
     "digest": "d78af580163234ce06bff3a11df26eadc6ab5153a3a7407c8921f045c8eb0e3a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2c004fb4081c48d3995fae5ec0324214eced2f88e779242bd2716c5ac972b2e0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/IUIMessageDataStorageLayout.h",
-      "reconstruction/bsengine/ModManagerDataStorageLayout.cpp",
-      "reconstruction/bsengine/ModManagerDataStorageLayout.h"
+      "reconstruction/bscore/ModManagerDataStorageLayout.cpp",
+      "reconstruction/bscore/ModManagerDataStorageLayout.h",
+      "reconstruction/bsscaleform/IUIMessageDataStorageLayout.h"
     ]
   },
   "symbol_map": {

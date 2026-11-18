@@ -29,9 +29,9 @@
         "object_sha256": "8060df32f533b5c68928917fa20cd358d16e9c4fa85adc7c1f6cca187155ff81",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/GRefCountImplCoreLayout.h",
-          "reconstruction/wrappers/F004Represented121990.cpp",
-          "reconstruction/wrappers/F004Represented121990.h"
+          "reconstruction/unmapped/support/GRefCountImplCoreLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented121990.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented121990.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "c7ff54169b4084832612d76c9924c2a8734a5ab08e710218f597e5f46e1c6c45",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/GRefCountImplCoreLayout.h",
-          "reconstruction/wrappers/F004Represented121990.cpp",
-          "reconstruction/wrappers/F004Represented121990.h"
+          "reconstruction/unmapped/support/GRefCountImplCoreLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented121990.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented121990.h"
         ]
       }
     }
@@ -334,15 +334,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented121990.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented121990.cpp",
     "digest": "cb71908056efc584572b7ae004ab0ad36383bb93f6690c9e63acde75e264681a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "368c6c5eaab75726b36fb5232776d63c0d0a572ba0e91445ea87b92fcff7b266",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/GRefCountImplCoreLayout.h",
-      "reconstruction/wrappers/F004Represented121990.cpp",
-      "reconstruction/wrappers/F004Represented121990.h"
+      "reconstruction/unmapped/support/GRefCountImplCoreLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented121990.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented121990.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "0be51e6368242ffc814671777bb49731e6d1f63d756d3cebeb0411c4b274cb32",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraTerminalStateStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraTerminalStateStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ca7a33714e304769b4f18192afe4315c8ae7300bbaad8f0023d56f41d792ccd7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraTerminalStateStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraTerminalStateStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraTerminalStateStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.cpp",
     "digest": "2cd840d0b8319c655727688cc0d191a9813b74270d39f77f5efd92af50031781",
     "digest_method": "tu-sha256-v2",
     "run_digest": "df5b6d708485bf2c30932b97a41c250fa464a4f5b7d044e715771dc66068ce5f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraTerminalStateStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraTerminalStateStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraTerminalStateStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "0480a677a597d592dedaaa509c44f0726fc085055b5afe8ddcac80ab5fdae4c8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ArrayAllocatorLeafLayout.cpp",
-          "reconstruction/bsengine/ArrayAllocatorLeafLayout.h"
+          "reconstruction/bscore/ArrayAllocatorLeafLayout.cpp",
+          "reconstruction/bscore/ArrayAllocatorLeafLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "02b7ca1e143f9e0ea223326cb35eef29fde1fe2541866446bdc5413daa73bc07",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ArrayAllocatorLeafLayout.cpp",
-          "reconstruction/bsengine/ArrayAllocatorLeafLayout.h"
+          "reconstruction/bscore/ArrayAllocatorLeafLayout.cpp",
+          "reconstruction/bscore/ArrayAllocatorLeafLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ArrayAllocatorLeafLayout.cpp",
+    "compiled": "reconstruction/bscore/ArrayAllocatorLeafLayout.cpp",
     "digest": "d513c1d4d46fb3840140de8a52e9e93266f8bd7b6cf09cdbcccecd564a21dddf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fa80b7d09e208afb59160ed17c758216c275395a91ea7154566f9a4c5492180a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ArrayAllocatorLeafLayout.cpp",
-      "reconstruction/bsengine/ArrayAllocatorLeafLayout.h"
+      "reconstruction/bscore/ArrayAllocatorLeafLayout.cpp",
+      "reconstruction/bscore/ArrayAllocatorLeafLayout.h"
     ]
   },
   "symbol_map": {

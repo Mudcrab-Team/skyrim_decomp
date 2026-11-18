@@ -29,9 +29,9 @@
         "object_sha256": "10b30b39458212714167f00078d2828bc63e63a9f1b03e56fc2255b568804792",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESSound.cpp",
-          "reconstruction/forms/TESSound.h"
+          "reconstruction/skyrim_shared/audio/TESSound.cpp",
+          "reconstruction/skyrim_shared/audio/TESSound.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "c19cd87007e281eec711ceb4b7d620344ee3868789e125ce6b8a268dbdd7a3aa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESSound.cpp",
-          "reconstruction/forms/TESSound.h"
+          "reconstruction/skyrim_shared/audio/TESSound.cpp",
+          "reconstruction/skyrim_shared/audio/TESSound.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESSound.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/TESSound.cpp",
     "digest": "82210c8c541b5722e679f646382a9efd860311c7fa69eec8c0ca7c0a91fcac1a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "095ef23972030077014089e49d1e3654c3f8be0fb5d73159e0bfba8abeae1344",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESSound.cpp",
-      "reconstruction/forms/TESSound.h"
+      "reconstruction/skyrim_shared/audio/TESSound.cpp",
+      "reconstruction/skyrim_shared/audio/TESSound.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

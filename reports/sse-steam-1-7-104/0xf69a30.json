@@ -29,8 +29,8 @@
         "object_sha256": "a9c23e996f4db90ac6d001914c56983513ce9a3a449ba914826c48e68ca84b5e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiTransformController.cpp",
-          "reconstruction/netimmerse/NiTransformController.h"
+          "reconstruction/gamebryo/nianimation/NiTransformController.cpp",
+          "reconstruction/gamebryo/nianimation/NiTransformController.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "04ead129709d5162ddd649f9733c1079bb834503552bbee8cf0d9ff63c17f4ee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiTransformController.cpp",
-          "reconstruction/netimmerse/NiTransformController.h"
+          "reconstruction/gamebryo/nianimation/NiTransformController.cpp",
+          "reconstruction/gamebryo/nianimation/NiTransformController.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiTransformController.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiTransformController.cpp",
     "digest": "a93646e2cab605b310c765e13308750dbc61f38eb52a5c34509d176d308a7564",
     "digest_method": "tu-sha256-v2",
     "run_digest": "79185f404f15204ca44018dfdbe3f73731431f1c99f02f61581b99c2deb388f3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiTransformController.cpp",
-      "reconstruction/netimmerse/NiTransformController.h"
+      "reconstruction/gamebryo/nianimation/NiTransformController.cpp",
+      "reconstruction/gamebryo/nianimation/NiTransformController.h"
     ]
   },
   "symbol_map": {

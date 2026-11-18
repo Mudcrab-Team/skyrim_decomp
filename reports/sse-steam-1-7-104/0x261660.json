@@ -29,8 +29,8 @@
         "object_sha256": "6dc2180e40ce563f09db7f396211061169faadd7fe9f6657b35275e95ad738b7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSExplosion.cpp",
-          "reconstruction/forms/BGSExplosion.h"
+          "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
+          "reconstruction/skyrim_shared/forms/BGSExplosion.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5b9934ff712c6f4b4acbef92dd5ffbe4faf3a36c01a0271b32390e243c82c9b9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSExplosion.cpp",
-          "reconstruction/forms/BGSExplosion.h"
+          "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
+          "reconstruction/skyrim_shared/forms/BGSExplosion.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSExplosion.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
     "digest": "8a9866bfae058d9b64758fc59000ef9af6a12003c27cdd13ce07f9257acde82e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8bfa6095966b8d83baf6fa21224785dedeb3107d6b2ebc398af6054f2b4b25c8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSExplosion.cpp",
-      "reconstruction/forms/BGSExplosion.h"
+      "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
+      "reconstruction/skyrim_shared/forms/BGSExplosion.h"
     ]
   },
   "symbol_map": {

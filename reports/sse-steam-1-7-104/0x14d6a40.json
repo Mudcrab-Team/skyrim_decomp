@@ -29,10 +29,10 @@
         "object_sha256": "00b334f6544357f13dd93f2305cf86e9bda43ff9fb92dd8535dbe967e9270a80",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/AutoPropertyFunctionLayout.h",
-          "reconstruction/fields/FieldLeaf14d6a40.cpp",
-          "reconstruction/fields/FieldLeaf14d6a40.h",
-          "reconstruction/fields/NativeFunctionLayout.h"
+          "reconstruction/unmapped/fields/AutoPropertyFunctionLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf14d6a40.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf14d6a40.h",
+          "reconstruction/unmapped/fields/NativeFunctionLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "e25f5e41cc8b9c8264672f979b1ecfa5824445f25969afdeabd71d46bfc6624e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/AutoPropertyFunctionLayout.h",
-          "reconstruction/fields/FieldLeaf14d6a40.cpp",
-          "reconstruction/fields/FieldLeaf14d6a40.h",
-          "reconstruction/fields/NativeFunctionLayout.h"
+          "reconstruction/unmapped/fields/AutoPropertyFunctionLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf14d6a40.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf14d6a40.h",
+          "reconstruction/unmapped/fields/NativeFunctionLayout.h"
         ]
       }
     }
@@ -347,16 +347,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf14d6a40.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf14d6a40.cpp",
     "digest": "96947af2bfc3fde17f2e864fc6328b236d44352d0ec22cdc20366a30f5fb642f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a4f914e95151efabb9c448f4d8ad6aa2be50412075e3190bae6be450d43c4f0a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/AutoPropertyFunctionLayout.h",
-      "reconstruction/fields/FieldLeaf14d6a40.cpp",
-      "reconstruction/fields/FieldLeaf14d6a40.h",
-      "reconstruction/fields/NativeFunctionLayout.h"
+      "reconstruction/unmapped/fields/AutoPropertyFunctionLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf14d6a40.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf14d6a40.h",
+      "reconstruction/unmapped/fields/NativeFunctionLayout.h"
     ]
   },
   "symbol_map": {

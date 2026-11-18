@@ -29,8 +29,8 @@
         "object_sha256": "d1119ae1d92a18acce9d85b4bd76afbbaa33913982f371e9616258779dbf1141",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatAreaHoldPosition.cpp",
-          "reconstruction/fo4hints/CombatAreaHoldPosition.h"
+          "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.cpp",
+          "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "07128edab7392bbd346523d08f9066dcd50d50b81f017350841a5bd6c2833cfd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatAreaHoldPosition.cpp",
-          "reconstruction/fo4hints/CombatAreaHoldPosition.h"
+          "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.cpp",
+          "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.h"
         ]
       }
     }
@@ -363,14 +363,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/CombatAreaHoldPosition.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.cpp",
     "digest": "5478362b4fadf529bf7c2b93edbbbce839ea0c21ddddc6f08eefba303f1b4f39",
     "digest_method": "tu-sha256-v2",
     "run_digest": "013c6bc6f405f08cc75c0117cbd06e0bf1e28bd84285b0068d256881b467a30a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/CombatAreaHoldPosition.cpp",
-      "reconstruction/fo4hints/CombatAreaHoldPosition.h"
+      "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.cpp",
+      "reconstruction/skyrim/ai/combat/CombatAreaHoldPosition.h"
     ]
   },
   "symbol_map": {

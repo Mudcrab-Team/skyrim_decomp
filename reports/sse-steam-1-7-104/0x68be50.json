@@ -31,10 +31,10 @@
         "object_sha256": "1c122067058cb83b3de9055123818dbf9a8d065ba87a61bc698ca8621c41624a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/Gold.cpp",
-          "reconstruction/actor206_1/Gold.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/Gold.cpp",
+          "reconstruction/skyrim_shared/forms/Gold.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "31507cc10c1f47dd4ce3f019391a417d816480202c215b3eaa586449828bb593",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/Gold.cpp",
-          "reconstruction/actor206_1/Gold.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/Gold.cpp",
+          "reconstruction/skyrim_shared/forms/Gold.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_1/Gold.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/Gold.cpp",
     "digest": "d08700f574fa16d0bde8fadf5b201d3d3436325c3018af54f555cfb6e04460fc",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b06e36ca5e6c6296a0f042d0947d1d3875fceb4e0438cc96bc3bb0058aaf811c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_1/Gold.cpp",
-      "reconstruction/actor206_1/Gold.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/forms/Gold.cpp",
+      "reconstruction/skyrim_shared/forms/Gold.h"
     ]
   },
   "symbol_map": {
