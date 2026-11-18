@@ -31,7 +31,7 @@
 //   RVA 0xeedf20, 339 bytes: NiSwitchNode::UpdateRigidDownwardPass
 //   RVA 0xeedc40, 341 bytes: NiSwitchNode::UpdateDownwardPass
 //   RVA 0xeedda0, 363 bytes: NiSwitchNode::UpdateSelectedDownwardPass
-// CI hash:0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
+// CI hash: 0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
 // CI hash: 0xeed490 ?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
 // CI hash: 0xeed6e0 ?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z
 // CI hash: 0xeed3c0 ?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
