@@ -1,7 +1,7 @@
 // BSInstanceTriShape functions, build sse-steam-1-7-104.
 //
 // Labels: v2
-// Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CommonLibSSE-NG (MIT), and no external implementation body or layout is copied.
+// Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CharmedBaryon/CommonLibSSE-NG (MIT); the member offsets, types and sizes follow that declaration; no external implementation body is copied.
 // Evidence: findings/fifth-batch-selection.md.
 // Source exposure: binary-analysis. Drafted by Taylor Turner, assisted by claude-sonnet-5-5.
 // A byte match shows that this source and recipe produce the checked code; it does not verify the

@@ -1,12 +1,13 @@
 // Type declarations for the BSInstanceTriShape translation unit (build sse-steam-1-7-104).
 //
 // Labels: v2
-// Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CommonLibSSE-NG (MIT); no external implementation body is copied, and the member offsets and types of the community-named members follow the community declaration.
+// Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CharmedBaryon/CommonLibSSE-NG (MIT); the member offsets, types and sizes follow that declaration; no external implementation body is copied.
 // Source exposure: binary-analysis (a local listing of the contributor's own copy of the pinned image).
 // Community names are unverified. Only the members the compared code needs are declared.
-// BSInstanceTriShape, BSInstanceTriShape::~BSInstanceTriShape: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSInstanceTriShape, BSInstanceTriShape::BSInstanceTriShape, BSInstanceTriShape::~BSInstanceTriShape: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSTriShape, BSTriShape::~BSTriShape, BSFixedString, NiPoint3, NiMatrix3, NiBound, NiTransform: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names and sizes as declared there, stand-ins limited to the members below
-// _refCount, _pad0C, name, controllers, extra, extraDataSize, maxSize, pad2C, parent, parentIndex, unk03C, collisionObject, local, world, previousWorld, worldBound, flags, userData, fadeAmount, lastUpdatedFrameCounter, unk108, flags02, unk10A, pad10C, modelBound, properties, skinInstance, rendererData, unk20, vertexDesc, type, pad31, pad32, pad34, triangleCount, vertexCount, pad15C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names, offsets and sizes as declared there (NiRefObject, NiObjectNET, NiAVObject and BSGeometry members are flattened into BSTriShape), the pointer types are guesses
+// _refCount, _pad0C, name, controllers, extra, extraDataSize, maxSize, pad2C, parent, parentIndex, unk03C, collisionObject, local, world, previousWorld, worldBound, flags, userData, fadeAmount, lastUpdatedFrameCounter, unk108, flags02, unk10A, pad10C, modelBound, properties, skinInstance, rendererData, unk20, vertexDesc, type, pad31, pad32, pad34, triangleCount, vertexCount, pad15C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names, offsets and sizes as declared there (NiRefObject, NiObjectNET, NiAVObject and BSGeometry members are flattened into BSTriShape)
+// The community smart-pointer members, the enumeration members and BSGraphics::VertexDesc: GUESS(low); declared as raw pointers, plain integers and std::uint64_t
 // The MIT notice below covers only the names and declarations taken from
 // CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a; the other code in this file
 // is covered by the repository licence and the provenance labels above.
