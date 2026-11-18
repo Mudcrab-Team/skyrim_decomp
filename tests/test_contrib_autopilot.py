@@ -1560,8 +1560,8 @@ reasons: original synthetic source and comparator reports
         published = result['completed']['publication']
         self.assertEqual(published['accepted'], 1)
         self.assertEqual(published['dropped'], 0)
-        self.assertEqual(self.models, ['gpt-6.1-sol', 'gpt-6.1-terra', 'gpt-6.1-sol'])
-        self.assertEqual(self.state.data['days'][self.state.today], dict(compiles=10, reviews=3))
+        self.assertEqual(self.models, ['gpt-6.1-sol', 'gpt-6.1-terra'])
+        self.assertEqual(self.state.data['days'][self.state.today], dict(compiles=6, reviews=2))
         reviews = [(m, p) for m, p in self.prompts if 'reviewer-runbook' in p]
         self.assertTrue(reviews)
         for m, p in reviews:
@@ -1584,15 +1584,7 @@ reasons: original synthetic source and comparator reports
         self.assertFalse((tree / self.fixture.REVIEW).exists())
         # Checkpointed dry run resumes without a second model call or compiler invocation.
         ap.process(self.runtime, ap.State(self.private, ap.DEFAULTS), pr(head=self.head, paths=(self.fixture.CPP,)), True)
-        self.assertEqual(len(self.models), 3)
-
-    def test_ci_determinism_compile_budget_is_reserved_before_sampling(self):
-        self.state.config = dict(ap.DEFAULTS, daily_compiles=9)
-        with self.assertRaises(ap.Limit):
-            ap.process(self.runtime, self.state, pr(head=self.head, paths=(self.fixture.CPP,)), dry_run=True)
-        self.assertEqual(self.state.data['days'][self.state.today]['compiles'], 6)
-        self.assertEqual(sum(len(argv) > 1 and argv[1] in (
-            'tools/verifier/attempt', 'tools/verifier/wine_confirm.py') for argv in self.commands), 2)
+        self.assertEqual(len(self.models), 2)
 
     def test_changed_accepted_unit_is_reconfirmed_reviewed_and_reaccepted(self):
         # Trusted main already accepted this member; the contributor edits its unit.
@@ -1612,7 +1604,7 @@ reasons: original synthetic source and comparator reports
         self.assertEqual(result['completed']['reviews']['approved'], ['0x1010'])
         self.assertEqual(result['completed']['publication']['accepted'], 1)
         self.assertEqual(result['completed']['publication']['dropped'], 0)
-        self.assertEqual(self.models, ['gpt-6.1-sol', 'gpt-6.1-terra', 'gpt-6.1-sol'])
+        self.assertEqual(self.models, ['gpt-6.1-sol', 'gpt-6.1-terra'])
         tree = Path(result['completed']['fetch']['tree'])
         fn = ap.read_json(tree / 'data/progress.json')['functions'][0]
         self.assertEqual(check.acceptance_staleness(fn, tree), check.STALE_REVIEW)
@@ -1630,7 +1622,7 @@ reasons: original synthetic source and comparator reports
         self.assertEqual(squashed['completed']['fetch']['merge_method'], 'squash')
         self.assertEqual(squashed['completed']['publication']['accepted'], 1)
         self.assertEqual(squashed['completed']['publication']['dropped'], 0)
-        self.assertEqual(len(self.models), 6)
+        self.assertEqual(len(self.models), 4)
 
 
 class RecoveryRegression(unittest.TestCase):
@@ -1849,7 +1841,7 @@ def _test_transient_confirm_resume(self):
     self.assertNotIn('confirmation', self.state.revision(row, True)['completed'])
     result = ap.process(self.runtime, self.state, row, True)
     self.assertEqual(result['completed']['publication']['accepted'], 1)
-    self.assertEqual(self.models, ['gpt-6.1-sol', 'gpt-6.1-terra', 'gpt-6.1-sol'])
+    self.assertEqual(self.models, ['gpt-6.1-sol', 'gpt-6.1-terra'])
 
 
 SyntheticEndToEnd.test_transient_confirmation_resumes_same_head = _test_transient_confirm_resume

@@ -998,7 +998,8 @@ class Runtime:
                     # Contributor prompt identity is unknown: never reuse another PR's first-20
                     # baseline as if its drafting prompt had been measured equal.
                     values['drafter_prompt'] = 'external-contributor:' + fetched['head']
-                sampled = flow.choose_sample(name, rvas, components, counts, seed='contrib-autopilot')
+                # docs/verification.md "No sampling second pass": one admitted review is the whole requirement.
+                sampled = []
                 for comps in components.values():
                     for c, v in comps.items():
                         counts.setdefault(c, {})[v] = counts.get(c, {}).get(v, 0) + 1
@@ -1106,7 +1107,7 @@ class Runtime:
             blocks = self.review_one(tree, group)
             unit_quarantine = quarantine(blocks)
             second_blocks = {}
-            if group.get('pair'):
+            if False and group.get('pair'):
                 second_blocks = self.review_one(tree, flow.load_group(tree / '.local/flow', group['pair']))
                 unit_quarantine |= quarantine(second_blocks)
             escalated = [r for r, b in blocks.items() if b.get('verdict') == 'escalate' and r not in second_blocks]
@@ -1123,7 +1124,7 @@ class Runtime:
                     flow.save_group(tree / '.local/flow', strong)
                 unit_quarantine |= quarantine(self.review_one(tree, strong))
             hold_history |= unit_quarantine
-            if group.get('pair'):
+            if False and group.get('pair'):
                 self.state.once(revision, 'rerun-' + name, lambda: self.rerun(fetched, group, tasks, revision))
                 group = flow.load_group(tree / '.local/flow', name)
                 ok, reason = flow.sampling_gate(tree, tree / '.local/flow', group, flow.inventory(tree))
