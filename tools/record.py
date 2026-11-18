@@ -214,6 +214,13 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
         if _patch_index(root, changed):
             out['files'].append(build_index.INDEX)
         out['files'].append(PROGRESS)
+        # check.py renders the README pictures from the data; a record that moves the counts must move them.
+        import build_progress_svg
+        for name, render in (('docs/progress.svg', build_progress_svg.render),
+                             ('docs/progress-map.svg', build_progress_svg.render_map)):
+            if (root / 'data/scope.json').is_file():
+                (root / name).write_text(render(root))
+                out['files'].append(name)
     return out
 
 
