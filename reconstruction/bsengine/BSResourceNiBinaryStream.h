@@ -1,14 +1,6 @@
-// BSResourceNiBinaryStream type declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Class, member and virtual names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT)
-// include/RE/B/BSResourceNiBinaryStream.h and include/RE/N/NiBinaryStream.h; layout sizes and
-// offsets are from the image.
-// Stand-ins: NiBinaryStream, BufferInfo, BSResource::Stream, StreamBuffer are
-// declared here with only the members and slots the compared code needs.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold at
-// CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // NiBinaryStream, BufferInfo: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiBinaryStream: EXE_RTTI
 // good, seek, tell, get_info, set_endian_swap, _absoluteCurrentPos, _readFn, _writeFn: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

@@ -1,16 +1,10 @@
-// BSLightingShaderMaterialBase member functions, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0x4b4ad0, 6 bytes (GetType); RVA 0x1523d10, 8 bytes (GetDefault);
-// RVA 0x1523f00, 191 bytes (ReceiveValuesFromRootMaterial);
-// RVA 0x1524030, 396 bytes (SaveBinary); RVA 0x15241d0, 396 bytes (LoadBinary).
-// Evidence: findings/fourth-batch-selection.md (class row; per-function evidence is in the private packs).
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with the class layout from the header beside this file.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. Five functions are compared; ClearTextures, OnLoadTextureSet and CopyMembers are not.
-// Names follow CommonLibSSE-NG (CharmedBaryon/CommonLibSSE-NG@b93280e, MIT).
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x4b4ad0 BSLightingShaderMaterialBase::GetType
+// 0x1523d10 BSLightingShaderMaterialBase::GetDefault
+// 0x1523f00 BSLightingShaderMaterialBase::ReceiveValuesFromRootMaterial
+// 0x1524030 BSLightingShaderMaterialBase::SaveBinary
+// 0x15241d0 BSLightingShaderMaterialBase::LoadBinary
 #include "BSLightingShaderMaterialBase.h"
 
 BSLightingShaderMaterialBase::Type BSLightingShaderMaterialBase::GetType() const

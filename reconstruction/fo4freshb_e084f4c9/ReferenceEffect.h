@@ -1,7 +1,4 @@
-// ReferenceEffect declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-e084f4c9
 // Source exposure: mixed (pinned target listing and sibling hints).
 // ReferenceEffect, ReferenceEffect::ClearTarget: GUESS(low)
 // ReferenceEffect fields: STANDIN GUESS(low)

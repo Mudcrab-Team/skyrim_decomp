@@ -1,35 +1,7 @@
-// BSFadeNode declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: contrib-bsfadenode
 // Code origin: names, bases, virtual slots and member offsets from CharmedBaryon/CommonLibSSE-NG b93280e (MIT); the bodies are written from the listing of the pinned image
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
-// Sizes and slots are community hypotheses: verify C1-C5 locally before drafting.
-// Size agreement alone proves neither fields nor ownership.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// The MIT notice above covers only the names and declarations taken from CommonLibSSE-NG.
-// Base form: shared header declarations/NiAVObject.h for NiAVObject.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSFadeNode, BSFadeNode::BSFadeNode (NG's ctor), ::~BSFadeNode, ::GetRTTI, ::AsFadeNode, ::CreateClone, ::LoadBinary, ::LinkObject, ::RegisterStreamables, ::SaveBinary, ::IsEqual, ::UpdateSelectedDownwardPass, ::OnVisible, ::AsTreeNode, ::AsLeafAnimNode, and the members unk128, unk12C, currentFade, unk134, unk138, unk13C, unk140, unk144, unk148, unk14C, unk150, unk152, unk153, unk154, unk155, unk156: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiNode, NiNode::NiNode, NiNode::children and NiNode's virtual overrides: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); defined here because the shared declarations/NiNode.h keeps the children array as opaque storage and has no constructor
 // NiTObjectArray, NiTArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to the 0x18 byte layout for pointer elements, field names are low-confidence guesses

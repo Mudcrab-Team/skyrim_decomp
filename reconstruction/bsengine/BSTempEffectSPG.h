@@ -1,12 +1,6 @@
-// BSTempEffectSPG declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: batch5-s03-niobject-bstempeffectspg
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../bsengine/BSTempEffect.h for BSTempEffect.
 // BSTempEffectSPG: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSTempEffectSPG::GetType, BSTempEffectSPG::FinishLoadGame: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown30: GUESS(low)

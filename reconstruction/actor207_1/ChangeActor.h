@@ -1,50 +1,12 @@
 // ChangeActor: STANDIN GUESS(low); partial target-bound receiver/callee view, no complete layout or ownership asserted.
 // Origin: original reconstruction; cited adapted declarations retain complete notices.
-// Drafted by gpt-6.1-terra; publication metadata normalized by gpt-6.1-sol.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// Compared: RVA 0x6c8060, 60 bytes.
-// ChangeActor: additive typed declaration views for build sse-steam-1-7-104.
-// Labels: v2
 // ChangeActor: STANDIN GUESS(medium); partial target-bound view, not an original complete declaration.
 // Origin: original declarations adapted from pinned community headers.
 // Source exposure: mixed (independent target accesses and public type hypotheses).
 // Drafted by gpt-6.1-terra; adapted from P206 prefix.
-// Evidence: findings/ghidra-import.md; RVA 0x6c8060, 60 bytes.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// No function body or complete allocation size is asserted here.
-// Source: CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a, MIT;
-// include/RE/A/Actor.h, A/AIProcess.h, A/ActorPackage.h, B/BSTArray.h, P/PlayerCharacter.h.
-// All unaccessed intermediate fields remain community hypotheses. Pointer storage proves no ownership.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-// GetCurrentScene: target Actor table 0x191b548 slot 74, entry RVA 0x674b70.
-// GetWalkSpeed: target Actor table 0x191b548 slot 238, entry RVA 0x6926f0.
-// Unused virtual declarations preserve unknown slots and are never called.
-// Public signature citations: CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a,
-// include/RE/A/Actor.h:292 (GetCurrentScene) and :436 (GetWalkSpeed).
-// Direct target metadata audit: Actor complete-object locator has offset zero; primary table
-// 0x191b548 entries 74 and 238 resolve respectively to 0x674b70 and 0x6926f0.
-// Independently delimited target callees are 20 and 10 bytes; their pointer and float return
-// representations agree with the used ABI views. Original names and pointee identity remain hypotheses.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 #include "actors/ActorValueTargetPrefix.h"

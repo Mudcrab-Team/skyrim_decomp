@@ -1,20 +1,12 @@
-// BSResourceNiBinaryStream: tell, good, SetEndianSwap, deleting destructor, get_info.
-// Build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0xf01650, 4 bytes: BSResourceNiBinaryStream::tell
-// RVA 0xf01600, 9 bytes: BSResourceNiBinaryStream::good
-// RVA 0xf016e0, 47 bytes: BSResourceNiBinaryStream::SetEndianSwap
-// RVA 0xf01be0, 52 bytes: BSResourceNiBinaryStream::~BSResourceNiBinaryStream (scalar deleting destructor)
-// RVA 0xf01660, 115 bytes: BSResourceNiBinaryStream::get_info
-// RVA 0xf014c0 (the plain destructor body the deleting destructor calls) is not defined here; it is out of line
-//
-// Evidence: findings/fourth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names from CommonLibSSE-NG b93280e (MIT).
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json; five functions are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none
-// other above its threshold at the pinned checkouts.
+// 0xf01650 BSResourceNiBinaryStream::tell
+// 0xf01600 BSResourceNiBinaryStream::good
+// 0xf016e0 BSResourceNiBinaryStream::set_endian_swap
+// 0xf01be0 BSResourceNiBinaryStream::~BSResourceNiBinaryStream
+// 0xf01660 BSResourceNiBinaryStream::get_info
+// 0xf014c0 BSResourceNiBinaryStream::Dtor
 #include "BSResourceNiBinaryStream.h"
 
 BSResourceNiBinaryStream::BSResourceNiBinaryStream()

@@ -1,15 +1,6 @@
-// BGSDefaultObjectManager type declarations, build sse-steam-1-7-104.
-//
-// Labels: v2
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Names and member offsets follow CharmedBaryon/CommonLibSSE-NG
-// b93280e832f263dbef44e44cbe2936622a02f91a (MIT) and meh321/AddressLibraryDatabase 0379cb6
-// (used with the author's permission as reported by the maintainer). NG's size and member
-// offsets are not used: this build has the object array at 0x20 and 0x174 entries.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared in this header; tools/check_origin.py reports none above its
-// threshold at the pinned community and sibling revisions.
-// BaseFormComponent, TESForm and BGSEquipSlot are minimal stand-ins; the shared TESForm.h declares
-// no TESForm constructor or out-of-line plain destructor, which this unit's code calls (header-gap TESForm).
 // BaseFormComponent, TESForm, TESForm::InitializeData ... QAvailableInGame, TESForm::formFlags, ::formID, ::formType, ::sourceFiles: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the slot names 04 to 3A follow NG and only the slot order matters here
 // TESForm::LookupByID, TESForm::kInitialized: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the address is the one the Address Library names TESDataHandler::GetForm (id 14617)
 // BGSDefaultObjectManager, BGSDefaultObjectManager::InitItemImpl, ::Load, ::objects: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares objects with 0x1c3 entries, 0x174 here

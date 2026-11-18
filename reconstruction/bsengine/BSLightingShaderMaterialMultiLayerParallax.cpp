@@ -1,24 +1,13 @@
-// BSLightingShaderMaterialMultiLayerParallax functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-bslightingshadermaterialmultilayerparallax
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by Claude Haiku 5.5 (claude-haiku-5-5, worker haiku-202611122349-3), starting from
-// a tools/skeleton.py skeleton.
-// Compared functions:
-//   RVA 0x1529070, 52 bytes: BSLightingShaderMaterialMultiLayerParallax::~BSLightingShaderMaterialMultiLayerParallax
-//   RVA 0x15281a0, 102 bytes: BSLightingShaderMaterialMultiLayerParallax::Ctor (set aside in near-miss/0x15281a0.cpp)
-//   RVA 0x1528820, 153 bytes: BSLightingShaderMaterialMultiLayerParallax::GetTextures (set aside in near-miss/0x1528820.cpp)
-//   RVA 0x1528770, 163 bytes: BSLightingShaderMaterialMultiLayerParallax::ReceiveValuesFromRootMaterial
-//   RVA 0x15284c0, 211 bytes: BSLightingShaderMaterialMultiLayerParallax::ComputeCRC32 (set aside in near-miss/0x15284c0.cpp)
-//   RVA 0x15288d0, 292 bytes: BSLightingShaderMaterialMultiLayerParallax::SaveBinary (set aside in near-miss/0x15288d0.cpp)
-//   RVA 0x1528a00, 324 bytes: BSLightingShaderMaterialMultiLayerParallax::LoadBinary (set aside in near-miss/0x1528a00.cpp)
 // Adapted bodies: none
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
+// 0x1529070 BSLightingShaderMaterialMultiLayerParallax::~BSLightingShaderMaterialMultiLayerParallax
+// 0x15281a0 BSLightingShaderMaterialMultiLayerParallax::Ctor
+// 0x1528820 BSLightingShaderMaterialMultiLayerParallax::GetTextures
+// 0x1528770 BSLightingShaderMaterialMultiLayerParallax::ReceiveValuesFromRootMaterial
+// 0x15284c0 BSLightingShaderMaterialMultiLayerParallax::ComputeCRC32
+// 0x15288d0 BSLightingShaderMaterialMultiLayerParallax::SaveBinary
+// 0x1528a00 BSLightingShaderMaterialMultiLayerParallax::LoadBinary
 #include <cstring>
 
 #include "BSLightingShaderMaterialMultiLayerParallax.h"

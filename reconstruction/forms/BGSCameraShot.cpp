@@ -1,16 +1,7 @@
-// BGSCameraShot::InitializeData and the deleting destructor, build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: batch5-s08-tesform-bgscamerashot
-// RVA 0x318c10, 44 bytes (InitializeData);
-// RVA 0x31a0c0, 52 bytes (~BGSCameraShot, the scalar deleting destructor in vftable slot 0);
-// Evidence: findings/fifth-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listing of the
-// pinned image, with the class layout from the header beside this file. Names are from
-// CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. The functions listed above are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x318c10 BGSCameraShot::InitializeData
+// 0x31a0c0 BGSCameraShot::~BGSCameraShot
 #include "BGSCameraShot.h"
 
 // The constructor is not compared: it is defined so that this unit emits the vftables and with

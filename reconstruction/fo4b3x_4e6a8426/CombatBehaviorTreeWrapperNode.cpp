@@ -1,34 +1,29 @@
-// Build: sse-steam-1-7-104
-// Labels: v2
 // Source exposure: mixed
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
-// Drafted by gpt-6.1-terra.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
-// RVA 0x8755c0, 11 bytes: CombatBehaviorTreeWrapperNode::GetName
 // CombatBehaviorTreeWrapperNode::GetName: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:271
-// RVA 0x8755e0, 11 bytes: CombatBehaviorTreeWrapperNode::Enter
 // CombatBehaviorTreeWrapperNode::Enter: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:277
-// RVA 0x875600, 11 bytes: CombatBehaviorTreeWrapperNode::Exit
 // CombatBehaviorTreeWrapperNode::Exit: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:283
-// RVA 0x875620, 11 bytes: CombatBehaviorTreeWrapperNode::Update
 // CombatBehaviorTreeWrapperNode::Update: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:289
-// RVA 0x875640, 11 bytes: CombatBehaviorTreeWrapperNode::Abort
 // CombatBehaviorTreeWrapperNode::Abort: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:295
-// RVA 0x875660, 11 bytes: CombatBehaviorTreeWrapperNode::SaveGame
 // CombatBehaviorTreeWrapperNode::SaveGame: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:301
-// RVA 0x875680, 11 bytes: CombatBehaviorTreeWrapperNode::LoadGame
 // CombatBehaviorTreeWrapperNode::LoadGame: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:307
-// RVA 0x8756a0, 11 bytes: CombatBehaviorTreeWrapperNode::Validate
 // CombatBehaviorTreeWrapperNode::Validate: SIBLING(fo4-private@1b765c70, author-permission); adaptation
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:319
+// 0x8755c0 CombatBehaviorTreeWrapperNode::GetName
+// 0x8755e0 CombatBehaviorTreeWrapperNode::Enter
+// 0x875600 CombatBehaviorTreeWrapperNode::Exit
+// 0x875620 CombatBehaviorTreeWrapperNode::Update
+// 0x875640 CombatBehaviorTreeWrapperNode::Abort
+// 0x875660 CombatBehaviorTreeWrapperNode::SaveGame
+// 0x875680 CombatBehaviorTreeWrapperNode::LoadGame
+// 0x8756a0 CombatBehaviorTreeWrapperNode::Validate
 #include "CombatBehaviorTreeWrapperNode.h"
 const BSFixedString& CombatBehaviorTreeWrapperNode::GetName() { return node->GetName(); }
 void CombatBehaviorTreeWrapperNode::Enter(CombatBehaviorThread* t) { node->Enter(t); }

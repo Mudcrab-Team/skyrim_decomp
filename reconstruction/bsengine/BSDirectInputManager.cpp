@@ -1,17 +1,9 @@
-// BSDirectInputManager methods, build sse-steam-1-7-104.
-//
-// Labels: v2
-// RVA 0xcfaeb0, 37 bytes: ReleaseDevice
-// RVA 0xcfae70, 48 bytes: CreateDeviceWithGUID
-// RVA 0xcfaee0, 113 bytes: GetDeviceState
-// RVA 0xcfaf60, 126 bytes: GetDeviceData
-//
-// Evidence: findings/third-batch-selection.md.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with types from the header beside this file.
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community method names or that the original source looked like this.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json. All four functions are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0xcfaeb0 BSDirectInputManager::ReleaseDevice
+// 0xcfae70 BSDirectInputManager::CreateDeviceWithGUID
+// 0xcfaee0 BSDirectInputManager::GetDeviceState
+// 0xcfaf60 BSDirectInputManager::GetDeviceData
 #include "BSDirectInputManager.h"
 
 #include <cstring>

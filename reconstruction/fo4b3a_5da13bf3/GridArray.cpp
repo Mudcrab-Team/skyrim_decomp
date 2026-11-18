@@ -1,13 +1,7 @@
-// Build: sse-steam-1-7-104
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by gpt-6.1-terra.
-// RVA 0x226cd0, 7 bytes: GridArray::KillAll
-// RVA 0x226cd0, 7 bytes: GridArray::KillAll
 // GridArray::KillAll: SIBLING(fo4-private@1b765c70, author-permission); adaptation of src/Shared/Misc/GridArray.cpp:23; target behavior differs where applicable.
 // Semantic names and types: GUESS(low)
-// Labels: v2
 // Source exposure: mixed.
 // Origin: original reconstruction from independently decoded target and anonymous sibling.
-// Drafted by gpt-6.1-terra. Evidence: findings/ghidra-import.md
+// 0x226cd0 GridArray::KillAll
 #include "GridArray.h"
 void GridArray::KillAll() { DetachAll(); }

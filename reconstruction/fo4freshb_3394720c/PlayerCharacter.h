@@ -1,7 +1,4 @@
-// PlayerCharacter declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-3394720c
 // Source exposure: mixed (pinned target listing and sibling hints).
 // PlayerCharacter, PlayerCharacter::HasBeenAttacked, PlayerCharacter::SetBeenAttacked: GUESS(low)
 // PlayerCharacter fields: STANDIN GUESS(low)

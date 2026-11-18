@@ -1,38 +1,14 @@
-// Build: sse-steam-1-7-104; RVA 0x333dd0; 218 bytes
-// Labels: v2
 // Source exposure: mixed
 // Origin: body structure adapted from the permitted FNV sibling cited below; declarations from public headers.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/tesconditionfunctions.cpp:1973
-// Drafted by gpt-6.1-terra
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
 // TESForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declaration kit.
 // TESObjectREFR and OBJ_REFR layout: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/T/TESObjectREFR.h.
 // names: GUESS(low); names and signatures are tentative.
 // ConditionFunctions::GetIsID: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); body structure (clear result, bound-object test, one-entry reference cache with extra-data fallback, comparison, logging); another game's reconstruction, no evidence about this build
 // cachedReference, cachedBase, GetExtraBase, LogCondition, conditionLogger, conditionLoggingEnabled: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); roles only
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ConditionFunctions, ConditionFunctions::GetIsID: GUESS(low); the static source container and original signature are unverified.
+// 0x333dd0 Condition::GetIsID
 #include "ConditionFunctions.h"
 #include "TESForm.h"
 class TESBoundObject;

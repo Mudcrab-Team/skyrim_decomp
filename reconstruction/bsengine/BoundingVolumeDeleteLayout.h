@@ -1,43 +1,16 @@
-// Build: sse-steam-1-7-104
 // Source exposure: mixed (community and authorized sibling declarations, local binary analysis).
-// Drafted by GPT-6.1 Sol; p104b geometry layout follow-up, not accepted.
-// Labels: v2
 // Code origin: value declarations adapted from CommonLibSSE-NG; bounding-volume, sphere, capsule and half-space declarations adapted from the authorized FNV sibling source. Box scalar declarations are originally inferred from target member accesses. No implementation bodies reused.
 // Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT), include/RE/N/NiPoint3.h, NiBound.h, NiPlane.h.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6 include/NiBoundingVolume.h
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6 include/NiSphereBV.h
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6 include/NiCapsuleBV.h
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6 include/NiHalfSpaceBV.h
-// Sibling declarations only, under docs/authorizations.md maintainer exception; no licence is granted by that source.
 // BoundingVolumeDeleteLayout, SphereDeleteLayout, CapsuleDeleteLayout, HalfSpaceDeleteLayout: GUESS(low) STANDIN; represented aliases with incomplete virtual method sets.
 // BoxScalarDeleteLayout, scalar08, scalar0C, scalar10, scalar14, scalar18, scalar1C, scalar20, scalar24, scalar28, scalar2C, scalar30, scalar34, scalar38, scalar3C, scalar40: GUESS(low) STANDIN; individually observed scalar floating-point accesses, no original field grouping claimed.
 // center, radius, normal, constant, x, y, z: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // axisDirection, halfLength, segmentOrigin, segmentDirection, boundRadius, halfSpacePlane: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
 // DeletePoint3, DeleteSphere, DeletePlane, sphere: GUESS(medium) STANDIN; aliases for the cited value declarations.
-// Sibling declarations are not Skyrim evidence; sizes/offsets below are testable hypotheses, and only deleting code can be a match.
-// Opaque union/padding arms in the sibling headers are omitted; actual segment/plane fields are declared instead.
-// The following MIT notice applies only to the adapted CommonLibSSE-NG value declarations, not the sibling declarations.
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
 namespace ResearchLayouts {

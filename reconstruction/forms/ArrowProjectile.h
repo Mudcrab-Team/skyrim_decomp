@@ -1,21 +1,13 @@
-// ArrowProjectile declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-c2-s06-projectile-arrowprojectile
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header ../forms/TESObjectREFR.h for TESObjectREFR and TESForm. It defines TESForm
-// itself, so ../forms/TESForm.h is not included (header-gap TESForm: the two shared headers cannot be combined).
 // ArrowProjectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // Projectile, MissileProjectile, TESAmmo: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); padded to the offsets the compared code uses
 // ArrowProjectile::ShouldBeLimited, ArrowProjectile::GetPowerSpeedMult, ArrowProjectile::Update3D, ArrowProjectile::GetWeaponSpeedMult, ArrowProjectile::GetGravity: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // Projectile::ammoSource: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares it at 0x1B8, the same offset here
 // Projectile::range: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares it at 0x190, the same offset here
 // Projectile::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares flags at 0x1CC, this build uses 0x1D4
-// TestBit: the shared TESObjectREFR.h helper, used for the flag bit
 // PrepareSpeedQuery, ComputeSpeedMult, ResolveAttachedNodes, GetBaseGravity, ScaleAmmoSpeed: GUESS(low)
 // g_gravityOne: GUESS(low); a mutable global the compared GetGravity reads at 0x20a7478
 // TESAmmo::unk170: GUESS(low)

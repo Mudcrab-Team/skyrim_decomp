@@ -1,7 +1,4 @@
-// PlayerCameraTransitionState declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-65cdceb4
 // Source exposure: mixed (pinned target listing and sibling hints).
 // PlayerCameraTransitionState, PlayerCameraTransitionState::Begin: GUESS(low)
 // PlayerCameraTransitionState fields: STANDIN GUESS(low)

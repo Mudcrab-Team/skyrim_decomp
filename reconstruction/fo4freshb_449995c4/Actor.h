@@ -1,7 +1,4 @@
-// Actor declarations for build sse-steam-1-7-104.
-// Labels: v2
 // Origin: original partial declarations from target listing and sibling type/name hints.
-// Task: p177fb-449995c4
 // Source exposure: mixed (pinned target listing and sibling hints).
 // Actor, Actor::ForceEditorLocation, Actor::GetEditorLocation, Actor::IsKnockedDown: GUESS(low)
 // Actor fields: STANDIN GUESS(low)
