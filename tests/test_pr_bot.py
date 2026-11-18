@@ -1172,6 +1172,164 @@ class ReviewContextTests(unittest.TestCase):
 
 
 
+class MappingBot(FakeBot):
+    """The mapping lane with the checker, the CI check, the model and the regenerate stubbed."""
+    MAP_FILES = [{'filename': 'data/progress.json', 'status': 'modified'},
+                 {'filename': 'findings/new.md', 'status': 'added'}]
+    APPROVE = json.dumps({'leak': 'no', 'verdict': 'approve', 'ground': 'none', 'why': 'ok', 'notes': []})
+
+    def __init__(self, work, codes=(), ci='success', review=APPROVE, **kw):
+        super().__init__(work, files=list(self.MAP_FILES), **kw)
+        self.codes, self.ci, self.text = list(codes), ci, review
+
+    def mapping_problems(self, base, head):
+        self.calls.append(['mapping_problems'])
+        return list(self.codes)
+
+    def mapping_added(self, base, head):
+        return [{'rva': 0x3000, 'size': 8, 'name': 'A::f', 'name_origin': 'COMMUNITY', 'evidence': 'findings/new.md',
+                 'owner': 'alice', 'name_source': 'Community name'}] * 3
+
+    def mapping_ci(self, head):
+        self.calls.append(['mapping_ci'])
+        if self.ci is None:
+            raise pr_bot.Stop('mapping check has no run on this head yet')
+        return self.ci
+
+    def mapping_review(self, number, head, added):
+        self.calls.append(['mapping_review', len(added)])
+        return self.text
+
+    def regenerate(self, number):
+        self.calls.append(['regenerate', number])
+
+
+class MappingLaneTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_lane_is_progress_plus_new_findings_and_nothing_else(self):
+        ok = MappingBot.MAP_FILES
+        self.assertTrue(pr_bot.mapping_lane(ok))
+        self.assertTrue(pr_bot.mapping_lane(ok[:1]))
+        for bad in ({'filename': 'docs/progress.svg', 'status': 'modified'},
+                    {'filename': 'reconstruction/INDEX.md', 'status': 'modified'},
+                    {'filename': 'reconstruction/a/B.cpp', 'status': 'added'},
+                    {'filename': 'findings/old.md', 'status': 'modified'},
+                    {'filename': 'findings/n.md', 'status': 'renamed', 'previous_filename': 'findings/o.md'}):
+            self.assertFalse(pr_bot.mapping_lane(ok + [bad]), bad)
+        self.assertFalse(pr_bot.mapping_lane(ok[1:]))
+        self.assertFalse(pr_bot.mapping_lane([]))
+
+    def test_a_valid_mapping_pr_is_reviewed_once_merged_and_regenerated_without_hosts(self):
+        bot = MappingBot(self.work)
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge'], out['mapped']), (None, True, 3))
+        for stage in ('mac', 'host1', 'build_records', 'record', 'drop_landed'):
+            self.assertEqual(bot.seen(stage), [], stage)
+        self.assertEqual(len(bot.seen('mapping_review')), 1)
+        merge = bot.seen('gh', 'pr', 'merge')
+        self.assertEqual(len(merge), 1)
+        self.assertEqual(merge[0][merge[0].index('--match-head-commit') + 1], HEAD)
+        self.assertEqual(merge[0][merge[0].index('--subject') + 1], 'Map 3 functions (#7)')
+        self.assertIn('Co-authored-by: alice <99+alice@users.noreply.github.com>', merge[0][-1])
+        self.assertEqual(bot.seen('regenerate'), [['regenerate', 7]])
+        self.assertLess(bot.calls.index(merge[0]), bot.calls.index(['regenerate', 7]))
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])  # a clean merge posts no new comment
+        before = len(bot.calls)
+        bot.process(PR)
+        self.assertEqual(len(bot.calls), before)
+
+    def test_a_rule_failure_blocks_before_the_ci_check_the_review_and_the_merge(self):
+        bot = MappingBot(self.work, codes=['status', 'forbidden-field'])
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('mapping', False))
+        for stage in ('mapping_ci', 'mapping_review'):
+            self.assertEqual(bot.seen(stage), [])
+        self.assertEqual((bot.seen('gh', 'pr', 'merge'), bot.seen('regenerate')), ([], []))
+        comment = bot.seen('gh', 'pr', 'comment')
+        self.assertEqual(len(comment), 1)
+        self.assertIn('status: added entries must have status `mapped`', comment[0][-1])
+        self.assertIn('forbidden-field', comment[0][-1])
+
+    def test_a_failed_mapping_check_blocks_and_a_missing_one_retries_without_caching(self):
+        bot = MappingBot(self.work, ci='failure')
+        self.assertEqual(bot.process(PR)['blocked'], 'mapping-ci')
+        self.assertEqual((bot.seen('mapping_review'), bot.seen('gh', 'pr', 'merge')), ([], []))
+        waiting = MappingBot(self.work / 'w', ci=None)
+        with self.assertRaises(pr_bot.Stop):
+            waiting.process(PR)
+        waiting.ci = 'success'
+        self.assertTrue(waiting.process(PR)['merge'])
+        self.assertEqual(len(waiting.seen('mapping_problems')), 1)
+
+    def test_a_reject_a_leak_or_an_unreadable_review_never_merges(self):
+        reject = json.dumps({'leak': 'no', 'verdict': 'reject', 'ground': 'plausibility', 'why': 'names do not fit sizes'})
+        leak = json.dumps({'leak': 'yes', 'leak_evidence': ['decompiler-artifact'], 'verdict': 'approve'})
+        for n, (text, blocked, shown) in enumerate(((reject, 'review', 'names do not fit sizes'),
+                                                    (leak, 'leak', 'decompiler-artifact'),
+                                                    ('nonsense', 'leak', 'bot fault'))):
+            bot = MappingBot(self.work / str(n), review=text)
+            self.assertEqual(bot.process(PR)['blocked'], blocked)
+            self.assertEqual((bot.seen('gh', 'pr', 'merge'), bot.seen('regenerate')), ([], []))
+            self.assertIn(shown, bot.seen('gh', 'pr', 'comment')[0][-1])
+
+    def test_a_refused_merge_does_not_regenerate(self):
+        bot = MappingBot(self.work)
+        bot.merge_ok = False
+        with self.assertRaises(pr_bot.Stop):
+            bot.process(PR)
+        self.assertEqual(bot.seen('regenerate'), [])
+
+    def test_a_dry_run_changes_nothing(self):
+        bot = MappingBot(self.work, dry_run=True)
+        self.assertTrue(bot.process(PR)['merge'])
+        self.assertEqual((bot.seen('gh', 'pr', 'merge'), bot.seen('regenerate'), bot.seen('gh', 'pr', 'comment')),
+                         ([], [], []))
+
+    def test_warm_never_probes_a_mapping_pr(self):
+        bot = MappingBot(self.work)
+        probed = []
+        bot.probe_hash_run = lambda number, head: probed.append(number)
+        bot.latest_hash_run = lambda head, unusable=(): None
+        bot.warm({'number': 7, 'headRefOid': HEAD})
+        self.assertEqual(probed, [])
+
+    def test_review_answers_are_parsed_strictly(self):
+        self.assertEqual(pr_bot.parse_mapping_review(MappingBot.APPROVE), ('no', 'approve', ['ok']))
+        self.assertEqual(pr_bot.parse_mapping_review('x')[:2], ('unreadable', 'reject'))
+        bare = json.dumps({'leak': 'yes', 'verdict': 'approve'})
+        self.assertEqual(pr_bot.parse_mapping_review(bare)[:2], ('no', 'approve'))
+        self.assertEqual(pr_bot.parse_mapping_review(json.dumps({'leak': 'no'}))[:2], ('no', 'reject'))
+
+    def test_the_regenerate_pushes_only_generated_files(self):
+        calls, status = [], []
+
+        class Tree(pr_bot.Bot):
+            def run(self, argv, **kw):
+                argv = [str(a) for a in argv]
+                calls.append(argv)
+                out = ''.join(f' M {n}\n' for n in status).encode() if argv[:2] == ['git', 'status'] else b''
+                return subprocess.CompletedProcess(argv, 0, out, b'')
+        bot = Tree(root=ROOT, work=self.work)
+        status[:] = ['reconstruction/INDEX.md', 'docs/progress.svg']
+        bot.regenerate(7)
+        self.assertTrue(any(c[:2] == ['git', 'push'] for c in calls))
+        add = [c for c in calls if c[:2] == ['git', 'add']][0]
+        self.assertEqual(add[-2:], ['docs/progress.svg', 'reconstruction/INDEX.md'])
+        calls.clear()
+        status[:] = ['reconstruction/INDEX.md', 'data/progress.json']
+        with self.assertRaises(pr_bot.Stop):
+            bot.regenerate(7)
+        self.assertFalse(any(c[:2] == ['git', 'push'] for c in calls))
+        calls.clear()
+        status[:] = []
+        bot.regenerate(7)
+        self.assertFalse(any(c[:2] in (['git', 'push'], ['git', 'commit']) for c in calls))
+
+
 class StickyCommentTests(unittest.TestCase):
     """Each PR carries at most one bot comment, edited in place on every head and verdict."""
 

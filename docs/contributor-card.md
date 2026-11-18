@@ -54,3 +54,14 @@ reason when you stop.
 A local PASS is a candidate, not acceptance: the project confirms on two hosts and one review
 approves the source before a function counts as `matched`. Ask once before reading listings or
 pseudo-C; see [the guide](contributing-agent.md).
+
+## Mapping-only PRs
+
+A PR that only names functions touches `data/progress.json` and, optionally, new `findings/*.md`:
+
+- Append entries to `functions` only: status `mapped`, the existing entry fields, no `report` or `matched`; change
+  nothing else in the file and keep its layout. Add no RVA that is already present.
+- Each entry's `evidence` is a findings file that exists; a guessed name has `GUESS(` in `name_source`.
+- Leave out `docs/progress.svg` and `reconstruction/INDEX.md`; the bot regenerates them after the merge.
+- The `mapping` check and `tools/mapping_check.py` run these rules; one review checks names, evidence and that
+  nothing is game-derived. No host runs, and no function can become `matched` this way.

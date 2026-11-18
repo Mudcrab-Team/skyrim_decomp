@@ -78,6 +78,17 @@ Steam credentials.
 adds a private `decomp.c`. Treat it as an untrusted hint for control flow and types; write your own
 source, because `compare` decides the match.
 
+## Mapping-only PRs
+
+A PR that only names functions touches `data/progress.json` and, optionally, new `findings/*.md`:
+
+- Append entries to `functions` only: status `mapped`, the existing entry fields, no `report` or `matched`; change
+  nothing else in the file and keep its layout. Add no RVA that is already present.
+- Each entry's `evidence` is a findings file that exists; a guessed name has `GUESS(` in `name_source`.
+- Leave out `docs/progress.svg` and `reconstruction/INDEX.md`; the bot regenerates them after the merge.
+- The `mapping` check and `tools/mapping_check.py` run these rules; one review checks names, evidence and that
+  nothing is game-derived. No host runs, and no function can become `matched` this way.
+
 ## While a PR is open
 
 Leave **Allow edits by maintainers** on and pull before continuing. Run `./sr feedback --json` at
