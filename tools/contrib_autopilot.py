@@ -260,6 +260,8 @@ class Runtime:
         self.dry_run = dry_run
         # Fetches into the shared checkout race on ref locks when PRs run on several threads.
         self.root_lock = threading.RLock()
+        # Headless Ghidra takes an exclusive lock on the shared project, so exports take turns.
+        self.ghidra_lock = threading.Lock()
         self.fdir = shared_root(root) / '.local/flow'
         self.logs = private / 'logs'
         self.logs.mkdir(parents=True, exist_ok=True)
@@ -718,8 +720,9 @@ class Runtime:
                 raise Stop('unit recipe is not present in trusted main')
             lines += [f'{build} 0x{r:x} {tid} {cpp} recipe={recipe}' for r in rvas]
         list_file.write_text('\n'.join(lines) + '\n')
-        self.command([sys.executable, 'tools/ghidra/export_pack.py', 'packs', str(list_file)],
-                     cwd=tree, timeout=self.config['export_timeout'])
+        with self.ghidra_lock:
+            self.command([sys.executable, 'tools/ghidra/export_pack.py', 'packs', str(list_file)],
+                         cwd=tree, timeout=self.config['export_timeout'])
         if len({int(str(f['rva']), 0) for d in tasks for f in read_json(Path(d) / 'task.json')['functions']}) > self.config['max_functions']:
             raise Rejected('exported regression functions exceed the per-PR function cap')
         return tasks
