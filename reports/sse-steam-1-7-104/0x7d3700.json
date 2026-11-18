@@ -334,8 +334,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/IHandlerFunctorBulkLayout.cpp",
-    "digest": "3fe808f36485ffe76db11239c4e9980837f60076787a4daa9444de2c617d2d9e",
-    "digest_method": "tu-sha256-v1",
+    "digest": "25ecb5c89a650519a2e719179809ae09a2b7971ce31ba12b2fc5213b11aeb43d",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "3fe808f36485ffe76db11239c4e9980837f60076787a4daa9444de2c617d2d9e",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedBulkLayout.h",
       "reconstruction/bsengine/IHandlerFunctorBulkLayout.cpp",

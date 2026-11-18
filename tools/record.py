@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
+from digest_v2 import review_binds  # noqa: E402
 from check import (ROOT, DIGEST_METHOD, REVIEW_RECORD_SCHEMA, TOOLCHAIN_PIN, file_sha256,  # noqa: E402
                    record_code_section, review_record_path, validate_match, validate_review)
 
@@ -52,7 +53,7 @@ def review_record(fn, record, model, task_id, blob, when):
     return {
         'review_record_schema': REVIEW_RECORD_SCHEMA,
         'function_id': fn['id'], 'build_id': fn['build_id'], 'rva': fn['rva'], 'size': fn['size'],
-        'source_digest_method': DIGEST_METHOD, 'source_digest': record['source']['digest'],
+        'source_digest_method': record['source']['digest_method'], 'source_digest': record['source']['digest'],
         'reviewer_model': model, 'review_task_id': task_id,
         'verdict': 'approve', 'escalation_category': 'none',
         'review_sha256': review_blob_digest(blob), 'review_date': when.date().isoformat(),
@@ -180,7 +181,7 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                 record['submitter'] = handle(author)
             # A stacked PR re-confirms functions of a unit that grew; only the identical source is a repeat.
             previous = _json_or_none(review_path) if fn['status'] == 'matched' else None
-            if previous and previous.get('source_digest') == record['source']['digest']:
+            if previous and review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source']):
                 raise ValueError('already matched')
             if records is not None or author:
                 prior[root / report] = (root / report).read_bytes() if (root / report).is_file() else None

@@ -534,7 +534,8 @@ class CompanionDiscoveryTests(unittest.TestCase):
         (self.tree / name).write_text(text)
 
     def accept(self, rva, unit, status='matched', digest=None):
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         closure = include_closure(self.tree, unit)
         report = f'reports/b/0x{rva:x}.json'
         self.write(report, json.dumps({'source': {'compiled': unit, 'translation_unit': closure,
@@ -990,7 +991,8 @@ class ReviewContextTests(unittest.TestCase):
         return subprocess.CompletedProcess(argv, 0, out, b'')
 
     def evidence(self, **report):
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         digest = tu_digest(self.tree, include_closure(self.tree, 'reconstruction/a/B.cpp'))
         recipe = self.tree / 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe.parent.mkdir(parents=True, exist_ok=True)

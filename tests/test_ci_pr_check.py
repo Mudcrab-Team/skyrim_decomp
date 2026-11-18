@@ -28,6 +28,10 @@ class PrCheckEvidence(GateFixture, unittest.TestCase):
         patcher = patch.object(c.target_hashes, 'load_manifest', return_value=self.manifest)
         patcher.start()
         self.addCleanup(patcher.stop)
+        # The fixture's reports embed a v1 revision, so the record assembled from them is v1 too.
+        extra = patch.object(record_tool, 'DIGEST_METHOD', 'tu-sha256-v1')
+        extra.start()
+        self.addCleanup(extra.stop)
 
         def git(*args):
             return subprocess.run(['git', *args], cwd=self.root, check=True, capture_output=True).stdout.decode().strip()

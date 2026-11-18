@@ -44,6 +44,12 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
         run: python tools/leakgrep.py --base "$BASE_SHA" --head "$PR_HEAD"
+      # Only units whose header this PR adds or changes are held to the compact-header rule.
+      - name: Compact headers on added or changed units
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: python tools/header_check.py --base "$BASE_SHA" --head "$PR_HEAD"
   hash:
     runs-on: windows-2022
     timeout-minutes: 35

@@ -334,8 +334,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/ExtraHealthPercStorageLayout.cpp",
-    "digest": "16f5ac193e9e35638b1b8253a16d52b077e0148f8d20bc124fd2aff9ab850328",
-    "digest_method": "tu-sha256-v1",
+    "digest": "549f60cfc5323c92a134db4652c4907e6c9297ebb986f10f09838bfcd730d08f",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "16f5ac193e9e35638b1b8253a16d52b077e0148f8d20bc124fd2aff9ab850328",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSExtraDataStorageLayout.h",
       "reconstruction/bsengine/ExtraHealthPercStorageLayout.cpp",

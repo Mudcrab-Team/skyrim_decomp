@@ -38,7 +38,7 @@ and prepares a skeleton and a private pack. Then edit the unit under `reconstruc
 `compare` until it passes, and `submit` (it needs a fork remote; if none, ask the person to fork
 the repository on GitHub). When you show output publicly, add `--redact`.
 
-The contributor card has the source, label and stopping rules. The
+The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
 

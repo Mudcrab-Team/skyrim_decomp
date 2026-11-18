@@ -21,6 +21,7 @@ class PrCheckWorkflow(unittest.TestCase):
         self.assertIn('\n  hash:', self.text)
         self.assertIn('ci_target_hash_check.py regress', self.text)
         self.assertIn('tools/leakgrep.py', self.text)
+        self.assertIn('tools/header_check.py', self.text)
 
 
 if __name__ == '__main__':

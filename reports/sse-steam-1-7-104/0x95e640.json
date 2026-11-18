@@ -334,8 +334,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/IMessageBoxCallbackBulkLayout.cpp",
-    "digest": "f066fdf2620c0b04045382c0f64b8a248f027fc1d639f477ac961196e503c31c",
-    "digest_method": "tu-sha256-v1",
+    "digest": "da86901e15a2199e1b3c84163d3ff8f60b0ad794640a418aa231f9ec7bfe8675",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "f066fdf2620c0b04045382c0f64b8a248f027fc1d639f477ac961196e503c31c",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedBulkLayout.h",
       "reconstruction/bsengine/IMessageBoxCallbackBulkLayout.cpp",

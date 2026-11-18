@@ -53,6 +53,7 @@ import urllib.parse
 import urllib.request
 
 import profiles
+import rva_headers
 import agent_advice
 import agent_identity
 import attempt_progress
@@ -574,7 +575,9 @@ def compile_unit(ctx, root, compiled, recipe_rel, out_dir, tool):
     """Compile one unit with the recipe's flags and the build-path checks of the verifier
     (tools/verifier/unit_build.py): cleared environment, /showIncludes equal to the closure."""
     import unit_build
-    from source_digest import include_closure, recipe_flag_problem, tu_digest
+    from source_digest import include_closure, recipe_flag_problem
+    # The compiler reports opened files from the real working directory, so compare against that.
+    from digest_v2 import tu_digest
     # The compiler reports opened files from the real working directory, so compare against that.
     root, out_dir = Path(root).resolve(), Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -1796,7 +1799,7 @@ def start(ctx, args, quiet=False):
         text = (ctx.repo / cpp).read_text()
         additions = []
         for fn, mm in zip(fns, m):
-            if not re.search(rf'\bRVA 0x{fn["rva"]:x}\b', text, re.I):
+            if fn['rva'] not in rva_headers.claimed_rvas([text]):
                 _h, metadata = skeleton(fn, cls, mm.group(2), area, drafted, recipe,
                                         getattr(args, 'code_origin', None))
                 additions.append(metadata.split('#include', 1)[0])
@@ -2155,7 +2158,8 @@ def cmd_submit(ctx, args):
         summary = json.loads((tdir / 'last-compare.json').read_text())
     except (OSError, ValueError):
         raise Stop(USAGE, 'no comparison yet', f'{ctx.cli} compare')
-    from source_digest import include_closure, tu_digest
+    from source_digest import include_closure
+    from digest_v2 import tu_digest
     try:
         digest = tu_digest(ctx.repo, include_closure(ctx.repo, task['compiled']))
         if digest != summary['source_revision']:

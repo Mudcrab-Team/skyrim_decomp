@@ -15,7 +15,8 @@ import contrib_readiness
 import contrib_validation
 import test_contrib as fixtures
 import test_match_gate as gate
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 
 class Preflight(fixtures.SubmitTests):
@@ -144,9 +145,10 @@ class Preflight(fixtures.SubmitTests):
                 patch.object(contrib, 'refresh_symbols'), patch.object(contrib, 'sibling_section', return_value=[]):
             contrib.start(ctx, args)
         header = source.read_text().split('#include', 1)[0]
-        for text in (hex(extra['rva']), '4 bytes', extra['build_id'], extra['evidence'],
-                     contrib.DEFAULT_RECIPE, 'Drafted by synthetic model', 'SKELETON_TODO_CODE_ORIGIN'):
+        for text in (f'// {hex(extra["rva"])} ', 'SKELETON_TODO_CODE_ORIGIN'):
             self.assertIn(text, header)
+        for text in (extra['build_id'], extra['evidence'], contrib.DEFAULT_RECIPE, 'Drafted by', '4 bytes'):
+            self.assertNotIn(text, header)  # the short header leaves out what the records hold
         self.assertIn('original synthetic fixture', header)  # the older declaration was preserved
 
 

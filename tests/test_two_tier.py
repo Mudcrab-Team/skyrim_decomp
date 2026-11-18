@@ -11,6 +11,7 @@ import json
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tests'))
@@ -141,10 +142,12 @@ class NamingFindingsTests(TwoTierFixture, unittest.TestCase):
         self.accept()
         self.assertIs(self.entry()['named'], False)
 
-    def test_unit_without_labels_v2_is_not_named(self):
+    def test_unit_outside_the_label_grammar_is_not_named(self):
+        import lint_reconstruction
         self.write(HDR, LINT_HDR.replace('// Labels: v2\n', ''))
         self.regenerate()
-        self.accept()
+        with patch.object(lint_reconstruction, 'FREEFORM_LABEL_FILES', frozenset({HDR, CPP})):
+            self.accept()
         self.assertIs(self.entry()['named'], False)
 
     def test_refresh_named_changes_only_the_tier(self):
@@ -437,7 +440,7 @@ class LintTests(unittest.TestCase):
             (root / name).write_text(text)
             return lint_file(root, name, 'b')
 
-    HEAD = '// Thing, build b. Source exposure: black-box. Names: GUESS.\n'
+    HEAD = '// Source exposure: black-box\n// Thing, Get: GUESS(low)\n'
 
     def test_noinline_needs_justification(self):
         # A code line first, so the header comment is not the line before the attribute.

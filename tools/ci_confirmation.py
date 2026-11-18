@@ -12,6 +12,7 @@ from pathlib import Path
 import compare
 from pecoff import CoffObject
 import target_hashes
+from digest_v2 import run_revision
 
 WORKFLOW = '.github/workflows/ci-confirm.yml'
 PR_WORKFLOW = '.github/workflows/pr-check.yml'
@@ -149,7 +150,7 @@ def validate_pr_check(root, record, fn, target, c):
             'no supported published target hash')
     require(c.get('target') == row and c.get('normalized_sha256') == row['normalized_sha256']
             and c.get('layout_sha256') == row['layout_sha256'], 'target binding differs')
-    require(c.get('source_sha256') == record['source']['digest']
+    require(c.get('source_sha256') == run_revision(record['source'])
             and c.get('recipe_sha256') == record['recipe']['sha256'], 'source or recipe differs')
     # CI found the function by hash, so it must be the one the first host's comparator bound.
     symbols = {(run['report'].get('function') or {}).get('symbol') for run in record['runs']}
@@ -188,7 +189,7 @@ def validate(root, record, fn, target):
     require(row is not None and row['size'] == fn['size'] and row['extraction'] != 'unmasked-unsupported',
             'no supported published target hash')
     require(c.get('target') == row and c.get('build_id') == target['build_id'], 'target binding differs')
-    require(c.get('source_sha256') == record['source']['digest']
+    require(c.get('source_sha256') == run_revision(record['source'])
             and c.get('unit') == record['source']['compiled']
             and c.get('recipe_sha256') == record['recipe']['sha256'], 'source or recipe differs')
     require(c.get('result') == 'hash-match' and c.get('deterministic') is True,

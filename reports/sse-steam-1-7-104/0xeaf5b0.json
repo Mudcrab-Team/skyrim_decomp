@@ -314,8 +314,10 @@
   ],
   "source": {
     "compiled": "reconstruction/netimmerse/NiFile.cpp",
-    "digest": "4868a373c2b6d830a06a1cf5998303dd23359a8c3062e7676b7ede0a1fa9096d",
-    "digest_method": "tu-sha256-v1",
+    "digest": "f971ddbc10438ff53d9c4417c608916f2aa42cd0b652d635ac89874cb4082b37",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "4868a373c2b6d830a06a1cf5998303dd23359a8c3062e7676b7ede0a1fa9096d",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/netimmerse/NiBinaryStream.h",
       "reconstruction/netimmerse/NiFile.cpp",

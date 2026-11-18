@@ -325,8 +325,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/CompressedArchiveFile.cpp",
-    "digest": "9f3489de70cf8270079f8787c0686249ed38b744626c8cb4ecb3ac9f4b291ade",
-    "digest_method": "tu-sha256-v1",
+    "digest": "8d318caf2734e577f7119f5db5bc915f7800b6f37ed98cf02cb21ddbb1845eaa",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "9f3489de70cf8270079f8787c0686249ed38b744626c8cb4ecb3ac9f4b291ade",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/CompressedArchiveFile.cpp",
       "reconstruction/bsengine/CompressedArchiveFile.h"

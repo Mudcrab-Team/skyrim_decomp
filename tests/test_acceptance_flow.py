@@ -416,6 +416,11 @@ class GitHistoryTests(FlowFixture, unittest.TestCase):
                   {'review_kind', 'previous_source_digest', 'previous_review_sha256',
                    'previous_code_section_sha256', 'code_section_sha256', 'naming_findings'}}
         self.write(REVIEW, json.dumps(dict(legacy, review_record_schema=1), indent=2))
+        # A schema 1 approval carries no naming findings, so the tier is not assessed.
+        self.data = self.progress()
+        for entry in self.data['functions']:
+            entry.pop('named', None)
+        self.save_data()
         build_index.write_index(self.progress(), self.root)
         self.validate()
         git(self.root, 'init', '-q')

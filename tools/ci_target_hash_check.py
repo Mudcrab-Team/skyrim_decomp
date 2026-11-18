@@ -21,7 +21,9 @@ import lint_reconstruction as lint
 import compare
 from pecoff import CoffObject, Reject
 from rva_headers import claimed_rvas
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+import digest_v2
+from digest_v2 import tu_digest
 import target_hashes as hashes
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
@@ -50,6 +52,21 @@ def trusted_inputs(root):
                 compiler_pins_sha256=hashes.digest((root / 'tools/verifier/pinned.sha256').read_bytes()))
 
 
+def comment_only_change(root, base, name, blob):
+    """Whether head's `blob` equals the base file at `name` once prose comments are removed.
+
+    Provenance comments stay in the compared text, and anything the comment scan cannot classify
+    counts as a real change, so this can only skip a compile whose result cannot differ.
+    """
+    old = subprocess.run(['git', '-C', str(root), 'show', f'{base}:{name}'], capture_output=True)
+    if old.returncode != 0:
+        return False
+    try:
+        return digest_v2.strip_comments(old.stdout, name) == digest_v2.strip_comments(blob, name)
+    except ValueError:
+        return False
+
+
 def prepare(root, base, head, work):
     if not SHA.fullmatch(base) or not SHA.fullmatch(head):
         raise ValueError('revision must be a full SHA')
@@ -57,7 +74,7 @@ def prepare(root, base, head, work):
         raise ValueError('tools must be from the trusted base revision')
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
-    rows = []
+    rows, comment_only = [], set()
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
         if not contrib.UNIT_PATH.fullmatch(name):
@@ -78,6 +95,8 @@ def prepare(root, base, head, work):
             raise ValueError('source is not text')
         blob.decode('utf-8-sig')
         rows.append((name, blob))
+        if status == 'M' and comment_only_change(root, merge_base, name, blob):
+            comment_only.add(name)
     if not rows:
         return root, []
     tree = work / 'source'
@@ -92,7 +111,9 @@ def prepare(root, base, head, work):
     for name, _blob in rows:
         if lint.lint_file(tree, name, target):
             raise ValueError('contributor source lint failed')
-    return tree, [name for name, _ in rows]
+    # A file whose text differs from base only in comments (digest_v2.strip_comments) compiles to the
+    # same code, so it asks for no compile of its own; it is still linted and still in the tree above.
+    return tree, [name for name, _ in rows if name not in comment_only]
 
 
 def bindings(root):

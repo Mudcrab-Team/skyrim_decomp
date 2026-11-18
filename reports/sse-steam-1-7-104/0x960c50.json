@@ -336,8 +336,10 @@
   ],
   "source": {
     "compiled": "reconstruction/bsengine/QuickSaveLoadHandlerStorageLayout.cpp",
-    "digest": "62f4b593518b6154f520f51970497ad691f62703199f60b3ac9bf3338d570786",
-    "digest_method": "tu-sha256-v1",
+    "digest": "d1eb65f4ce51f02e50fde42bdefeadc4facb1e9342e0a80c5de4c7a6366b4265",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "62f4b593518b6154f520f51970497ad691f62703199f60b3ac9bf3338d570786",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
       "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",

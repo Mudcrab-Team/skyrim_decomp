@@ -22,7 +22,8 @@ import symbol_map
 import unit_build
 from census_leaf_generate import write_new
 from pecoff import CoffObject, PeImage
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 from storage_row_extract import extract_eh, extract_instructions
 import string_static_template_v2 as template
 

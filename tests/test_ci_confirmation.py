@@ -152,7 +152,8 @@ class Evidence(GateFixture,unittest.TestCase):
 class Prepare(unittest.TestCase):
     def test_real_source_intake_has_trusted_recipe_and_evidence_before_lint(self):
         from test_lint_reconstruction import HEADER, SOURCE, BUILD
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)/'repo';root.mkdir()
             def git(*args):
@@ -161,7 +162,7 @@ class Prepare(unittest.TestCase):
             for name,data in {'builds/target.json':json.dumps(dict(build_id=BUILD)),
                 'findings/TEMPLATE.md':'Original synthetic evidence.\n',
                 'reconstruction/recipes/r.json':'{}',
-                'reconstruction/misc/Widget.cpp':SOURCE,'reconstruction/misc/Widget.h':HEADER}.items():
+                'reconstruction/misc/Widget.cpp':SOURCE.replace('#include','// Evidence: findings/TEMPLATE.md\n#include',1),'reconstruction/misc/Widget.h':HEADER}.items():
                 p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(data, newline="\n")
             git('add','.');git('commit','-qm','original synthetic fixture');base=git('rev-parse','HEAD')
             closure=include_closure(root,'reconstruction/misc/Widget.cpp')

@@ -14,7 +14,8 @@ import draft_worktrees as drafts
 import work_queue as wq
 import lint_reconstruction as lint
 import synthetic_pecoff as fx
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 from repo_fixture import Repo, BUILD, git
 
 
@@ -403,12 +404,10 @@ class DraftWorktrees(unittest.TestCase):
         drafts.save(self.root / 'builds/target.json', {'build_id': BUILD})
         drafts.save(self.root / 'reconstruction/recipes/r.json', {})
         (self.root / self.unit['sources'][0]).write_text(
-            f'// Foo, build {BUILD}. Source exposure: binary-analysis. Names are GUESS.\n'
+            '// Source exposure: binary-analysis\n// Foo: GUESS(low)\n'
             '#pragma once\nclass Foo {};\n')
-        source = (f'// SyntheticSum, build {BUILD}, RVA 0x1000, 16 bytes.\n'
-                  f'// Evidence: reports/{BUILD}/0x1000.json\n'
-                  '// Source exposure: binary-analysis. Drafted by a synthetic test.\n'
-                  '// Recipe: reconstruction/recipes/r.json\n#include "Foo.h"\n')
+        source = ('// Source exposure: binary-analysis\n'
+                  '// 0x1000 SyntheticSum\n#include "Foo.h"\n')
         (self.root / self.unit['sources'][-1]).write_text(source + 'int SyntheticSum() { return 0; }\n')
         git(self.root, 'add', 'builds/target.json', 'reconstruction/recipes/r.json', *self.unit['sources'])
         git(self.root, 'commit', '-m', 'synthetic lint inputs')

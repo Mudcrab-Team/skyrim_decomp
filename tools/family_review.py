@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 import re
 import subprocess
+from digest_v2 import run_revision
 from validation_reads import read_bytes, read_text
 
 ID = re.compile(r'[a-z0-9][a-z0-9-]*\Z')
@@ -77,7 +78,7 @@ def binding(fn, record):
 
 def member_digest(fn, record):
     return digest({'function_id': fn['id'], 'build_id': fn['build_id'], 'rva': fn['rva'], 'size': fn['size'],
-                   'source_digest': record['source']['digest'], 'name': fn['name'], 'name_origin': fn['name_origin'],
+                   'source_digest': run_revision(record['source']), 'name': fn['name'], 'name_origin': fn['name_origin'],
                    'origin': record.get('origin'),
                    'family_parameters': record.get('family_parameters'), 'name_source': record.get('name_source'),
                    'binding': binding(fn, record)})

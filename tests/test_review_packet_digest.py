@@ -9,7 +9,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import review_packet  # noqa: E402
-from source_digest import tu_digest  # noqa: E402
+from digest_v2 import tu_digest  # noqa: E402
 
 
 class DigestAt(unittest.TestCase):

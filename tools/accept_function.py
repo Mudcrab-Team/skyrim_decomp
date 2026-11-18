@@ -69,8 +69,8 @@ from check import (ROOT, LABEL_ONLY, MAX_NAMING_FINDINGS, REVIEW_RECORD_SCHEMA, 
                    validate_match, validate_review, check_internal_admission)
 from build_index import INDEX, write_index  # noqa: E402
 from check_source_digest import source_digest_cache  # noqa: E402
-from lint_reconstruction import LABELS_VERSION, lint_tree  # noqa: E402
-from source_digest import DIGEST_METHOD  # noqa: E402
+from lint_reconstruction import label_grammar_applies, lint_tree  # noqa: E402
+from digest_v2 import review_binds  # noqa: E402
 import review_packet  # noqa: E402
 import family_review as fr  # noqa: E402
 from flow_state import state_lock, require_complete  # noqa: E402
@@ -575,7 +575,7 @@ def named_value(root, record, naming_findings):
         return False
     unit = record['source']['translation_unit']
     for name in unit:
-        if not LABELS_VERSION.search((Path(root) / name).read_text(encoding='utf-8')):
+        if not label_grammar_applies(name, (Path(root) / name).read_text(encoding='utf-8')):
             return False
     try:
         return not label_findings(root, unit)
@@ -600,7 +600,7 @@ def review_record(fn, record, header, title, blob, when, kind, naming, previous=
     return {
         'review_record_schema': REVIEW_RECORD_SCHEMA,
         'function_id': fn['id'], 'build_id': fn['build_id'], 'rva': fn['rva'], 'size': fn['size'],
-        'source_digest_method': DIGEST_METHOD, 'source_digest': record['source']['digest'],
+        'source_digest_method': record['source']['digest_method'], 'source_digest': record['source']['digest'],
         'reviewer_model': header['reviewer_model'], 'review_task_id': title,
         'verdict': 'approve', 'escalation_category': 'none',
         'review_sha256': _review_sha(blob), 'review_date': when.date().isoformat(),
@@ -655,7 +655,7 @@ def prepare(root, data, target, index, title, header, block, blob, when, *, carr
         # A different review, source, kind or naming finding takes the ordinary path below.
         if (carry_accepted and previous is not None
                 and previous.get('review_record_schema') == REVIEW_RECORD_SCHEMA
-                and previous.get('source_digest') == record['source']['digest']
+                and review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source'])
                 and previous.get('review_sha256') == _review_sha(blob)
                 and previous.get('review_task_id') == title
                 and previous.get('reviewer_model') == header['reviewer_model']
@@ -671,8 +671,8 @@ def prepare(root, data, target, index, title, header, block, blob, when, *, carr
         # Label-only and family records have no individual Reviewer pass on this digest; a full
         # review may replace them, which is how their naming findings get closed.
         relabelled = (previous is not None and previous.get('review_kind') in (LABEL_ONLY, 'family')
-                      and previous.get('source_digest') == record['source']['digest'] and kind == 'full')
-        refuse(previous is not None and (previous.get('source_digest') != record['source']['digest'] or relabelled),
+                      and review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source']) and kind == 'full')
+        refuse(previous is not None and (not review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source']) or relabelled),
                f'{fn["id"]} is already matched')
         # The superseded approval must be a real one for this function, or a delta would chain from nothing.
         refuse(previous.get('verdict') == 'approve' and previous.get('function_id') == fn['id'],
@@ -984,7 +984,7 @@ def superseded_approval(fn, record, previous):
            f'{where} is not an approve without escalation')
     refuse((previous['function_id'], previous['build_id'], previous['rva'], previous['size'])
            == (fn['id'], fn['build_id'], fn['rva'], fn['size']), f'{where} approved another function')
-    refuse(is_hash(previous['source_digest']) and previous['source_digest'] != record['source']['digest'],
+    refuse(is_hash(previous['source_digest']) and not review_binds(previous.get('source_digest_method'), previous['source_digest'], record['source']),
            f'{where} does not bind an earlier digest')
     refuse(is_hash(previous['review_sha256']), f'{where} names no review hash')
 
@@ -1033,7 +1033,7 @@ def label_only(root, select=None, when=None, *, prepare_only=False):
         review = {
             'review_record_schema': REVIEW_RECORD_SCHEMA,
             'function_id': fn['id'], 'build_id': fn['build_id'], 'rva': fn['rva'], 'size': fn['size'],
-            'source_digest_method': DIGEST_METHOD, 'source_digest': record['source']['digest'],
+            'source_digest_method': record['source']['digest_method'], 'source_digest': record['source']['digest'],
             'reviewer_model': previous['reviewer_model'], 'review_task_id': previous['review_task_id'],
             'verdict': 'approve', 'escalation_category': 'none',
             'review_sha256': previous['review_sha256'], 'review_date': previous['review_date'],

@@ -346,8 +346,10 @@
   ],
   "source": {
     "compiled": "reconstruction/shaders/BSLightingShaderThunkLayout.cpp",
-    "digest": "688b806aa636f5bed1fa5778023d3bffee401bfdac2b7f564551ecd7e88db70b",
-    "digest_method": "tu-sha256-v1",
+    "digest": "46fbf6ba08dfe6f873943108b1e97d444e4da8b47abeda55f372ebc82753ecce",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "688b806aa636f5bed1fa5778023d3bffee401bfdac2b7f564551ecd7e88db70b",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/shaders/BSLightingShaderThunkLayout.cpp",
       "reconstruction/shaders/BSLightingShaderThunkLayout.h",

@@ -482,7 +482,8 @@ class Bot:
         Both hosts' results are in before the review starts, because checklist item 3 asks whether
         the report binds this source and whether the second-host reproduction is present.
         """
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         tree, evidence = self.tree, evidence or {}
         changed = set(changed) if changed is not None else None
         data = json.loads((tree / 'data/progress.json').read_text())
@@ -581,7 +582,8 @@ class Bot:
         that closure leaves the record stale, whether or not the PR lists the function. The unit is
         known from the record, which also covers a changed header shared by several units.
         """
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         tree = self.tree
         changed = {f['filename'] for f in files}
         target = json.loads((tree / 'builds/target.json').read_text())['build_id']
@@ -597,9 +599,10 @@ class Bot:
             unit = source.get('compiled')
             if not unit or not (unit in units or changed & set(source.get('translation_unit') or ())):
                 continue
-            if unit not in current:
-                current[unit] = tu_digest(tree, include_closure(tree, unit)) if (tree / unit).is_file() else None
-            if current[unit] is not None and current[unit] != source.get('digest'):
+            key = (unit, source.get('digest_method'))
+            if key not in current:
+                current[key] = tu_digest(tree, include_closure(tree, unit), key[1]) if (tree / unit).is_file() else None
+            if current[key] is not None and current[key] != source.get('digest'):
                 out.setdefault(unit, []).append(fn['rva'])
         return {u: sorted(rs) for u, rs in out.items()}
 

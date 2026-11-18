@@ -45,7 +45,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lint_reconstruction import LABEL_LINE, LABELS_VERSION, SIBLING_HEADER, SIBLING_SOURCES, SIBLING_ID  # noqa: E402
+from lint_reconstruction import LABEL_LINE, label_grammar_applies, SIBLING_HEADER, SIBLING_SOURCES, SIBLING_ID  # noqa: E402
 from build_fnv_index import split_symbol  # noqa: E402
 
 DEFAULT_CHECKOUTS = {
@@ -417,7 +417,7 @@ class Checker:
         text = path.read_text()
         # Sibling body citations are checked in every unit, labelled v2 or not.
         findings = self.check_sibling_sources(rel, text)
-        if not LABELS_VERSION.search(text[:4000]):
+        if not label_grammar_applies(rel, text):
             return findings
         scopes = unit_scopes(text)
         community_names = {}   # simple or qualified name -> (repo, index)
@@ -617,7 +617,7 @@ def community_excerpts(files, checkouts=None, root=ROOT):
     for path in files:
         path = Path(path) if Path(path).is_absolute() else root / path
         text = path.read_text()
-        if not LABELS_VERSION.search(text[:4000]):
+        if not label_grammar_applies(path.relative_to(root).as_posix() if path.is_relative_to(root) else str(path), text):
             continue
         scopes = unit_scopes(text)
         for number, names, labels in label_lines(text):

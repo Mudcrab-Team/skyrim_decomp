@@ -10,14 +10,30 @@ per class, since each PR costs a full verification and merge cycle.
 
 Read only the private pack named by the helper, after the owner has agreed to model exposure.
 Never post listings, pseudo-C, Ghidra projects, bytes, objects, raw diagnostics or paths. Keep the
-skeleton's provenance and licence fields; name your actual model. Fill the `Code origin:`
-placeholder truthfully in each file, including adaptations and sources. Community headers are
+skeleton's short header (below) and fill the `Code origin:` placeholder truthfully in each file,
+including adaptations and sources. Community headers are
 hypotheses, not binary proof. Never write `asm`, `##`, `#pragma` (except `once`), byte arrays or
 `\x` strings, and never edit verifier inputs, tools, flags or another unit to force a pass.
 
 For FNV reuse use `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` and cite each reused
 body in a `Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>` header line. Another
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.
+
+Header: keep it short. The skeleton writes all of it; a `.cpp` looks like
+
+```
+// Source exposure: mixed (community headers; the pinned image listing).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original; the listing and community declarations only
+// 0x1de5e0 TESActorBaseData::Unk_07
+// Adapted bodies: none
+#include "TESActorBaseData.h"
+```
+
+Never paste licence text, and leave out Task, Labels, Evidence, Drafted by, Recipe (unless it is
+not the default) and any "a byte match shows..." disclaimer: the records and git hold them. Labels,
+`Sibling source:` and `0x<rva> <Name>` lines do not count; keep the rest to 6 lines or fewer. The
+PR check fails a new or changed header that is longer or holds licence text.
 
 Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,

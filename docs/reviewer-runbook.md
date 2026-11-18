@@ -260,7 +260,7 @@ review_kind: <full|delta>
 previous_source_digest: <delta only: the approved digest the packet names>
 code_section_unchanged: <delta only: yes, as the packet shows>
 source_paths: <translation-unit files>
-source_digest: <tu-sha256-v1 digest you computed>
+source_digest: <digest you computed with the record method>
 report_path: <path>
 report_binding: <agree|disagree|missing>, <one line>
 checks:

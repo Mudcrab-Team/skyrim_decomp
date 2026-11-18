@@ -18,7 +18,8 @@ import compare_internal as internal
 import imagemodel
 from pecoff import CoffObject, PeImage
 import runners
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 import symbol_map
 import unit_build
 import shared_teardown_template_v1 as template

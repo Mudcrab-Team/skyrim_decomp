@@ -14,7 +14,8 @@ import subprocess
 import sys
 
 from compare import COMPARATOR_VERSION, CONTRACT_VERSION, REPORT_SCHEMA, comparator_source_sha256, sanitized
-from source_digest import DIGEST_METHOD, INCLUDE_ROOTS, recipe_flag_problem, tu_digest
+from source_digest import INCLUDE_ROOTS, recipe_flag_problem
+from digest_v2 import DIGEST_METHOD, DIGEST_METHODS, review_binds, run_revision, run_digest_problem, tu_digest
 from check_source_digest import include_closure, source_digest_cache
 from lint_reconstruction import lint_tree
 import cost_ledger
@@ -209,7 +210,9 @@ def check_match(fn, target, root=None):
     require(record.get('function_id') == fn['id'], 'Match record: function_id is not this inventory entry')
 
     source = record.get('source') or {}
-    require(source.get('digest_method') == DIGEST_METHOD, 'Match record: unknown source digest method')
+    require(source.get('digest_method') in DIGEST_METHODS, 'Match record: unknown source digest method')
+    problem = run_digest_problem(source)
+    require(problem is None, f'Match record: {problem}')
     unit = source.get('translation_unit')
     require(isinstance(unit, list) and unit, 'Match record: translation_unit must list the source files')
     unit = [public_path(name, {'reconstruction'}, 'source file', root) for name in unit]
@@ -217,8 +220,11 @@ def check_match(fn, target, root=None):
     compiled = source.get('compiled')
     require(compiled in unit, 'Match record: the compiled file is not part of the translation unit')
     check_unit(root, compiled, unit, 'Match record')
-    digest = tu_digest(root, unit)
-    require(source.get('digest') == digest, 'Match record: source digest is stale for the integrated source')
+    require(source.get('digest') == tu_digest(root, unit, source['digest_method']),
+            'Match record: source digest is stale for the integrated source')
+    # The runs embed the revision they were made on: the record's own digest, or for a record
+    # migrated to a newer digest method the one it carried before (digest_v2.run_revision).
+    digest = run_revision(source)
 
     recipe_ref = record.get('recipe') or {}
     recipe_path = public_path(recipe_ref.get('path'), {'reconstruction'}, 'recipe', root)
@@ -463,7 +469,7 @@ def validate_review(fn, record, root=None):
     require(review['function_id'] == fn['id'] and review['build_id'] == fn['build_id']
             and review['rva'] == fn['rva'] and review['size'] == fn['size'],
             'Review record: it reviewed another function than this inventory entry')
-    require(review['source_digest_method'] == DIGEST_METHOD and review['source_digest'] == record['source']['digest'],
+    require(review_binds(review['source_digest_method'], review['source_digest'], record['source']),
             'Review record: it reviewed other source than the match record binds')
     require(isinstance(review['reviewer_model'], str) and bool(MODEL_ID.fullmatch(review['reviewer_model'])),
             'Review record: names no reviewer model')
@@ -658,7 +664,8 @@ def _staleness_uncached(fn, root):
     if not isinstance(unit, list) or not all(isinstance(n, str) and n.startswith('reconstruction/') for n in unit + [compiled]):
         return None, None, compiled
     try:
-        digest = tu_digest(root, include_closure(root, compiled))
+        closure = include_closure(root, compiled)
+        digest = tu_digest(root, closure, source.get('digest_method'))
     except (ValueError, OSError):
         return None, None, compiled
     if digest != source.get('digest'):
@@ -669,7 +676,7 @@ def _staleness_uncached(fn, root):
             detail = str(exc)
         return STALE_UNIT, detail, compiled
     review = _json_or_none(root / review_record_path(fn))
-    if review is not None and review.get('source_digest') != digest:
+    if review is not None and not review_binds(review.get('source_digest_method'), review.get('source_digest'), source):
         return STALE_REVIEW, 'Review record: it reviewed other source than the match record binds', compiled
     return None, None, compiled
 

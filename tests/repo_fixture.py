@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
-from source_digest import tu_digest  # noqa: E402
+from digest_v2 import tu_digest  # noqa: E402
 
 BUILD = 'synthetic-build'
 FUNCS = [(0x1000, 16, 'Foo::A'), (0x1010, 8, 'Foo::B'), (0x2000, 12, 'Bar::C')]
