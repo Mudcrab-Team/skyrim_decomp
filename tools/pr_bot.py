@@ -797,7 +797,9 @@ class Bot:
             return self.conflicting(pr, state)
         started = time.time()
         files = state.once('scope', lambda: self.changed_files(number))
-        if scope_problem(files):
+        # No changed files means the PR's tree equals main's (all of it landed elsewhere): the landed path below
+        # marks it merged with credit instead of calling it out of scope.
+        if scope_problem(files) not in (None, 'empty'):
             decision = dict(blocked='scope', merge=False, verdicts={})
             state.set('decision', decision)
             return self.finish(pr, state, decision, started, comment='This PR changes files outside reconstruction/, '

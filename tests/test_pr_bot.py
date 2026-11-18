@@ -295,6 +295,16 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
         self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
 
+    def test_a_pr_with_no_changed_files_is_marked_landed_not_called_out_of_scope(self):
+        bot = FakeBot(self.work, files=[])
+        bot.landed = []
+        out = bot.process(PR)
+        self.assertIsNone(out['blocked'])
+        self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
+        comment = bot.seen('gh', 'pr', 'comment')
+        self.assertEqual(len(comment), 1)
+        self.assertNotIn('outside reconstruction', comment[0][-1])
+
     def test_grep_hit_blocks_before_any_model_or_host_call(self):
         bot = FakeBot(self.work, grep=(True, ['LG01']))
         out = bot.process(PR)
