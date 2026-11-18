@@ -27,7 +27,9 @@ import target_hashes as hashes
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # Optional source-header request for a new unit with no accepted symbol binding yet. It is a
 # claim about which public target to try, never evidence of identity or acceptance.
-REQUEST = re.compile(r'^// CI hash: (0x[0-9a-fA-F]+) (\S+)\s*$', re.M)
+# Horizontal whitespace after the colon is optional: a hint typed without it must still bind
+# rather than fail the whole unit.
+REQUEST = re.compile(r'^// CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S+)\s*$', re.M)
 SHA = re.compile(r'[0-9a-f]{40}')
 UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.

@@ -57,6 +57,14 @@ class HeaderClaims(Fixture):
         got = ci.requests(self.root, [HEADER], {})
         self.assertEqual(got, [dict(unit=UNIT, rva=0x1010, symbol=None, recipe=ci.DEFAULT_RECIPE)])
 
+    def test_ci_hash_hint_accepts_optional_space_after_the_colon(self):
+        for spacing in ('', ' ', '  ', '\t'):
+            with self.subTest(spacing=spacing):
+                self.assertEqual(ci.REQUEST.findall(f'// CI hash:{spacing}0xeee380 ?f@@YAXXZ\n'),
+                                 [('0xeee380', '?f@@YAXXZ')])
+        self.assertEqual(ci.REQUEST.findall('// CI hash:\n0xeee380 ?f@@YAXXZ\n'), [])
+        self.assertEqual(ci.REQUEST.findall('// CI hash: 0xeee380\n'), [])
+
     def test_the_unit_names_its_recipe(self):
         self.write(UNIT, f'// recipe {RECIPE}\n#include "Fixture.h"\nint f() {{ return 1; }}\n')
         self.assertEqual(ci.requests(self.root, [HEADER], {})[0]['recipe'], RECIPE)
