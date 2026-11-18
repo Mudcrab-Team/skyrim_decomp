@@ -824,14 +824,17 @@ class Bot:
         state.set('recorded', True)
 
 
-def poll(bot, interval):
+def poll(bot, interval, restart_after=None):
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
         print('another pr_bot --poll holds the lock', file=sys.stderr)
         return 1
+    started = time.time()
     while True:
+        if restart_after and time.time() - started > restart_after:
+            return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
         try:
             prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                               'number,headRefOid,author,baseRefName,isDraft')
@@ -859,6 +862,7 @@ def main(argv=None):
     p.add_argument('number', nargs='?', type=int)
     p.add_argument('--poll', action='store_true')
     p.add_argument('--interval', type=int, default=60)
+    p.add_argument('--restart-after', type=int, help='--poll: exit between cycles after this many seconds')
     p.add_argument('--dry-run', action='store_true', help='no merge, push or comment')
     p.add_argument('--head')
     p.add_argument('--base')
@@ -871,7 +875,7 @@ def main(argv=None):
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
-        return poll(bot, a.interval)
+        return poll(bot, a.interval, a.restart_after)
     if a.command != 'pr' or not a.number:
         p.error('give `pr NUMBER` or --poll')
     pr = bot.gh_json('pr', 'view', str(a.number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
