@@ -5,9 +5,10 @@
 // Source exposure: binary-analysis (a local listing of the contributor's own copy of the pinned image).
 // Community names are unverified. Only the members the compared code needs are declared.
 // BGSAttackData, BGSAttackData::~BGSAttackData, event: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// NiRefObject, NiRefObject::~NiRefObject, NiRefObject::ms_totalObjects, _refCount, DeleteThis: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); inline because the target inlines it
+// NiRefObject, NiRefObject::~NiRefObject, _refCount, DeleteThis: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); inline because the target inlines it
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the destructor is called out of line
 // value, unknown18: GUESS(low)
+// ms_totalObjects: GUESS(low); NG reaches the counter through GetTotalObjectCount()
 #pragma once
 
 #include <intrin.h>
