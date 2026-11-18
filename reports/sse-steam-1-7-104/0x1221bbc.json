@@ -29,10 +29,10 @@
         "object_sha256": "2f5395f2b600a10b3e772161359e2eb435e2e18c965c80c1db1ff5d0d5982c29",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.h",
-          "reconstruction/bsengine/MovementVptrContractLayout.cpp",
-          "reconstruction/bsengine/MovementVptrContractLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.h",
+          "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.cpp",
+          "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "d8c81a8cdf73d4977b10678948e4271779107e87777dec6c6016c8d8ecd55ff4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.h",
-          "reconstruction/bsengine/MovementVptrContractLayout.cpp",
-          "reconstruction/bsengine/MovementVptrContractLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.h",
+          "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.cpp",
+          "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MovementVptrContractLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.cpp",
     "digest": "c74f88cfc7fef3d20365cef1905934f2f2f0a85a2938a97c080e53a7643fd268",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ccfd3dda8e82ce669a39c2096dcc60ccfba526764eaac6feeefc04c9e72ecdba",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/MovementAgentPathFollowerStandardPrefixLayout.h",
-      "reconstruction/bsengine/MovementVptrContractLayout.cpp",
-      "reconstruction/bsengine/MovementVptrContractLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/ai/movement/MovementAgentPathFollowerStandardPrefixLayout.h",
+      "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.cpp",
+      "reconstruction/skyrim/ai/movement/MovementVptrContractLayout.h"
     ]
   },
   "symbol_map": {

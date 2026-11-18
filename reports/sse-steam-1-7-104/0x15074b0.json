@@ -29,15 +29,15 @@
         "object_sha256": "beee3a3f194fc16dfaa4428048b1af1bf99549991c41c6a8bec709567ce3c0ef",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "0f1287be607382f144101e033b08a960a20c90206a417d8ebe03fb165a4ffbf5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -349,21 +349,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
     "digest": "9571b732765ae52a2ea05bfd9ab841a44537ef04f5482413b46c4a89896f37bb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f702b0e74e61ae984a509db6e7617730b9bc718805b462cf358f2024b7a0676a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderISCompositeLensFlareVolumetricLightingThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

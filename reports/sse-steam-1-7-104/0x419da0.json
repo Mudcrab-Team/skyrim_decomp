@@ -29,8 +29,8 @@
         "object_sha256": "39e1771de0c40336c7160dbcc8614b4853605fc684ec8e7d645fd5afaed42291",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TempLoadGameBuffer.cpp",
-          "reconstruction/forms/TempLoadGameBuffer.h"
+          "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.cpp",
+          "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "0515416ffd846afa4977c6d3369afc7c37c50367e124f532ff4a5a83fd8f5c1f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TempLoadGameBuffer.cpp",
-          "reconstruction/forms/TempLoadGameBuffer.h"
+          "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.cpp",
+          "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TempLoadGameBuffer.cpp",
+    "compiled": "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.cpp",
     "digest": "176b1b9608bfe777726d5ccb35505f94c564e7b20d34922d15d7135d5f6c7126",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4d099cd9c39e9c3aad7c15569726ea9dc3916776b5c20fb2f60d1a250ec35cb2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TempLoadGameBuffer.cpp",
-      "reconstruction/forms/TempLoadGameBuffer.h"
+      "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.cpp",
+      "reconstruction/skyrim_shared/saveload/TempLoadGameBuffer.h"
     ]
   },
   "symbol_map": {

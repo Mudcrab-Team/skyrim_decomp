@@ -29,8 +29,8 @@
         "object_sha256": "28bec5d858f84fa4ab5ba5e724527a32849cbbdaf77f9e713abddf6c405242b0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/SaveStorageWrapper.cpp",
-          "reconstruction/bsengine/SaveStorageWrapper.h"
+          "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.cpp",
+          "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "1d84df487962d515a30b836db719fad79764acf2dd998de55b2a9b9f75fa66be",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/SaveStorageWrapper.cpp",
-          "reconstruction/bsengine/SaveStorageWrapper.h"
+          "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.cpp",
+          "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/SaveStorageWrapper.cpp",
+    "compiled": "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.cpp",
     "digest": "e5dac4f4be8296c4c19da2cab16d22ad9220ae9c503af494a2e7b4042d0518c7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f9c0ddd1312c80dfb3d455de1eba8e9aaea174d345a2926303e983234f009939",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/SaveStorageWrapper.cpp",
-      "reconstruction/bsengine/SaveStorageWrapper.h"
+      "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.cpp",
+      "reconstruction/skyrim_shared/saveload/SaveStorageWrapper.h"
     ]
   },
   "symbol_map": {

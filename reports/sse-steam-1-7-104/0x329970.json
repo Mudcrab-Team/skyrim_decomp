@@ -29,9 +29,9 @@
         "object_sha256": "160c93ba2669d115fef2c1481f4b7e391dde22a4ddb09422f127adf2e38adc8a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSoundCategory.cpp",
-          "reconstruction/forms/BGSSoundCategory.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSSoundCategory.cpp",
+          "reconstruction/skyrim_shared/audio/BGSSoundCategory.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "d0614c809ed5c963a215163c79120761b23f5645e3d28c4f136359f98bef980f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSoundCategory.cpp",
-          "reconstruction/forms/BGSSoundCategory.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSSoundCategory.cpp",
+          "reconstruction/skyrim_shared/audio/BGSSoundCategory.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSSoundCategory.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSSoundCategory.cpp",
     "digest": "b8b697d0752df560ee8a78c4996792260d6923b4f889b966a49e8363eb83ca30",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e76ecf23492f84401bd75192b0da759526c3f7a3a14abf0ec4aa1253bb9c3f51",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSSoundCategory.cpp",
-      "reconstruction/forms/BGSSoundCategory.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/audio/BGSSoundCategory.cpp",
+      "reconstruction/skyrim_shared/audio/BGSSoundCategory.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

@@ -29,10 +29,10 @@
         "object_sha256": "76c78d3fe5d781607b50286227508ef1f9b020c8111bed0fb1ccb34e6a131cd7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSFixedStringStorageLayout.h",
-          "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.h"
+          "reconstruction/bscore/BSFixedStringStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "e1b5fc3de4d0ff5e0e23394f89eb001fea914ab852ef0d885183f3075819aee2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSFixedStringStorageLayout.h",
-          "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.h"
+          "reconstruction/bscore/BSFixedStringStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.cpp",
     "digest": "20cf1a3b3d2b8e5a012d5370aa39ce5add4a6d4dc4739e192922a1fcde4f0683",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2f4f867acc4b66481023bd2c73baef3832c27233b622df64f7a0cf30a5618145",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/BSFixedStringStorageLayout.h",
-      "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraEditorRefMoveDataStorageLayout.h"
+      "reconstruction/bscore/BSFixedStringStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraEditorRefMoveDataStorageLayout.h"
     ]
   },
   "symbol_map": {

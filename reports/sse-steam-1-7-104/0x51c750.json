@@ -29,8 +29,8 @@
         "object_sha256": "3320bc78ca610caa88044c9854a31387cc3af76faad1e72b85d3bbd41c08553d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSQueuedTerrainInitialLoad.cpp",
-          "reconstruction/forms/BGSQueuedTerrainInitialLoad.h"
+          "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.cpp",
+          "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "51465f0c41ffa9090bb6ea00da7f9286765cf169862ed972b0d025317f3ffeee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSQueuedTerrainInitialLoad.cpp",
-          "reconstruction/forms/BGSQueuedTerrainInitialLoad.h"
+          "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.cpp",
+          "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSQueuedTerrainInitialLoad.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.cpp",
     "digest": "3aaaa88964b2cc579676835bdcbfea57e044d31809a6537c5ea78fac8f258176",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ced2c95206eb465ae1685bcc5dca8064cb26e7b2e7bcaa5cfd20c2c9fc7a4fa6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSQueuedTerrainInitialLoad.cpp",
-      "reconstruction/forms/BGSQueuedTerrainInitialLoad.h"
+      "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.cpp",
+      "reconstruction/skyrim_shared/world/BGSQueuedTerrainInitialLoad.h"
     ]
   },
   "symbol_map": {

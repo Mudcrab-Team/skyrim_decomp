@@ -29,9 +29,9 @@
         "object_sha256": "38f7fa9ae6984b28ac860a1df2daac6ab4f8ace7d24097b994a95d3fb7f6278c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "5c6320ac79984ddfec4d4f27e15c63606a9de97556ffc2ec642d058972f45bdf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.cpp",
     "digest": "3a4ea475fcabc469503fe9965b5fab3bfd478edd3d232d565dcc2e372068dc1b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "48a8b907134f8e608bcbefe0d37a40da18594611d88b9540d6d56967429b4301",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCellImageSpaceStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellImageSpaceStorageLayout.h"
     ]
   },
   "symbol_map": {

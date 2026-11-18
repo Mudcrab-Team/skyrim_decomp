@@ -29,8 +29,8 @@
         "object_sha256": "b5e1988a6dec5377701b5009472a80897b147bf5160b9dacfc70faa10323206d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESAIForm.cpp",
-          "reconstruction/forms/TESAIForm.h"
+          "reconstruction/skyrim_shared/forms/TESAIForm.cpp",
+          "reconstruction/skyrim_shared/forms/TESAIForm.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "0a0b83f9126b45fa39c91b76442c25dbe1ce6b56c9066685d3c7d08570c78961",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESAIForm.cpp",
-          "reconstruction/forms/TESAIForm.h"
+          "reconstruction/skyrim_shared/forms/TESAIForm.cpp",
+          "reconstruction/skyrim_shared/forms/TESAIForm.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESAIForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESAIForm.cpp",
     "digest": "fa78ae17c550c38f63f9476ab707d785df861138dfe544efce816a3ebbbabe97",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b80177e3a7e8b6882c75e21d9a26806ca34754681afb8d34e2148fed9e63c274",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESAIForm.cpp",
-      "reconstruction/forms/TESAIForm.h"
+      "reconstruction/skyrim_shared/forms/TESAIForm.cpp",
+      "reconstruction/skyrim_shared/forms/TESAIForm.h"
     ]
   },
   "symbol_map": {

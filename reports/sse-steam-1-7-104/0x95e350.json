@@ -29,11 +29,11 @@
         "object_sha256": "112ef216ee208ee749348f4e6a3d90174517763f1db5d7add86474caf0dfce28",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.cpp",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-          "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.cpp",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -52,11 +52,11 @@
         "object_sha256": "c4678cd3819593fad6d2f21f89f672382d12d71dab9b547839862335fd3a87cf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.cpp",
-          "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-          "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-          "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.cpp",
+          "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+          "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
         ]
       }
     }
@@ -323,17 +323,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.cpp",
+    "compiled": "reconstruction/bscore/EventInterfaceVptrPrefixLayout.cpp",
     "digest": "a7856d771b43596a1d28c319ebef712c0d7d9b8d6fc3ffdcb9c4f2cecf699d0e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "83634cd4f33de4c8148d503fb6c28b586c560dcf0a26177d73e01bee462b197f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.cpp",
-      "reconstruction/bsengine/EventInterfaceVptrPrefixLayout.h",
-      "reconstruction/scaleform/GRefCountImplCoreStorageLayout.h",
-      "reconstruction/scaleform/GRefCountImplStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/bscore/EventInterfaceVptrPrefixLayout.cpp",
+      "reconstruction/bscore/EventInterfaceVptrPrefixLayout.h",
+      "reconstruction/thirdparty/scaleform/GRefCountImplCoreStorageLayout.h",
+      "reconstruction/thirdparty/scaleform/GRefCountImplStorageLayout.h"
     ]
   },
   "symbol_map": {

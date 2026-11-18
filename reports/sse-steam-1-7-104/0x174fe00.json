@@ -29,8 +29,8 @@
         "object_sha256": "efb8673ac3d5bfb5a4649a731d9b7917e5c297d8a5e522edf3d6b5ed0f8ec602",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/Static174fe00.cpp",
-          "reconstruction/static/Static174fe00.h"
+          "reconstruction/unmapped/static/Static174fe00.cpp",
+          "reconstruction/unmapped/static/Static174fe00.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ed1c036b0b6f18f622158d1c6df0b64f83a9dc29df01bde313ee7dc1cfb26760",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/static/Static174fe00.cpp",
-          "reconstruction/static/Static174fe00.h"
+          "reconstruction/unmapped/static/Static174fe00.cpp",
+          "reconstruction/unmapped/static/Static174fe00.h"
         ]
       }
     }
@@ -419,14 +419,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/static/Static174fe00.cpp",
+    "compiled": "reconstruction/unmapped/static/Static174fe00.cpp",
     "digest": "6522a416381f9b9be3bfb20662bb25fb755688d7425d085012fbb9dc89f1987b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c15bc967d3ac41ab048fb0bb5e43bb9ad1caa4be557464a913363138af0ca5ab",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/static/Static174fe00.cpp",
-      "reconstruction/static/Static174fe00.h"
+      "reconstruction/unmapped/static/Static174fe00.cpp",
+      "reconstruction/unmapped/static/Static174fe00.h"
     ]
   },
   "symbol_map": {

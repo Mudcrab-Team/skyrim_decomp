@@ -29,8 +29,8 @@
         "object_sha256": "a95a1d93f44af22c5ac105c849cd50336f33526c41f83172a257cc0677e7d8b3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTask.cpp",
-          "reconstruction/bsengine/BSTask.h"
+          "reconstruction/bscore/BSTask.cpp",
+          "reconstruction/bscore/BSTask.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "20c10b7476ae7ffaf0a767cd0052a34366839512306484df1be520fa68e81921",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTask.cpp",
-          "reconstruction/bsengine/BSTask.h"
+          "reconstruction/bscore/BSTask.cpp",
+          "reconstruction/bscore/BSTask.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTask.cpp",
+    "compiled": "reconstruction/bscore/BSTask.cpp",
     "digest": "46fa6f94f41d1d912588e9e0290152c174ee81983e1e3669f6e0d3217586f229",
     "digest_method": "tu-sha256-v2",
     "run_digest": "26d167989563ce301ae79542d66ee30c0e033160ccb642d704cf2c753d4cc92c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTask.cpp",
-      "reconstruction/bsengine/BSTask.h"
+      "reconstruction/bscore/BSTask.cpp",
+      "reconstruction/bscore/BSTask.h"
     ]
   },
   "symbol_map": {

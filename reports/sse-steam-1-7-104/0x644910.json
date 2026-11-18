@@ -29,8 +29,8 @@
         "object_sha256": "b9303c41635b5e3dcfd9efadf2190ced1ec193715bd68a11c780f0361919d8f4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMoviePlayer.cpp",
-          "reconstruction/forms/BGSMoviePlayer.h"
+          "reconstruction/skyrim_shared/quest/BGSMoviePlayer.cpp",
+          "reconstruction/skyrim_shared/quest/BGSMoviePlayer.h"
         ]
       }
     }
@@ -174,14 +174,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMoviePlayer.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSMoviePlayer.cpp",
     "digest": "542042266d7b620804f0c516caf16b143fb89623c41d29f0053eaefcd4ec65ea",
     "digest_method": "tu-sha256-v2",
     "run_digest": "51a2740f040bf959437c1d26df4d8975b3b571c60a7d9671ab0560b08ea9cbb3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMoviePlayer.cpp",
-      "reconstruction/forms/BGSMoviePlayer.h"
+      "reconstruction/skyrim_shared/quest/BGSMoviePlayer.cpp",
+      "reconstruction/skyrim_shared/quest/BGSMoviePlayer.h"
     ]
   },
   "submitter": "hinkiii",

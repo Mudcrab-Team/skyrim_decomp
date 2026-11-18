@@ -31,10 +31,10 @@
         "object_sha256": "00b1b3b78b7ed7f2e40006e9f45e4a1edc19826caee7666bc1c350fbd22dc8cb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/ComplexPass.cpp",
-          "reconstruction/actor206_1/ComplexPass.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/ComplexPass.cpp",
+          "reconstruction/skyrim_shared/forms/ComplexPass.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "9064b54c073dcca44342ee28238184ced84f1a36480719e29325328aa12c8ba6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/ComplexPass.cpp",
-          "reconstruction/actor206_1/ComplexPass.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/ComplexPass.cpp",
+          "reconstruction/skyrim_shared/forms/ComplexPass.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_1/ComplexPass.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/ComplexPass.cpp",
     "digest": "cc4182f8c894e6a55533a7c9353fbb2f960f1580f3aee7cbbff07c36e87eead8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c3146f271d1230bd25391b59ecc0ce6c9259ce4c2dff218c02972ca21d895f26",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_1/ComplexPass.cpp",
-      "reconstruction/actor206_1/ComplexPass.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/forms/ComplexPass.cpp",
+      "reconstruction/skyrim_shared/forms/ComplexPass.h"
     ]
   },
   "symbol_map": {

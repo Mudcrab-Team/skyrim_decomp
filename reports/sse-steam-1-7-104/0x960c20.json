@@ -29,10 +29,10 @@
         "object_sha256": "ac62bab47bd984e8a1e16ed17972db91103c70765c0485674a6eda3c5ebcf497",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuOpenHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/MenuOpenHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "b133514eaddc7c745c6c66deaf61ac175e6d029b4aa0e3314f1d52833aec66f7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuOpenHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/MenuOpenHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MenuOpenHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.cpp",
     "digest": "a73fccacdcace9734e781cb85b97bea1783f426f8eee8bd6a873cdb588796f2c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7d6629de6078df4b6169ce5d36164c97ff9028b5a9908620731ac1adfcf71cf7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-      "reconstruction/bsengine/MenuOpenHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/MenuOpenHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/interface/MenuOpenHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

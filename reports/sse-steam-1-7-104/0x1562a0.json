@@ -29,8 +29,8 @@
         "object_sha256": "bc67d53727bb82dc5d4edb0df60381f47b19f69bc0b780de079d3fdfd97cfc52",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellMusicType.cpp",
-          "reconstruction/bsengine/ExtraCellMusicType.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "326d513a11000b10369046987ff3358e9f844e33ea49edb7335c7aee2bd57136",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellMusicType.cpp",
-          "reconstruction/bsengine/ExtraCellMusicType.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellMusicType.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.cpp",
     "digest": "b579975b013f59106cea75685da069e9aa981c7682f13f192ee82f615ee93131",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f53263765031db14193729ef838f52b83dc0d9f2ae48a792ad127b4d45ed213b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCellMusicType.cpp",
-      "reconstruction/bsengine/ExtraCellMusicType.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellMusicType.h"
     ]
   },
   "symbol_map": {

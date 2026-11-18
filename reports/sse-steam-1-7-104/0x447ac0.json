@@ -29,8 +29,8 @@
         "object_sha256": "4ff844ef2e629ad9682ce3a8efd11247890d79372f06cf18b48bb388856cd1ee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAIWorldLocation.cpp",
-          "reconstruction/forms/BGSAIWorldLocation.h"
+          "reconstruction/skyrim/ai/BGSAIWorldLocation.cpp",
+          "reconstruction/skyrim/ai/BGSAIWorldLocation.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6e8f02441b8e2d3f7f36253b3188423a6904733730f5702c399ffd5af49a058d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAIWorldLocation.cpp",
-          "reconstruction/forms/BGSAIWorldLocation.h"
+          "reconstruction/skyrim/ai/BGSAIWorldLocation.cpp",
+          "reconstruction/skyrim/ai/BGSAIWorldLocation.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSAIWorldLocation.cpp",
+    "compiled": "reconstruction/skyrim/ai/BGSAIWorldLocation.cpp",
     "digest": "1828f5e6afb5b8a127a913ebf19b8822721724f48accc1317f0a053a98056cfe",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f37f42af311ce9ec33f52c0d8460f9c410626277c2bf1b579edb25bb3546f49b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSAIWorldLocation.cpp",
-      "reconstruction/forms/BGSAIWorldLocation.h"
+      "reconstruction/skyrim/ai/BGSAIWorldLocation.cpp",
+      "reconstruction/skyrim/ai/BGSAIWorldLocation.h"
     ]
   },
   "symbol_map": {

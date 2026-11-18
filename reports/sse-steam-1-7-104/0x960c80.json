@@ -29,10 +29,10 @@
         "object_sha256": "75157e608b946c8166538140c8e25051af618863af987e54ec4b7db9d41a78ad",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-          "reconstruction/bsengine/ScreenshotHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ScreenshotHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "0b5fb9bfc277901ae3a25ff51fa4675d751f8a1c4a358eac6015fc05a3a04ae6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-          "reconstruction/bsengine/ScreenshotHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ScreenshotHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ScreenshotHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.cpp",
     "digest": "657ad6f82e92b0d36d07335bb5952765a0a37600f2659a5ccf0b909fc1614772",
     "digest_method": "tu-sha256-v2",
     "run_digest": "da4ea2551854ecf9afe6dd7307f86834acb4bbb63493d8c5efa0b2ae8875f0f8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h",
-      "reconstruction/bsengine/ScreenshotHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/ScreenshotHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h",
+      "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/interface/ScreenshotHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

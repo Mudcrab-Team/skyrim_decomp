@@ -29,8 +29,8 @@
         "object_sha256": "060d9b671973a065f7b9214ddb05208ba7d0206b507d39cbf743fffcaf3e0fe5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSGamebryoSequenceGenerator.cpp",
-          "reconstruction/forms/BGSGamebryoSequenceGenerator.h"
+          "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.cpp",
+          "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "1bb58a0ebfbc29e67c1353afe2062698760da939bd17e49ba118c4f4461a2480",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSGamebryoSequenceGenerator.cpp",
-          "reconstruction/forms/BGSGamebryoSequenceGenerator.h"
+          "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.cpp",
+          "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSGamebryoSequenceGenerator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.cpp",
     "digest": "21d2359c15953f191ef407809c028354e48ccd8352da89946b15dfa0345c9458",
     "digest_method": "tu-sha256-v2",
     "run_digest": "43f96ae1a90531b10be4d6900abe2387ab9ea6d469eb5ce3e129c00cd5cddfa0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSGamebryoSequenceGenerator.cpp",
-      "reconstruction/forms/BGSGamebryoSequenceGenerator.h"
+      "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.cpp",
+      "reconstruction/gamebryo/nianimation/BGSGamebryoSequenceGenerator.h"
     ]
   },
   "symbol_map": {

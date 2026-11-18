@@ -29,8 +29,8 @@
         "object_sha256": "7d0855c5b9058b804a72c3a68e3a1304514ed92a35a0380dc85fd7dafeeb766a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiCamera.cpp",
-          "reconstruction/netimmerse/NiCamera.h"
+          "reconstruction/gamebryo/nimain/NiCamera.cpp",
+          "reconstruction/gamebryo/nimain/NiCamera.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "4a013caceb1381176258718a043f09de2342bad47ebfb3a5181ed36a71648bba",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiCamera.cpp",
-          "reconstruction/netimmerse/NiCamera.h"
+          "reconstruction/gamebryo/nimain/NiCamera.cpp",
+          "reconstruction/gamebryo/nimain/NiCamera.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiCamera.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiCamera.cpp",
     "digest": "15757b8b96cd264a8cbda231abcd2b8c0969accaab5d17318cb75cdea931d155",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f6f146ea625c5afed2cb80d7f9172b50d56c01d31eb283caaa5b884cc42c9cc0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiCamera.cpp",
-      "reconstruction/netimmerse/NiCamera.h"
+      "reconstruction/gamebryo/nimain/NiCamera.cpp",
+      "reconstruction/gamebryo/nimain/NiCamera.h"
     ]
   },
   "symbol_map": {

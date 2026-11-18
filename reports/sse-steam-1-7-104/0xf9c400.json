@@ -29,9 +29,9 @@
         "object_sha256": "6b2086a2457f6a3032d8e054631b6e9df759e2563c16d7f8e835f5adb92d1ae5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiPSysGravityModifier.cpp",
-          "reconstruction/netimmerse/NiPSysGravityModifier.h",
-          "reconstruction/netimmerse/NiPSysModifier.h"
+          "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
+          "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.h",
+          "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "0f6fca3ab83e208b5a7ae9ea0fc20d72cc2ccf43058a000d54a5bfb5466f5332",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiPSysGravityModifier.cpp",
-          "reconstruction/netimmerse/NiPSysGravityModifier.h",
-          "reconstruction/netimmerse/NiPSysModifier.h"
+          "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
+          "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.h",
+          "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiPSysGravityModifier.cpp",
+    "compiled": "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
     "digest": "f390403a46badd8ec00be401fc30e0d8a6f1d3765b1ba5cf59d77c4408405117",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c5dbc39ca5dfa6d03dc00e99320e5e48c7c6a75cc1ee1b43ba9be57b3aa00a47",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiPSysGravityModifier.cpp",
-      "reconstruction/netimmerse/NiPSysGravityModifier.h",
-      "reconstruction/netimmerse/NiPSysModifier.h"
+      "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
+      "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.h",
+      "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
     ]
   },
   "symbol_map": {

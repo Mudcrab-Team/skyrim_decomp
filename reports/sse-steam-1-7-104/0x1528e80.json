@@ -29,10 +29,10 @@
         "object_sha256": "c72109e84851c682a63a7eace6264ea0b678394f05bf0848f8b4c09478a9560d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegen.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegen.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegen.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegen.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "19ad961475ff959a534349da1f66f4ad9700d8a89705ba070476124b7d08e374",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegen.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegen.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegen.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegen.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialFacegen.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialFacegen.cpp",
     "digest": "d447789dd1c6004b6ceebf3a9a8834490df8745ab62bed0fed1ae0696ebd0833",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a9afbfa2a0d4a783bcca7126bf22f4a26677802ebfd93e7e68ba10b856e58a2d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterial.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialFacegen.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialFacegen.h"
+      "reconstruction/bsshader/BSLightingShaderMaterial.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialFacegen.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialFacegen.h"
     ]
   },
   "symbol_map": {

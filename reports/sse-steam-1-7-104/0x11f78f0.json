@@ -29,8 +29,8 @@
         "object_sha256": "193cdae616a6a56f1f35c97ed1c847e42de7c2144a09d788e6b259626e49817b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/QueueDeleteLayout.cpp",
-          "reconstruction/bsengine/QueueDeleteLayout.h"
+          "reconstruction/bscore/QueueDeleteLayout.cpp",
+          "reconstruction/bscore/QueueDeleteLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "4fc5c65cd912ecf868be80934df346956d9df9ade798888a00e2640f972e9489",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/QueueDeleteLayout.cpp",
-          "reconstruction/bsengine/QueueDeleteLayout.h"
+          "reconstruction/bscore/QueueDeleteLayout.cpp",
+          "reconstruction/bscore/QueueDeleteLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/QueueDeleteLayout.cpp",
+    "compiled": "reconstruction/bscore/QueueDeleteLayout.cpp",
     "digest": "db6b17afda3a988d0f2cb44b5dfcba4b2264b9a1c61184461d7f2dc13a90c793",
     "digest_method": "tu-sha256-v2",
     "run_digest": "27baa3eaa1057afdc34836974897d538680d05e3c4485cd6fa2a2e40fb5478fd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/QueueDeleteLayout.cpp",
-      "reconstruction/bsengine/QueueDeleteLayout.h"
+      "reconstruction/bscore/QueueDeleteLayout.cpp",
+      "reconstruction/bscore/QueueDeleteLayout.h"
     ]
   },
   "symbol_map": {

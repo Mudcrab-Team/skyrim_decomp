@@ -29,9 +29,9 @@
         "object_sha256": "9b6061d2d35e768e429576fdd74d2b08a73eb6dc29b8b88251ce6b2bf04891c7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getactorvalue/Actor.h",
-          "reconstruction/conditions_getactorvalue/ConditionFunctions.cpp",
-          "reconstruction/conditions_getactorvalue/ConditionFunctions.h"
+          "reconstruction/skyrim_shared/actors/Actor_3308c0.h",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "5d335eb5fa71558b7dc57ec9b471558edc2ddf3bcc706d6f4314043f8e5499ce",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getactorvalue/Actor.h",
-          "reconstruction/conditions_getactorvalue/ConditionFunctions.cpp",
-          "reconstruction/conditions_getactorvalue/ConditionFunctions.h"
+          "reconstruction/skyrim_shared/actors/Actor_3308c0.h",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions.h"
         ]
       }
     }
@@ -322,15 +322,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/conditions_getactorvalue/ConditionFunctions.cpp",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions.cpp",
     "digest": "c2ba8ff5f780cc7f6dbd457f9f2054ca297e239052dc718d78052b8944a0c42b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c050ef0f2b8d8a7d856c06459c1ea3025a32771dad7a378fd4062d963093f18e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/conditions_getactorvalue/Actor.h",
-      "reconstruction/conditions_getactorvalue/ConditionFunctions.cpp",
-      "reconstruction/conditions_getactorvalue/ConditionFunctions.h"
+      "reconstruction/skyrim_shared/actors/Actor_3308c0.h",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions.h"
     ]
   },
   "symbol_map": {

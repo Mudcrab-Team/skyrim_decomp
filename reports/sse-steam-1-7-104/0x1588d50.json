@@ -29,9 +29,9 @@
         "object_sha256": "dafb8da00b5d0285f2d35118bc290bb1b02d50ae79a7821306a732f4d82c2984",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShadowParabolicLight.cpp",
-          "reconstruction/bsengine/BSShadowParabolicLight.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/bsshader/BSShadowParabolicLight.cpp",
+          "reconstruction/bsshader/BSShadowParabolicLight.h",
+          "reconstruction/gamebryo/nimain/NiRefObject.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "221ef517649a24872efab7463bef23bf7937db089c1b241bf2b15d5bb9ab56f4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShadowParabolicLight.cpp",
-          "reconstruction/bsengine/BSShadowParabolicLight.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/bsshader/BSShadowParabolicLight.cpp",
+          "reconstruction/bsshader/BSShadowParabolicLight.h",
+          "reconstruction/gamebryo/nimain/NiRefObject.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSShadowParabolicLight.cpp",
+    "compiled": "reconstruction/bsshader/BSShadowParabolicLight.cpp",
     "digest": "75bd94255ab3319bf54593f11acd27d19c99f9afddbff513f71b11be4f20fece",
     "digest_method": "tu-sha256-v2",
     "run_digest": "47ea43652f5a9c463fb99d0078f5e679355b34a39f7dd37d61b4dc0a89adc0fa",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShadowParabolicLight.cpp",
-      "reconstruction/bsengine/BSShadowParabolicLight.h",
-      "reconstruction/netimmerse/NiRefObject.h"
+      "reconstruction/bsshader/BSShadowParabolicLight.cpp",
+      "reconstruction/bsshader/BSShadowParabolicLight.h",
+      "reconstruction/gamebryo/nimain/NiRefObject.h"
     ]
   },
   "symbol_map": {

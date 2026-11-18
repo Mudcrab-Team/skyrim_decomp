@@ -29,9 +29,9 @@
         "object_sha256": "3aaa383d3df4bf4d8f9bc43b0973bef631d64ccd2414ee40cfd9a06ab9941da9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSIdleMarker.cpp",
-          "reconstruction/forms/BGSIdleMarker.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSIdleMarker.cpp",
+          "reconstruction/skyrim_shared/forms/BGSIdleMarker.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "6ef001d8c36c735228bc10cf1fccaf99b3093e08e8f632ac15c2876b37f65e3f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSIdleMarker.cpp",
-          "reconstruction/forms/BGSIdleMarker.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSIdleMarker.cpp",
+          "reconstruction/skyrim_shared/forms/BGSIdleMarker.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSIdleMarker.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSIdleMarker.cpp",
     "digest": "50a94788111f30c1c2a0c26fee19325c8dcde0a547daccce44a64972acd8504e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "847b90141ec6dd663fbda3b619546d34531ee8213152dcdb03dfb73989941fef",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSIdleMarker.cpp",
-      "reconstruction/forms/BGSIdleMarker.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/BGSIdleMarker.cpp",
+      "reconstruction/skyrim_shared/forms/BGSIdleMarker.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

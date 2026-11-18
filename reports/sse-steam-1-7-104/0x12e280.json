@@ -29,9 +29,9 @@
         "object_sha256": "b8580c9fcb91d1ffa445f305e1709229aa93241941a2fe24a296552bb7176f57",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BoundPairCallableLayout.h",
-          "reconstruction/fields/FieldLeaf12e280.cpp",
-          "reconstruction/fields/FieldLeaf12e280.h"
+          "reconstruction/unmapped/fields/BoundPairCallableLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf12e280.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf12e280.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ec6fcc7af46a2515114f087c5d9df30a2be230562a5ba3e8e64823210da6480f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BoundPairCallableLayout.h",
-          "reconstruction/fields/FieldLeaf12e280.cpp",
-          "reconstruction/fields/FieldLeaf12e280.h"
+          "reconstruction/unmapped/fields/BoundPairCallableLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf12e280.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf12e280.h"
         ]
       }
     }
@@ -345,15 +345,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf12e280.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf12e280.cpp",
     "digest": "efbecd72317377c2c394d468152e57d2585c8eeb1d5d1a8ba79436d6bb70ad09",
     "digest_method": "tu-sha256-v2",
     "run_digest": "810ee42b16e865acc3d301a6205d61d9dc631c102b266b179e87773f31656e4c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/BoundPairCallableLayout.h",
-      "reconstruction/fields/FieldLeaf12e280.cpp",
-      "reconstruction/fields/FieldLeaf12e280.h"
+      "reconstruction/unmapped/fields/BoundPairCallableLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf12e280.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf12e280.h"
     ]
   },
   "symbol_map": {

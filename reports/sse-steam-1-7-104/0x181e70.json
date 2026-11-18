@@ -29,8 +29,8 @@
         "object_sha256": "e3211748b220327537b62ea93e9025785a0e68d1a76c52fa33eb8401026a4360",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRagDollData.cpp",
-          "reconstruction/bsengine/ExtraRagDollData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRagDollData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRagDollData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "8f4eba82937f69d8211536268f83fb267f6e449ef2c94b9db419d4d1b0469f63",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRagDollData.cpp",
-          "reconstruction/bsengine/ExtraRagDollData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRagDollData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRagDollData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRagDollData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRagDollData.cpp",
     "digest": "319338490d35474dab87f418e523018ffd1316b21445abda0843a25efad66cb2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cfbd105bbb57a1b0fd93c81eaa326f5fefb4fc2e0969262d262bbfd50e4a1fb3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraRagDollData.cpp",
-      "reconstruction/bsengine/ExtraRagDollData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraRagDollData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRagDollData.h"
     ]
   },
   "symbol_map": {

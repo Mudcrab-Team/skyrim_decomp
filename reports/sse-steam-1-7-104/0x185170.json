@@ -29,8 +29,8 @@
         "object_sha256": "8e70a762c46f2a018f696032fbe96d26c5653000a72d67e4c82ab32da0c91444",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraSavedHavokData.cpp",
-          "reconstruction/bsengine/ExtraSavedHavokData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "a087cf5d2111a1b44b58c49bc3c8db343df97b55775a7c9fa8fb9ffeda65a6d1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraSavedHavokData.cpp",
-          "reconstruction/bsengine/ExtraSavedHavokData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraSavedHavokData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.cpp",
     "digest": "48d2178ae4d1706d341556fa3e560007323dd6e43050987f90709d31c358e29e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "456c2e13c2e026c62e7130b6f8746f629f5b1c023dc20dc6ab09bfcac0f62a90",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraSavedHavokData.cpp",
-      "reconstruction/bsengine/ExtraSavedHavokData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraSavedHavokData.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "ff25d71035d2a61b81e2266ad78d267a2d12c8a7169c84c6a6123fa06a310d52",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/ActorMoverStorageLayout.cpp",
-          "reconstruction/actors/ActorMoverStorageLayout.h"
+          "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.cpp",
+          "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3de75229963d374780ac93067564a8b251f353949dfa928c4b3d5c03654bfcd6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/ActorMoverStorageLayout.cpp",
-          "reconstruction/actors/ActorMoverStorageLayout.h"
+          "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.cpp",
+          "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actors/ActorMoverStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.cpp",
     "digest": "33af8e9e026c8dbe1ecb119b77f3b8cb7a66b3bfee3165c5dcf39d24dc26678d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "19e41a3027596255e43f919c6cc6da69250a26d4a7f44afa3d03348f1334642c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/ActorMoverStorageLayout.cpp",
-      "reconstruction/actors/ActorMoverStorageLayout.h"
+      "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.cpp",
+      "reconstruction/skyrim_shared/actors/ActorMoverStorageLayout.h"
     ]
   },
   "symbol_map": {

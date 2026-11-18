@@ -29,8 +29,8 @@
         "object_sha256": "5d07df141b3ee07d84d44d876f04c9b4c1a59a1775fc82410570af5f14306258",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPoison.cpp",
-          "reconstruction/bsengine/ExtraPoison.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPoison.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPoison.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "02c5ef54b7fa2914476ec1822026fde73a804124a12a6ae040e31613d3483b97",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPoison.cpp",
-          "reconstruction/bsengine/ExtraPoison.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPoison.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPoison.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPoison.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPoison.cpp",
     "digest": "0296504f8b55ab0f0c1bf830898021a3ca8b02f4fc854a63ab0a2d1d3f72f945",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c022cf15189979275d660323943e2adf5caf327c6a2709dbe64293d2a04d64c2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraPoison.cpp",
-      "reconstruction/bsengine/ExtraPoison.h"
+      "reconstruction/skyrim_shared/extradata/ExtraPoison.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPoison.h"
     ]
   },
   "symbol_map": {

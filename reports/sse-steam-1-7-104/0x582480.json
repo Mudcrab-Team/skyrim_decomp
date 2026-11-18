@@ -29,9 +29,9 @@
         "object_sha256": "ce5dd6b8e3095fda808b3870ff3150f199f4410c7c3377ef9da522e85330badc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "99a77ebbdc9649faeb7fb34197f552da493e758319519c22096b135a2750e497",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MenuEventHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.cpp",
     "digest": "0a96421e715f60a87cbef9ee7fa7989bb43f41c16e804751d1371b434b65322d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8bd6510b53a91185a03797598645e4ff2789576af161a4d612d44f4d57238e5d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

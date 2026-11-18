@@ -29,8 +29,8 @@
         "object_sha256": "a3dcbb4e17196c3e48f943bcacce3f14c1cd9f4d4f9fb011e2712bebb5e7a54d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSGamepadDevice.cpp",
-          "reconstruction/bsengine/BSGamepadDevice.h"
+          "reconstruction/bsinput/BSGamepadDevice.cpp",
+          "reconstruction/bsinput/BSGamepadDevice.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "c4577a16d6aba72e02bcd745f7f0a27eb73762a0f50b7fb26f3d130cfe690d42",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSGamepadDevice.cpp",
-          "reconstruction/bsengine/BSGamepadDevice.h"
+          "reconstruction/bsinput/BSGamepadDevice.cpp",
+          "reconstruction/bsinput/BSGamepadDevice.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSGamepadDevice.cpp",
+    "compiled": "reconstruction/bsinput/BSGamepadDevice.cpp",
     "digest": "48c2f1172c8cc79a839d45a4724ca81eaed20825ab8eb945ba64a7035ccf39b4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8a3a3ac5dea0b8fe3f97ae255bd692bf683ce1692656bafa4fab605112baa8db",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSGamepadDevice.cpp",
-      "reconstruction/bsengine/BSGamepadDevice.h"
+      "reconstruction/bsinput/BSGamepadDevice.cpp",
+      "reconstruction/bsinput/BSGamepadDevice.h"
     ]
   },
   "symbol_map": {

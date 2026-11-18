@@ -29,8 +29,8 @@
         "object_sha256": "83ab26432e53507cccef15bbba80dcc2595b768314684edeb1c35cd708c4cd51",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/MagicTraversalCaptureBase.cpp",
-          "reconstruction/bsengine/MagicTraversalCaptureBase.h"
+          "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.cpp",
+          "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "900d0f96dca9e738632284c559e282ab8ad48b60eecd31ff9ee074c8a28b4259",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/MagicTraversalCaptureBase.cpp",
-          "reconstruction/bsengine/MagicTraversalCaptureBase.h"
+          "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.cpp",
+          "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MagicTraversalCaptureBase.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.cpp",
     "digest": "0f70d1cf69395515ba827240e4e52305eeb43e078489697e65ee01a0e58e21ff",
     "digest_method": "tu-sha256-v2",
     "run_digest": "480ca7c8d00b9bf6567c1da0387b502423135760cc44902f65784bdab4f59985",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/MagicTraversalCaptureBase.cpp",
-      "reconstruction/bsengine/MagicTraversalCaptureBase.h"
+      "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.cpp",
+      "reconstruction/skyrim_shared/magic/MagicTraversalCaptureBase.h"
     ]
   },
   "symbol_map": {

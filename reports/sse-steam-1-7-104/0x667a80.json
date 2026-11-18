@@ -29,8 +29,8 @@
         "object_sha256": "c27924b3d0936fad0445ed2c5519a8088eb818f4c49c557dae359cc9b8033127",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198f_667a80/TaskQueueInterface.cpp",
-          "reconstruction/fo4p198f_667a80/TaskQueueInterface.h"
+          "reconstruction/bscore/TaskQueueInterface_667a80.cpp",
+          "reconstruction/bscore/TaskQueueInterface_667a80.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5027369c4da8573efa94257e61f12ac1f16430b704dc9c6425bb692523da64a3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198f_667a80/TaskQueueInterface.cpp",
-          "reconstruction/fo4p198f_667a80/TaskQueueInterface.h"
+          "reconstruction/bscore/TaskQueueInterface_667a80.cpp",
+          "reconstruction/bscore/TaskQueueInterface_667a80.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198f_667a80/TaskQueueInterface.cpp",
+    "compiled": "reconstruction/bscore/TaskQueueInterface_667a80.cpp",
     "digest": "3a43af14a914944bf91a5264ea5653b546ad69220ade4368b64084e2947013a5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f30384e02bc185af4fca0361c90af795bd7a19cde0dc4ac1588299c125f61d43",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198f_667a80/TaskQueueInterface.cpp",
-      "reconstruction/fo4p198f_667a80/TaskQueueInterface.h"
+      "reconstruction/bscore/TaskQueueInterface_667a80.cpp",
+      "reconstruction/bscore/TaskQueueInterface_667a80.h"
     ]
   },
   "symbol_map": {

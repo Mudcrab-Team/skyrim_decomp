@@ -247,8 +247,8 @@ def generate(args):
                str(Path(cfg['main']) / '.local/analysis/classes.jsonl'))).read_text().splitlines())}
     unit_areas = {}
     for root in (wt, Path(cfg['main'])):
-        for path in (root / 'reconstruction').glob('*/*.h'):
-            area = path.parent.name
+        for path in (root / 'reconstruction').rglob('*.h'):
+            area = path.parent.relative_to(root / 'reconstruction').as_posix()
             if path.stem in unit_areas and unit_areas[path.stem] != area:
                 raise ValueError('class has conflicting existing unit areas')
             unit_areas[path.stem] = area
@@ -401,9 +401,7 @@ def install(args):
             raise ValueError('task must be inside staging')
         task = json.loads((task_dir / 'task.json').read_text())
         rel = PurePosixPath(task['compiled'])
-        if (len(rel.parts) != 3 or rel.parts[0] != 'reconstruction' or
-                not re.fullmatch(r'[a-z][a-z0-9_]*', rel.parts[1]) or
-                not re.fullmatch(r'[A-Z][A-Za-z0-9_]*\.cpp', rel.parts[2])):
+        if not re.fullmatch(r'reconstruction/(?:[a-z][a-z0-9_]*/)+[A-Z][A-Za-z0-9_]*\.cpp', str(rel)):
             raise ValueError('invalid compiled unit path')
         expected = {str(rel), str(rel.with_suffix('.h'))}
         if set(include_closure(staging, str(rel))) != expected:

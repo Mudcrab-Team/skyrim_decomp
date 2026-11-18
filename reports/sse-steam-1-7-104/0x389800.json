@@ -29,9 +29,9 @@
         "object_sha256": "34089993af84563dcdb82c770c7933b4475c442ccf5d33bd5eb480f151fda777",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAssociationType.cpp",
-          "reconstruction/forms/BGSAssociationType.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/perks/BGSAssociationType.cpp",
+          "reconstruction/skyrim_shared/perks/BGSAssociationType.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "f19b0b21d26be964bfcf9c18964fe0823f7775249deb3f568a763bbc6905ec2c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAssociationType.cpp",
-          "reconstruction/forms/BGSAssociationType.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/perks/BGSAssociationType.cpp",
+          "reconstruction/skyrim_shared/perks/BGSAssociationType.h"
         ]
       }
     }
@@ -367,15 +367,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSAssociationType.cpp",
+    "compiled": "reconstruction/skyrim_shared/perks/BGSAssociationType.cpp",
     "digest": "1333abe69a5328dc1ab0e57129ce47025f20f9dc883cf5d87db8caac743ab9b2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6853912fcec371576fb5afee4e45d337a011547f9acb130ca9f3dddaebf095c1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSAssociationType.cpp",
-      "reconstruction/forms/BGSAssociationType.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/perks/BGSAssociationType.cpp",
+      "reconstruction/skyrim_shared/perks/BGSAssociationType.h"
     ]
   },
   "symbol_map": {

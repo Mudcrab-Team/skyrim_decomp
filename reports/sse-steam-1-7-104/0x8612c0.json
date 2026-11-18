@@ -29,8 +29,8 @@
         "object_sha256": "412cce2cc83e7fe1071f2f6e1a3e2be02fca06fdd0e480c5e1cdf0820270f661",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatTargetLocationSearchResult.cpp",
-          "reconstruction/fo4hints/CombatTargetLocationSearchResult.h"
+          "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.cpp",
+          "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "74b0f6364f1d909f8727903d0ffc440cd99ff3a2264040000f80d6319934d107",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/CombatTargetLocationSearchResult.cpp",
-          "reconstruction/fo4hints/CombatTargetLocationSearchResult.h"
+          "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.cpp",
+          "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.h"
         ]
       }
     }
@@ -363,14 +363,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/CombatTargetLocationSearchResult.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.cpp",
     "digest": "b2a5c40955f581c58adb8f9775241851f70cb43b97a3aaeb927218a923f5c6f8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "211be5ad75ff285da736f955f62c01211c89bc3596de1c185af4dab193a8f4ac",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/CombatTargetLocationSearchResult.cpp",
-      "reconstruction/fo4hints/CombatTargetLocationSearchResult.h"
+      "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.cpp",
+      "reconstruction/skyrim/ai/combat/CombatTargetLocationSearchResult.h"
     ]
   },
   "symbol_map": {

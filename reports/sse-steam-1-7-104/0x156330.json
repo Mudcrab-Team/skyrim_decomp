@@ -29,8 +29,8 @@
         "object_sha256": "06e8418ba65e0e5eb98dbcb7af0858be53c6b1ea83d327358c959165d05f1f43",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellImageSpace.cpp",
-          "reconstruction/bsengine/ExtraCellImageSpace.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "15f3556a2b5f5c15553be5193e8c04445b6b849123becdde630d4d7e6dc8b26a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellImageSpace.cpp",
-          "reconstruction/bsengine/ExtraCellImageSpace.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellImageSpace.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.cpp",
     "digest": "c778a4b59d8f3aad6c5833a2ecc40a35eba83a6917ad4f1de6a46fb1738315e0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f061a7f97ed9e96af6ef4e5136bc0b67589ce04901cb94a5eb156e1150a4ebc4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCellImageSpace.cpp",
-      "reconstruction/bsengine/ExtraCellImageSpace.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellImageSpace.h"
     ]
   },
   "symbol_map": {

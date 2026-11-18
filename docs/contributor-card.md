@@ -39,7 +39,7 @@ Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
   `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. One label per line.
 - Includes: own header `#include "X.h"`; shared headers by reconstruction-root path such as
-  `"area/Y.h"`. Parent steps and host paths are refused.
+  `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. Parent steps and host paths are refused.
 - Declare, do not define, a function the target calls; `compare` binds the call.
 - Write assignments in the order the listing stores them; keep a repeated null test as a repeat read.
 - `static_assert` needs a message.

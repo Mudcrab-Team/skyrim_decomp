@@ -29,9 +29,9 @@
         "object_sha256": "2f975596b4446054747bedc106a30e19266ec5dc8f6aef342f92d729a2d7560d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CodeTaskletFieldLayout.cpp",
-          "reconstruction/bsengine/CodeTaskletFieldLayout.h",
-          "reconstruction/bsengine/CommunityLeafStorageLayout.h"
+          "reconstruction/bscore/CodeTaskletFieldLayout.cpp",
+          "reconstruction/bscore/CodeTaskletFieldLayout.h",
+          "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "333b60caead6f0db19d68632836e1636ca74e4fcdc051ef8fa56f010cc8fc62e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CodeTaskletFieldLayout.cpp",
-          "reconstruction/bsengine/CodeTaskletFieldLayout.h",
-          "reconstruction/bsengine/CommunityLeafStorageLayout.h"
+          "reconstruction/bscore/CodeTaskletFieldLayout.cpp",
+          "reconstruction/bscore/CodeTaskletFieldLayout.h",
+          "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/CodeTaskletFieldLayout.cpp",
+    "compiled": "reconstruction/bscore/CodeTaskletFieldLayout.cpp",
     "digest": "0cf2d97d41aa6b04287336bdc1343c61174beef660397ff22c4a6508e3aa0d83",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8d2ce226a2508ebedc9d279d4eda7c79172d3565d99693453a64721f5e345c06",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/CodeTaskletFieldLayout.cpp",
-      "reconstruction/bsengine/CodeTaskletFieldLayout.h",
-      "reconstruction/bsengine/CommunityLeafStorageLayout.h"
+      "reconstruction/bscore/CodeTaskletFieldLayout.cpp",
+      "reconstruction/bscore/CodeTaskletFieldLayout.h",
+      "reconstruction/unmapped/leaves/CommunityLeafStorageLayout.h"
     ]
   },
   "symbol_map": {

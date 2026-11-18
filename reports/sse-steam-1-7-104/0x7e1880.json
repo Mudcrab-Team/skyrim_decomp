@@ -29,8 +29,8 @@
         "object_sha256": "3daa795fc784a9f8866d0a0bcc2ee7d9da6007036f4878c5ddeb5a7e8a8ffa1e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/ConeProjectile.cpp",
-          "reconstruction/forms/ConeProjectile.h"
+          "reconstruction/skyrim_shared/refs/ConeProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/ConeProjectile.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6f47a94aee01dbd55ca4fcb4d560d571553e1af263fd2a4570d7c005986d90f5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/ConeProjectile.cpp",
-          "reconstruction/forms/ConeProjectile.h"
+          "reconstruction/skyrim_shared/refs/ConeProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/ConeProjectile.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/ConeProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/ConeProjectile.cpp",
     "digest": "c5e217796e742a99775603fbfdbac944e2cc4aff9bc539b25352c7685a59d550",
     "digest_method": "tu-sha256-v2",
     "run_digest": "734094d3c9676f058d6cb8c25c421774190b00efc19fb5a9afec09154c34e95f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/ConeProjectile.cpp",
-      "reconstruction/forms/ConeProjectile.h"
+      "reconstruction/skyrim_shared/refs/ConeProjectile.cpp",
+      "reconstruction/skyrim_shared/refs/ConeProjectile.h"
     ]
   },
   "symbol_map": {

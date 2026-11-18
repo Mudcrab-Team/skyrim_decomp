@@ -29,9 +29,9 @@
         "object_sha256": "34b5000ef08dac1a99879a27e759788fe5e2629ef25bda97e3791c1953b3aca0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/SyncQueueObjStorageLayout.cpp",
-          "reconstruction/bsengine/SyncQueueObjStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/SyncQueueObjStorageLayout.cpp",
+          "reconstruction/bscore/SyncQueueObjStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ef9fc61ded8d5cb13f4400753d30432b94095e566251d4cc984f58380f308cff",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/SyncQueueObjStorageLayout.cpp",
-          "reconstruction/bsengine/SyncQueueObjStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/bscore/SyncQueueObjStorageLayout.cpp",
+          "reconstruction/bscore/SyncQueueObjStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/SyncQueueObjStorageLayout.cpp",
+    "compiled": "reconstruction/bscore/SyncQueueObjStorageLayout.cpp",
     "digest": "87c36c015b82336a6627877afbebd6505ff2ea96ec8422485cf45927864ed264",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e8d8447a9641deb533fba23248438b82c3dfacd31072de3dc7718c5a20badc57",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/SyncQueueObjStorageLayout.cpp",
-      "reconstruction/bsengine/SyncQueueObjStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/bscore/SyncQueueObjStorageLayout.cpp",
+      "reconstruction/bscore/SyncQueueObjStorageLayout.h"
     ]
   },
   "symbol_map": {

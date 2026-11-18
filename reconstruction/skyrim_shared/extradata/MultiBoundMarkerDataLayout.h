@@ -1,0 +1,20 @@
+// Source exposure: community-headers (layout reconciled with target allocation sizes separately).
+// Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/M/MultiBoundMarkerData.h; MIT.
+// MultiBoundMarkerData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// MultiBoundMarkerDataLayout: GUESS(medium) STANDIN; represented layout type names
+#pragma once
+#include <cstdint>
+#include <cstddef>
+#include "skyrim_shared/extradata/BSExtraDataLayout.h"
+#include "bscore/BSFixedStringLayout.h"
+
+namespace ResearchLayouts {
+class MultiBoundMarkerDataLayout : public BSExtraDataLayout {
+public:
+    virtual ~MultiBoundMarkerDataLayout();
+    NiPoint3Layout halfExtents;
+};
+static_assert(sizeof(MultiBoundMarkerDataLayout) == 32, "community represented size");
+static_assert(offsetof(MultiBoundMarkerDataLayout, halfExtents) == 16, "halfExtents offset");
+}

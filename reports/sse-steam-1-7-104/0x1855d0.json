@@ -29,8 +29,8 @@
         "object_sha256": "2252f0ba0d6e86baef0ea16e0909b69dd4ea13ede4b3f72b822a3134ca463c48",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCreatureAwakeSound.cpp",
-          "reconstruction/bsengine/ExtraCreatureAwakeSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5b7133156b5f52e11e4cad3b0f11970f12123b06b1feb62354d095248c076c08",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCreatureAwakeSound.cpp",
-          "reconstruction/bsengine/ExtraCreatureAwakeSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCreatureAwakeSound.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.cpp",
     "digest": "319f2d4acee3585afd19783641401c832672a53530e1fa595e14a4c69fad95be",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cb97336bc39fea5ab9a940c7d115c0f2ba9169f6ab17cbf4ea58a692dfafa27c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCreatureAwakeSound.cpp",
-      "reconstruction/bsengine/ExtraCreatureAwakeSound.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSound.h"
     ]
   },
   "symbol_map": {

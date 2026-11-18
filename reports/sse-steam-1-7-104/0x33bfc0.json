@@ -29,10 +29,10 @@
         "object_sha256": "f0c1cdfb25b9369c98836e7b393d963711aa0e91f94008f99d9a8aa8485d69c7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_isindialoguewithplayer/Actor.h",
-          "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.cpp",
-          "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.h",
-          "reconstruction/conditions_isindialoguewithplayer/TESForm.h"
+          "reconstruction/skyrim_shared/actors/Actor_33bfc0.h",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.h",
+          "reconstruction/skyrim_shared/forms/TESForm_33bfc0.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "0de3f2c29fc9fb79ec249e50abe57754f0b776edd5e65585bdcd31a83482e95b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_isindialoguewithplayer/Actor.h",
-          "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.cpp",
-          "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.h",
-          "reconstruction/conditions_isindialoguewithplayer/TESForm.h"
+          "reconstruction/skyrim_shared/actors/Actor_33bfc0.h",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.h",
+          "reconstruction/skyrim_shared/forms/TESForm_33bfc0.h"
         ]
       }
     }
@@ -324,16 +324,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.cpp",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.cpp",
     "digest": "726e8b490bba8b58e50be8ae644b99a85de651d136cd9b875d8291321bcb9e68",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7c8c02f989c7f07bcbe83c4457c3c632ba121979448444d22080726520dab2ce",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/conditions_isindialoguewithplayer/Actor.h",
-      "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.cpp",
-      "reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.h",
-      "reconstruction/conditions_isindialoguewithplayer/TESForm.h"
+      "reconstruction/skyrim_shared/actors/Actor_33bfc0.h",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.h",
+      "reconstruction/skyrim_shared/forms/TESForm_33bfc0.h"
     ]
   },
   "symbol_map": {

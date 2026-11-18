@@ -29,8 +29,8 @@
         "object_sha256": "efd106832197f333688a0ada26c997fcbf8e6a91ffd2b54a4e46f27b31a4b587",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraModelSwap.cpp",
-          "reconstruction/bsengine/ExtraModelSwap.h"
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwap.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwap.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "42ec0cb74ac899c46614033fd79c56f42579522f1bd74331db3bee922bee3fad",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraModelSwap.cpp",
-          "reconstruction/bsengine/ExtraModelSwap.h"
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwap.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraModelSwap.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraModelSwap.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraModelSwap.cpp",
     "digest": "872eee496e104c8d18bbf4d0b80779761ef38f32bffce5bb720e65dc0fd17985",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5bc4909d9ca4b895ab43cbf6b65b87a57a56b9d3747a852aa8b6432e3a278d16",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraModelSwap.cpp",
-      "reconstruction/bsengine/ExtraModelSwap.h"
+      "reconstruction/skyrim_shared/extradata/ExtraModelSwap.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraModelSwap.h"
     ]
   },
   "symbol_map": {

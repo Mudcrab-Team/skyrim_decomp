@@ -29,9 +29,9 @@
         "object_sha256": "b40708a63357a323b8d909d0ae6f8300005fc114a1a18b0972b39e718b3d5ee1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "46b51b44754fddbb67f4ced063914509a35edf544b41648064f5fcc704cf12a4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.cpp",
     "digest": "770db7ef6b36a3c3896a65992262e66beb8acd989a83f2229770a8a9e18be05b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9dc405abb7dd1ea42e82fea5c5e216ec2b0841cbc6ea73fdcfeb9f898143869c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCellMusicTypeStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellMusicTypeStorageLayout.h"
     ]
   },
   "symbol_map": {

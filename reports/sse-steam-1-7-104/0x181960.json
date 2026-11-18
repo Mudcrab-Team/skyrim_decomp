@@ -29,8 +29,8 @@
         "object_sha256": "e5a0cdae4e7cdb02e1fddac0b56a3b271a8de3f8ae30e7d999e3cd70fd7b014f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPackageStartLocation.cpp",
-          "reconstruction/bsengine/ExtraPackageStartLocation.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "851d24e6d98e6e5eda2d61afd0c7d70b81e4824fa8feb22114631ff207d467f6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraPackageStartLocation.cpp",
-          "reconstruction/bsengine/ExtraPackageStartLocation.h"
+          "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraPackageStartLocation.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.cpp",
     "digest": "dfb0f56642cb151a619c5350332dfc8ca1c3cb676304eecd137d98e59aefce33",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bb1f5919b3af35b18480d95217c8e0022e29f621adf6ddb490d011c3d747e061",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraPackageStartLocation.cpp",
-      "reconstruction/bsengine/ExtraPackageStartLocation.h"
+      "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPackageStartLocation.h"
     ]
   },
   "symbol_map": {

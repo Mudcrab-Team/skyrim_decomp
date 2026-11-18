@@ -29,8 +29,8 @@
         "object_sha256": "33e6ac899b2ae75edf55c138017c0cece410e651524231188d1686244c7e2146",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_32b510/BGSSoundOutput.cpp",
-          "reconstruction/fo4b4b_32b510/BGSSoundOutput.h"
+          "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.cpp",
+          "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f3e2bb5e012d21a284bfe6d1527577c93af901bd13f9ab11d3f2a51260f5bbf5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_32b510/BGSSoundOutput.cpp",
-          "reconstruction/fo4b4b_32b510/BGSSoundOutput.h"
+          "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.cpp",
+          "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4b4b_32b510/BGSSoundOutput.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.cpp",
     "digest": "efe6f36c572ccb7bf531f019c5203f1bacddc4a3ebcca7911617d7c367c4c3a2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5914b77f671d8f74fe17b1ae31aabb92d754c360986cc0c3be950d5b2f8a01c4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4b4b_32b510/BGSSoundOutput.cpp",
-      "reconstruction/fo4b4b_32b510/BGSSoundOutput.h"
+      "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.cpp",
+      "reconstruction/skyrim_shared/audio/BGSSoundOutput_32b510.h"
     ]
   },
   "symbol_map": {

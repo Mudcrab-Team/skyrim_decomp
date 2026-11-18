@@ -31,11 +31,11 @@
         "object_sha256": "d8de2302b6a22489c444ef39ecbfa385c5487234468ea068756ba98dd7d71b24",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/PlayerVirtual.cpp",
-          "reconstruction/actor206_2/PlayerVirtual.h",
-          "reconstruction/actor206_2/VirtualREFR.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerVirtual.cpp",
+          "reconstruction/skyrim_shared/actors/PlayerVirtual.h",
+          "reconstruction/skyrim_shared/refs/VirtualREFR.h"
         ]
       },
       "winpc-native": {
@@ -56,11 +56,11 @@
         "object_sha256": "29afac15c32e8e3a5002457fc9088cd1e614f577fbbf587508f04c3b5e6ae4c6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/PlayerVirtual.cpp",
-          "reconstruction/actor206_2/PlayerVirtual.h",
-          "reconstruction/actor206_2/VirtualREFR.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerVirtual.cpp",
+          "reconstruction/skyrim_shared/actors/PlayerVirtual.h",
+          "reconstruction/skyrim_shared/refs/VirtualREFR.h"
         ]
       }
     }
@@ -333,17 +333,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_2/PlayerVirtual.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/PlayerVirtual.cpp",
     "digest": "048c43aa09ed9e0fcfff827fb9ce996811754b1a920ab9015f2cfd7f321002af",
     "digest_method": "tu-sha256-v2",
     "run_digest": "61b0bcbae6056e842efa268b66ef2fe952eb72173173252e209b0b478adabb31",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_2/PlayerVirtual.cpp",
-      "reconstruction/actor206_2/PlayerVirtual.h",
-      "reconstruction/actor206_2/VirtualREFR.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/PlayerVirtual.cpp",
+      "reconstruction/skyrim_shared/actors/PlayerVirtual.h",
+      "reconstruction/skyrim_shared/refs/VirtualREFR.h"
     ]
   },
   "symbol_map": {

@@ -31,10 +31,10 @@
         "object_sha256": "6f3af680adce052200d2c4beb5e1f76598ead0a39e9d318a01576259c7f21273",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/RelationshipActor.cpp",
-          "reconstruction/actor207_1/RelationshipActor.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/RelationshipActor.cpp",
+          "reconstruction/skyrim_shared/actors/RelationshipActor.h"
         ]
       }
     }
@@ -187,16 +187,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/RelationshipActor.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/RelationshipActor.cpp",
     "digest": "730688a2abb8f1dbcf49841e7364914fa1cfdfe8fd72f1d750e10fcbb89f1965",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9fbaf0a9198869ffcb9dccb989fc6f0005e16774ab8c33b1bb6408ab1377e3d8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/RelationshipActor.cpp",
-      "reconstruction/actor207_1/RelationshipActor.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/RelationshipActor.cpp",
+      "reconstruction/skyrim_shared/actors/RelationshipActor.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "95e0290ffa1a722b4453379143188d00922c23ea2b9be5198dd64602874c5533",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSIdleCollection.cpp",
-          "reconstruction/forms/BGSIdleCollection.h"
+          "reconstruction/skyrim_shared/forms/BGSIdleCollection.cpp",
+          "reconstruction/skyrim_shared/forms/BGSIdleCollection.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "b46cde2cca4f13e0cad1f20ad3979bcb41b7c0400df6fc900f5655e47072d91e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSIdleCollection.cpp",
-          "reconstruction/forms/BGSIdleCollection.h"
+          "reconstruction/skyrim_shared/forms/BGSIdleCollection.cpp",
+          "reconstruction/skyrim_shared/forms/BGSIdleCollection.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSIdleCollection.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSIdleCollection.cpp",
     "digest": "cbd28fdc20fab56b0c7a6fec7d01f1ea69b7a7b99a6c005deed13c744327d518",
     "digest_method": "tu-sha256-v2",
     "run_digest": "896cc6766a2a978954014684633d86cf4d59dd9c90f923551492adb1221a4bb3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSIdleCollection.cpp",
-      "reconstruction/forms/BGSIdleCollection.h"
+      "reconstruction/skyrim_shared/forms/BGSIdleCollection.cpp",
+      "reconstruction/skyrim_shared/forms/BGSIdleCollection.h"
     ]
   },
   "symbol_map": {

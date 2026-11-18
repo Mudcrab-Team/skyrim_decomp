@@ -29,9 +29,9 @@
         "object_sha256": "800618495fea37aaec12ed2cf35b21a3bd54d6d1a23fbf29cfab4872fe168f9b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSceneAction.h",
-          "reconstruction/forms/BGSSceneActionPackage.cpp",
-          "reconstruction/forms/BGSSceneActionPackage.h"
+          "reconstruction/skyrim_shared/quest/BGSSceneAction.h",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.cpp",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "c602a54f5a1258c87c3054c7b7def54893b906e5e540fb91de8772bf61b87b5e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSceneAction.h",
-          "reconstruction/forms/BGSSceneActionPackage.cpp",
-          "reconstruction/forms/BGSSceneActionPackage.h"
+          "reconstruction/skyrim_shared/quest/BGSSceneAction.h",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.cpp",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSSceneActionPackage.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.cpp",
     "digest": "a585c40eff1bc1ebc08fc57954f880772d036ac4533e415cb5f67dd04d89e8c5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e14413681ce4ab120a2bcf35c8e59b0482a86ab8721f11dd349f638082c8cd5f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSSceneAction.h",
-      "reconstruction/forms/BGSSceneActionPackage.cpp",
-      "reconstruction/forms/BGSSceneActionPackage.h"
+      "reconstruction/skyrim_shared/quest/BGSSceneAction.h",
+      "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.cpp",
+      "reconstruction/skyrim_shared/quest/BGSSceneActionPackage.h"
     ]
   },
   "symbol_map": {

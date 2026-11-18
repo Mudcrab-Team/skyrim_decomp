@@ -29,8 +29,8 @@
         "object_sha256": "52bf43580da245d6fa20f7304550cdb54953dabbc576190073e60d2ceda86667",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBlendColorInterpolator.cpp",
-          "reconstruction/netimmerse/NiBlendColorInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "eafa99f01aaf4804ba3e80c2de0170f588f916af746816d228cf577028bedcdc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBlendColorInterpolator.cpp",
-          "reconstruction/netimmerse/NiBlendColorInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiBlendColorInterpolator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.cpp",
     "digest": "8af2a5b4511a7caf800070ebe92ba7c31f84be2dbced566fc5184a2d34970a06",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ca22360874e9b18847b2cb0d1c81902832ed49b665819b06a5e10e5b5ef71f75",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiBlendColorInterpolator.cpp",
-      "reconstruction/netimmerse/NiBlendColorInterpolator.h"
+      "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.cpp",
+      "reconstruction/gamebryo/nianimation/NiBlendColorInterpolator.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "0a1cc495d370cd8684aaecdfff0cfb173beaa9dbac83de24fcd2a273f97173a9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPortalGraphEntry.cpp",
-          "reconstruction/bsengine/BSPortalGraphEntry.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/gamebryo/nimain/BSPortalGraphEntry.cpp",
+          "reconstruction/gamebryo/nimain/BSPortalGraphEntry.h",
+          "reconstruction/gamebryo/nimain/NiRefObject.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "42dea54f78041d7c06e27fa59560972324d9cca290a4d0c51f15cedcdf1e8a88",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSPortalGraphEntry.cpp",
-          "reconstruction/bsengine/BSPortalGraphEntry.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/gamebryo/nimain/BSPortalGraphEntry.cpp",
+          "reconstruction/gamebryo/nimain/BSPortalGraphEntry.h",
+          "reconstruction/gamebryo/nimain/NiRefObject.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSPortalGraphEntry.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSPortalGraphEntry.cpp",
     "digest": "9daf9b355b5c7bf855b84455e919500fdd551a8a5ae4da6b8a3890cc078393d9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fc89ec53f74f6f80bf2e57723d3f3e01479028af072c0bcf3a0de2dcf3181e22",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSPortalGraphEntry.cpp",
-      "reconstruction/bsengine/BSPortalGraphEntry.h",
-      "reconstruction/netimmerse/NiRefObject.h"
+      "reconstruction/gamebryo/nimain/BSPortalGraphEntry.cpp",
+      "reconstruction/gamebryo/nimain/BSPortalGraphEntry.h",
+      "reconstruction/gamebryo/nimain/NiRefObject.h"
     ]
   },
   "symbol_map": {

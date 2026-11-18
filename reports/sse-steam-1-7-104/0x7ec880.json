@@ -29,8 +29,8 @@
         "object_sha256": "985d297ca91b2f02806fb2f07ee86dd29e196cbf21e435cda3a27f25ab2ee0d4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/GrenadeProjectile.cpp",
-          "reconstruction/forms/GrenadeProjectile.h"
+          "reconstruction/skyrim_shared/refs/GrenadeProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/GrenadeProjectile.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2ff11656ce3c2509e71d72e4c22d3ca39adf808572855aadf624bac1a885922c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/GrenadeProjectile.cpp",
-          "reconstruction/forms/GrenadeProjectile.h"
+          "reconstruction/skyrim_shared/refs/GrenadeProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/GrenadeProjectile.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/GrenadeProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/GrenadeProjectile.cpp",
     "digest": "cb55d629088e19f9e02e9a7d1e1b3d6a85e844d8dc5e2536adc5935680062afb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f99bfe430dfe154706f6a40b08e1c4b434c26747ba756edfddb96cea8039a3f8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/GrenadeProjectile.cpp",
-      "reconstruction/forms/GrenadeProjectile.h"
+      "reconstruction/skyrim_shared/refs/GrenadeProjectile.cpp",
+      "reconstruction/skyrim_shared/refs/GrenadeProjectile.h"
     ]
   },
   "symbol_map": {

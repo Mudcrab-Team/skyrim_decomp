@@ -29,9 +29,9 @@
         "object_sha256": "b33e2ff8f655ee55e57c5e16f196ac9a22ee897913ff9dd69477cff42d5c1e4d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESCombatStyle.cpp",
-          "reconstruction/forms/TESCombatStyle.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/actors/TESCombatStyle.cpp",
+          "reconstruction/skyrim_shared/actors/TESCombatStyle.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ba8ab80bd87612fd1f4c93542ff782aff94464656bac1ef0893d8561678ece1b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESCombatStyle.cpp",
-          "reconstruction/forms/TESCombatStyle.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/actors/TESCombatStyle.cpp",
+          "reconstruction/skyrim_shared/actors/TESCombatStyle.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESCombatStyle.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/TESCombatStyle.cpp",
     "digest": "e4e36a8e0778d62e4b1da0bfc2428543c8625b759111ab8952fe67a85d479cd3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6a222decf713c51576a770250bb98d336dbd99c6726184dacf3b86ddf3be6435",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESCombatStyle.cpp",
-      "reconstruction/forms/TESCombatStyle.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/actors/TESCombatStyle.cpp",
+      "reconstruction/skyrim_shared/actors/TESCombatStyle.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

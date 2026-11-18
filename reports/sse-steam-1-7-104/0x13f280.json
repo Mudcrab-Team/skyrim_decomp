@@ -29,9 +29,9 @@
         "object_sha256": "f66bad48083e8c55ebd73e0d98dd7ef1d913757da33fa010ed01ea415511e542",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BoundArgumentCallableLayout.h",
-          "reconstruction/fields/FieldLeaf13f280.cpp",
-          "reconstruction/fields/FieldLeaf13f280.h"
+          "reconstruction/unmapped/fields/BoundArgumentCallableLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf13f280.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf13f280.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "7efc76264138d40fad2a64592b2a10515fa4676b333213f10e2dbe0517553ee9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BoundArgumentCallableLayout.h",
-          "reconstruction/fields/FieldLeaf13f280.cpp",
-          "reconstruction/fields/FieldLeaf13f280.h"
+          "reconstruction/unmapped/fields/BoundArgumentCallableLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf13f280.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf13f280.h"
         ]
       }
     }
@@ -345,15 +345,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf13f280.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf13f280.cpp",
     "digest": "ef21f523eb49f5c3f2b871aad5758d85c01947313250ceac4f113ed923d9b29b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f67e5156f95a4d0f8e694c625acd409a333be0611762bc7748ae80b9b2ae6932",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/BoundArgumentCallableLayout.h",
-      "reconstruction/fields/FieldLeaf13f280.cpp",
-      "reconstruction/fields/FieldLeaf13f280.h"
+      "reconstruction/unmapped/fields/BoundArgumentCallableLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf13f280.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf13f280.h"
     ]
   },
   "symbol_map": {

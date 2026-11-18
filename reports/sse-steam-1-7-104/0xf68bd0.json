@@ -29,8 +29,8 @@
         "object_sha256": "1da2401da780ab185706d55b37aa6975c05a5417abcb86cd262760e1ce46f92a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBlendFloatInterpolator.cpp",
-          "reconstruction/netimmerse/NiBlendFloatInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "35d8e3e9b248ae9696ef7f784d1a1997b1d908c1bd74f3f83d3f330dece747c7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBlendFloatInterpolator.cpp",
-          "reconstruction/netimmerse/NiBlendFloatInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiBlendFloatInterpolator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.cpp",
     "digest": "f0ad4c8e123281aebc6a9d5f2de789164f4f9dd5acd315344d223be6ac0ffef0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "353006d1a8fdbc5ff84f674e16a02e236ab7e52a68361367dbba6b8295a0f557",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiBlendFloatInterpolator.cpp",
-      "reconstruction/netimmerse/NiBlendFloatInterpolator.h"
+      "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.cpp",
+      "reconstruction/gamebryo/nianimation/NiBlendFloatInterpolator.h"
     ]
   },
   "symbol_map": {

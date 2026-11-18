@@ -29,9 +29,9 @@
         "object_sha256": "d2290e84977ca036f9a76fc9527533f5fa39b6ec26c013e5b3c324a07f350e7b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLight.cpp",
-          "reconstruction/bsengine/BSLight.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/bsshader/BSLight.cpp",
+          "reconstruction/bsshader/BSLight.h",
+          "reconstruction/gamebryo/nimain/NiRefObject.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "53574063dff36ecdb3a2aeda3bede77f6e404939cc639ae382877275480af4d6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLight.cpp",
-          "reconstruction/bsengine/BSLight.h",
-          "reconstruction/netimmerse/NiRefObject.h"
+          "reconstruction/bsshader/BSLight.cpp",
+          "reconstruction/bsshader/BSLight.h",
+          "reconstruction/gamebryo/nimain/NiRefObject.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLight.cpp",
+    "compiled": "reconstruction/bsshader/BSLight.cpp",
     "digest": "2647ab278462d5796cc22a6021802706cff59a3dac91f4179f4bca10ae3f2ce8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ff54edc784fd6e4894e51c204a99d1fc221f544f17fbd0f3a1f9f383fc6b6bd5",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLight.cpp",
-      "reconstruction/bsengine/BSLight.h",
-      "reconstruction/netimmerse/NiRefObject.h"
+      "reconstruction/bsshader/BSLight.cpp",
+      "reconstruction/bsshader/BSLight.h",
+      "reconstruction/gamebryo/nimain/NiRefObject.h"
     ]
   },
   "symbol_map": {

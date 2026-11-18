@@ -31,12 +31,12 @@
         "object_sha256": "23764285e4d28f969a0c8ddc5ca46ce3355f11a6236114cb4f4515d23dbf6171",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/ActorValueReset.cpp",
-          "reconstruction/actor206_sol/ActorValueReset.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueReset.cpp",
+          "reconstruction/skyrim_shared/actors/ActorValueReset.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       },
       "winpc-native": {
@@ -57,12 +57,12 @@
         "object_sha256": "4e27922204d208c83951585c6a21e1825aa132229860fd8e0a0e1d4bedfa4634",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/ActorValueReset.cpp",
-          "reconstruction/actor206_sol/ActorValueReset.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueReset.cpp",
+          "reconstruction/skyrim_shared/actors/ActorValueReset.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       }
     }
@@ -335,18 +335,18 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_sol/ActorValueReset.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ActorValueReset.cpp",
     "digest": "dec72963ab736d0c7604972430505963773f1a628b48e8a1c1c958e711556d46",
     "digest_method": "tu-sha256-v2",
     "run_digest": "500f48927b4c9808db0fb44a2fe5145199b15f909e5859f119b75e0fc7fa51c9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_sol/ActorValueReset.cpp",
-      "reconstruction/actor206_sol/ActorValueReset.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueReset.cpp",
+      "reconstruction/skyrim_shared/actors/ActorValueReset.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
     ]
   },
   "symbol_map": {

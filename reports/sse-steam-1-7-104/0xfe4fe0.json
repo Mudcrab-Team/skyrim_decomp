@@ -30,8 +30,8 @@
         "object_sha256": "233a2f583cc5969c387a8ec40a8bdb5058d01afde0567d03c2f13c749aedd6cb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMultiBoundShape.cpp",
-          "reconstruction/bsengine/BSMultiBoundShape.h"
+          "reconstruction/gamebryo/nimain/BSMultiBoundShape.cpp",
+          "reconstruction/gamebryo/nimain/BSMultiBoundShape.h"
         ]
       }
     }
@@ -173,14 +173,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSMultiBoundShape.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSMultiBoundShape.cpp",
     "digest": "813d2147603bc8b4e5fc0fde4277f08ae9142fc0a8299bd52f3f769bc10fa379",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9d4ce6d1ded6214616b54880ee89033f86d23c6c0a83ade5f7a0e475d646e835",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSMultiBoundShape.cpp",
-      "reconstruction/bsengine/BSMultiBoundShape.h"
+      "reconstruction/gamebryo/nimain/BSMultiBoundShape.cpp",
+      "reconstruction/gamebryo/nimain/BSMultiBoundShape.h"
     ]
   },
   "submitter": "hinkiii",

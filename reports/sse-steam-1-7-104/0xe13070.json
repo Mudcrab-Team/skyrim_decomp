@@ -29,8 +29,8 @@
         "object_sha256": "5b18f9232b1cb6eb3c1074897042736db1e9041c3690741227823dfcd0dbd875",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMouseDevice.cpp",
-          "reconstruction/bsengine/BSMouseDevice.h"
+          "reconstruction/bsinput/BSMouseDevice.cpp",
+          "reconstruction/bsinput/BSMouseDevice.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "76e06a04f9043b2d52eb1a835c4bd5a10b03a99e3d7f978b0e93cb28a538894a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSMouseDevice.cpp",
-          "reconstruction/bsengine/BSMouseDevice.h"
+          "reconstruction/bsinput/BSMouseDevice.cpp",
+          "reconstruction/bsinput/BSMouseDevice.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSMouseDevice.cpp",
+    "compiled": "reconstruction/bsinput/BSMouseDevice.cpp",
     "digest": "f1ebd028b5f057dd248cbecd2e3d53ecb504310e187192649d8710de1198e78f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bffcd581a1749a537965fcef26aebaad392ab3c45ac1e5ad5d4983fa0e4ab2e0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSMouseDevice.cpp",
-      "reconstruction/bsengine/BSMouseDevice.h"
+      "reconstruction/bsinput/BSMouseDevice.cpp",
+      "reconstruction/bsinput/BSMouseDevice.h"
     ]
   },
   "symbol_map": {

@@ -31,9 +31,9 @@
         "object_sha256": "b9b3afc039e7d3be5400451e1c453f44bb6e82b05d9907d3304a62585c0fb509",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.cpp",
-          "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.h"
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.cpp",
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       },
       "winpc-native": {
@@ -54,9 +54,9 @@
         "object_sha256": "20fcdd8e94f95c9c40b50f747549b7820feec5829702e3dd1eafd4db37bed75e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.cpp",
-          "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.h"
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.cpp",
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       }
     }
@@ -330,15 +330,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.cpp",
     "digest": "251ac0793f31c67e2d935ae289ce8f128933d55715d904a832c82a611b83b758",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d46c195aa880d927578abae82f49f77a13b619c65a13b0a7eab1817ea3d82502",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiObject.h",
-      "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.cpp",
-      "reconstruction/small202_42fcf3cb/NiAlphaAccumulator.h"
+      "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.cpp",
+      "reconstruction/gamebryo/nimain/NiAlphaAccumulator_f0f210.h",
+      "reconstruction/netimmerse/NiObject.h"
     ]
   },
   "symbol_map": {

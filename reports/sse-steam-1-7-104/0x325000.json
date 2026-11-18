@@ -29,8 +29,8 @@
         "object_sha256": "f8e0afc6b526351a142933853b5ccfbfd6c131a7c50290fd43f0ba0d88ef841e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMusicPaletteTrack.cpp",
-          "reconstruction/forms/BGSMusicPaletteTrack.h"
+          "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.cpp",
+          "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d4f47ed57a186ec0ceec599bd5f1a0799457e0ade275852df2f087f4f2defb79",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMusicPaletteTrack.cpp",
-          "reconstruction/forms/BGSMusicPaletteTrack.h"
+          "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.cpp",
+          "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMusicPaletteTrack.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.cpp",
     "digest": "6f08d576bbb9e350538a676e0b60082658baf63772d33838f3b2dae8f22a5eb6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e0877e96c8ec01247952f227664c5bbbe00d3cc3e6a09f2926aec080114bbe45",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMusicPaletteTrack.cpp",
-      "reconstruction/forms/BGSMusicPaletteTrack.h"
+      "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.cpp",
+      "reconstruction/skyrim_shared/audio/BGSMusicPaletteTrack.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "fbbe15855cefbf30cf2b8fedcc9114f3e42d991e25e312d4302faeec36f8e8e5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIMusicTrackStorageLayout.cpp",
-          "reconstruction/bsengine/BSIMusicTrackStorageLayout.h"
+          "reconstruction/bsaudio/BSIMusicTrackStorageLayout.cpp",
+          "reconstruction/bsaudio/BSIMusicTrackStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5a6d7144c4a203c6d45f67f7c9f9b519b8a68babb0c76406a699b4932ee0f864",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIMusicTrackStorageLayout.cpp",
-          "reconstruction/bsengine/BSIMusicTrackStorageLayout.h"
+          "reconstruction/bsaudio/BSIMusicTrackStorageLayout.cpp",
+          "reconstruction/bsaudio/BSIMusicTrackStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSIMusicTrackStorageLayout.cpp",
+    "compiled": "reconstruction/bsaudio/BSIMusicTrackStorageLayout.cpp",
     "digest": "2609be994b253ac2c74ca4e4f0d443b0a0621ef073b84733472621a4265e7b9d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "384ce9e9dfb933c5f8582de36b76fc4d096f49bfd572b1ba1fbe89c78c867d37",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIMusicTrackStorageLayout.cpp",
-      "reconstruction/bsengine/BSIMusicTrackStorageLayout.h"
+      "reconstruction/bsaudio/BSIMusicTrackStorageLayout.cpp",
+      "reconstruction/bsaudio/BSIMusicTrackStorageLayout.h"
     ]
   },
   "symbol_map": {

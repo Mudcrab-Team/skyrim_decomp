@@ -29,8 +29,8 @@
         "object_sha256": "fb16826efd999309ba3480c9ea825edd3653d019b38a16b30960a2b9ce467f12",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/storage/StorageInitfdb230.cpp",
-          "reconstruction/storage/StorageInitfdb230.h"
+          "reconstruction/unmapped/storage/StorageInitfdb230.cpp",
+          "reconstruction/unmapped/storage/StorageInitfdb230.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "0aaaa61af1590bde4002c61cfc64eb3a59dde61d102640e154082885c7a9a0c6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/storage/StorageInitfdb230.cpp",
-          "reconstruction/storage/StorageInitfdb230.h"
+          "reconstruction/unmapped/storage/StorageInitfdb230.cpp",
+          "reconstruction/unmapped/storage/StorageInitfdb230.h"
         ]
       }
     }
@@ -380,14 +380,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/storage/StorageInitfdb230.cpp",
+    "compiled": "reconstruction/unmapped/storage/StorageInitfdb230.cpp",
     "digest": "62a4e08678d9be6ee7d5448000ac961407b1ef97588c8686d60e017f57e0fc09",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1b2c5b07f5637fc566595fc0cdac8ac21455cc2273382a9146cfbbda5285fa5f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/storage/StorageInitfdb230.cpp",
-      "reconstruction/storage/StorageInitfdb230.h"
+      "reconstruction/unmapped/storage/StorageInitfdb230.cpp",
+      "reconstruction/unmapped/storage/StorageInitfdb230.h"
     ]
   },
   "symbol_map": {

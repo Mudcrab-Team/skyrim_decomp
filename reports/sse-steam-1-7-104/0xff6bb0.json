@@ -29,8 +29,8 @@
         "object_sha256": "2880c6ad6af02edef4e443d308c5d6bfaa7264eae81e4b9dfbcf6a825343ba02",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSubIndexTriShape.cpp",
-          "reconstruction/bsengine/BSSubIndexTriShape.h"
+          "reconstruction/gamebryo/nimain/BSSubIndexTriShape.cpp",
+          "reconstruction/gamebryo/nimain/BSSubIndexTriShape.h"
         ]
       }
     }
@@ -173,14 +173,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSSubIndexTriShape.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSSubIndexTriShape.cpp",
     "digest": "7452e0205c263da405f615a44c8aab11ac3de0cabb7f88f3e24792cea3f21eaa",
     "digest_method": "tu-sha256-v2",
     "run_digest": "93bc48cd6f50b70ef83fddcb123615e6257f3e82d5352f26ec33ee41ce2fb01d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSSubIndexTriShape.cpp",
-      "reconstruction/bsengine/BSSubIndexTriShape.h"
+      "reconstruction/gamebryo/nimain/BSSubIndexTriShape.cpp",
+      "reconstruction/gamebryo/nimain/BSSubIndexTriShape.h"
     ]
   },
   "submitter": "taylorturnerit",

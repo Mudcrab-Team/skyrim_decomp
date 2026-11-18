@@ -29,8 +29,8 @@
         "object_sha256": "8cb3512c6e8ca2b26bce24acd8ded3c44511c55e17dc5af72757025ae7f2fe51",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/MessageCallbackCaptureBase.cpp",
-          "reconstruction/bsengine/MessageCallbackCaptureBase.h"
+          "reconstruction/skyrim/interface/MessageCallbackCaptureBase.cpp",
+          "reconstruction/skyrim/interface/MessageCallbackCaptureBase.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9d06f62b32b76601f24274d4840d2c2f854cf07a465bf1fcc1ffe2049f86c222",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/MessageCallbackCaptureBase.cpp",
-          "reconstruction/bsengine/MessageCallbackCaptureBase.h"
+          "reconstruction/skyrim/interface/MessageCallbackCaptureBase.cpp",
+          "reconstruction/skyrim/interface/MessageCallbackCaptureBase.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/MessageCallbackCaptureBase.cpp",
+    "compiled": "reconstruction/skyrim/interface/MessageCallbackCaptureBase.cpp",
     "digest": "f78e77dabc812559fefb0f05375b9d81fc41a26b497e55b79751494fa31f4595",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d0cd61cba141d08b03df2e3f8b3c33e05ff4150090cd055671170a6e0c432575",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/MessageCallbackCaptureBase.cpp",
-      "reconstruction/bsengine/MessageCallbackCaptureBase.h"
+      "reconstruction/skyrim/interface/MessageCallbackCaptureBase.cpp",
+      "reconstruction/skyrim/interface/MessageCallbackCaptureBase.h"
     ]
   },
   "symbol_map": {

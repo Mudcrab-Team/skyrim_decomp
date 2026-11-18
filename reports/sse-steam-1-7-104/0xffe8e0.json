@@ -29,9 +29,9 @@
         "object_sha256": "5d8ed127905b35b555a699d38805d0c9dfbd68356333f6bcd39f518d31ff5493",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSProceduralLightningTasklet.cpp",
-          "reconstruction/bsengine/BSProceduralLightningTasklet.h",
-          "reconstruction/bsengine/BSTaskletData.h"
+          "reconstruction/bscore/BSTaskletData.h",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.cpp",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "d5f72b6b4429a0065ee04809894b87e3516c3076f1e20bf8e5c166e5090c8c9f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSProceduralLightningTasklet.cpp",
-          "reconstruction/bsengine/BSProceduralLightningTasklet.h",
-          "reconstruction/bsengine/BSTaskletData.h"
+          "reconstruction/bscore/BSTaskletData.h",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.cpp",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSProceduralLightningTasklet.cpp",
+    "compiled": "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.cpp",
     "digest": "4d9e2b56fc1fe3472bde2a9e759216e5722c900f117f28f1a444d9ea8e8de3ee",
     "digest_method": "tu-sha256-v2",
     "run_digest": "274dea878c55ef5c0030c2a0ec6c43a9cf4afeaaf8b03e3cf55589be56bed031",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSProceduralLightningTasklet.cpp",
-      "reconstruction/bsengine/BSProceduralLightningTasklet.h",
-      "reconstruction/bsengine/BSTaskletData.h"
+      "reconstruction/bscore/BSTaskletData.h",
+      "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.cpp",
+      "reconstruction/gamebryo/niparticle/BSProceduralLightningTasklet.h"
     ]
   },
   "symbol_map": {

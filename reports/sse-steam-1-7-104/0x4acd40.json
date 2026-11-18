@@ -30,9 +30,9 @@
         "object_sha256": "67738aa8a83fdfd664a19d2f062cff12bfb5a126595423b18c1fbf0b84c492e8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.h",
-          "reconstruction/bsengine/BSTempEffectGeometryDecal.cpp",
-          "reconstruction/bsengine/BSTempEffectGeometryDecal.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectGeometryDecal.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectGeometryDecal.h"
         ]
       }
     }
@@ -174,15 +174,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTempEffectGeometryDecal.cpp",
+    "compiled": "reconstruction/skyrim_shared/tempeffects/BSTempEffectGeometryDecal.cpp",
     "digest": "0a84d42cbe5dcb0545815a442efb993b87e48b48d915ca63b872c5b3f5303113",
     "digest_method": "tu-sha256-v2",
     "run_digest": "73ea2d85284cdfba395d81123be1fbfe0a85e9411cd9ce816913f1c1477b46af",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTempEffect.h",
-      "reconstruction/bsengine/BSTempEffectGeometryDecal.cpp",
-      "reconstruction/bsengine/BSTempEffectGeometryDecal.h"
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectGeometryDecal.cpp",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectGeometryDecal.h"
     ]
   },
   "submitter": "hinkiii",

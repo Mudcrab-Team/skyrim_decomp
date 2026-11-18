@@ -29,8 +29,8 @@
         "object_sha256": "161882730261b5900e7e68116e19cc335d0f9ea5e6c44229c6fc2182019722a3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialEye.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialEye.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialEye.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialEye.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3dd50e378de805ca007086bfec86c1ee88381a50dc42d2dfefaf044ea9f4e218",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialEye.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialEye.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialEye.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialEye.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialEye.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialEye.cpp",
     "digest": "b37846e2642e3d9348a60ee68b4b4fa56b3ced0e7e0ff57f88a55555aecf7b00",
     "digest_method": "tu-sha256-v2",
     "run_digest": "31c7c98968f63681d007f3968304af915994c5c8f8452de99fd46cd69c2c542a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterialEye.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialEye.h"
+      "reconstruction/bsshader/BSLightingShaderMaterialEye.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialEye.h"
     ]
   },
   "symbol_map": {

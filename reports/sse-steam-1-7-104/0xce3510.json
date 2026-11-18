@@ -29,8 +29,8 @@
         "object_sha256": "7e297416ebb44ddd67c164bbab96d05aac9bc3cc0adf4219493e95d1dd30fa2d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSReadWriteLock.cpp",
-          "reconstruction/bsengine/BSReadWriteLock.h"
+          "reconstruction/bscore/BSReadWriteLock.cpp",
+          "reconstruction/bscore/BSReadWriteLock.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9f3717dd79144db5e95477255f7cc07d27c35db39e45805114b9c06b7a6354a7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSReadWriteLock.cpp",
-          "reconstruction/bsengine/BSReadWriteLock.h"
+          "reconstruction/bscore/BSReadWriteLock.cpp",
+          "reconstruction/bscore/BSReadWriteLock.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSReadWriteLock.cpp",
+    "compiled": "reconstruction/bscore/BSReadWriteLock.cpp",
     "digest": "6851c8c8af0c4592d9335a5846c57f67e7035647eb567ea32cbc54aa2680036f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d19ee8f4d8a2eadca66d47099dfcff8a17974c95985aefe711c46a2637a36595",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSReadWriteLock.cpp",
-      "reconstruction/bsengine/BSReadWriteLock.h"
+      "reconstruction/bscore/BSReadWriteLock.cpp",
+      "reconstruction/bscore/BSReadWriteLock.h"
     ]
   },
   "symbol_map": {

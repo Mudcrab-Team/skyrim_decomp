@@ -31,10 +31,10 @@
         "object_sha256": "bf106fb845b358a0c1f055dbcb866f0e292d7faa2ba3703da2138bb7dd6c0b44",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/TESObjectREFRTyped.cpp",
-          "reconstruction/actor206_2/TESObjectREFRTyped.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.cpp",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "07ccabf39388dec20c13b0bed0bfec5ed59108b9a50d005a6a71c31d8f39908e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_2/TESObjectREFRTyped.cpp",
-          "reconstruction/actor206_2/TESObjectREFRTyped.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.cpp",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_2/TESObjectREFRTyped.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.cpp",
     "digest": "fdebd56ef3ba40fb9ebc66aabfcc1f43541f668dec3197df9b83fa524850579e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "934bae5ea705987edc54f6749e0818a78988a6e1d9a8d09718508e4f1d69ff44",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_2/TESObjectREFRTyped.cpp",
-      "reconstruction/actor206_2/TESObjectREFRTyped.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.cpp",
+      "reconstruction/skyrim_shared/refs/TESObjectREFRTyped.h"
     ]
   },
   "symbol_map": {

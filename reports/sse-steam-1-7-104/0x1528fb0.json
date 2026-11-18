@@ -29,10 +29,10 @@
         "object_sha256": "29542280d8fe178007b2bf4e5c705ae6003fc80ed30deb2cc3e33b370d06b100",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialHairTint.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialHairTint.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialHairTint.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialHairTint.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "34f920ee067a7ae4ae0ff335152e4412a7ac41668ca5c9d26852d548035b1fe4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialHairTint.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialHairTint.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialHairTint.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialHairTint.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialHairTint.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialHairTint.cpp",
     "digest": "c4e730f9c3c32984045eba54a191eef85b8b9ae24d65b11427b9717c9c3d541f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0f35a3c68d23e7a8e1258f3308592768605d07179a68052d3c8b44723d5f048b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterial.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialHairTint.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialHairTint.h"
+      "reconstruction/bsshader/BSLightingShaderMaterial.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialHairTint.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialHairTint.h"
     ]
   },
   "symbol_map": {

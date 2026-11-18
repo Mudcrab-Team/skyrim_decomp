@@ -29,8 +29,8 @@
         "object_sha256": "a60b944db78833631e21cd6a8afccd0b70a9a509eae90829d36228e6cb0703b2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRank.cpp",
-          "reconstruction/bsengine/ExtraRank.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRank.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRank.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "33d641c6947a7a8b2652b6ddd18650dae3014ea39889d236c9f1ce2a2be42ecc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraRank.cpp",
-          "reconstruction/bsengine/ExtraRank.h"
+          "reconstruction/skyrim_shared/extradata/ExtraRank.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRank.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRank.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRank.cpp",
     "digest": "fde2dbbfcfc7d971993e5f53f65d245250e403023bb30fd53b89e7206c347648",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3477dc3db9a9925f78ff0b5ccde56ba4774becb56445ffd636c72ffd81acfadd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraRank.cpp",
-      "reconstruction/bsengine/ExtraRank.h"
+      "reconstruction/skyrim_shared/extradata/ExtraRank.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRank.h"
     ]
   },
   "symbol_map": {

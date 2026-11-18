@@ -29,8 +29,8 @@
         "object_sha256": "90fe7213f24a7af77d74a2f19eced168d083b8fab5d21d5334460964ccc5da67",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSFootstepSet.cpp",
-          "reconstruction/forms/BGSFootstepSet.h"
+          "reconstruction/skyrim_shared/audio/BGSFootstepSet.cpp",
+          "reconstruction/skyrim_shared/audio/BGSFootstepSet.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f2e4884b24541288f27b63fb09baeecbcba063d955e62ec5c8bd955cb22bd50f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSFootstepSet.cpp",
-          "reconstruction/forms/BGSFootstepSet.h"
+          "reconstruction/skyrim_shared/audio/BGSFootstepSet.cpp",
+          "reconstruction/skyrim_shared/audio/BGSFootstepSet.h"
         ]
       }
     }
@@ -365,14 +365,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSFootstepSet.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSFootstepSet.cpp",
     "digest": "ab472430f348b3eb58bb42e588ac010b479585589e52c22db05094608b0a6e12",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3d3398ddbd574b1fef50afeaf841af53c34aae804355b7a7b82d6b142fa35e72",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSFootstepSet.cpp",
-      "reconstruction/forms/BGSFootstepSet.h"
+      "reconstruction/skyrim_shared/audio/BGSFootstepSet.cpp",
+      "reconstruction/skyrim_shared/audio/BGSFootstepSet.h"
     ]
   },
   "symbol_map": {

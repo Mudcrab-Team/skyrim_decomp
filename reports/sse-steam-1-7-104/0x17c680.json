@@ -29,9 +29,9 @@
         "object_sha256": "62dfe31f0cacf311534a38bd3986a78b7fe0025131ae6c20fdcd260ef54edec7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCountStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCountStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "95f0f61a8067f631856a1307723ec3cb0cb3dfcc8d0456ee33b2f15425b326ab",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCountStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCountStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCountStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.cpp",
     "digest": "27512484ab222b22e47a8772ff058b93fbf9f4cb255d4694e3713dfa59f30763",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1469e21812b4ed8051514f3abe9f7ee85c7833719c9acaf5fca26bde1455117b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCountStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCountStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCountStorageLayout.h"
     ]
   },
   "symbol_map": {

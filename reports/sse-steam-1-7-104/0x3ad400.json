@@ -29,9 +29,9 @@
         "object_sha256": "796badf44507ba50480eaaf47d523e09eeb510dd45e5246c876d0c5e801a6d8b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSceneAction.h",
-          "reconstruction/forms/BGSSceneActionTimer.cpp",
-          "reconstruction/forms/BGSSceneActionTimer.h"
+          "reconstruction/skyrim_shared/quest/BGSSceneAction.h",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.cpp",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "1d01addca815adacf3e33aa5136dabc6fcc750124ce89becb3e782d5a2b21be7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSceneAction.h",
-          "reconstruction/forms/BGSSceneActionTimer.cpp",
-          "reconstruction/forms/BGSSceneActionTimer.h"
+          "reconstruction/skyrim_shared/quest/BGSSceneAction.h",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.cpp",
+          "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSSceneActionTimer.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.cpp",
     "digest": "bdc23c0346701a64b9fb96d9a35adc4252086eaf0bc50c2d857962bd275108dd",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9983afdfbfb6574e0833997fb94caba6e0feaa7379c913f13084d7c4f0e9cb2f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSSceneAction.h",
-      "reconstruction/forms/BGSSceneActionTimer.cpp",
-      "reconstruction/forms/BGSSceneActionTimer.h"
+      "reconstruction/skyrim_shared/quest/BGSSceneAction.h",
+      "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.cpp",
+      "reconstruction/skyrim_shared/quest/BGSSceneActionTimer.h"
     ]
   },
   "symbol_map": {

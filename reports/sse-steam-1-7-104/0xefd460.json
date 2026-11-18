@@ -30,12 +30,12 @@
         "object_sha256": "8e083883f9a95364b6ebc53c3795bb0b36a6bb30a8cea47ab6167e7124461dfb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSDynamicTriShape.cpp",
-          "reconstruction/bsengine/BSDynamicTriShape.h",
           "reconstruction/declarations/NiAVObject.h",
           "reconstruction/declarations/NiObject.h",
           "reconstruction/declarations/NiObjectNET.h",
-          "reconstruction/declarations/NiRefObject.h"
+          "reconstruction/declarations/NiRefObject.h",
+          "reconstruction/gamebryo/nimain/BSDynamicTriShape.cpp",
+          "reconstruction/gamebryo/nimain/BSDynamicTriShape.h"
         ]
       }
     }
@@ -177,18 +177,18 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSDynamicTriShape.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSDynamicTriShape.cpp",
     "digest": "73554a6aa77a343e922acfcf05b30e6e8f726b892d66f81b03951a81a714dfc7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6e42c66f38be749b12ec1b6dcaf01f42aeea4536d6e3023b9f186a393f1c8766",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSDynamicTriShape.cpp",
-      "reconstruction/bsengine/BSDynamicTriShape.h",
       "reconstruction/declarations/NiAVObject.h",
       "reconstruction/declarations/NiObject.h",
       "reconstruction/declarations/NiObjectNET.h",
-      "reconstruction/declarations/NiRefObject.h"
+      "reconstruction/declarations/NiRefObject.h",
+      "reconstruction/gamebryo/nimain/BSDynamicTriShape.cpp",
+      "reconstruction/gamebryo/nimain/BSDynamicTriShape.h"
     ]
   },
   "submitter": "hinkiii",

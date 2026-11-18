@@ -29,9 +29,9 @@
         "object_sha256": "93d0720e19493f4573db9ba725723f9618e438f2c0376cf789426031c4157109",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/ToggleRunHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ToggleRunHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a10568ca61f59a964ccab24ac3796246a04e5a223e0e277402373e2f05f87043",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/ToggleRunHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ToggleRunHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ToggleRunHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.cpp",
     "digest": "c26030bcfe7381aa334e849dc6418ff2c906126f340e9756161922e37127a5c2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d7b8925b2fdbdfb1fd73506932877c89c6f2385240074c3d63a61b4142d2d94e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-      "reconstruction/bsengine/ToggleRunHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/ToggleRunHandlerStorageLayout.h"
+      "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/ToggleRunHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

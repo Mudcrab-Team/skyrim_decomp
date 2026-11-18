@@ -29,9 +29,9 @@
         "object_sha256": "5f2c9570cc9641fefbaaa060f77cf2e7e9e5c742564a163e30f66dfbd636b345",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CharEventStorageLayout.cpp",
-          "reconstruction/bsengine/CharEventStorageLayout.h",
-          "reconstruction/bsengine/InputEventStorageLayout.h"
+          "reconstruction/bsinput/CharEventStorageLayout.cpp",
+          "reconstruction/bsinput/CharEventStorageLayout.h",
+          "reconstruction/bsinput/InputEventStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a0fe67f0c6c7a2c90f0bfb0e87158a05baeb71bea85b20cee2cd6be833078609",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/CharEventStorageLayout.cpp",
-          "reconstruction/bsengine/CharEventStorageLayout.h",
-          "reconstruction/bsengine/InputEventStorageLayout.h"
+          "reconstruction/bsinput/CharEventStorageLayout.cpp",
+          "reconstruction/bsinput/CharEventStorageLayout.h",
+          "reconstruction/bsinput/InputEventStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/CharEventStorageLayout.cpp",
+    "compiled": "reconstruction/bsinput/CharEventStorageLayout.cpp",
     "digest": "c1da9baef06f8170fb7a0fbf7feb5c365fa843b8912062f05d7bdd782f8bdc44",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b39e245a9b4153f3c06e2c2395ec132beb7f7791d81b62b844fc2972d5bc2aa8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/CharEventStorageLayout.cpp",
-      "reconstruction/bsengine/CharEventStorageLayout.h",
-      "reconstruction/bsengine/InputEventStorageLayout.h"
+      "reconstruction/bsinput/CharEventStorageLayout.cpp",
+      "reconstruction/bsinput/CharEventStorageLayout.h",
+      "reconstruction/bsinput/InputEventStorageLayout.h"
     ]
   },
   "symbol_map": {

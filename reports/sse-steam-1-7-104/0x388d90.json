@@ -29,9 +29,9 @@
         "object_sha256": "c86968ff89f5b6271617898428aeb9b1d385976353d63bb1e0d051fb3c2a00b7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESWordOfPower.cpp",
-          "reconstruction/forms/TESWordOfPower.h"
+          "reconstruction/skyrim_shared/dialogue/TESWordOfPower.cpp",
+          "reconstruction/skyrim_shared/dialogue/TESWordOfPower.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "f0296b4549dfa5fc5af715aeb6d0cf123785236d66b6f1dd0d6c1b7e44f1babb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESWordOfPower.cpp",
-          "reconstruction/forms/TESWordOfPower.h"
+          "reconstruction/skyrim_shared/dialogue/TESWordOfPower.cpp",
+          "reconstruction/skyrim_shared/dialogue/TESWordOfPower.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESWordOfPower.cpp",
+    "compiled": "reconstruction/skyrim_shared/dialogue/TESWordOfPower.cpp",
     "digest": "f2c662b53fcfab38529db9a3b99d542a4c66adde21e5336028e468495cd0d3a0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7b2b8a4e97384fda47fb2a2d6ff55c313d66057ded11f0037995d110e39f3e09",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESWordOfPower.cpp",
-      "reconstruction/forms/TESWordOfPower.h"
+      "reconstruction/skyrim_shared/dialogue/TESWordOfPower.cpp",
+      "reconstruction/skyrim_shared/dialogue/TESWordOfPower.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

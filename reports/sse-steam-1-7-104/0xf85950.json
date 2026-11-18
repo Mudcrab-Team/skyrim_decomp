@@ -29,8 +29,8 @@
         "object_sha256": "3d841547c38e30d5f8866f79243fc10d3e5c0a8b5f48090241e4a6f53f4154d6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiQuaternionInterpolator.cpp",
-          "reconstruction/netimmerse/NiQuaternionInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "e66a82ab136415988060afd0afb9c50eb7ee0293f81bd9064e77bb1a3bcede04",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiQuaternionInterpolator.cpp",
-          "reconstruction/netimmerse/NiQuaternionInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiQuaternionInterpolator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.cpp",
     "digest": "268b207fb265437fac24e4b18a49f04ba9073b2dfaa99fde09313181a3fcc91b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bf0c5381f362cd7cb301036f288ce9556b90c7c9275cc1c56772305d8a928b9c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiQuaternionInterpolator.cpp",
-      "reconstruction/netimmerse/NiQuaternionInterpolator.h"
+      "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.cpp",
+      "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator.h"
     ]
   },
   "symbol_map": {

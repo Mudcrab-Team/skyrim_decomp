@@ -29,8 +29,8 @@
         "object_sha256": "6c5d1f58b702169f246249c9874d84ed4001371c9a15eda7a2d308d01be42b3d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAnimNoteReceiver.cpp",
-          "reconstruction/bsengine/ExtraAnimNoteReceiver.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2d3d3ae64a8b23667a9de56c091c960710cff3dca6d13c9bc9626bf03f7100d0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAnimNoteReceiver.cpp",
-          "reconstruction/bsengine/ExtraAnimNoteReceiver.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAnimNoteReceiver.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.cpp",
     "digest": "4308267ff59d3e6699e76b8e14b05373759fe5caa36272e7aface12704fe69b8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1c1a27c05f2ceaf8935f58b791ffd3e6886a80c27d7acbb2072ea7dd2467b97f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraAnimNoteReceiver.cpp",
-      "reconstruction/bsengine/ExtraAnimNoteReceiver.h"
+      "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAnimNoteReceiver.h"
     ]
   },
   "symbol_map": {

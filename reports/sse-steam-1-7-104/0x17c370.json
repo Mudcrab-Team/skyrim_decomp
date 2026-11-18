@@ -29,9 +29,9 @@
         "object_sha256": "ee1f1d75d0a11156cd2efba12911ba84754f4fc8c261632100f7009219cffe37",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraBadPositionStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraBadPositionStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "62c6bf9b0dcdb0ca211f416d17031823a97c5dc880bfcd6256c9338e75f23eee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraBadPositionStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraBadPositionStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraBadPositionStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.cpp",
     "digest": "7f7a391de6a8510a827443a6d965efaa0e1381c61460efbfc97794d1b2999b65",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ae496a75b5bb448b8c4702e4796e0864096131584ac22a52ccd49737f003333c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraBadPositionStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraBadPositionStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraBadPositionStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -31,12 +31,12 @@
         "object_sha256": "60482ec26ee5cffcfaec6bf2d65f6f271f46be9a6f2d14fe21729a87a456fd8e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_3/PlayerMenuModeSink.cpp",
-          "reconstruction/actor207_3/PlayerMenuModeSink.h",
-          "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h"
+          "reconstruction/skyrim/interface/PlayerMenuModeSink.cpp",
+          "reconstruction/skyrim/interface/PlayerMenuModeSink.h",
+          "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h"
         ]
       }
     }
@@ -190,18 +190,18 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_3/PlayerMenuModeSink.cpp",
+    "compiled": "reconstruction/skyrim/interface/PlayerMenuModeSink.cpp",
     "digest": "1fbc7a9d5337d7e8824bc915227ed73b0ebadd1e968e0d848cc4fb26f6a04a82",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1c649a1fccb6c5b5fb896414b97edcfbb476fe92acbdb40cb47ba2c42160cf77",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_3/PlayerMenuModeSink.cpp",
-      "reconstruction/actor207_3/PlayerMenuModeSink.h",
-      "reconstruction/actors/ActorPrimaryTargetPrefix.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h"
+      "reconstruction/skyrim/interface/PlayerMenuModeSink.cpp",
+      "reconstruction/skyrim/interface/PlayerMenuModeSink.h",
+      "reconstruction/skyrim_shared/actors/ActorPrimaryTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h"
     ]
   },
   "symbol_map": {

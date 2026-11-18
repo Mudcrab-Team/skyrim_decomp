@@ -29,9 +29,9 @@
         "object_sha256": "10be36bf5400ff690a2d2a83a89880f61abfb7c2615b995be9f3b1e6046df647",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "5f0ff39dc56fef7ce4b31fda59c1f4f5d52d552c8b92a4316a295145e110fea8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.cpp",
     "digest": "e000fcec2775d9f64275841fe72e7a54c7c18426fb8e51da577d03ee4f6cce60",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fd0539b48f213396c2f22462b3a6b1e6de78d3e21b47578cf1f745c658b59e28",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraHeadTrackingWeightStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeightStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "bde6f6684f0ab7fa34917dc116ae24029db36c61bf4e3c7dae60040fd060cffe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellWaterType.cpp",
-          "reconstruction/bsengine/ExtraCellWaterType.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ebf951ebf02d67ad2f2591c22ba178de0c7350b559079adb71f53e0afd860264",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraCellWaterType.cpp",
-          "reconstruction/bsengine/ExtraCellWaterType.h"
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellWaterType.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.cpp",
     "digest": "1664a968ac6739176247eac84925a8f674f4efffbe8cc15080b395a1c23ab21e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4673ed9ec74365b9b347184a540fc7d16892a3d00532075b0287cec7d2511aca",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraCellWaterType.cpp",
-      "reconstruction/bsengine/ExtraCellWaterType.h"
+      "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellWaterType.h"
     ]
   },
   "symbol_map": {

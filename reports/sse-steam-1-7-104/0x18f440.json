@@ -29,9 +29,9 @@
         "object_sha256": "8da4aea473ff51ea25ceadf917a7f2bced22fa608ef265b0cc8a49d337e4c558",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "6b33af7b3ccce13833eb60b2eb6f2e05cea23ec48d57f9085ef670ca1be3ddbb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.cpp",
     "digest": "77f94dba533d3df0ecf28edb18d969dc5da71accd57a03b5661c2b2ebf021dcf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "371709497a0c7db6f9e26512babc0083a1ca84ce70ea29c8b537dd1bf6b8e2cb",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraLeveledCreatureStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraLeveledCreatureStorageLayout.h"
     ]
   },
   "symbol_map": {

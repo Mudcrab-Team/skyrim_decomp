@@ -29,8 +29,8 @@
         "object_sha256": "55b12eecbfa30c746bfa96f26eaea291984fe3cfda6d9811dd107901051b9a9a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESSpellList.cpp",
-          "reconstruction/forms/TESSpellList.h"
+          "reconstruction/skyrim_shared/forms/TESSpellList.cpp",
+          "reconstruction/skyrim_shared/forms/TESSpellList.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "32eec69bc13d0a30ea6da6638e7debdf40b2f3b36aeb246cc3aad04c6f21cdf3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESSpellList.cpp",
-          "reconstruction/forms/TESSpellList.h"
+          "reconstruction/skyrim_shared/forms/TESSpellList.cpp",
+          "reconstruction/skyrim_shared/forms/TESSpellList.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESSpellList.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESSpellList.cpp",
     "digest": "4ea7187ada7f057636fac65ab28768dc38851f3333f1a2cb0766918a2aea2ce3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "728226b1876e0e9b2111c0a07500ced8f60c503ff2d84309cb936f5cd28c4669",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESSpellList.cpp",
-      "reconstruction/forms/TESSpellList.h"
+      "reconstruction/skyrim_shared/forms/TESSpellList.cpp",
+      "reconstruction/skyrim_shared/forms/TESSpellList.h"
     ]
   },
   "symbol_map": {

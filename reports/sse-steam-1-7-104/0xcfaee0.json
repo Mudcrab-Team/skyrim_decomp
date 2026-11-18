@@ -29,8 +29,8 @@
         "object_sha256": "164e3803d4dac414545699d88a720e537c6debaf459f9737076c0960449d3303",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSDirectInputManager.cpp",
-          "reconstruction/bsengine/BSDirectInputManager.h"
+          "reconstruction/bsinput/BSDirectInputManager.cpp",
+          "reconstruction/bsinput/BSDirectInputManager.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "89e5db05426fde3656f3f96fafa56cbe28072ee381437fd1d5a9087d6b10a25e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSDirectInputManager.cpp",
-          "reconstruction/bsengine/BSDirectInputManager.h"
+          "reconstruction/bsinput/BSDirectInputManager.cpp",
+          "reconstruction/bsinput/BSDirectInputManager.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSDirectInputManager.cpp",
+    "compiled": "reconstruction/bsinput/BSDirectInputManager.cpp",
     "digest": "781a31e3f64b61c6de3e04e4d0627a8bc4824adb0c26e028fb6ce276ffd40fc7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0a261d5b96227be37502871a4524b512c87e0d5c52a453f8f74de6572015e8fb",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSDirectInputManager.cpp",
-      "reconstruction/bsengine/BSDirectInputManager.h"
+      "reconstruction/bsinput/BSDirectInputManager.cpp",
+      "reconstruction/bsinput/BSDirectInputManager.h"
     ]
   },
   "symbol_map": {

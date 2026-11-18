@@ -29,9 +29,9 @@
         "object_sha256": "6c3b91bb1ab5f93110b0d56a3198c97eb2e60c71837567a23ca7f7349b0f7a57",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSDistantTreeShaderProperty.cpp",
-          "reconstruction/bsengine/BSDistantTreeShaderProperty.h",
-          "reconstruction/bsengine/BSShaderProperty.h",
+          "reconstruction/bsshader/BSDistantTreeShaderProperty.cpp",
+          "reconstruction/bsshader/BSDistantTreeShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -51,9 +51,9 @@
         "object_sha256": "2efc4c5c27164c592482d0beaf2ffb69d71d4961b7c99a25daca1b41286a7ff7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSDistantTreeShaderProperty.cpp",
-          "reconstruction/bsengine/BSDistantTreeShaderProperty.h",
-          "reconstruction/bsengine/BSShaderProperty.h",
+          "reconstruction/bsshader/BSDistantTreeShaderProperty.cpp",
+          "reconstruction/bsshader/BSDistantTreeShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -315,15 +315,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSDistantTreeShaderProperty.cpp",
+    "compiled": "reconstruction/bsshader/BSDistantTreeShaderProperty.cpp",
     "digest": "baa8f1de95a357362850fb2403453b68dfe435af66860d1cece6572b6b7f0abb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "68ff1c30fc2d5b29b3adab1413610252cf601919491d054ef25c1788a530480e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSDistantTreeShaderProperty.cpp",
-      "reconstruction/bsengine/BSDistantTreeShaderProperty.h",
-      "reconstruction/bsengine/BSShaderProperty.h",
+      "reconstruction/bsshader/BSDistantTreeShaderProperty.cpp",
+      "reconstruction/bsshader/BSDistantTreeShaderProperty.h",
+      "reconstruction/bsshader/BSShaderProperty.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

@@ -18,6 +18,7 @@ from html import escape
 import json
 import math
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -76,7 +77,8 @@ def unit_of(fn, root):
         record = json.loads((root / fn['report']).read_text())
         parts = record['source']['compiled'].split('/')
         if parts[0] == 'reconstruction' and len(parts) > 2:
-            return parts[1], parts[-1].rsplit('.', 1)[0]
+            # A second unit of a split class is `<Class>_<lowest rva>`; it counts for the class.
+            return parts[1], re.sub(r'_[0-9a-f]{3,8}$', '', parts[-1].rsplit('.', 1)[0])
     except (KeyError, OSError, ValueError):
         pass
     return 'unknown', None

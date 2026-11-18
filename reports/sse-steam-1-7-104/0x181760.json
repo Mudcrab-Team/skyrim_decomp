@@ -29,8 +29,8 @@
         "object_sha256": "7ca3c0a9089abc5e7ce51e5ce4abbbbce46b74bc42e04fc11b7ebcf338eda5d7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraScale.cpp",
-          "reconstruction/bsengine/ExtraScale.h"
+          "reconstruction/skyrim_shared/extradata/ExtraScale.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraScale.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ffb04f939f7d31f256aa4958a410fa9461883ee8913984fbd3f7f2423b5a393e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraScale.cpp",
-          "reconstruction/bsengine/ExtraScale.h"
+          "reconstruction/skyrim_shared/extradata/ExtraScale.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraScale.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraScale.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraScale.cpp",
     "digest": "2c9f36184387f7f342e52962f33f38c8f2af048659afbc61ed2f9fc356f2c135",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3059751ac160e4b3f13ee89de44949f6d1c907d46d05b71a9b474b8b81e57643",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraScale.cpp",
-      "reconstruction/bsengine/ExtraScale.h"
+      "reconstruction/skyrim_shared/extradata/ExtraScale.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraScale.h"
     ]
   },
   "symbol_map": {

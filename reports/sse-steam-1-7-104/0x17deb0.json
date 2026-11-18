@@ -29,10 +29,10 @@
         "object_sha256": "05c5c55b3d670bc4b5629536d80003f05d3468715b8430d32d0b4025885a8db3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSSoundHandleStorageLayout.h",
-          "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "dc83f00d9669923e2869e53dcd595e7f0e920b177595be9363d8607bccf28639",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSSoundHandleStorageLayout.h",
-          "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.cpp",
     "digest": "76c9d03c9b583cc63ff6b9a97c135c991c43f0aecf0b91755780f23351b1610f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "db9e58ee00c6ba818f36f68d4534b1f5bf3e3f71e16e349f7a71ca33b0f9726e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/BSSoundHandleStorageLayout.h",
-      "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraWeaponAttackSoundStorageLayout.h"
+      "reconstruction/bsaudio/BSSoundHandleStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSoundStorageLayout.h"
     ]
   },
   "symbol_map": {

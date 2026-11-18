@@ -29,10 +29,10 @@
         "object_sha256": "aef7bc6eb11995609cdf5701fa12c637f0f6b64b81180cf348a0d64b59aa41be",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaf5dcce0.cpp",
-          "reconstruction/fields/FieldLeaf5dcce0.h",
-          "reconstruction/fields/ReferenceEffectControllerLayout.h",
-          "reconstruction/fields/WeaponEnchantmentControllerLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaf5dcce0.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf5dcce0.h",
+          "reconstruction/unmapped/fields/ReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/fields/WeaponEnchantmentControllerLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "816c2292ea4f0784d98eda12a7afccaecb49626af339525b1fb5733d5b3c7cc0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaf5dcce0.cpp",
-          "reconstruction/fields/FieldLeaf5dcce0.h",
-          "reconstruction/fields/ReferenceEffectControllerLayout.h",
-          "reconstruction/fields/WeaponEnchantmentControllerLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaf5dcce0.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf5dcce0.h",
+          "reconstruction/unmapped/fields/ReferenceEffectControllerLayout.h",
+          "reconstruction/unmapped/fields/WeaponEnchantmentControllerLayout.h"
         ]
       }
     }
@@ -344,16 +344,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf5dcce0.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf5dcce0.cpp",
     "digest": "6d8252cf5c08d07ab0c1e6682c8dbd6d875c54760de321877333b154247e2a5a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "79f5824ec5cd39bad15470a773e3afa6b149449bfbab6c290c1beb50b4c155b8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/FieldLeaf5dcce0.cpp",
-      "reconstruction/fields/FieldLeaf5dcce0.h",
-      "reconstruction/fields/ReferenceEffectControllerLayout.h",
-      "reconstruction/fields/WeaponEnchantmentControllerLayout.h"
+      "reconstruction/unmapped/fields/FieldLeaf5dcce0.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf5dcce0.h",
+      "reconstruction/unmapped/fields/ReferenceEffectControllerLayout.h",
+      "reconstruction/unmapped/fields/WeaponEnchantmentControllerLayout.h"
     ]
   },
   "symbol_map": {

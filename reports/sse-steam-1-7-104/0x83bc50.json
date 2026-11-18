@@ -29,13 +29,13 @@
         "object_sha256": "4c3297b91d7269b769c4a82a4c30fca7ed370f6dbb5fc3126aca67caad2f1be8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/CombatInventoryItemLayout.h",
-          "reconstruction/f004support/CombatInventoryItemMagicLayout.h",
-          "reconstruction/f004support/CombatObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented83bc50.cpp",
-          "reconstruction/wrappers/F004Represented83bc50.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/CombatInventoryItemLayout.h",
+          "reconstruction/unmapped/support/CombatInventoryItemMagicLayout.h",
+          "reconstruction/unmapped/support/CombatObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented83bc50.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented83bc50.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "bf0b79afcb6df6e25aeb43a5cb7c727ee296d235bf055f50eb1a7b6a069c2391",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/CombatInventoryItemLayout.h",
-          "reconstruction/f004support/CombatInventoryItemMagicLayout.h",
-          "reconstruction/f004support/CombatObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented83bc50.cpp",
-          "reconstruction/wrappers/F004Represented83bc50.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/CombatInventoryItemLayout.h",
+          "reconstruction/unmapped/support/CombatInventoryItemMagicLayout.h",
+          "reconstruction/unmapped/support/CombatObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented83bc50.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented83bc50.h"
         ]
       }
     }
@@ -342,19 +342,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented83bc50.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented83bc50.cpp",
     "digest": "21d1400069045d93977e5824d7f406f7df3c56f13d6993b42dc1ccee69c0169c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1c63ccaff9489ebefec887b22c8986175d219fb8072b8e0f640b635b653e1d80",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSFixedStringLayout.h",
-      "reconstruction/f004support/CombatInventoryItemLayout.h",
-      "reconstruction/f004support/CombatInventoryItemMagicLayout.h",
-      "reconstruction/f004support/CombatObjectLayout.h",
-      "reconstruction/f004support/NiRefObjectLayout.h",
-      "reconstruction/wrappers/F004Represented83bc50.cpp",
-      "reconstruction/wrappers/F004Represented83bc50.h"
+      "reconstruction/unmapped/support/BSFixedStringLayout.h",
+      "reconstruction/unmapped/support/CombatInventoryItemLayout.h",
+      "reconstruction/unmapped/support/CombatInventoryItemMagicLayout.h",
+      "reconstruction/unmapped/support/CombatObjectLayout.h",
+      "reconstruction/unmapped/support/NiRefObjectLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented83bc50.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented83bc50.h"
     ]
   },
   "symbol_map": {

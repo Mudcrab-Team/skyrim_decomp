@@ -29,8 +29,8 @@
         "object_sha256": "c52850137d30731096ee2932c7d55d69d2a72f18e0a8231378b00e6a52b62661",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOcclusionShape.cpp",
-          "reconstruction/bsengine/BSOcclusionShape.h"
+          "reconstruction/gamebryo/nimain/BSOcclusionShape.cpp",
+          "reconstruction/gamebryo/nimain/BSOcclusionShape.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2e40963bb3c71189a88cbdab0ddd51acbd3df54a2f962faf334a77c556c33b66",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOcclusionShape.cpp",
-          "reconstruction/bsengine/BSOcclusionShape.h"
+          "reconstruction/gamebryo/nimain/BSOcclusionShape.cpp",
+          "reconstruction/gamebryo/nimain/BSOcclusionShape.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSOcclusionShape.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSOcclusionShape.cpp",
     "digest": "eb01b5fb72c8fd841c3b96d5ab7bfc9e90f4f9f4374e8065ebf45f39c7da783d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c3dcaea9c0f92899cd42e82d41ac0f9d93e50b9c40c9358c5814b81bddaf7c2f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSOcclusionShape.cpp",
-      "reconstruction/bsengine/BSOcclusionShape.h"
+      "reconstruction/gamebryo/nimain/BSOcclusionShape.cpp",
+      "reconstruction/gamebryo/nimain/BSOcclusionShape.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "d020033e4c1da81f426975a0dbcb61630e21e7ff0a43a804ff22d622314e0868",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/ArrowProjectile.cpp",
-          "reconstruction/forms/ArrowProjectile.h",
-          "reconstruction/forms/TESObjectREFR.h"
+          "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/ArrowProjectile.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFR.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "cdba27d6e0121458454af6e982759b13dc989856d1ed0289897ea4884e8cc666",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/ArrowProjectile.cpp",
-          "reconstruction/forms/ArrowProjectile.h",
-          "reconstruction/forms/TESObjectREFR.h"
+          "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/ArrowProjectile.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFR.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/ArrowProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
     "digest": "40e8840cf22af3a45ac3ab4ab7d24a8aaa4f85c491e80629f21943720dbc5a53",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e6b7ee89004b9d7a5e486f2515950a9ef727f06f988939a86d33a8247d72f59c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/ArrowProjectile.cpp",
-      "reconstruction/forms/ArrowProjectile.h",
-      "reconstruction/forms/TESObjectREFR.h"
+      "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
+      "reconstruction/skyrim_shared/refs/ArrowProjectile.h",
+      "reconstruction/skyrim_shared/refs/TESObjectREFR.h"
     ]
   },
   "symbol_map": {

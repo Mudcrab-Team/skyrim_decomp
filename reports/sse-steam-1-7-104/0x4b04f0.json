@@ -29,9 +29,9 @@
         "object_sha256": "9bf209eba9eb8046e6cf87cccb2e4e749c4488fd62ac3371a29ecf94174421cc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.h",
-          "reconstruction/bsengine/BSTempEffectParticle.cpp",
-          "reconstruction/bsengine/BSTempEffectParticle.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "da9f3311fb5ec78d69be75897770a1428e7fde2d39a481ca23067fc6664549e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.h",
-          "reconstruction/bsengine/BSTempEffectParticle.cpp",
-          "reconstruction/bsengine/BSTempEffectParticle.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTempEffectParticle.cpp",
+    "compiled": "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.cpp",
     "digest": "8e2f8d565662f179f5209b4cdf9287b9a3e4a9117ff848bcf9334ea3546d47cc",
     "digest_method": "tu-sha256-v2",
     "run_digest": "453e51e0f2d026d4796e70407f7101ec68d8535d2c6b7c67f717745ec1d50a47",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTempEffect.h",
-      "reconstruction/bsengine/BSTempEffectParticle.cpp",
-      "reconstruction/bsengine/BSTempEffectParticle.h"
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.cpp",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectParticle.h"
     ]
   },
   "symbol_map": {

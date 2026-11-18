@@ -73,7 +73,7 @@ MAX_UNIT_FILE_BYTES = 64 * 1024
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # A matched function with a two-file unit, used by `setup` to prove the whole local chain works.
 SELF_TEST_RVA = 0xef8900
-UNIT_PATH = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
 PLAIN_NAME = re.compile(r'([A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
 RVA_TOKEN = re.compile(r'(?<![0-9A-Za-z])0x([0-9a-fA-F]{3,8})(?![0-9A-Za-z])')
 # Pinned community naming sources (SOURCES.md) that tools/check_labels.py and check_origin.py read
@@ -304,20 +304,19 @@ def community_label(name_source):
     return None, None
 
 
-def area_for(cls):
-    try:
-        from export_pack import area_for as rule
-    except Exception:  # noqa: BLE001 - the rule is optional; a missing area is asked for instead
-        return None
-    return rule(cls)
+def area_for(cls, repo=None):
+    """The area the class belongs in by tools/unit_paths.py, or None when no rule covers it."""
+    import unit_paths
+    return unit_paths.unit_dir(cls, repo or Path(__file__).resolve().parent.parent)
 
 
 def unit_files(repo, cls, area=None):
     """(area, .h, .cpp) repository paths of the class's unit, existing or proposed."""
-    for path in sorted((Path(repo) / 'reconstruction').glob(f'*/{cls}.cpp')):
-        a = path.parent.name
+    base = Path(repo) / 'reconstruction'
+    for path in sorted(base.rglob(f'{cls}.cpp')):
+        a = path.parent.relative_to(base).as_posix()
         return a, f'reconstruction/{a}/{cls}.h', f'reconstruction/{a}/{cls}.cpp'
-    area = area or area_for(cls)
+    area = area or area_for(cls, repo)
     if area is None:
         return None, None, None
     return area, f'reconstruction/{area}/{cls}.h', f'reconstruction/{area}/{cls}.cpp'
@@ -1733,8 +1732,9 @@ def start(ctx, args, quiet=False):
     if len(classes) != 1:
         raise Stop(USAGE, 'one unit per task: give functions of one class')
     cls = classes.pop()
-    if args.area is not None and not re.fullmatch(r'[a-z][a-z0-9_]*', args.area):
-        raise Stop(USAGE, f'--area must be one lower-case directory name under reconstruction/ ([a-z][a-z0-9_]*), '
+    import unit_paths
+    if args.area is not None and not unit_paths.area_accepted(args.area):
+        raise Stop(USAGE, f'--area must be one of the areas in tools/unit_paths.py (for example skyrim/ai), '
                    f'not {args.area!r}')
     area, header, cpp = unit_files(ctx.repo, cls, args.area)
     if area is None:

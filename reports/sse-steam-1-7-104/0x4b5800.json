@@ -29,9 +29,9 @@
         "object_sha256": "87b343db402b395b2a963b88175447954a0dbab07c1a813ed287f178c3428b14",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.h",
-          "reconstruction/bsengine/BSTempEffectSPG.cpp",
-          "reconstruction/bsengine/BSTempEffectSPG.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "e1e03214d749ebd4074c0115711fdfccf1d8da245091ada58e125c9700468460",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTempEffect.h",
-          "reconstruction/bsengine/BSTempEffectSPG.cpp",
-          "reconstruction/bsengine/BSTempEffectSPG.h"
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.cpp",
+          "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTempEffectSPG.cpp",
+    "compiled": "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.cpp",
     "digest": "39a80c4e150f9b8af76f3bcfb7116ce84e36586e239381a7d6e0d5a062145438",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a23da8dbe96bde36dbf2fa434054d85d8228c29b93b4175fc00f83c6b4e248f7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTempEffect.h",
-      "reconstruction/bsengine/BSTempEffectSPG.cpp",
-      "reconstruction/bsengine/BSTempEffectSPG.h"
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffect.h",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.cpp",
+      "reconstruction/skyrim_shared/tempeffects/BSTempEffectSPG.h"
     ]
   },
   "symbol_map": {

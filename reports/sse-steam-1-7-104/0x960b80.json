@@ -29,10 +29,10 @@
         "object_sha256": "0a8e64f034e11b8bd16838c5d0a3bfcbc50cd8475a0633bf16fd3f3efa902849",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/DirectionHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/DirectionHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "8585ec4295e8424d5e6ac85b113ab0356a4cb9dfae369b21a1e47a7a0dcadaee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/DirectionHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/DirectionHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/DirectionHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.cpp",
     "digest": "1affe94c68c5eedbc6fddeebea69130b1f7140c2ba66e4c965d352469b0a7940",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bb74d4981219515a2fb967daede3c0a02e7321e7b51e382e7a3ddc586c4109e6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/DirectionHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/DirectionHandlerStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/DirectionHandlerStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

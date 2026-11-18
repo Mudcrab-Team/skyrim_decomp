@@ -29,8 +29,8 @@
         "object_sha256": "45bae4ae4568313d7495d95e1ad9bb5877d8f91a43aa206f742bcd4fbe0d7f49",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/EventCaptureDeleteLayout.cpp",
-          "reconstruction/bsengine/EventCaptureDeleteLayout.h"
+          "reconstruction/bscore/EventCaptureDeleteLayout.cpp",
+          "reconstruction/bscore/EventCaptureDeleteLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6724bcb01f1f589d9edfb27b131d8459e703ee213b283b01566b7014ddb5b94d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/EventCaptureDeleteLayout.cpp",
-          "reconstruction/bsengine/EventCaptureDeleteLayout.h"
+          "reconstruction/bscore/EventCaptureDeleteLayout.cpp",
+          "reconstruction/bscore/EventCaptureDeleteLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/EventCaptureDeleteLayout.cpp",
+    "compiled": "reconstruction/bscore/EventCaptureDeleteLayout.cpp",
     "digest": "255888cfa49533375cbf66a33cfa3ccee6694affac237c5a8fb15abdea8ef0f2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "281930905696e1140fb635fbccafc344840d8bfc8ddf49e88240421e1181c1f4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/EventCaptureDeleteLayout.cpp",
-      "reconstruction/bsengine/EventCaptureDeleteLayout.h"
+      "reconstruction/bscore/EventCaptureDeleteLayout.cpp",
+      "reconstruction/bscore/EventCaptureDeleteLayout.h"
     ]
   },
   "symbol_map": {

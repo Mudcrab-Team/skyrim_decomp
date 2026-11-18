@@ -29,10 +29,10 @@
         "object_sha256": "7b02135c59ead814dfb468fb02217408c565abfd8b9c5ef998ea7ba0cfaa0ca3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiColorInterpolator.cpp",
-          "reconstruction/netimmerse/NiColorInterpolator.h",
-          "reconstruction/netimmerse/NiInterpolator.h",
-          "reconstruction/netimmerse/NiKeyBasedInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiColorInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiColorInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "11281c3e674dba3feaa8fae2aa7774cbc80a8cc936acc49f8b7b97366c471ca5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiColorInterpolator.cpp",
-          "reconstruction/netimmerse/NiColorInterpolator.h",
-          "reconstruction/netimmerse/NiInterpolator.h",
-          "reconstruction/netimmerse/NiKeyBasedInterpolator.h"
+          "reconstruction/gamebryo/nianimation/NiColorInterpolator.cpp",
+          "reconstruction/gamebryo/nianimation/NiColorInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiColorInterpolator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiColorInterpolator.cpp",
     "digest": "f7d27d94b7130c46ab4021b6c82890fe869df3b7c79a7e2420514c2c346cf450",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ca252a917a026c1e117b36b3171a7ad45d2755e70faa53224b3651cde1429bb6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiColorInterpolator.cpp",
-      "reconstruction/netimmerse/NiColorInterpolator.h",
-      "reconstruction/netimmerse/NiInterpolator.h",
-      "reconstruction/netimmerse/NiKeyBasedInterpolator.h"
+      "reconstruction/gamebryo/nianimation/NiColorInterpolator.cpp",
+      "reconstruction/gamebryo/nianimation/NiColorInterpolator.h",
+      "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+      "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h"
     ]
   },
   "symbol_map": {

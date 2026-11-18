@@ -29,9 +29,9 @@
         "object_sha256": "8149c5fccf9f4e8fc6a37b6aece09641912e36be6c50b876e9c04b06dd324074",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198c_flame/FlameProjectile.cpp",
-          "reconstruction/fo4p198c_flame/FlameProjectile.h",
-          "reconstruction/fo4p198c_flame/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm_7eb240.h",
+          "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.cpp",
+          "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "0c5a6c792424f39f09a0707f9b404d5e1f758f2d28b2ab4679882747886c0916",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198c_flame/FlameProjectile.cpp",
-          "reconstruction/fo4p198c_flame/FlameProjectile.h",
-          "reconstruction/fo4p198c_flame/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm_7eb240.h",
+          "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.cpp",
+          "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198c_flame/FlameProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.cpp",
     "digest": "d3e8f3f9a1a1753ed2a48872a0bde349e56af17bda282a8b093f0eaa85c03f03",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1537dbf3e69327ddb3ba9c1b7ddccc23493f652a84575d04a57ab2e9dc9297f6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198c_flame/FlameProjectile.cpp",
-      "reconstruction/fo4p198c_flame/FlameProjectile.h",
-      "reconstruction/fo4p198c_flame/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm_7eb240.h",
+      "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.cpp",
+      "reconstruction/skyrim_shared/refs/FlameProjectile_7eb240.h"
     ]
   },
   "symbol_map": {

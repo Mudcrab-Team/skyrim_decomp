@@ -29,8 +29,8 @@
         "object_sha256": "adda3cba26f4632cc6225b014a4551ff45f901564485e969d0483aad82988d9a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_cca620/BSAudioManager.cpp",
-          "reconstruction/fo4b4b_cca620/BSAudioManager.h"
+          "reconstruction/bsaudio/BSAudioManager.cpp",
+          "reconstruction/bsaudio/BSAudioManager.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "dbf61cd51146a117a210898b06c5a6407273756ccd27f40392d72cec748ea0a8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_cca620/BSAudioManager.cpp",
-          "reconstruction/fo4b4b_cca620/BSAudioManager.h"
+          "reconstruction/bsaudio/BSAudioManager.cpp",
+          "reconstruction/bsaudio/BSAudioManager.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4b4b_cca620/BSAudioManager.cpp",
+    "compiled": "reconstruction/bsaudio/BSAudioManager.cpp",
     "digest": "e664133f5a14b48575efa0de959d9ea0cdb4172ccad2275096c4893ab94975bd",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4780e9a319a18076b4b9f081e62d0cd15baf304b8cfc99e5ff9d31c99bc6d8d6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4b4b_cca620/BSAudioManager.cpp",
-      "reconstruction/fo4b4b_cca620/BSAudioManager.h"
+      "reconstruction/bsaudio/BSAudioManager.cpp",
+      "reconstruction/bsaudio/BSAudioManager.h"
     ]
   },
   "symbol_map": {

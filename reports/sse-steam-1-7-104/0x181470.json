@@ -29,8 +29,8 @@
         "object_sha256": "4d4ac4038c2a23b9709b24fe8605591abce1a47d318fdd8be0bf8d330ab9ba21",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraLockList.cpp",
-          "reconstruction/bsengine/ExtraLockList.h"
+          "reconstruction/skyrim_shared/extradata/ExtraLockList.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLockList.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "a7e710c386992fbe02b4e95ca11ee23316232e054339bb6f0c10390781e6a580",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraLockList.cpp",
-          "reconstruction/bsengine/ExtraLockList.h"
+          "reconstruction/skyrim_shared/extradata/ExtraLockList.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLockList.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraLockList.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraLockList.cpp",
     "digest": "d64a0ddce3120c9642b88a9b84fcc08cf4336288e796488d55c32e8f49150318",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9833ee7c603bbf5e33fc2f14460b59df10d5caaf42e2be6fcf80b241e9c6a621",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraLockList.cpp",
-      "reconstruction/bsengine/ExtraLockList.h"
+      "reconstruction/skyrim_shared/extradata/ExtraLockList.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraLockList.h"
     ]
   },
   "symbol_map": {

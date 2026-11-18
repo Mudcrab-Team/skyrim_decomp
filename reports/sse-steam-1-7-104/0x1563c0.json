@@ -29,8 +29,8 @@
         "object_sha256": "9413e360b83abd9bf0bf1b4e4ad6fda75ad66cfaed5032d5bc4661e3afbda6e9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraNorthRotation.cpp",
-          "reconstruction/bsengine/ExtraNorthRotation.h"
+          "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "47582ab2a23ab6dfbb8706313a15fba9643c07d627ccc7e1575affc48c8384cd",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraNorthRotation.cpp",
-          "reconstruction/bsengine/ExtraNorthRotation.h"
+          "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraNorthRotation.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.cpp",
     "digest": "534634502de35c49b5e0cb6229acfd135eaa0629aab1109361cd2a23a52ad88a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4233017d7b3a46c08de6eba82fe6de0c30be66bde1444534f2745f5c8d34ff8b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraNorthRotation.cpp",
-      "reconstruction/bsengine/ExtraNorthRotation.h"
+      "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraNorthRotation.h"
     ]
   },
   "symbol_map": {

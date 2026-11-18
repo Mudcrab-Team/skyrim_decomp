@@ -29,8 +29,8 @@
         "object_sha256": "095ee7099b586a2b9ce4b6b338d7b47ae61f43fa3de4a1c49ab007d56b0941eb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraHealthPerc.cpp",
-          "reconstruction/bsengine/ExtraHealthPerc.h"
+          "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "23d73f25216cb6983dfdc182a1b011426c2680c5033d153ac22fb11294a67b0f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraHealthPerc.cpp",
-          "reconstruction/bsengine/ExtraHealthPerc.h"
+          "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHealthPerc.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.cpp",
     "digest": "8cc1454211b2c9b31a901ffdbec0c55947fc0bf28897638a9b1720dbe8e87cd7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f1b5b25ac5b0504696599119d3a941bed435b4a730d9929f3f3ee259afba6cba",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraHealthPerc.cpp",
-      "reconstruction/bsengine/ExtraHealthPerc.h"
+      "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHealthPerc.h"
     ]
   },
   "symbol_map": {

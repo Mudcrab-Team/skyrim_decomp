@@ -99,6 +99,6 @@ Append JSON lines to `.local/handoffs/<group>.jsonl`, one per function, then one
 
 ```json
 {"rva": "0x4aa860", "result": "pass", "reason": "all-checks-passed", "attempts": 2}
-{"task": "<unit task id>", "unit": "reconstruction/bsengine/X.cpp", "attempts": 2, "blocker": null}
+{"task": "<unit task id>", "unit": "reconstruction/bscore/X.cpp", "attempts": 2, "blocker": null}
 ```
 `result` is `pass` or `fail`; `blocker` names the near-miss file or the problem, else `null`.

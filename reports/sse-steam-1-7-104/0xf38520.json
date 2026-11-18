@@ -29,8 +29,8 @@
         "object_sha256": "3e40c7c04918cdc1851fcdb9d4ef2ed915337b37c3de0ab5f9eb8dea9b0a9d3a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBoundingVolume.cpp",
-          "reconstruction/netimmerse/NiBoundingVolume.h"
+          "reconstruction/gamebryo/nimain/NiBoundingVolume.cpp",
+          "reconstruction/gamebryo/nimain/NiBoundingVolume.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ec51535242d805ddb349d2e9da779006d44859a5743efd52b12abafc2ffa59a2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBoundingVolume.cpp",
-          "reconstruction/netimmerse/NiBoundingVolume.h"
+          "reconstruction/gamebryo/nimain/NiBoundingVolume.cpp",
+          "reconstruction/gamebryo/nimain/NiBoundingVolume.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiBoundingVolume.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiBoundingVolume.cpp",
     "digest": "69b7fef4a491269e638bcff6badccd9242144c6314b6afa7fd279c8b088d5eba",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e72daa90969151067638094c51558e110f914b92faa9883c839d3089dc33ec19",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiBoundingVolume.cpp",
-      "reconstruction/netimmerse/NiBoundingVolume.h"
+      "reconstruction/gamebryo/nimain/NiBoundingVolume.cpp",
+      "reconstruction/gamebryo/nimain/NiBoundingVolume.h"
     ]
   },
   "symbol_map": {

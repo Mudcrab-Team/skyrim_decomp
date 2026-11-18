@@ -29,9 +29,9 @@
         "object_sha256": "7102072d685892c1dcc5574d0dee35af2c5ea1b88ab37c7238281f3f8f3eeec9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "28255fc6154b5f70c4a0aba6ebdd14bbf4b01462a6c95ac9471b4e324eba1c1e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.cpp",
     "digest": "a9a539e6d741d2ad65c2db002d64c21c4604b5b684eb58d29bfd7d4673e3598f",
     "digest_method": "tu-sha256-v2",
     "run_digest": "78671593b1149142ff0afe98d551d7485ab6c962d34cc3896a6090d80e55123b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialLODLandscape.h"
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialLODLandscape.h"
     ]
   },
   "symbol_map": {

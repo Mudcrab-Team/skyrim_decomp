@@ -29,9 +29,9 @@
         "object_sha256": "b988abf8cccb7fe9d19b195b74fca0a9051e71638624660f7b5c26d9fc856ec5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "c9ab5efea01ae8082850a033cba60827cb4ca31d229a240403b7c247e575a64c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.cpp",
     "digest": "597947baffbe43c0d63ed60757c36f7e5802d02b6d528e02c01b3a730dd82645",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e3a5acf6a3428c980c160ed91715a7bbbc13ea70f2bbce0b41aef5cd935fec32",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCellWaterTypeStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellWaterTypeStorageLayout.h"
     ]
   },
   "symbol_map": {

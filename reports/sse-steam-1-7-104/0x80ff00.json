@@ -29,8 +29,8 @@
         "object_sha256": "a6c51e588e520dc431fa4695a22e5414f079dae2a6a7b0fefbf9cd30387ea1d9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/VirtualTail80ff00.cpp",
-          "reconstruction/leaves/VirtualTail80ff00.h"
+          "reconstruction/unmapped/leaves/VirtualTail80ff00.cpp",
+          "reconstruction/unmapped/leaves/VirtualTail80ff00.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ff9caf1c5ceaa91e3b91eed6ba4d83cc80eaf5845edbf9718e6c670ac8ea9c79",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/VirtualTail80ff00.cpp",
-          "reconstruction/leaves/VirtualTail80ff00.h"
+          "reconstruction/unmapped/leaves/VirtualTail80ff00.cpp",
+          "reconstruction/unmapped/leaves/VirtualTail80ff00.h"
         ]
       }
     }
@@ -323,14 +323,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/leaves/VirtualTail80ff00.cpp",
+    "compiled": "reconstruction/unmapped/leaves/VirtualTail80ff00.cpp",
     "digest": "a9ebc3485f9dbdf6b87db2b76e7687c43600758456d9fb3e76cc45a1a2d564a9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c2522dc9de41c64deebb2e49fba302eaa03b064df942a9e76c853a36db7a0b46",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/leaves/VirtualTail80ff00.cpp",
-      "reconstruction/leaves/VirtualTail80ff00.h"
+      "reconstruction/unmapped/leaves/VirtualTail80ff00.cpp",
+      "reconstruction/unmapped/leaves/VirtualTail80ff00.h"
     ]
   },
   "symbol_map": {

@@ -29,10 +29,10 @@
         "object_sha256": "1b8003b326142f7ac94c3c21c468cbca866f7e29120ed2c87e505f0bcfeb9786",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/HeldStateHandlerStorageLayout.h",
-          "reconstruction/bsengine/TogglePOVHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/TogglePOVHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "8dc4c441c15e1cef6cde401281bc5dc782b0eb82027a01be59adcc42960a3568",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/HeldStateHandlerStorageLayout.h",
-          "reconstruction/bsengine/TogglePOVHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/TogglePOVHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/TogglePOVHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.cpp",
     "digest": "18e835427f5b816cb5377dd5d3afb7287c71db52bccba10c45417027df0258a2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4fb4d0c515be8e7fde0354a546651ac75143457e4cca9d5e9272247f675a52ee",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-      "reconstruction/bsengine/HeldStateHandlerStorageLayout.h",
-      "reconstruction/bsengine/TogglePOVHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/TogglePOVHandlerStorageLayout.h"
+      "reconstruction/skyrim/controls/HeldStateHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/TogglePOVHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

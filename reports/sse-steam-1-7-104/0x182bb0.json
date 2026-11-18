@@ -29,8 +29,8 @@
         "object_sha256": "da07b8f1158bdfeb6e0283565d88d3451e28f5a80639750392ee07609d2d4156",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraLeveledItemBase.cpp",
-          "reconstruction/bsengine/ExtraLeveledItemBase.h"
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "08d9c4fff5c021548eb8171a011f31bb9ac4ad34480cffbd4ea111cabf0c77fe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraLeveledItemBase.cpp",
-          "reconstruction/bsengine/ExtraLeveledItemBase.h"
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraLeveledItemBase.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.cpp",
     "digest": "450576626a476033f8ae8043d5064a1907072b15b67767b287a93faca8b09fbf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "23021a526de7db4ec22e1ce63283d4067e6e02d56356b7fae8df1979fb2f4e41",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraLeveledItemBase.cpp",
-      "reconstruction/bsengine/ExtraLeveledItemBase.h"
+      "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraLeveledItemBase.h"
     ]
   },
   "symbol_map": {
