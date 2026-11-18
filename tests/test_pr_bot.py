@@ -451,6 +451,20 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
         self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
 
+    def test_warm_probes_only_a_head_with_no_run_and_in_scope(self):
+        probed = []
+        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        self.bot.changed_files = lambda number: [{'filename': 'reconstruction/a/B.cpp'}]
+        pr = {'number': 7, 'headRefOid': HEAD}
+        self.bot.warm(pr)
+        self.assertEqual(probed, [])  # the head already has a hash run
+        self.job['name'] = 'other'
+        self.bot.warm(pr)
+        self.assertEqual(probed, [7])
+        self.bot.changed_files = lambda number: [{'filename': 'tools/x.py'}]
+        self.bot.warm(pr)
+        self.assertEqual(probed, [7])
+
     def test_a_missing_artifact_is_retried_not_trusted(self):
         self.files.pop('hash-result.json')
         with self.assertRaises(pr_bot.Stop):

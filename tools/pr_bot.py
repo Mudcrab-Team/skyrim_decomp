@@ -583,6 +583,18 @@ class Bot:
                       '--body', f'Runs pr-check on the same commit as #{number}. Closed by the bot when it is done.'],
                      check=False)
 
+    def warm(self, pr):
+        """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
+        number, head = pr['number'], pr['headRefOid']
+        if State(self.work / 'state', number, head).get('done'):
+            return
+        runs = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs')['check_runs']
+        if any(r['name'] in HASH_CHECKS and r['head_sha'] == head for r in runs):
+            return
+        if scope_problem(self.changed_files(number)):
+            return
+        self.probe_hash_run(number, head)
+
     def drop_probe(self, number):
         # Deleting the head branch ends the probe PR; the bot has no code path that closes a PR itself.
         self.run(['gh', 'api', '-X', 'DELETE', f'repos/{REPOSITORY}/git/refs/heads/probe/pr-{number}'], check=False)
@@ -826,9 +838,14 @@ def poll(bot, interval):
         except (Stop, subprocess.SubprocessError, ValueError) as exc:
             print('poll: gh failed:', exc, file=sys.stderr)
             prs = []
+        prs = [pr for pr in prs if pr['author']['login'].casefold() != OWNER.casefold()
+               and pr['baseRefName'] == 'main' and not pr['isDraft']]
         for pr in prs:
-            if pr['author']['login'].casefold() == OWNER.casefold() or pr['baseRefName'] != 'main' or pr['isDraft']:
-                continue
+            try:
+                bot.warm(pr)
+            except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                print(f'pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr)
+        for pr in prs:
             try:
                 print(json.dumps(bot.process(pr)))
             except (Stop, Rejected, subprocess.SubprocessError, OSError, ValueError) as exc:
