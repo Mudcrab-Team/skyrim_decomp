@@ -3,6 +3,8 @@ name: PR check
 # file, so a green result is advisory until the bot re-verifies scope through the GitHub API.
 on:
   pull_request:
+    # ready_for_review lets the bot re-run a PR whose head predates this workflow without a push.
+    types: [opened, synchronize, reopened, ready_for_review]
 permissions:
   contents: read
 concurrency:
