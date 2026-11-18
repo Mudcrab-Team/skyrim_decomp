@@ -79,6 +79,9 @@ def keep_line(line):
     text = line.strip()
     if digest_v2.is_provenance(text):
         return True
+    # What an earlier pass wrote, so running the tool again changes nothing.
+    if 'SPDX-License-Identifier' in text or lint.COMPARED_LINE.match(text):
+        return True
     if GPL_MENTION.search(text) and 'licenses/' not in text and 'GNU General' not in text:
         return True
     if ORIGIN_STATEMENT.search(text) or ORIGIN_FIELD.match(text):
@@ -152,7 +155,10 @@ def rewrite(text, ext, names, canon):
         out.insert(0 if not out else 1, '// ' + lint.SPDX_MIT)
     if ext == 'cpp':
         compared = []
+        listed = {int(m.group(1), 16) for line in out for m in [re.match(r'//\s*0x([0-9a-fA-F]+)\b', line)] if m}
         for rva in rvas:
+            if rva in listed:
+                continue
             name = names.get(rva)
             compared.append(f'// 0x{rva:x} {name}' if name else f'// 0x{rva:x}')
         out += compared

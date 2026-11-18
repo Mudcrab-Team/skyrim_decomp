@@ -44,6 +44,14 @@ class RewriteTests(unittest.TestCase):
         self.assertTrue(any(NG in line for line in head))
         self.assertTrue(any('wrapped' not in line and line.endswith('image).') for line in head))
 
+    def test_running_it_again_changes_nothing(self):
+        once, _ = self.rewrite(OLD)
+        again, why = self.rewrite(once)
+        self.assertIsNone(why)
+        self.assertEqual(once, again)
+        header, _ = self.rewrite(OLD.replace('COMMUNITY(', 'COMMUNITY('), 'h')
+        self.assertEqual(header, self.rewrite(header, 'h')[0])
+
     def test_a_non_default_recipe_is_kept_and_a_header_gets_no_function_list(self):
         new, _ = self.rewrite(OLD.replace(lint.DEFAULT_RECIPE, 'reconstruction/recipes/other.json'), 'h')
         self.assertIn('// Recipe: reconstruction/recipes/other.json', new)
