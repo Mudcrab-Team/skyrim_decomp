@@ -1,6 +1,6 @@
 # Contributor lessons
 
-- Never pad a base class with opaque bytes to force its size; declare represented fields with named unknowns at their offsets. (docs/reviewer-runbook.md#checklist-per-function)
+- Declare every field the function reads or writes at its offset; named unknown members are fine for regions it never touches, but never hide an accessed field in a byte array or filler, or stand in for the whole class with one array. (docs/reviewer-runbook.md#checklist-per-function)
 - Write plausible original source rather than copying decompiler output. (docs/reviewer-runbook.md#checklist-per-function)
 - Avoid code whose only plausible purpose is steering emitted bytes. (docs/reviewer-runbook.md#checklist-per-function)
 - Ensure each submitted function compiles and binds to its intended symbol. (docs/verification.md)

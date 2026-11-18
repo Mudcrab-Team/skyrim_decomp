@@ -96,8 +96,10 @@ blocks; list what you find as `naming_findings` and still approve.
    - no byte steering: no nonsensical control flow, dead code, helper, attribute or intrinsic
      whose only plausible reason is forcing bytes; a justification comment that is not a reason a
      programmer had counts here;
-   - opaque storage used to force allocation size is banned; require the represented layout
-     (maintainer decision, 2026-11-14);
+   - named unknown members (for example `std::uint64_t unk10;`) at their offsets are acceptable for
+     regions the reviewed function does not access. Reject only when a field the function reads or
+     writes is hidden in opaque storage, a byte array or filler, or when one big array stands in for
+     the whole class (maintainer decision, 2026-11-14, narrowed in `docs/authorizations.md`, Notes);
    - nothing that cannot be what it claims: an unreachable branch or impossible type use that
      signals a wrong binding or a wrong class.
 2. **Provenance.** No code from unlicensed projects other than the FNV decompilation

@@ -137,6 +137,25 @@ def squash_message(number, login, user_id, rvas):
     return subject, body
 
 
+def review_notes(text, functions):
+    """{rva: [public lines]} from a review's why and naming findings, each through the publication filter."""
+    from check import naming_finding_problem
+    try:
+        rows = json.JSONDecoder().raw_decode(text[text.index('{'):])[0]['functions']
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return {}
+    out = {}
+    for rva in functions:
+        row = rows.get(f'0x{rva:x}') if isinstance(rows, dict) else None
+        if not isinstance(row, dict) or row.get('verdict') == 'approve':
+            continue
+        items = [row.get('why')] + (row.get('naming_findings') if isinstance(row.get('naming_findings'), list) else [])
+        lines = [i.strip() for i in items if isinstance(i, str) and i.strip() and not naming_finding_problem(i)]
+        if lines:
+            out[rva] = lines[:5]
+    return out
+
+
 def comment_body(sha, decision, leak_codes=()):
     marker = f'<!-- pr-bot sha={sha} -->'
     if decision['blocked'] == 'leak':
@@ -154,7 +173,11 @@ def comment_body(sha, decision, leak_codes=()):
     failed = {r: v.split(':', 1)[1] for r, v in decision['verdicts'].items() if v.startswith('fail:')}
     if failed:
         lines.append('Not accepted yet (they stay drafted; push a fix and the bot re-checks the new head):')
-        lines += [f'- 0x{r:x}: {REASONS[c]}' for r, c in sorted(failed.items())]
+        notes = decision.get('notes', {})
+        for r, c in sorted(failed.items()):
+            lines.append(f'- 0x{r:x}: {REASONS[c]}')
+            if c == 'review':
+                lines += [f'  - {n}' for n in notes.get(r, [])]
     return '\n'.join(lines)
 
 
@@ -726,15 +749,17 @@ class Bot:
         # Only what both hosts passed can be accepted, so only that is worth a review call; a
         # regression blocks the whole PR whatever the review says.
         passed = [r for r in functions if host1.get(r) == 'pass' and host2.get(r) == 'pass']
-        leak, verdict = 'no', {}
+        leak, verdict, notes = 'no', {}, {}
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
             text = state.once('review_text', lambda: self.review(number, head, base, passed, grep, units, evidence,
                                                                   {f['filename'] for f in files}))
             leak, verdict = parse_review(text, passed)
+            notes = review_notes(text, passed)
         verdict = {r: verdict.get(r, 'reject') for r in functions}
         decision = decide(functions, host1, host2, verdict, leak=leak)
         state.set('decision', decision)
+        decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
             records, refused = self.build_records(f'{number}-{head[:8]}/records', units, set(matched), state)

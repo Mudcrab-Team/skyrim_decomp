@@ -51,6 +51,20 @@ class DecisionTests(unittest.TestCase):
         self.assertTrue(d['merge'])
         self.assertNotIn('0x20', pr_bot.comment_body(HEAD, d))
 
+    def test_rejection_comment_carries_filtered_review_reasons(self):
+        text = json.dumps({'functions': {
+            '0x10': {'verdict': 'reject', 'ground': 'plausibility', 'why': 'Accessed field hidden in a byte array.',
+                     'naming_findings': ['Placeholder member names.', 'bytes 0x48 0x89 0x5c 0x24 0x08 leak']},
+            '0x20': {'verdict': 'approve', 'why': 'fine'}}})
+        notes = pr_bot.review_notes(text, [0x10, 0x20])
+        self.assertEqual(notes, {0x10: ['Accessed field hidden in a byte array.', 'Placeholder member names.']})
+        d = pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'reject'})
+        body = pr_bot.comment_body(HEAD, dict(d, notes=notes))
+        self.assertIn('the review did not approve it', body)
+        self.assertIn('  - Accessed field hidden in a byte array.', body)
+        self.assertNotIn('0x48', body)
+        self.assertEqual(pr_bot.review_notes('nonsense', [0x10]), {})
+
     def test_a_bad_review_answer_never_approves(self):
         self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('yes', {}))
         leak, out = pr_bot.parse_review('x ' + GOOD, [0x10, 0x30])
