@@ -546,13 +546,11 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         deadline = time.time() + self.config['hash_wait']
-        probed = False
+        probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
         unusable = set()  # runs that finished without a result, e.g. on a stale base lacking the tools
         target = self.work / 'hash' / f'{number}-{head[:12]}'
         while True:
-            runs = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs')['check_runs']
-            mine = [r for r in runs if r['name'] in HASH_CHECKS and r['head_sha'] == head and r.get('id', r.get('details_url')) not in unusable]
-            run = max(mine, key=lambda r: r.get('started_at') or '', default=None)
+            run = self.latest_hash_run(head, unusable)
             if run and run['status'] == 'completed':
                 run_id = re.search(r'/runs/(\d+)', run.get('details_url', ''))
                 if not run_id:
@@ -560,23 +558,23 @@ class Bot:
                 meta = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs/{run_id.group(1)}')
                 if meta.get('head_sha') != head or str(meta.get('id')) != run_id.group(1):
                     raise Stop('hash run belongs to another revision')
-                shutil.rmtree(target, ignore_errors=True)
-                target.mkdir(parents=True, exist_ok=True)
-                self.run(['gh', 'run', 'download', run_id.group(1), '-R', REPOSITORY, '-D', target], check=False)
-                found = sorted(target.rglob('hash-result.json'))
+                found = self.download_hash_result(run_id.group(1), target)
                 if found:
                     break
                 # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 unusable.add(run.get('id', run.get('details_url')))
-                if probed:
+                # A stale run that finished before the probe was requested says nothing about the probe's run,
+                # which has yet to start or finish; waiting for it is the point of the probe.
+                if probed_at is not None and (run.get('started_at') or '') >= probed_at:
                     raise Stop('hash check left no result')
-                self.probe_hash_run(number, head)
-                probed = True
+                if probed_at is None:
+                    probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    self.probe_hash_run(number, head)
             elif run is None:
                 self.approve_pending(head)
-                if not probed:
+                if probed_at is None:
+                    probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                     self.probe_hash_run(number, head)
-                    probed = True
             if time.time() > deadline:
                 raise Stop('hash check has not finished')
             time.sleep(20)
@@ -597,6 +595,36 @@ class Bot:
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
+
+    def latest_hash_run(self, head, unusable=()):
+        """The newest `hash` check run on the head, from every page: a head with many checks spills past page one."""
+        pages = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs?per_page=100', '--paginate', '--slurp')
+        runs = [r for page in (pages if isinstance(pages, list) else [pages]) for r in page['check_runs']]
+        mine = [r for r in runs if r['name'] in HASH_CHECKS and r['head_sha'] == head
+                and r.get('id', r.get('details_url')) not in unusable]
+        return max(mine, key=lambda r: r.get('started_at') or '', default=None)
+
+    def download_hash_result(self, run_id, target):
+        """hash-result.json files of a finished run; [] only when the run has no such artifact.
+
+        A listed artifact that will not download is an infrastructure failure, not a run without a result:
+        it must not mark the run unusable, or the loop falls back to an older run that never had one.
+        """
+        listing = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs/{run_id}/artifacts?per_page=100')
+        listed = isinstance(listing, dict) and any(
+            a.get('name') == 'hash-result' and not a.get('expired') for a in listing.get('artifacts', []))
+        for attempt in range(3 if listed else 1):
+            shutil.rmtree(target, ignore_errors=True)
+            target.mkdir(parents=True, exist_ok=True)
+            self.run(['gh', 'run', 'download', run_id, '-R', REPOSITORY, '-D', target], check=False)
+            found = sorted(target.rglob('hash-result.json'))
+            if found:
+                return found
+            if listed and attempt < 2:
+                time.sleep(self.config.get('download_retry_wait', 5))
+        if listed:
+            raise Stop('hash artifact is listed but did not download')
+        return []
 
     def probe_hash_run(self, number, head):
         """Get pr-check onto a head that has no run, from a draft PR in this repository on the same commit.
@@ -624,8 +652,7 @@ class Bot:
         number, head = pr['number'], pr['headRefOid']
         if State(self.work / 'state', number, head).get('done'):
             return
-        runs = self.gh_json('api', f'repos/{REPOSITORY}/commits/{head}/check-runs')['check_runs']
-        if any(r['name'] in HASH_CHECKS and r['head_sha'] == head for r in runs):
+        if self.latest_hash_run(head):
             return
         if scope_problem(self.changed_files(number)):
             return

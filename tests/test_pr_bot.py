@@ -416,14 +416,20 @@ class Host1Tests(unittest.TestCase):
                       'target-result.json': {'head_sha': HEAD, 'base_sha': BASE, 'toolset': 'MATCH',
                                              'compiler_pins_sha256': 'e' * 64, 'functions': [
                                                  {'rva': '0x10', 'unit': 'reconstruction/a/B.cpp', 'status': 'pass'}]}}
+        self.artifacts = []
         bot = pr_bot.Bot(root=ROOT, work=self.work)
         bot.run = self.fake_run
         bot.gh_json = self.gh
         bot.config['hash_wait'] = 0
+        bot.config['download_retry_wait'] = 0
         self.bot = bot
 
     def gh(self, *args):
-        return {'check_runs': [self.job]} if args[1].endswith('/check-runs') else self.meta
+        if '/check-runs' in args[1]:
+            return {'check_runs': self.jobs if hasattr(self, 'jobs') else [self.job]}
+        if '/artifacts' in args[1]:
+            return {'artifacts': self.artifacts}
+        return self.meta
 
     def fake_run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -464,7 +470,7 @@ class Host1Tests(unittest.TestCase):
         calls = []
         self.job['name'] = 'other'
         self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
-        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if a[1].endswith('/check-runs') else ([] if a[0] == 'pr' else {'workflow_runs': []})
+        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if '/check-runs' in a[1] else ([] if a[0] == 'pr' else {'workflow_runs': []})
         with self.assertRaises(pr_bot.Stop):
             self.host1()
         branch = [c for c in calls if c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c]
@@ -503,6 +509,58 @@ class Host1Tests(unittest.TestCase):
         self.files.pop('hash-result.json')
         with self.assertRaises(pr_bot.Stop):
             self.host1()
+
+    def wait_with(self, on_sleep):
+        self.bot.config['hash_wait'] = 60
+        real_sleep = pr_bot.time.sleep
+        pr_bot.time.sleep = on_sleep
+        self.addCleanup(setattr, pr_bot.time, 'sleep', real_sleep)
+
+    def test_a_stale_run_ahead_of_the_probe_does_not_end_the_wait(self):
+        # The fork's own run (stale base, no artifact) finishes before the probe's run has appeared.
+        probed = []
+        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        self.bot.approve_pending = lambda head: None
+        self.job.update(id=1, conclusion='failure', started_at='2000-01-01T00:00:00Z')
+        self.files.pop('hash-result.json')
+        later = dict(self.job, id=2, conclusion='success', started_at='2999-01-01T00:00:00Z')
+        stale = self.job
+
+        def on_sleep(seconds):
+            self.jobs = [stale, later]  # the probe's run shows up while the bot waits
+            self.files['hash-result.json'] = {'0x10': 'pass', '0x20': 'pass'}
+        self.wait_with(on_sleep)
+        got, _ = self.host1()
+        self.assertEqual(got, {0x10: 'pass', 0x20: 'pass'})
+        self.assertEqual(probed, [7])
+
+    def test_a_probe_run_without_a_result_is_a_real_stop(self):
+        self.bot.probe_hash_run = lambda number, head: None
+        self.bot.approve_pending = lambda head: None
+        self.job.update(id=1, started_at='2000-01-01T00:00:00Z')
+        self.files.pop('hash-result.json')
+        later = dict(self.job, id=2, started_at='2999-01-01T00:00:00Z')
+        stale = self.job
+
+        def on_sleep(seconds):
+            self.jobs = [stale, later]
+        self.wait_with(on_sleep)
+        with self.assertRaisesRegex(pr_bot.Stop, 'left no result'):
+            self.host1()
+
+    def test_a_listed_artifact_that_will_not_download_is_not_a_run_without_a_result(self):
+        self.artifacts = [{'name': 'hash-result', 'expired': False}]
+        self.files.pop('hash-result.json')
+        probed = []
+        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        with self.assertRaisesRegex(pr_bot.Stop, 'did not download'):
+            self.host1()
+        self.assertEqual(probed, [])
+
+    def test_check_runs_are_read_from_every_page(self):
+        pages = [{'check_runs': [dict(self.job, name='tests (0)')]}, {'check_runs': [self.job]}]
+        self.bot.gh_json = lambda *a: pages
+        self.assertEqual(self.bot.latest_hash_run(HEAD)['name'], 'hash')
 
 
 class NewFunctionRecordTests(unittest.TestCase):
