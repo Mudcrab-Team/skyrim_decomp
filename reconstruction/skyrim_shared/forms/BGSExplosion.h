@@ -32,7 +32,7 @@
 // TESFileContainer, TESFileArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the array layout (data, size) is read from the listings
 // TESFile: STANDIN COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // TESDataHandler, TESDataHandler::IsTemporaryFormID: STANDIN COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
-// TESDataHandler::singleton: GUESS(low); the global pointer at RVA 0x219ded8, which NG reads through GetSingleton
+// TESDataHandler::singleton: GUESS(low); the global pointer (image offset 0x219ded8), which NG reads through GetSingleton
 // ExtraDataList, ExtraDataList::GetEnchantment: STANDIN COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // EnchantmentItem, TESEnchantableForm, TESEnchantableForm::formEnchanting, TESValueForm, TESValueForm::value, MagicItem, MagicItem::CalculateCost, AlchemyItem: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESEnchantableForm, TESValueForm, MagicItem, AlchemyItem: EXE_RTTI; the names of the type descriptors the casts use, read from the image RTTI
