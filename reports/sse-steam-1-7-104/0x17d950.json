@@ -29,9 +29,9 @@
         "object_sha256": "a2786a344623022f3aa365ed094baccc9700f31fb76106f07effa5aac76cde0d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRegionListStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRegionListStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "fb81b209a8a04c8463c479f809df2e64cf4a70b57cd473e6e8e8ab27d6c3b528",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRegionListStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRegionListStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRegionListStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.cpp",
     "digest": "4e1220e1e881e827dc1cd179fc0583d945d0835caa4a9cb3bcf2c86cfd45e575",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d742c5e1c296106d0187f59a9afd797614a487e111470e19f50d638ae4c69b88",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraRegionListStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraRegionListStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRegionListStorageLayout.h"
     ]
   },
   "symbol_map": {

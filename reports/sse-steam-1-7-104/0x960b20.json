@@ -29,10 +29,10 @@
         "object_sha256": "b207d5265219cd84df4713c8f749b7a02bc2a898118a76cecd7ff2f92ad8f876",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/ClickHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ClickHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/ClickHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/ClickHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "5f9e190825c686623ae06a4748a85dc3e9d13c9be7345b9360b33d53ff30dfd1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/ClickHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ClickHandlerStorageLayout.h",
-          "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/controls/ClickHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/ClickHandlerStorageLayout.h",
+          "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ClickHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/ClickHandlerStorageLayout.cpp",
     "digest": "6c8c6d10400200f6df2295a047e287260c1677fa285d5d7a6f3e3ef99b29f8bb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e7cb7bfedf7605ccab839eda7a2691999b81dc6fe7540779c68a9a2e3b4facef",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/ClickHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/ClickHandlerStorageLayout.h",
-      "reconstruction/bsengine/MenuEventHandlerStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/controls/ClickHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/ClickHandlerStorageLayout.h",
+      "reconstruction/skyrim/interface/MenuEventHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

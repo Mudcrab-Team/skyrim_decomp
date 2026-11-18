@@ -29,9 +29,9 @@
         "object_sha256": "b6ab6da36ea23e1c69a4ea264a52b1d07fc0885c9841f840c1e36bdfe45932b4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSStoryManagerBranchNode.cpp",
-          "reconstruction/forms/BGSStoryManagerBranchNode.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.cpp",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ba2d226eef26c0dc4a64a58cb700c95b2ebd89610ec756d36f3e3d29d3d27a81",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSStoryManagerBranchNode.cpp",
-          "reconstruction/forms/BGSStoryManagerBranchNode.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.cpp",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSStoryManagerBranchNode.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.cpp",
     "digest": "c604ac1d5012ea355dbccd8dfce5e8d0116250aaf37af73ff824911c46a13951",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6614cc11c8e7d7cd86d882421eba83e9430ede8d9b4af1babc7929ce4e32559f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSStoryManagerBranchNode.cpp",
-      "reconstruction/forms/BGSStoryManagerBranchNode.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.cpp",
+      "reconstruction/skyrim_shared/quest/BGSStoryManagerBranchNode.h"
     ]
   },
   "symbol_map": {

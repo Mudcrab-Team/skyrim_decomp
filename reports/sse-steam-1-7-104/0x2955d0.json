@@ -29,9 +29,9 @@
         "object_sha256": "acd70b407728644215c91195ac5f5576c46053accf0c2b96c261dca893974f3b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSLightingTemplate.cpp",
-          "reconstruction/forms/BGSLightingTemplate.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSLightingTemplate.cpp",
+          "reconstruction/skyrim_shared/world/BGSLightingTemplate.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "396066b206082aacfd4ba41a7716ac55d1a91bfb9f546ddcdf5b3a49416b7723",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSLightingTemplate.cpp",
-          "reconstruction/forms/BGSLightingTemplate.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSLightingTemplate.cpp",
+          "reconstruction/skyrim_shared/world/BGSLightingTemplate.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSLightingTemplate.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSLightingTemplate.cpp",
     "digest": "31ccfaa8e5f11eeead8a8a4c4d3738903b3838aa05bf567f35e686cf73fc9eb7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b640ed72bbb7b0476018ff4d538f3a142bbcc91e74d29d09d571bac09f5414b4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSLightingTemplate.cpp",
-      "reconstruction/forms/BGSLightingTemplate.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/BGSLightingTemplate.cpp",
+      "reconstruction/skyrim_shared/world/BGSLightingTemplate.h"
     ]
   },
   "symbol_map": {

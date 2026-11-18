@@ -29,9 +29,9 @@
         "object_sha256": "fbe00d5231cdba983c3dd3d7c4349a9caa79a34dfb701a530709b1a29e6e8656",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "8f4a56bfeff01e7346cf642fe02496f4f128f14e6e7976f9f685a00507bc3935",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       }
     }
@@ -335,15 +335,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.cpp",
     "digest": "bf3f49fcace40527fc17109407c1a6cc6670c3197c92e6417a46a059bd6f1bde",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3d1e7a49cc3bc428638840a03abb575b87e147a893a311032061a12bc67a74e9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.cpp",
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterArmorLayout.h",
-      "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.cpp",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterArmorLayout.h",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,13 +29,13 @@
         "object_sha256": "c7ed63166681681381b09d98850670c1d52d9b10f5880e8514e10a028c91c125",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AttackDamageComponentLayout.h",
-          "reconstruction/forms/BlockBashComponentLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/MessageIconComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
-          "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.h"
+          "reconstruction/skyrim/ai/combat/AttackDamageComponentLayout.h",
+          "reconstruction/skyrim/ai/combat/BlockBashComponentLayout.h",
+          "reconstruction/skyrim/interface/MessageIconComponentLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "3cc787058637d537b841b59973ea316a328bff37d18978a2459ff06cd261c9ad",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AttackDamageComponentLayout.h",
-          "reconstruction/forms/BlockBashComponentLayout.h",
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/MessageIconComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
-          "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.h"
+          "reconstruction/skyrim/ai/combat/AttackDamageComponentLayout.h",
+          "reconstruction/skyrim/ai/combat/BlockBashComponentLayout.h",
+          "reconstruction/skyrim/interface/MessageIconComponentLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.h"
         ]
       }
     }
@@ -346,19 +346,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
     "digest": "356bdfde65d67f0d722c2a2721b808b7529e908fe2b98e1ef802a5d44444a898",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a2b16181eb33a46c8273404b3a35c2d00b4388df52d6d53e350e96d924da3ddc",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/AttackDamageComponentLayout.h",
-      "reconstruction/forms/BlockBashComponentLayout.h",
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/MessageIconComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
-      "reconstruction/forms/TESObjectWEAPLargeFormPrefixLayout.h"
+      "reconstruction/skyrim/ai/combat/AttackDamageComponentLayout.h",
+      "reconstruction/skyrim/ai/combat/BlockBashComponentLayout.h",
+      "reconstruction/skyrim/interface/MessageIconComponentLayout.h",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/forms/TESObjectWEAPLargeFormPrefixLayout.h"
     ]
   },
   "symbol_map": {

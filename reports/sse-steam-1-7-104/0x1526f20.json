@@ -29,10 +29,10 @@
         "object_sha256": "c2b4429c13aba4a6d579477aa76fe7b38cc52b094e7a856e7e94baedfeaf479b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "b5a48af58bb760e699e6402d04bc43078752898efc3dcba847268193fd87ee98",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterial.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.h"
+          "reconstruction/bsshader/BSLightingShaderMaterial.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.cpp",
     "digest": "ce865dd8b036de7fd6666a94b1b8a02fcec84e2031109d9ebf1dcbcc9a1eab15",
     "digest_method": "tu-sha256-v2",
     "run_digest": "817534ee7f298246ace46886fdd2a5325e29fe5cb0916445899639b68f9e2161",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterial.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialFacegenTint.h"
+      "reconstruction/bsshader/BSLightingShaderMaterial.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.h"
     ]
   },
   "symbol_map": {

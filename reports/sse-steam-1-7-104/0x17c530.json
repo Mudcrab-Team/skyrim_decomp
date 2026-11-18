@@ -29,9 +29,9 @@
         "object_sha256": "d424c1975cf3f79cc0e825a9d4c2ba99a605df26d691084864b484d59b91d757",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "d8dccc8f1c9a55d10d1b0987ebce4e40803003a5420379de9d9fb4e061ddd39c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.cpp",
     "digest": "b74591630027bdb174b63963a28d78aa64e73173bf8700914b835ed0b5f31267",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1d1d34558bb315040008bdff6ae85e9764801ac4ad1a1471df19708ece690bd9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCellSkyRegionStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCellSkyRegionStorageLayout.h"
     ]
   },
   "symbol_map": {

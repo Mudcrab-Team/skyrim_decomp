@@ -29,8 +29,8 @@
         "object_sha256": "b3acd5745045233720762132c28b62b6b014406deee0a26d691af824479f1dc5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.cpp",
-          "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.h"
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.cpp",
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "e905aa69bda85eadd626fc4bad641f70eb72198627550d068e525ae3320021b9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.cpp",
-          "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.h"
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.cpp",
+          "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.h"
         ]
       }
     }
@@ -318,14 +318,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.cpp",
+    "compiled": "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.cpp",
     "digest": "5dc032d64cd135868ef2fc883c3f7843ec0318eaa092fdd972f558d10cb1a6a0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "156890b559ed872c66ccaef478cd48f9dba2157c5fda3717a10ddffb347b9627",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.cpp",
-      "reconstruction/fo4hints/MasterFilePathingStreamWriteToBuffer.h"
+      "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.cpp",
+      "reconstruction/skyrim_shared/pathfinding/MasterFilePathingStreamWriteToBuffer.h"
     ]
   },
   "symbol_map": {

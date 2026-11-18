@@ -29,8 +29,8 @@
         "object_sha256": "24b405c5c9f045d7fc556000893956582bbaa673db0419f4c22cb26132f23585",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiAlphaAccumulator.cpp",
-          "reconstruction/netimmerse/NiAlphaAccumulator.h",
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator.cpp",
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "25de3e0d37e88b8ab2ffa956ca39298250028aa1fb644ac4b91fc18f7bfe87d1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiAlphaAccumulator.cpp",
-          "reconstruction/netimmerse/NiAlphaAccumulator.h",
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator.cpp",
+          "reconstruction/gamebryo/nimain/NiAlphaAccumulator.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -319,14 +319,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiAlphaAccumulator.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiAlphaAccumulator.cpp",
     "digest": "2f6989ec61453b1773378fbe773d205c0d9a877d5555ba52ae178f0c059c6eeb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "80a51867b9879b64322e31efe65d2e5194e59560b5a5e74ea4b27b8cd1cbcfa0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiAlphaAccumulator.cpp",
-      "reconstruction/netimmerse/NiAlphaAccumulator.h",
+      "reconstruction/gamebryo/nimain/NiAlphaAccumulator.cpp",
+      "reconstruction/gamebryo/nimain/NiAlphaAccumulator.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

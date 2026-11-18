@@ -29,8 +29,8 @@
         "object_sha256": "e5e4b29fdcc29584c5443260876f6177127495fdfa34b89576412626ba9d47e9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAnimationSequencer.cpp",
-          "reconstruction/bsengine/ExtraAnimationSequencer.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "b895fb025b8ecc08656445f6f5f89b505f237d9f77161b77b5343051aad06502",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraAnimationSequencer.cpp",
-          "reconstruction/bsengine/ExtraAnimationSequencer.h"
+          "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAnimationSequencer.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.cpp",
     "digest": "8ee335b076ebb2653676c63895b48434ec5618f098f1d601483645abb30c9b51",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3bf602397a3c9672c7f57f34c29fe9e7b5c39aa8c50c95129678f33e88bc46f6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraAnimationSequencer.cpp",
-      "reconstruction/bsengine/ExtraAnimationSequencer.h"
+      "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAnimationSequencer.h"
     ]
   },
   "symbol_map": {

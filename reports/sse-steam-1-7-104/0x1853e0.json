@@ -29,8 +29,8 @@
         "object_sha256": "7e14ea4fe6ab1ee53cf7936aa48fb1f4afab648ed61e36f406c3f90d16cb68fa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraStartingWorldOrCell.cpp",
-          "reconstruction/bsengine/ExtraStartingWorldOrCell.h"
+          "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "451b6a742dd1b29fac962b8d000733c131294617da6c83d25abbe5fdc93c7320",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraStartingWorldOrCell.cpp",
-          "reconstruction/bsengine/ExtraStartingWorldOrCell.h"
+          "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraStartingWorldOrCell.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.cpp",
     "digest": "c2cf3ec496e2a2a5bc74a0f8248c68b0ac3964ac41d6bd03e2b8f76e79e15e62",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e0210813de143e70b84e9932dc8b46cd0d894ca5417741a96ffb27412fbe62af",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraStartingWorldOrCell.cpp",
-      "reconstruction/bsengine/ExtraStartingWorldOrCell.h"
+      "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraStartingWorldOrCell.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "44ad84b30fabf1e341108926ebf83dcc44746149b861bc841112c2bd5dea82a1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/ActorProcess.cpp",
-          "reconstruction/actors/ActorProcess.h"
+          "reconstruction/skyrim/ai/ActorProcess.cpp",
+          "reconstruction/skyrim/ai/ActorProcess.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "484257fc59b7d51f3240b9975fea3f5e7ecc097ae44279484d6ee97e8ca160f6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/ActorProcess.cpp",
-          "reconstruction/actors/ActorProcess.h"
+          "reconstruction/skyrim/ai/ActorProcess.cpp",
+          "reconstruction/skyrim/ai/ActorProcess.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actors/ActorProcess.cpp",
+    "compiled": "reconstruction/skyrim/ai/ActorProcess.cpp",
     "digest": "8ab6489f76a14f635861afd350a4f6dc0fe921cfbd66cc4b60977dcefce437b6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f17f2170e57b01b9415b31a1ec1a1ed14e73898e1919569854777f5cbd118bd2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/ActorProcess.cpp",
-      "reconstruction/actors/ActorProcess.h"
+      "reconstruction/skyrim/ai/ActorProcess.cpp",
+      "reconstruction/skyrim/ai/ActorProcess.h"
     ]
   },
   "symbol_map": {

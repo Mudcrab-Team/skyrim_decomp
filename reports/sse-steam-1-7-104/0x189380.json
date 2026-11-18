@@ -29,8 +29,8 @@
         "object_sha256": "35fc507c8cca99f55bbeb4fb7521d55105073933e39a727057ddbec0155b8884",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraHeadTrackingWeight.cpp",
-          "reconstruction/bsengine/ExtraHeadTrackingWeight.h"
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ca0abe8a41791c0b77329dc13859a0a33af6bfd3fe63f63c446fc902934fb2fc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraHeadTrackingWeight.cpp",
-          "reconstruction/bsengine/ExtraHeadTrackingWeight.h"
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHeadTrackingWeight.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.cpp",
     "digest": "1b1b04ddeff9d0961fee73a1a1a50150ede0e45421f308e2181d059fd9de45fb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "50d917acd38e3a417a8ba9db3af9f8f4bb4e48d6c2a7e258ce17acfdfb3107c6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraHeadTrackingWeight.cpp",
-      "reconstruction/bsengine/ExtraHeadTrackingWeight.h"
+      "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHeadTrackingWeight.h"
     ]
   },
   "symbol_map": {

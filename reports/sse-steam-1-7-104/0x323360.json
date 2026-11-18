@@ -29,9 +29,9 @@
         "object_sha256": "f27151c76cc2e975a4e68a2028e13cb3ad423e241a06a0026a796e65153934e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMenuIcon.cpp",
-          "reconstruction/forms/BGSMenuIcon.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim/interface/BGSMenuIcon.cpp",
+          "reconstruction/skyrim/interface/BGSMenuIcon.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ac7b8d2b740e602a09e4deb2a45414ce6771ad722f97470e2100eb22602aa040",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMenuIcon.cpp",
-          "reconstruction/forms/BGSMenuIcon.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim/interface/BGSMenuIcon.cpp",
+          "reconstruction/skyrim/interface/BGSMenuIcon.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -367,15 +367,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMenuIcon.cpp",
+    "compiled": "reconstruction/skyrim/interface/BGSMenuIcon.cpp",
     "digest": "32df67aabc71f50d1e92f161c7b8eed7670502eff592fc41525c003467817642",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7e32fc718faac3fada1261c914c16abac34b5ffafc9a4c31902c5f0314f5b3ae",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMenuIcon.cpp",
-      "reconstruction/forms/BGSMenuIcon.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim/interface/BGSMenuIcon.cpp",
+      "reconstruction/skyrim/interface/BGSMenuIcon.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

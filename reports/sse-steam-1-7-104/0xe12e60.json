@@ -29,8 +29,8 @@
         "object_sha256": "1864590db1b8c186d3c5a44756ed20da3f040cb6004f7972d36ebcd5c70245c7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.cpp",
-          "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.h"
+          "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.cpp",
+          "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "afac34a3a9633eb8ea442cf77732dfdfc9aa7e09729cc4dfd9b37eb7919b40f1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.cpp",
-          "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.h"
+          "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.cpp",
+          "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.cpp",
+    "compiled": "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.cpp",
     "digest": "3c5079bd6e1e6d40e4827fcecf94e306357c87b305e8df07cf36e1f3851e1eb8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a3864c8e732cd7fe40d09eff2fc2d0943311b32aef882b0d144bd9c48247b725",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.cpp",
-      "reconstruction/bsengine/BSWin32VirtualKeyboardDevice.h"
+      "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.cpp",
+      "reconstruction/bsinput/BSWin32VirtualKeyboardDevice.h"
     ]
   },
   "symbol_map": {

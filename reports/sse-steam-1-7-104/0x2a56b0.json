@@ -29,12 +29,12 @@
         "object_sha256": "22e032173ada58b10f7111fa53c23b55b5cb7783c508bcb0365cb36fbf2887fe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/ImageSpaceModifierInstanceLayout.h",
-          "reconstruction/f004support/NiObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented2a56b0.cpp",
-          "reconstruction/wrappers/F004Represented2a56b0.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/ImageSpaceModifierInstanceLayout.h",
+          "reconstruction/unmapped/support/NiObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented2a56b0.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented2a56b0.h"
         ]
       },
       "winpc-native": {
@@ -53,12 +53,12 @@
         "object_sha256": "d21c7b65c0a9640f92df489fe3fb96b22476e7194f2a5b44c123793af9058374",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/ImageSpaceModifierInstanceLayout.h",
-          "reconstruction/f004support/NiObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented2a56b0.cpp",
-          "reconstruction/wrappers/F004Represented2a56b0.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/ImageSpaceModifierInstanceLayout.h",
+          "reconstruction/unmapped/support/NiObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented2a56b0.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented2a56b0.h"
         ]
       }
     }
@@ -340,18 +340,18 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented2a56b0.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented2a56b0.cpp",
     "digest": "8820f6c91d47ff08a159b6a4916ad9d970f1fbb710cec148451e8529bb97db85",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1b1ff064f6b050e83970713b7e48c01a9b9450581d5ff30eee1ea64dfa16306c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSFixedStringLayout.h",
-      "reconstruction/f004support/ImageSpaceModifierInstanceLayout.h",
-      "reconstruction/f004support/NiObjectLayout.h",
-      "reconstruction/f004support/NiRefObjectLayout.h",
-      "reconstruction/wrappers/F004Represented2a56b0.cpp",
-      "reconstruction/wrappers/F004Represented2a56b0.h"
+      "reconstruction/unmapped/support/BSFixedStringLayout.h",
+      "reconstruction/unmapped/support/ImageSpaceModifierInstanceLayout.h",
+      "reconstruction/unmapped/support/NiObjectLayout.h",
+      "reconstruction/unmapped/support/NiRefObjectLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented2a56b0.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented2a56b0.h"
     ]
   },
   "symbol_map": {

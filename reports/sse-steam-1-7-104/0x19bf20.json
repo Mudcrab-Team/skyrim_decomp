@@ -29,9 +29,9 @@
         "object_sha256": "57c03527089525df63da3013e3c3f7e8af18d58a78d06c4d6abb944b1c01fe79",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSTaskLayout.h",
-          "reconstruction/wrappers/F004Represented19bf20.cpp",
-          "reconstruction/wrappers/F004Represented19bf20.h"
+          "reconstruction/unmapped/support/BSTaskLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented19bf20.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented19bf20.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "226381e2e2722c08b15f26652f9c7eaa10dd09a0a7231d820fb91f01c4b17745",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSTaskLayout.h",
-          "reconstruction/wrappers/F004Represented19bf20.cpp",
-          "reconstruction/wrappers/F004Represented19bf20.h"
+          "reconstruction/unmapped/support/BSTaskLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented19bf20.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented19bf20.h"
         ]
       }
     }
@@ -334,15 +334,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented19bf20.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented19bf20.cpp",
     "digest": "19948f912b6937871dd03974672c42fcd1da2eb4dcaefc3c2f3377fd841276ac",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3a2a547865d6152798f95907405a9dd509c7b4c082f7f46cc3832ed77d7e713a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSTaskLayout.h",
-      "reconstruction/wrappers/F004Represented19bf20.cpp",
-      "reconstruction/wrappers/F004Represented19bf20.h"
+      "reconstruction/unmapped/support/BSTaskLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented19bf20.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented19bf20.h"
     ]
   },
   "symbol_map": {

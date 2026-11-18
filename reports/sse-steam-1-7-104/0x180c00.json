@@ -29,8 +29,8 @@
         "object_sha256": "dff0a91982c9f14756313cf1ebd5a423074c1f5dc7e4d718443569bb70c9dcae",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraFollower.cpp",
-          "reconstruction/bsengine/ExtraFollower.h"
+          "reconstruction/skyrim_shared/extradata/ExtraFollower.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraFollower.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3b3537ecdf74567f47607690f494dfa88f745f6c78f36b6a9d5146fc30d5a9c2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraFollower.cpp",
-          "reconstruction/bsengine/ExtraFollower.h"
+          "reconstruction/skyrim_shared/extradata/ExtraFollower.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraFollower.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraFollower.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraFollower.cpp",
     "digest": "5fe306d7f3d77f217aff66362c6a24958f19988c15b2ef0cb0a7f89213c721a5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b36a93cd0210e9607f6800420e6ae50721a86c1894f42ad36bb1d1bb3f36026d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraFollower.cpp",
-      "reconstruction/bsengine/ExtraFollower.h"
+      "reconstruction/skyrim_shared/extradata/ExtraFollower.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraFollower.h"
     ]
   },
   "symbol_map": {

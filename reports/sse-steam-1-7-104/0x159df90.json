@@ -29,8 +29,8 @@
         "object_sha256": "9e055f98c43d2b96cfea9e6b4cd01626748ead89b25d560f79a722985ae1267f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSStreamSystemUtility.cpp",
-          "reconstruction/bsengine/BSStreamSystemUtility.h"
+          "reconstruction/bssystem/BSStreamSystemUtility.cpp",
+          "reconstruction/bssystem/BSStreamSystemUtility.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "7181b85e6f3068d58c7b333a05ae4c2db3bc6e182dadc4965213048e81c401c8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSStreamSystemUtility.cpp",
-          "reconstruction/bsengine/BSStreamSystemUtility.h"
+          "reconstruction/bssystem/BSStreamSystemUtility.cpp",
+          "reconstruction/bssystem/BSStreamSystemUtility.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSStreamSystemUtility.cpp",
+    "compiled": "reconstruction/bssystem/BSStreamSystemUtility.cpp",
     "digest": "45fd812ddc3ff0ab709762813a46267c2efbb731dc97258ebc72cfeff5c692f1",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f3eaad761f1c4c70d37b79f20cee3dd5589766f9e79ba8f3e93119ff9114a0ee",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSStreamSystemUtility.cpp",
-      "reconstruction/bsengine/BSStreamSystemUtility.h"
+      "reconstruction/bssystem/BSStreamSystemUtility.cpp",
+      "reconstruction/bssystem/BSStreamSystemUtility.h"
     ]
   },
   "symbol_map": {

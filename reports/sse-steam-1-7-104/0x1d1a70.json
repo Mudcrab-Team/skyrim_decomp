@@ -29,8 +29,8 @@
         "object_sha256": "25fab6fefb29a28974702a0b50477beb0300da08d7ed667027da480678b6ba66",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAttackDataForm.cpp",
-          "reconstruction/forms/BGSAttackDataForm.h"
+          "reconstruction/skyrim/ai/combat/BGSAttackDataForm.cpp",
+          "reconstruction/skyrim/ai/combat/BGSAttackDataForm.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ff8c787573c46c5d8e68154756e52b481383573410dd2b5c2a28bc288eb5fd08",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSAttackDataForm.cpp",
-          "reconstruction/forms/BGSAttackDataForm.h"
+          "reconstruction/skyrim/ai/combat/BGSAttackDataForm.cpp",
+          "reconstruction/skyrim/ai/combat/BGSAttackDataForm.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSAttackDataForm.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/BGSAttackDataForm.cpp",
     "digest": "1904942a53a258ab6688db57a9c4da4db02a5f55a77e76f3565cba2c9964749a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "af5e300c3196f228e291fcb1f79998720716ea3bc1a23cff9ec00360ba43a03a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSAttackDataForm.cpp",
-      "reconstruction/forms/BGSAttackDataForm.h"
+      "reconstruction/skyrim/ai/combat/BGSAttackDataForm.cpp",
+      "reconstruction/skyrim/ai/combat/BGSAttackDataForm.h"
     ]
   },
   "symbol_map": {

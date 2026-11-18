@@ -29,8 +29,8 @@
         "object_sha256": "ebf3f05a98f783dd0d7664e1c86c62e1132fc2f4aeb7611075b5e18cb74afd24",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSInputDevice.cpp",
-          "reconstruction/bsengine/BSInputDevice.h"
+          "reconstruction/bsinput/BSInputDevice.cpp",
+          "reconstruction/bsinput/BSInputDevice.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "5a322a57f7e366d83561ed1d467d506009f5f6bc12ad8436664a2d87fb34e501",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSInputDevice.cpp",
-          "reconstruction/bsengine/BSInputDevice.h"
+          "reconstruction/bsinput/BSInputDevice.cpp",
+          "reconstruction/bsinput/BSInputDevice.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSInputDevice.cpp",
+    "compiled": "reconstruction/bsinput/BSInputDevice.cpp",
     "digest": "2f54ead0e8be5fbaa157ac2cacb9013ccf2cad3a8776d00b3209cef1e76ae2ab",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0128ad3740bf8da3bd3102c497a604807973adbb597ffc86f5058da1968dca34",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSInputDevice.cpp",
-      "reconstruction/bsengine/BSInputDevice.h"
+      "reconstruction/bsinput/BSInputDevice.cpp",
+      "reconstruction/bsinput/BSInputDevice.h"
     ]
   },
   "symbol_map": {

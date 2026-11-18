@@ -29,9 +29,9 @@
         "object_sha256": "28fc23ba81ad5c5e2bb4ee0042208cfc4a8dc5ba80b28e2bedd5ad8b9421a56f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "2b015c23ee83535f662672f40a90283aea8bea17d2433f76a2d8c2e18c0257c4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.cpp",
     "digest": "96c9956b1719355971e4c939203bdd3a6691830aadf1d9d9a1493b937eca94c5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "37aaa48dcbc2c4cc9e9245c5440359da5cc4df00331034a4ad7832ce5ff91e96",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraAlphaCutoffStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraAlphaCutoffStorageLayout.h"
     ]
   },
   "symbol_map": {

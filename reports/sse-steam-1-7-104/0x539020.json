@@ -29,9 +29,9 @@
         "object_sha256": "a661f8d9b83aa97faa1902f8629a266f9db1d9323db437de848d723cef8dacab",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSStoryManagerQuestNode.cpp",
-          "reconstruction/forms/BGSStoryManagerQuestNode.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.cpp",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "00dcb52550efaaed8251bcc7b8effe23d6e342baf1d9e2d91a551fd31a384eeb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSStoryManagerQuestNode.cpp",
-          "reconstruction/forms/BGSStoryManagerQuestNode.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.cpp",
+          "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSStoryManagerQuestNode.cpp",
+    "compiled": "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.cpp",
     "digest": "859921b39612cd8671ad142b7c88911e03695c3c679f590f3d79fc4a4f5c6ff7",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a7a568bb1549bed8f0eb5a037afba10983ab027f03c946f87cc553127466a7e9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSStoryManagerQuestNode.cpp",
-      "reconstruction/forms/BGSStoryManagerQuestNode.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.cpp",
+      "reconstruction/skyrim_shared/quest/BGSStoryManagerQuestNode.h"
     ]
   },
   "symbol_map": {

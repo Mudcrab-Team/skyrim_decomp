@@ -29,8 +29,8 @@
         "object_sha256": "306884e277e015a821ecec2c272a0c9881e058242390bbf2a793badd5437a55c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_328f00/BGSReverbParameters.cpp",
-          "reconstruction/fo4b4b_328f00/BGSReverbParameters.h"
+          "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.cpp",
+          "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "b51bb8254e8b2e618eacb6758c655ddf2e5bc19e9fe8fea24b95fc08bcc6a687",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_328f00/BGSReverbParameters.cpp",
-          "reconstruction/fo4b4b_328f00/BGSReverbParameters.h"
+          "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.cpp",
+          "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4b4b_328f00/BGSReverbParameters.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.cpp",
     "digest": "212dd388bbeece5fa50c5961d2f3faa2e4d14c0a4209add19a71014bc79b3a67",
     "digest_method": "tu-sha256-v2",
     "run_digest": "473b62ff5243323beb0f670b3b37cb2d9de5e7568c3baaf1aeb6558044a88125",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4b4b_328f00/BGSReverbParameters.cpp",
-      "reconstruction/fo4b4b_328f00/BGSReverbParameters.h"
+      "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.cpp",
+      "reconstruction/skyrim_shared/audio/BGSReverbParameters_328f00.h"
     ]
   },
   "symbol_map": {

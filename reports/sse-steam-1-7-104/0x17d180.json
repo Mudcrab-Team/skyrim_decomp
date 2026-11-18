@@ -29,10 +29,10 @@
         "object_sha256": "8ba91c3f167a946511323686309a1b8b3a852bea3deaf6dca87794fce3076efb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSExtraDataLayout.h",
-          "reconstruction/f004support/ExtraLightLayout.h",
-          "reconstruction/wrappers/F004Represented17d180.cpp",
-          "reconstruction/wrappers/F004Represented17d180.h"
+          "reconstruction/unmapped/support/BSExtraDataLayout.h",
+          "reconstruction/unmapped/support/ExtraLightLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented17d180.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented17d180.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "751e907eae1d81a505f1bdf995b62581434f5aa90c3ac980644ecc7f88ffc6e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSExtraDataLayout.h",
-          "reconstruction/f004support/ExtraLightLayout.h",
-          "reconstruction/wrappers/F004Represented17d180.cpp",
-          "reconstruction/wrappers/F004Represented17d180.h"
+          "reconstruction/unmapped/support/BSExtraDataLayout.h",
+          "reconstruction/unmapped/support/ExtraLightLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented17d180.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented17d180.h"
         ]
       }
     }
@@ -336,16 +336,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented17d180.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented17d180.cpp",
     "digest": "d84633b086cfa39a164adb2150fb0c3f90937740f1d955ffcca42c262ef78dce",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c5c20d9778f62cebe356e1afe1eecd96b1f4a265f481304cec6b90ec16db2dfe",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSExtraDataLayout.h",
-      "reconstruction/f004support/ExtraLightLayout.h",
-      "reconstruction/wrappers/F004Represented17d180.cpp",
-      "reconstruction/wrappers/F004Represented17d180.h"
+      "reconstruction/unmapped/support/BSExtraDataLayout.h",
+      "reconstruction/unmapped/support/ExtraLightLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented17d180.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented17d180.h"
     ]
   },
   "symbol_map": {

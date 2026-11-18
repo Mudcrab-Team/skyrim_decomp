@@ -29,9 +29,9 @@
         "object_sha256": "c570aada7be1dd82cdba07384256f2f7041a786450877038ef6928de1e10cbd8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderProperty.h",
-          "reconstruction/bsengine/BSWaterShaderProperty.cpp",
-          "reconstruction/bsengine/BSWaterShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
+          "reconstruction/bsshader/BSWaterShaderProperty.cpp",
+          "reconstruction/bsshader/BSWaterShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -51,9 +51,9 @@
         "object_sha256": "eb9ecec625594c52b05187f9d50c6a4628dd45596217061b86c07172af3a59cc",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShaderProperty.h",
-          "reconstruction/bsengine/BSWaterShaderProperty.cpp",
-          "reconstruction/bsengine/BSWaterShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
+          "reconstruction/bsshader/BSWaterShaderProperty.cpp",
+          "reconstruction/bsshader/BSWaterShaderProperty.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -315,15 +315,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSWaterShaderProperty.cpp",
+    "compiled": "reconstruction/bsshader/BSWaterShaderProperty.cpp",
     "digest": "e414045a4d49e4e95cd0b771762fb11cc39d3d992b8d68f722cadf3f49d09595",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3c84dbbf7e7cd8b92ede9ff1aa37a6f1b40e99637f4506ed960d2c3962ee1b7b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShaderProperty.h",
-      "reconstruction/bsengine/BSWaterShaderProperty.cpp",
-      "reconstruction/bsengine/BSWaterShaderProperty.h",
+      "reconstruction/bsshader/BSShaderProperty.h",
+      "reconstruction/bsshader/BSWaterShaderProperty.cpp",
+      "reconstruction/bsshader/BSWaterShaderProperty.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

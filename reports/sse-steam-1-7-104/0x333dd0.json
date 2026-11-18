@@ -29,10 +29,10 @@
         "object_sha256": "ec54ab7af79a19c36a1854867e00145a28a7dfc5f043d55d75bdb9606c671908",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getisid/BaseFormComponent.h",
-          "reconstruction/conditions_getisid/ConditionFunctions.cpp",
-          "reconstruction/conditions_getisid/ConditionFunctions.h",
-          "reconstruction/conditions_getisid/TESForm.h"
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.h",
+          "reconstruction/skyrim_shared/forms/BaseFormComponent.h",
+          "reconstruction/skyrim_shared/forms/TESForm_333dd0.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "a77b838d3176222f4ea4764b5403153826e452fb9d4a7a7ae5ed441d412e8ae3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getisid/BaseFormComponent.h",
-          "reconstruction/conditions_getisid/ConditionFunctions.cpp",
-          "reconstruction/conditions_getisid/ConditionFunctions.h",
-          "reconstruction/conditions_getisid/TESForm.h"
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.h",
+          "reconstruction/skyrim_shared/forms/BaseFormComponent.h",
+          "reconstruction/skyrim_shared/forms/TESForm_333dd0.h"
         ]
       }
     }
@@ -324,16 +324,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/conditions_getisid/ConditionFunctions.cpp",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.cpp",
     "digest": "cb87703bfcd0859f09def5edadba4d91c57837352f3b1106bcefd8667dbdb199",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1ddf0cf69e1ad28ab668a958c84e1bba21f32a3dc0a3702f579cb74da26a4575",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/conditions_getisid/BaseFormComponent.h",
-      "reconstruction/conditions_getisid/ConditionFunctions.cpp",
-      "reconstruction/conditions_getisid/ConditionFunctions.h",
-      "reconstruction/conditions_getisid/TESForm.h"
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_333dd0.h",
+      "reconstruction/skyrim_shared/forms/BaseFormComponent.h",
+      "reconstruction/skyrim_shared/forms/TESForm_333dd0.h"
     ]
   },
   "symbol_map": {

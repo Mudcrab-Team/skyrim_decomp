@@ -29,9 +29,9 @@
         "object_sha256": "767ce827a5c436ffaf1dd83db0e97c0414e0005b571920828024dfc4a361e98d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "640f5b7f57cd9249748971d8a7da04958dda8d44c2abdbca4b9b103eaa22b4cf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-          "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.cpp",
-          "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.h"
+          "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+          "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.cpp",
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.cpp",
     "digest": "d67f462bc861b2b4cdbda84a4fd659a897a59172a256d60063ed234e3e9620ac",
     "digest_method": "tu-sha256-v2",
     "run_digest": "fe150d6a912867e697fc8b971a1c734714a5cd65ef6b3700b8d260528299afd5",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSLightingShaderMaterialBase.h",
-      "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.cpp",
-      "reconstruction/bsengine/BSLightingShaderMaterialEnvmap.h"
+      "reconstruction/bsshader/BSLightingShaderMaterialBase.h",
+      "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialEnvmap.h"
     ]
   },
   "symbol_map": {

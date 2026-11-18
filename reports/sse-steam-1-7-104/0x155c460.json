@@ -29,10 +29,10 @@
         "object_sha256": "c3782dcb72f1240e4cf80713b328461b335c983ef9e3f50b6593ebe41617e0e2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFogProperty.cpp",
-          "reconstruction/bsengine/BSFogProperty.h",
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/netimmerse/NiObjectNET.h"
+          "reconstruction/gamebryo/nimain/BSFogProperty.cpp",
+          "reconstruction/gamebryo/nimain/BSFogProperty.h",
+          "reconstruction/gamebryo/nimain/NiObjectNET.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "6fa9f2739184fa5586ea7098afc512baa919ad9d244f19040f7fe70b55436ad8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFogProperty.cpp",
-          "reconstruction/bsengine/BSFogProperty.h",
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/netimmerse/NiObjectNET.h"
+          "reconstruction/gamebryo/nimain/BSFogProperty.cpp",
+          "reconstruction/gamebryo/nimain/BSFogProperty.h",
+          "reconstruction/gamebryo/nimain/NiObjectNET.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSFogProperty.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSFogProperty.cpp",
     "digest": "5ecd3f9b7a3e7e1c0ea6c01a451c2e7bf7be8e045f1f10f9099c30bbfe398e72",
     "digest_method": "tu-sha256-v2",
     "run_digest": "58230a354c41327a205aea2bd7f8a9b25eb0d0e55ecaf4ddbca38299c901d008",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSFogProperty.cpp",
-      "reconstruction/bsengine/BSFogProperty.h",
-      "reconstruction/netimmerse/NiObject.h",
-      "reconstruction/netimmerse/NiObjectNET.h"
+      "reconstruction/gamebryo/nimain/BSFogProperty.cpp",
+      "reconstruction/gamebryo/nimain/BSFogProperty.h",
+      "reconstruction/gamebryo/nimain/NiObjectNET.h",
+      "reconstruction/netimmerse/NiObject.h"
     ]
   },
   "symbol_map": {

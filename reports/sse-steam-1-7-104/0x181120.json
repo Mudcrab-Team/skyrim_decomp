@@ -29,8 +29,8 @@
         "object_sha256": "0226d70cf732a20fbc7258dae623edfce825f17f438d945c199e8c8db36452b8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraTeleportName.cpp",
-          "reconstruction/bsengine/ExtraTeleportName.h"
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportName.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportName.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d21bc16ed05af4c0bd0770064517b8223343a67cfb9382e2de1c05481380887f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraTeleportName.cpp",
-          "reconstruction/bsengine/ExtraTeleportName.h"
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportName.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraTeleportName.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraTeleportName.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraTeleportName.cpp",
     "digest": "b5209e86345fe3498e89d46fb36db73e548d42013fb9c33428ebc0f75dcc2f28",
     "digest_method": "tu-sha256-v2",
     "run_digest": "feadbd342b14295279401dbaecb0488e384621832d2f08cd26327911a19abb69",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraTeleportName.cpp",
-      "reconstruction/bsengine/ExtraTeleportName.h"
+      "reconstruction/skyrim_shared/extradata/ExtraTeleportName.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraTeleportName.h"
     ]
   },
   "symbol_map": {

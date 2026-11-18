@@ -29,8 +29,8 @@
         "object_sha256": "153634f0ee67cba652b85d975a211e785f267c9943e7ed9c68cad95d69d8ed2c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSAudioStorageLayout.cpp",
-          "reconstruction/bsengine/BSAudioStorageLayout.h"
+          "reconstruction/bsaudio/BSAudioStorageLayout.cpp",
+          "reconstruction/bsaudio/BSAudioStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "49775ecf3e58486110d17af01c62bbc70ba0ba4538dd02f507410218bc219fe0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSAudioStorageLayout.cpp",
-          "reconstruction/bsengine/BSAudioStorageLayout.h"
+          "reconstruction/bsaudio/BSAudioStorageLayout.cpp",
+          "reconstruction/bsaudio/BSAudioStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSAudioStorageLayout.cpp",
+    "compiled": "reconstruction/bsaudio/BSAudioStorageLayout.cpp",
     "digest": "c86e9fe441363f515e048dae3e6a0e047922f98907e4a27f1ee937c41f80bc50",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c57cad65c065aabfa35bb1e7a06e8301ffee8a074ed95a425d3472ad92f35189",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSAudioStorageLayout.cpp",
-      "reconstruction/bsengine/BSAudioStorageLayout.h"
+      "reconstruction/bsaudio/BSAudioStorageLayout.cpp",
+      "reconstruction/bsaudio/BSAudioStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -31,10 +31,10 @@
         "object_sha256": "2a24025e2b1fa6ba16d55b2b3746055da6f071a69b0a446af128eae39dca17c4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/ArrestProcess.cpp",
-          "reconstruction/actor207_1/ArrestProcess.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim/ai/ArrestProcess.cpp",
+          "reconstruction/skyrim/ai/ArrestProcess.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
         ]
       }
     }
@@ -187,16 +187,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/ArrestProcess.cpp",
+    "compiled": "reconstruction/skyrim/ai/ArrestProcess.cpp",
     "digest": "a0e3ef654b2dcb5b7e96ee94e64ba4eb7f21b1c14e5e63ad1c153f22519a6bba",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2563cf28691b8ba60a23574802c441d75787b7d39e82e9eaf313c55fd2015e0e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/ArrestProcess.cpp",
-      "reconstruction/actor207_1/ArrestProcess.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim/ai/ArrestProcess.cpp",
+      "reconstruction/skyrim/ai/ArrestProcess.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
     ]
   },
   "symbol_map": {

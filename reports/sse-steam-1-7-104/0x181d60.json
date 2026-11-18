@@ -29,8 +29,8 @@
         "object_sha256": "cc792ee5e224d39f91d4ef8b6b140aea4a21f302973dc78a28b53907c8026b74",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraOutfitItem.cpp",
-          "reconstruction/bsengine/ExtraOutfitItem.h"
+          "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9fc900f47dd417b926b512f1d5ba0ea322204c573b3dde25569ee57ce0cd0465",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraOutfitItem.cpp",
-          "reconstruction/bsengine/ExtraOutfitItem.h"
+          "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraOutfitItem.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.cpp",
     "digest": "7c40094400acf990cf47b615cb2846d30f07214b14e5453f293d90564fd223bb",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2f4f6791f4749476bd11da44b4704bf01a180d72b0aec5e0de7b9d474af6f419",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraOutfitItem.cpp",
-      "reconstruction/bsengine/ExtraOutfitItem.h"
+      "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraOutfitItem.h"
     ]
   },
   "symbol_map": {

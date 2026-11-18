@@ -31,10 +31,10 @@
         "object_sha256": "2a804ea1b5045e15f1e9df69d8b856c7088392e01facde7f17e66760361cdc90",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/StateRelated.cpp",
-          "reconstruction/actor207_1/StateRelated.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/forms/StateRelated.cpp",
+          "reconstruction/skyrim_shared/forms/StateRelated.h"
         ]
       }
     }
@@ -187,16 +187,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/StateRelated.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/StateRelated.cpp",
     "digest": "2d7bc0f629b362365489391f8ca8a6488e4db81b15bcbe0886cac7672ce6bdec",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ef299de58af122bba6185e79ed1c335ea396c807bd3035d053a3dab431e712ef",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/StateRelated.cpp",
-      "reconstruction/actor207_1/StateRelated.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/forms/StateRelated.cpp",
+      "reconstruction/skyrim_shared/forms/StateRelated.h"
     ]
   },
   "symbol_map": {

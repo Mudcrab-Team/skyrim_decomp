@@ -294,7 +294,7 @@ def load_unit(task_dir, repo=None):
         raise SkeletonError(f'{task_dir}: no readable task.json ({exc}); give a unit task directory, '
                             'not a group directory') from None
     compiled = task.get('compiled') or ''
-    m = re.fullmatch(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.cpp', compiled)
+    m = re.fullmatch(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.cpp', compiled)
     if not m:
         raise SkeletonError(f'{task_dir}/task.json: compiled must be reconstruction/<area>/<Class>.cpp')
     brief_path = task_dir / 'BRIEF.md'
@@ -529,7 +529,7 @@ def plan(unit, repo=None):
     shared = brief_shared_headers(unit['brief'])
     if not shared:
         shared = {p.stem: p.relative_to(Path(repo) / 'reconstruction').as_posix()
-                  for anc in chain for p in sorted((Path(repo) / 'reconstruction').glob(f'*/{anc}.h')) if p.stem != cls
+                  for anc in chain for p in sorted((Path(repo) / 'reconstruction').rglob(f'{anc}.h')) if p.stem != cls
                   and p.parent.name != 'declarations'}
     # For community-only preparation prefer the additive, complete-signature kit.
     if facts:

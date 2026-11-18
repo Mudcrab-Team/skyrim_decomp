@@ -29,8 +29,8 @@
         "object_sha256": "16caddabc75daf84ebd55db365a02cafdc188bf2605675b77960fc401c9f2cb2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSEffectShaderProperty.cpp",
-          "reconstruction/bsengine/BSEffectShaderProperty.h"
+          "reconstruction/bsshader/BSEffectShaderProperty.cpp",
+          "reconstruction/bsshader/BSEffectShaderProperty.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "cfc917a6b416b5e0113f3776880e0e33759ec50e6a77fbf2c71554f9b5c5f32e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSEffectShaderProperty.cpp",
-          "reconstruction/bsengine/BSEffectShaderProperty.h"
+          "reconstruction/bsshader/BSEffectShaderProperty.cpp",
+          "reconstruction/bsshader/BSEffectShaderProperty.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSEffectShaderProperty.cpp",
+    "compiled": "reconstruction/bsshader/BSEffectShaderProperty.cpp",
     "digest": "63537126cb5256a5fe254f8277644d76004822214ff277ca3bdf68da1b0c86a4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "63e2b373321ad06219739188d442cea4af776d29159e3e9c83342c334062dab4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSEffectShaderProperty.cpp",
-      "reconstruction/bsengine/BSEffectShaderProperty.h"
+      "reconstruction/bsshader/BSEffectShaderProperty.cpp",
+      "reconstruction/bsshader/BSEffectShaderProperty.h"
     ]
   },
   "symbol_map": {

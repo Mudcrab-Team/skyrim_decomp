@@ -29,8 +29,8 @@
         "object_sha256": "94a5094084a3ed08585a69b122983d5c4243c4bd88bed049407844d4e45cf23d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraStartingPosition.cpp",
-          "reconstruction/bsengine/ExtraStartingPosition.h"
+          "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "eb721ca8ce140edb8aeed38ce6c11863f9197ec43f5ea0e76390f8f6f0f6c6d7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraStartingPosition.cpp",
-          "reconstruction/bsengine/ExtraStartingPosition.h"
+          "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraStartingPosition.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.cpp",
     "digest": "07e5e553977a5ef3a5b8e41d1d312c67df5203448fb460961698e764db249ad4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3add1fb4d6bd116062c4c3da119f4b38f86c14c5d2301d31ac64ce783ed613e8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraStartingPosition.cpp",
-      "reconstruction/bsengine/ExtraStartingPosition.h"
+      "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraStartingPosition.h"
     ]
   },
   "symbol_map": {

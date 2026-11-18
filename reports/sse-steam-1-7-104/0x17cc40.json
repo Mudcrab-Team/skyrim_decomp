@@ -29,9 +29,9 @@
         "object_sha256": "913300c31a7586fca104b5f747368de172a8f9e3f0e0590c59d19839c62fc92a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "b994962a73df6550297b08941b08b1c6c8d44ac12803447bdbdeef814e7b7bd7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.cpp",
     "digest": "fbec8135c8ff26c7232683fa17f66948dfa14a27160375e497ad923addda94c3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d5fd229a0d4c0755da28c49fd08ba135695e2e592974a9af2a09a2b09d044b07",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraHasNoRumorsStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraHasNoRumorsStorageLayout.h"
     ]
   },
   "symbol_map": {

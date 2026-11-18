@@ -29,11 +29,11 @@
         "object_sha256": "318b6295dbac745b761688ab6cad1c792502b8bd61a698fcc30e8d7d5844d259",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/BSTaskLayout.h",
-          "reconstruction/f004support/IOTaskLayout.h",
-          "reconstruction/wrappers/F004Representedfc80c0.cpp",
-          "reconstruction/wrappers/F004Representedfc80c0.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/BSTaskLayout.h",
+          "reconstruction/unmapped/support/IOTaskLayout.h",
+          "reconstruction/unmapped/wrappers/F004Representedfc80c0.cpp",
+          "reconstruction/unmapped/wrappers/F004Representedfc80c0.h"
         ]
       },
       "winpc-native": {
@@ -52,11 +52,11 @@
         "object_sha256": "ffb01a558b4cdcb807948f7c660240112df5cd05e9d3bd7fb44e5aafbd6eb010",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/BSTaskLayout.h",
-          "reconstruction/f004support/IOTaskLayout.h",
-          "reconstruction/wrappers/F004Representedfc80c0.cpp",
-          "reconstruction/wrappers/F004Representedfc80c0.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/BSTaskLayout.h",
+          "reconstruction/unmapped/support/IOTaskLayout.h",
+          "reconstruction/unmapped/wrappers/F004Representedfc80c0.cpp",
+          "reconstruction/unmapped/wrappers/F004Representedfc80c0.h"
         ]
       }
     }
@@ -338,17 +338,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Representedfc80c0.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Representedfc80c0.cpp",
     "digest": "f0edf31876c87af5561a65fad6d8b956587bc4f74dcd6e50eaf0ea5efed0845a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1ffb9642d7ebebfe204580bf6e3e8828a7884a9cccd6c4cb34af2276fba069a6",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSFixedStringLayout.h",
-      "reconstruction/f004support/BSTaskLayout.h",
-      "reconstruction/f004support/IOTaskLayout.h",
-      "reconstruction/wrappers/F004Representedfc80c0.cpp",
-      "reconstruction/wrappers/F004Representedfc80c0.h"
+      "reconstruction/unmapped/support/BSFixedStringLayout.h",
+      "reconstruction/unmapped/support/BSTaskLayout.h",
+      "reconstruction/unmapped/support/IOTaskLayout.h",
+      "reconstruction/unmapped/wrappers/F004Representedfc80c0.cpp",
+      "reconstruction/unmapped/wrappers/F004Representedfc80c0.h"
     ]
   },
   "symbol_map": {

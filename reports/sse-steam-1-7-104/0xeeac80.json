@@ -29,8 +29,8 @@
         "object_sha256": "2d1b1bf78fec7148aab833b9771448abeacabf08e40586d8b49d5f5d023ffd7e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiAVObject.cpp",
-          "reconstruction/netimmerse/NiAVObject.h",
+          "reconstruction/gamebryo/nimain/NiAVObject.cpp",
+          "reconstruction/gamebryo/nimain/NiAVObject.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "6a68f6bb87e82738159e13c4469a59d00e4529b468aaf8971e0b2f5d9013df70",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiAVObject.cpp",
-          "reconstruction/netimmerse/NiAVObject.h",
+          "reconstruction/gamebryo/nimain/NiAVObject.cpp",
+          "reconstruction/gamebryo/nimain/NiAVObject.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -319,14 +319,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiAVObject.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/NiAVObject.cpp",
     "digest": "e8d478646856aef9d6738a5ad15a9ce96ac330bdbfaab8afec43882150884dec",
     "digest_method": "tu-sha256-v2",
     "run_digest": "01dc3a1886eb44adef08532b39f4aa9f823bf062368820a8c23bca6c1a24edff",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiAVObject.cpp",
-      "reconstruction/netimmerse/NiAVObject.h",
+      "reconstruction/gamebryo/nimain/NiAVObject.cpp",
+      "reconstruction/gamebryo/nimain/NiAVObject.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

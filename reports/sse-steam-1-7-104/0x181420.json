@@ -29,8 +29,8 @@
         "object_sha256": "34f17f8a69b377833bf3a3caab05b4055e0ae40f9209de032e0d341f724257b0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraOwnership.cpp",
-          "reconstruction/bsengine/ExtraOwnership.h"
+          "reconstruction/skyrim_shared/extradata/ExtraOwnership.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOwnership.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "302f898eb9f1a230f755a3d2d8c3505cefcbf4ca882e8e1b1137cce0ce53874e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraOwnership.cpp",
-          "reconstruction/bsengine/ExtraOwnership.h"
+          "reconstruction/skyrim_shared/extradata/ExtraOwnership.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraOwnership.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraOwnership.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraOwnership.cpp",
     "digest": "da5fe292496e7d5ecb1b26ea52cf8b0b6c37dccf5a12353efb0294d67f074728",
     "digest_method": "tu-sha256-v2",
     "run_digest": "8f7a39ce28c85e427dda462463df7309c1473dd5206daf9fb36b2af524641762",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraOwnership.cpp",
-      "reconstruction/bsengine/ExtraOwnership.h"
+      "reconstruction/skyrim_shared/extradata/ExtraOwnership.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraOwnership.h"
     ]
   },
   "symbol_map": {

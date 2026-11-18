@@ -29,8 +29,8 @@
         "object_sha256": "46fdd031da81d0fecfbcd5e2408634f3e8362302d435a8dcf0f2985eb7cc8142",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWaterLightRefs.cpp",
-          "reconstruction/bsengine/ExtraWaterLightRefs.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "856696abf6eae8d59ee666be3ae3ddf1ec15d748b33b13bce82816b075d09c86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWaterLightRefs.cpp",
-          "reconstruction/bsengine/ExtraWaterLightRefs.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWaterLightRefs.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.cpp",
     "digest": "5da5946342fe95614d86f3cea6a9eae97168c74b2e772043bc92ce22aef0fb54",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3f26b52462e478f3c6f5a46f6e378cb036125bf591d2c4efcd8a3bc5f980e1dc",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraWaterLightRefs.cpp",
-      "reconstruction/bsengine/ExtraWaterLightRefs.h"
+      "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWaterLightRefs.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "5c4902e8d3f36eb6f71f8945bb4120d0eb1d1337852e001c1c5e0cc4872d69e9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Projectile.cpp",
-          "reconstruction/forms/Projectile.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/Projectile.cpp",
+          "reconstruction/skyrim_shared/refs/Projectile.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "47f65ad4dee5aa2ffcd7afb0d9b4bcac69d6622084dfea7d4046ceb232fdb5e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Projectile.cpp",
-          "reconstruction/forms/Projectile.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/Projectile.cpp",
+          "reconstruction/skyrim_shared/refs/Projectile.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/Projectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/Projectile.cpp",
     "digest": "bca6a3d2e3c40cfbd4d59d6a26d3d1273224cbc65711c06f7ad7338a65d88b97",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d6731718312948c024c3d3fe6c488196be3a7832cea924d6836ceee7d0f3f042",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/Projectile.cpp",
-      "reconstruction/forms/Projectile.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/refs/Projectile.cpp",
+      "reconstruction/skyrim_shared/refs/Projectile.h"
     ]
   },
   "symbol_map": {

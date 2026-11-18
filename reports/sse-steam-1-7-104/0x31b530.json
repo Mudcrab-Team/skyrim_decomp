@@ -29,9 +29,9 @@
         "object_sha256": "de44e127f8cb6c66de5935ae5a05b987fad08e96ada252f1965bea322c6d8661",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSColorForm.cpp",
-          "reconstruction/forms/BGSColorForm.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSColorForm.cpp",
+          "reconstruction/skyrim_shared/forms/BGSColorForm.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "bac8ec8ad2c5091d91cf18f0ab3509e51d258643e65023ec2cd72207cc44a046",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSColorForm.cpp",
-          "reconstruction/forms/BGSColorForm.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSColorForm.cpp",
+          "reconstruction/skyrim_shared/forms/BGSColorForm.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSColorForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSColorForm.cpp",
     "digest": "3f604426f0d2f6058c8f534241450ff258f527f82888aac836cbd468e3d36642",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ee47efb55fb6c42d363be8b503757d60500d39a9ffa520bef2507fe433a5758c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSColorForm.cpp",
-      "reconstruction/forms/BGSColorForm.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/BGSColorForm.cpp",
+      "reconstruction/skyrim_shared/forms/BGSColorForm.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

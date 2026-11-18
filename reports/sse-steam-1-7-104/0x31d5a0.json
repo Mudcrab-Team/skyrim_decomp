@@ -29,10 +29,10 @@
         "object_sha256": "e6b8c36ffa6274a7e6ac334f31a9e3765645297a2fe15306b1c03308ac1a6449",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/ConcreteFormFactoryLayout.h",
-          "reconstruction/fields/FieldLeaf31d5a0.cpp",
-          "reconstruction/fields/FieldLeaf31d5a0.h",
-          "reconstruction/fields/IFormFactoryLayout.h"
+          "reconstruction/unmapped/fields/ConcreteFormFactoryLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf31d5a0.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf31d5a0.h",
+          "reconstruction/unmapped/fields/IFormFactoryLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "201ccf01fccde3ed465141633925a58bc519b453e88f6ac24bda3f10582dad4f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/ConcreteFormFactoryLayout.h",
-          "reconstruction/fields/FieldLeaf31d5a0.cpp",
-          "reconstruction/fields/FieldLeaf31d5a0.h",
-          "reconstruction/fields/IFormFactoryLayout.h"
+          "reconstruction/unmapped/fields/ConcreteFormFactoryLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf31d5a0.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf31d5a0.h",
+          "reconstruction/unmapped/fields/IFormFactoryLayout.h"
         ]
       }
     }
@@ -344,16 +344,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf31d5a0.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf31d5a0.cpp",
     "digest": "f9c76d6c8d30f16cecfecb442e9171ae0943486b449f1ede6967d46914d8de76",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d2d298ed417ebe669f3f05a55482a2e84f0f9aea7bcd467d122f35957a545c01",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/ConcreteFormFactoryLayout.h",
-      "reconstruction/fields/FieldLeaf31d5a0.cpp",
-      "reconstruction/fields/FieldLeaf31d5a0.h",
-      "reconstruction/fields/IFormFactoryLayout.h"
+      "reconstruction/unmapped/fields/ConcreteFormFactoryLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf31d5a0.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf31d5a0.h",
+      "reconstruction/unmapped/fields/IFormFactoryLayout.h"
     ]
   },
   "symbol_map": {

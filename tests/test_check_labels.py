@@ -354,7 +354,7 @@ public:
         self.assertEqual(codes, {0, 1})
 
     def test_free_form_legacy_files_are_skipped(self):
-        h = self.root / 'reconstruction/netimmerse/NiTimeController.h'
+        h = self.root / 'reconstruction/gamebryo/nianimation/NiTimeController.h'
         h.parent.mkdir(parents=True, exist_ok=True)
         h.write_text(f'// Widget::flags1: {self.label()}\n')
         self.assertEqual(check_labels.check([h], self.checkouts, root=self.root), [])

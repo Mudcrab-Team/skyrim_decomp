@@ -29,8 +29,8 @@
         "object_sha256": "3bc85289d393ea4e3aa9dea4dff9cc6ef0dae546dc726b75a153a68bffeeba22",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFlattenedBoneTree.cpp",
-          "reconstruction/bsengine/BSFlattenedBoneTree.h",
+          "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.cpp",
+          "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.h",
           "reconstruction/netimmerse/NiNode.h"
         ]
       },
@@ -50,8 +50,8 @@
         "object_sha256": "f1af95b4bb8b67053189fdf7b43d261753a2667f65dc1f813c693e04bec957ee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSFlattenedBoneTree.cpp",
-          "reconstruction/bsengine/BSFlattenedBoneTree.h",
+          "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.cpp",
+          "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.h",
           "reconstruction/netimmerse/NiNode.h"
         ]
       }
@@ -319,14 +319,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSFlattenedBoneTree.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.cpp",
     "digest": "6a0d9bf664064a48325314eec2c6943e0648cbc802ed38117092f5965525f9f2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "84b30ca4843eea4baef582924173c9efc8f945f82c39ffdd73fc67be5c1bbc02",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSFlattenedBoneTree.cpp",
-      "reconstruction/bsengine/BSFlattenedBoneTree.h",
+      "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.cpp",
+      "reconstruction/gamebryo/nimain/BSFlattenedBoneTree.h",
       "reconstruction/netimmerse/NiNode.h"
     ]
   },

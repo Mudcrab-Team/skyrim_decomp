@@ -29,9 +29,9 @@
         "object_sha256": "b3470acbcd8cb07aa14a496a5d186bbfd6d132637ebc2741dbc9c82dce37c724",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ba0c968116fc20131c33e0c3225064c8a8525116593af47080f44dc97f5ae362",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.cpp",
     "digest": "6299524caa3522fa922b3e23ec3ab15bf5427a7801a5d6d42e94e5658a36bd64",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1617adef276125eaf77b85f258d698bb61c04c69122204b8d06b6c81b1ca1ecd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCanTalkToPlayerStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCanTalkToPlayerStorageLayout.h"
     ]
   },
   "symbol_map": {

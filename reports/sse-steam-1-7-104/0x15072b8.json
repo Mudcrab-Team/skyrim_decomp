@@ -29,15 +29,15 @@
         "object_sha256": "32ec93113620885324c87d81d2a09e7c55425d005ffd363a46e74f88fe204cc5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       },
       "winpc-native": {
@@ -56,15 +56,15 @@
         "object_sha256": "43ec420850485d093a41c764b5a95591272c03b57b764b1622b3ef15245aef24",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
-          "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.h",
-          "reconstruction/shaders/ImageEffectLayout.h",
-          "reconstruction/shaders/ImagespaceShaderLayout.h",
-          "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-          "reconstruction/shaders/ReloadShaderLayout.h",
-          "reconstruction/shaders/ShaderBaseLayout.h",
-          "reconstruction/shaders/ShaderRefLayout.h",
-          "reconstruction/shaders/ShaderTableLayout.h"
+          "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.h",
+          "reconstruction/bsshader/ImageEffectLayout.h",
+          "reconstruction/bsshader/ImagespaceShaderLayout.h",
+          "reconstruction/bsshader/ReloadShaderLayout.h",
+          "reconstruction/bsshader/ShaderBaseLayout.h",
+          "reconstruction/bsshader/ShaderRefLayout.h",
+          "reconstruction/bsshader/ShaderTableLayout.h",
+          "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
         ]
       }
     }
@@ -349,21 +349,21 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
     "digest": "625727ade399e23f914572adddbf2abab9da22ff4225c35151e520fe4096ba12",
     "digest_method": "tu-sha256-v2",
     "run_digest": "63bd529ddec118f7205e8223be754dfe433a448894124ea4c1b9fcff7f411d4a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
-      "reconstruction/shaders/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.h",
-      "reconstruction/shaders/ImageEffectLayout.h",
-      "reconstruction/shaders/ImagespaceShaderLayout.h",
-      "reconstruction/shaders/NiBoneMatrixSetterLayout.h",
-      "reconstruction/shaders/ReloadShaderLayout.h",
-      "reconstruction/shaders/ShaderBaseLayout.h",
-      "reconstruction/shaders/ShaderRefLayout.h",
-      "reconstruction/shaders/ShaderTableLayout.h"
+      "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderDepthOfFieldMaskedFoggedThunkLayout.h",
+      "reconstruction/bsshader/ImageEffectLayout.h",
+      "reconstruction/bsshader/ImagespaceShaderLayout.h",
+      "reconstruction/bsshader/ReloadShaderLayout.h",
+      "reconstruction/bsshader/ShaderBaseLayout.h",
+      "reconstruction/bsshader/ShaderRefLayout.h",
+      "reconstruction/bsshader/ShaderTableLayout.h",
+      "reconstruction/gamebryo/nimain/NiBoneMatrixSetterLayout.h"
     ]
   },
   "symbol_map": {

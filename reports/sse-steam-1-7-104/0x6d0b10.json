@@ -29,8 +29,8 @@
         "object_sha256": "963899e58c9751d87f7a13842ec8442655fe5ab95b2d45bf7290582af0f301ce",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/storage/StorageInit6d0b10.cpp",
-          "reconstruction/storage/StorageInit6d0b10.h"
+          "reconstruction/unmapped/storage/StorageInit6d0b10.cpp",
+          "reconstruction/unmapped/storage/StorageInit6d0b10.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "de384be1cb0e439b2015e94feaab4f1f69e8f773b60dba3cf0c32f476c6c0b7d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/storage/StorageInit6d0b10.cpp",
-          "reconstruction/storage/StorageInit6d0b10.h"
+          "reconstruction/unmapped/storage/StorageInit6d0b10.cpp",
+          "reconstruction/unmapped/storage/StorageInit6d0b10.h"
         ]
       }
     }
@@ -380,14 +380,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/storage/StorageInit6d0b10.cpp",
+    "compiled": "reconstruction/unmapped/storage/StorageInit6d0b10.cpp",
     "digest": "d40a7041e2dc6b8831ab9aac643b79b9e51a39c43fd779a1654ce3c2f82d688a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b7055d1b90326c3d44ec75431afe1126d7c9c697309fb1a745fbe355c950a426",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/storage/StorageInit6d0b10.cpp",
-      "reconstruction/storage/StorageInit6d0b10.h"
+      "reconstruction/unmapped/storage/StorageInit6d0b10.cpp",
+      "reconstruction/unmapped/storage/StorageInit6d0b10.h"
     ]
   },
   "symbol_map": {

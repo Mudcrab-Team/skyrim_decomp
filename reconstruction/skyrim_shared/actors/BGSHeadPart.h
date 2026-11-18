@@ -1,0 +1,30 @@
+// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Adapted body: BSFixedString::c_str (the null test with the empty-string fallback), from
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Other bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// BGSHeadPart, BGSHeadPart::GetFormEditorID, ::SetFormEditorID, ::formEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BGSHeadPart::unk20: GUESS(low); filler bytes for the TESFullName, TESModelTextureSwap bases and the data members up to offset 0x118
+// BSFixedString, BSFixedString::c_str, ::operator=, ::_data: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; a single string pointer; operator= is declared and not defined, bound by hint to 0xeb1120
+#pragma once
+
+#include <cstdint>
+
+#include "../forms/TESForm.h"
+
+class BSFixedString {
+public:
+    BSFixedString& operator=(const char* a_str);
+
+    const char* c_str() const { return _data ? _data : ""; }
+
+    const char* _data;  // 00
+};
+
+class BGSHeadPart : public TESForm {
+public:
+    const char* GetFormEditorID() const override;             // 32
+    bool        SetFormEditorID(const char* a_str) override;  // 33
+
+    std::uint8_t  unk20[0xF8];   // 20
+    BSFixedString formEditorID;  // 118
+};

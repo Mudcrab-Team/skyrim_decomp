@@ -29,8 +29,8 @@
         "object_sha256": "e58d37a9c2674c8d9d391c5c5b756dede7edc162468d91943cd4f98f7a367ea2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSProjectile.cpp",
-          "reconstruction/forms/BGSProjectile.h"
+          "reconstruction/skyrim_shared/refs/BGSProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/BGSProjectile.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "59ebdf184fc74ac1e86a21f6ff81cdb0476f1c582437cd0a84e507386d82f1ac",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSProjectile.cpp",
-          "reconstruction/forms/BGSProjectile.h"
+          "reconstruction/skyrim_shared/refs/BGSProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/BGSProjectile.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/BGSProjectile.cpp",
     "digest": "acf2638cce9ebfa141482908e4e4cc9a86fcf16a5dca8c06f3860fad53d2cbf2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ebeccde3a85375877ee88b173041874999c197b7d132788f2565cac98b21164e",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSProjectile.cpp",
-      "reconstruction/forms/BGSProjectile.h"
+      "reconstruction/skyrim_shared/refs/BGSProjectile.cpp",
+      "reconstruction/skyrim_shared/refs/BGSProjectile.h"
     ]
   },
   "symbol_map": {

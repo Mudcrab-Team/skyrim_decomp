@@ -29,13 +29,13 @@
         "object_sha256": "74c15b96fc94e739aab720e3952388ed3455e25626aedb0c196114066e3f5639",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/BhkNiCollisionObjectLayout.h",
-          "reconstruction/f004support/NiCollisionObjectLayout.h",
-          "reconstruction/f004support/NiObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented2f9300.cpp",
-          "reconstruction/wrappers/F004Represented2f9300.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/BhkNiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented2f9300.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented2f9300.h"
         ]
       },
       "winpc-native": {
@@ -54,13 +54,13 @@
         "object_sha256": "ebb830b2dbef620e7dd558124ba379c555d48a481940638b3c1d3c71e7aea8b8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BSFixedStringLayout.h",
-          "reconstruction/f004support/BhkNiCollisionObjectLayout.h",
-          "reconstruction/f004support/NiCollisionObjectLayout.h",
-          "reconstruction/f004support/NiObjectLayout.h",
-          "reconstruction/f004support/NiRefObjectLayout.h",
-          "reconstruction/wrappers/F004Represented2f9300.cpp",
-          "reconstruction/wrappers/F004Represented2f9300.h"
+          "reconstruction/unmapped/support/BSFixedStringLayout.h",
+          "reconstruction/unmapped/support/BhkNiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiCollisionObjectLayout.h",
+          "reconstruction/unmapped/support/NiObjectLayout.h",
+          "reconstruction/unmapped/support/NiRefObjectLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented2f9300.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented2f9300.h"
         ]
       }
     }
@@ -342,19 +342,19 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented2f9300.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented2f9300.cpp",
     "digest": "1b5f43202b031c79913873c927be645d6756b5ea2a0b93c56cf4e85806fa4835",
     "digest_method": "tu-sha256-v2",
     "run_digest": "16707a09bbc78a39a8f5c9602cded2d962f3ffaa941a29a4859d75508c7b6989",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BSFixedStringLayout.h",
-      "reconstruction/f004support/BhkNiCollisionObjectLayout.h",
-      "reconstruction/f004support/NiCollisionObjectLayout.h",
-      "reconstruction/f004support/NiObjectLayout.h",
-      "reconstruction/f004support/NiRefObjectLayout.h",
-      "reconstruction/wrappers/F004Represented2f9300.cpp",
-      "reconstruction/wrappers/F004Represented2f9300.h"
+      "reconstruction/unmapped/support/BSFixedStringLayout.h",
+      "reconstruction/unmapped/support/BhkNiCollisionObjectLayout.h",
+      "reconstruction/unmapped/support/NiCollisionObjectLayout.h",
+      "reconstruction/unmapped/support/NiObjectLayout.h",
+      "reconstruction/unmapped/support/NiRefObjectLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented2f9300.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented2f9300.h"
     ]
   },
   "symbol_map": {

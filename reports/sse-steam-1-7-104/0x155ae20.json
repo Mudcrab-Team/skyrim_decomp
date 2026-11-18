@@ -29,8 +29,8 @@
         "object_sha256": "69af22a708bf3d36e76c943b153bd063af1066306394b7829a95a1663544c6eb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWaterShaderMaterial.cpp",
-          "reconstruction/bsengine/BSWaterShaderMaterial.h"
+          "reconstruction/bsshader/BSWaterShaderMaterial.cpp",
+          "reconstruction/bsshader/BSWaterShaderMaterial.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "38fae90ac44beb0ba6600e6013fb4fa8d40c4ee7815b6dee293881902ecf09d2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWaterShaderMaterial.cpp",
-          "reconstruction/bsengine/BSWaterShaderMaterial.h"
+          "reconstruction/bsshader/BSWaterShaderMaterial.cpp",
+          "reconstruction/bsshader/BSWaterShaderMaterial.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSWaterShaderMaterial.cpp",
+    "compiled": "reconstruction/bsshader/BSWaterShaderMaterial.cpp",
     "digest": "6ef0ef5d194862f15e98b94699f61cf6dc2dfe07c7e2e7b4a94b954f0b7414ca",
     "digest_method": "tu-sha256-v2",
     "run_digest": "da74d562bdf0ab987f438b70cd08654545b3f7becb83662ced6c69392720e536",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSWaterShaderMaterial.cpp",
-      "reconstruction/bsengine/BSWaterShaderMaterial.h"
+      "reconstruction/bsshader/BSWaterShaderMaterial.cpp",
+      "reconstruction/bsshader/BSWaterShaderMaterial.h"
     ]
   },
   "symbol_map": {

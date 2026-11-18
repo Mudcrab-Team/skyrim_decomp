@@ -29,8 +29,8 @@
         "object_sha256": "570930baae27affc8c3569ef6138e9031538b518194346d0c53adae5db517fcf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraEncounterZone.cpp",
-          "reconstruction/bsengine/ExtraEncounterZone.h"
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "7f26b23b28fa52719f9dd8e4e86aeb437dcd29df089d014afba7db18726ed7b5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraEncounterZone.cpp",
-          "reconstruction/bsengine/ExtraEncounterZone.h"
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraEncounterZone.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.cpp",
     "digest": "e323edba1ba04d75941412f7af8c8af6ddacac951deeb8c49e5fbcc00ff94016",
     "digest_method": "tu-sha256-v2",
     "run_digest": "21afbe6066e65f6fa4b2d8604751860eee3f50e56cc3832b6da52118a4fec1e1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraEncounterZone.cpp",
-      "reconstruction/bsengine/ExtraEncounterZone.h"
+      "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraEncounterZone.h"
     ]
   },
   "symbol_map": {

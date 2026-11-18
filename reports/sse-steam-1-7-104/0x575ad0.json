@@ -29,9 +29,9 @@
         "object_sha256": "1b66ef2021c44eee0c7833955fd0ba5ee2d39f76288e009904abf9b2a454785b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.cpp",
-          "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.cpp",
+          "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "7c3dc41f3ddb173a0db49ae8407fb9d802e1a1fa657f1893d14b666fad690a86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-          "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.cpp",
-          "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.h"
+          "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+          "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.cpp",
+          "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.cpp",
     "digest": "58ccdf856ec0d73fdbba89943429a570d5eecb034e5b4def8c7ae2dfbe3ecc84",
     "digest_method": "tu-sha256-v2",
     "run_digest": "73db52d5484bd5052ad99bc37aae158ca0232ea1e6182767463632d2eb8c84e4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSIntrusiveRefCountedStorageLayout.h",
-      "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.cpp",
-      "reconstruction/bsengine/IMessageBoxCallbackStorageLayout.h"
+      "reconstruction/bscore/BSIntrusiveRefCountedStorageLayout.h",
+      "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.cpp",
+      "reconstruction/skyrim/interface/IMessageBoxCallbackStorageLayout.h"
     ]
   },
   "symbol_map": {

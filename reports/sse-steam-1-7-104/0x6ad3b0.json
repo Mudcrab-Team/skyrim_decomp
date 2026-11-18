@@ -31,11 +31,11 @@
         "object_sha256": "508beaa63c403782cbf488dc7b9e22029dada17d0b2fa30dcb7e0888255c09c9",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/InitializeValues.cpp",
-          "reconstruction/actor206_sol/InitializeValues.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim/papyrus/InitializeValues.cpp",
+          "reconstruction/skyrim/papyrus/InitializeValues.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       },
       "winpc-native": {
@@ -56,11 +56,11 @@
         "object_sha256": "86bee6e65a171864ffdb49af3da4cda83d3f1886ed19223d99ef4643ff56d980",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/InitializeValues.cpp",
-          "reconstruction/actor206_sol/InitializeValues.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim/papyrus/InitializeValues.cpp",
+          "reconstruction/skyrim/papyrus/InitializeValues.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       }
     }
@@ -333,17 +333,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_sol/InitializeValues.cpp",
+    "compiled": "reconstruction/skyrim/papyrus/InitializeValues.cpp",
     "digest": "3b2b3247aa8c88c074589ccbcb073f603050ea84750d7845e8419b5ecc355ef5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "30309c7a968a1fbac97feb066774ba5dd4563ad9dbbdf1ed2999f50dbcf520e3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_sol/InitializeValues.cpp",
-      "reconstruction/actor206_sol/InitializeValues.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim/papyrus/InitializeValues.cpp",
+      "reconstruction/skyrim/papyrus/InitializeValues.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
     ]
   },
   "symbol_map": {

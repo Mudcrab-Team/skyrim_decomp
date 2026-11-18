@@ -29,8 +29,8 @@
         "object_sha256": "39fc72d40d57b01441cf90847c3c9df822171cad88dc8e6f4d46254f02e865cf",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSGeometryReturns.cpp",
-          "reconstruction/bsengine/BSGeometryReturns.h"
+          "reconstruction/gamebryo/nimain/BSGeometryReturns.cpp",
+          "reconstruction/gamebryo/nimain/BSGeometryReturns.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "ee3e66b3590096e7fff01083744807b4caf8808c029e211e2e20225a287a0769",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSGeometryReturns.cpp",
-          "reconstruction/bsengine/BSGeometryReturns.h"
+          "reconstruction/gamebryo/nimain/BSGeometryReturns.cpp",
+          "reconstruction/gamebryo/nimain/BSGeometryReturns.h"
         ]
       }
     }
@@ -312,14 +312,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSGeometryReturns.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSGeometryReturns.cpp",
     "digest": "8b71da32270ed6a2da2c0eb583f086cd55cb7377a16e12b22075458b70b608ea",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e6b2f9814975596cc56bd5aeda3a97bb0fe613759433061100ba0d360f171570",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSGeometryReturns.cpp",
-      "reconstruction/bsengine/BSGeometryReturns.h"
+      "reconstruction/gamebryo/nimain/BSGeometryReturns.cpp",
+      "reconstruction/gamebryo/nimain/BSGeometryReturns.h"
     ]
   },
   "symbol_map": {

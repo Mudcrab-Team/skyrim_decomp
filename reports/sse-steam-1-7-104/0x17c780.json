@@ -29,10 +29,10 @@
         "object_sha256": "ea98069a332fef31686ee5abe52ee0160d544c866a150dd3a9034ead85c7f94f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/BSExtraDataLayout.h",
-          "reconstruction/represented_storage/F004Recovered17c780.cpp",
-          "reconstruction/represented_storage/F004Recovered17c780.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h"
+          "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered17c780.cpp",
+          "reconstruction/unmapped/represented/F004Recovered17c780.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "73683bd5758382916d997ebf88f4c75d384fc070cf347f7a23cf023af5414b48",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/represented_storage/BSExtraDataLayout.h",
-          "reconstruction/represented_storage/F004Recovered17c780.cpp",
-          "reconstruction/represented_storage/F004Recovered17c780.h",
-          "reconstruction/represented_storage/LayoutValueTypes.h"
+          "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+          "reconstruction/unmapped/represented/F004Recovered17c780.cpp",
+          "reconstruction/unmapped/represented/F004Recovered17c780.h",
+          "reconstruction/unmapped/represented/LayoutValueTypes.h"
         ]
       }
     }
@@ -321,16 +321,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/represented_storage/F004Recovered17c780.cpp",
+    "compiled": "reconstruction/unmapped/represented/F004Recovered17c780.cpp",
     "digest": "2c3c4649b8c0422908b02ac0d0c616834709c9c9f98f0af4eace51b17002f9a9",
     "digest_method": "tu-sha256-v2",
     "run_digest": "963a198dbe89e420e1330cde9fed2d8c64efb6ca78e6d812f1b4f5a39c0a46c4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/represented_storage/BSExtraDataLayout.h",
-      "reconstruction/represented_storage/F004Recovered17c780.cpp",
-      "reconstruction/represented_storage/F004Recovered17c780.h",
-      "reconstruction/represented_storage/LayoutValueTypes.h"
+      "reconstruction/unmapped/represented/BSExtraDataLayout.h",
+      "reconstruction/unmapped/represented/F004Recovered17c780.cpp",
+      "reconstruction/unmapped/represented/F004Recovered17c780.h",
+      "reconstruction/unmapped/represented/LayoutValueTypes.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "76c0b83403f3acecae31e7e7fbbe31b2fc0a0dc1e2471c7728c86d9918ad09e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESObjectWEAP.cpp",
-          "reconstruction/forms/TESObjectWEAP.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAP.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAP.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a927684264bf058030094245a7361c28f1320626cab8d905114c2dd0735df208",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESObjectWEAP.cpp",
-          "reconstruction/forms/TESObjectWEAP.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAP.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAP.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESObjectWEAP.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESObjectWEAP.cpp",
     "digest": "7edf1ec6df6a3a0c7791bd478d4bfde5148cab7e43da617b7efc50479595a596",
     "digest_method": "tu-sha256-v2",
     "run_digest": "dd0856544219903367dc4acfe1a528cf526bd117287c3083ba5147233db15e15",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESObjectWEAP.cpp",
-      "reconstruction/forms/TESObjectWEAP.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/forms/TESObjectWEAP.cpp",
+      "reconstruction/skyrim_shared/forms/TESObjectWEAP.h"
     ]
   },
   "symbol_map": {

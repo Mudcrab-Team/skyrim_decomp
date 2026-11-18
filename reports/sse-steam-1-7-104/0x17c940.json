@@ -29,9 +29,9 @@
         "object_sha256": "7c571897193cb74ec8dc66b147870d189ead5eab8ee536aba65e25edeb833b85",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraFavorCostStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraFavorCostStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "a35b27efe2e528691221019601d58d0e0ff5190a1c732296431c7644a22c84d3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraFavorCostStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraFavorCostStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraFavorCostStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.cpp",
     "digest": "6e24b4172e85d9820e5b6dec0fab843d62aabcc51a8da635bbd7e9a7ddddc355",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e547621827248dc56413572c78e67f59f342b48e82a87aeb8bcc881e7673d79a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraFavorCostStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraFavorCostStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraFavorCostStorageLayout.h"
     ]
   },
   "symbol_map": {

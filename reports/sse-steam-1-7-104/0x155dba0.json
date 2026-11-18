@@ -29,8 +29,8 @@
         "object_sha256": "7efb1d15cd53ba5118249ae651cffdc6ea5bf6c1abbdaaeafd0dde4751303535",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShadowLight.cpp",
-          "reconstruction/bsengine/BSShadowLight.h"
+          "reconstruction/bsshader/BSShadowLight.cpp",
+          "reconstruction/bsshader/BSShadowLight.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "7a178484fd02519bf59c256be52bcb569de3a08ce2030be643af2a4b1b747469",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShadowLight.cpp",
-          "reconstruction/bsengine/BSShadowLight.h"
+          "reconstruction/bsshader/BSShadowLight.cpp",
+          "reconstruction/bsshader/BSShadowLight.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSShadowLight.cpp",
+    "compiled": "reconstruction/bsshader/BSShadowLight.cpp",
     "digest": "19616c782b981d9ce6ebb3a5f50a260459373039261e0c783aba4446f7bca1d2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2c39f4bf1d17557a8d693029f33113428e09d77679e5750183642125836cddfc",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShadowLight.cpp",
-      "reconstruction/bsengine/BSShadowLight.h"
+      "reconstruction/bsshader/BSShadowLight.cpp",
+      "reconstruction/bsshader/BSShadowLight.h"
     ]
   },
   "symbol_map": {

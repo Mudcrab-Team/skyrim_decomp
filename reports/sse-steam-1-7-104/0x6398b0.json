@@ -29,9 +29,9 @@
         "object_sha256": "e26902f8ba7f00623aa2829eb4ef89b8219752b61638cf16d155f741920809ba",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BGSSaveGameBufferLayout.h",
-          "reconstruction/wrappers/F004Represented6398b0.cpp",
-          "reconstruction/wrappers/F004Represented6398b0.h"
+          "reconstruction/unmapped/support/BGSSaveGameBufferLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented6398b0.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented6398b0.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "20a83efa1b3bc863730a67f5650aaf19588fde13f81f6c9dfaa24bee843149a7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/f004support/BGSSaveGameBufferLayout.h",
-          "reconstruction/wrappers/F004Represented6398b0.cpp",
-          "reconstruction/wrappers/F004Represented6398b0.h"
+          "reconstruction/unmapped/support/BGSSaveGameBufferLayout.h",
+          "reconstruction/unmapped/wrappers/F004Represented6398b0.cpp",
+          "reconstruction/unmapped/wrappers/F004Represented6398b0.h"
         ]
       }
     }
@@ -334,15 +334,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/wrappers/F004Represented6398b0.cpp",
+    "compiled": "reconstruction/unmapped/wrappers/F004Represented6398b0.cpp",
     "digest": "7672db7dc594c040c50eea85b10c5af530a906a45ce38176f83b7c6437ce03b5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "dc4f973ae71cd20eddb98ff99111d8fd331d49d3ad750168e5f2253bf1c4e6da",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/f004support/BGSSaveGameBufferLayout.h",
-      "reconstruction/wrappers/F004Represented6398b0.cpp",
-      "reconstruction/wrappers/F004Represented6398b0.h"
+      "reconstruction/unmapped/support/BGSSaveGameBufferLayout.h",
+      "reconstruction/unmapped/wrappers/F004Represented6398b0.cpp",
+      "reconstruction/unmapped/wrappers/F004Represented6398b0.h"
     ]
   },
   "symbol_map": {

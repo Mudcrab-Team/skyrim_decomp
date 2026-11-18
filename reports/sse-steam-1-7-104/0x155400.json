@@ -29,8 +29,8 @@
         "object_sha256": "1b72ca1c7c31891914523dd041ea1ffd6cc5b7ecdb0f8ff221a2ff97ded56212",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_155400/SpellItem.cpp",
-          "reconstruction/fo4b4b_155400/SpellItem.h"
+          "reconstruction/skyrim_shared/magic/SpellItem_155400.cpp",
+          "reconstruction/skyrim_shared/magic/SpellItem_155400.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "71e199b733ae655c2714467a05fdd8b5cdded4207cfeaa82fc99ef48eff557a8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4b_155400/SpellItem.cpp",
-          "reconstruction/fo4b4b_155400/SpellItem.h"
+          "reconstruction/skyrim_shared/magic/SpellItem_155400.cpp",
+          "reconstruction/skyrim_shared/magic/SpellItem_155400.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4b4b_155400/SpellItem.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/SpellItem_155400.cpp",
     "digest": "985ba7aecdb133eb19c4ab36b6761e6982feec486ebb396f181406fe5b7185ae",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3cedbadc19441ba60247041d31628ba69ed4bf118f4445e985800c7a3f1ba027",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4b4b_155400/SpellItem.cpp",
-      "reconstruction/fo4b4b_155400/SpellItem.h"
+      "reconstruction/skyrim_shared/magic/SpellItem_155400.cpp",
+      "reconstruction/skyrim_shared/magic/SpellItem_155400.h"
     ]
   },
   "symbol_map": {

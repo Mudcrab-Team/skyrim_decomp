@@ -29,8 +29,8 @@
         "object_sha256": "da6467fadc866589584e53e9889e2cf225ac64c819055ee51e9f53136f38d8df",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionDataSound.cpp",
-          "reconstruction/forms/TESRegionDataSound.h"
+          "reconstruction/skyrim_shared/world/TESRegionDataSound.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionDataSound.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "81e4f078f126785b29e67ca00def00658b33edc35b57d87ac837e4614d6440c1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionDataSound.cpp",
-          "reconstruction/forms/TESRegionDataSound.h"
+          "reconstruction/skyrim_shared/world/TESRegionDataSound.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionDataSound.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRegionDataSound.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESRegionDataSound.cpp",
     "digest": "ea462f951bc251799d191e5d4fd7a32864519bab4b3b459282070eca4f619af5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a90a5632fcbbced6954e3a642b6a2fd43c7aa9541a590d08afeddb1ab9c5fcda",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESRegionDataSound.cpp",
-      "reconstruction/forms/TESRegionDataSound.h"
+      "reconstruction/skyrim_shared/world/TESRegionDataSound.cpp",
+      "reconstruction/skyrim_shared/world/TESRegionDataSound.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "cd0d2db5c33f86a4b1b5c780a7b335a0acbb07bfe792b6000f0399d21314ad7d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSaveFormBuffer.h",
-          "reconstruction/forms/BeamProjectile.cpp",
-          "reconstruction/forms/BeamProjectile.h"
+          "reconstruction/skyrim_shared/refs/BeamProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/BeamProjectile.h",
+          "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "bb7c0d10b2cff3c2d90253510d0c0db8ff3a88edb0540386f943e20e3f96592f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSaveFormBuffer.h",
-          "reconstruction/forms/BeamProjectile.cpp",
-          "reconstruction/forms/BeamProjectile.h"
+          "reconstruction/skyrim_shared/refs/BeamProjectile.cpp",
+          "reconstruction/skyrim_shared/refs/BeamProjectile.h",
+          "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BeamProjectile.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/BeamProjectile.cpp",
     "digest": "743f6b24799a11cf9e35ced3321fe1fba11eff27f3b77f062588d2f2174156d3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "a23929652c5d8f29669dd356c58334753c2f3d86d64ed5a0b87305f9675fc5fd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSSaveFormBuffer.h",
-      "reconstruction/forms/BeamProjectile.cpp",
-      "reconstruction/forms/BeamProjectile.h"
+      "reconstruction/skyrim_shared/refs/BeamProjectile.cpp",
+      "reconstruction/skyrim_shared/refs/BeamProjectile.h",
+      "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.h"
     ]
   },
   "symbol_map": {

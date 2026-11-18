@@ -29,8 +29,8 @@
         "object_sha256": "b73882f8063a53cac6a0f5aa42c21f21d5080851bd4f43aa404b3a35914972ce",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraSeenData.cpp",
-          "reconstruction/bsengine/ExtraSeenData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraSeenData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSeenData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9d19e3144d813348851434bb0a261bb0cff184202ab4905ad15aeb3380e3371a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraSeenData.cpp",
-          "reconstruction/bsengine/ExtraSeenData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraSeenData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraSeenData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraSeenData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraSeenData.cpp",
     "digest": "c2092f79c7411a7b771f14d3391f1cd5477c1988c62e43ad37146daffe269e6a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "bebdb1adb0d6dbfea243f43559605cc48e7a02fab5418b75b2bba4688bb7c3a2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraSeenData.cpp",
-      "reconstruction/bsengine/ExtraSeenData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraSeenData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraSeenData.h"
     ]
   },
   "symbol_map": {

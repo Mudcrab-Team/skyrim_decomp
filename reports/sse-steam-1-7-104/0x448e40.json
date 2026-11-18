@@ -29,10 +29,10 @@
         "object_sha256": "bd2db4885bc5eaea1daf2778cd199fde743b69d38ae0891cdad92727d5047216",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/AIWorldLocationLayout.h",
-          "reconstruction/fields/AIWorldPointRadiusLayout.h",
-          "reconstruction/fields/FieldLeaf448e40.cpp",
-          "reconstruction/fields/FieldLeaf448e40.h"
+          "reconstruction/unmapped/fields/AIWorldLocationLayout.h",
+          "reconstruction/unmapped/fields/AIWorldPointRadiusLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf448e40.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf448e40.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "2b48206635bb4e690d183215fe8e560fa68115e996779fe054a1cafc596d9a81",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/AIWorldLocationLayout.h",
-          "reconstruction/fields/AIWorldPointRadiusLayout.h",
-          "reconstruction/fields/FieldLeaf448e40.cpp",
-          "reconstruction/fields/FieldLeaf448e40.h"
+          "reconstruction/unmapped/fields/AIWorldLocationLayout.h",
+          "reconstruction/unmapped/fields/AIWorldPointRadiusLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf448e40.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf448e40.h"
         ]
       }
     }
@@ -347,16 +347,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf448e40.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf448e40.cpp",
     "digest": "bc36deaeb7b1aac98a281ac3ae4abc965604b352a02ca404ba620e9bd4df922c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "de56c6f116450231745d6e0c96531830842d4ad2e21b4a4238962529d8811c8b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/AIWorldLocationLayout.h",
-      "reconstruction/fields/AIWorldPointRadiusLayout.h",
-      "reconstruction/fields/FieldLeaf448e40.cpp",
-      "reconstruction/fields/FieldLeaf448e40.h"
+      "reconstruction/unmapped/fields/AIWorldLocationLayout.h",
+      "reconstruction/unmapped/fields/AIWorldPointRadiusLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf448e40.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf448e40.h"
     ]
   },
   "symbol_map": {

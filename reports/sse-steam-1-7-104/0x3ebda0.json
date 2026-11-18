@@ -29,9 +29,9 @@
         "object_sha256": "06795030c46d2ee94a7d2611ebae28b11b71720fe0e00987bb117a91e1e19577",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESRace.cpp",
-          "reconstruction/forms/TESRace.h"
+          "reconstruction/skyrim_shared/actors/TESRace.cpp",
+          "reconstruction/skyrim_shared/actors/TESRace.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "ae9804565a4344522a3de25f701ae82aa7c9d2fb38fd91e0d54bb9fdb641c3d6",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESForm.h",
-          "reconstruction/forms/TESRace.cpp",
-          "reconstruction/forms/TESRace.h"
+          "reconstruction/skyrim_shared/actors/TESRace.cpp",
+          "reconstruction/skyrim_shared/actors/TESRace.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRace.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/TESRace.cpp",
     "digest": "5b2bf0ae83b95874e32e9865903b619b71feb066ba1ab49d4695df01ebbced72",
     "digest_method": "tu-sha256-v2",
     "run_digest": "67234f197b9dea782b2170fa9354def8a494275c7fbc0a2f3534c5e37e55f9d9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESForm.h",
-      "reconstruction/forms/TESRace.cpp",
-      "reconstruction/forms/TESRace.h"
+      "reconstruction/skyrim_shared/actors/TESRace.cpp",
+      "reconstruction/skyrim_shared/actors/TESRace.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

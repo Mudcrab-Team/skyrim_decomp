@@ -29,8 +29,8 @@
         "object_sha256": "34d2d0649990421e7dd7f24f3c5d769b47902a3b8cde83ce2df52dd1d8250e26",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShadowFrustumLight.cpp",
-          "reconstruction/bsengine/BSShadowFrustumLight.h"
+          "reconstruction/bsshader/BSShadowFrustumLight.cpp",
+          "reconstruction/bsshader/BSShadowFrustumLight.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f9374fdbcc90d6f5393066237e14464783f954526de8ffdede2e9bffd7e64c2c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSShadowFrustumLight.cpp",
-          "reconstruction/bsengine/BSShadowFrustumLight.h"
+          "reconstruction/bsshader/BSShadowFrustumLight.cpp",
+          "reconstruction/bsshader/BSShadowFrustumLight.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSShadowFrustumLight.cpp",
+    "compiled": "reconstruction/bsshader/BSShadowFrustumLight.cpp",
     "digest": "ad588b45d3576c920d5530bbc19a18d2f5ac6d68296e0ecb772f52ef78edfcf0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1ae94b2d146487fb46ea735f72bded19890239206205ef6cf39bbf62f32b4ba9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSShadowFrustumLight.cpp",
-      "reconstruction/bsengine/BSShadowFrustumLight.h"
+      "reconstruction/bsshader/BSShadowFrustumLight.cpp",
+      "reconstruction/bsshader/BSShadowFrustumLight.h"
     ]
   },
   "symbol_map": {

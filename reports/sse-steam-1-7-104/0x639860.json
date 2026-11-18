@@ -29,8 +29,8 @@
         "object_sha256": "6dcc49434be23d9d8e433f59b3a546c0634ac6e352a64d316c9725f8a1b0462c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSaveFormBuffer.cpp",
-          "reconstruction/forms/BGSSaveFormBuffer.h"
+          "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.cpp",
+          "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "24786b1c7bdfff98d197d02190aad173dfb7c8fbb26a9406a25b35cdf77f3b4e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSSaveFormBuffer.cpp",
-          "reconstruction/forms/BGSSaveFormBuffer.h"
+          "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.cpp",
+          "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSSaveFormBuffer.cpp",
+    "compiled": "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.cpp",
     "digest": "f1e8098b06661e24fe216f13d2549affb3b8808481a47e448335c9b955c41a71",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d0073729eb2227ea4d2a981bf8efc303d33d5d2a72eb9f2f1fa996022c75e512",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSSaveFormBuffer.cpp",
-      "reconstruction/forms/BGSSaveFormBuffer.h"
+      "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.cpp",
+      "reconstruction/skyrim_shared/saveload/BGSSaveFormBuffer.h"
     ]
   },
   "symbol_map": {

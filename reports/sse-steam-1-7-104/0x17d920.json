@@ -29,9 +29,9 @@
         "object_sha256": "b48bcf93c33f0ab47393d7d19c6ed39ff42d0b8ef57b7001eb4cf91d5a2bd04e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "4efed73ee742642853661ac0dd40cc5f03fc83782da8af9b20ce6ded482539c4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.cpp",
     "digest": "04e652bfa985fcb639f8c9781b6c152bbb5186c9409b8175bff132e92e4ac73a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2c13100f70f5edb3ad58f823394e3d104a6c5f346d8feb15b407a6368c84aa6a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraRefractionPropertyStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraRefractionPropertyStorageLayout.h"
     ]
   },
   "symbol_map": {

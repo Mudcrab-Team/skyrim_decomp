@@ -29,8 +29,8 @@
         "object_sha256": "71091dd48e8df86e4651d06857bc780992a57275a7938d08307fb035d8150f4c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiStream.cpp",
-          "reconstruction/netimmerse/NiStream.h"
+          "reconstruction/bssystem/NiStream.cpp",
+          "reconstruction/bssystem/NiStream.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "65a70bd4374e19b77da0f99845b96cdf13fe68067ae155e6af26d3bc06724779",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiStream.cpp",
-          "reconstruction/netimmerse/NiStream.h"
+          "reconstruction/bssystem/NiStream.cpp",
+          "reconstruction/bssystem/NiStream.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiStream.cpp",
+    "compiled": "reconstruction/bssystem/NiStream.cpp",
     "digest": "51ba920c830c7f2a8ae0d8082be5fe84588404a779c9a444e0b4a1493e6703be",
     "digest_method": "tu-sha256-v2",
     "run_digest": "0b9be573e0f079304d8518882db1980fc2437711e519dc1f0af7c13c468811fa",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiStream.cpp",
-      "reconstruction/netimmerse/NiStream.h"
+      "reconstruction/bssystem/NiStream.cpp",
+      "reconstruction/bssystem/NiStream.h"
     ]
   },
   "symbol_map": {

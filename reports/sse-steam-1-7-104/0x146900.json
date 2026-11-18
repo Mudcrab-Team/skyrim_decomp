@@ -29,8 +29,8 @@
         "object_sha256": "704155a9a562fd61df7ff14ab5236585199037a923dfe79bc802d05f2e7976c3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/MagicItem.cpp",
-          "reconstruction/forms/MagicItem.h"
+          "reconstruction/skyrim_shared/magic/MagicItem.cpp",
+          "reconstruction/skyrim_shared/magic/MagicItem.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f5b28974d42e02a72c06fde09765b5c4a54cbbd8ef3f8e302685dddb6bc462fb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/MagicItem.cpp",
-          "reconstruction/forms/MagicItem.h"
+          "reconstruction/skyrim_shared/magic/MagicItem.cpp",
+          "reconstruction/skyrim_shared/magic/MagicItem.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/MagicItem.cpp",
+    "compiled": "reconstruction/skyrim_shared/magic/MagicItem.cpp",
     "digest": "02bfade42a3d29f354e6ba9dc239417ccf4942d9308d6242a5abf02d6f47a31c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "aaa9ca954e44d763a13753507c5f97a32c7b57ccb1a1c05c4135dcf0cdf80406",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/MagicItem.cpp",
-      "reconstruction/forms/MagicItem.h"
+      "reconstruction/skyrim_shared/magic/MagicItem.cpp",
+      "reconstruction/skyrim_shared/magic/MagicItem.h"
     ]
   },
   "symbol_map": {

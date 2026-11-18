@@ -29,8 +29,8 @@
         "object_sha256": "4740ba3ed2ff18f2f5bbd91b25010690a7e6497c804c0a6affb822ecb35cc156",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraBadPosition.cpp",
-          "reconstruction/bsengine/ExtraBadPosition.h"
+          "reconstruction/skyrim_shared/extradata/ExtraBadPosition.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraBadPosition.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "92e9280bcc641312916ca322ed132d3a231a05146603efcf1da900aad667c0fe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraBadPosition.cpp",
-          "reconstruction/bsengine/ExtraBadPosition.h"
+          "reconstruction/skyrim_shared/extradata/ExtraBadPosition.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraBadPosition.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraBadPosition.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraBadPosition.cpp",
     "digest": "31c4521d8a247314ab361ee822c29bd3d72c19192c03a032de1876a2e1362c08",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2c42797900374d9bac7f00eede19d000d99228f61546b9335f79c3a253d30623",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraBadPosition.cpp",
-      "reconstruction/bsengine/ExtraBadPosition.h"
+      "reconstruction/skyrim_shared/extradata/ExtraBadPosition.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraBadPosition.h"
     ]
   },
   "symbol_map": {

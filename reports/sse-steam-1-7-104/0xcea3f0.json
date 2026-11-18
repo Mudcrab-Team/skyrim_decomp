@@ -29,8 +29,8 @@
         "object_sha256": "6bca294cb4be4a2e9df22d065b7a56c1a4c12287ebe92c5a93269729111dc907",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSSmallBlockAllocator.cpp",
-          "reconstruction/bsengine/BSSmallBlockAllocator.h"
+          "reconstruction/bscore/BSSmallBlockAllocator.cpp",
+          "reconstruction/bscore/BSSmallBlockAllocator.h"
         ]
       }
     }
@@ -171,14 +171,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSSmallBlockAllocator.cpp",
+    "compiled": "reconstruction/bscore/BSSmallBlockAllocator.cpp",
     "digest": "3398d1abd3040cd52b7ccdd55f72401e91449c8ede82281dcb1b15cc51ba0947",
     "digest_method": "tu-sha256-v2",
     "run_digest": "407c835fec6b86f6ca38036929a47fe952e7130184954b47ddae68e1fa362bd1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSSmallBlockAllocator.cpp",
-      "reconstruction/bsengine/BSSmallBlockAllocator.h"
+      "reconstruction/bscore/BSSmallBlockAllocator.cpp",
+      "reconstruction/bscore/BSSmallBlockAllocator.h"
     ]
   },
   "submitter": "hinkiii",

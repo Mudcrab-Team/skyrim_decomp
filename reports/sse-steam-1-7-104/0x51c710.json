@@ -29,8 +29,8 @@
         "object_sha256": "f6690e994e27ac0644427092ad1297c3f1b674b6e140a49d816b3da1e5935e73",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSQueuedObjectDowngrade.cpp",
-          "reconstruction/forms/BGSQueuedObjectDowngrade.h"
+          "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.cpp",
+          "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3f8f1454cfba412c87cbec0020bc56d7256b4d3f04ff03782c7487a63cc1f3a0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSQueuedObjectDowngrade.cpp",
-          "reconstruction/forms/BGSQueuedObjectDowngrade.h"
+          "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.cpp",
+          "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSQueuedObjectDowngrade.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.cpp",
     "digest": "1f29641f733b89a44ed97574147509448b6d43400eeee42f893fedce02784ee4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d7dda96b17c1eef2e019bde6c8a0b850cd170b0c9e1e5fa49a19f8191c990b2a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSQueuedObjectDowngrade.cpp",
-      "reconstruction/forms/BGSQueuedObjectDowngrade.h"
+      "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.cpp",
+      "reconstruction/skyrim_shared/world/BGSQueuedObjectDowngrade.h"
     ]
   },
   "symbol_map": {

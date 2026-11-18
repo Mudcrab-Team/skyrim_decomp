@@ -29,8 +29,8 @@
         "object_sha256": "77e6dd26510f56a6dc8331570bdf5763b222b35c19c111ba10dddc3694cc504a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraForcedTarget.cpp",
-          "reconstruction/bsengine/ExtraForcedTarget.h"
+          "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "0f555232495f76321a2c7daf236a7a50c0e77705cc5405f35d03b605127c9bb4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraForcedTarget.cpp",
-          "reconstruction/bsengine/ExtraForcedTarget.h"
+          "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraForcedTarget.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.cpp",
     "digest": "ee76f448226c13f31327b7d157aa727c8c0b7a74d4f5c59dc6a6428c9b377bad",
     "digest_method": "tu-sha256-v2",
     "run_digest": "dcc7f5be759cc201f150695f2c599b68ec7ed393fbfb993982c837a3c2e0dfdf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraForcedTarget.cpp",
-      "reconstruction/bsengine/ExtraForcedTarget.h"
+      "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraForcedTarget.h"
     ]
   },
   "symbol_map": {

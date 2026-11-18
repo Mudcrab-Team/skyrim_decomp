@@ -29,9 +29,9 @@
         "object_sha256": "93a0b242fde623d346d16c00e4efa9f2df6b21bfa1e4adf1a47f0da3552051ca",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSKeyword.cpp",
-          "reconstruction/forms/BGSKeyword.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSKeyword.cpp",
+          "reconstruction/skyrim_shared/forms/BGSKeyword.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "b0b2e2caa51378eeccbea56bf7c6e40288e9529db59d86c1487f7997d5273f86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSKeyword.cpp",
-          "reconstruction/forms/BGSKeyword.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/BGSKeyword.cpp",
+          "reconstruction/skyrim_shared/forms/BGSKeyword.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSKeyword.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSKeyword.cpp",
     "digest": "af6f598ced8c2b568d7162e5254dc3307d1b308428bba67d9bdb5f908dd70fda",
     "digest_method": "tu-sha256-v2",
     "run_digest": "3398415a8a66f46662c322c43cf36f659f1f63f77f6b0abc685b9799e1dc7db4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSKeyword.cpp",
-      "reconstruction/forms/BGSKeyword.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/BGSKeyword.cpp",
+      "reconstruction/skyrim_shared/forms/BGSKeyword.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

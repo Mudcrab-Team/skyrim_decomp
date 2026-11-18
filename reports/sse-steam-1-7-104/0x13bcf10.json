@@ -29,8 +29,8 @@
         "object_sha256": "b3c8e683df436ad905c9ca0665573765452bc7977a295d48623153a9a80c2e56",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/buffers/CheckedCopy13bcf10.cpp",
-          "reconstruction/buffers/CheckedCopy13bcf10.h"
+          "reconstruction/unmapped/buffers/CheckedCopy13bcf10.cpp",
+          "reconstruction/unmapped/buffers/CheckedCopy13bcf10.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "90e15c272b2b873c4bc4516e0d2b2564156df2b0a2437426ec77aedc53be6a03",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/buffers/CheckedCopy13bcf10.cpp",
-          "reconstruction/buffers/CheckedCopy13bcf10.h"
+          "reconstruction/unmapped/buffers/CheckedCopy13bcf10.cpp",
+          "reconstruction/unmapped/buffers/CheckedCopy13bcf10.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/buffers/CheckedCopy13bcf10.cpp",
+    "compiled": "reconstruction/unmapped/buffers/CheckedCopy13bcf10.cpp",
     "digest": "a936e480218c8e93478b0c98783e66f0c7de7d9618eafcd3023f791baec90824",
     "digest_method": "tu-sha256-v2",
     "run_digest": "cbb3240ca442ea0d598cc7af8604ddcfb31f77c37b17abfc768895cd3d4aec36",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/buffers/CheckedCopy13bcf10.cpp",
-      "reconstruction/buffers/CheckedCopy13bcf10.h"
+      "reconstruction/unmapped/buffers/CheckedCopy13bcf10.cpp",
+      "reconstruction/unmapped/buffers/CheckedCopy13bcf10.h"
     ]
   },
   "symbol_map": {

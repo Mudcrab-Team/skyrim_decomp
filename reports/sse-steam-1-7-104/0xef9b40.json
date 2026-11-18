@@ -29,12 +29,12 @@
         "object_sha256": "d05b6ff5a0a1e968a9839af35ae046d98f325367eb9565681cfa5cfc69654d65",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BSFixedStringLayout.h",
-          "reconstruction/fields/FieldLeafef9b40.cpp",
-          "reconstruction/fields/FieldLeafef9b40.h",
-          "reconstruction/fields/NiExtraDataLayout.h",
-          "reconstruction/fields/NiObjectLayout.h",
-          "reconstruction/fields/NiRefObjectLayout.h"
+          "reconstruction/unmapped/fields/BSFixedStringLayout.h",
+          "reconstruction/unmapped/fields/FieldLeafef9b40.cpp",
+          "reconstruction/unmapped/fields/FieldLeafef9b40.h",
+          "reconstruction/unmapped/fields/NiExtraDataLayout.h",
+          "reconstruction/unmapped/fields/NiObjectLayout.h",
+          "reconstruction/unmapped/fields/NiRefObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -53,12 +53,12 @@
         "object_sha256": "f23784ac16d23c44ed0e2a56dc68dfa2fdf035d8e5f57a7019ffd8b320abfe72",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BSFixedStringLayout.h",
-          "reconstruction/fields/FieldLeafef9b40.cpp",
-          "reconstruction/fields/FieldLeafef9b40.h",
-          "reconstruction/fields/NiExtraDataLayout.h",
-          "reconstruction/fields/NiObjectLayout.h",
-          "reconstruction/fields/NiRefObjectLayout.h"
+          "reconstruction/unmapped/fields/BSFixedStringLayout.h",
+          "reconstruction/unmapped/fields/FieldLeafef9b40.cpp",
+          "reconstruction/unmapped/fields/FieldLeafef9b40.h",
+          "reconstruction/unmapped/fields/NiExtraDataLayout.h",
+          "reconstruction/unmapped/fields/NiObjectLayout.h",
+          "reconstruction/unmapped/fields/NiRefObjectLayout.h"
         ]
       }
     }
@@ -344,18 +344,18 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeafef9b40.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeafef9b40.cpp",
     "digest": "f4b9e120219a0d357c7e9e0da89207168bcac856b91d9a05b4429eb0932d44e3",
     "digest_method": "tu-sha256-v2",
     "run_digest": "d04252eea211348662a2a60ef50dc67811b1962d36ba4791eeafb41d3d536383",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/BSFixedStringLayout.h",
-      "reconstruction/fields/FieldLeafef9b40.cpp",
-      "reconstruction/fields/FieldLeafef9b40.h",
-      "reconstruction/fields/NiExtraDataLayout.h",
-      "reconstruction/fields/NiObjectLayout.h",
-      "reconstruction/fields/NiRefObjectLayout.h"
+      "reconstruction/unmapped/fields/BSFixedStringLayout.h",
+      "reconstruction/unmapped/fields/FieldLeafef9b40.cpp",
+      "reconstruction/unmapped/fields/FieldLeafef9b40.h",
+      "reconstruction/unmapped/fields/NiExtraDataLayout.h",
+      "reconstruction/unmapped/fields/NiObjectLayout.h",
+      "reconstruction/unmapped/fields/NiRefObjectLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "baa2865486e92d2ae4b46a4aa035479dfa4a1db265f427474e797aed07774ccb",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionGrassObject.cpp",
-          "reconstruction/forms/TESRegionGrassObject.h"
+          "reconstruction/skyrim_shared/world/TESRegionGrassObject.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionGrassObject.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "745673f1c1705761ca6a58207bd1a81b17d2ed4fb591fb4faa71f513af889bd2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESRegionGrassObject.cpp",
-          "reconstruction/forms/TESRegionGrassObject.h"
+          "reconstruction/skyrim_shared/world/TESRegionGrassObject.cpp",
+          "reconstruction/skyrim_shared/world/TESRegionGrassObject.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESRegionGrassObject.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESRegionGrassObject.cpp",
     "digest": "917a3ce4fd6c2bbaed90d93554924421c2992bd33733d3fb4eab77a4d2a066cc",
     "digest_method": "tu-sha256-v2",
     "run_digest": "124767ad087aae1441f4db71c28862a6e72cb61cdf0271c012af44506536a9a4",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESRegionGrassObject.cpp",
-      "reconstruction/forms/TESRegionGrassObject.h"
+      "reconstruction/skyrim_shared/world/TESRegionGrassObject.cpp",
+      "reconstruction/skyrim_shared/world/TESRegionGrassObject.h"
     ]
   },
   "symbol_map": {

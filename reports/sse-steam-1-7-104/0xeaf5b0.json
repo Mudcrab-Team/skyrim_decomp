@@ -29,9 +29,9 @@
         "object_sha256": "5f9dd6ef1d8558edc2ea98e55e6d3cb5a7dd1808cff7352ef45bfaf8b5cc5659",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBinaryStream.h",
-          "reconstruction/netimmerse/NiFile.cpp",
-          "reconstruction/netimmerse/NiFile.h"
+          "reconstruction/bssystem/NiBinaryStream.h",
+          "reconstruction/bssystem/NiFile.cpp",
+          "reconstruction/bssystem/NiFile.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "eba0317e66c23d3eaa040af496e835df0059ddcbbbc858e05b741c9fa0276423",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiBinaryStream.h",
-          "reconstruction/netimmerse/NiFile.cpp",
-          "reconstruction/netimmerse/NiFile.h"
+          "reconstruction/bssystem/NiBinaryStream.h",
+          "reconstruction/bssystem/NiFile.cpp",
+          "reconstruction/bssystem/NiFile.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiFile.cpp",
+    "compiled": "reconstruction/bssystem/NiFile.cpp",
     "digest": "f971ddbc10438ff53d9c4417c608916f2aa42cd0b652d635ac89874cb4082b37",
     "digest_method": "tu-sha256-v2",
     "run_digest": "4868a373c2b6d830a06a1cf5998303dd23359a8c3062e7676b7ede0a1fa9096d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiBinaryStream.h",
-      "reconstruction/netimmerse/NiFile.cpp",
-      "reconstruction/netimmerse/NiFile.h"
+      "reconstruction/bssystem/NiBinaryStream.h",
+      "reconstruction/bssystem/NiFile.cpp",
+      "reconstruction/bssystem/NiFile.h"
     ]
   },
   "symbol_map": {

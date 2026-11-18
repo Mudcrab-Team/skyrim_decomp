@@ -29,9 +29,9 @@
         "object_sha256": "f9f7e3796c6c3a3dc89707fbced2e3718d6eded8e05ad75ce9bf4a208bea8602",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSGeometry.cpp",
-          "reconstruction/bsengine/BSGeometry.h",
-          "reconstruction/netimmerse/NiAVObject.h",
+          "reconstruction/gamebryo/nimain/BSGeometry.cpp",
+          "reconstruction/gamebryo/nimain/BSGeometry.h",
+          "reconstruction/gamebryo/nimain/NiAVObject.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       },
@@ -51,9 +51,9 @@
         "object_sha256": "4b425dc839db41acad0fdcbdfc6077b6b2ca5ae1ef68d5d95e1ddb3a482944f1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSGeometry.cpp",
-          "reconstruction/bsengine/BSGeometry.h",
-          "reconstruction/netimmerse/NiAVObject.h",
+          "reconstruction/gamebryo/nimain/BSGeometry.cpp",
+          "reconstruction/gamebryo/nimain/BSGeometry.h",
+          "reconstruction/gamebryo/nimain/NiAVObject.h",
           "reconstruction/netimmerse/NiObject.h"
         ]
       }
@@ -321,15 +321,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSGeometry.cpp",
+    "compiled": "reconstruction/gamebryo/nimain/BSGeometry.cpp",
     "digest": "fc4f3e5909edb539b9b49cd70e598e917f0c5fb4514419e26d4c2d6bb068f284",
     "digest_method": "tu-sha256-v2",
     "run_digest": "aa31cdf493558ed204b6deb5319a726cbbc1946eb2658b00c1b235c4be554720",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSGeometry.cpp",
-      "reconstruction/bsengine/BSGeometry.h",
-      "reconstruction/netimmerse/NiAVObject.h",
+      "reconstruction/gamebryo/nimain/BSGeometry.cpp",
+      "reconstruction/gamebryo/nimain/BSGeometry.h",
+      "reconstruction/gamebryo/nimain/NiAVObject.h",
       "reconstruction/netimmerse/NiObject.h"
     ]
   },

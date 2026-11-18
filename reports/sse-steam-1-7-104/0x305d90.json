@@ -29,8 +29,8 @@
         "object_sha256": "16fdd93c7bf6652f8bb9ed3328fcc976e442f8a9c2e924dc7e1ed26780b4ac8f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiTimeController.cpp",
-          "reconstruction/netimmerse/NiTimeController.h"
+          "reconstruction/gamebryo/nianimation/NiTimeController.cpp",
+          "reconstruction/gamebryo/nianimation/NiTimeController.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "c49514473df1823a1eb0448944d4b8062b8043802456b741c8911a75a1a353b2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiTimeController.cpp",
-          "reconstruction/netimmerse/NiTimeController.h"
+          "reconstruction/gamebryo/nianimation/NiTimeController.cpp",
+          "reconstruction/gamebryo/nianimation/NiTimeController.h"
         ]
       }
     }
@@ -311,14 +311,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiTimeController.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/NiTimeController.cpp",
     "digest": "5bae0422a16a07791ce8c57623d36c37e2cf74f22cddad34d7f5484a622a3658",
     "digest_method": "tu-sha256-v2",
     "run_digest": "62c7fa9fdb6e36fe78e6c7e41f458a54b465ab3f5f2ee491eacf368d912f1e55",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiTimeController.cpp",
-      "reconstruction/netimmerse/NiTimeController.h"
+      "reconstruction/gamebryo/nianimation/NiTimeController.cpp",
+      "reconstruction/gamebryo/nianimation/NiTimeController.h"
     ]
   },
   "symbol_map": {

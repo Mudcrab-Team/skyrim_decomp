@@ -29,9 +29,9 @@
         "object_sha256": "513c00ce66ec6ac1c15b5149c8778c63c07b3d88d412e15472d27201b9ed938f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "67f969352c292bf75d8f7c4cfdbbf2c862f404ea60e86eaaa8736070c66bd6aa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-          "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.cpp",
-          "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.h"
+          "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+          "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.cpp",
+          "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.cpp",
     "digest": "77dba20bed72b77c800e4efe5389df76988e49ab29d0119348370db4ed17b22d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "54c237987f52c57ea9a245a86f8ea20e95de01b3f0473f6e15c93b4c4282d894",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actors/PlayerInputHandlerStorageLayout.h",
-      "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.cpp",
-      "reconstruction/bsengine/ReadyWeaponHandlerStorageLayout.h"
+      "reconstruction/skyrim/controls/PlayerInputHandlerStorageLayout.h",
+      "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.cpp",
+      "reconstruction/skyrim/controls/ReadyWeaponHandlerStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,16 +29,16 @@
         "object_sha256": "1ab4b92885a2c4d63aad39d998b3322535510948ac393a0c6ce48a9a7fd45f76",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198e_5e5770/ActiveEffectLayout.h",
-          "reconstruction/fo4p198e_5e5770/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e5770/BSSoundHandleLayout.h",
-          "reconstruction/fo4p198e_5e5770/BanishEffect.cpp",
-          "reconstruction/fo4p198e_5e5770/BanishEffect.h",
-          "reconstruction/fo4p198e_5e5770/DemoralizeEffectLayout.h",
-          "reconstruction/fo4p198e_5e5770/LayoutValueTypes.h",
-          "reconstruction/fo4p198e_5e5770/ReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e5770/TargetValueModifierEffectLayout.h",
-          "reconstruction/fo4p198e_5e5770/ValueModifierEffectLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleLayout_5e5770.h",
+          "reconstruction/skyrim/magic/ActiveEffectLayout_5e5770.h",
+          "reconstruction/skyrim/magic/BanishEffect.cpp",
+          "reconstruction/skyrim/magic/BanishEffect.h",
+          "reconstruction/skyrim/magic/DemoralizeEffectLayout.h",
+          "reconstruction/skyrim/magic/TargetValueModifierEffectLayout.h",
+          "reconstruction/skyrim/magic/ValueModifierEffectLayout_5e5770.h",
+          "reconstruction/skyrim/papyrus/LayoutValueTypes_5e5770.h",
+          "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e5770.h",
+          "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5e5770.h"
         ]
       },
       "winpc-native": {
@@ -57,16 +57,16 @@
         "object_sha256": "e6d483547d9d92e62e095c13c7030d530870c6e281911d36fdea3a5b5ee0666b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198e_5e5770/ActiveEffectLayout.h",
-          "reconstruction/fo4p198e_5e5770/ActiveEffectReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e5770/BSSoundHandleLayout.h",
-          "reconstruction/fo4p198e_5e5770/BanishEffect.cpp",
-          "reconstruction/fo4p198e_5e5770/BanishEffect.h",
-          "reconstruction/fo4p198e_5e5770/DemoralizeEffectLayout.h",
-          "reconstruction/fo4p198e_5e5770/LayoutValueTypes.h",
-          "reconstruction/fo4p198e_5e5770/ReferenceEffectControllerLayout.h",
-          "reconstruction/fo4p198e_5e5770/TargetValueModifierEffectLayout.h",
-          "reconstruction/fo4p198e_5e5770/ValueModifierEffectLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleLayout_5e5770.h",
+          "reconstruction/skyrim/magic/ActiveEffectLayout_5e5770.h",
+          "reconstruction/skyrim/magic/BanishEffect.cpp",
+          "reconstruction/skyrim/magic/BanishEffect.h",
+          "reconstruction/skyrim/magic/DemoralizeEffectLayout.h",
+          "reconstruction/skyrim/magic/TargetValueModifierEffectLayout.h",
+          "reconstruction/skyrim/magic/ValueModifierEffectLayout_5e5770.h",
+          "reconstruction/skyrim/papyrus/LayoutValueTypes_5e5770.h",
+          "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e5770.h",
+          "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5e5770.h"
         ]
       }
     }
@@ -333,22 +333,22 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198e_5e5770/BanishEffect.cpp",
+    "compiled": "reconstruction/skyrim/magic/BanishEffect.cpp",
     "digest": "6e6b3941ff8d726564921116b6a1c4a72cba330e15ff7a75f32a3d6e4e9a16a4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ec41dd1d05206bfc742f66b7fc1a6dafa76539cf62fdf6b7f699f04b94816737",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198e_5e5770/ActiveEffectLayout.h",
-      "reconstruction/fo4p198e_5e5770/ActiveEffectReferenceEffectControllerLayout.h",
-      "reconstruction/fo4p198e_5e5770/BSSoundHandleLayout.h",
-      "reconstruction/fo4p198e_5e5770/BanishEffect.cpp",
-      "reconstruction/fo4p198e_5e5770/BanishEffect.h",
-      "reconstruction/fo4p198e_5e5770/DemoralizeEffectLayout.h",
-      "reconstruction/fo4p198e_5e5770/LayoutValueTypes.h",
-      "reconstruction/fo4p198e_5e5770/ReferenceEffectControllerLayout.h",
-      "reconstruction/fo4p198e_5e5770/TargetValueModifierEffectLayout.h",
-      "reconstruction/fo4p198e_5e5770/ValueModifierEffectLayout.h"
+      "reconstruction/bsaudio/BSSoundHandleLayout_5e5770.h",
+      "reconstruction/skyrim/magic/ActiveEffectLayout_5e5770.h",
+      "reconstruction/skyrim/magic/BanishEffect.cpp",
+      "reconstruction/skyrim/magic/BanishEffect.h",
+      "reconstruction/skyrim/magic/DemoralizeEffectLayout.h",
+      "reconstruction/skyrim/magic/TargetValueModifierEffectLayout.h",
+      "reconstruction/skyrim/magic/ValueModifierEffectLayout_5e5770.h",
+      "reconstruction/skyrim/papyrus/LayoutValueTypes_5e5770.h",
+      "reconstruction/skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e5770.h",
+      "reconstruction/skyrim_shared/tempeffects/ReferenceEffectControllerLayout_5e5770.h"
     ]
   },
   "symbol_map": {

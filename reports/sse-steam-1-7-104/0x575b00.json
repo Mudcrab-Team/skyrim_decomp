@@ -29,8 +29,8 @@
         "object_sha256": "7a862da5593dca0bab5ff2fda7a06fd2586313aceafd4d702707cb3ad5e3da86",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/IUIMessageDataStorageLayout.cpp",
-          "reconstruction/bsengine/IUIMessageDataStorageLayout.h"
+          "reconstruction/bsscaleform/IUIMessageDataStorageLayout.cpp",
+          "reconstruction/bsscaleform/IUIMessageDataStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "24923bae7d37b54e465d647483a24089a72a878cb4df8be76debaa75c41aa453",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/IUIMessageDataStorageLayout.cpp",
-          "reconstruction/bsengine/IUIMessageDataStorageLayout.h"
+          "reconstruction/bsscaleform/IUIMessageDataStorageLayout.cpp",
+          "reconstruction/bsscaleform/IUIMessageDataStorageLayout.h"
         ]
       }
     }
@@ -331,14 +331,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/IUIMessageDataStorageLayout.cpp",
+    "compiled": "reconstruction/bsscaleform/IUIMessageDataStorageLayout.cpp",
     "digest": "771b87f7fa78cdc0078998a2c344986c71fdb87d5b2d6cf86a10a6a40062d4d5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c26017f701cf1a32a7013d45a72dd1eefcfc612328bc25e6adb5f3b3706bff60",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/IUIMessageDataStorageLayout.cpp",
-      "reconstruction/bsengine/IUIMessageDataStorageLayout.h"
+      "reconstruction/bsscaleform/IUIMessageDataStorageLayout.cpp",
+      "reconstruction/bsscaleform/IUIMessageDataStorageLayout.h"
     ]
   },
   "symbol_map": {

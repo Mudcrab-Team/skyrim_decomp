@@ -29,8 +29,8 @@
         "object_sha256": "1efc9d310b0e56cd67bbcc6d1a4647788f8ae703354bddcbdfea3cc2a7fe4c63",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4c_686600/Actor.cpp",
-          "reconstruction/fo4b4c_686600/Actor.h"
+          "reconstruction/skyrim_shared/actors/Actor_686600.cpp",
+          "reconstruction/skyrim_shared/actors/Actor_686600.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "bc4dfd4e2a42eafa9e9590626d5213ed4ff531cd5c90be9a2c58f22bbc3e1de8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4b4c_686600/Actor.cpp",
-          "reconstruction/fo4b4c_686600/Actor.h"
+          "reconstruction/skyrim_shared/actors/Actor_686600.cpp",
+          "reconstruction/skyrim_shared/actors/Actor_686600.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4b4c_686600/Actor.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/Actor_686600.cpp",
     "digest": "3a142b4a31fd373a29c1bd84bd8d2f9ffbff51453e3e913366bafa0d901e8d99",
     "digest_method": "tu-sha256-v2",
     "run_digest": "51d4c497460eb33b58b26d8ac0b3e581e0cf1c59c6b955c7e210996b390cbab0",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4b4c_686600/Actor.cpp",
-      "reconstruction/fo4b4c_686600/Actor.h"
+      "reconstruction/skyrim_shared/actors/Actor_686600.cpp",
+      "reconstruction/skyrim_shared/actors/Actor_686600.h"
     ]
   },
   "symbol_map": {

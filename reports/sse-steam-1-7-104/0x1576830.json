@@ -31,9 +31,9 @@
         "object_sha256": "d98a1f8581b7ed0846bc04735f8a8b6213e8b8c50fc2329ebfa8ea85c012ceec",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/small202_2e95ea6d/BSLight.cpp",
-          "reconstruction/small202_2e95ea6d/BSLight.h"
+          "reconstruction/bsshader/BSLight_1576830.cpp",
+          "reconstruction/bsshader/BSLight_1576830.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       },
       "winpc-native": {
@@ -54,9 +54,9 @@
         "object_sha256": "04a2c3beff2e069e4996491817748d13782cd9ea1a86cd6605228c47a912dfc2",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiObject.h",
-          "reconstruction/small202_2e95ea6d/BSLight.cpp",
-          "reconstruction/small202_2e95ea6d/BSLight.h"
+          "reconstruction/bsshader/BSLight_1576830.cpp",
+          "reconstruction/bsshader/BSLight_1576830.h",
+          "reconstruction/netimmerse/NiObject.h"
         ]
       }
     }
@@ -330,15 +330,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/small202_2e95ea6d/BSLight.cpp",
+    "compiled": "reconstruction/bsshader/BSLight_1576830.cpp",
     "digest": "09638956a9fda1f5b7ccf78c1090097f4c71dcdb68f2ac85c377633cd0b1b5cf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "04e4c8e8ed61381c7dd4e45e36bd217268f0f15287e764312006a9e065bb7f10",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiObject.h",
-      "reconstruction/small202_2e95ea6d/BSLight.cpp",
-      "reconstruction/small202_2e95ea6d/BSLight.h"
+      "reconstruction/bsshader/BSLight_1576830.cpp",
+      "reconstruction/bsshader/BSLight_1576830.h",
+      "reconstruction/netimmerse/NiObject.h"
     ]
   },
   "symbol_map": {

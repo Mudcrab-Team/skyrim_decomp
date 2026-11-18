@@ -29,9 +29,9 @@
         "object_sha256": "e8068a7c0d038db7d3735196304118f59e4bf2611146ac4d3eb8883fe84b62d7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198c_land/TESForm.h",
-          "reconstruction/fo4p198c_land/TESLandTexture.cpp",
-          "reconstruction/fo4p198c_land/TESLandTexture.h"
+          "reconstruction/skyrim_shared/forms/TESForm_2b68d0.h",
+          "reconstruction/skyrim_shared/world/TESLandTexture.cpp",
+          "reconstruction/skyrim_shared/world/TESLandTexture.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "08d88798d6b28c1df5e66ac1456ea0b7122bf77e8c1c9e2e8c66246e593af9c5",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fo4p198c_land/TESForm.h",
-          "reconstruction/fo4p198c_land/TESLandTexture.cpp",
-          "reconstruction/fo4p198c_land/TESLandTexture.h"
+          "reconstruction/skyrim_shared/forms/TESForm_2b68d0.h",
+          "reconstruction/skyrim_shared/world/TESLandTexture.cpp",
+          "reconstruction/skyrim_shared/world/TESLandTexture.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fo4p198c_land/TESLandTexture.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/TESLandTexture.cpp",
     "digest": "784b5d31e6288bc96d7353638c313a2568dedd70f461451545923a7935eafad0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "feedc0806575ba1042b11064ddabd4eda58b877d9c298c6dff93152d3df2cd40",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fo4p198c_land/TESForm.h",
-      "reconstruction/fo4p198c_land/TESLandTexture.cpp",
-      "reconstruction/fo4p198c_land/TESLandTexture.h"
+      "reconstruction/skyrim_shared/forms/TESForm_2b68d0.h",
+      "reconstruction/skyrim_shared/world/TESLandTexture.cpp",
+      "reconstruction/skyrim_shared/world/TESLandTexture.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "1e388f6995d7e20b40d8b8f8cdd12d64f35f6850980e8ac1316a796d95ae43ee",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWaterCurrentZoneData.cpp",
-          "reconstruction/bsengine/ExtraWaterCurrentZoneData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "927d9625bd6786471883e93a75589377bbe980d8c987ed554bed115f82981c39",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWaterCurrentZoneData.cpp",
-          "reconstruction/bsengine/ExtraWaterCurrentZoneData.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWaterCurrentZoneData.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.cpp",
     "digest": "d95fa928e5a11e3cae18603f9fde08073cffab839e8cc223b1adcd9ea6cb77a8",
     "digest_method": "tu-sha256-v2",
     "run_digest": "aa89dc58463ad91fd481698634e91b0ee215431073270a5cbd52db06079d31f1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraWaterCurrentZoneData.cpp",
-      "reconstruction/bsengine/ExtraWaterCurrentZoneData.h"
+      "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWaterCurrentZoneData.h"
     ]
   },
   "symbol_map": {

@@ -29,11 +29,11 @@
         "object_sha256": "5079f1134388aa2ab813d8dcf5906ef865c0c1af0f431b95c33444657ef435c0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/MessageIconComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESAmmoLargeFormPrefixLayout.cpp",
-          "reconstruction/forms/TESAmmoLargeFormPrefixLayout.h"
+          "reconstruction/skyrim/interface/MessageIconComponentLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -52,11 +52,11 @@
         "object_sha256": "7b0c75e60af1a87cc328b529fbe336719c992e1de5b865baac536b6a02ddef4c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/FormComponentLayout.h",
-          "reconstruction/forms/MessageIconComponentLayout.h",
-          "reconstruction/forms/RaceComponentLayout.h",
-          "reconstruction/forms/TESAmmoLargeFormPrefixLayout.cpp",
-          "reconstruction/forms/TESAmmoLargeFormPrefixLayout.h"
+          "reconstruction/skyrim/interface/MessageIconComponentLayout.h",
+          "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+          "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.h"
         ]
       }
     }
@@ -342,17 +342,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESAmmoLargeFormPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.cpp",
     "digest": "6b7b075c0d58847d5360cbc89622d934367d6dc67346f6be7c521906007e53ec",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9aeac90c2cf1de9ef84c7ab7355bf8591903110111999f9917d388d6a00361a5",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/FormComponentLayout.h",
-      "reconstruction/forms/MessageIconComponentLayout.h",
-      "reconstruction/forms/RaceComponentLayout.h",
-      "reconstruction/forms/TESAmmoLargeFormPrefixLayout.cpp",
-      "reconstruction/forms/TESAmmoLargeFormPrefixLayout.h"
+      "reconstruction/skyrim/interface/MessageIconComponentLayout.h",
+      "reconstruction/skyrim_shared/actors/RaceComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/FormComponentLayout.h",
+      "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/forms/TESAmmoLargeFormPrefixLayout.h"
     ]
   },
   "symbol_map": {

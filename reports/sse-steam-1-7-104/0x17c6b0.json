@@ -29,10 +29,10 @@
         "object_sha256": "3fb51bb8ea1996e68607864d470e4cf6656b38c920755a2d16c9ca1d759baeaa",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSSoundHandleStorageLayout.h",
-          "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "d07082674b6959718745d8b50b8f6a250c57d60e450398828b449f0c68e39d6f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/BSSoundHandleStorageLayout.h",
-          "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.h"
+          "reconstruction/bsaudio/BSSoundHandleStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.h"
         ]
       }
     }
@@ -335,16 +335,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.cpp",
     "digest": "c5956528c630c5e45464000760d06cde27b2052d7d32bf9ad673dec383d2e72d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "94af0bc44f40a54677553537cbab4923f2fd405c01d5a2b38bcfbd445464f825",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/BSSoundHandleStorageLayout.h",
-      "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraCreatureAwakeSoundStorageLayout.h"
+      "reconstruction/bsaudio/BSSoundHandleStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraCreatureAwakeSoundStorageLayout.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "8ab0af19f23cb194a2ad740389809db9dda641fa36100f990b21514e18e3a010",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMessageIcon.cpp",
-          "reconstruction/forms/BGSMessageIcon.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim/interface/BGSMessageIcon.cpp",
+          "reconstruction/skyrim/interface/BGSMessageIcon.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "df616b4bae1c5194468e2453ad658231432113afed06c1aa44ac7e870499c586",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMessageIcon.cpp",
-          "reconstruction/forms/BGSMessageIcon.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim/interface/BGSMessageIcon.cpp",
+          "reconstruction/skyrim/interface/BGSMessageIcon.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -361,15 +361,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMessageIcon.cpp",
+    "compiled": "reconstruction/skyrim/interface/BGSMessageIcon.cpp",
     "digest": "427cb585abf5061197a58ca5cf6fb75523fd94f91cefcf77f66719dd2f6d8005",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6a312ee6ae2c7b963bc5c75ab16c8dd46116511bf3818c68c4ba2c02f495a414",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMessageIcon.cpp",
-      "reconstruction/forms/BGSMessageIcon.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim/interface/BGSMessageIcon.cpp",
+      "reconstruction/skyrim/interface/BGSMessageIcon.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

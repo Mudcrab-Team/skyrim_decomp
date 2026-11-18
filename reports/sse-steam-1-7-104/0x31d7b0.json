@@ -29,9 +29,9 @@
         "object_sha256": "bb7c1e4077a0330ae9964efc611dc0bae01bf47c5630ee62e9613929661fc21f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSImpactData.cpp",
-          "reconstruction/forms/BGSImpactData.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSImpactData.cpp",
+          "reconstruction/skyrim_shared/audio/BGSImpactData.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "dd27b60860352cc5ec412e12ec81ea3e96bdfd078cc9ef7a77ea59b4309c9161",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSImpactData.cpp",
-          "reconstruction/forms/BGSImpactData.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/audio/BGSImpactData.cpp",
+          "reconstruction/skyrim_shared/audio/BGSImpactData.h",
+          "reconstruction/skyrim_shared/forms/TESForm.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSImpactData.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSImpactData.cpp",
     "digest": "11c7c85f9eb4ce17871545fef82cd255ddad5f8f00619d9eae8fbee235012816",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5bce67228fa5e44b26529a8e91092e44f7b39db0d2c185deb1986f28fa30c470",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSImpactData.cpp",
-      "reconstruction/forms/BGSImpactData.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/audio/BGSImpactData.cpp",
+      "reconstruction/skyrim_shared/audio/BGSImpactData.h",
+      "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
   "symbol_map": {

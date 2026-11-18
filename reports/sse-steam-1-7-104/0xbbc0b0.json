@@ -29,8 +29,8 @@
         "object_sha256": "0fd1b6af76e5ac1c75a6341f9fca30ece55c17b0908dea672ccf7247c9940820",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTweenerModifier.cpp",
-          "reconstruction/bsengine/BSTweenerModifier.h"
+          "reconstruction/gamebryo/nianimation/BSTweenerModifier.cpp",
+          "reconstruction/gamebryo/nianimation/BSTweenerModifier.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "6011eb6f2be84775566d5b24e8a21e01d8d1cb6f006cae434f8832e5304dea93",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTweenerModifier.cpp",
-          "reconstruction/bsengine/BSTweenerModifier.h"
+          "reconstruction/gamebryo/nianimation/BSTweenerModifier.cpp",
+          "reconstruction/gamebryo/nianimation/BSTweenerModifier.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTweenerModifier.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BSTweenerModifier.cpp",
     "digest": "85ce1b86836a72fef6ed31cc56dbd29087f9ec7c8c84175eb250da8753fb03d4",
     "digest_method": "tu-sha256-v2",
     "run_digest": "513c645368a982b31762e20799aa041196b8439c4c5e2917017dc0618a840041",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTweenerModifier.cpp",
-      "reconstruction/bsengine/BSTweenerModifier.h"
+      "reconstruction/gamebryo/nianimation/BSTweenerModifier.cpp",
+      "reconstruction/gamebryo/nianimation/BSTweenerModifier.h"
     ]
   },
   "symbol_map": {

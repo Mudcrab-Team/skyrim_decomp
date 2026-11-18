@@ -29,8 +29,8 @@
         "object_sha256": "1a352f42e69243c0ef4dab987a0e3ba16e52ef938029cdf0f317bb8fd7890577",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.cpp",
-          "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.h"
+          "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.cpp",
+          "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "f2a0152c2a3ac99f2f5e97c43a2491950191f39d3a92a80d2b4712def5e478a4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.cpp",
-          "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.h"
+          "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.cpp",
+          "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.cpp",
     "digest": "8a7c7e761e1e7e6ad5caeea0bbd0fecd1d9a96e5f6eb61680ce83d53b7804449",
     "digest_method": "tu-sha256-v2",
     "run_digest": "781c7cc58290f6efe15fcfaf1a3c06df468607dee2617faeddda2a19ff5f34f9",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.cpp",
-      "reconstruction/bsengine/SimpleAnimationGraphManagerLoadingTask.h"
+      "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.cpp",
+      "reconstruction/gamebryo/nianimation/SimpleAnimationGraphManagerLoadingTask.h"
     ]
   },
   "symbol_map": {

@@ -29,8 +29,8 @@
         "object_sha256": "b8c4b90b2da25de0a847a84a12810a8380177a890ceceb61c524b36be0ecb7be",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiAllocator.cpp",
-          "reconstruction/netimmerse/NiAllocator.h"
+          "reconstruction/bscore/NiAllocator.cpp",
+          "reconstruction/bscore/NiAllocator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2b57fb05fc2e55d4399dbd7ff05a54e5ce9428c8472e41bc96f4be083d875b06",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/netimmerse/NiAllocator.cpp",
-          "reconstruction/netimmerse/NiAllocator.h"
+          "reconstruction/bscore/NiAllocator.cpp",
+          "reconstruction/bscore/NiAllocator.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/netimmerse/NiAllocator.cpp",
+    "compiled": "reconstruction/bscore/NiAllocator.cpp",
     "digest": "137a90ca5fcd9f2169fbb6b66d76c3fd9d1aec7de79386bc34d7a3c01d75364d",
     "digest_method": "tu-sha256-v2",
     "run_digest": "b509a6b3ad89400450df7ef52978f7e9f3541e0997d6293ad7b955eca8b6ca1b",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/netimmerse/NiAllocator.cpp",
-      "reconstruction/netimmerse/NiAllocator.h"
+      "reconstruction/bscore/NiAllocator.cpp",
+      "reconstruction/bscore/NiAllocator.h"
     ]
   },
   "symbol_map": {

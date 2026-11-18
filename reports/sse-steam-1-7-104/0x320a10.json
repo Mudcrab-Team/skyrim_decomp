@@ -29,8 +29,8 @@
         "object_sha256": "8f87e4b5b6bd355d9a3668da7f5cac3dc462ec8f052bdd36615dd8f8436887f8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSListForm.cpp",
-          "reconstruction/forms/BGSListForm.h"
+          "reconstruction/skyrim_shared/forms/BGSListForm.cpp",
+          "reconstruction/skyrim_shared/forms/BGSListForm.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "945e618621683ce820a32a4828b7fb38f524960c5c778eeb6d7ad4eaea8d317e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSListForm.cpp",
-          "reconstruction/forms/BGSListForm.h"
+          "reconstruction/skyrim_shared/forms/BGSListForm.cpp",
+          "reconstruction/skyrim_shared/forms/BGSListForm.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSListForm.cpp",
+    "compiled": "reconstruction/skyrim_shared/forms/BGSListForm.cpp",
     "digest": "1ea08e6debe4992daed354369b9d71b92a72786f9a376b9dc96d0ec7c8f6f532",
     "digest_method": "tu-sha256-v2",
     "run_digest": "662faf0374a7523cab4cf63a31c6f3427cd86218b7e024ed21a6b6ba91b7f1d2",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSListForm.cpp",
-      "reconstruction/forms/BGSListForm.h"
+      "reconstruction/skyrim_shared/forms/BGSListForm.cpp",
+      "reconstruction/skyrim_shared/forms/BGSListForm.h"
     ]
   },
   "symbol_map": {

@@ -31,11 +31,11 @@
         "object_sha256": "c23898a670ad0c739a2fca303b26f492c8b45c715a005e3a627bf11acf07749a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor207_1/ActorSpeedPrefix.cpp",
-          "reconstruction/actor207_1/ActorSpeedPrefix.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/ActorValueTargetPrefix.h"
+          "reconstruction/skyrim_shared/actors/ActorSpeedPrefix.cpp",
+          "reconstruction/skyrim_shared/actors/ActorSpeedPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h"
         ]
       }
     }
@@ -186,17 +186,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor207_1/ActorSpeedPrefix.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/ActorSpeedPrefix.cpp",
     "digest": "457bdb7b238f25919635b994cb28c4d47b078e99e460b711cd6c36c4b8a5d3ce",
     "digest_method": "tu-sha256-v2",
     "run_digest": "27135e69b5ad107e3fc40cd7aeeb03f1f017db58a51719f54e76b402b7bd3d45",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor207_1/ActorSpeedPrefix.cpp",
-      "reconstruction/actor207_1/ActorSpeedPrefix.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/ActorValueTargetPrefix.h"
+      "reconstruction/skyrim_shared/actors/ActorSpeedPrefix.cpp",
+      "reconstruction/skyrim_shared/actors/ActorSpeedPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/ActorValueTargetPrefix.h"
     ]
   },
   "symbol_map": {

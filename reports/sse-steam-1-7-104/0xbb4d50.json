@@ -29,8 +29,8 @@
         "object_sha256": "e15414697312c119e06616b90a631a145fe863a06e9c5557d7d75e4c2454bb03",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOffsetAnimationGenerator.cpp",
-          "reconstruction/bsengine/BSOffsetAnimationGenerator.h"
+          "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.cpp",
+          "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "d3f62c264168dc9fa6980c18e5d9f2d8dfb9daf3da0225b01d1bf72b6652142f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSOffsetAnimationGenerator.cpp",
-          "reconstruction/bsengine/BSOffsetAnimationGenerator.h"
+          "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.cpp",
+          "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSOffsetAnimationGenerator.cpp",
+    "compiled": "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.cpp",
     "digest": "d8dedd40d7ee7f1f961c18cec63449fb9423b12d553a0a04efb4c49a246223c2",
     "digest_method": "tu-sha256-v2",
     "run_digest": "85cc357cd8b65bce0871597f6e5d2b4263d5400afbef456ddcdb73f9a9ae4fe8",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSOffsetAnimationGenerator.cpp",
-      "reconstruction/bsengine/BSOffsetAnimationGenerator.h"
+      "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.cpp",
+      "reconstruction/gamebryo/nianimation/BSOffsetAnimationGenerator.h"
     ]
   },
   "symbol_map": {

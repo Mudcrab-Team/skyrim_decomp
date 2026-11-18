@@ -29,9 +29,9 @@
         "object_sha256": "495e3e32325e3623b70fdbefbfc03731cb9c57c6d7af1a95c697f8b5d5aebea7",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Explosion.cpp",
-          "reconstruction/forms/Explosion.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/Explosion.cpp",
+          "reconstruction/skyrim_shared/refs/Explosion.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "52649f6720a4c374eadccefd7803084a1633154a2f40ffbaf0a7d1e6bc83546e",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/Explosion.cpp",
-          "reconstruction/forms/Explosion.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/refs/Explosion.cpp",
+          "reconstruction/skyrim_shared/refs/Explosion.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/Explosion.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/Explosion.cpp",
     "digest": "f8e06c9c527d582b15fd051e0d744709838ba20aafd517c004ec531e58be42af",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2034e86c4c2b0763afa6d6bad60e4238f4ae8038bff9a1f60888e01bc24f8668",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/Explosion.cpp",
-      "reconstruction/forms/Explosion.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/refs/Explosion.cpp",
+      "reconstruction/skyrim_shared/refs/Explosion.h"
     ]
   },
   "symbol_map": {

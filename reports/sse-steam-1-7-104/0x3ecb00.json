@@ -29,8 +29,8 @@
         "object_sha256": "4d2d8b86e238aad9b8df825d90dc7452eaa4d8ff64780cf184ca6a21ee8d1ee8",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/layouts/ResponseDataPrefixLayout.cpp",
-          "reconstruction/layouts/ResponseDataPrefixLayout.h"
+          "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "57825386a416f862a78d60895152180b11f031e0cf0ad2b544a1f3b39182386d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/layouts/ResponseDataPrefixLayout.cpp",
-          "reconstruction/layouts/ResponseDataPrefixLayout.h"
+          "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/layouts/ResponseDataPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.cpp",
     "digest": "94bfa9a56a93892457a22e8753a0f4eda7283b2a0bf53d5ebcd9ac75947bbbbf",
     "digest_method": "tu-sha256-v2",
     "run_digest": "5d700d48e0a4de7a40bac533fdfe39ae7eaa3f41ea322f59fcb6c5693291d491",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/layouts/ResponseDataPrefixLayout.cpp",
-      "reconstruction/layouts/ResponseDataPrefixLayout.h"
+      "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/dialogue/ResponseDataPrefixLayout.h"
     ]
   },
   "symbol_map": {

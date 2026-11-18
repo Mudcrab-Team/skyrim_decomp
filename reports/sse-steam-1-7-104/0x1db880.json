@@ -29,8 +29,8 @@
         "object_sha256": "0106cbba75303a05169a7f3216c1517e7169e3729b8b84539fe695783e2c6c18",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPickupPutdownSounds.cpp",
-          "reconstruction/forms/BGSPickupPutdownSounds.h"
+          "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.cpp",
+          "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "88f44ff7024157383c7282f3e1990f54bf4ceeb837520fb766319ef27fafdd35",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSPickupPutdownSounds.cpp",
-          "reconstruction/forms/BGSPickupPutdownSounds.h"
+          "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.cpp",
+          "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSPickupPutdownSounds.cpp",
+    "compiled": "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.cpp",
     "digest": "95e9a80509944bbf5f3f73c56a91af5e3637f3b64e439d8a7d520de7e653e36a",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e752374710ce1bde8b665f140a0b6b74e4c06cd77a81e1d55a4941742f666a39",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSPickupPutdownSounds.cpp",
-      "reconstruction/forms/BGSPickupPutdownSounds.h"
+      "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.cpp",
+      "reconstruction/skyrim_shared/audio/BGSPickupPutdownSounds.h"
     ]
   },
   "symbol_map": {

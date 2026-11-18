@@ -29,8 +29,8 @@
         "object_sha256": "6305b1bf700b4b4e9d2836fd3c4c55f7a1c916dcc3ac89e7585ef2e459428b7d",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESCameraState.cpp",
-          "reconstruction/forms/TESCameraState.h"
+          "reconstruction/skyrim/camera/TESCameraState.cpp",
+          "reconstruction/skyrim/camera/TESCameraState.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "06f195185f471b99c03acf416d236ed3f995dddaa44eb41ed3e0aae35958f7ae",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/TESCameraState.cpp",
-          "reconstruction/forms/TESCameraState.h"
+          "reconstruction/skyrim/camera/TESCameraState.cpp",
+          "reconstruction/skyrim/camera/TESCameraState.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/TESCameraState.cpp",
+    "compiled": "reconstruction/skyrim/camera/TESCameraState.cpp",
     "digest": "a1874b874f29cc088ee01b59ca2658c193bcb982ede6115ee8f437cd5a88596c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1b74898baef8891af86efb3130e0a7a7109215ed9e0a90367370aca251abe9bd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/TESCameraState.cpp",
-      "reconstruction/forms/TESCameraState.h"
+      "reconstruction/skyrim/camera/TESCameraState.cpp",
+      "reconstruction/skyrim/camera/TESCameraState.h"
     ]
   },
   "symbol_map": {

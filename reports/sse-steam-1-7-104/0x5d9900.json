@@ -29,8 +29,8 @@
         "object_sha256": "f5014f7edce7f200ed40c90b5a05b8c800574996037ca0e699ca186c6b5fe383",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/NonActorMagicTarget.cpp",
-          "reconstruction/bsengine/NonActorMagicTarget.h"
+          "reconstruction/skyrim/magic/NonActorMagicTarget.cpp",
+          "reconstruction/skyrim/magic/NonActorMagicTarget.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "25d89fa45c9e2b90d51d9fee7f5dd93f8b0af3aaf54fbb0a69f8397f87764db4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/NonActorMagicTarget.cpp",
-          "reconstruction/bsengine/NonActorMagicTarget.h"
+          "reconstruction/skyrim/magic/NonActorMagicTarget.cpp",
+          "reconstruction/skyrim/magic/NonActorMagicTarget.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/NonActorMagicTarget.cpp",
+    "compiled": "reconstruction/skyrim/magic/NonActorMagicTarget.cpp",
     "digest": "f7413d89b2977a884d6d301e46dca31725b60650cd53b79a818eba671c7d7eb0",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ed4ea85cbf63a01cf9e93a833ab5064a9b0d04f0e0a4e1980939fa33e24b66e3",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/NonActorMagicTarget.cpp",
-      "reconstruction/bsengine/NonActorMagicTarget.h"
+      "reconstruction/skyrim/magic/NonActorMagicTarget.cpp",
+      "reconstruction/skyrim/magic/NonActorMagicTarget.h"
     ]
   },
   "symbol_map": {

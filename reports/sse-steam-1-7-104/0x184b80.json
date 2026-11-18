@@ -29,10 +29,10 @@
         "object_sha256": "03e25d426b97d8e2837fcb8a11aee387df0b82d882c635716fcc9e446cc0ff0a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BSExtraDataLayout.h",
-          "reconstruction/fields/ExtraPoisonLayout.h",
-          "reconstruction/fields/FieldLeaf184b80.cpp",
-          "reconstruction/fields/FieldLeaf184b80.h"
+          "reconstruction/unmapped/fields/BSExtraDataLayout.h",
+          "reconstruction/unmapped/fields/ExtraPoisonLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf184b80.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf184b80.h"
         ]
       },
       "winpc-native": {
@@ -51,10 +51,10 @@
         "object_sha256": "d52ed85422eaea02eac0516c15a6b161e11c7a5ded57bb9640a08f53a19f7859",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/BSExtraDataLayout.h",
-          "reconstruction/fields/ExtraPoisonLayout.h",
-          "reconstruction/fields/FieldLeaf184b80.cpp",
-          "reconstruction/fields/FieldLeaf184b80.h"
+          "reconstruction/unmapped/fields/BSExtraDataLayout.h",
+          "reconstruction/unmapped/fields/ExtraPoisonLayout.h",
+          "reconstruction/unmapped/fields/FieldLeaf184b80.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf184b80.h"
         ]
       }
     }
@@ -340,16 +340,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf184b80.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf184b80.cpp",
     "digest": "cbc5a28aaf4ac8c9e61b46e74ef39bd3f1307335496587b0699414cd4a8e5466",
     "digest_method": "tu-sha256-v2",
     "run_digest": "feb43445849fc353d378273772cd0dd5395661b752bb54582c1b3b2cbcc02065",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/BSExtraDataLayout.h",
-      "reconstruction/fields/ExtraPoisonLayout.h",
-      "reconstruction/fields/FieldLeaf184b80.cpp",
-      "reconstruction/fields/FieldLeaf184b80.h"
+      "reconstruction/unmapped/fields/BSExtraDataLayout.h",
+      "reconstruction/unmapped/fields/ExtraPoisonLayout.h",
+      "reconstruction/unmapped/fields/FieldLeaf184b80.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf184b80.h"
     ]
   },
   "symbol_map": {

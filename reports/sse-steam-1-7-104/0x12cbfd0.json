@@ -29,9 +29,9 @@
         "object_sha256": "6c9c50c0f5266192bf9247bdc46860c71ac2975ca690a3ead86cf35b3ca9214f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaf12cbfd0.cpp",
-          "reconstruction/fields/FieldLeaf12cbfd0.h",
-          "reconstruction/fields/ScalarCaptureCallableLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaf12cbfd0.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf12cbfd0.h",
+          "reconstruction/unmapped/fields/ScalarCaptureCallableLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "0c9576797866d7478ebe18f01dd1b493d534426b46acdcbff372d8cbdff2f798",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/fields/FieldLeaf12cbfd0.cpp",
-          "reconstruction/fields/FieldLeaf12cbfd0.h",
-          "reconstruction/fields/ScalarCaptureCallableLayout.h"
+          "reconstruction/unmapped/fields/FieldLeaf12cbfd0.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf12cbfd0.h",
+          "reconstruction/unmapped/fields/ScalarCaptureCallableLayout.h"
         ]
       }
     }
@@ -345,15 +345,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/fields/FieldLeaf12cbfd0.cpp",
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf12cbfd0.cpp",
     "digest": "bceec08290db8aaa29bb22431ba40db2f485e0a3119d21e07f158180e4dfc4b6",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e8246b2acf13261d0d4639336da1bf5930022e3706f5f191cdc31677036c0caf",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/fields/FieldLeaf12cbfd0.cpp",
-      "reconstruction/fields/FieldLeaf12cbfd0.h",
-      "reconstruction/fields/ScalarCaptureCallableLayout.h"
+      "reconstruction/unmapped/fields/FieldLeaf12cbfd0.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf12cbfd0.h",
+      "reconstruction/unmapped/fields/ScalarCaptureCallableLayout.h"
     ]
   },
   "symbol_map": {

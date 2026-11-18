@@ -29,8 +29,8 @@
         "object_sha256": "50604c4bb44126320ad7cd790cad6bb1c7f980c8ed787c3aabab2104b64cbf1a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWeaponAttackSound.cpp",
-          "reconstruction/bsengine/ExtraWeaponAttackSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "2aa082de6056e43fdbf9eaa613bb975c40a417b93e83802f0b292c65369bad16",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/ExtraWeaponAttackSound.cpp",
-          "reconstruction/bsengine/ExtraWeaponAttackSound.h"
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraWeaponAttackSound.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.cpp",
     "digest": "f0058dced857738e3b449b638c89ecc1bdf2168ece0d3c4d2c5b9fecc9467672",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ac2cf8522adfb5055437b12921d0c78422f0c9a7eac583e9159a8c4199be760a",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/ExtraWeaponAttackSound.cpp",
-      "reconstruction/bsengine/ExtraWeaponAttackSound.h"
+      "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraWeaponAttackSound.h"
     ]
   },
   "symbol_map": {

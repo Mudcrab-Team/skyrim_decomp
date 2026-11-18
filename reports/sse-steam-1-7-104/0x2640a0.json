@@ -29,9 +29,9 @@
         "object_sha256": "49a465b8b2aa8e63d0d2ac364d7bed4310ea269494551a417dc43ff90687b234",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMovableStatic.cpp",
-          "reconstruction/forms/BGSMovableStatic.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSMovableStatic.cpp",
+          "reconstruction/skyrim_shared/world/BGSMovableStatic.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "7b622457d710dbcd498bf346aba8e5bf702f236be7f9c8d8fbe0d0ede7083d2b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/BGSMovableStatic.cpp",
-          "reconstruction/forms/BGSMovableStatic.h",
-          "reconstruction/forms/TESForm.h"
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/world/BGSMovableStatic.cpp",
+          "reconstruction/skyrim_shared/world/BGSMovableStatic.h"
         ]
       }
     }
@@ -313,15 +313,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/BGSMovableStatic.cpp",
+    "compiled": "reconstruction/skyrim_shared/world/BGSMovableStatic.cpp",
     "digest": "aeacc7214150ee3140c7859eee8c1352902e22b2f26f2ddc673e76e78fa1e100",
     "digest_method": "tu-sha256-v2",
     "run_digest": "75e28272bc88062ed0e864c3fee12f384de6748190e6fffcc7ea8ebdac32ee9c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/BGSMovableStatic.cpp",
-      "reconstruction/forms/BGSMovableStatic.h",
-      "reconstruction/forms/TESForm.h"
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/world/BGSMovableStatic.cpp",
+      "reconstruction/skyrim_shared/world/BGSMovableStatic.h"
     ]
   },
   "symbol_map": {

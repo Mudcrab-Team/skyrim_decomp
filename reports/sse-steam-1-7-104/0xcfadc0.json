@@ -29,8 +29,8 @@
         "object_sha256": "78f2bf22997b32ddf1e3bb74ed409f22c03c9c84ee82289e6877a29437943345",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWin32GamerProfile.cpp",
-          "reconstruction/bsengine/BSWin32GamerProfile.h"
+          "reconstruction/bsinput/BSWin32GamerProfile.cpp",
+          "reconstruction/bsinput/BSWin32GamerProfile.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "9250d115044c87b401c928fa775e20d8d8f4a16f2bdc5230fb7d9346dda7593b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSWin32GamerProfile.cpp",
-          "reconstruction/bsengine/BSWin32GamerProfile.h"
+          "reconstruction/bsinput/BSWin32GamerProfile.cpp",
+          "reconstruction/bsinput/BSWin32GamerProfile.h"
         ]
       }
     }
@@ -324,14 +324,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSWin32GamerProfile.cpp",
+    "compiled": "reconstruction/bsinput/BSWin32GamerProfile.cpp",
     "digest": "16e948093a31d8c64804ef48f71d5e4f5f1c513ef46534ce9164add95a5f0017",
     "digest_method": "tu-sha256-v2",
     "run_digest": "63df17590b3c7bd5091d6dd4ff0f396b89f444a754e40a6ca3948bf5e3384c23",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSWin32GamerProfile.cpp",
-      "reconstruction/bsengine/BSWin32GamerProfile.h"
+      "reconstruction/bsinput/BSWin32GamerProfile.cpp",
+      "reconstruction/bsinput/BSWin32GamerProfile.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "702b54b4eaf5e320207dd94b1cc9e1861fe03358e40ea87111421dc490a2b715",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/layouts/ExtraDataList.h",
-          "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.cpp",
-          "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.h"
+          "reconstruction/skyrim_shared/extradata/ExtraDataList.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "7331eebddb32164ace22352823097633d5041fbbbf8c92effe7e7918aaa7fe6b",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/layouts/ExtraDataList.h",
-          "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.cpp",
-          "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.h"
+          "reconstruction/skyrim_shared/extradata/ExtraDataList.h",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.cpp",
+          "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.h"
         ]
       }
     }
@@ -319,15 +319,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.cpp",
     "digest": "6392ba92fdd30cc05bb0a15c910ecff9833812b860dbab7269728f07ac1b18b5",
     "digest_method": "tu-sha256-v2",
     "run_digest": "58053e4ab83735a4571fc9c806cf3f8597d1e4722c2dbd20e49fccb1c4582764",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/layouts/ExtraDataList.h",
-      "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.cpp",
-      "reconstruction/layouts/TESObjectREFRExtraPrefixLayout.h"
+      "reconstruction/skyrim_shared/extradata/ExtraDataList.h",
+      "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.cpp",
+      "reconstruction/skyrim_shared/refs/TESObjectREFRExtraPrefixLayout.h"
     ]
   },
   "symbol_map": {

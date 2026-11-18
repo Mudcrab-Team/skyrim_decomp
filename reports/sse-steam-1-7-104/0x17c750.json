@@ -29,9 +29,9 @@
         "object_sha256": "517825a5b07a4a696c17ef85681b6e33483cd36daa087476f23cf74ac9aab5d4",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraDetachTimeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraDetachTimeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "5327e51c220b6f10a0c79e82242dcc7cac3f4f618a89bba26b763dc2ca67a4c3",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-          "reconstruction/bsengine/ExtraDetachTimeStorageLayout.cpp",
-          "reconstruction/bsengine/ExtraDetachTimeStorageLayout.h"
+          "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+          "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/ExtraDetachTimeStorageLayout.cpp",
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.cpp",
     "digest": "310c9aa34bf42d352cada6f30745198e9aed903d8f36c88eb1ac2b6ef4533e65",
     "digest_method": "tu-sha256-v2",
     "run_digest": "6ed682586e5660c4823d3b285ae6c4ce356d10a973c753009233d1756754c64d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSExtraDataStorageLayout.h",
-      "reconstruction/bsengine/ExtraDetachTimeStorageLayout.cpp",
-      "reconstruction/bsengine/ExtraDetachTimeStorageLayout.h"
+      "reconstruction/skyrim_shared/extradata/BSExtraDataStorageLayout.h",
+      "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraDetachTimeStorageLayout.h"
     ]
   },
   "symbol_map": {

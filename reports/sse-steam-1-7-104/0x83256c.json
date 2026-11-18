@@ -29,9 +29,9 @@
         "object_sha256": "4dbcc6a7fac37aba7f857d8baf1b8c667bba681157a5bb06e373ab4ae256cf21",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "55e579d0dc97ee3f6d6a2bf2181d0d208a59374d279b0be9442a16c71bf980d1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
-          "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.h",
-          "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.h",
+          "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
         ]
       }
     }
@@ -335,15 +335,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
     "digest": "daf4e1aacfd3b9104948873217ab00ddc712ee1cb3bbf627b1daf8656ae1a592",
     "digest_method": "tu-sha256-v2",
     "run_digest": "9b3db7fe0f2eec72c6767085b99ddb2be1efe061b320660d56599f235955c61d",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
-      "reconstruction/bsengine/AutoRegisterCombatMagicCasterTargetEffectLayout.h",
-      "reconstruction/bsengine/AutoRegisterCombatObjectLayout.h"
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.cpp",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatMagicCasterTargetEffectLayout.h",
+      "reconstruction/skyrim/ai/combat/AutoRegisterCombatObjectLayout.h"
     ]
   },
   "symbol_map": {

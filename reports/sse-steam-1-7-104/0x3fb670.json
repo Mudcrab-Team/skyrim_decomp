@@ -29,8 +29,8 @@
         "object_sha256": "1dc2b9326855b6e834299d7c55ddfe872bc2f7d83b70e2c79f9ba60531771e02",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTaskletData.cpp",
-          "reconstruction/bsengine/BSTaskletData.h"
+          "reconstruction/bscore/BSTaskletData.cpp",
+          "reconstruction/bscore/BSTaskletData.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "e6abd520058335556e7eed3c7b1bce5336f966ffacd4acf83e3dc343ab72d4e0",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSTaskletData.cpp",
-          "reconstruction/bsengine/BSTaskletData.h"
+          "reconstruction/bscore/BSTaskletData.cpp",
+          "reconstruction/bscore/BSTaskletData.h"
         ]
       }
     }
@@ -317,14 +317,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSTaskletData.cpp",
+    "compiled": "reconstruction/bscore/BSTaskletData.cpp",
     "digest": "8956f39b8b9ae53e071aaeb37c67ee7d7cd270a8372954eb53957225fab2a2ed",
     "digest_method": "tu-sha256-v2",
     "run_digest": "ded4cbf53d3c3063a06203c29aed74dfb744a189974ed1fcdb30650dc03139fd",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSTaskletData.cpp",
-      "reconstruction/bsengine/BSTaskletData.h"
+      "reconstruction/bscore/BSTaskletData.cpp",
+      "reconstruction/bscore/BSTaskletData.h"
     ]
   },
   "symbol_map": {

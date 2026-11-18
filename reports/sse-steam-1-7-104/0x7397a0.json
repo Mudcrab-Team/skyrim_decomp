@@ -31,11 +31,11 @@
         "object_sha256": "996832ec92a20cb813b21c192cf0bd1a99065db17a41c4106381bcf5fa13893c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/CharacterWordQuery.cpp",
-          "reconstruction/actor206_sol/CharacterWordQuery.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/CharacterWordQuery.cpp",
+          "reconstruction/skyrim_shared/actors/CharacterWordQuery.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       },
       "winpc-native": {
@@ -56,11 +56,11 @@
         "object_sha256": "7b98efdd5b10c05f6121ea7d9f1202677b04061996dbc0ca2cb4092ba774081a",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_sol/CharacterWordQuery.cpp",
-          "reconstruction/actor206_sol/CharacterWordQuery.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h",
-          "reconstruction/actors/PlayerCharacterTargetMembers.h"
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+          "reconstruction/skyrim_shared/actors/CharacterWordQuery.cpp",
+          "reconstruction/skyrim_shared/actors/CharacterWordQuery.h",
+          "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
         ]
       }
     }
@@ -333,17 +333,17 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_sol/CharacterWordQuery.cpp",
+    "compiled": "reconstruction/skyrim_shared/actors/CharacterWordQuery.cpp",
     "digest": "67164fdb5faf4163bf13a6059aeeb659a577384f80e4c929ad1f9a1dded01140",
     "digest_method": "tu-sha256-v2",
     "run_digest": "700c9f3e3f3bc12c20b5a13fbdebfe05f222818767f993eb6459383ab9312fc7",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_sol/CharacterWordQuery.cpp",
-      "reconstruction/actor206_sol/CharacterWordQuery.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h",
-      "reconstruction/actors/PlayerCharacterTargetMembers.h"
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h",
+      "reconstruction/skyrim_shared/actors/CharacterWordQuery.cpp",
+      "reconstruction/skyrim_shared/actors/CharacterWordQuery.h",
+      "reconstruction/skyrim_shared/actors/PlayerCharacterTargetMembers.h"
     ]
   },
   "symbol_map": {

@@ -29,9 +29,9 @@
         "object_sha256": "cf90adf38b82e48af6d76fd83dbc2e9965f3855c3802a32000e56eb1962c9874",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSProceduralLightningController.cpp",
-          "reconstruction/bsengine/BSProceduralLightningController.h",
-          "reconstruction/netimmerse/NiTimeController.h"
+          "reconstruction/gamebryo/nianimation/NiTimeController.h",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningController.cpp",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningController.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "3bc3971354be10aa0cf5ce17e40982ac4210409b118fb42bd764c902ec8a029c",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/bsengine/BSProceduralLightningController.cpp",
-          "reconstruction/bsengine/BSProceduralLightningController.h",
-          "reconstruction/netimmerse/NiTimeController.h"
+          "reconstruction/gamebryo/nianimation/NiTimeController.h",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningController.cpp",
+          "reconstruction/gamebryo/niparticle/BSProceduralLightningController.h"
         ]
       }
     }
@@ -314,15 +314,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/bsengine/BSProceduralLightningController.cpp",
+    "compiled": "reconstruction/gamebryo/niparticle/BSProceduralLightningController.cpp",
     "digest": "4f7bb266899391c12591d9255d3354df67f9d2ab39706ce498f4b3407ef1cf93",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1c466e9c6f8d97c0c2438f01483fecf349f74efc135043a38ba1803d3a0bd0a5",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/bsengine/BSProceduralLightningController.cpp",
-      "reconstruction/bsengine/BSProceduralLightningController.h",
-      "reconstruction/netimmerse/NiTimeController.h"
+      "reconstruction/gamebryo/nianimation/NiTimeController.h",
+      "reconstruction/gamebryo/niparticle/BSProceduralLightningController.cpp",
+      "reconstruction/gamebryo/niparticle/BSProceduralLightningController.h"
     ]
   },
   "symbol_map": {

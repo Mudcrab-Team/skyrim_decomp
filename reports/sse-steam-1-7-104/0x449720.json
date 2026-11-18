@@ -29,9 +29,9 @@
         "object_sha256": "78e234d0968306f476e6fd1ec880a07b3e6894e4fea6ec82eaaa893883856f24",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AIWorldLocationLayout.h",
-          "reconstruction/forms/AIWorldPointRadiusLayout.cpp",
-          "reconstruction/forms/AIWorldPointRadiusLayout.h"
+          "reconstruction/skyrim/ai/AIWorldLocationLayout.h",
+          "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.cpp",
+          "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "85524945f2baf3ff6d360672284bd65cefcfd960f2501bbcff8ca949f4e6d432",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/forms/AIWorldLocationLayout.h",
-          "reconstruction/forms/AIWorldPointRadiusLayout.cpp",
-          "reconstruction/forms/AIWorldPointRadiusLayout.h"
+          "reconstruction/skyrim/ai/AIWorldLocationLayout.h",
+          "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.cpp",
+          "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.h"
         ]
       }
     }
@@ -333,15 +333,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/forms/AIWorldPointRadiusLayout.cpp",
+    "compiled": "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.cpp",
     "digest": "6a9f76929285b0a43d7ebaadb4fe2b68146a6683d5b425c72e5294d08dc6fbef",
     "digest_method": "tu-sha256-v2",
     "run_digest": "1c8f6cf8c3ea2863e13df338dcd54fe1e835013551fbdfc0d820eb51ee200d6f",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/forms/AIWorldLocationLayout.h",
-      "reconstruction/forms/AIWorldPointRadiusLayout.cpp",
-      "reconstruction/forms/AIWorldPointRadiusLayout.h"
+      "reconstruction/skyrim/ai/AIWorldLocationLayout.h",
+      "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.cpp",
+      "reconstruction/skyrim/ai/AIWorldPointRadiusLayout.h"
     ]
   },
   "symbol_map": {

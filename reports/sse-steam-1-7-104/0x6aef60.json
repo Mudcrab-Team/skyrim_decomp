@@ -31,10 +31,10 @@
         "object_sha256": "5624ad3c0651b5fecfac5c60cc435b71c09c2aba334b7803dee4a9a3c1a774a1",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/Blocking.cpp",
-          "reconstruction/actor206_1/Blocking.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim/ai/combat/Blocking.cpp",
+          "reconstruction/skyrim/ai/combat/Blocking.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
         ]
       },
       "winpc-native": {
@@ -55,10 +55,10 @@
         "object_sha256": "f87c565e478ee93b38c99863ae50be5957f1c8bf93b10ee0f20c820ed1b274fe",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/actor206_1/Blocking.cpp",
-          "reconstruction/actor206_1/Blocking.h",
-          "reconstruction/actors/ActorTargetInterfaces.h",
-          "reconstruction/actors/ActorTargetPrefix.h"
+          "reconstruction/skyrim/ai/combat/Blocking.cpp",
+          "reconstruction/skyrim/ai/combat/Blocking.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+          "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
         ]
       }
     }
@@ -331,16 +331,16 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/actor206_1/Blocking.cpp",
+    "compiled": "reconstruction/skyrim/ai/combat/Blocking.cpp",
     "digest": "12f09b7980050c1fdb755238a6465e6c7f7aef46fbc12775142993d4f847202c",
     "digest_method": "tu-sha256-v2",
     "run_digest": "beed46db719b9630436a65580afe4f5b0880c6b7b363559d3d321b274bfed64c",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/actor206_1/Blocking.cpp",
-      "reconstruction/actor206_1/Blocking.h",
-      "reconstruction/actors/ActorTargetInterfaces.h",
-      "reconstruction/actors/ActorTargetPrefix.h"
+      "reconstruction/skyrim/ai/combat/Blocking.cpp",
+      "reconstruction/skyrim/ai/combat/Blocking.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetInterfaces.h",
+      "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
     ]
   },
   "symbol_map": {

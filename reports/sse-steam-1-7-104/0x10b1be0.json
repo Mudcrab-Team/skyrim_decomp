@@ -29,8 +29,8 @@
         "object_sha256": "bef379e5f29f8bbecd83ba9a2a0c2f4b499487d3854822a3408ed02fa7b0d2ef",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/LeafAddress10b1be0.cpp",
-          "reconstruction/leaves/LeafAddress10b1be0.h"
+          "reconstruction/unmapped/leaves/LeafAddress10b1be0.cpp",
+          "reconstruction/unmapped/leaves/LeafAddress10b1be0.h"
         ]
       },
       "winpc-native": {
@@ -49,8 +49,8 @@
         "object_sha256": "3900d413d3cd611a5357854a10eb000f4bc0316d57f4bf40dddd4e5381a04e99",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/leaves/LeafAddress10b1be0.cpp",
-          "reconstruction/leaves/LeafAddress10b1be0.h"
+          "reconstruction/unmapped/leaves/LeafAddress10b1be0.cpp",
+          "reconstruction/unmapped/leaves/LeafAddress10b1be0.h"
         ]
       }
     }
@@ -329,14 +329,14 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/leaves/LeafAddress10b1be0.cpp",
+    "compiled": "reconstruction/unmapped/leaves/LeafAddress10b1be0.cpp",
     "digest": "fb39d143f08d6b9e459cf78c2775058c3c7523665ea3cbebe2c4b5ff044f5940",
     "digest_method": "tu-sha256-v2",
     "run_digest": "c5abb5877b9acfcaab0a1deb4da9aa96803a096325a5b8ba6a428bdb8581b6c1",
     "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/leaves/LeafAddress10b1be0.cpp",
-      "reconstruction/leaves/LeafAddress10b1be0.h"
+      "reconstruction/unmapped/leaves/LeafAddress10b1be0.cpp",
+      "reconstruction/unmapped/leaves/LeafAddress10b1be0.h"
     ]
   },
   "symbol_map": {
