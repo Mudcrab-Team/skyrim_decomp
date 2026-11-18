@@ -1,4 +1,5 @@
 // Code origin: body written by the contributor from the compared function's behaviour; names and
+// declarations come from the header (CharmedBaryon/CommonLibSSE-NG, MIT).
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

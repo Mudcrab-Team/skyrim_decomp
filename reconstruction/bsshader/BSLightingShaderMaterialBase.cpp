@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with the class layout from the header beside this file.
 // 0x4b4ad0 BSLightingShaderMaterialBase::GetType
 // 0x1523d10 BSLightingShaderMaterialBase::GetDefault
 // 0x1523f00 BSLightingShaderMaterialBase::ReceiveValuesFromRootMaterial

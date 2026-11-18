@@ -1,5 +1,6 @@
 // Source exposure: mixed (community declarations and pinned image analysis).
 // Declarations derived from powerof3/CommonLibSSE@654e55f7979c1733033d5dbef176e43827bac944; GPL-3.0.
+// CombatBehaviorTreeNode, name, parent, children, childCount,
 // CombatBehaviorTreeNodeObjectBase, CombatBehaviorTreeNodeObject: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // CombatBehaviorTreeNodeLayout, NodeName: GUESS(low) STANDIN
 #pragma once

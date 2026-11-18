@@ -1,5 +1,6 @@
 // Code origin: declarations adapted from the pinned community headers identified below.
 // Source exposure: mixed (pinned community declarations and local target analysis).
+// NativeFunctionLayout, NativeFunctionBaseLayout, ScriptFunctionLayout, ScriptRefCountLayout,
 // ScriptStringLayout, ScriptTypeLayout, ScriptDescriptorLayout: GUESS(low) STANDIN
 // Field layouts: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NativeFunction and NativeLatentFunction owner spellings: EXE_RTTI

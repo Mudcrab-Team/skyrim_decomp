@@ -1,5 +1,5 @@
 // Code origin: original contributor declarations from CommonLibSSE-NG names and layouts (the Ctor
-// name from powerof3/CommonLibSSE). Review fix by gpt-6.1-sol reuses the represented NiAVObject
+// name from powerof3/CommonLibSSE). Review fix by gpt-6.1-sol reuses the represented NiAVObject base from NiAVObject.h and the NiColor value declaration used in small202_b72804af/Sky.h.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // base declarations from existing repository headers and local analysis of the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

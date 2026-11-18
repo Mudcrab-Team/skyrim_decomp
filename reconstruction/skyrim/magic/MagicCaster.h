@@ -1,7 +1,7 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// (GPL-3.0, used as a naming source per docs/authorizations.md).
-// Adapted code: the inline body of BSTArray::operator[] is adapted from CharmedBaryon/CommonLibSSE-NG
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none
+// AIFormulas::GetSoundLevelValue follows powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0, used as a naming source per docs/authorizations.md).
+// Adapted code: the inline body of BSTArray::operator[] is adapted from CharmedBaryon/CommonLibSSE-NG b93280e include/RE/B/BSTArray.h under its MIT licence (its assert dropped, the data member indexed directly instead of through data()).
+// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold (0.75) at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8. NG's licence notice, from its LICENSE at b93280e, is kept as it requires:
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // MagicCaster: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MagicCaster::sounds MagicCaster::currentSpell MagicCaster::state MagicCaster::currentSpellCost: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); at 0x08, 0x28, 0x30, 0x38

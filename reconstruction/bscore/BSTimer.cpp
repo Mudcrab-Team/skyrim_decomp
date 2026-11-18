@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local instruction listing and
+// decompiler output of the pinned image, with types from the header beside this file.
 // Recipe: reconstruction/recipes/o2-fpfast.json
 // 0xce3970 BSTimer::SetGlobalTimeMultiplier
 #include "BSTimer.h"

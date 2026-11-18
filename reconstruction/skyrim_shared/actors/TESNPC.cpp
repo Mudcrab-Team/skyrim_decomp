@@ -1,6 +1,6 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// fork (GPL-3.0) uses the same ones. A byte match shows that this source and recipe produce the
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// pinned image, with the class layout from the header beside this file. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) and meh321's Address Library name list; the powerof3
+// fork (GPL-3.0) uses the same ones. A byte match shows that this source and recipe produce the checked code; it does not verify the community names or that the original source looked like this.
 // 0x3cd8d0 TESNPC::SetObjectVoiceType
 // 0x3afeb0 TESNPC::IsFemale
 // 0x3a4e00 TESNPC::GetRelationshipRankIndex

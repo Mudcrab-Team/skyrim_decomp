@@ -63,5 +63,71 @@ class RewriteTests(unittest.TestCase):
         self.assertEqual(self.rewrite(OLD.replace('\n', '\r\n'))[1], 'crlf')
 
 
+WRAPPED = f"""// Build: sse-steam-1-7-104; RVA 0x1000; 8 bytes
+// Code origin: body written from the compared function's behaviour; names and
+// declarations come from the header (CharmedBaryon/CommonLibSSE-NG, MIT),
+// with no body copied.
+// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// the compared functions from the pinned image).
+// Widget, Get: GUESS(low) STANDIN
+// Nothing else is claimed.
+// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT)
+// and powerof3/CommonLibSSE 654e55f (GPL-3.0), and callee
+// names from a list used with permission.
+// Labels: v2
+// object: GUESS(low)
+// Widget: {NG}
+#include "Widget.h"
+int Widget::Get() const {{ return 1; }}
+"""
+
+
+class WrapTests(unittest.TestCase):
+    """A field wrapped over several lines keeps all of its text, digest-neutrally and idempotently."""
+
+    def rewrite(self, text):
+        return c.rewrite(text, 'cpp', {0x1000: 'Widget::Get'}, c.canonical_notice())
+
+    def test_a_wrapped_field_keeps_its_continuation(self):
+        new, why = self.rewrite(WRAPPED)
+        self.assertIsNone(why)
+        head = new.split('#include')[0].splitlines()
+        code = head.index("// Code origin: body written from the compared function's behaviour; names and")
+        # The provenance line is hashed as written; the rest of its sentence follows as one line.
+        self.assertEqual(head[code + 1], '// declarations come from the header (CharmedBaryon/CommonLibSSE-NG, MIT), '
+                                         'with no body copied.')
+        exposure = next(i for i, line in enumerate(head) if 'Source exposure:' in line)
+        self.assertEqual(head[exposure + 1], '// the compared functions from the pinned image).')
+        self.assertEqual(digest_v2.strip_comments(WRAPPED.encode(), 'x.cpp'),
+                         digest_v2.strip_comments(new.encode(), 'x.cpp'))
+
+    def test_a_kept_line_that_starts_mid_sentence_gets_its_start_back(self):
+        new, _ = self.rewrite(WRAPPED)
+        self.assertIn('// Names follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT) and powerof3/CommonLibSSE 654e55f '
+                      '(GPL-3.0), and callee names from a list used with permission.', new.splitlines())
+
+    def test_a_new_statement_is_not_a_wrap(self):
+        new, _ = self.rewrite(WRAPPED)
+        for gone in ('Nothing else is claimed', 'Labels: v2', 'Build:'):
+            self.assertNotIn(gone, new)
+        self.assertIn('// object: GUESS(low)', new.splitlines())
+        self.assertFalse(c.wraps_into('// Widget, Get: GUESS(low) STANDIN', '// The target calls it.'))
+        self.assertFalse(c.wraps_into('// Labels: v2', '// object: GUESS(low)'))
+        self.assertTrue(c.wraps_into('// a, b, c,', '// d: GUESS(low)'))
+
+    def test_the_spdx_line_does_not_split_a_wrapped_field(self):
+        text = ('// Source exposure: mixed (names from community headers; sizes and\n'
+                '// the compared functions from the pinned image).\n'
+                f'// Widget: {NG}\n#include "Widget.h"\n')
+        new, _ = c.rewrite(text, 'h', {}, c.canonical_notice())
+        head = new.split('#include')[0].splitlines()
+        self.assertEqual(head[1], '// the compared functions from the pinned image).')
+        self.assertIn('// ' + lint.SPDX_MIT, head[2:])
+
+    def test_running_it_again_changes_nothing(self):
+        once, _ = self.rewrite(WRAPPED)
+        self.assertEqual(self.rewrite(once)[0], once)
+
+
 if __name__ == '__main__':
     unittest.main()

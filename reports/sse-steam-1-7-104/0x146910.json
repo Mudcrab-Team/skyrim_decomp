@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "a13d8fc900ea92d3bcbdcad4274dd3b41850fca70f3607a10caa8bf7635fa1b5",
+        "object_sha256": "72a5fe5212bafdc9455fcfff8316080f0e78f55c07a330da95cac3ee14abd216",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/contrib_alchemyitem/AlchemyItem.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "ee54cb3fdbde559a785df69fdcb9bb2f07f3238e",
+    "base_sha": "f49449f9c7cc109c7faaafe8b683e7da726ea4ab",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "883821bbb7f42345a5730a9aa39771287339711d",
+    "head_sha": "9b30baa338c23fcee1175dc59915b50e5eaea3ba",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44306848289,
+    "run_id": 44374019614,
     "rva": "0x146910",
     "schema": 2,
-    "source_sha256": "d740e0231e90e654ff484116ecce9ec7b1bbe6cb1c6a22c59368aead78b50f43",
+    "source_sha256": "c8497003f4b86cbf83f5bd149e10d63b2155497d42d97dc055d39495317ef5b2",
     "status": "pass",
     "symbols": [
       "?IsMedicine@AlchemyItem@@UEBA_NXZ"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "8552b589e26d242b0af2c1c77f2bce78c4fb7db87982f6e8ce4fb0deb32296db",
           "code_sections": 1,
-          "object_sha256": "a13d8fc900ea92d3bcbdcad4274dd3b41850fca70f3607a10caa8bf7635fa1b5"
+          "object_sha256": "72a5fe5212bafdc9455fcfff8316080f0e78f55c07a330da95cac3ee14abd216"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,7 +159,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/contrib_alchemyitem/AlchemyItem.cpp",
-          "source_revision": "d740e0231e90e654ff484116ecce9ec7b1bbe6cb1c6a22c59368aead78b50f43"
+          "source_revision": "c8497003f4b86cbf83f5bd149e10d63b2155497d42d97dc055d39495317ef5b2"
         },
         "symbol_map_sha256": "13c848fa9ed2f5093dcc1ebc38cde4e3af70c79828898ecbd449f9f79b969600",
         "target": {
@@ -172,10 +172,8 @@
   ],
   "source": {
     "compiled": "reconstruction/contrib_alchemyitem/AlchemyItem.cpp",
-    "digest": "7ef9712b2a85cff02a599dd3b014a582166abced398585e7feb9b9dcd7cc51e1",
+    "digest": "c8497003f4b86cbf83f5bd149e10d63b2155497d42d97dc055d39495317ef5b2",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "d740e0231e90e654ff484116ecce9ec7b1bbe6cb1c6a22c59368aead78b50f43",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/contrib_alchemyitem/AlchemyItem.cpp",
       "reconstruction/contrib_alchemyitem/AlchemyItem.h"

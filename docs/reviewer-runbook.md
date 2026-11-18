@@ -107,7 +107,7 @@ blocks; list what you find as `naming_findings` and still approve.
    material. The source header states provenance and source exposure, and what it says about
    origin and licence is true. Start from the packet's `body origin` list and its per-function
    `community/sibling body similarity` line: every `adapted` body must be named in the unit
-   header with its upstream file, revision and licence (NG: MIT with NG's notice kept in the file;
+   header with its upstream file, revision and licence (NG: MIT, with NG's notice kept in the file as the one-line `SPDX-License-Identifier: MIT (... Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)`, which is the whole notice the header policy asks for; do not reject because the full licence text was removed;
    powerof3: GPL-3.0; FNV: a `Sibling source:` line), and a header claim about what is not copied
    must be true. `trivial` bodies need no statement.
    Admitted Reviewers are authorized to read the FNV source and local index for this comparison (see `docs/authorizations.md`, Notes).

@@ -1,5 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
+// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // Names are COMMUNITY and unverified; the class name and vftable slot 4 agree with EXE_RTTI.
 #pragma once
 

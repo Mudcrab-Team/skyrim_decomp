@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // TESRegionDataManager: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESRegionDataManager::AsRegionDataObjects, TESRegionDataManager::AsRegionDataWeather, TESRegionDataManager::AsRegionDataMap, TESRegionDataManager::AsRegionDataLandscape, TESRegionDataManager::AsRegionDataGrass, TESRegionDataManager::AsRegionDataSound: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRegionDataObjects, TESRegionDataWeather, TESRegionDataMap, TESRegionDataLandscape, TESRegionDataGrass, TESRegionDataSound: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // 0x30 of a parent), so they use RawAt; header-gap TESForm for these fields.
 // BGSSoundCategory: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSSoundCategory::SetCategoryAttenuation, BGSSoundCategory::SetCategoryFrequency, BGSSoundCategory::Matches: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)

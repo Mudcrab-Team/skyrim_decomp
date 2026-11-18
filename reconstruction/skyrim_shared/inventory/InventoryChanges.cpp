@@ -3,6 +3,7 @@
 // GetWeaponSlotMask, OccupiesWornSlot: GUESS; file-local helpers with no address of their own
 // InventoryUtils::ItemFilter::~ItemFilter: GUESS(low)
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local instruction listing and
+// decompiler output of the pinned image, with types from the header beside this file.
 // 0x22b710 InventoryUtils::ItemFilter::~ItemFilter
 // 0x233f90 InventoryChanges::InitOutfitItems
 // 0x2372c0 InventoryChanges::VisitInventory

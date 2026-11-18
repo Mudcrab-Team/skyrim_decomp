@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
+// with types from the header beside this file; labels revised by claude-opus-5-5 against the pinned community checkouts.
 // Recipe: reconstruction/recipes/o2-fpfast.json
 // 0x5c2cc0 MagicCaster::GetCurrentSpellCost
 // 0x5caae0 MagicCaster::InterruptCast

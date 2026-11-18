@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "75f212120b5de62287ca3d9240919656e3c864318283399bed24676d1146b5b7",
+        "object_sha256": "20184245a615662f68c47956f9d33d5b5db651f79991abbf11c94a4c4932e817",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/contrib_tesfurniture/TESFurniture.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "097869ff3e896cda8b3a41af63e72c71a87fc8f6",
+    "base_sha": "f49449f9c7cc109c7faaafe8b683e7da726ea4ab",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "888b80d39fe0ad5ab59c483648a8e1dc36718b9f",
+    "head_sha": "9b30baa338c23fcee1175dc59915b50e5eaea3ba",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44274552954,
+    "run_id": 44374019614,
     "rva": "0x26e110",
     "schema": 2,
-    "source_sha256": "eea05344206a01cf4ff7140a08aca7ff69c2c383905b225c3bef36dca98944d0",
+    "source_sha256": "f784794d42c538243e36353cb53b8767db6d13040ea3414c224e80f8643411de",
     "status": "pass",
     "symbols": [
       "?InitializeData@TESFurniture@@UEAAXXZ"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "adeb989cb7a9dbb54095a0c89a92f2b81204c337460ee42a1e355b7c80989fcf",
           "code_sections": 1,
-          "object_sha256": "75f212120b5de62287ca3d9240919656e3c864318283399bed24676d1146b5b7"
+          "object_sha256": "20184245a615662f68c47956f9d33d5b5db651f79991abbf11c94a4c4932e817"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,7 +161,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/contrib_tesfurniture/TESFurniture.cpp",
-          "source_revision": "eea05344206a01cf4ff7140a08aca7ff69c2c383905b225c3bef36dca98944d0"
+          "source_revision": "f784794d42c538243e36353cb53b8767db6d13040ea3414c224e80f8643411de"
         },
         "symbol_map_sha256": "cf7e82c9a4dca91bfb0929860916405437bd9954a1206c357dcc367cf537609a",
         "target": {
@@ -174,10 +174,8 @@
   ],
   "source": {
     "compiled": "reconstruction/contrib_tesfurniture/TESFurniture.cpp",
-    "digest": "b2bbb662eb15de87594ced632c8401b59572f7f6dae23a287ddae25abcd2d40c",
+    "digest": "f784794d42c538243e36353cb53b8767db6d13040ea3414c224e80f8643411de",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "eea05344206a01cf4ff7140a08aca7ff69c2c383905b225c3bef36dca98944d0",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/contrib_tesfurniture/TESFurniture.cpp",
       "reconstruction/contrib_tesfurniture/TESFurniture.h"

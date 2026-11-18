@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSMaterialObject, BGSMaterialObject::EnsureLoaded, BGSMaterialObject::fileData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSMaterialObject::fileData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares BSTArray<FILE_DATA>, here the stand-in BSTArray
 // BSMaterialObject, BSMaterialObject::EnsureLoaded, ::~BSMaterialObject: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); size 0x58, two dword members read by EnsureLoaded

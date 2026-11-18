@@ -1,6 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSLocation, BGSLocation::InitializeData, BGSLocation::~BGSLocation, BGSLocation::parentLoc, BGSLocation::unreportedCrimeFaction, BGSLocation::musicType, BGSLocation::worldLocMarker, BGSLocation::worldLocRadius, BGSLocation::horseLocMarker, BGSLocation::lastChecked, BGSLocation::cleared, BGSLocation::everCleared: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSLocation::clearedFlags: GUESS(low); one 16-bit field for the two flag bytes, which the listing clears with one word store
 // gNullHandle: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the 32-bit null reference handle at RVA 0x219e55c, id 400312; the name there is gNullHandle_*

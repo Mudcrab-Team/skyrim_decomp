@@ -1,5 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Names and offsets follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESGlobal.h and
 // include/RE/B/BSString.h. Adapted bodies: none declared.
 // TESGlobal, TESGlobal::GetFormEditorID, ::SetFormEditorID, ::formEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSStringT, BSString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's BSStringT<char, N, Allocator> (and its BSString alias) reduced to the members the code needs

@@ -1,5 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
+// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // COMMUNITY: NiObject, NiTimeController, ProcessClone (slot 0x1D), NiCloningProcess, next (0x40).
 // GUESS: unk01..unk1C are unnamed vftable slots kept only to place ProcessClone at slot 0x1D;
 #pragma once

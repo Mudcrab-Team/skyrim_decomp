@@ -1,6 +1,6 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with names from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // 0x3dfeb0 TESQuest::QConditions
 // 0x3df9b0 TESQuest::GetFormEditorID
 // 0x3d2870 TESQuest::FinishLoadGame

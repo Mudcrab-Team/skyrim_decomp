@@ -1,6 +1,7 @@
 // Licence: uses the GetEncounterZone and BGSEncounterZone names from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other
+// with types from the header beside this file.
+// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // 0x2e6f30 TESObjectREFR::GetScale
 // 0x2f3b70 TESObjectREFR::GetCurrentLocation
 // 0x300b90 TESObjectREFR::GetCalcLevel

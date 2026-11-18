@@ -1,7 +1,9 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with names and types from the header beside this file.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nimain/niobjectnet.cpp:54
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nimain/niobjectnet.cpp:85
 // LoadFixedString, LoadStep1, LoadStep2, SaveFixedString below: GUESS(low); the image gives these
+// stream helpers no community name.
 // 0xeeb940 NiObjectNET::ctor
 // 0xeea6c0 NiObjectNET::LoadBinary
 // 0xeeb8c0 NiObjectNET::ProcessClone

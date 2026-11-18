@@ -1,7 +1,8 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Adapted body: BSFixedString::c_str (the null test with the empty-string fallback), from
+// CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/B/BSFixedString.h, MIT. Licence notice:
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Other bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Other bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSMusicType, BGSMusicType::GetFormEditorID, BGSMusicType::SetFormEditorID, BGSMusicType::DoPause, BGSMusicType::~BGSMusicType, BGSMusicType::formEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSIMusicType, BSIMusicType::DoUpdate, ::DoPlay, ::DoPause, ::DoFinish, ::DoApplyDuckingAttenuation, ::DoClearDucking, ::DoPrepare, ::flags, ::priority, ::ducksOtherMusicBy, ::fadeTime, ::currentTrackIndex, ::trackHistory, ::tracks, ::typeStatus: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); layout as in NG, size 0x50
 // BSIMusicType::padding, ::pad4C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); padding

@@ -1,36 +1,12 @@
-// TESFurniture declarations for build sse-steam-1-7-104 (standalone unit for the functions compared in the matching .cpp).
-// Labels: v2
 // Code origin: declarations extended by hand from the local listings; names follow the community headers.
-// Source exposure: mixed
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Evidence: findings/ghidra-import.md
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
 // TESFurniture, TESObjectACTI: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); declarations adapted from include/RE/T/TESObjectACTI.h, include/RE/T/TESBoundObject.h, include/RE/T/TESForm.h and public component headers.
 // names: GUESS(low); names and original signatures are tentative.
-// MIT License
-// 
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESFurniture::InitializeData, TESFurniture::Clone3D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names only, the bodies are written from the target listing
 // g_furnitureCloneFlag: GUESS(low); global byte at address 0x20b6130 that gates the extra step in Clone3D
 // TESFurniture::Unk26f900: GUESS(low); address 0x26f900, called with the cloned node when the flag is set
-// dwordE4, qwordE8, unkE0: GUESS(low); members the compared InitializeData clears
+// workBenchData, padE2, furnFlags, associatedForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); names and offsets E0 to E8 from include/RE/T/TESFurniture.h; types simplified, the compared InitializeData clears furnFlags and associatedForm
 #pragma once
 class Component { public: virtual ~Component(); };
 class TESForm : public Component { public: void* files; unsigned formFlags, id; unsigned short inGameFlags; unsigned char type, pad; unsigned pad2; void Revert(void*); };
@@ -47,5 +23,7 @@ class BGSOpenCloseForm { public: virtual ~BGSOpenCloseForm(); };
 class BGSKeywordForm : public Component { public: void** keywords; unsigned count; };
 class TESObjectACTI : public TESBoundAnimObject, public TESFullName, public TESModelTextureSwap, public TESMagicTargetForm, public BGSDestructibleObjectForm, public BGSOpenCloseForm, public BGSKeywordForm { public: void* soundLoop; void* soundActivate; void* waterForm; unsigned short flags, padc2; unsigned padc4; void ClearData(); virtual void InitializeData(); };
 template<class T> struct Array { T* data; unsigned capacity, allocatorPad, size, sizePad; void Deallocate(); void Clear() { if (data) { Deallocate(); size = 0; } } };
-class TESFurniture : public TESObjectACTI { public: struct EntryPointData; Array<EntryPointData> entryPointDataArray; unsigned unkE0, dwordE4; void* qwordE8; void ClearData(); void InitializeData() override; NiAVObject* Clone3D(TESObjectREFR* a_ref) override; void Unk26f900(NiAVObject* a_node); };
+class TESFurniture : public TESObjectACTI { public: struct EntryPointData; Array<EntryPointData> entryPointDataArray; unsigned short workBenchData, padE2; unsigned furnFlags; void* associatedForm; void ClearData(); void InitializeData() override; NiAVObject* Clone3D(TESObjectREFR* a_ref) override; void Unk26f900(NiAVObject* a_node); };
+static_assert(sizeof(TESObjectACTI) == 0xC8, "layout");
+static_assert(sizeof(TESFurniture) == 0xF0, "layout");
 extern bool g_furnitureCloneFlag;

@@ -1089,6 +1089,7 @@ class ReviewContextTests(unittest.TestCase):
         self.assertTrue(text.startswith('## Checklist (per function)'))
         self.assertNotIn('For a change to the comparator', text)
         self.assertIn('Plausible source', text)
+        self.assertIn('do not reject because the full licence text was removed', text)
 
     def test_a_reply_with_reasons_still_parses_and_only_approve_approves(self):
         leak, got = pr_bot.parse_review(json.dumps({'leak': 'no', 'functions': {

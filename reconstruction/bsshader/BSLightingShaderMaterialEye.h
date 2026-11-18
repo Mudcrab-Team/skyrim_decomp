@@ -7,6 +7,7 @@
 // BSLightingShaderMaterialEye::SaveBinary, BSLightingShaderMaterialEye::LoadBinary, BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEye::Ctor, BSLightingShaderMaterialEye::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // eyeEnvMask, eyeCubemap, unkB0, colorB4, colorC0, pad_CC: GUESS(low)
 // Adapted bodies: NiBinaryStream::read, NiBinaryStream::write from
+// CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h (MIT);
 #pragma once
 
 #include <cstdint>

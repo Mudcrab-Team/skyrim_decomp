@@ -1,4 +1,5 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image, with types from the header beside this file.
 // 0xcfaeb0 BSDirectInputManager::ReleaseDevice
 // 0xcfae70 BSDirectInputManager::CreateDeviceWithGUID
 // 0xcfaee0 BSDirectInputManager::GetDeviceState

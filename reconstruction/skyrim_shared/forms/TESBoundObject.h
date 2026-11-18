@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // CalculateDoFavor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetBipedObjectForm, SendActorItemEquippedEvent: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the community declarations are unknown, the signatures here come from the listings

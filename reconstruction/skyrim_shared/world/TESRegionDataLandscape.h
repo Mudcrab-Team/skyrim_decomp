@@ -1,4 +1,5 @@
 // Code origin: names, bases, virtual slots and member offsets are taken from CharmedBaryon/CommonLibSSE-NG
+// b93280e (MIT); the bodies are written from the listing of the pinned image, not copied from any source.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

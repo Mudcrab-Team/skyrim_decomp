@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BGSSceneActionDialogue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSSceneActionDialogue::GetEmotionType, BGSSceneActionDialogue::GetEmotionValue, BGSSceneActionDialogue::Loops, BGSSceneActionDialogue::FacesTarget, BGSSceneActionDialogue::Unk_0B, BGSSceneActionDialogue::~BGSSceneActionDialogue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSSceneActionBase, BGSSceneActionBase::Unk_0B, BGSSceneActionBase::unknown08, BGSSceneActionBase::unknown14: GUESS(low)

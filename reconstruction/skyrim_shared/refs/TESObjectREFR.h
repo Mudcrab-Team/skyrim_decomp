@@ -1,8 +1,9 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// and powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), and callee
+// Names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT) and powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), and callee names from meh321/AddressLibraryDatabase 0379cb6 (used with the author's permission as reported by the maintainer).
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// Because it uses powerof3 names, this header is GPL-3.0. Every class other than TESObjectREFR is a minimal stand-in that declares only
+// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
+// Because it uses powerof3 names, this header is GPL-3.0. Every class other than TESObjectREFR is a minimal stand-in that declares only the members and virtual slots the compared code needs, so the layouts of the stand-ins are not claimed to match the game. Unk_NN placeholders only keep the compared virtual slots at the vtable offsets the image encodes (slot NN is the byte offset NN * 8).
 // TESObjectREFR, GetScale, GetCurrentLocation, GetCalcLevel, GetTransform, CanBeMoved, HasQuestObject, GetBaseObject, GetContainer, Get3D2: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 

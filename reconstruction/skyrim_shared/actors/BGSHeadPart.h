@@ -1,7 +1,8 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Adapted body: BSFixedString::c_str (the null test with the empty-string fallback), from
+// CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/B/BSFixedString.h, MIT. Licence notice:
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Other bodies adapted from community sources: none; tools/check_origin.py reports none above its
+// Other bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold at the pinned checkouts.
 // BGSHeadPart, BGSHeadPart::GetFormEditorID, ::SetFormEditorID, ::formEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSHeadPart::unk20: GUESS(low); filler bytes for the TESFullName, TESModelTextureSwap bases and the data members up to offset 0x118
 // BSFixedString, BSFixedString::c_str, ::operator=, ::_data: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; a single string pointer; operator= is declared and not defined, bound by hint to 0xeb1120

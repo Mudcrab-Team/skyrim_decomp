@@ -1,6 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// the compared functions from the pinned image).
 // BGSMusicSilenceTrack: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // GetDurationImpl, DoFinish, DoPause, DoUpdate, DoPlay, Load: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // duration, pad24, playTime, pauseTime: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the community comment marks duration as the FLTV subrecord

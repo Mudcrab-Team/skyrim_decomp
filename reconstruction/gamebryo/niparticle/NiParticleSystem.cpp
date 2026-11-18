@@ -1,4 +1,5 @@
 // Code origin: bodies written for this unit from the listings of the pinned image; names and
+// declarations from CommonLibSSE-NG. No community or sibling body is adapted.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
