@@ -1,17 +1,7 @@
-// NiSwitchNode declarations for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-niswitchnode
-// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
-// the compared functions from the pinned image).
+// Source exposure: mixed (names and declarations from community headers; base classes, sizes and the compared functions from the pinned image).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
-// community names are unverified.
-// Base form: shared header NiNode.h (same folder) for NiNode.
-// Code origin: declarations from the skeleton and the community headers named in the labels; the
-// AsSwitchNodeImpl, NiUpdateData, NiTimeController and NiChildSlots stand-ins were added by v-macrev, assisted by
-// claude-opus-5-5, from a local listing of the contributor's own copy of the pinned image. No
-// community or sibling body is adapted.
+// Code origin: declarations from the skeleton and the community headers named in the labels; the AsSwitchNodeImpl, NiUpdateData, NiTimeController and NiChildSlots stand-ins were added by v-macrev, assisted by claude-opus-5-5, from a local listing of the contributor's own copy of the pinned image. No community or sibling body is adapted.
 // NiSwitchNode: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiSwitchNode::IsEqual, NiSwitchNode::UpdateWorldBound, NiSwitchNode::SaveBinary, NiSwitchNode::AttachChild, NiSwitchNode::LoadBinary, NiSwitchNode::SetAt1, NiSwitchNode::OnVisible, NiSwitchNode::UpdateRigidDownwardPass, NiSwitchNode::UpdateDownwardPass, NiSwitchNode::UpdateSelectedDownwardPass: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiPointer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

@@ -1,71 +1,20 @@
-// NiSwitchNode functions for build sse-steam-1-7-104.
-//
-// Labels: v2
-// Task: p46-n-niswitchnode
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
+// Source exposure: mixed (community declarations; the listing of the contributor's own pinned image).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: IsEqual and its small accessor helpers retain the earlier project draft; the other bodies are original reconstructions by v-macrev, assisted by claude-opus-5-5, from a local listing of the contributor's own pinned image. The bound copy calls SetCenterAndRadius as named and called in the FNV decompilation (label at the helper); no sibling body is copied.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Evidence: findings/queue-normal-selection.md
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json (compile this file alone).
-// Drafted by Claude Haiku 5.5 (claude-haiku-5-5, worker haiku-202611122349-3), starting from
-// a tools/skeleton.py skeleton.
-// Source exposure: binary-analysis. Drafted by v-macrev, assisted by claude-opus-5-5.
-// Code origin: IsEqual and its small accessor helpers retain the earlier project draft.
-// StreamRead, StreamBinaryRead: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from
-// include/RE/N/NiBinaryStream.h (read) and src/RE/N/NiBinaryStream.cpp (binary_read).
-// Other bodies are original reconstructions by v-macrev, assisted by claude-opus-5-5,
-// from a local listing of the contributor's own pinned image. Integration repair by
-// awarebayes, assisted by gpt-6.1-sol, corrects provenance and defers four update bodies.
-// The four update and bound bodies were rewritten by v-macrev, assisted by claude-opus-5-5, from the
-// same listing. Their bound copy calls the engine's bound setter, SetCenterAndRadius, named and
-// called as in the FNV decompilation (the label is at the helper). No sibling body is copied.
-// Compared functions:
-//   RVA 0xeed530, 82 bytes: NiSwitchNode::IsEqual
-//   RVA 0xeee380, 4 bytes: NiSwitchNode::AsSwitchNode
-//   RVA 0xeed490, 142 bytes: NiSwitchNode::SaveBinary
-//   RVA 0xeed6e0, 143 bytes: NiSwitchNode::AttachChild
-//   RVA 0xeed3c0, 160 bytes: NiSwitchNode::LoadBinary
-//   RVA 0xeedae0, 161 bytes: NiSwitchNode::SetAt1
-//   RVA 0xeee100, 170 bytes: NiSwitchNode::OnVisible
-//   RVA 0xeee080, 110 bytes: NiSwitchNode::UpdateWorldBound
-//   RVA 0xeedf20, 339 bytes: NiSwitchNode::UpdateRigidDownwardPass
-//   RVA 0xeedc40, 341 bytes: NiSwitchNode::UpdateDownwardPass
-//   RVA 0xeedda0, 363 bytes: NiSwitchNode::UpdateSelectedDownwardPass
-// CI hash: 0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
-// CI hash: 0xeed490 ?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
-// CI hash: 0xeed6e0 ?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z
-// CI hash: 0xeed3c0 ?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z
-// CI hash: 0xeedae0 ?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z
-// CI hash: 0xeee100 ?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z
-// CI hash: 0xeee080 ?UpdateWorldBound@NiSwitchNode@@UEAAXXZ
-// CI hash: 0xeedf20 ?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
-// CI hash: 0xeedc40 ?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
-// CI hash: 0xeedda0 ?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z
+// StreamRead, StreamBinaryRead: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted from include/RE/N/NiBinaryStream.h (read) and src/RE/N/NiBinaryStream.cpp (binary_read).
 // Adapted bodies: StreamRead, StreamBinaryRead (CommonLibSSE-NG, cited above).
-// A byte match shows that this source and recipe produce the checked code; it does not verify the
-// community names or that the original source looked like this.
-// CommonLibSSE-NG licence notice:
-// MIT License
-//
-// Copyright (c) 2018 Ryan-rsm-McKenzie
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+// 0xeed530 NiSwitchNode::IsEqual
+// 0xeee380 NiSwitchNode::AsSwitchNode
+// 0xeed490 NiSwitchNode::SaveBinary
+// 0xeed6e0 NiSwitchNode::AttachChild
+// 0xeed3c0 NiSwitchNode::LoadBinary
+// 0xeedae0 NiSwitchNode::SetAt1
+// 0xeee100 NiSwitchNode::OnVisible
+// 0xeee080 NiSwitchNode::UpdateWorldBound
+// 0xeedf20 NiSwitchNode::UpdateRigidDownwardPass
+// 0xeedc40 NiSwitchNode::UpdateDownwardPass
+// 0xeedda0 NiSwitchNode::UpdateSelectedDownwardPass
 #include "NiSwitchNode.h"
 
 // The shared header leaves the read pointer as void*; this view reads the same offset typed.
