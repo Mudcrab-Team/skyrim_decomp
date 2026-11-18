@@ -34,8 +34,11 @@
 // NiSkinData, NiBinaryStream, NiStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiBinaryStream::write, NiBinaryStream::binary_write, NiStream::SaveLinkID, oStr: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // skinData, skinPartition, rootParent, bones, boneWorldTransforms, frameID, numMatrices, numRegisters, allocatedSize, boneMatrices, prevBoneMatrices, skinToWorldWorldToSkinMatrix, lock: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// SkinInstanceLock: STANDIN GUESS(low); opaque platform lock storage initialized by the platform API
-// Value, unk10, unk0C, streamStorage, unknownWords, outputCursor, writeCallback, elementByteCount, elementsToWrite, payloadBytes, widths, emittedBytes, length, widthCount, total, streamRef, comparedObject, cloneContext, linkTarget: GUESS(low)
+// SkinInstanceLock: STANDIN GUESS(low); stands for the community lock type REX::W32::CRITICAL_SECTION, initialized by the platform API
+// DebugInfo, LockCount, RecursionCount, OwningThread, LockSemaphore, SpinCount: STANDIN GUESS(low); the documented Windows critical-section member names and sizes
+// NiPoint3, NiMatrix3, NiTransform, BSStreamHeader, skinPartition, rootParentToSkin, boneData, bones, pad5C, header, nifMaxVersion, nifMaxUserDefinedVersion, inputFilePath, unk20C, unk20E, unk210, iStr, oStr: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names, offsets and sizes as declared there, pointer types are guesses
+// unk0D0, unk0D8, unk0E0, unk0E8, unk0F0, unk0F8, unk218, unk220, unk228, unk230, unk238, unk240, unk248, unk250, unk258, unk260, unk268, unk270, unk278, unk280, unk288, unk290: GUESS(low); NiStream storage the community types as containers, kept as plain words
+// Value, unk10, unk0C, outputCursor, writeCallback, elementByteCount, elementsToWrite, payloadBytes, widths, emittedBytes, length, widthCount, total, streamRef, comparedObject, cloneContext, linkTarget: GUESS(low)
 // LoadLinkID, SkipLinkIDs: GUESS(low); stream operations identified by their use in the load path
 // unk01 through unk0B: GUESS(low); virtual slots outside this unit
 // NiSkinInstance::Ctor: OBSERVED; placement construction entry
@@ -44,12 +47,40 @@
 #include <cstdint>
 #include "NiObject.h"
 
+class NiPoint3
+{
+public:
+    float x;  // 0
+    float y;  // 4
+    float z;  // 8
+};
+
+class NiMatrix3
+{
+public:
+    float entry[3][3];  // 00
+};
+
+class NiTransform
+{
+public:
+    NiMatrix3 rotate;     // 00
+    NiPoint3  translate;  // 24
+    float     scale;      // 30
+};
+static_assert(sizeof(NiTransform) == 0x34, "NiTransform size");
+
+class NiSkinPartition;
 class NiSkinData : public NiObject
 {
 public:
-    std::uint8_t unk10[0x48];
-    std::uint32_t bones;
+    NiSkinPartition* skinPartition;  // 10
+    NiTransform rootParentToSkin;    // 18
+    void* boneData;                  // 50
+    std::uint32_t bones;             // 58
+    std::uint32_t pad5C;             // 5C
 };
+static_assert(sizeof(NiSkinData) == 0x60, "NiSkinData size");
 
 class NiBinaryStream
 {
@@ -78,6 +109,16 @@ public:
     std::uint32_t (*writeCallback)(NiBinaryStream*, const void*, std::uint32_t, std::uint32_t*, std::uint32_t);
 };
 
+struct BSStreamHeader
+{
+    std::uint32_t version;            // 00
+    char author[64];                  // 04
+    char processScript[64];           // 44
+    char exportScript[64];            // 84
+    std::uint32_t padC4;              // C4
+};
+static_assert(sizeof(BSStreamHeader) == 0xC8, "BSStreamHeader size");
+
 class NiStream
 {
 public:
@@ -98,16 +139,50 @@ public:
     void LoadLinkID();
     void SkipLinkIDs();
 
-    std::uint8_t streamStorage[0x298];
+    BSStreamHeader header;  // 008
+    std::uint64_t unk0D0;  // 0D0
+    std::uint64_t unk0D8;  // 0D8
+    std::uint64_t unk0E0;  // 0E0
+    std::uint64_t unk0E8;  // 0E8
+    std::uint64_t unk0F0;  // 0F0
+    std::uint64_t unk0F8;  // 0F8
+    std::uint32_t nifMaxVersion;             // 100
+    std::uint32_t nifMaxUserDefinedVersion;  // 104
+    char inputFilePath[260];                 // 108
+    std::uint16_t unk20C;  // 20C
+    std::uint16_t unk20E;  // 20E
+    std::uint64_t unk210;  // 210
+    std::uint64_t unk218;  // 218
+    std::uint64_t unk220;  // 220
+    std::uint64_t unk228;  // 228
+    std::uint64_t unk230;  // 230
+    std::uint64_t unk238;  // 238
+    std::uint64_t unk240;  // 240
+    std::uint64_t unk248;  // 248
+    std::uint64_t unk250;  // 250
+    std::uint64_t unk258;  // 258
+    std::uint64_t unk260;  // 260
+    std::uint64_t unk268;  // 268
+    std::uint64_t unk270;  // 270
+    std::uint64_t unk278;  // 278
+    std::uint64_t unk280;  // 280
+    std::uint64_t unk288;  // 288
+    std::uint64_t unk290;  // 290
+    NiBinaryStream* iStr;  // 298
     NiBinaryStream* oStr;
 };
 
 struct SkinInstanceLock
 {
     SkinInstanceLock() noexcept;
-    std::uint64_t unknownWords[5];
+    void* DebugInfo;            // 00
+    std::int32_t LockCount;     // 08
+    std::int32_t RecursionCount;  // 0C
+    void* OwningThread;         // 10
+    void* LockSemaphore;        // 18
+    std::uint64_t SpinCount;    // 20
 };
-static_assert(sizeof(SkinInstanceLock) == 0x28, "SkinInstanceLock storage size");
+static_assert(sizeof(SkinInstanceLock) == 0x28, "SkinInstanceLock size");
 
 // NiPointer, get: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // pointee: GUESS(low)
