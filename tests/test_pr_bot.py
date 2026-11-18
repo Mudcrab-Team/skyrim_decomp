@@ -758,7 +758,10 @@ class NewFunctionRecordTests(unittest.TestCase):
         if argv[1].endswith('bind.py'):
             code = self.bind_code
             if not code:
-                self.set_task('reports/b/unit-symbols/' + 'c' * 64 + '.json')
+                public = 'reports/b/unit-symbols/' + 'c' * 64 + '.json'
+                (self.tree / public).parent.mkdir(parents=True, exist_ok=True)
+                (self.tree / public).write_text('{}')
+                self.set_task(public)
         if argv[1] == '-c':
             rva = json.loads((Path(argv[4]) / 'task.json').read_text())['functions'][0]['rva']
             if self.record_ok[int(rva, 0)]:
@@ -786,9 +789,18 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertEqual(len(self.seen('wine_confirm.py')), 2)
 
     def test_an_already_public_map_is_not_rebound(self):
-        self.set_task('reports/b/unit-symbols/' + 'd' * 64 + '.json')
+        public = 'reports/b/unit-symbols/' + 'd' * 64 + '.json'
+        (self.tree / public).parent.mkdir(parents=True, exist_ok=True)
+        (self.tree / public).write_text('{}')
+        self.set_task(public)
         self.build()
         self.assertEqual(self.seen('bind.py'), [])
+
+    def test_a_public_map_lost_with_a_rebuilt_tree_is_bound_again(self):
+        self.set_task('reports/b/unit-symbols/' + 'e' * 64 + '.json')
+        out, failed = self.build()
+        self.assertEqual(failed, set())
+        self.assertEqual(len(self.seen('bind.py')), 1)
 
     def test_a_failed_bind_refuses_every_function_of_the_unit_without_confirming_any(self):
         self.bind_code = 1

@@ -748,7 +748,9 @@ class Bot:
             wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
             if not wanted:
                 continue
-            if not str(info.get('symbols', '')).startswith('reports/'):
+            symbols = str(info.get('symbols', ''))
+            # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
+            if not symbols.startswith('reports/') or not (self.tree / symbols).is_file():
                 # The record must point at a public symbol map; bind freezes this unit's names into an
                 # immutable one without touching the shared map.
                 (task / 'bind-list.txt').write_text(f'{task}\n')
