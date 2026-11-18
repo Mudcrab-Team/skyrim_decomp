@@ -4,7 +4,7 @@
 // Code origin: original reconstruction from binary analysis by Taylor Turner, assisted by claude-sonnet-5-5; class and member names come from CommonLibSSE-NG (MIT); no external implementation body is copied, and the member offsets and types of the community-named members follow the community declaration.
 // Source exposure: binary-analysis (a local listing of the contributor's own copy of the pinned image).
 // Community names are unverified. Only the members the compared code needs are declared.
-// BSPathingCell, BSPathingCell::~BSPathingCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSPathingCell, BSPathingCell::BSPathingCell, BSPathingCell::~BSPathingCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // _refCount, unk0C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names and offsets as declared there, the BSIntrusiveRefCounted base is flattened into this class and the types are guesses
 // The MIT notice below covers only the names and declarations taken from
 // CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a; the other code in this file
