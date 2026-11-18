@@ -103,7 +103,7 @@ static inline bool StreamRead(NiBinaryStream* a_in, T* a_value, std::uint32_t a_
 // RVA 0xeee380, 4 bytes.
 NiSwitchNode* NiSwitchNode::AsSwitchNodeImpl()
 {
-	return this;
+	return static_cast<NiSwitchNode*>(this);
 }
 
 // RVA 0xeed3c0, 160 bytes.
