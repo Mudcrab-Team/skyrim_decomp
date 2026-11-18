@@ -136,6 +136,9 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
                 companions=companions)
 
 
+CONFLICT_COMMENT = 'This PR conflicts with main; merge main into your branch and push.'
+
+
 def merge_command(number, sha, subject, body):
     return ['gh', 'pr', 'merge', str(number), '-R', REPOSITORY, '--squash', '--match-head-commit', sha,
             '--subject', subject, '--body', body]
@@ -715,7 +718,7 @@ class Bot:
     def warm(self, pr):
         """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
         number, head = pr['number'], pr['headRefOid']
-        if State(self.work / 'state', number, head).get('done'):
+        if State(self.work / 'state', number, head).get('done') or pr.get('mergeable') == 'CONFLICTING':
             return
         if self.latest_hash_run(head):
             return
@@ -790,6 +793,8 @@ class Bot:
         state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
         if state.get('done'):
             return state.data
+        if pr.get('mergeable') == 'CONFLICTING' and not state.get('merged'):
+            return self.conflicting(pr, state)
         started = time.time()
         files = state.once('scope', lambda: self.changed_files(number))
         if scope_problem(files):
@@ -934,8 +939,7 @@ class Bot:
             merged = self.run(merge_command(number, head, *squash_message(number, login, uid, matched, again)),
                               check=False)
             if merged.returncode:
-                state.data.clear()
-                raise Stop('merge refused (the head moved); starting over on the next tick')
+                return self.merge_refused(pr, state, summary)
             state.set('merged', True)
         if land and not state.get('merged'):
             outcome = self.merge_landed(pr, land)
@@ -957,6 +961,32 @@ class Bot:
         self.drop_probe(number)
         state.set('done', True)
         return summary
+
+    def conflicting(self, pr, state):
+        """A PR that cannot merge is not worth a review and two host compares; tell the author once per head.
+
+        The state is per head, so a push that resolves the conflict gets a fresh look.
+        """
+        summary = dict(pr=pr['number'], head=pr['headRefOid'], blocked='conflict', merge=False, verdicts={})
+        if self.dry_run:
+            return summary
+        self.run(['gh', 'pr', 'comment', str(pr['number']), '-R', REPOSITORY, '--body', CONFLICT_COMMENT])
+        state.set('summary', summary)
+        state.set('commented', True)
+        state.set('done', True)
+        return summary
+
+    def merge_refused(self, pr, state, summary):
+        """`gh pr merge --match-head-commit` failed: say why, and keep the paid results unless the head moved."""
+        number, head = pr['number'], pr['headRefOid']
+        now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,mergeable,state')
+        if now.get('headRefOid') != head:
+            state.data.clear()
+            raise Stop('merge refused (the head moved); starting over on the next tick')
+        if now.get('mergeable') == 'CONFLICTING':
+            return self.conflicting(pr, state)
+        raise Stop(f'merge refused with the head unchanged (mergeable={now.get("mergeable")}, '
+                   f'state={now.get("state")}); results kept, retrying next tick')
 
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
@@ -985,7 +1015,7 @@ def poll(bot, interval, restart_after=None):
             return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
         try:
             prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
-                              'number,headRefOid,author,baseRefName,isDraft')
+                              'number,headRefOid,author,baseRefName,isDraft,mergeable')
         except (Stop, subprocess.SubprocessError, ValueError) as exc:
             print('poll: gh failed:', exc, file=sys.stderr)
             prs = []

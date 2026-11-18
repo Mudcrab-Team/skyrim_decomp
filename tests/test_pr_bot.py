@@ -221,6 +221,58 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual((len(bot.seen('review')), len(bot.seen('mac'))), (1, 1))
         self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 1)
 
+    def test_a_conflicting_pr_is_told_once_per_head_and_costs_no_review_or_compare(self):
+        bot = FakeBot(self.work)
+        pr = dict(PR, mergeable='CONFLICTING')
+        out = bot.process(pr)
+        self.assertEqual((out['blocked'], out['merge']), ('conflict', False))
+        bot.process(pr)
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+        self.assertIn('merge main into your branch', bot.seen('gh', 'pr', 'comment')[0][-1])
+        for stage in ('review', 'mac', 'host1', 'changed_files'):
+            self.assertEqual(bot.seen(stage), [])
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        warmed = len(bot.calls)
+        bot.warm(pr)
+        self.assertEqual(len(bot.calls), warmed)
+
+    def test_a_new_head_after_a_conflict_is_processed_normally(self):
+        bot = FakeBot(self.work)
+        bot.process(dict(PR, mergeable='CONFLICTING'))
+        out = bot.process(dict(PR, headRefOid='b' * 40, mergeable='MERGEABLE'))
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 1)
+
+    def test_a_merge_refusal_for_a_conflict_comments_once_and_does_not_redo_the_pipeline(self):
+        bot = FakeBot(self.work)
+        bot.merge_ok = False
+        bot.gh_json = lambda *a: {'id': 99, 'headRefOid': HEAD, 'state': 'OPEN', 'mergeable': 'CONFLICTING'}
+        bot.process(PR)
+        bot.process(PR)
+        self.assertEqual((len(bot.seen('review')), len(bot.seen('mac')), len(bot.seen('gh', 'pr', 'merge'))), (1, 1, 1))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+
+    def test_a_merge_refusal_with_the_head_unchanged_keeps_the_cached_results_and_retries_only_the_merge(self):
+        bot = FakeBot(self.work)
+        bot.merge_ok = False
+        bot.gh_json = lambda *a: {'id': 99, 'headRefOid': HEAD, 'state': 'OPEN', 'mergeable': 'UNKNOWN'}
+        for _ in range(2):
+            with self.assertRaises(pr_bot.Stop):
+                bot.process(PR)
+        self.assertEqual((len(bot.seen('review')), len(bot.seen('mac')), len(bot.seen('host1'))), (1, 1, 1))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 2)
+        bot.merge_ok = True
+        bot.process(PR)
+        self.assertEqual((len(bot.seen('review')), len(bot.seen('mac'))), (1, 1))
+
+    def test_a_merge_refusal_because_the_head_moved_is_not_reported_as_a_conflict(self):
+        bot = FakeBot(self.work)
+        bot.merge_ok = False
+        bot.gh_json = lambda *a: {'id': 99, 'headRefOid': 'c' * 40, 'state': 'OPEN', 'mergeable': 'MERGEABLE'}
+        with self.assertRaises(pr_bot.Stop):
+            bot.process(PR)
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+
     def test_only_what_both_hosts_passed_is_reviewed_and_nothing_else_costs_a_call(self):
         bot = FakeBot(self.work, h2={0x10: 'pass', 0x20: 'fail'})
         out = bot.process(PR)
