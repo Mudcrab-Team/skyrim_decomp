@@ -6,6 +6,7 @@
 // Adapted bodies: StreamRead, StreamBinaryRead (CommonLibSSE-NG, MIT; its notice is the SPDX line above, full text in licenses/CommonLibSSE-NG.txt).
 // 0xeed530 NiSwitchNode::IsEqual
 // 0xeee380 NiSwitchNode::AsSwitchNode
+// CI hash: 0xeee380 ?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ
 // 0xeed490 NiSwitchNode::SaveBinary
 // 0xeed6e0 NiSwitchNode::AttachChild
 // 0xeed3c0 NiSwitchNode::LoadBinary
