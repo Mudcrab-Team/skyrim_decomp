@@ -31,8 +31,8 @@
 // Started from a tools/skeleton.py skeleton: stand-ins carry only what the compared code needs, and
 // community names are unverified.
 // Base form: NiParticles over BSGeometry, local stand-ins of the community 0x168 and 0x158 sizes over a
-// minimal NiObject; the NiObjectNET and NiAVObject layers are not modelled, and BSGeometry holds the
-// NiAVObject members the compared code reads. NiObject declares the virtual slots up to 0x1C because
+// minimal NiObject; the NiObjectNET and NiAVObject layers are flattened into BSGeometry at their
+// community offsets. NiObject declares the virtual slots up to 0x1C because
 // the compared code calls slots 0x1A and 0x1C of modifiers; later slot order is not modelled.
 // NiParticleSystem, NiParticleSystem::LoadBinary, NiParticleSystem::RegisterStreamables, NiParticleSystem::SaveBinary, NiParticleSystem::IsEqual, NiParticleSystem::UpdateDownwardPass, NiParticleSystem::UpdateSelectedDownwardPass, NiParticleSystem::SetSelectiveUpdateFlags, NiParticleSystem::~NiParticleSystem (implicit here), NiParticles::LoadBinary, NiParticles::RegisterStreamables, NiParticles::SaveBinary, NiParticles::IsEqual, NiParticles::~NiParticles, BSGeometry::SetSelectiveUpdateFlags, BSGeometry::UpdateDownwardPass, BSGeometry::UpdateSelectedDownwardPass: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
@@ -41,6 +41,14 @@
 #include <cstddef>
 
 class NiObject;
+class NiTimeController;
+class NiExtraData;
+class NiNode;
+class NiCollisionObject;
+class TESObjectREFR;
+class NiProperty;
+class NiSkinInstance;
+class NiParticlesData;
 
 // NiBinaryStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the members the compared code reads
 class NiBinaryStream
@@ -61,7 +69,19 @@ public:
 };
 static_assert(sizeof(NiBinaryStream) == 0x20, "NiBinaryStream size");
 
-// NiStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the virtual slots up to SaveLinkID and a prefix view up to the two stream pointers
+// BSStreamHeader: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+struct BSStreamHeader
+{
+    // version, author, processScript, exportScript, padC4: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    std::uint32_t version;  // 00
+    char author[64];  // 04
+    char processScript[64];  // 44
+    char exportScript[64];  // 84
+    std::uint32_t padC4;  // C4
+};
+static_assert(sizeof(BSStreamHeader) == 0xC8, "BSStreamHeader size");
+
+// NiStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the virtual slots up to SaveLinkID and a prefix view up to the two stream pointers, with the members before them at their community offsets
 class NiStream
 {
 public:
@@ -83,8 +103,37 @@ public:
     // SkipLinkIDs: GUESS(low); the stream helper the load path calls, declared only, bound by its public name
     void SkipLinkIDs();
 
-    // unk008: GUESS(low); members not used here
-    std::uint8_t unk008[0x290];  // 008
+    // header, nifMaxVersion, nifMaxUserDefinedVersion, inputFilePath, unk20C, unk20E, unk210: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); sizes and offsets as declared there
+    BSStreamHeader header;  // 008
+    // unk0D0 to unk0F8, unk218 to unk290: GUESS(low); the community types these as containers, kept as plain words here
+    std::uint64_t unk0D0;  // 0D0
+    std::uint64_t unk0D8;  // 0D8
+    std::uint64_t unk0E0;  // 0E0
+    std::uint64_t unk0E8;  // 0E8
+    std::uint64_t unk0F0;  // 0F0
+    std::uint64_t unk0F8;  // 0F8
+    std::uint32_t nifMaxVersion;  // 100
+    std::uint32_t nifMaxUserDefinedVersion;  // 104
+    char inputFilePath[260];  // 108
+    std::uint16_t unk20C;  // 20C
+    std::uint16_t unk20E;  // 20E
+    std::uint64_t unk210;  // 210
+    std::uint64_t unk218;  // 218
+    std::uint64_t unk220;  // 220
+    std::uint64_t unk228;  // 228
+    std::uint64_t unk230;  // 230
+    std::uint64_t unk238;  // 238
+    std::uint64_t unk240;  // 240
+    std::uint64_t unk248;  // 248
+    std::uint64_t unk250;  // 250
+    std::uint64_t unk258;  // 258
+    std::uint64_t unk260;  // 260
+    std::uint64_t unk268;  // 268
+    std::uint64_t unk270;  // 270
+    std::uint64_t unk278;  // 278
+    std::uint64_t unk280;  // 280
+    std::uint64_t unk288;  // 288
+    std::uint64_t unk290;  // 290
     // iStr, oStr: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     NiBinaryStream* iStr;  // 298
     NiBinaryStream* oStr;  // 2A0
@@ -192,15 +241,40 @@ public:
 };
 static_assert(sizeof(NiTPointerList) == 0x18, "NiTPointerList size");
 
-// NiTransform: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque storage of the community size
+// NiPoint3, NiMatrix3, NiBound: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); x, y, z, entry, center, radius as declared there
+class NiPoint3
+{
+public:
+    float x;  // 0
+    float y;  // 4
+    float z;  // 8
+};
+
+class NiMatrix3
+{
+public:
+    float entry[3][3];  // 00
+};
+
+class NiBound
+{
+public:
+    NiPoint3 center;  // 00
+    float radius;  // 0C
+};
+static_assert(sizeof(NiBound) == 0x10, "NiBound size");
+
+// NiTransform: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 class NiTransform
 {
 public:
     // NiTransformHelper: GUESS(low); the member function the load path calls on the world transform, declared only, bound by address
     void NiTransformHelper();
 
-    // unk00: GUESS(low); rotate, translate and scale, not modelled
-    std::uint8_t unk00[0x34];  // 00
+    // rotate, translate, scale: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    NiMatrix3 rotate;  // 00
+    NiPoint3 translate;  // 24
+    float scale;  // 30
 };
 static_assert(sizeof(NiTransform) == 0x34, "NiTransform size");
 
@@ -223,15 +297,42 @@ public:
     virtual void UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);
     virtual void UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);
 
-    // unk010: GUESS(low); NiObjectNET and NiAVObject members, not used here
-    std::uint8_t unk010[0x6C];  // 010
-    // world, flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NiAVObject members
+    // name, controllers, extra, extraDataSize, maxSize, pad2C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NiObjectNET members flattened into this class
+    BSFixedString name;  // 010
+    NiTimeController* controllers;  // 018
+    NiExtraData** extra;  // 020
+    std::uint16_t extraDataSize;  // 028
+    std::uint16_t maxSize;  // 02A
+    std::uint32_t pad2C;  // 02C
+    // parent, parentIndex, unk03C, collisionObject, local, world, previousWorld, worldBound, flags,
+    // userData, fadeAmount, lastUpdatedFrameCounter, unk108, flags02, unk10A, pad10C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NiAVObject members flattened into this class
+    NiNode* parent;  // 030
+    std::uint32_t parentIndex;  // 038
+    std::uint32_t unk03C;  // 03C
+    NiCollisionObject* collisionObject;  // 040
+    NiTransform local;  // 048
     NiTransform world;  // 07C
-    // unk0B0: GUESS(low); members not used here
-    std::uint8_t unk0B0[0x44];  // 0B0
+    NiTransform previousWorld;  // 0B0
+    NiBound worldBound;  // 0E4
     std::uint32_t flags;  // 0F4
-    // unk0F8: GUESS(low); NiAVObject and BSGeometry members, not used here
-    std::uint8_t unk0F8[0x60];  // 0F8
+    TESObjectREFR* userData;  // 0F8
+    float fadeAmount;  // 100
+    std::uint32_t lastUpdatedFrameCounter;  // 104
+    std::uint8_t unk108;  // 108
+    std::uint8_t flags02;  // 109
+    std::uint16_t unk10A;  // 10A
+    std::uint32_t pad10C;  // 10C
+    // modelBound, properties, skinInstance, rendererData, unk20, vertexDesc (a plain word here), type, pad31, pad32, pad34: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    NiBound modelBound;  // 110
+    NiProperty* properties[2];  // 120
+    NiSkinInstance* skinInstance;  // 130
+    void* rendererData;  // 138
+    void* unk20;  // 140
+    std::uint64_t vertexDesc;  // 148
+    std::uint8_t type;  // 150
+    std::uint8_t pad31;  // 151
+    std::uint16_t pad32;  // 152
+    std::uint32_t pad34;  // 154
 };
 static_assert(sizeof(BSGeometry) == 0x158, "BSGeometry size");
 
@@ -249,8 +350,9 @@ public:
     void SaveBinary(NiStream& a_stream) override;
     bool IsEqual(NiObject* a_object) override;
 
-    // unk158: GUESS(low); NiParticles members, not used here
-    std::uint8_t unk158[0x10];  // 158
+    // particleData, unk160: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    NiParticlesData* particleData;  // 158
+    std::uint64_t unk160;  // 160
 };
 static_assert(sizeof(NiParticles) == 0x168, "NiParticles size");
 
