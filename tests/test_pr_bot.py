@@ -352,6 +352,14 @@ class LeakgrepContractTests(unittest.TestCase):
         with self.assertRaises(pr_bot.Stop):
             bot.leakgrep(BASE, HEAD)
 
+    def test_a_crash_that_exits_one_without_the_summary_is_not_a_leak(self):
+        bot = pr_bot.Bot(root=ROOT)
+        bot.tools = Path(tempfile.mkdtemp())
+        (bot.tools / 'leakgrep.py').write_text('')
+        bot.run = lambda argv, **kw: subprocess.CompletedProcess(argv, 1, b'', b'Traceback')
+        with self.assertRaises(pr_bot.Stop):
+            bot.leakgrep(BASE, HEAD)
+
     def test_live_mode_fails_closed_without_leakgrep_and_replay_does_not(self):
         bot = pr_bot.Bot(root=Path(tempfile.mkdtemp()))
         bot.tools = Path(tempfile.mkdtemp())
@@ -464,6 +472,18 @@ class Host1Tests(unittest.TestCase):
         self.bot.changed_files = lambda number: [{'filename': 'tools/x.py'}]
         self.bot.warm(pr)
         self.assertEqual(probed, [7])
+
+    def test_a_finished_run_without_a_result_triggers_one_probe_then_stops(self):
+        calls = []
+        self.files.pop('hash-result.json')
+        self.job['id'] = 1
+        base_run = self.bot.run
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or base_run(argv, **kw)
+        orig = self.bot.gh_json
+        self.bot.gh_json = lambda *a: [] if a[0] == 'pr' else orig(*a)
+        with self.assertRaises(pr_bot.Stop):
+            self.host1()
+        self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
 
     def test_a_missing_artifact_is_retried_not_trusted(self):
         self.files.pop('hash-result.json')
