@@ -818,6 +818,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.calls.append(argv)
         code = 0
         if argv[1].endswith('bind.py'):
+            self.bound_rvas = [f['rva'] for f in json.loads((self.task / 'task.json').read_text())['functions']]
             code = self.bind_code
             if not code:
                 public = 'reports/b/unit-symbols/' + 'c' * 64 + '.json'
@@ -849,6 +850,12 @@ class NewFunctionRecordTests(unittest.TestCase):
         sub = json.loads((self.task / 'confirm-0x10/task.json').read_text())
         self.assertTrue(sub['symbols'].startswith('reports/b/unit-symbols/'))
         self.assertEqual(len(self.seen('wine_confirm.py')), 2)
+
+    def test_only_the_functions_being_recorded_are_bound_so_a_debt_function_cannot_refuse_them(self):
+        out, failed = self.build({0x10})
+        self.assertEqual((failed, self.bound_rvas), (set(), ['0x10']))
+        self.assertEqual([f['rva'] for f in json.loads((self.task / 'task.json').read_text())['functions']],
+                         ['0x10', '0x20'])
 
     def test_an_already_public_map_is_not_rebound(self):
         public = 'reports/b/unit-symbols/' + 'd' * 64 + '.json'
@@ -966,6 +973,7 @@ class ReviewContextTests(unittest.TestCase):
             (self.tree / name).parent.mkdir(parents=True, exist_ok=True)
             (self.tree / name).write_text(text)
         self.prompts = []
+        self.origin_out = b'check_origin: threshold 0.75; compared with a/b@1234567\ncheck_origin: 0 hit(s), 0 non-trivial\n'
         bot = pr_bot.Bot(root=ROOT, work=self.tree / '.w')
         bot.tree = self.tree
         bot.run = self.fake_run
@@ -977,6 +985,8 @@ class ReviewContextTests(unittest.TestCase):
             self.prompts.append(kw['input'].decode())
             Path(argv[argv.index('--output-last-message') + 1]).write_text('{}')
         out = b'reconstruction/a/B.h: check provenance: missing origin\n' if 'lint_review_readiness.py' in ' '.join(argv) else b''
+        if 'check_origin.py' in ' '.join(argv):
+            out = self.origin_out
         return subprocess.CompletedProcess(argv, 0, out, b'')
 
     def evidence(self, **report):
@@ -1001,6 +1011,18 @@ class ReviewContextTests(unittest.TestCase):
         self.assertIn('.local/tasks/prbot-7-aaaaaaaa-0/attempts/001/0x10/report.json: result pass: agree', prompt)
         self.assertNotIn('DIFFER', prompt)
         self.assertIn('second-host run 555 (CI hash job, which compares the published target hashes) on head ' + HEAD[:12] + ': pass; its source digest agrees, its recipe hash agrees', prompt)
+
+    def test_the_prompt_lists_body_origin_hits_or_says_none_were_found(self):
+        units = {'reconstruction/a/B.cpp': [0x10]}
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, self.evidence())
+        self.assertIn('## Body origin (tools/check_origin.py)\nno same-named community/sibling body found '
+                      '(clone revisions: a/b@1234567)', self.prompts[0])
+        self.assertIn('"unverified" alone is not a ground to reject', self.prompts[0])
+        hit = {'function': 'B::f', 'repo': 'x/ng', 'revision': 'abc', 'path': 'src/B.cpp', 'upstream_line': 3,
+               'similarity': 0.9, 'trivial': False, 'declared': False, 'fork_of': None}
+        self.origin_out = b'check_origin: threshold 0.75; compared with x/ng@abc\n' + json.dumps(hit).encode() + b'\n'
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, self.evidence())
+        self.assertIn('B::f ~ x/ng@abc src/B.cpp:3 similarity 0.90 (adapted; header does NOT name it', self.prompts[1])
 
     def test_the_sheet_marks_which_files_the_pr_changed_and_which_are_unchanged_context(self):
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, self.evidence(),

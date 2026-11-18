@@ -515,6 +515,8 @@ class Bot:
                         cwd=tree, check=False, timeout=300)
         out += ['', '## Mechanical readiness lint (tools/lint_review_readiness.py on the unit files)',
                 lint.stdout.decode(errors='replace').strip() or 'clean',
+                '', '## Body origin (tools/check_origin.py)',
+                *self.body_origin([f for f in sorted(files) if changed is None or f in changed]),
                 '', '## Private reading', f'Function packs: {", ".join(packs) or "none found"}.',
                 'For the provenance comparison read .local/analysis/fnv_index.jsonl and the pinned FNV source '
                 'files it identifies. ' + EXPOSURE,
@@ -523,8 +525,30 @@ class Bot:
                 'PR changes in full; files marked unchanged from main were accepted with earlier functions, so read '
                 'them as context for how these functions use them, as the runbook does for the rest of a unit. The second-host run '
                 'required by item 3 is the CI hash job listed per function; a function listed as passing on both '
-                'hosts has both. The unit files are in the working directory at the paths above.']
+                'hosts has both. The unit files are in the working directory at the paths above. Provenance (item 2): a clean '
+                'body origin report plus your own spot check of the FNV index is enough when the unit claims no '
+                'adaptation; "unverified" alone is not a ground to reject.']
         return '\n'.join(out)
+
+    def body_origin(self, files):
+        """Lines for the runbook's provenance item, which starts from the list of bodies like a community one."""
+        files = [f for f in files if f.startswith(SCOPE_PREFIX) and f.endswith(('.h', '.cpp'))]
+        if not files:
+            return ['no changed unit files to compare']
+        result = self.run([sys.executable, 'tools/check_origin.py', '--json', *files], cwd=self.tree,
+                          check=False, timeout=600)
+        if result.returncode:
+            return ['check_origin did not complete; the list is unavailable (not a finding)']
+        import check_origin
+        hits, pins = [], 'unknown'
+        for line in result.stdout.decode(errors='replace').splitlines():
+            if line.startswith('{'):
+                hits.append(json.loads(line))
+            elif line.startswith('check_origin: threshold') and ' compared with ' in line:
+                pins = line.split(' compared with ', 1)[1]
+        if not hits:
+            return [f'no same-named community/sibling body found (clone revisions: {pins})']
+        return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins})']
 
     def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=()):
         diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction'], cwd=self.root).stdout.decode(errors='replace')
@@ -757,12 +781,19 @@ class Bot:
                 # The record must point at a public symbol map; bind freezes this unit's names into an
                 # immutable one without touching the shared map.
                 (task / 'bind-list.txt').write_text(f'{task}\n')
+                # bind fails the whole task for any unbound function, and a debt function of the unit that the
+                # PR does not accept is often one; bind only what is being recorded, then restore the full list.
+                full = info['functions']
+                narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
+                (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
                 bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
                                   '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+                info = json.loads((task / 'task.json').read_text())
+                (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
                 if bound.returncode:
                     failed |= wanted
                     continue
-                info = json.loads((task / 'task.json').read_text())
+                info = dict(info, functions=full)
             for fn in info['functions']:
                 rva = int(str(fn['rva']), 0)
                 if rva not in wanted:
