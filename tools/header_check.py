@@ -49,7 +49,7 @@ def check(root, base, head):
         if old is not None and leading_comment(old) == header:
             continue
         shown = name if SAFE.fullmatch(name) else 'reconstruction/<unprintable path>'
-        problems += header_budget_problems(shown, header)
+        problems += header_budget_problems(shown, header, leading_comment(old) if old is not None else None)
     return problems
 
 

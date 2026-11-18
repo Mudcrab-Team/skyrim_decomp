@@ -32,7 +32,8 @@ import lint_review_readiness as readiness  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 FIELD = re.compile(r'//\s*[A-Z][A-Za-z ]{2,24}:')
 KEEP_RECIPE = re.compile(r'//\s*Recipe:\s*(\S+)')
-GPL_MENTION = re.compile(r'GPL|GNU General', re.I)
+# One short statement that a GPL label's file is under the GPL; the notice's prose is not kept line by line.
+GPL_MENTION = re.compile(r'GPL(?!\w)|GPL-\d')
 # Statements the review-readiness lint accepts as the origin of the code (tools/lint_review_readiness.py).
 ORIGIN_STATEMENT = re.compile(r'\b(?:original implementation|original reconstruction|original declarations|'
                               r'original code|original work|adapted from|derived from|reconstructed from|'
@@ -76,7 +77,9 @@ def find_notice(lead, canon):
 
 def keep_line(line):
     text = line.strip()
-    if digest_v2.is_provenance(text) or GPL_MENTION.search(text):
+    if digest_v2.is_provenance(text):
+        return True
+    if GPL_MENTION.search(text) and 'licenses/' not in text and 'GNU General' not in text:
         return True
     if ORIGIN_STATEMENT.search(text) or ORIGIN_FIELD.match(text):
         return True
@@ -105,7 +108,7 @@ def rewrite(text, ext, names, canon):
     notice = find_notice(lead, canon)
     if notice == 'bad':
         return None, 'unrecognised-licence-text'
-    out, previous_kept = [], False
+    out, previous_kept, gpl_seen = [], False, set()
     rvas = []
     for index, line in enumerate(lead):
         if notice and notice[0] <= index < notice[1]:
@@ -129,6 +132,16 @@ def rewrite(text, ext, names, canon):
         # A wrapped statement: the kept line above opened a parenthesis it has not closed.
         continuation = (previous_kept and line.strip() not in ('//', '// ') and not FIELD.match(line)
                         and out[-1].count('(') > out[-1].count(')'))
+        recipe = KEEP_RECIPE.match(line.strip())
+        if recipe and recipe.group(1) != lint.DEFAULT_RECIPE:
+            out.append(f'// Recipe: {recipe.group(1).rstrip(".,;")}')
+            previous_kept = False
+            continue
+        if keep_line(line) and not digest_v2.is_provenance(line) and GPL_MENTION.search(line):
+            if line[:40] in gpl_seen:
+                previous_kept = False
+                continue
+            gpl_seen.add(line[:40])
         if keep_line(line) or continuation:
             out.append(line)
             previous_kept = True

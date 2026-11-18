@@ -1,0 +1,59 @@
+"""tools/compact_headers.py changes comments only, keeps provenance, and refuses what it cannot prove safe."""
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+import compact_headers as c  # noqa: E402
+import digest_v2  # noqa: E402
+import lint_reconstruction as lint  # noqa: E402
+
+LICENCE = '\n'.join('// ' + line if line else '//' for line in (ROOT / 'licenses/CommonLibSSE-NG.txt').read_text().splitlines())
+NG = 'COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)'
+OLD = f"""// Build: sse-steam-1-7-104; RVA 0x1000; 8 bytes
+// Evidence: findings/x.md
+// Recipe: {lint.DEFAULT_RECIPE}
+// Source exposure: mixed (names from community headers; the listing of the pinned
+// image).
+// Drafted by someone.
+// Labels: v2
+// Widget, Get: {NG}
+// Some prose that says nothing.
+{LICENCE}
+// Origin: {{"family": "f", "template_digest": "{'0' * 64}", "version": "2"}}
+#include "Widget.h"
+int Widget::Get() const {{ return 1; }}
+"""
+
+
+class RewriteTests(unittest.TestCase):
+    def rewrite(self, text, ext='cpp', names=None):
+        return c.rewrite(text, ext, names or {0x1000: 'Widget::Get'}, c.canonical_notice())
+
+    def test_header_becomes_compact_and_digest_text_is_unchanged(self):
+        new, why = self.rewrite(OLD)
+        self.assertIsNone(why)
+        self.assertEqual(digest_v2.strip_comments(OLD.encode(), 'x.cpp'), digest_v2.strip_comments(new.encode(), 'x.cpp'))
+        head = new.split('#include')[0].splitlines()
+        self.assertIn('// 0x1000 Widget::Get', head)
+        self.assertIn('// ' + lint.SPDX_MIT, head)
+        self.assertIn('// Origin: f v2', head)
+        for gone in ('Build:', 'Evidence:', 'Recipe:', 'Drafted by', 'Labels: v2', 'prose', 'Permission'):
+            self.assertFalse(any(gone in line for line in head), gone)
+        self.assertTrue(any(NG in line for line in head))
+        self.assertTrue(any('wrapped' not in line and line.endswith('image).') for line in head))
+
+    def test_a_non_default_recipe_is_kept_and_a_header_gets_no_function_list(self):
+        new, _ = self.rewrite(OLD.replace(lint.DEFAULT_RECIPE, 'reconstruction/recipes/other.json'), 'h')
+        self.assertIn('// Recipe: reconstruction/recipes/other.json', new)
+        self.assertNotIn('// 0x1000', new)
+
+    def test_a_garbled_licence_or_crlf_is_left_alone(self):
+        self.assertEqual(self.rewrite(OLD.replace('Permission is hereby granted', 'Permission is granted'))[1],
+                         'unrecognised-licence-text')
+        self.assertEqual(self.rewrite(OLD.replace('\n', '\r\n'))[1], 'crlf')
+
+
+if __name__ == '__main__':
+    unittest.main()

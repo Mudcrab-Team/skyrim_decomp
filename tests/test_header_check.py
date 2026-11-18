@@ -59,6 +59,10 @@ class HeaderCheckTests(unittest.TestCase):
         self.assertEqual(len(problems), 1)
         self.assertIn('New.h', problems[0])
 
+    def test_a_change_that_only_shortens_a_long_header_passes(self):
+        self.write('reconstruction/a/Widget.h', OLD.replace('// line 3\n', ''))
+        self.assertEqual(self.head(), [])
+
     def test_unprintable_path_is_not_echoed(self):
         self.write('reconstruction/a/we ird;$(x).h', OLD)
         problems = self.head()

@@ -413,10 +413,19 @@ def licence_text_problems(root):
     return []
 
 
-def header_budget_problems(name, header):
+def counted_header_lines(header):
+    """The header lines that count against HEADER_LIMIT: everything but labels, sibling citations,
+    compared-function lines and the SPDX line."""
+    return [ln for ln in header.split('\n') if ln.strip() and ln.strip() != '//'
+            and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
+            and 'SPDX-License-Identifier' not in ln]
+
+
+def header_budget_problems(name, header, old_header=None):
     """The compact-header rule for a new or changed unit file: no licence text in the file, one
     SPDX line for NG declarations, and at most HEADER_LIMIT header lines besides labels, sibling
-    citations and compared-function lines."""
+    citations and compared-function lines. A change that only removes lines from `old_header`
+    makes nothing longer and is not held to the line count."""
     problems = []
     if FULL_LICENCE.search(header):
         problems.append(f'{name}: remove the licence text from the header; use the one line "// {SPDX_MIT}" '
@@ -424,10 +433,9 @@ def header_budget_problems(name, header):
     if 'CharmedBaryon/CommonLibSSE-NG@' in header and 'SPDX-License-Identifier: MIT' not in header \
             and not FULL_LICENCE.search(header):
         problems.append(f'{name}: NG declarations need the line "// {SPDX_MIT}"')
-    counted = [ln for ln in header.split('\n') if ln.strip() and ln.strip() != '//'
-               and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
-               and 'SPDX-License-Identifier' not in ln]
-    if len(counted) > HEADER_LIMIT:
+    counted = counted_header_lines(header)
+    shrinks = old_header is not None and set(counted) <= set(counted_header_lines(old_header))
+    if len(counted) > HEADER_LIMIT and not shrinks:
         problems.append(f'{name}: header has {len(counted)} lines besides labels, sources and compared functions; '
                         f'keep at most {HEADER_LIMIT}: drop Task, Labels, Recipe, Evidence, Drafted by, disclaimers '
                         '(docs/contributor-lessons.md, compact headers)')
