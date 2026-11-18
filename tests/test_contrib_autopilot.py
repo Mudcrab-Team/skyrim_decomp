@@ -430,6 +430,23 @@ class ResumeAndLimits(unittest.TestCase):
         ap.process(self.runtime, self.state, pr(head='e' * 40))
         self.assertNotIn('publish', self.runtime.calls)
 
+    def test_concurrent_reservations_and_saves_stay_consistent(self):
+        import threading
+        self.config['daily_compiles'] = 1000
+        def worker():
+            for _ in range(25):
+                self.state.reserve('compiles')
+                self.state.data['prs'].setdefault(str(threading.get_ident()), {})['n'] = 1
+                self.state.save()
+        threads = [threading.Thread(target=worker) for _ in range(8)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        self.assertEqual(self.state.data['days'][self.state.today]['compiles'], 200)
+        self.reload()
+        self.assertEqual(self.state.data['days'][self.state.today]['compiles'], 200)
+
     def test_caps_are_durable_and_roll_over_in_utc(self):
         self.state.reserve('compiles', 2)
         self.reload()
@@ -779,17 +796,85 @@ class GitTransport(unittest.TestCase):
         self.assertEqual(revision['ci_hash'], {'state': 'pending'})
         self.assertEqual(revision['waiting_reason'], 'service-retry')
 
-    def test_archive_copy_platform_flags(self):
-        for platform, flags in [('darwin', ['-c', '-R']), ('linux', ['-R'])]:
-            directory = self.private / 'live' / ('pr-1-' + self.head + '-squash')
-            tree = directory / 'tree'
-            (tree / '.local').mkdir(parents=True)
-            ap.save_json(tree / '.local/contrib-initialized.json', dict(base='a' * 40))
-            revision = dict(completed={})
-            with patch.object(ap.sys, 'platform', platform), patch.object(self.runtime, 'command') as command:
-                self.runtime.rebase_retry(dict(tree=str(tree)), revision)
-            copy = next(call.args[0] for call in command.call_args_list if call.args[0][0] == 'cp')
-            self.assertEqual(copy[1:-2], flags)
+    def test_archive_keeps_small_evidence_and_never_copies_the_clone(self):
+        directory = self.private / 'live' / ('pr-1-' + self.head + '-squash')
+        tree = directory / 'tree'
+        (tree / '.local').mkdir(parents=True)
+        (tree / 'bulk.bin').write_text('clone content')
+        ap.save_json(tree / '.local/contrib-initialized.json', dict(base='a' * 40))
+        (directory / 'diff.txt').write_text('retained')
+        revision = dict(completed={})
+        with patch.object(self.runtime, 'command') as command:
+            self.runtime.rebase_retry(dict(tree=str(tree)), revision)
+        self.assertFalse(any(call.args[0][0] == 'cp' for call in command.call_args_list))
+        archive = self.private / 'archive' / ('pr-1-' + self.head + '-' + 'a' * 12)
+        self.assertEqual((archive / 'diff.txt').read_text(), 'retained')
+        self.assertFalse((archive / 'tree').exists())
+
+    def _soft_fixture(self):
+        tree = self.private / 'live' / ('pr-1-' + self.head + '-squash') / 'tree'
+        with patch.object(self.runtime, 'link_inputs'):
+            self.runtime.prepare_main_tree(tree, self.base)
+        completed = {key: True for key in ('screen', 'export', 'bind-x', 'confirm-x', 'confirmation')}
+        completed.update(fetch=dict(tree=str(tree), base=self.base, files=[dict(path='reconstruction/synth/Synth.cpp')]),
+                         intake=[], functions={'reconstruction/synth/Synth.cpp': [4096]}, companions={})
+        revision = dict(number=1, head=self.head, completed=completed)
+        return tree, revision
+
+    def _advance_main(self, name, text='other\n'):
+        path = self.root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        self.git('add', name)
+        self.git('commit', '--quiet', '-m', 'advance main')
+        self.git('push', '--quiet', 'origin', 'main')
+        return self.git('rev-parse', 'HEAD')
+
+    def _rebase(self, tree, revision):
+        fetched = revision['completed']['fetch']
+        with patch.object(self.runtime, 'intake', return_value=[]), \
+                patch.object(self.runtime, 'functions', return_value={'reconstruction/synth/Synth.cpp': [4096]}), \
+                patch.object(self.runtime, 'companions', return_value={}):
+            return self.runtime.rebase_retry(fetched, revision), fetched
+
+    def test_unrelated_merge_rebases_without_discarding_expensive_verdicts(self):
+        tree, revision = self._soft_fixture()
+        live = self._advance_main('reconstruction/other/Other.cpp')
+        rebuilt, fetched = self._rebase(tree, revision)
+        self.assertFalse(rebuilt)
+        self.assertEqual(self.git_in(tree, 'rev-parse', 'HEAD'), live)
+        self.assertEqual(ap.read_json(tree / '.local/contrib-initialized.json'), dict(base=live))
+        self.assertEqual(fetched['base'], live)
+        self.assertIn('screen', revision['completed'])
+        self.assertIn('export', revision['completed'])
+        self.assertIn('bind-x', revision['completed'])
+        self.assertNotIn('confirmation', revision['completed'])
+        self.assertNotIn('confirm-x', revision['completed'])
+
+    def git_in(self, tree, *args):
+        return subprocess.run(['git', *args], cwd=tree, check=True, capture_output=True, text=True).stdout.strip()
+
+    def test_tooling_change_on_main_forces_a_rebuild(self):
+        tree, revision = self._soft_fixture()
+        self._advance_main('tools/anything.py')
+        rebuilt, _ = self._rebase(tree, revision)
+        self.assertTrue(rebuilt)
+        self.assertFalse(tree.exists())
+        self.assertNotIn('screen', revision['completed'])
+
+    def test_change_to_a_submitted_file_forces_a_rebuild(self):
+        tree, revision = self._soft_fixture()
+        self._advance_main('reconstruction/synth/Synth.cpp', '// someone else\n')
+        rebuilt, _ = self._rebase(tree, revision)
+        self.assertTrue(rebuilt)
+        self.assertNotIn('screen', revision['completed'])
+
+    def test_changed_function_discovery_forces_a_rebuild(self):
+        tree, revision = self._soft_fixture()
+        self._advance_main('reconstruction/other/Other.cpp')
+        revision['completed']['functions'] = {'reconstruction/synth/Synth.cpp': [1]}
+        rebuilt, _ = self._rebase(tree, revision)
+        self.assertTrue(rebuilt)
 
     def test_enqueued_intake_is_untouched(self):
         revision = dict(enqueued=True, completed={'fetch': True})
@@ -1415,6 +1500,15 @@ reasons: original synthetic source and comparator reports
         self.assertEqual(current['submitter'], 'earlier-contributor')
         self.assertEqual(current['matchers'], previous['matchers'])
         self.assertNotEqual(current['source'], previous['source'])
+
+    def test_one_ci_dispatch_covers_the_whole_pr(self):
+        ap.process(self.runtime, self.state, pr(author='Outside-Contributor', head=self.head, paths=(self.fixture.CPP,)),
+                   dry_run=True)
+        comparisons = [c for c in self.commands if len(c) > 1 and c[1] == 'tools/verifier/confirm']
+        # The sampled re-run is a separate, deliberate comparison; confirmation itself is one batch.
+        confirmation = [c for c in comparisons if not any('rerun-' in part for part in c)]
+        self.assertEqual(len(confirmation), 1)
+        self.assertIn('--list', confirmation[0])
 
     def test_cached_confirmation_restores_credit_without_recomparison(self):
         info = pr(author='Outside-Contributor', head=self.head, paths=(self.fixture.CPP,))

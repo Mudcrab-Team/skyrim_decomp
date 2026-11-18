@@ -112,7 +112,7 @@ class MergeWaitsForLane(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             fdir = Path(tmp) / 'flow'
             runtime = SimpleNamespace(fdir=fdir, config=dict(standard_headers=[], max_functions=1),
-                                      private=Path(tmp), root=Path(tmp))
+                                      private=Path(tmp), root=Path(tmp), root_lock=threading.RLock())
             pushes = []
             runtime.current_head = lambda number: 'h' * 40
             runtime.gh = lambda *a, **k: SimpleNamespace(stdout='{"state": "OPEN"}')
