@@ -330,6 +330,14 @@ def parse_review(text, functions):
     return leak, out
 
 
+def tid_of(task):
+    return Path(str(task)).name
+
+
+def stamp():
+    return time.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+
 def functions_of(texts):
     """RVAs named by `RVA 0x..` header lines in the unit sources."""
     return rva_headers.claimed_rvas(texts)
@@ -769,10 +777,15 @@ class Bot:
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
         for task in tasks:
-            code = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
-                            cwd=self.tree, check=False, timeout=self.config['compare_timeout']).returncode
+            done = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
+                            cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            code = done.returncode
             if code not in (0, 1, 3):
-                raise Stop('verifier host did not complete')
+                # The tool's own last line says why (a bad task row, a missing toolchain); without it every
+                # failure looks the same in the service log.
+                lines = [l for l in done.stderr.decode(errors='replace').splitlines() if l.strip()]
+                raise Stop(f'verifier host did not complete (exit {code}, {tid_of(task)}): '
+                           f'{(lines[-1] if lines else "no error text")[:200]}')
             attempts = sorted((task / 'attempts').glob('[0-9]*')) if code != 3 else []
             for fn in json.loads((task / 'task.json').read_text())['functions']:
                 rva = int(str(fn['rva']), 0)
@@ -1208,7 +1221,7 @@ def poll(bot, interval, restart_after=None):
             prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                               'number,headRefOid,author,baseRefName,isDraft,mergeable')
         except (Stop, subprocess.SubprocessError, ValueError) as exc:
-            print('poll: gh failed:', exc, file=sys.stderr)
+            print(stamp(), 'poll: gh failed:', exc, file=sys.stderr)
             prs = []
         prs = [pr for pr in prs if pr['author']['login'].casefold() != OWNER.casefold()
                and pr['baseRefName'] == 'main' and not pr['isDraft']]
@@ -1216,12 +1229,15 @@ def poll(bot, interval, restart_after=None):
             try:
                 bot.warm(pr)
             except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                print(f'pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr)
+                print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr)
         for pr in prs:
             try:
-                print(json.dumps(bot.process(pr)))
+                result = bot.process(pr)
+                # The state of a finished PR is large and was printed again every tick; the summary says what happened.
+                print(stamp(), json.dumps(result.get('summary') or {k: result[k] for k in ('pr', 'head', 'blocked', 'merge')
+                                                                    if k in result} or {'pr': pr['number']}))
             except (Stop, Rejected, subprocess.SubprocessError, OSError, ValueError) as exc:
-                print(f'pr {pr["number"]}: {type(exc).__name__}: {exc}', file=sys.stderr)
+                print(f'{stamp()} pr {pr["number"]}: {type(exc).__name__}: {exc}', file=sys.stderr)
         time.sleep(interval)
 
 
