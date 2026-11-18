@@ -121,6 +121,7 @@ class FakeBot(pr_bot.Bot):
         self.landed = None
         self.refused = set()
         self.history = None
+        self.extra = {}
 
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -152,15 +153,19 @@ class FakeBot(pr_bot.Bot):
     def leakgrep(self, base, head):
         return self.grep
 
+    def companions(self, units, files, functions):
+        return self.extra
+
     def review(self, number, head, base, functions, *a):
         self.calls.append(['review', sorted(functions)])
         return self.review_text
 
     def mac_compare(self, units, tag):
-        self.calls.append(['mac'])
+        self.calls.append(['mac', units])
         return dict(self.h2)
 
     def host1(self, number, head, functions, state=None, units=None):
+        self.calls.append(['host1', sorted(functions), units])
         return dict(self.h1)
 
     def classify_debt(self, host2, *a):
@@ -170,6 +175,7 @@ class FakeBot(pr_bot.Bot):
         return host1
 
     def build_records(self, *a):
+        self.calls.append(['build_records', a[1], sorted(a[2])])
         return Path('/nonexistent'), set(self.refused)
 
     def record(self, pr, state, rvas):
@@ -343,6 +349,161 @@ class ProcessTests(unittest.TestCase):
         bot.merge_ok = True
         bot.process(PR)
         self.assertEqual(len(bot.seen('record')), 1)
+
+
+WITH_COMPANION = json.dumps({'leak': 'no', 'functions': {
+    f'0x{r:x}': {'verdict': 'approve', 'ground': 'none'} for r in (0x10, 0x20, 0x30)}})
+
+
+class CompanionProcessTests(unittest.TestCase):
+    """Accepted functions of a changed unit that the PR does not name are confirmed with it or block it."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def bot(self, **kw):
+        kw.setdefault('review', WITH_COMPANION)
+        kw.setdefault('h1', {0x10: 'pass', 0x20: 'pass', 0x30: 'pass'})
+        kw.setdefault('h2', {0x10: 'pass', 0x20: 'pass', 0x30: 'pass'})
+        bot = FakeBot(self.work, **kw)
+        bot.extra = {'reconstruction/a/B.cpp': [0x30]}
+        return bot
+
+    def test_decide_blocks_on_a_companion_that_is_not_matched_and_ignores_it_for_the_merge_floor(self):
+        ok = {0x10: 'pass', 0x30: 'pass'}
+        done = pr_bot.decide([0x10, 0x30], ok, ok, {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
+        self.assertEqual((done['blocked'], done['merge'], done['companions']), (None, True, [0x30]))
+        only = pr_bot.decide([0x10, 0x30], {0x10: 'fail', 0x30: 'pass'}, ok, {0x10: 'approve', 0x30: 'approve'},
+                             companions=[0x30])
+        self.assertEqual((only['blocked'], only['merge']), (None, False))
+        for review in ('reject', None):
+            bad = pr_bot.decide([0x10, 0x30], ok, ok, {0x10: 'approve', 0x30: review}, companions=[0x30])
+            self.assertEqual((bad['blocked'], bad['merge']), ('companion', False))
+        debt = pr_bot.decide([0x10, 0x30], ok, {0x10: 'pass', 0x30: 'preexisting-fail'},
+                             {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
+        self.assertEqual((debt['blocked'], debt['merge']), ('companion', False))
+
+    def test_companions_are_confirmed_on_both_hosts_reviewed_recorded_and_credited_apart(self):
+        bot = self.bot()
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched', '0x30': 'matched'})
+        self.assertEqual(bot.seen('mac')[0][1], {'reconstruction/a/B.cpp': [0x10, 0x20, 0x30]})
+        self.assertEqual(bot.seen('host1')[0][1], [0x10, 0x20, 0x30])
+        self.assertEqual(bot.seen('review'), [['review', [0x10, 0x20, 0x30]]])
+        self.assertEqual(bot.seen('build_records')[0][2], [0x10, 0x20, 0x30])
+        self.assertEqual(bot.seen('record'), [['record', [0x10, 0x20, 0x30]]])
+        merge = bot.seen('gh', 'pr', 'merge')[0]
+        subject = merge[merge.index('--subject') + 1]
+        self.assertIn('Reconstruct 2 functions (0x10, 0x20)', subject)
+        self.assertIn('0x30', merge[merge.index('--body') + 1])
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+
+    def test_a_companion_that_stops_matching_blocks_the_merge_with_a_comment_naming_it(self):
+        bot = self.bot(h2={0x10: 'pass', 0x20: 'pass', 0x30: 'fail'})
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('companion', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        self.assertEqual(bot.seen('record'), [])
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x30', body)
+        self.assertNotIn('0x10', body)
+        self.assertIn('did not byte-match', body)
+
+    def test_a_companion_the_reviewer_rejects_blocks_the_merge(self):
+        no = json.loads(WITH_COMPANION)
+        no['functions']['0x30']['verdict'] = 'reject'
+        bot = self.bot(review=json.dumps(no))
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['verdicts']['0x30']), ('companion', 'fail:review'))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+
+    def test_a_companion_without_a_ci_row_is_a_failure_not_a_pass(self):
+        bot = self.bot(h1={0x10: 'pass', 0x20: 'pass'})
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'companion')
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+
+    def test_a_companion_whose_record_cannot_be_built_blocks_before_the_merge(self):
+        bot = self.bot()
+        bot.refused = {0x30}
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('companion', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        self.assertEqual(bot.seen('record'), [])
+
+    def test_a_pr_with_no_companions_is_unchanged(self):
+        bot = FakeBot(self.work)
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(bot.seen('record'), [['record', [0x10, 0x20]]])
+
+    def test_results_cached_without_companions_are_not_reused_for_a_set_that_has_them(self):
+        bot = self.bot()
+        state = pr_bot.State(self.work / 'state', 7, HEAD)
+        state.set('host2', {'16': 'pass', '32': 'pass'})
+        state.set('host1', {'16': 'pass', '32': 'pass'})
+        state.set('review_text', GOOD)
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts']['0x30'], 'matched')
+        self.assertEqual(len(bot.seen('mac')), 1)
+
+
+class CompanionDiscoveryTests(unittest.TestCase):
+    """Bot.companions reads the inventory and records to find accepted functions a PR makes stale."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.tree = Path(self.tmp.name)
+        self.write('builds/target.json', json.dumps({'build_id': 'b'}))
+        self.write('reconstruction/a/B.cpp', '#include "B.h"\nint f() { return 1; }\n')
+        self.write('reconstruction/a/B.h', '// RVA 0x10\nint f();\n')
+        self.write('reconstruction/c/D.cpp', '#include "../a/B.h"\nint g() { return 2; }\n')
+        self.write('reconstruction/e/F.cpp', 'int h() { return 3; }\n')
+        self.fns = []
+        bot = pr_bot.Bot(root=ROOT, work=self.tree / '.w')
+        bot.tree = self.tree
+        self.bot = bot
+
+    def write(self, name, text):
+        (self.tree / name).parent.mkdir(parents=True, exist_ok=True)
+        (self.tree / name).write_text(text)
+
+    def accept(self, rva, unit, status='matched', digest=None):
+        from source_digest import include_closure, tu_digest
+        closure = include_closure(self.tree, unit)
+        report = f'reports/b/0x{rva:x}.json'
+        self.write(report, json.dumps({'source': {'compiled': unit, 'translation_unit': closure,
+                                                  'digest': digest or tu_digest(self.tree, closure)}}))
+        self.fns.append({'build_id': 'b', 'rva': rva, 'status': status, 'report': report})
+        self.write('data/progress.json', json.dumps({'functions': self.fns}))
+
+    def find(self, changed, units, named=(0x10,)):
+        files = [{'filename': n, 'status': 'modified'} for n in changed]
+        return self.bot.companions(units, files, named)
+
+    def test_an_accepted_function_of_a_changed_unit_with_a_stale_digest_is_a_companion(self):
+        self.accept(0x10, 'reconstruction/a/B.cpp')
+        self.accept(0x11, 'reconstruction/a/B.cpp', digest='0' * 64)
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}),
+                         {'reconstruction/a/B.cpp': [0x11]})
+
+    def test_a_function_the_pr_names_or_that_is_not_matched_or_whose_digest_is_current_is_not(self):
+        self.accept(0x10, 'reconstruction/a/B.cpp', digest='0' * 64)
+        self.accept(0x12, 'reconstruction/a/B.cpp', status='drafted', digest='0' * 64)
+        self.accept(0x13, 'reconstruction/a/B.cpp')
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}), {})
+
+    def test_a_unit_that_only_includes_the_changed_header_is_found_through_its_record(self):
+        self.accept(0x20, 'reconstruction/c/D.cpp', digest='0' * 64)
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}),
+                         {'reconstruction/c/D.cpp': [0x20]})
+
+    def test_an_unrelated_unit_is_left_alone(self):
+        self.accept(0x30, 'reconstruction/e/F.cpp', digest='0' * 64)
+        self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}), {})
 
 
 class LeakgrepContractTests(unittest.TestCase):

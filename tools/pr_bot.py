@@ -8,6 +8,8 @@ A function is `matched` only if host 1 (the PR's `hash` check run) and host 2 (t
 compare of the changed units) both byte-match and the single review approves it. A leakgrep hit,
 a review `leak: yes` or a regression of an already matched function blocks the whole PR. A
 function that already fails on base is project debt: it never blocks and is never recorded.
+Accepted functions of a changed unit that the PR does not name (companions) are confirmed on both
+hosts and reviewed with it, and recorded in the same commit; one that fails blocks the merge.
 Per-head state lives in .local/pr-bot/ so a re-run resumes instead of repeating paid work.
 """
 import argparse
@@ -42,6 +44,7 @@ REASONS = {
     'review': 'the review did not approve it',
     'record': 'it matched, but its record could not be written',
     'missing': 'a host or the review gave no result for it',
+    'debt': 'it already failed to match before this change',
 }
 RUNBOOK = 'docs/reviewer-runbook.md'
 PREAMBLE = """You are the single Reviewer for an outside pull request, with the same standards as the
@@ -98,8 +101,13 @@ def scope_problem(files):
     return None
 
 
-def decide(functions, host1, host2, review, leak_hits=(), leak='no'):
-    """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail."""
+def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=()):
+    """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail.
+
+    `companions` are already accepted functions of a unit the PR changes that the PR does not name.
+    Their records go stale with the unit, so each must be re-confirmed and re-approved against the
+    PR's version; one that is not blocks the merge, since merging would leave main red.
+    """
     if leak_hits or leak != 'no':
         return dict(blocked='leak', merge=False, verdicts={r: 'blocked' for r in functions})
     # A header change can break a matched function outside this PR's own list; the hash run names it too.
@@ -120,7 +128,12 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no'):
             verdicts[rva] = 'fail:host2'
         else:
             verdicts[rva] = 'fail:review'
-    return dict(blocked=None, merge='matched' in verdicts.values(), verdicts=verdicts)
+    companions = sorted(set(companions) & set(functions))
+    if any(verdicts[r] != 'matched' for r in companions):
+        return dict(blocked='companion', merge=False, verdicts=verdicts, companions=companions)
+    own = [r for r in functions if r not in companions]
+    return dict(blocked=None, merge=any(verdicts[r] == 'matched' for r in own), verdicts=verdicts,
+                companions=companions)
 
 
 def merge_command(number, sha, subject, body):
@@ -128,11 +141,13 @@ def merge_command(number, sha, subject, body):
             '--subject', subject, '--body', body]
 
 
-def squash_message(number, login, user_id, rvas):
+def squash_message(number, login, user_id, rvas, companions=()):
     """Bot-written, so the contributor's commit messages are never published; they are credited."""
     shown = ', '.join(f'0x{r:x}' for r in sorted(rvas))
     subject = f'Reconstruct {len(rvas)} function{"s" if len(rvas) != 1 else ""} ({shown}) (#{number})'
-    body = (f'Accepted after a byte match on two hosts and an approving review.\n\n'
+    again = (f'Re-confirmed on both hosts and re-approved, their unit having changed: '
+             f'{", ".join(f"0x{r:x}" for r in sorted(companions))}.\n\n') if companions else ''
+    body = (f'Accepted after a byte match on two hosts and an approving review.\n\n{again}'
             f'Co-authored-by: {login} <{user_id}+{login}@users.noreply.github.com>')
     return subject, body
 
@@ -166,6 +181,18 @@ def comment_body(sha, decision, leak_codes=()):
     if decision['blocked'] == 'regression':
         return (f'{marker}\nThis change makes an already matched function stop matching, so it was not '
                 f'merged. Please keep the shared code compatible or touch only your own unit.')
+    if decision['blocked'] == 'companion':
+        verdicts = decision['verdicts']
+        lines = [marker, 'Thanks for the PR. It changes a unit that already holds accepted functions this PR does '
+                 'not name. Each of them has to byte-match on both hosts and pass review against your version of '
+                 'the unit before the merge, and these did not, so nothing was merged:']
+        for r in decision.get('companions', []):
+            if verdicts.get(r) != 'matched':
+                code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
+                lines.append(f'- 0x{r:x}: {REASONS.get(code, "it was not re-confirmed")}')
+        lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
+                     'again; the bot re-checks the new head.')
+        return '\n'.join(lines)
     lines = [f'{marker}', 'Thanks for the PR.']
     done = [r for r, v in decision['verdicts'].items() if v == 'matched']
     if done:
@@ -496,11 +523,12 @@ class Bot:
                 'hosts has both. The unit files are in the working directory at the paths above.']
         return '\n'.join(out)
 
-    def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None):
+    def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=()):
         diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction'], cwd=self.root).stdout.decode(errors='replace')
         context = self.review_context(units, set(functions), evidence, changed) if units else ''
         prompt = (PREAMBLE + '\n' + runbook_checklist(self.tree) + f'\n\nFunctions under review: '
                   f'{", ".join(f"0x{r:x}" for r in sorted(functions))}\n'
+                  f'{self.companion_note(companions)}'
                   f'leakgrep: {"HIT " + ",".join(grep[1]) if grep[0] else "clean"}\n\n{context}\n\n'
                   f'UNTRUSTED DIFF DATA:\n{diff}')
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
@@ -510,6 +538,43 @@ class Bot:
                   '--cd', self.tree, '--output-last-message', out, '-'], cwd=self.tree,
                  input=prompt.encode(), timeout=self.config['model_timeout'])
         return out.read_text()
+
+    @staticmethod
+    def companion_note(companions):
+        if not companions:
+            return ''
+        return ('Already accepted functions of units this PR changes, re-confirmed here because their earlier '
+                f'acceptance binds the old unit: {", ".join(f"0x{r:x}" for r in sorted(companions))}. Judge them '
+                'by the same checklist against the new unit text.\n')
+
+    def companions(self, units, files, functions):
+        """{unit: [rva]} of accepted functions the PR does not name whose acceptance the PR makes stale.
+
+        A matched function's record binds the digest of its unit's include closure, so any change to
+        that closure leaves the record stale, whether or not the PR lists the function. The unit is
+        known from the record, which also covers a changed header shared by several units.
+        """
+        from source_digest import include_closure, tu_digest
+        tree = self.tree
+        changed = {f['filename'] for f in files}
+        target = json.loads((tree / 'builds/target.json').read_text())['build_id']
+        inventory = json.loads((tree / 'data/progress.json').read_text())
+        named, current, out = set(functions), {}, {}
+        for fn in inventory['functions']:
+            if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in named or not fn.get('report'):
+                continue
+            try:
+                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+            except (OSError, ValueError):
+                continue
+            unit = source.get('compiled')
+            if not unit or not (unit in units or changed & set(source.get('translation_unit') or ())):
+                continue
+            if unit not in current:
+                current[unit] = tu_digest(tree, include_closure(tree, unit)) if (tree / unit).is_file() else None
+            if current[unit] is not None and current[unit] != source.get('digest'):
+                out.setdefault(unit, []).append(fn['rva'])
+        return {u: sorted(rs) for u, rs in out.items()}
 
     def mac_compare(self, units, tag):
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
@@ -752,6 +817,13 @@ class Bot:
         if not functions or len(functions) > self.config['max_functions']:
             raise Rejected('functions')
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
+        # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
+        # before the companions were known are for a smaller set, so these stages use their own cache keys.
+        extra_units = state.once('companions', lambda: self.companions(units, files, functions))
+        extra = sorted({r for rs in extra_units.values() for r in rs})
+        check_units = {u: sorted(set(units.get(u, [])) | set(extra_units.get(u, []))) for u in {*units, *extra_units}}
+        everything = functions + extra
+        sfx = '-c' if extra else ''
         if grep[0]:
             decision = decide(functions, {}, {}, {}, leak_hits=grep[1] or ['hit'])
             state.set('decision', decision)
@@ -760,40 +832,44 @@ class Bot:
         tag = f'{number}-{head[:8]}'
 
         def mac():
-            return state.once('host2', lambda: {str(k): v for k, v in self.mac_compare(units, tag).items()})
+            return state.once('host2' + sfx, lambda: {str(k): v for k, v in
+                                                      self.mac_compare(check_units, tag).items()})
 
         def ci():
-            return state.once('host1', lambda: {str(k): v for k, v in
-                                                self.host1(number, head, functions, state, units).items()})
+            return state.once('host1' + sfx, lambda: {str(k): v for k, v in
+                                                      self.host1(number, head, everything, state,
+                                                                 check_units).items()})
         # Both hosts first: the Reviewer's binding check needs the comparator report and the CI result.
         with ThreadPoolExecutor(max_workers=2) as pool:
             f_mac, f_ci = pool.submit(mac), pool.submit(ci)
             host2 = {int(k): v for k, v in f_mac.result().items()}
             host1 = {int(k): v for k, v in f_ci.result().items()}
         host1 = self.settle_ci_debt(host1)
-        host2 = self.classify_debt(host2, host1, base, units, state)
+        host2 = self.classify_debt(host2, host1, base, check_units, state)
         self.overlay(head, files)
         # Only what both hosts passed can be accepted, so only that is worth a review call; a
         # regression blocks the whole PR whatever the review says.
-        passed = [r for r in functions if host1.get(r) == 'pass' and host2.get(r) == 'pass']
+        passed = [r for r in everything if host1.get(r) == 'pass' and host2.get(r) == 'pass']
         leak, verdict, notes = 'no', {}, {}
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
-            text = state.once('review_text', lambda: self.review(number, head, base, passed, grep, units, evidence,
-                                                                  {f['filename'] for f in files}))
+            text = state.once('review_text' + sfx, lambda: self.review(
+                number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra))
             leak, verdict = parse_review(text, passed)
             notes = review_notes(text, passed)
-        verdict = {r: verdict.get(r, 'reject') for r in functions}
-        decision = decide(functions, host1, host2, verdict, leak=leak)
+        verdict = {r: verdict.get(r, 'reject') for r in everything}
+        decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra)
         state.set('decision', decision)
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
-            records, refused = self.build_records(f'{number}-{head[:8]}/records', units, set(matched), state)
+            records, refused = self.build_records(f'{number}-{head[:8]}/records', check_units, set(matched), state)
             if refused:
                 for rva in refused:
                     decision['verdicts'][rva] = 'fail:record'
-                decision['merge'] = 'matched' in decision['verdicts'].values()
+                decision['merge'] = 'matched' in [v for r, v in decision['verdicts'].items() if r not in extra]
+                if refused & set(extra):
+                    decision.update(blocked='companion', merge=False)
                 state.set('decision', decision)
             state.set('records', str(records))
         return self.finish(pr, state, decision, started)
@@ -849,10 +925,12 @@ class Bot:
         if self.dry_run:
             return summary
         if decision['merge'] and not state.get('merged'):
-            matched = [int(r) for r, v in verdicts.items() if v == 'matched']
+            again = {int(r) for r in decision.get('companions') or ()}
+            matched = [int(r) for r, v in verdicts.items() if v == 'matched' and int(r) not in again]
             login = pr['author']['login']
             uid = self.gh_json('api', f'users/{login}')['id']
-            merged = self.run(merge_command(number, head, *squash_message(number, login, uid, matched)), check=False)
+            merged = self.run(merge_command(number, head, *squash_message(number, login, uid, matched, again)),
+                              check=False)
             if merged.returncode:
                 state.data.clear()
                 raise Stop('merge refused (the head moved); starting over on the next tick')
