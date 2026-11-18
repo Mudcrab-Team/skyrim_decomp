@@ -311,8 +311,10 @@ class Bot:
             if self.dry_run:
                 return False, []  # a replay may run before the tool is on this checkout; live never does
             raise Stop('leakgrep is not available')
-        result = self.run([sys.executable, script, '--base', base, '--head', head], check=False, timeout=120)
-        if result.returncode not in (0, 1):
+        result = self.run([sys.executable, script, '--base', base, '--head', head, '--repo', self.root,
+                           '--private-list', self.root / '.local/leakgrep-private.txt'], check=False, timeout=120)
+        # A crash also exits 1; only the summary line proves the scan ran.
+        if result.returncode not in (0, 1) or b'leakgrep: ' not in result.stdout:
             raise Stop('leakgrep did not complete')
         return result.returncode == 1, parse_leak_codes(result.stdout.decode(errors='replace'))
 
