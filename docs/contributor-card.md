@@ -45,8 +45,9 @@ Source rules:
 - `static_assert` needs a message.
 - A tail jump (`JMP <function>`) is `return Callee(...);` as the last statement.
 
-Diagnostics: read `functions[].reason`, sizes, `first_mismatch` and `hint` from `compare`. An
-unbound symbol needs the helper's bind hint, using an RVA from your own pack. A compile or include
+Diagnostics: read `functions[].reason`, sizes, `first_mismatch` and `hint` from `compare`. Bind hints stay local: `bind-hints.json` is never
+submitted, and intake binds by position with no hints. An unbound symbol needs your local bind hint, using an RVA from
+your own pack; thread-locals are the exception and need a `tls:` hint. A compile or include
 failure is not comparison evidence. Under `cheap`, stop after 3 attempts without an improvement in
 matching bytes (hard cap 6 comparisons); under `full`, 4 and 10. Keep the source and the sanitized
 reason when you stop.
