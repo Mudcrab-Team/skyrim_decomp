@@ -1,3 +1,4 @@
+// Code origin: project stand-ins and declarations adapted from CommonLibSSE-NG.
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESGrass.h and the vftables of the pinned image; the powerof3 fork (GPL-3.0) declares the same names.
@@ -420,50 +421,58 @@ public:
 	virtual void SetUnderwaterState(GRASS_WATER_STATE a_waterState);  // 5E
 	// TESGrass::GetPositionRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 95, target 0x2709a0
 	// community declaration: virtual float GetPositionRange() const;
-	virtual void GetPositionRange();  // 5F
+	virtual float GetPositionRange() const;  // 5F
 	// TESGrass::SetPositionRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 96, target 0x270430
 	// community declaration: virtual bool SetPositionRange(float a_positionRange);
-	virtual void SetPositionRange();  // 60
+	virtual bool SetPositionRange(float a_positionRange);  // 60
 	// TESGrass::GetHeightRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 97, target 0x270930
 	// community declaration: virtual float GetHeightRange() const;
 	virtual float GetHeightRange() const;  // 61
 	// TESGrass::SetHeightRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 98, target 0x270460
 	// community declaration: virtual bool SetHeightRange(float a_heightRange);
-	virtual void SetHeightRange();  // 62
+	virtual bool SetHeightRange(float a_heightRange);  // 62
 	// TESGrass::GetColorRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 99, target 0x2708f0
 	// community declaration: virtual float GetColorRange() const;
 	virtual float GetColorRange() const;  // 63
 	// TESGrass::SetColorRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 100, target 0x270490
 	// community declaration: virtual bool SetColorRange(float a_colorRange);
-	virtual void SetColorRange();  // 64
+	virtual bool SetColorRange(float a_colorRange);  // 64
 	// TESGrass::GetWavePeriod: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 101, target 0x2709e0
 	// community declaration: virtual float GetWavePeriod() const;
-	virtual void GetWavePeriod();  // 65
+	virtual float GetWavePeriod() const;  // 65
 	// TESGrass::SetWavePeriod: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 102, target 0x2704c0
 	// community declaration: virtual bool SetWavePeriod(float a_wavePeriod);
 	virtual void SetWavePeriod();  // 66
 	// TESGrass::GetVertexLighting: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 103, target 0x2709d0
 	// community declaration: virtual bool GetVertexLighting() const;
-	virtual void GetVertexLighting();  // 67
+	virtual bool GetVertexLighting() const;  // 67
 	// TESGrass::SetVertexLighting: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 104, target 0x270a70
 	// community declaration: virtual void SetVertexLighting(bool a_set);
-	virtual void SetVertexLighting();  // 68
+	virtual void SetVertexLighting(bool a_set);  // 68
 	// TESGrass::GetUniformScaling: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 105, target 0x2709c0
 	// community declaration: virtual bool GetUniformScaling() const;
 	virtual void GetUniformScaling();  // 69
 	// TESGrass::SetUniformScaling: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 106, target 0x270a40
 	// community declaration: virtual void SetUniformScaling(bool a_set);
-	virtual void SetUniformScaling();  // 6A
+	virtual void SetUniformScaling(bool a_set);  // 6A
 	// TESGrass::GetFitToSlope: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 107, target 0x270920
 	// community declaration: virtual bool GetFitToSlope() const;
 	virtual void GetFitToSlope();  // 6B
 	// TESGrass::SetFitToSlope: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 108, target 0x270a00
 	// community declaration: virtual void SetFitToSlope(bool a_set);
-	virtual void SetFitToSlope();  // 6C
+	virtual void SetFitToSlope(bool a_set);  // 6C
 
 	// GRASS_DATA: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); members used here only, offsets within DATA as in NG
 	struct GRASS_DATA
 	{
+		// Flag, kVertexLighting, kUniformScale, kFitSlope: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+		enum Flag : std::uint8_t
+		{
+			kVertexLighting = 1,
+			kUniformScale = 2,
+			kFitSlope = 4
+		};
+
 		std::int8_t   density;                 // 00
 		std::int8_t   minSlopeDegrees;         // 01
 		std::int8_t   maxSlopeDegrees;         // 02
@@ -471,12 +480,15 @@ public:
 		std::uint16_t distanceFromWaterLevel;  // 04
 		std::uint16_t pad06;                   // 06
 		GRASS_WATER_STATE underwater;          // 08
-		// unk0C: GUESS(low); NG names positionRange, heightRange, colorRange, wavePeriod, flags are not needed here
-		std::uint8_t  unk0C[0x4];  // 0C
+		// positionRange, wavePeriod, flags, pad1D, pad1E: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+		float positionRange;  // 0C
 		// heightRange, colorRange: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); offsets within DATA as in NG
 		float heightRange;  // 10
 		float colorRange;  // 14
-		std::uint8_t unk18[0x20 - 0x18];  // 18
+		float wavePeriod;  // 18
+		std::uint8_t flags;  // 1C
+		std::uint8_t pad1D;
+		std::uint16_t pad1E;
 	};
 	static_assert((sizeof(GRASS_DATA) == 0x20), "layout");
 
