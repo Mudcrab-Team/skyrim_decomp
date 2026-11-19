@@ -4,7 +4,7 @@ A matching decompilation of Skyrim Special Edition (Steam 1.7.104). The goal is 
 
 **No humans in the loop.** Contributions are reviewed and merged automatically by AI agents, with credit to you. Matches are re-verified on two independent machines: our build host compares against the project’s game copy, and a GitHub Windows CI runner checks the compiled bytes against published target hashes.
 
-<a href="https://discord.gg/QufDpXhx88"><img src="docs/discord-banner.svg" alt="Join our Discord" width="100%"></a>
+<a href="https://discord.gg/tbXD8gwgjJ"><img src="docs/discord-banner.svg" alt="Join our Discord" width="100%"></a>
 
 ## Progress
 

@@ -111,5 +111,5 @@ the start of each session; push fixes to the same branch and never force-push ov
 
 ## Questions
 
-Ask in the project Discord: https://discord.gg/QufDpXhx88. The publication rules apply there too:
+Ask in the project Discord: https://discord.gg/tbXD8gwgjJ. The publication rules apply there too:
 no listings, pseudo-C, bytes or screenshots of them.
