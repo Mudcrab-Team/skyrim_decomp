@@ -424,15 +424,16 @@ def origin_findings(hits, headers, unverified=False):
 
     A hit is informational only when its source is an admitted sibling, the unit header names that
     sibling path in a valid `Sibling source:` line, and (for fo4-private) the path is a game-code folder.
-    Trivial bodies and fork duplicates carry no provenance claim. Anything else, or a check that could not
-    run, stays blocking so a reviewer's origin claim is never waved through unverified.
+    Trivial bodies and fork duplicates carry no provenance claim, so a reviewer claim that rests only on
+    them is explained, not unconfirmed. Anything else, or a check that could not run, stays blocking so a reviewer's origin claim is never waved through unverified.
     """
     import check_origin
     from fo4_private import allowed_path
     from lint_reconstruction import SIBLING_HEADER, sibling_header_problems
-    problems, permitted = [], []
+    problems, permitted, ignored = [], [], 0
     for hit in hits:
         if hit['trivial'] or hit.get('fork_of'):
+            ignored += 1
             continue
         file, repo = hit['file'], hit['repo']
         header = headers.get(file, '')
@@ -447,7 +448,7 @@ def origin_findings(hits, headers, unverified=False):
             problems.append((file, 'invalid-label'))
         else:
             permitted.append(file)
-    if unverified or not (problems or permitted):
+    if unverified or not (problems or permitted or ignored):
         problems.append(('(origin check)', 'unconfirmed'))
     return sorted(set(problems)), sorted(set(permitted))
 

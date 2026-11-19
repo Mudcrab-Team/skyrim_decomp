@@ -307,9 +307,13 @@ class OriginFindingTests(unittest.TestCase):
         self.assertEqual(pr_bot.origin_findings([hit], {UNIT: header})[0], [(UNIT, 'excluded-source')])
 
     def test_a_claim_the_origin_check_cannot_confirm_blocks(self):
-        for hits, unverified in (([], False), ([origin_hit(trivial=True)], False), ([origin_hit()], True)):
+        for hits, unverified in (([], False), ([origin_hit()], True), ([origin_hit(trivial=True)], True)):
             problems, _ = pr_bot.origin_findings(hits, {UNIT: FNV_HEADER}, unverified)
             self.assertIn(('(origin check)', 'unconfirmed'), problems)
+
+    def test_a_claim_resting_only_on_trivial_or_fork_hits_is_not_a_finding(self):
+        fork = dict(origin_hit('CharmedBaryon/CommonLibSSE-NG', 'src/Thing.cpp'), fork_of='x')
+        self.assertEqual(pr_bot.origin_findings([origin_hit(trivial=True), fork], {UNIT: FNV_HEADER}), ([], []))
 
 
 class OriginBot(FakeBot):
