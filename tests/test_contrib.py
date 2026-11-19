@@ -5,6 +5,7 @@ tests/stub_cl.py, GitHub is a fake object, and Windows paths are exercised throu
 helpers on any host.
 """
 import contextlib
+import hashlib
 from datetime import datetime, timedelta, timezone
 import io
 import json
@@ -593,7 +594,8 @@ class SubmitTests(Base):
         digest = tu_digest(self.repo, include_closure(self.repo, self.unit[1]))
         self.summary = {
             'task': self.tdir.name, 'run': 1, 'unit': self.unit[1], 'source_revision': digest,
-            'recipe': contrib.DEFAULT_RECIPE, 'recipe_sha256': 'ab' * 32, 'compiler': 'pinned',
+            'recipe': contrib.DEFAULT_RECIPE, 'compiler': 'pinned',
+            'recipe_sha256': hashlib.sha256((self.repo / contrib.DEFAULT_RECIPE).read_bytes()).hexdigest(),
             'image_sha256_pinned': True, 'comparator': {'version': 'x'}, 'contract_version': 2, 'practice': False,
             'functions': [{'rva': f'0x{self.RVA:x}', 'name': fn['name'], 'result': 'pass', 'reason': 'all-checks-passed',
                            'detail': self.SECRETS[0], 'hint': 'h', 'first_mismatch': self.SECRETS[1],
@@ -654,6 +656,11 @@ class SubmitTests(Base):
         code, out = self.submit(gh)
         self.assertEqual(code, contrib.FAILED)
         return '\n'.join(out['blockers'])
+
+    def test_a_recipe_that_changed_since_the_compare_blocks(self):
+        self.summary['recipe_sha256'] = 'ab' * 32
+        self.write()
+        self.assertIn('changed since the last compare', self.blockers())
 
     def test_stand_in_compiler_blocks(self):
         self.summary['compiler'] = 'override'

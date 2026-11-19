@@ -17,16 +17,26 @@ A PR that only appends `mapped` inventory entries (data/progress.json plus new f
 tools/mapping_check.py, the PR's `mapping` check run, one review, a squash merge, then the bot regenerates
 the index and pictures on main. No host runs and no match count can change.
 Per-head state lives in .local/pr-bot/ so a re-run resumes instead of repeating paid work.
+Before a review is paid for, tools/prereview.py's checks run on what both hosts passed: the source and readiness
+lints, an undeclared adapted body, and whether the comparator report and the CI row bind the unit as pushed. A
+function they refuse is `fail:precheck` with the exact fix in the comment and never reaches the Reviewer.
+The poll works on two PRs at once, each on its own scratch tree; pushes to main, Ghidra exports and fetches into
+the shared checkout take turns. The same infrastructure failure on one head three times in a row backs that
+head off with a growing delay (a verifier failure is said once on the PR), and a `gh` failure backs the whole
+poll off instead of looping.
 Each PR gets at most one bot comment, marked with STICKY, which is edited in place on every new
 head or verdict and never posted again.
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
+import contextlib
+import copy
 import fcntl
 import hashlib
 import json
 import os
 from pathlib import Path
+import queue
 import re
 import shutil
 import subprocess
@@ -57,6 +67,7 @@ REASONS = {
     'record': 'it matched, but its record could not be written',
     'missing': 'a host or the review gave no result for it',
     'debt': 'it already failed to match before this change',
+    'precheck': 'a mechanical check refused it before any review (see the findings below)',
 }
 # The one bot comment per PR starts with this marker; older bot comments used `<!-- pr-bot sha=...`, and
 # the prefix match lets the bot adopt one of those instead of adding another.
@@ -78,6 +89,7 @@ def is_generated(name):
     return name in GENERATED or (name.startswith(TARGET_HASH_DIR) and name.endswith('.json')
                                  and '/' not in name[len(TARGET_HASH_DIR):])
 NAME_SOURCE_SHOWN = 240
+PRECHECK_SHOWN = 12
 MAPPING_PREAMBLE = """You are the single Reviewer for a mapping-only pull request: it only adds `mapped` entries
 (RVA, size, name, name origin, name source, evidence file) to the function inventory. Nothing is
 compiled and nothing becomes `matched`; the deterministic rules (schema, added-only, labels, evidence
@@ -140,6 +152,14 @@ class Stop(Exception):
     """Infrastructure did not complete; nothing is cached and the next tick retries."""
 
 
+class HostFailure(Stop):
+    """A verifier host did not complete a compare. Repeats of it on one head back off and are said once."""
+
+
+class GhFailure(Stop):
+    """A `gh` call failed. It says nothing about the PR, so it backs off for the whole bot, not per head."""
+
+
 class Rejected(Exception):
     """The PR cannot proceed until the contributor changes it; `text` tells them what to do.
 
@@ -179,7 +199,8 @@ def scope_problem(files):
     return None
 
 
-def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=(), leak_evidence=(), stale=()):
+def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=(), leak_evidence=(), stale=(),
+           refused=()):
     """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail.
 
     `companions` are already accepted functions of a unit the PR changes that the PR does not name.
@@ -188,6 +209,8 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
     `stale` is every accepted function, named by the PR or not, whose record the PR's unit text outdates.
     It may never be debt: a function that fails to compare because its binding is missing is still one
     whose acceptance the merge would break, so any verdict but `matched` blocks.
+    `refused` are functions that passed both hosts but failed a mechanical pre-review check; they never
+    reach the Reviewer and are never `matched`.
     """
     if leak_hits:
         return dict(blocked='leak', leak_source='leakgrep', merge=False, verdicts={r: 'blocked' for r in functions})
@@ -202,6 +225,8 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
         h1, h2, rv = host1.get(rva), host2.get(rva), review.get(rva)
         if 'preexisting-fail' in (h1, h2):
             verdicts[rva] = 'debt'
+        elif rva in refused:
+            verdicts[rva] = 'fail:precheck'
         elif h1 == 'pass' and h2 == 'pass' and rv == 'approve':
             verdicts[rva] = 'matched'
         elif None in (h1, h2, rv):
@@ -224,6 +249,50 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
 
 
 CONFLICT_COMMENT = 'This PR conflicts with main; merge main into your branch and push.'
+
+# The same infrastructure failure on one head this many times in a row stops the retry-every-tick loop.
+FAILURE_THRESHOLD = 3
+FAILURE_BACKOFF_FIRST, FAILURE_BACKOFF_CAP = 300, 7200
+GH_BACKOFF_FIRST, GH_BACKOFF_CAP = 60, 900
+HOST_FAILURE_COMMENT = ('A verifier host did not complete the comparison of this head several times in a row. '
+                        'This is a fault of the bot\'s own machine, not a finding about the PR; nothing was merged. '
+                        'The bot retries with a growing delay, and re-checks at once on a new push.')
+
+
+def failure_record(previous, signature, now, post=False):
+    """The failure ledger for one head after one more failure with `signature`.
+
+    Identical failures count; a different one starts again. Below FAILURE_THRESHOLD the next tick retries,
+    after it the delay doubles from FAILURE_BACKOFF_FIRST up to FAILURE_BACKOFF_CAP. `posted` stays set once
+    the failure has been said on the PR, so it is said once per signature.
+    """
+    same = bool(previous) and previous.get('signature') == signature
+    count = previous['count'] + 1 if same else 1
+    wait = 0 if count < FAILURE_THRESHOLD else min(FAILURE_BACKOFF_FIRST * 2 ** (count - FAILURE_THRESHOLD),
+                                                   FAILURE_BACKOFF_CAP)
+    return dict(signature=signature, count=count, next=now + wait, posted=bool(same and previous.get('posted')))
+
+
+class GhBackoff:
+    """One delay shared by every worker: a GitHub outage is nobody's PR, and retrying at full speed only loops."""
+
+    def __init__(self, clock=time.time):
+        self.clock, self.failures, self.until = clock, 0, 0.0
+        self.lock = threading.Lock()
+
+    def failed(self):
+        with self.lock:
+            self.failures += 1
+            self.until = self.clock() + min(GH_BACKOFF_FIRST * 2 ** (self.failures - 1), GH_BACKOFF_CAP)
+            return self.until - self.clock()
+
+    def succeeded(self):
+        with self.lock:
+            self.failures, self.until = 0, 0.0
+
+    def remaining(self):
+        with self.lock:
+            return max(0.0, self.until - self.clock())
 
 
 def mapping_lane(files):
@@ -397,6 +466,13 @@ def comment_body(sha, decision, leak_codes=()):
             lines.append(f'- 0x{r:x}: {REASONS[c]}')
             if c == 'review':
                 lines += [f'  - {n}' for n in notes.get(r, [])]
+        found = list(dict.fromkeys(l for r, c in sorted(failed.items()) if c == 'precheck'
+                                   for l in (decision.get('pre') or {}).get(r, [])))
+        if found:
+            lines.append('Findings from the mechanical checks (no review was spent on these):')
+            lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
+            if len(found) > PRECHECK_SHOWN:
+                lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
     return '\n'.join(lines) or 'Nothing to report.'
 
 
@@ -542,10 +618,19 @@ class State:
     def set(self, key, value):
         with self.lock:
             self.data[key] = value
-            tmp = self.path.with_suffix('.tmp')
-            tmp.write_text(json.dumps(self.data, indent=1, sort_keys=True))
-            os.replace(tmp, self.path)
+            self._save()
         return value
+
+    def drop(self, key):
+        with self.lock:
+            if key in self.data:
+                del self.data[key]
+                self._save()
+
+    def _save(self):
+        tmp = self.path.with_suffix('.tmp')
+        tmp.write_text(json.dumps(self.data, indent=1, sort_keys=True))
+        os.replace(tmp, self.path)
 
     def once(self, key, fn):
         return self.data[key] if key in self.data else self.set(key, fn())
@@ -564,12 +649,45 @@ class Bot:
         self.tree = self.work / 'tree'
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
+        # Shared by every slot of a pool (see for_slot): git in the shared checkout races on ref locks,
+        # headless Ghidra takes an exclusive project lock, and every push to main must be one at a time.
+        self.root_lock = threading.RLock()
+        self.ghidra_lock = threading.Lock()
+        self.land_lock = threading.Lock()
+
+    def for_slot(self, slot):
+        """A copy of this bot with its own scratch tree, sharing the locks, so two PRs never share a checkout."""
+        other = copy.copy(self)
+        other.tree = self.work / ('tree' if slot == 0 else f'tree-{slot}')
+        return other
+
+    @contextlib.contextmanager
+    def pr_lock(self, number):
+        """Held while one process works on a PR, across threads and across processes; False if another has it."""
+        path = self.work / 'locks' / f'pr{number}.lock'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, 'a+') as handle:
+            try:
+                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError:
+                yield False
+                return
+            try:
+                yield True
+            finally:
+                fcntl.flock(handle, fcntl.LOCK_UN)
 
     def run(self, argv, cwd=None, input=None, timeout=None, check=True):
-        result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
-                                capture_output=True, timeout=timeout)
+        name = Path(str(argv[0])).name
+        try:
+            result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
+                                    capture_output=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            if name == 'gh':
+                raise GhFailure('gh timed out')
+            raise
         if check and result.returncode:
-            raise Stop(f'{Path(str(argv[0])).name} failed')
+            raise (GhFailure if name == 'gh' else Stop)(f'{name} failed')
         return result
 
     def gh_json(self, *args):
@@ -612,6 +730,10 @@ class Bot:
         return [item for page in pages for item in page]
 
     def prepare_tree(self, base):
+        with self.root_lock:
+            self._prepare_tree(base)
+
+    def _prepare_tree(self, base):
         if not (self.tree / '.git').exists():
             self.tree.parent.mkdir(parents=True, exist_ok=True)
             self.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', self.root, self.tree])
@@ -734,9 +856,10 @@ class Bot:
                             row=(ci.get('rows') or {}).get(str(rva)), run=ci.get('run'))
         return out
 
-    def binding_lines(self, rva, cpp, digest, evidence):
-        """Agreement of one function's comparator report and CI row with the files and pins, as computed here."""
+    def binding_facts(self, rva, cpp, digest, evidence):
+        """({fact: bool}, report) for one function: its comparator report and CI row against the unit and the pins."""
         import check
+        import prereview
         tree = self.tree
         target = json.loads((tree / 'builds/target.json').read_text())
         text = (tree / cpp).read_text()
@@ -755,26 +878,28 @@ class Bot:
                 report = json.loads(Path(evidence['report']).read_text())
             except (OSError, ValueError):
                 report = None
+        facts = prereview.binding_facts(report, evidence.get('row'), digest, cpp, recipe_sha, ci_recipe_sha,
+                                        check.pinned_compiler_sha256(tree), target.get('image_sha256'))
+        return facts, report
+
+    def binding_lines(self, rva, cpp, digest, evidence):
+        """Agreement of one function's comparator report and CI row with the files and pins, as computed here."""
+        import prereview
+        facts, report = self.binding_facts(rva, cpp, digest, evidence)
         lines = []
         if report is None:
             lines.append('  first-host comparator report: NOT available')
         else:
-            src, rec, tgt = report.get('source') or {}, report.get('recipe') or {}, report.get('target') or {}
-            facts = {'result pass': report.get('result') == 'pass',
-                     'source revision equals the tu digest and unit path': src.get('source_revision') == digest
-                     and src.get('path') == cpp,
-                     'recipe hash equals the recipe file': recipe_sha is not None and rec.get('recipe_sha256') == recipe_sha,
-                     'compiler hash equals the pinned cl.exe': rec.get('compiler_binary_sha256') == check.pinned_compiler_sha256(tree),
-                     'target image equals builds/target.json': tgt.get('image_sha256') == tgt.get('expected_image_sha256')
-                     == target.get('image_sha256')}
-            rel = Path(evidence['report']).relative_to(tree).as_posix()
+            first = {k: v for k, v in facts.items() if not k.startswith('second-host') and k != prereview.HOSTS_AGREE}
+            rel = Path(evidence['report']).relative_to(self.tree).as_posix()
             lines.append(f'  first-host (Mac, Wine) comparator report {rel}: ' +
-                         '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in facts.items()))
+                         '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in first.items()))
         row, run = evidence.get('row'), evidence.get('run')
         if row:
+            word = {True: 'agrees', False: 'DIFFERS'}
             lines.append(f'  second-host run {run.get("run_id")} (CI hash job, which compares the published target hashes) on head {str(run.get("head_sha"))[:12]}: {row.get("status")}; '
-                         f'its source digest {"agrees" if row.get("source_sha256") == digest else "DIFFERS"}, '
-                         f'its recipe hash {"agrees" if ci_recipe_sha is not None and row.get("recipe_sha256") == ci_recipe_sha else "DIFFERS"}')
+                         f'its source digest {word[facts["second-host source digest equals the tu digest"]]}, '
+                         f'its recipe hash {word[facts["second-host recipe hash equals the recipe the job selects"]]}')
         else:
             lines.append(f'  second-host run (CI hash job, which compares the published target hashes): {evidence.get("host1")}')
         return lines
@@ -926,21 +1051,33 @@ class Bot:
             lines += [f'{build} 0x{r:x} {tid} {cpp} recipe={recipe}' for r in sorted(rvas)]
         listing = self.work / f'export-{tag}.txt'
         listing.write_text('\n'.join(lines) + '\n')
-        self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree, timeout=900)
+        for task in tasks:
+            # A task directory reused from an earlier compare keeps its attempt count, and the verifier
+            # refuses a task whose attempt budget is spent (exit 5) however often it is asked again.
+            shutil.rmtree(task, ignore_errors=True)
+        try:
+            with self.ghidra_lock:
+                self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree,
+                         timeout=900)
+        except (Stop, subprocess.TimeoutExpired) as exc:
+            raise HostFailure(f'pack export did not complete ({type(exc).__name__})')
         out = {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
         for task in tasks:
-            done = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
-                            cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            try:
+                done = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
+                                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            except subprocess.TimeoutExpired:
+                raise HostFailure(f'verifier host timed out ({tid_of(task)})')
             code = done.returncode
             if code not in (0, 1, 3):
                 # The tool's own last line says why (a bad task row, a missing toolchain); without it every
                 # failure looks the same in the service log.
                 lines = [l for l in done.stderr.decode(errors='replace').splitlines() if l.strip()]
-                raise Stop(f'verifier host did not complete (exit {code}, {tid_of(task)}): '
+                raise HostFailure(f'verifier host did not complete (exit {code}, {tid_of(task)}): '
                            f'{(lines[-1] if lines else "no error text")[:200]}')
             attempts = sorted((task / 'attempts').glob('[0-9]*')) if code != 3 else []
             for fn in json.loads((task / 'task.json').read_text())['functions']:
@@ -1149,6 +1286,39 @@ class Bot:
                 self.tell_rejection(pr, exc.text)
             raise
 
+    def attempt(self, pr, now=None):
+        """`process` under the per-PR lock and the head's failure ledger; None when the PR is not due.
+
+        A head whose infrastructure keeps failing the same way is not retried every tick: after
+        FAILURE_THRESHOLD identical failures it backs off with a growing delay, and a verifier failure is
+        said once on the PR. A `gh` failure is raised unrecorded, since it belongs to the bot's backoff.
+        """
+        number, head = pr['number'], pr['headRefOid']
+        directory = self.work / ('dry' if self.dry_run else 'state')
+        with self.pr_lock(number) as mine:
+            if not mine:
+                return None
+            ledger = State(directory, number, head).get('failure')
+            if ledger and ledger.get('next', 0) > (now if now is not None else time.time()):
+                return None
+            try:
+                result = self.process(pr)
+            except GhFailure:
+                raise
+            except Stop as exc:
+                state = State(directory, number, head)  # process may have rewritten it
+                record = failure_record(state.get('failure'), f'{type(exc).__name__}: {exc}',
+                                        now if now is not None else time.time())
+                if (isinstance(exc, HostFailure) and record['count'] >= FAILURE_THRESHOLD and not record['posted']
+                        and not self.dry_run):
+                    self.say(number, sticky_body(head, HOST_FAILURE_COMMENT))
+                    record['posted'] = True
+                state.set('failure', record)
+                raise
+            state = State(directory, number, head)
+            state.drop('failure')
+            return result
+
     def tell_rejection(self, pr, text):
         """Show the contributor why the PR is stuck, in the sticky comment; once per head and wording."""
         number, head = pr['number'], pr['headRefOid']
@@ -1176,9 +1346,10 @@ class Bot:
             state.set('decision', decision)
             return self.finish(pr, state, decision, started, comment='This PR changes files outside reconstruction/, '
                                'which the bot never merges. Please limit it to unit sources.')
-        self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
-        if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
-            self.run(['git', 'fetch', '--quiet', 'origin', head])
+        with self.root_lock:
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+            if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', head])
         pinned = base  # an explicit base (a replay) is also the reference for what has already landed
         base = base or self.run(['git', 'merge-base', 'origin/main', head]).stdout.decode().strip()
         files = state.once('delta', lambda: self.drop_landed(head, files, pinned or 'origin/main'))
@@ -1240,6 +1411,13 @@ class Bot:
         # Only what both hosts passed can be accepted, so only that is worth a review call; a
         # regression blocks the whole PR whatever the review says.
         passed = [r for r in everything if host1.get(r) == 'pass' and host2.get(r) == 'pass']
+        # Mechanical findings refuse a function before the review is paid for; a regression is blocked anyway.
+        refused = {}
+        if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
+            refused = {int(r): lines for r, lines in state.once('precheck' + sfx, lambda: {
+                str(r): lines for r, lines in self.precheck(tag, files, check_units, everything, host1, host2,
+                                                            state).items()}).items()}
+            passed = [r for r in passed if r not in refused]
         leak, verdict, notes, evidence_kinds = 'no', {}, {}, []
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
@@ -1258,8 +1436,9 @@ class Bot:
                 leak = 'no'
         verdict = {r: verdict.get(r, 'reject') for r in everything}
         decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra, stale=stale,
-                          leak_evidence=evidence_kinds)
+                          leak_evidence=evidence_kinds, refused=set(refused))
         state.set('decision', decision)
+        decision['pre'] = refused  # in memory only, like the notes: rebuilt from the cached precheck on a rerun
         decision['origin_problems'] = origin_problems
         decision['origin_permitted'] = origin_permitted
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
@@ -1275,6 +1454,52 @@ class Bot:
                 state.set('decision', decision)
             state.set('records', str(records))
         return self.finish(pr, state, decision, started)
+
+    def precheck(self, tag, files, units, functions, host1, host2, state):
+        """{rva: [line]} for functions that passed both hosts but that a program can refuse before a review.
+
+        The same three kinds of finding a Reviewer rejects for, computed instead of judged: the source and
+        readiness lints on the files the PR changes, a body close to a community or sibling body that the
+        unit header does not declare (the origin check, with the pinned clones this machine has), and a
+        comparator report or CI row that does not bind the unit as it is on disk. A fact that only this
+        machine's own pins can break is a bot fault, so it stops the PR instead of blaming the author.
+        """
+        import check
+        import prereview
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
+        tree = self.tree
+        passed = {r for r in functions if host1.get(r) == 'pass' and host2.get(r) == 'pass'}
+        changed = [f['filename'] for f in files if f.get('status') != 'removed']
+        build = json.loads((tree / 'builds/target.json').read_text())['build_id']
+        findings = prereview.unit_findings(tree, changed, build)
+        hits, headers, _unverified = self.origin_hits(units)
+        findings += [(file, f'{file}: {text}') for file, text in prereview.origin_problems(hits, headers)]
+        evidence = self.review_evidence(tag, sorted(passed), host1, host2, state)
+        out, bot_side = {}, []
+        for cpp, rvas in sorted(units.items()):
+            closure = include_closure(tree, cpp)
+            digest = tu_digest(tree, closure)
+            stem = cpp.rsplit('.', 1)[0]
+            unit_lines = [line for file, line in findings if file in closure or file.rsplit('.', 1)[0] == stem]
+            for rva in rvas:
+                if rva not in passed:
+                    continue
+                facts, _report = self.binding_facts(rva, cpp, digest, evidence.get(rva, {}))
+                mine, theirs = prereview.binding_split(facts)
+                bot_side += [f'0x{rva:x}: {fact}' for fact in theirs]
+                lines = list(unit_lines) + [f'0x{rva:x}: {prereview.BINDING_ADVICE[fact]}' for fact in mine]
+                if lines:
+                    out[rva] = lines
+        if bot_side:
+            raise Stop('the verifier results do not bind this machine\'s tree or pins: ' + '; '.join(bot_side[:3]))
+        safe = {}
+        for rva, lines in out.items():
+            shown = [l[:220] for l in dict.fromkeys(lines) if not check.naming_finding_problem(l[:220])]
+            hidden = len(set(lines)) - len(shown)
+            safe[rva] = shown + ([f'{hidden} more finding(s) not shown; run `python3 tools/prereview.py` locally']
+                                 if hidden else [])
+        return safe
 
     def origin_hits(self, units):
         """(hits, {unit file: leading comment of its header and source}, unverified) from tools/check_origin.py.
@@ -1346,9 +1571,10 @@ class Bot:
         No host runs: nothing is compiled, and the rules make a change to any `matched` entry impossible.
         """
         number, head = pr['number'], pr['headRefOid']
-        self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
-        if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
-            self.run(['git', 'fetch', '--quiet', 'origin', head])
+        with self.root_lock:
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+            if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', head])
         base = self.run(['git', 'merge-base', 'origin/main', head]).stdout.decode().strip()
         decision = state.get('decision')
         if not decision:
@@ -1360,17 +1586,18 @@ class Bot:
         state.set('summary', summary)
         if self.dry_run:
             return summary
-        if decision['merge'] and not state.get('merged'):
-            login = pr['author']['login']
-            uid = self.gh_json('api', f'users/{login}')['id']
-            merged = self.run(merge_command(number, head, *mapping_squash_message(number, login, uid, count)),
-                              check=False)
-            if merged.returncode:
-                return self.merge_refused(pr, state, summary)
-            state.set('merged', True)
-        if state.get('merged') and not state.get('regenerated'):
-            self.regenerate(number)
-            state.set('regenerated', True)
+        with self.land_lock:
+            if decision['merge'] and not state.get('merged'):
+                login = pr['author']['login']
+                uid = self.gh_json('api', f'users/{login}')['id']
+                merged = self.run(merge_command(number, head, *mapping_squash_message(number, login, uid, count)),
+                                  check=False)
+                if merged.returncode:
+                    return self.merge_refused(pr, state, summary)
+                state.set('merged', True)
+            if state.get('merged') and not state.get('regenerated'):
+                self.regenerate(number)
+                state.set('regenerated', True)
         if not state.get('commented'):
             if decision['merge']:
                 text = f'Merged: {count} mapped entries added. No function was matched by this change.'
@@ -1462,7 +1689,7 @@ class Bot:
         if not base_units:
             return host2
         self.run(['git', 'checkout', '--quiet', '--force', base, '--', '.'], cwd=self.tree)
-        at_base = state.once('host2_base', lambda: {str(k): v for k, v in self.mac_compare(base_units, 'base').items()})
+        at_base = state.once('host2_base', lambda: {str(k): v for k, v in self.mac_compare(base_units, f'base-{state.path.stem}').items()})
         return {r: ('preexisting-fail' if r in suspects and at_base.get(str(r)) == 'fail' else
                     'regressed' if r in suspects and at_base.get(str(r)) == 'pass' else v)
                 for r, v in host2.items()}
@@ -1518,6 +1745,12 @@ class Bot:
         state.set('summary', summary)
         if self.dry_run:
             return summary
+        with self.land_lock:  # merges, the history merge and the record push to main take turns
+            return self._finish(pr, state, decision, summary, comment, leak_codes, land)
+
+    def _finish(self, pr, state, decision, summary, comment, leak_codes, land):
+        number, head = pr['number'], pr['headRefOid']
+        verdicts = decision['verdicts']
         if decision['merge'] and not state.get('merged'):
             again = {int(r) for r in decision.get('companions') or ()}
             matched = [int(r) for r, v in verdicts.items() if v == 'matched' and int(r) not in again]
@@ -1600,7 +1833,38 @@ def pollable(prs):
             and pr['baseRefName'] == 'main' and not pr['isDraft']]
 
 
-def poll(bot, interval, restart_after=None):
+POOL_SIZE = 2
+
+
+def work_one(slots, gh, pr):
+    """One PR on a free slot; the printed line is the outcome, a failure goes to its own ledger."""
+    slot = slots.get()
+    try:
+        result = slot.attempt(pr)
+        if result is not None:
+            gh.succeeded()
+            # The state of a finished PR is large and was printed again every tick; the summary says what happened.
+            print(stamp(), json.dumps(result.get('summary') or {k: result[k] for k in ('pr', 'head', 'blocked', 'merge')
+                                                                if k in result} or {'pr': pr['number']}), flush=True)
+    except GhFailure as exc:
+        delay = gh.failed()
+        print(f'{stamp()} pr {pr["number"]}: gh failed ({exc}); GitHub calls back off for {delay:.0f}s',
+              file=sys.stderr, flush=True)
+    except (Stop, Rejected, subprocess.SubprocessError, OSError, ValueError) as exc:
+        print(f'{stamp()} pr {pr["number"]}: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    except Exception as exc:  # a worker thread's exception would otherwise vanish with its future
+        print(f'{stamp()} pr {pr["number"]}: unexpected {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    finally:
+        slots.put(slot)
+
+
+def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None):
+    """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
+
+    A PR is never queued twice, and a finished head or one that is backing off costs no worker. After a
+    `gh` failure nothing is listed or run until the shared GitHub backoff has passed. `rounds` bounds the
+    loop for tests.
+    """
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -1608,30 +1872,53 @@ def poll(bot, interval, restart_after=None):
         print('another pr_bot --poll holds the lock', file=sys.stderr)
         return 1
     started = time.time()
-    while True:
-        if restart_after and time.time() - started > restart_after:
-            return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
-        try:
-            prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
-                              'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
-        except (Stop, subprocess.SubprocessError, ValueError) as exc:
-            print(stamp(), 'poll: gh failed:', exc, file=sys.stderr)
-            prs = []
-        prs = pollable(prs)
-        for pr in prs:
+    gh = gh or GhBackoff()
+    slots = queue.Queue()
+    for index in range(workers):
+        slots.put(bot.for_slot(index))
+    inflight = {}  # PR number -> future
+    directory = bot.work / ('dry' if bot.dry_run else 'state')
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        turn = 0
+        while rounds is None or turn < rounds:
+            turn += 1
+            for number in [n for n, f in inflight.items() if f.done()]:
+                del inflight[number]
+            if restart_after and time.time() - started > restart_after and not inflight:
+                return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
+            wait = gh.remaining()
+            if wait:
+                sleep(min(wait, interval))
+                continue
             try:
-                bot.warm(pr)
-            except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr)
-        for pr in prs:
-            try:
-                result = bot.process(pr)
-                # The state of a finished PR is large and was printed again every tick; the summary says what happened.
-                print(stamp(), json.dumps(result.get('summary') or {k: result[k] for k in ('pr', 'head', 'blocked', 'merge')
-                                                                    if k in result} or {'pr': pr['number']}))
-            except (Stop, Rejected, subprocess.SubprocessError, OSError, ValueError) as exc:
-                print(f'{stamp()} pr {pr["number"]}: {type(exc).__name__}: {exc}', file=sys.stderr)
-        time.sleep(interval)
+                prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
+                                  'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
+                gh.succeeded()
+            except (Stop, subprocess.SubprocessError, ValueError) as exc:
+                delay = gh.failed()
+                print(stamp(), f'poll: gh failed: {exc}; GitHub calls back off for {delay:.0f}s', file=sys.stderr,
+                      flush=True)
+                continue
+            now = time.time()
+            for pr in pollable(prs):
+                state = State(directory, pr['number'], pr['headRefOid'])
+                ledger = state.get('failure') or {}
+                if pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now:
+                    continue
+                try:
+                    bot.warm(pr)
+                except GhFailure as exc:
+                    delay = gh.failed()
+                    print(f'{stamp()} pr {pr["number"]}: warm: gh failed ({exc}); GitHub calls back off for {delay:.0f}s',
+                          file=sys.stderr, flush=True)
+                    break
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+                inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
+            sleep(interval)
+        for future in list(inflight.values()):
+            future.result()
+    return 0
 
 
 def main(argv=None):
@@ -1659,7 +1946,11 @@ def main(argv=None):
     pr = bot.gh_json('pr', 'view', str(a.number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
     if a.head:
         pr['headRefOid'] = a.head
-    print(json.dumps(bot.process(pr, base=a.base), indent=1))
+    with bot.pr_lock(a.number) as mine:
+        if not mine:
+            print(f'pr {a.number} is being processed by another run', file=sys.stderr)
+            return 1
+        print(json.dumps(bot.process(pr, base=a.base), indent=1))
     return 0
 
 

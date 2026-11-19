@@ -2185,6 +2185,13 @@ def cmd_submit(ctx, args):
     except (OSError, ValueError):
         blockers.append(f'{task["compiled"]}:1: comparison source closure cannot be resolved; '
                         'fix: repair the include findings below, then run compare again')
+    try:
+        import prereview
+        recipe = prereview.recipe_problem(ctx.repo, (ctx.repo / task['compiled']).read_text(), summary)
+        if recipe:
+            blockers.append(f'{task["compiled"]}:1: {recipe}')
+    except (OSError, ValueError):
+        pass  # the unreadable unit is already reported by the digest check above
     if not all(r['result'] == 'pass' for r in summary['functions']):
         blockers.append(f'{task["compiled"]}:1: not every function passed the last compare; '
                         'fix: resolve the comparison failures before submitting')

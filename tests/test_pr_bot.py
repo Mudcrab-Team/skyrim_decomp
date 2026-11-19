@@ -179,6 +179,7 @@ class FakeBot(pr_bot.Bot):
         self.stale = []
         self.comments = []  # the PR's issue comments as {id, login, body}
         self.sizes = {}
+        self.pre = {}  # rva -> mechanical findings the pre-review gate returns
 
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -242,6 +243,10 @@ class FakeBot(pr_bot.Bot):
 
     def classify_debt(self, host2, *a):
         return host2
+
+    def precheck(self, tag, files, units, functions, host1, host2, state):
+        self.calls.append(['precheck', sorted(functions)])
+        return {r: list(v) for r, v in self.pre.items()}
 
     def settle_ci_debt(self, host1):
         return host1
