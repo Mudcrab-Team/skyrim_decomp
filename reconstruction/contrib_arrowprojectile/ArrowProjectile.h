@@ -1,14 +1,6 @@
-// ArrowProjectile declarations for build sse-steam-1-7-104 (standalone unit for the functions listed below).
-//
-// Labels: v2
-// Task: contrib-arrowprojectile
 // Source exposure: mixed (names and declarations from community headers; the listing of the contributor's own pinned image).
 // Code origin: declarations written by hand from the community headers and the local listings; the bodies are in the matching .cpp. The class layout is a minimal stand-in that names only what the compared code touches.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by v-macrev, assisted by claude-sonnet-5-5.
-// RVA 0x7de110, 3 bytes: ArrowProjectile::GetStopMainSoundAfterImpact
-// RVA 0x7de810, 3 bytes: ArrowProjectile::Unk_C2
 // ArrowProjectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // ArrowProjectile::GetStopMainSoundAfterImpact, ArrowProjectile::Unk_C2: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG declares Unk_C2 as void, the image returns a bool-sized value
 // Unk_00 through Unk_C1 (except GetStopMainSoundAfterImpact): GUESS(low); placeholder virtual slots that keep the named slots at slots 0xB1 and 0xC2

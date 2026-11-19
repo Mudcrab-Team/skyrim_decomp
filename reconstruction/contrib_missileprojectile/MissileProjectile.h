@@ -1,23 +1,7 @@
-// MissileProjectile declarations for build sse-steam-1-7-104 (standalone unit for Unk_C2, Unk_C3 and Revert).
-//
-// Labels: v2
-// Task: contrib-missileprojectile
 // Source exposure: mixed (names and declarations from community headers; the listing of the contributor's own pinned image).
 // Code origin: declarations written by hand from the community headers and the local listings; the bodies are in the matching .cpp. The class layout is a minimal stand-in that names only what the compared code touches.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0-or-later.
-// This file is free software: you can redistribute it and/or modify it under the terms
-// of the GNU General Public License as published by the Free Software Foundation,
-// either version 3 of the License, or (at your option) any later version.
-// This file is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-// without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU General Public License for more details. A copy is provided in
-// licenses/CommonLibSSE-GPL-3.0.txt; see also https://www.gnu.org/licenses/.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by v-macrev, assisted by claude-sonnet-5-5.
-// RVA 0x7f4d60, 3 bytes: MissileProjectile::Unk_C3
-// RVA 0x7f4e50, 30 bytes: MissileProjectile::Revert
-// RVA 0x7f5660, 3 bytes: MissileProjectile::Unk_C2
 // MissileProjectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // Projectile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSLoadFormBuffer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); forward declaration only

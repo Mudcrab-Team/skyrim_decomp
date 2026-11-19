@@ -1,14 +1,6 @@
-// BarrierProjectile declarations for build sse-steam-1-7-104 (standalone unit for the functions listed below).
-//
-// Labels: v2
-// Task: contrib-barrierprojectile
 // Source exposure: mixed (names and declarations from community headers; the listing of the contributor's own pinned image).
 // Code origin: declarations written by hand from the community headers and the local listings; the bodies are in the matching .cpp. The class layout is a minimal stand-in that names only what the compared code touches.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
-// Drafted by v-macrev, assisted by claude-sonnet-5-5.
-// RVA 0x7df6b0, 64 bytes: BarrierProjectile::SaveGame
-// RVA 0x7df700, 55 bytes: BarrierProjectile::LoadGame
 // BarrierProjectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // Projectile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BarrierProjectile::SaveGame, BarrierProjectile::LoadGame, Projectile::SaveGame, Projectile::LoadGame: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declared by TESForm at slots 0x0E and 0x0F, the image has its own override and calls the Projectile one non-virtually
