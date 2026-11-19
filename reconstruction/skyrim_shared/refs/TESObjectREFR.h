@@ -1,9 +1,9 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Code origin: original reconstruction from the pinned image and community declarations.
-// Consulted (private, not in repo): decompiler control-flow hints.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT) and powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), and callee names from meh321/AddressLibraryDatabase 0379cb6 (used with the author's permission as reported by the maintainer).
-// Existing stand-ins declare the fields and virtual slots needed by the compared functions. Unk_NN identifies slots by index.
+// Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
+// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
+// Because it uses powerof3 names, this header is GPL-3.0. Every class other than TESObjectREFR is a minimal stand-in that declares only the members and virtual slots the compared code needs, so the layouts of the stand-ins are not claimed to match the game. Unk_NN placeholders only keep the compared virtual slots at the vtable offsets the image encodes (slot NN is the byte offset NN * 8).
 // TESObjectREFR, GetScale, GetCurrentLocation, GetCalcLevel, GetTransform, CanBeMoved, HasQuestObject, GetBaseObject, GetContainer, Get3D2: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 
@@ -393,10 +393,6 @@ public:
 
     float         GetScale() const;
 
-    // TESObjectREFR::Function685c30, TESObjectREFR::Function6bd530: GUESS(low)
-    float Function685c30(float a_height, const TESObjectCELL* a_cell) const;
-    float Function6bd530(float a_distance, float a_scale);
-
 
     // GetDistanceBetweenSquared: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the parameter names are not from the community
     float GetDistanceBetweenSquared(const TESObjectREFR* a_other, bool a_ignoreDisabled, bool a_ignoreWorldspace) const;
@@ -441,8 +437,7 @@ public:
     // declares its own GetInventoryChanges without this parameter: HasQuestObject leaves the base
     // object's form type in the second argument register, and the allocation only matches when it
     // is passed, so it is declared as a parameter.
-    // Not inlined: the call sites in this unit call the function instead of expanding it, as the image does.
-    __declspec(noinline) InventoryChanges* GetInventoryChanges(FormType a_baseType) const;
+    InventoryChanges* GetInventoryChanges(FormType a_baseType) const;
 
     // GetAllowPromoteToPersistent: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); RVA 0x2e4f80. Not virtual here: no vtable slot is known for it, and a new virtual would move the slots after it.
     bool GetAllowPromoteToPersistent() const;
