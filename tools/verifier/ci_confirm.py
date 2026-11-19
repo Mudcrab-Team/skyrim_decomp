@@ -29,7 +29,7 @@ from source_digest import include_closure
 from digest_v2 import DIGEST_METHOD, tu_digest
 import target_hashes
 
-REPOSITORY = 'awarebayes/skyrim_decomp'
+REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
 
 
 def command(argv, root, data=None, env=None):

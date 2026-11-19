@@ -18,7 +18,7 @@ import tempfile
 import agent_advice
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = 'awarebayes/skyrim_decomp'
+REPO = 'Mudcrab-Team/skyrim_decomp'
 MARKER = 'skyrim-claim-v1'
 MANAGED = '<!-- skyrim-project-claim -->'
 BODY_LIMIT = 60000

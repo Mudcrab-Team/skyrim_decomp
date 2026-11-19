@@ -13,7 +13,7 @@ in `builds/target.json`); disk space for the measured baseline plus margin ([pla
 installed for you.
 
 ```sh
-git clone https://github.com/awarebayes/skyrim_decomp.git
+git clone https://github.com/Mudcrab-Team/skyrim_decomp.git
 cd skyrim_decomp
 ./sr go            # Windows (cmd or PowerShell): .\sr.cmd go
 ```

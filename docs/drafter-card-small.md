@@ -8,7 +8,7 @@ Words: a **unit** is one class, `reconstruction/<area>/<Class>.h` + `.cpp`; its 
 compares its bytes with the game. Everything under `.local/` is private: never paste it anywhere.
 
 The cheap profile's pass-rate threshold depends on function size: compare like-sized samples
-before treating an overall rate as representative. One [contributor sample (issue #37)](https://github.com/awarebayes/skyrim_decomp/issues/37)
+before treating an overall rate as representative. One [contributor sample (issue #37)](https://github.com/Mudcrab-Team/skyrim_decomp/issues/37)
 reported drafter-only local passes of **15/15 at 3–56 B** and **13/24 at 67–228 B** with
 `deepseek-v4.1-flash`. This is one small sample, not accepted matches or a new threshold; the
 profile and acceptance rules are unchanged.

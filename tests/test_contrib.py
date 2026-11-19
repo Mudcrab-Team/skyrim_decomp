@@ -1072,7 +1072,8 @@ class SubmitPreflightTests(SubmitTests):
     def test_renamed_or_legacy_upstream_can_never_receive_submit_push(self):
         self.git('remote', 'remove', 'fork')
         self.git('remote', 'add', 'origin', 'https://github.com/awarebayes/skyrim_decomp.git')
-        for url in ('https://github.com/awarebayes/skyrim_decomp.git',
+        for url in ('https://github.com/Mudcrab-Team/skyrim_decomp.git',
+                    'https://github.com/awarebayes/skyrim_decomp.git',
                     'git@github.com:awarebayes/skyrim-research.git',
                     'https://github.com/AWAREBAYES/SKYRIM_DECOMP.git/'):
             with self.subTest(url=url):

@@ -49,8 +49,9 @@ import mapping_check  # noqa: E402
 import rva_headers  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = 'awarebayes/skyrim_decomp'
-OWNER = REPOSITORY.split('/')[0]
+REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
+# The maintainer is a person; the repository belongs to an organisation.
+OWNER = 'awarebayes'
 # An owner PR is skipped unless it carries this label, which asks for the same acceptance as an outside PR.
 OPT_IN_LABEL = 'bot-process'
 SHA = re.compile(r'[0-9a-f]{40}')
