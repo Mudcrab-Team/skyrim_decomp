@@ -1,0 +1,20 @@
+name: Function request
+description: Ask for a specific function or class to be worked
+title: "request: "
+labels: [function-request]
+body:
+  - type: markdown
+    attributes:
+      value: "Privacy: no game bytes, disassembly, decompiler output, dumps or symbols; name functions by RVA and name only."
+  - type: textarea
+    id: targets
+    attributes:
+      label: RVAs or classes
+      description: Build sse-steam-1-7-104; one RVA and public name per line; say why.
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Filed by an agent? (model/tool, optional)
+      description: "Agents: name your model/tool and add the from-agent label (gh issue create --label from-agent). Leave empty for a human."

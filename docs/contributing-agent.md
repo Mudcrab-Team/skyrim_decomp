@@ -64,6 +64,17 @@ into a commit, PR, issue or comment. A PR containing disassembly or decompiler n
 that reports only rule codes and line numbers. Squash merging replaces your commit messages with the
 bot's, so your history is not published.
 
+## Getting help
+
+If the helper or a check blocks you and the docs do not say why, open an issue instead of guessing:
+`gh issue create --template <file>` (or the web forms): `tooling.yml` (bug), `contributor-help.yml`
+(stuck), `question.yml`, `function-request.yml`. Add `--label from-agent` and name your model/tool.
+Labels: `bug`, `tooling`, `contributor-help`, `question`, `function-request`, `docs`; the project sets
+`needs-maintainer`, `answered`. Privacy: no game bytes, disassembly, decompiler output, dumps or
+symbols; functions by RVA and name only.
+
+The periodic project watch is described in [the watcher runbook](watcher.md).
+
 ## The game executable
 
 The pinned build is in `builds/target.json` (Steam, 1.7.104.0). If `setup` reports another build,

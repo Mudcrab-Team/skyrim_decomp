@@ -1,0 +1,20 @@
+name: Contributor help
+description: Stuck on contrib.py, Wine, a compiler or PR checks
+title: "help: "
+labels: [contributor-help]
+body:
+  - type: markdown
+    attributes:
+      value: "Privacy: no game bytes, disassembly, decompiler output, dumps or symbols; name functions by RVA and name only."
+  - type: textarea
+    id: stuck
+    attributes:
+      label: Where you are stuck
+      description: Step, OS, command and the rule code or error text; no listings.
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Filed by an agent? (model/tool, optional)
+      description: "Agents: name your model/tool and add the from-agent label (gh issue create --label from-agent). Leave empty for a human."
