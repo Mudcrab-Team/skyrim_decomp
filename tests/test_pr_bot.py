@@ -1432,6 +1432,13 @@ class MappingLaneTests(unittest.TestCase):
         bot.warm({'number': 7, 'headRefOid': HEAD})
         self.assertEqual(probed, [])
 
+    def test_the_mapping_reviewer_is_told_it_may_read_with_shell_commands(self):
+        # A read-only sandbox reads only through shell commands; "run nothing" made the model report that it
+        # could not inspect the findings and reject every mapping PR.
+        text = pr_bot.MAPPING_PREAMBLE
+        self.assertIn('read-only shell commands', text)
+        self.assertNotIn('run nothing', text)
+
     def test_review_answers_are_parsed_strictly(self):
         self.assertEqual(pr_bot.parse_mapping_review(MappingBot.APPROVE), ('no', 'approve', ['ok']))
         self.assertEqual(pr_bot.parse_mapping_review('x')[:2], ('unreadable', 'reject'))
