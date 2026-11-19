@@ -46,7 +46,10 @@ The same applies to references made from the function's funclets (catch and unwi
 comparator compares with it, found through its .pdata, unwind info and FuncInfo). For an unwind
 funclet the pack's `object_lifetimes` adds the destructor calls of its state: by position at the
 state's funclet RVA when the decoded value is one of them, by community name, or, when the state
-lists exactly one call and the funclet leaves exactly one name unbound, that call.
+lists exactly one call and the funclet leaves exactly one name unbound, that call. A destructor the
+compiler generates for a local is often not in the pack at all; a call from an unwind funclet whose
+decoded target is a function start of the private function table (`SR_FUNCTION_TABLE`, else
+`.local/analysis/functions.jsonl` of the checkout or of the main checkout) binds by position too.
 
 Anything left is listed with the file to edit. The comparator still checks every binding: a
 wrong RVA fails with relocation-target-mismatch, it cannot pass.
@@ -58,9 +61,13 @@ match record in the checkout valid (a draft renaming its own function); otherwis
 and the change needs `tools/symbol_map.py add --allow-change`. A private `symbols.json` is edited
 in place as before.
 
-Thread-local variables (references by a SECREL relocation) are never bound by position or name:
-only a hint `"<name>": "tls:0x<offset>"` binds one, as a `thread-local` map entry with that
-TLS-template offset (docs/comparator-contract.md, "Thread-local variables"). `_tls_index` needs
+Thread-local variables (references by a SECREL relocation) are never bound by position alone or by
+community name. Two things bind one, as a `thread-local` map entry with a TLS-template offset
+(docs/comparator-contract.md, "Thread-local variables"): a private hint `"<name>": "tls:0x<offset>"`,
+or, with no hint, the offset the unit declares in the variable's own name, `tls_0x<offset>` anywhere
+in the member name (`playerState_tls_0x768`). The declared offset is accepted only when the target's
+own field at the same position, less the unit's addend, equals it and it lies inside the image's TLS
+template; a name that disagrees with the target binds nothing. `_tls_index` needs
 no entry; the comparator takes it from the image's TLS directory. A `tls:` hint that no compared
 SECREL reference uses is listed under ignored hints. A thread-local entry is published to the
 repository map like any other, with a provenance entry giving its offset; because the comparator
@@ -101,6 +108,7 @@ REL32_TAIL = {0x04: 0, 0x05: 1, 0x06: 2, 0x07: 3, 0x08: 4, 0x09: 5}
 ADDR32NB = 0x03
 SECREL = 0x0B
 TLS_HINT = re.compile(r'tls:(0x[0-9a-fA-F]+|[0-9]+)')
+TLS_NAME = re.compile(r'(?:^|_)tls_0x([0-9a-fA-F]{1,8})(?:_|$)')
 # Resolved by the comparator from the image's TLS directory, so it never gets a map entry.
 DIRECTORY_SYMBOLS = {'_tls_index'}
 UNDNAME = ('llvm-undname', '/opt/homebrew/opt/llvm/bin/llvm-undname', '/usr/local/opt/llvm/bin/llvm-undname')
@@ -314,6 +322,45 @@ def lifetime_calls(repo, fn):
         if st.get('funclet'):
             places[st.get('state')] = parse_rva(st['funclet'])
     return calls, places
+
+
+_function_starts = {}
+
+
+def function_starts(repo):
+    """Set of function-start RVAs of the private function table, or None when no table is present."""
+    candidates = []
+    if os.environ.get('SR_FUNCTION_TABLE'):
+        candidates.append(Path(os.environ['SR_FUNCTION_TABLE']))
+    candidates.append(Path(repo) / '.local/analysis/functions.jsonl')
+    try:
+        out = subprocess.run(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir'], cwd=repo,
+                             capture_output=True, text=True)
+        if out.returncode == 0 and out.stdout.strip():
+            candidates.append(Path(out.stdout.strip()).parent / '.local/analysis/functions.jsonl')
+    except OSError:
+        pass
+    # The intake tree is a clone under the main checkout's .local, so its own .local holds no tables.
+    candidates += [d / '.local/analysis/functions.jsonl' for d in Path(repo).resolve().parents]
+    for path in candidates:
+        if not path.is_file():
+            continue
+        key = (str(path), path.stat().st_mtime_ns)
+        if key not in _function_starts:
+            starts = set()
+            with open(path) as fh:
+                for line in fh:
+                    if line.strip():
+                        starts.add(json.loads(line)['rva'])
+            _function_starts[key] = starts
+        return _function_starts[key]
+    return None
+
+
+def declared_tls_offset(name):
+    """The TLS-template offset a variable's member name declares as `tls_0x<offset>`, or None."""
+    m = TLS_NAME.search(name or '')
+    return int(m.group(1), 16) if m else None
 
 
 def by_position(image, fn_rva, rel):
@@ -642,6 +689,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                        'that defines a constructor or otherwise references the vftable')
         report['ignored_hints'].append({'hint': h, 'rva': hex(r), 'reason': reason})
     compared = {fn['symbol']: fn for fn in task['functions'] if fn['symbol'] in defined}
+    starts = function_starts(repo)
     own = set(compared)
     defined_sections = set(defined.values())
     for name, fn in compared.items():
@@ -675,6 +723,23 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                     if ref in symbols:
                         continue
                     if key is None:
+                        offset = declared_tls_offset(member(q) if q else ref)
+                        if offset is not None and base is not None and image is not None:
+                            sec = obj.section(index)
+                            try:
+                                addend = struct.unpack_from('<I', sec.data, rel.offset)[0]
+                                (field,) = struct.unpack('<I', image.read(base + rel.offset, 4, 'bind')[1])
+                                start, end, _ = image.tls_template()
+                            except (Reject, struct.error, TypeError):
+                                field = None
+                            if field is not None and field - addend == offset and offset < end - start:
+                                symbols[ref] = {'kind': 'thread-local', 'tls_offset': offset, 'size': None}
+                                found[ref] = ('thread-local name', None)
+                                report['references'].append({'symbol': ref, 'tls_offset': hex(offset),
+                                                             'how': 'thread-local name',
+                                                             **({'from': 'funclet'} if is_funclet else {})})
+                                report['changed'] = True
+                                continue
                         if ref not in report['unbound_thread_locals']:
                             report['unbound_thread_locals'].append(ref)
                         continue
@@ -710,7 +775,12 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                     if pos is not None and pos in accept:
                         how, value = ('object lifetime position' if pos in life_known and pos not in known
                                       else 'position'), pos
-                    contradicted = pos is not None and pos not in accept
+                    elif (pos is not None and is_funclet and state is not None and rel.kind in REL32_TAIL
+                          and starts is not None and pos in starts):
+                        # The compiler's own destructor of a local is a function of the image the pack
+                        # need not list; the relocated target being a known function start is the evidence.
+                        how, value = 'unwind funclet position', pos
+                    contradicted = value is None and pos is not None and pos not in accept
                 if value is None:
                     q = names(ref)
                     pool = refs + life_refs if is_funclet else refs
@@ -756,7 +826,7 @@ def provenance_entry(name, entry, found):
     how = found.get(name, ('unknown', None))[0]
     if entry.get('kind') == 'thread-local':
         return {'name': name, 'tls_offset': hex(entry['tls_offset']), 'size_from': None, 'community_name': None,
-                'note': f'bound by tools/verifier/bind.py ({how}) from a tls: bind hint; the offset is the one the '
+                'note': f'bound by tools/verifier/bind.py ({how}) from a tls: bind hint or the tls_0x<offset> name; the offset is the one the '
                         'target code adds to the TLS block, the decorated name is the reconstruction\'s'}
     return {'name': name, 'rva': hex(entry['rva']), 'size_from': 'task' if entry.get('size') else None,
             'community_name': found.get(name, (None, None))[1],

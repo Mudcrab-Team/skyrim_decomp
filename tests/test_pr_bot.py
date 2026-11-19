@@ -30,6 +30,26 @@ class HintTests(unittest.TestCase):
         self.assertEqual(pr_bot.ci_hash_hints(text, []), {})
 
 
+class PollableTests(unittest.TestCase):
+    def pr(self, login, labels=(), base='main', draft=False):
+        return {'number': 1, 'author': {'login': login}, 'baseRefName': base, 'isDraft': draft,
+                'labels': [{'name': n} for n in labels]}
+
+    def test_owner_pr_is_skipped_unless_it_carries_the_opt_in_label(self):
+        owner = pr_bot.OWNER
+        self.assertEqual(pr_bot.pollable([self.pr(owner), self.pr(owner, ['other'])]), [])
+        opted = self.pr(owner, [pr_bot.OPT_IN_LABEL])
+        self.assertEqual(pr_bot.pollable([opted]), [opted])
+
+    def test_outside_pr_needs_no_label_but_drafts_and_other_bases_stay_out(self):
+        outside = self.pr('alice')
+        self.assertEqual(pr_bot.pollable([outside, self.pr('alice', draft=True), self.pr('alice', base='dev'),
+                                          self.pr(pr_bot.OWNER, [pr_bot.OPT_IN_LABEL], draft=True)]), [outside])
+        self.assertEqual(pr_bot.pollable([{'number': 2, 'author': {'login': 'bob'}, 'baseRefName': 'main',
+                                           'isDraft': False}]), [{'number': 2, 'author': {'login': 'bob'},
+                                                                  'baseRefName': 'main', 'isDraft': False}])
+
+
 class DecisionTests(unittest.TestCase):
     def table(self, h1, h2, rv, **kw):
         return pr_bot.decide([0x10], {0x10: h1}, {0x10: h2}, {0x10: rv}, **kw)
@@ -242,6 +262,102 @@ class FakeBot(pr_bot.Bot):
 
     def seen(self, *prefix):
         return [c for c in self.calls if c[:len(prefix)] == list(prefix)]
+
+
+ORIGIN_REVIEW = json.dumps({'leak': 'yes', 'leak_evidence': ['origin-similarity'],
+                            'functions': {'0x10': {'verdict': 'approve', 'ground': 'none'},
+                                          '0x20': {'verdict': 'approve', 'ground': 'none'}}})
+UNIT = 'reconstruction/a/B.cpp'
+FNV_HEADER = '// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/Game/Thing.cpp:12'
+
+
+def origin_hit(repo='momusdigital/fnv_decomp', path='src/Game/Thing.cpp', declared=True, trivial=False, file=UNIT):
+    return {'function': 'Thing::Run', 'file': file, 'line': 3, 'repo': repo, 'revision': '91e1b6e', 'licence': 'x',
+            'path': path, 'upstream_line': 12, 'similarity': 0.9, 'trivial': trivial, 'declared': declared,
+            'fork_of': None}
+
+
+class OriginFindingTests(unittest.TestCase):
+    """An origin-similarity claim is informational only for a labelled admitted sibling body."""
+
+    def test_an_admitted_sibling_with_a_valid_label_is_a_note(self):
+        self.assertEqual(pr_bot.origin_findings([origin_hit()], {UNIT: FNV_HEADER}), ([], [UNIT]))
+
+    def test_a_fo4_private_game_folder_with_a_valid_label_is_a_note(self):
+        header = '// Sibling source: fo4-private@1b765c70 src/BSMain/Thing.cpp'
+        hit = origin_hit('fo4-private', 'src/BSMain/Thing.cpp')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: header}), ([], [UNIT]))
+
+    def test_an_unlabelled_sibling_match_blocks(self):
+        self.assertEqual(pr_bot.origin_findings([origin_hit(declared=False)], {UNIT: '// nothing'})[0],
+                         [(UNIT, 'unlabelled')])
+
+    def test_a_label_citing_another_file_or_pin_blocks(self):
+        for header in ('// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/Game/Other.cpp',
+                       '// Sibling source: momusdigital/fnv_decomp@deadbeef src/Game/Thing.cpp'):
+            self.assertEqual(pr_bot.origin_findings([origin_hit()], {UNIT: header})[0], [(UNIT, 'invalid-label')])
+
+    def test_an_unpermitted_origin_blocks_even_when_declared(self):
+        hit = origin_hit('CharmedBaryon/CommonLibSSE-NG', 'src/Thing.cpp')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: FNV_HEADER})[0], [(UNIT, 'unpermitted-source')])
+
+    def test_excluded_fo4_private_folders_block(self):
+        header = '// Sibling source: fo4-private@1b765c70 src/Havok/Thing.cpp'
+        hit = origin_hit('fo4-private', 'src/Havok/Thing.cpp')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: header})[0], [(UNIT, 'excluded-source')])
+
+    def test_a_claim_the_origin_check_cannot_confirm_blocks(self):
+        for hits, unverified in (([], False), ([origin_hit(trivial=True)], False), ([origin_hit()], True)):
+            problems, _ = pr_bot.origin_findings(hits, {UNIT: FNV_HEADER}, unverified)
+            self.assertIn(('(origin check)', 'unconfirmed'), problems)
+
+
+class OriginBot(FakeBot):
+    def __init__(self, work, hits, header=FNV_HEADER, **kw):
+        super().__init__(work, review=ORIGIN_REVIEW, **kw)
+        self.hits, self.header = hits, header
+
+    def origin_hits(self, units):
+        return self.hits, {UNIT: self.header}, False
+
+
+class OriginProcessTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_a_labelled_sibling_body_merges_with_a_note_and_no_leak(self):
+        bot = OriginBot(self.work, [origin_hit()])
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(out['origin_note'], [UNIT])
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+        text = pr_bot.comment_body(HEAD, dict(blocked=None, merge=True, verdicts={0x10: 'fail:host2'},
+                                               origin_permitted=[UNIT]))
+        self.assertIn('Note, not a block', text)
+
+    def test_an_unlabelled_match_blocks_and_the_comment_names_the_file_and_reason(self):
+        bot = OriginBot(self.work, [origin_hit(declared=False)])
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('leak', False))
+        body = bot.comments[0]['body']
+        self.assertIn(f'- {UNIT}: unlabelled', body)
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+
+    def test_an_unpermitted_origin_blocks(self):
+        bot = OriginBot(self.work, [origin_hit('powerof3/CommonLibSSE', 'src/T.cpp')])
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('leak', False))
+        self.assertIn(f'- {UNIT}: unpermitted-source', bot.comments[0]['body'])
+
+    def test_other_evidence_alongside_origin_similarity_still_blocks(self):
+        review = json.dumps({'leak': 'yes', 'leak_evidence': ['origin-similarity', 'copied-text'],
+                             'functions': {'0x10': {'verdict': 'approve'}, '0x20': {'verdict': 'approve'}}})
+        bot = OriginBot(self.work, [origin_hit()])
+        bot.review_text = review
+        self.assertEqual(bot.process(PR)['blocked'], 'leak')
+
 
 
 class ProcessTests(unittest.TestCase):

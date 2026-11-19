@@ -57,7 +57,7 @@ import rva_headers
 import agent_advice
 import agent_identity
 import attempt_progress
-from local_paths import local_dir, local_path, no_sibling_names
+from local_paths import local_dir, local_path, main_worktree_local, no_sibling_names
 
 REPO = Path(__file__).resolve().parents[1]
 TOOLS = REPO / 'tools'
@@ -123,6 +123,10 @@ class Ctx:
                  runner=None, github=None, private=None):
         self.repo = Path(repo)
         self.env = dict(os.environ if env is None else env)
+        if not self.env.get('SR_LOCAL_DIR'):
+            shared = main_worktree_local(self.repo)
+            if shared:
+                self.env['SR_LOCAL_DIR'] = str(shared)
         self.platform = platform or sys.platform
         if interactive is None:
             interactive = sys.stdin.isatty() and sys.stdout.isatty()
@@ -1010,9 +1014,18 @@ def load_task(ctx, ident=None):
     return pick[0]
 
 
+def symbol_map_path(repo, build_id):
+    """The public symbol map, or a Stop that names the file and the sparse-checkout fix."""
+    path = Path(repo) / 'reports' / build_id / 'symbol-map.json'
+    if not path.is_file():
+        raise Stop(MISSING, f'{path} is missing; a sparse checkout that excludes reports/ does not have it',
+                   "git sparse-checkout set --no-cone '/*' '!/site/'   (then run the command again)")
+    return path
+
+
 def refresh_symbols(ctx, tdir, build_id):
     """symbols.json = the public map plus the entries bind added for this task earlier."""
-    public = json.loads((ctx.repo / 'reports' / build_id / 'symbol-map.json').read_text())
+    public = json.loads(symbol_map_path(ctx.repo, build_id).read_text())
     path = tdir / 'symbols.json'
     try:
         private = json.loads(path.read_text())
@@ -1040,13 +1053,16 @@ def cmd_doctor(ctx, args):
             nxt = fix
     add('python', sys.version_info >= (3, 11), sys.version.split()[0], 'use ./sr (Windows: .\\sr.cmd), which finds Python 3.11+; or install Python 3.11 or newer')
     add('git', bool(ctx.which('git')), ctx.which('git') or 'not found', 'install git')
+    shared = ctx.env.get('SR_LOCAL_DIR')
+    if shared:
+        ctx.say(f'note: private files are under {shared} (SR_LOCAL_DIR, or the main worktree\'s .local)')
     info, how = resolve_exe(ctx, target, getattr(args, 'exe', None))
     if info is None:
         add('game executable', False, 'SkyrimSE.exe not found in a Steam library',
-            f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"')
+            f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"   (or set SR_SKYRIM_EXE to its path)')
     elif info['status'] != 'ok':
         add('game executable', False, wrong_build_message(info, target) if info['status'] == 'wrong-build'
-            else f'{info["path"]} does not exist', f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"')
+            else f'{info["path"]} does not exist', f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"   (or set SR_SKYRIM_EXE)')
     else:
         add('game executable', True, f'{info["path"]} ({how}) is {target["version"]}, hash pinned')
     tool = check_toolchain(ctx)
@@ -1057,14 +1073,16 @@ def cmd_doctor(ctx, args):
             wine = str(Path(ctx.env.get('SR_WINE_BIN') or private_wine_bin(ctx)) / 'wine') if mac_wine_ready(ctx) else None
         else:
             wine = ctx.which('wine64') or ctx.which('wine')
-        add('wine', bool(wine), wine or 'not found', f'{ctx.cli} setup --yes', required=tool['status'] != 'override')
+        add('wine', bool(wine), wine or 'not found',
+            f'{ctx.cli} setup --yes   (or set SR_WINE_BIN to the folder holding wine)', required=tool['status'] != 'override')
     detail = {'ok': f'cl 19.16.27054 at {tool.get("bin")} matches tools/verifier/pinned.sha256',
               'override': 'SR_CONTRIB_COMPILER stand-in (not the pinned compiler; results cannot be submitted)',
               'missing': f'no MSVC toolchain under {tool.get("root")}',
               'mismatch': f'toolchain at {tool.get("root")} differs from pinned.sha256 ({", ".join(tool.get("differing", []))})',
               'no-wrapper': 'toolset unpacked but the msvc-wine wrapper is missing'}[tool['status']]
     add('compiler', tool['status'] in ('ok', 'override'), detail,
-        f'{ctx.cli} setup --accept-microsoft-license   (a person must accept Microsoft\'s licence first)')
+        f'{ctx.cli} setup --accept-microsoft-license   (a person must accept Microsoft\'s licence first; '
+        'or set SR_MSVC to an unpacked toolchain)')
     objdump = find_objdump(ctx)
     add('llvm-objdump (readable listing)', bool(objdump), objdump or 'not found; byte listing only',
         f'{ctx.cli} setup --yes', required=False)
@@ -1744,7 +1762,7 @@ def start(ctx, args, quiet=False):
     tdir = task_dir(ctx, task_id_for(cls, args.practice))
     tdir.mkdir(parents=True, exist_ok=True)
     names = public_names(ctx.repo, data)
-    smap = json.loads((ctx.repo / 'reports' / target['build_id'] / 'symbol-map.json').read_text())['symbols']
+    smap = json.loads(symbol_map_path(ctx.repo, target['build_id']).read_text())['symbols']
     by_rva = {e['rva']: n for n, e in smap.items() if isinstance(e, dict) and isinstance(e.get('rva'), int)}
     try:
         old = json.loads((tdir / 'task.json').read_text())

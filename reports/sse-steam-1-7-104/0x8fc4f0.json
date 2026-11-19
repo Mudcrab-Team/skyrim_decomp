@@ -1,0 +1,213 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "9b760057578bf693c93091938b750ff48fc93a600b68ba0329752313f87f3a84",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim/camera/BleedoutCameraState.cpp",
+          "reconstruction/skyrim/camera/BleedoutCameraState.h",
+          "reconstruction/skyrim/camera/TESCameraState.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "bd79d99ec373a333cc655f47e8b1b50ef895c165",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "b11ba49c8c7dd22847eeab097674c59318dbdac9",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "2bcca28245797cdee0527dbf38509502084f83588cc764972e92f7c4b323a4da",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "066a291ba11d5ca264dbc23e5a4b0d89e643bc052b9a905a8862a9c7246df9e1",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44540751998,
+    "rva": "0x8fc4f0",
+    "schema": 2,
+    "source_sha256": "92991a941f7a426ace73f7e0394c3190ac24e13c486ee72c2d747baa1c9fc1b2",
+    "status": "pass",
+    "symbols": [
+      "??_GBleedoutCameraState@@UEAAPEAXI@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "2bcca28245797cdee0527dbf38509502084f83588cc764972e92f7c4b323a4da",
+      "normalized_sha256": "066a291ba11d5ca264dbc23e5a4b0d89e643bc052b9a905a8862a9c7246df9e1",
+      "rva": 9422064,
+      "size": 123
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim/camera/BleedoutCameraState.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x8fc4f0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "43a8f01e52ff665df68c5317b7582ea3c0e9342da0d7826b4a0c982c5a3e4ec4",
+          "code_sections": 1,
+          "object_sha256": "9b760057578bf693c93091938b750ff48fc93a600b68ba0329752313f87f3a84"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 16,
+          "code_bytes_exact": 107,
+          "code_bytes_total": 123,
+          "eh": {
+            "bytes": 76,
+            "handlers": {
+              "__CxxFrameHandler3": 1
+            },
+            "int_fields": 8,
+            "ref_fields": 8,
+            "structures": {
+              "funcinfo": 1,
+              "ip_to_state": 1,
+              "unwind_map_entry": 1
+            },
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 4
+          },
+          "runtime_actions": [
+            {
+              "iat_rva": 24939104,
+              "import": "__std_terminate",
+              "module": "vcruntime140.dll",
+              "rva": 22714318,
+              "size": 6,
+              "symbol": "__std_terminate"
+            }
+          ],
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 12,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 9422064,
+          "size": 123,
+          "symbol": "??_GBleedoutCameraState@@UEAAPEAXI@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim/camera/BleedoutCameraState.cpp",
+          "source_revision": "92991a941f7a426ace73f7e0394c3190ac24e13c486ee72c2d747baa1c9fc1b2"
+        },
+        "symbol_map_sha256": "3a679b8a17a3f89c6153430c2a08c9c993cf72d896cbfe8156c51b6805077863",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x8fc4f0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim/camera/BleedoutCameraState.cpp",
+    "digest": "92991a941f7a426ace73f7e0394c3190ac24e13c486ee72c2d747baa1c9fc1b2",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim/camera/BleedoutCameraState.cpp",
+      "reconstruction/skyrim/camera/BleedoutCameraState.h",
+      "reconstruction/skyrim/camera/TESCameraState.h"
+    ]
+  },
+  "submitter": "taylorturnerit",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/3a679b8a17a3f89c6153430c2a08c9c993cf72d896cbfe8156c51b6805077863.json",
+    "sha256": "3a679b8a17a3f89c6153430c2a08c9c993cf72d896cbfe8156c51b6805077863"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

@@ -1,6 +1,6 @@
 # Finding: whole-program optimization does not explain the prologue-only near-misses
 
-Status: OBSERVED (LTCG and flag-sweep results measured; the cause of the near-misses stays open)
+Status: OBSERVED (LTCG and flag-sweep results measured; the skipped-first-slot shape is explained in the follow-up, the other near-misses stay open)
 Author / human operator: awarebayes
 AI assistance / model: Claude Code Engineer worker (claude-opus-5-5); task p9-ltcg-experiment
 Target build id / image SHA-256: `sse-steam-1-7-104` /
@@ -61,6 +61,15 @@ pattern clusters by address, so it belongs to a few objects or a source idiom us
 hypotheses, untested: EH state removed after frame layout (a `noexcept` or `throw()` helper whose
 throwing path folds away), or frame layout kept from dead code (a parameter or `this` whose
 address is taken and then optimised out), tried first on one dense run.
+
+## Follow-up: the skipped first home slot
+
+The skipped-first-slot prologue in the lighting material functions has a source cause, not a
+build-setting one: an inlined reference-count release that stores the decremented count in a
+named local makes the compiler reserve the first home slot and leave it unused. Spelling the
+release that way in the shared header closed nine functions locally on the pinned compiler with
+other functions of the touched units unchanged (cookbook rule 29). The lock functions and the
+-2-without-handler shape above contain no such release and stay open.
 
 ## Reproduction and sanitized evidence
 

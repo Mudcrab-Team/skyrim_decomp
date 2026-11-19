@@ -1,6 +1,7 @@
 """Private storage paths shared by contributor tools; SR_LOCAL_DIR must already exist."""
 import os
 from pathlib import Path
+import subprocess
 
 
 def local_dir(root, env=None):
@@ -26,3 +27,25 @@ def local_path(root, path, env=None):
 
 def no_sibling_names(env=None):
     return (os.environ if env is None else env).get('SR_NO_SIBLING_NAMES') == '1'
+
+
+def main_worktree_local(root):
+    """The main worktree's .local when `root` is a linked git worktree without a .local of its own.
+
+    Toolchains, Wine and the game executable are set up once per clone; a fresh worktree would
+    otherwise look empty. None when `root` is the main worktree, is not a git checkout, or has its
+    own .local (then that one is the intended private store).
+    """
+    root = Path(root)
+    if (root / '.local').exists():
+        return None
+    try:
+        proc = subprocess.run(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir', '--git-dir'],
+                              cwd=root, capture_output=True, text=True, timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    lines = proc.stdout.splitlines()
+    if proc.returncode or len(lines) != 2 or lines[0] == lines[1]:
+        return None
+    main = Path(lines[0]).parent / '.local'
+    return main.resolve() if main.is_dir() else None

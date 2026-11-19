@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import check_labels
 import check_origin
-from local_paths import local_dir, local_path
+from local_paths import local_dir, local_path, main_worktree_local
 
 
 class LocalPathsTests(unittest.TestCase):
@@ -55,6 +55,35 @@ class LocalPathsTests(unittest.TestCase):
         self.assertEqual(opened[sibling][1], self.shared / 'sources/sibling')
         self.assertTrue(all(args[-1] == self.shared / 'analysis/origin-index' for args in opened.values()))
         self.assertFalse((self.repo / '.local').exists())
+
+
+class WorktreeFallbackTests(unittest.TestCase):
+    def test_linked_worktree_uses_the_main_worktrees_local(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as tmp:
+            main = Path(tmp).resolve() / 'main'
+            main.mkdir()
+
+            def git(*args, cwd=main):
+                subprocess.run(['git', '-c', 'user.name=t', '-c', 'user.email=t@t', *args], cwd=cwd, check=True,
+                               capture_output=True)
+            git('init', '-q', '-b', 'main')
+            (main / 'f').write_text('x')
+            git('add', 'f')
+            git('commit', '-q', '-m', 'c')
+            linked = Path(tmp).resolve() / 'linked'
+            git('worktree', 'add', '-q', '-b', 'w', str(linked))
+            self.assertIsNone(main_worktree_local(main))
+            self.assertIsNone(main_worktree_local(linked))  # no .local in the main worktree yet
+            (main / '.local').mkdir()
+            self.assertEqual(main_worktree_local(linked), (main / '.local').resolve())
+            self.assertIsNone(main_worktree_local(main))
+            (linked / '.local').mkdir()
+            self.assertIsNone(main_worktree_local(linked))  # its own .local wins
+
+    def test_not_a_git_checkout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(main_worktree_local(tmp))
 
 
 if __name__ == '__main__':

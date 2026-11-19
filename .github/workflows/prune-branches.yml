@@ -1,0 +1,51 @@
+name: Prune abandoned branches
+# Merged PR branches are removed by the repository's delete-on-merge setting; this covers
+# PRs closed without merging, which that setting never touches.
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'List branches that would be deleted without deleting them'
+        type: boolean
+        default: true
+permissions:
+  contents: write
+  pull-requests: read
+concurrency:
+  group: prune-branches
+  cancel-in-progress: false
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      # Scheduled runs have no inputs and must delete; manual runs default to a dry run.
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+    steps:
+      - name: Delete branches of PRs closed unmerged more than 7 days ago
+        run: |
+          set -euo pipefail
+          cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          prs=$(gh pr list --repo "$REPO" --state all --limit 5000 \
+            --json state,headRefName,headRepositoryOwner,mergedAt,closedAt)
+          owner=${REPO%%/*}
+          # A branch qualifies only if every same-repo PR from it is closed unmerged and past
+          # the cutoff; any open or merged-recently PR, or a reused name, keeps it.
+          echo "$prs" | jq -r --arg cutoff "$cutoff" --arg owner "$owner" '
+            map(select(.headRepositoryOwner.login == $owner)) | group_by(.headRefName)[]
+            | select(all(.state == "CLOSED" and .mergedAt == null and .closedAt < $cutoff))
+            | .[0].headRefName' |
+          while read -r branch; do
+            [ "$branch" = main ] && continue
+            info=$(gh api "repos/$REPO/branches/$branch" --jq .protected 2>/dev/null) || continue
+            [ "$info" = false ] || continue
+            if [ "$DRY_RUN" = true ]; then
+              echo "would delete $branch"
+            else
+              echo "deleting $branch"
+              gh api -X DELETE "repos/$REPO/git/refs/heads/$branch"
+            fi
+          done
