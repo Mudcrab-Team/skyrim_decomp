@@ -69,6 +69,14 @@ REASONS = {
     'debt': 'it already failed to match before this change',
     'precheck': 'a mechanical check refused it before any review (see the findings below)',
 }
+# What a review rejection is called in the comment; the review's own wording is never quoted for the category.
+GROUND_LABELS = {
+    'plausibility': 'plausibility',
+    'provenance': 'provenance label mismatch or origin statement',
+    'binding': 'binding of the record to the unit text',
+    'claim': 'claim stronger than the evidence',
+    'hygiene': 'hygiene',
+}
 # The one bot comment per PR starts with this marker; older bot comments used `<!-- pr-bot sha=...`, and
 # the prefix match lets the bot adopt one of those instead of adding another.
 STICKY = '<!-- pr-bot -->'
@@ -386,6 +394,33 @@ def squash_message(number, login, user_id, rvas, companions=()):
     return subject, body
 
 
+def review_grounds(text, functions):
+    """{rva: ground} for each rejected function; a ground outside GROUNDS is reported as `other`."""
+    try:
+        rows = json.JSONDecoder().raw_decode(text[text.index('{'):])[0]['functions']
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return {}
+    out = {}
+    for rva in functions:
+        row = rows.get(f'0x{rva:x}') if isinstance(rows, dict) else None
+        if isinstance(row, dict) and row.get('verdict') != 'approve':
+            out[rva] = row.get('ground') if row.get('ground') in GROUNDS else 'other'
+    return out
+
+
+def reason_text(decision, rva, code):
+    """The comment's reason for a failed function; a review rejection also names the unit file and a category."""
+    text = REASONS.get(code, 'it was not re-confirmed')
+    if code != 'review':
+        return text
+    unit = (decision.get('unit_files') or {}).get(rva)
+    ground = (decision.get('grounds') or {}).get(rva)
+    if unit:
+        text += f' (unit {unit}'
+        text += f'; {GROUND_LABELS.get(ground, "no category given")})' if ground else ')'
+    return text
+
+
 def review_notes(text, functions):
     """{rva: [public lines]} from a review's why and naming findings, each through the publication filter."""
     from check import naming_finding_problem
@@ -452,7 +487,7 @@ def comment_body(sha, decision, leak_codes=()):
         for r in decision.get('stale', []):
             if verdicts.get(r) != 'matched':
                 code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
-                lines.append(f'- 0x{r:x}: {REASONS.get(code, "it was not re-confirmed")}')
+                lines.append(f'- 0x{r:x}: {reason_text(decision, r, code)}')
         lines.append('Please keep those functions compiling to the same code on both hosts, or leave the unit '
                      'alone, and push again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -464,7 +499,7 @@ def comment_body(sha, decision, leak_codes=()):
         for r in decision.get('companions', []):
             if verdicts.get(r) != 'matched':
                 code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
-                lines.append(f'- 0x{r:x}: {REASONS.get(code, "it was not re-confirmed")}')
+                lines.append(f'- 0x{r:x}: {reason_text(decision, r, code)}')
         lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
                      'again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -480,7 +515,7 @@ def comment_body(sha, decision, leak_codes=()):
         lines.append('Not accepted yet (they stay drafted; push a fix and the bot re-checks the new head):')
         notes = decision.get('notes', {})
         for r, c in sorted(failed.items()):
-            lines.append(f'- 0x{r:x}: {REASONS[c]}')
+            lines.append(f'- 0x{r:x}: {reason_text(decision, r, c)}')
             if c == 'review':
                 lines += [f'  - {n}' for n in notes.get(r, [])]
         found = list(dict.fromkeys(l for r, c in sorted(failed.items()) if c == 'precheck'
@@ -1448,13 +1483,14 @@ class Bot:
                 str(r): lines for r, lines in self.precheck(tag, files, check_units, everything, host1, host2,
                                                             state).items()}).items()}
             passed = [r for r in passed if r not in refused]
-        leak, verdict, notes, evidence_kinds = 'no', {}, {}, []
+        leak, verdict, notes, evidence_kinds, grounds = 'no', {}, {}, [], {}
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
             text = state.once('review_text' + sfx, lambda: self.review(
                 number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra))
             leak, verdict = parse_review(text, passed)
             notes = review_notes(text, passed)
+            grounds = review_grounds(text, passed)
             evidence_kinds = review_leak_evidence(text)
         origin_problems, origin_permitted = [], []
         if leak == 'yes' and 'origin-similarity' in evidence_kinds:
@@ -1471,6 +1507,8 @@ class Bot:
         decision['pre'] = refused  # in memory only, like the notes: rebuilt from the cached precheck on a rerun
         decision['origin_problems'] = origin_problems
         decision['origin_permitted'] = origin_permitted
+        decision['grounds'] = grounds
+        decision['unit_files'] = {r: u for u, rs in check_units.items() for r in rs}
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']

@@ -128,6 +128,28 @@ class DecisionTests(unittest.TestCase):
         self.assertNotIn('0x48', body)
         self.assertEqual(pr_bot.review_notes('nonsense', [0x10]), {})
 
+    def test_review_rejection_names_the_unit_and_a_category_in_every_blocking_comment(self):
+        text = json.dumps({'functions': {
+            '0x10': {'verdict': 'reject', 'ground': 'provenance', 'why': 'Header contradicts itself.'},
+            '0x20': {'verdict': 'reject', 'ground': 'surprise', 'why': 'x'},
+            '0x30': {'verdict': 'approve', 'ground': 'none', 'why': 'fine'}}})
+        grounds = pr_bot.review_grounds(text, [0x10, 0x20, 0x30])
+        self.assertEqual(grounds, {0x10: 'provenance', 0x20: 'other'})
+        self.assertEqual(pr_bot.review_grounds('nonsense', [0x10]), {})
+        units = {0x10: 'reconstruction/a/Foo.cpp', 0x20: 'reconstruction/a/Bar.cpp'}
+        d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'pass'}, {0x10: 'pass', 0x20: 'pass'},
+                          {0x10: 'reject', 0x20: 'reject'})
+        body = pr_bot.comment_body(HEAD, dict(d, grounds=grounds, unit_files=units))
+        self.assertIn('- 0x10: the review did not approve it (unit reconstruction/a/Foo.cpp; provenance label', body)
+        self.assertIn('- 0x20: the review did not approve it (unit reconstruction/a/Bar.cpp; no category given)', body)
+        self.assertNotIn('contradicts', body)
+        stale = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'pass'}, {0x10: 'pass', 0x20: 'pass'},
+                              {0x10: 'reject', 0x20: 'approve'}, stale=[0x10])
+        body = pr_bot.comment_body(HEAD, dict(stale, grounds=grounds, unit_files=units))
+        self.assertIn('go stale', body)
+        self.assertIn('0x10: the review did not approve it (unit reconstruction/a/Foo.cpp; provenance', body)
+        self.assertNotIn('0x20', body)
+
     def test_a_bad_review_answer_never_approves(self):
         self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('unreadable', {}))
         leak, out = pr_bot.parse_review('x ' + GOOD, [0x10, 0x30])
