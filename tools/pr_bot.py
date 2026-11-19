@@ -191,6 +191,18 @@ def ci_hash_hints(text, rvas):
     return {sym: rva.lower() for rva, sym in CI_HASH_LINE.findall(text) if int(rva, 16) in set(rvas)}
 
 
+def recorded_symbol_hints(task, rvas):
+    """{decorated symbol: rva} from the task's already-accepted records of the unit.
+
+    Overloads that differ only in constness share a community name, so binding by name leaves both
+    unbound on the standing host although each record names the exact symbol that matched; the
+    comparator still byte-compares whatever the hint selects.
+    """
+    wanted = {hex(r) for r in rvas}
+    return {rec['symbol']: rec['rva'].lower() for rec in task.get('export', {}).get('unit_already_records', [])
+            if rec.get('symbol') and str(rec.get('rva', '')).lower() in wanted}
+
+
 def scope_problem(files):
     """Reason code if any changed path (or rename origin) is outside reconstruction/, else None."""
     if not files:
@@ -1074,6 +1086,7 @@ class Bot:
         out = {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
+            hints = {**recorded_symbol_hints(json.loads((task / 'task.json').read_text()), rvas), **hints}
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
         for task in tasks:
