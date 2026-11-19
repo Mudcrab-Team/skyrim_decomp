@@ -1,9 +1,7 @@
-// Source exposure: mixed (pinned image listing and community declarations; names from CharmedBaryon/CommonLibSSE-NG b93280e, MIT).
-// Code origin: original; the listing and community declarations only
+// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // 0x3b8200 TESIdleForm::~TESIdleForm
 // 0x3b7240 TESIdleForm::InitItemImpl
-// 0x3b82d0 TESIdleForm::GetFormEditorID
-// Adapted bodies: none
 #include "TESIdleForm.h"
 
 // The constructor is not compared: it is defined so that this unit emits the vftable and with it
@@ -12,7 +10,7 @@ TESIdleForm::TESIdleForm()
 {
 }
 
-// Callees of the compared member below: GUESS(low); declared without bodies; the compare binds each call by position.
+// Callees of the compared member below: GUESS(low); declared without bodies, bound by RVA in bind-hints.json.
 void              TESIdleFormInitSub(void* a_sub, TESIdleForm* a_owner);                       // RVA 0x4a6940
 std::uint64_t     GetCompileIndexForOwner(TESIdleForm* a_owner, std::uint32_t a_mask);          // RVA 0x1e5ae0
 void              RecordFlags_AddCompileIndex(std::uint32_t* a_formID, std::uint64_t a_compileIndex);  // RVA 0x1e6d00
@@ -57,10 +55,4 @@ void TESIdleForm::InitItemImpl()
 
         FinishInitItem(this, true);
     }
-}
-
-// TESIdleForm::GetFormEditorID, RVA 0x3b82d0, 19 bytes. Returns the editor ID text, or the empty text.
-const char* TESIdleForm::GetFormEditorID() const
-{
-    return formEditorID.c_str();
 }
