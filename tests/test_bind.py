@@ -354,6 +354,138 @@ class ClassSpecialNameTests(unittest.TestCase):
         self.assertIn('CI hash:', '\n'.join(bind.describe(report, self.task_dir)))
 
 
+
+COLL = '?GetCollisionObject@NiAVObject@@QEAAPEAVbhkCollisionObject@@XZ'
+COLL_CONST = '?GetCollisionObject@NiAVObject@@QEBAPEAVbhkCollisionObject@@XZ'
+
+
+class OverloadAndOrderTests(unittest.TestCase):
+    """Name-to-definition rules for C++ forms that share or rename a community name (no demangler)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.task_dir = self.root / 'task'
+        self.task_dir.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_bind(self, defined, functions, header=None, hints=None, matcher=None):
+        """`defined` is {decorated name: section bytes}; `functions` [(rva, size, community name)]."""
+        unit = fx.Unit()
+        for name, code in defined.items():
+            sec = unit.section('.text$mn', code if isinstance(code, bytes) else b'\xc3' * code, fx.SCN_CODE)
+            unit.define(name, sec, storage=fx.STORAGE_EXTERNAL, function=True)
+        (self.root / 'obj').write_bytes(unit.coff())
+        task = {'symbols': 'symbols.json', 'compiled': 'unit.cpp', 'functions': [
+            {'rva': rva, 'size': size, 'symbol': f'unbound:{rva}', 'community_name': name}
+            for rva, size, name in functions]}
+        if header is not None:
+            (self.root / 'unit.cpp').write_text(''.join(f'// {line}\n' for line in header) + '#include "unit.h"\n')
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': {}}))
+        if hints is not None:
+            (self.task_dir / bind.HINTS).write_text(json.dumps(hints))
+        with mock.patch.object(bind, 'target_matcher', return_value=matcher):
+            report = bind.bind(self.task_dir, self.root / 'obj', None, repo=self.root)
+        bound = {f['rva']: f['symbol'] for f in json.loads((self.task_dir / 'task.json').read_text())['functions']}
+        return report, bound
+
+    def test_const_and_non_const_overloads_split_by_size(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 20}, [
+            ('0x1900a0', 9, 'RE::NiAVObject::GetCollisionObject'),
+            ('0x405a50', 20, 'RE::NiAVObject::GetCollisionObject')])
+        self.assertEqual(bound, {'0x1900a0': COLL, '0x405a50': COLL_CONST})
+        self.assertEqual(report['unbound_functions'], [])
+        self.assertIn('narrowed by size', report['functions'][0]['how'])
+
+    def test_same_size_overloads_split_by_target_hash(self):
+        def matcher(rva, symbol):
+            return (rva, symbol) in {(0x1900a0, COLL), (0x405a50, COLL_CONST)}
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [
+            ('0x1900a0', 9, 'NiAVObject::GetCollisionObject'),
+            ('0x405a50', 9, 'NiAVObject::GetCollisionObject')], matcher=matcher)
+        self.assertEqual(bound, {'0x1900a0': COLL, '0x405a50': COLL_CONST})
+        self.assertIn('target hash', report['functions'][0]['how'])
+
+    def test_declared_signature_on_the_header_line_picks_the_overload(self):
+        static = '?GetContainer@TESObjectREFR@@SAPEAVTESContainer@@PEAVTESBoundObject@@@Z'
+        member_fn = '?GetContainer@TESObjectREFR@@QEBAPEAVTESContainer@@XZ'
+        report, bound = self.run_bind({static: 9, member_fn: 9}, [('0x2e8660', 9, 'TESObjectREFR::GetContainer')],
+                                      header=['0x2e8660 TESObjectREFR::GetContainer() const'])
+        self.assertEqual(bound['0x2e8660'], member_fn)
+        self.assertIn('declared signature', report['functions'][0]['how'])
+
+    def test_indistinguishable_overloads_list_the_hint_lines(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')])
+        self.assertEqual(bound['0x1900a0'], 'unbound:0x1900a0')
+        self.assertEqual(report['unbound_functions'][0]['overloads'], sorted([COLL, COLL_CONST]))
+        text = '\n'.join(bind.describe(report, self.task_dir))
+        self.assertIn(f'// CI hash: 0x1900a0 {COLL}', text)
+        self.assertIn(f'// CI hash: 0x1900a0 {COLL_CONST}', text)
+
+    def test_hint_still_decides_between_overloads(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      hints={COLL_CONST: '0x1900a0'})
+        self.assertEqual(bound['0x1900a0'], COLL_CONST)
+
+    def test_member_name_never_takes_another_functions_exact_name(self):
+        # The unit defines TESObjectCELL::GetOwner and calls ExtraDataList::GetOwner, and the task lists
+        # the callee first: the callee must not take the definition by member name.
+        owner = '?GetOwner@TESObjectCELL@@QEAAPEAVTESForm@@XZ'
+        report, bound = self.run_bind({owner: 33}, [('0x164570', 33, 'ExtraDataList::GetOwner'),
+                                                    ('0x2be530', 33, 'TESObjectCELL::GetOwner')])
+        self.assertEqual(bound['0x2be530'], owner)
+        self.assertEqual(bound['0x164570'], 'unbound:0x164570')
+
+    def test_member_name_still_binds_an_override_named_for_its_base(self):
+        derived = '?Update@Derived@@UEAAXXZ'
+        report, bound = self.run_bind({derived: 9}, [('0x1000', 9, 'Base::Update')])
+        self.assertEqual(bound['0x1000'], derived)
+        self.assertEqual(report['functions'][0]['how'], 'member name')
+
+    def test_header_line_names_a_stand_in_without_a_community_name(self):
+        slot = '?Slot8@PlayerCharacter@@UEBAEXZ'
+        report, bound = self.run_bind({slot: 9, '?Other@PlayerCharacter@@QEAAXXZ': 9}, [('0x75c2b0', 9, None)],
+                                      header=['0x75c2b0 PlayerCharacter::Slot8'])
+        self.assertEqual(bound['0x75c2b0'], slot)
+        self.assertEqual(report['functions'][0]['how'], 'header name')
+
+    def test_literal_ctor_member_beats_the_class_constructor(self):
+        literal = '?Ctor@BSLightingShaderMaterialSnow@@QEAAPEAV1@XZ'
+        report, bound = self.run_bind({literal: 9, '??0BSLightingShaderMaterialSnow@@QEAA@XZ': 9},
+                                      [('0x1527fc0', 9, 'BSLightingShaderMaterialSnow::Ctor')])
+        self.assertEqual(bound['0x1527fc0'], literal)
+
+    def test_deleting_destructor_adjustor_thunk_binds_by_size(self):
+        thunk = '??_EBGSMovableStatic@@WBA@EAAPEAXI@Z'
+        report, bound = self.run_bind({'??1BGSMovableStatic@@UEAA@XZ': 40, '??_GBGSMovableStatic@@UEAAPEAXI@Z': 60,
+                                       thunk: 9}, [('0x264444', 9, 'BGSMovableStatic::dtor')])
+        self.assertEqual(bound['0x264444'], thunk)
+
+    def test_ci_hash_line_in_the_unit_is_a_hint(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      header=['0x1900a0 NiAVObject::GetCollisionObject', f'CI hash: 0x1900a0 {COLL}'])
+        self.assertEqual(bound['0x1900a0'], COLL)
+        self.assertEqual(report['functions'][0]['how'], 'hint')
+
+    def test_decoration_traits(self):
+        self.assertEqual(bind.decoration_traits(COLL_CONST), {'static': False, 'cv': 'const', 'params': None})
+        self.assertEqual(bind.decoration_traits(COLL)['cv'], '')
+        self.assertTrue(bind.decoration_traits('?GetContainer@TESObjectREFR@@SAPEAVTESContainer@@XZ')['static'])
+        self.assertEqual(bind.decoration_traits('??0Eye@@QEAA@XZ')['cv'], '')
+        text = 'public: static class TESContainer * __cdecl TESObjectREFR::GetContainer(class TESBoundObject *)'
+        self.assertEqual(bind.decoration_traits('?x', text)['params'], 'TESBoundObject*')
+
+    def test_header_declarations(self):
+        (self.root / 'u.cpp').write_text('// Source exposure: original.\n// 0x10 A::F\n'
+                                         '// 0x20 RE::A::G(int, char const *) const\n// CI hash: 0x10 ?F@A@@QEAAXXZ\n#include "u.h"\n')
+        decls = bind.header_declarations(self.root, 'u.cpp')
+        self.assertEqual(decls[0x10], {'name': 'A::F', 'params': None, 'cv': None})
+        self.assertEqual(decls[0x20], {'name': 'A::G', 'params': 'int,charconst*', 'cv': 'const'})
+
+
 class FuncletTests(unittest.TestCase):
     """References made only from funclets, on the synthetic catch unit (catch$0 and dtor$0)."""
 

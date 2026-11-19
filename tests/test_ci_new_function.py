@@ -119,5 +119,18 @@ class Discovery(Fixture):
         self.assertEqual((row['result'], row['symbols']), ('hash-match', [fx.FUNCTION]))
 
 
+    def test_a_stale_recorded_symbol_is_found_again_by_its_hash(self):
+        # A declaration change (void made bool) renames the decorated symbol a record names.
+        stale = '?Setup@Shader@@UEAAXXZ'
+        (row,) = self.rows(fx.coff_object(), [dict(unit=UNIT, rva=0x1010, symbol=stale, recipe=RECIPE)],
+                           [target_row()])
+        self.assertEqual((row['result'], row['symbols']), ('hash-match', [fx.FUNCTION]))
+
+    def test_a_stale_recorded_symbol_with_changed_code_still_fails(self):
+        (row,) = self.rows(fx.coff_object(code=fx.CODE[:-1] + bytes([0x90])),
+                           [dict(unit=UNIT, rva=0x1010, symbol='?Setup@Shader@@UEAAXXZ', recipe=RECIPE)],
+                           [target_row()])
+        self.assertEqual((row['result'], row['reason']), ('mismatch', 'no-matching-function'))
+
 if __name__ == '__main__':
     unittest.main()
