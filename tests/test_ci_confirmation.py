@@ -251,5 +251,18 @@ class Config(unittest.TestCase):
         raw['attempt']='ci'
         with self.assertRaisesRegex(runners.RunnerError,'confirmation host only'):runners.validate(raw)
 
+    def test_ci_host_accepts_the_moved_repository_name_only_for_this_project(self):
+        mac=dict(backend='local',host_id='mac-wine',machine='maintainer-mac',loader='wine',
+                 msvc='msvc',work='work',wine_bin='wine',image='private-image')
+        for repository,ok in [('Mudcrab-Team/skyrim_decomp',True),('awarebayes/skyrim_decomp',True),
+                              ('someone/skyrim_decomp',False)]:
+            ci=dict(backend='ci-hash',host_id='github-windows-native',machine='github-hosted-windows',
+                    loader='native',repository=repository)
+            raw=dict(runners_schema=1,hosts=dict(mac=mac,ci=ci),attempt='mac',confirm=['mac','ci'])
+            if ok:
+                runners.validate(raw)
+            else:
+                with self.assertRaisesRegex(runners.RunnerError,'approved GitHub Windows host'):runners.validate(raw)
+
 
 if __name__=='__main__':unittest.main()
