@@ -18,7 +18,6 @@
 // 0x668a00 TaskQueueInterface::Function668a00
 // 0x668b90 TaskQueueInterface::Function668b90
 // 0x668cc0 TaskQueueInterface::Function668cc0
-// 0x668d10 TaskQueueInterface::QueueAddRipple
 // 0x668d60 TaskQueueInterface::Function668d60
 // 0x668e60 TaskQueueInterface::Function668e60
 // 0x668f20 TaskQueueInterface::Function668f20
@@ -331,17 +330,6 @@ void TaskQueueInterface::Function668cc0(float a_scale, const NiPoint3& a_positio
 {
     BSPackedTask task;
     task.data[0].integer = 44;
-    task.data[1].real = a_scale;
-    task.data[2].real = a_position.x;
-    task.data[3].real = a_position.y;
-    task.data[4].real = a_position.z;
-    QueueIfActive(task);
-}
-
-void TaskQueueInterface::QueueAddRipple(float a_scale, const NiPoint3& a_position)
-{
-    BSPackedTask task;
-    task.data[0].integer = 45;
     task.data[1].real = a_scale;
     task.data[2].real = a_position.x;
     task.data[3].real = a_position.y;
