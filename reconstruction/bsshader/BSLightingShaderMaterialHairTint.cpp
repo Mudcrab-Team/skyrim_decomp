@@ -3,6 +3,7 @@
 // Adapted bodies: none
 // 0x1528fb0 BSLightingShaderMaterialHairTint::~BSLightingShaderMaterialHairTint
 // 0x1527050 BSLightingShaderMaterialHairTint::Ctor
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include <new>
 #include "BSLightingShaderMaterialHairTint.h"
 

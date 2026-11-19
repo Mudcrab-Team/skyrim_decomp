@@ -5,6 +5,7 @@
 // BSLightingShaderMaterialEnvmap::Ctor, BSLightingShaderMaterialEnvmap::SaveBinary, BSLightingShaderMaterialEnvmap::LoadBinary, BSLightingShaderMaterialEnvmap::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEnvmap::GetTextures, BSLightingShaderMaterialEnvmap::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unkA0Texture, unkA8Texture, unkB0, pad_B4: GUESS(low)
 // ComputeFlagHash: GUESS(low)
+// Code origin: declarations follow CommonLibSSE-NG names; offsets, sizes and the compared bodies are read from the local listings.
 #pragma once
 
 #include <cstdint>

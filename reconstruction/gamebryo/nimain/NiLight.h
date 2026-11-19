@@ -1,5 +1,5 @@
 // Source exposure: mixed (community declarations and the contributor-owned pack).
-// Code origin: SKELETON_TODO_CODE_ORIGIN (state the actual origin and any adaptation)
+// Code origin: declarations follow CommonLibSSE-NG names; offsets, sizes and the compared body are read from the local listings.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiLight, NiLight::~NiLight, NiLight::GetRTTI, NiLight::LoadBinary, NiLight::SaveBinary, NiLight::IsEqual: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown110: GUESS(low)

@@ -8,6 +8,7 @@
 // eyeEnvMask, eyeCubemap, unkB0, colorB4, colorC0, pad_CC: GUESS(low)
 // Adapted bodies: NiBinaryStream::read, NiBinaryStream::write from
 // CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h (MIT);
+// Code origin: declarations follow CommonLibSSE-NG names; offsets, sizes and the compared bodies are read from the local listings.
 #pragma once
 
 #include <cstdint>
@@ -323,6 +324,7 @@ public:
     virtual void SaveBinary(NiStream& a_stream);  // compared: 0x1525770
     virtual void LoadBinary(NiStream& a_stream);  // compared: 0x15257f0
     virtual void ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, std::uintptr_t a_extra1, std::uintptr_t a_extra2);  // compared: 0x1525640
+    // noinline: the image calls the constructor from Create instead of inlining it
     __declspec(noinline) BSLightingShaderMaterialEye();  // compared: 0x15250e0
     static void* operator new(std::size_t a_size) throw();
     static void* operator new(std::size_t, void* a_place) noexcept { return a_place; }
