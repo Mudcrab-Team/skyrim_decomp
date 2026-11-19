@@ -1235,7 +1235,7 @@ class Bot:
         ci = state.get('ci')
         if not ci:
             raise Stop('no hash run evidence to build records from')
-        out, failed = self.work / 'records' / tag, set()
+        out, failed, built = self.work / 'records' / tag, set(), set()
         for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{tag.split("/")[0]}-*')):
             info = json.loads((task / 'task.json').read_text())
             wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
@@ -1277,11 +1277,16 @@ class Bot:
                 if row is None:
                     failed.add(rva)
                     continue
-                built = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
+                built_run = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
                     dict(run=ci['run'], report=ci['report'], row=row, map_status=ci['map'].get(str(rva))))],
                     cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
-                if built.returncode or not made.is_file():
+                if not built_run.returncode and made.is_file():
+                    built.add(rva)
+                else:
                     failed.add(rva)  # the validator refused it: the function stays drafted
+        # A function with no task directory in the tree was never confirmed at all; leaving it out of `failed`
+        # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
+        failed |= set(rvas) - built - failed
         return out, failed
 
     # ---- one PR head ----
@@ -1853,7 +1858,11 @@ class Bot:
                 '--records', state.get('records')]
         for r in rvas:
             argv += ['--rva', hex(r)]
-        self.run(argv, cwd=self.tree, timeout=1800)
+        done = self.run(argv, cwd=self.tree, timeout=1800, check=False)
+        if done.returncode:
+            # record.py prints which function it refused and why; without it the log only says "python3.13 failed".
+            tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
+            raise Stop(f'record step failed after the merge: {tail[0][:300]}')
         state.set('recorded', True)
 
 

@@ -1096,6 +1096,10 @@ class NewFunctionRecordTests(unittest.TestCase):
         out, failed = self.build()
         self.assertEqual(failed, {0x10})
 
+    def test_a_matched_function_with_no_task_in_the_tree_is_refused_not_skipped(self):
+        out, failed = self.build({0x10, 0x20, 0x30})
+        self.assertEqual(failed, {0x30})
+
     def test_a_stale_record_file_never_stands_in_for_a_refused_one(self):
         out, _ = self.build()
         self.record_ok[0x10] = False
