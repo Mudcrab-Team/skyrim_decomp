@@ -56,7 +56,10 @@ def claim_scope_problems(name, text):
     return [f'{name}: check claim_scope: claim exceeds the checked byte match: {claim}' for claim in claims]
 
 
-def lint_files(root, names):
+def lint_files(root, names, included_only=None):
+    """included_only: headers pulled in by a compiled unit but never compiled as one. They are shared
+    declarations, so only the unit's own leading header must state a code origin. When not given, a
+    header without a same-named .cpp is treated that way."""
     root = Path(root).resolve()
     problems = []
     for name in sorted(set(names)):
@@ -67,7 +70,14 @@ def lint_files(root, names):
             problems.append(f'{name}: source path missing or outside repository')
             continue
         text = path.read_text()
-        problems += [f'check provenance: {p}' for p in origin_statement_problems(name, text)]
+        if path.suffix != '.h':
+            shared = False
+        elif included_only is None:
+            shared = not path.with_suffix('.cpp').is_file()
+        else:
+            shared = name in included_only
+        if not shared:
+            problems += [f'check provenance: {p}' for p in origin_statement_problems(name, text)]
         problems += [f'check publication_hygiene: {p}' for p in truncated_mit_problems(name, text)]
         problems += plausible_source_problems(name, text)
         problems += claim_scope_problems(name, text)

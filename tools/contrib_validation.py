@@ -121,6 +121,9 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
                 problems += [diagnostic(f'{cpp}: deterministic screen: {code}') for code in codes]
         except (OSError, ValueError) as exc:
             problems.append(diagnostic(str(exc)))
+    own_headers = {str(Path(c).with_suffix('.h')) for c in compiled}
+    # Shared declarations are only included, never compiled as a unit; a unit's own header is not.
+    included_only = {n for n in all_names if n.endswith('.h') and n not in own_headers}
     for name in sorted(all_names):
         path = root / name
         if _repo_file(root, name) != name:
@@ -136,7 +139,7 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
         problems += screen_diagnostics(blob, name, headers=headers)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
-            problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name])]
+            problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]
         except (UnicodeError, ValueError) as exc:
             problems.append(diagnostic(f'{name}: source lint failed ({type(exc).__name__})'))
     return sorted(set(problems))
