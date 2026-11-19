@@ -5,7 +5,11 @@
 // BGSExplosion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSExplosion::UnClone3D, TESObject::UnClone3D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); bodies written from the listing
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
-// TESObjectREFR flag word at 0x144, bit 5: GUESS(low); the type stays opaque in this unit and only that word is read
+// Explosion, Explosion::Flags, kNone, kIgnoreImageSpaceSwap, kInWater, unk98, startKeyTime, endKeyTime, hitKeyTime, radius, imodRadius, unkB4, unkB8, unkC0, unkC8, sound01, sound02, light, actorOwner, unkF4, unkF8, padFC, actorCause, magicCaster, weaponSource, unk118, unk11C, negativeVelocity, damage, unk138, flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG lays the members out from 0x98 with flags at 0x13C, the pinned image has them 8 bytes higher with flags at 0x144
+// TESObjectREFR: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); sized only (0xA0), no member of it is read here
+// BSSoundHandle, soundID, assumeSuccess, pad05, state: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the layout is declared
+// NiPoint3, NiPointLight, bhkSimpleShapePhantom, ActorCause, NonActorMagicCaster, TESObjectWEAP: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the layout of the members is declared
+// unrepresented: GUESS(low); the bytes of the TESObjectREFR stand-in whose members are not declared
 #pragma once
 #include <cstdint>
 #include <cstddef>
@@ -252,6 +256,65 @@ class BSFixedString { public: BSFixedString(); ~BSFixedString(); const char* val
 class TESFullName : public BaseFormComponent { public: ~TESFullName() override {} void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual std::uint32_t GetFullNameLength() const; virtual const char* GetFullName() const; BSFixedString fullName; };
 class TESModel : public BaseFormComponent { public: ~TESModel() override; void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual const char* GetModel() const; virtual void SetModel(const char*); virtual void* GetAsModelTextureSwap(); BSFixedString model; void* textures; std::uint32_t* addons; std::uint16_t numTextures,numAddons; };
 class TESObject : public TESForm { public: virtual void UnClone3D(TESObjectREFR* a_ref); };
+
+class TESObjectREFR : public TESForm {
+public:
+    std::uint8_t unrepresented[0x80];  // 20
+};
+static_assert(sizeof(TESObjectREFR) == 0xA0, "TESObjectREFR stand-in size");
+
+struct BSSoundHandle {
+    std::uint32_t soundID;         // 00
+    bool          assumeSuccess;   // 04
+    std::uint8_t  pad05[3];        // 05
+    std::uint32_t state;           // 08
+};
+static_assert(sizeof(BSSoundHandle) == 0xC, "sound handle size");
+
+struct NiPoint3 { float x, y, z; };
+
+class NiPointLight;
+class bhkSimpleShapePhantom;
+class ActorCause;
+class NonActorMagicCaster;
+class TESObjectWEAP;
+
+class Explosion : public TESObjectREFR {
+public:
+    enum class Flags : std::uint32_t {
+        kNone = 0,
+        kIgnoreImageSpaceSwap = 1 << 4,
+        kInWater = 1 << 5
+    };
+
+    std::uint64_t          unk98;             // A0
+    float                  startKeyTime;      // A8
+    float                  endKeyTime;        // AC
+    float                  hitKeyTime;        // B0
+    float                  radius;            // B4
+    float                  imodRadius;        // B8
+    float                  unkB4;             // BC
+    bhkSimpleShapePhantom* unkB8;             // C0
+    std::uint64_t          unkC0;             // C8
+    std::uint64_t          unkC8;             // D0
+    BSSoundHandle          sound01;           // D8
+    BSSoundHandle          sound02;           // E4
+    NiPointLight*          light;             // F0
+    std::uint32_t          actorOwner;        // F8
+    std::uint32_t          unkF4;             // FC
+    std::uint32_t          unkF8;             // 100
+    std::uint32_t          padFC;             // 104
+    ActorCause*            actorCause;        // 108
+    NonActorMagicCaster*   magicCaster;       // 110
+    TESObjectWEAP*         weaponSource;      // 118
+    std::uint32_t          unk118;            // 120
+    NiPoint3               unk11C;            // 124
+    NiPoint3               negativeVelocity;  // 130
+    float                  damage;            // 13C
+    float                  unk138;            // 140
+    Flags                  flags;             // 144
+};
+static_assert(offsetof(Explosion, flags) == 0x144, "Explosion::flags offset");
 class TESBoundObject : public TESObject { public: virtual ~TESBoundObject(); std::int16_t boundMin[3],boundMax[3]; };
 class BGSPreloadable : public BaseFormComponent { public:  void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual void Preload(); };
 class TESImageSpaceModifiableForm : public BaseFormComponent { public:  void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; void* imageSpaceModifier; };

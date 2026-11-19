@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original reconstruction from the pinned image and community declarations.
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // BGSPackageDataBool: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -51,12 +52,12 @@ class BSString;
 bool SetStringLiteral(BSString* a_dst, const char* a_text, std::uint32_t a_flag);
 
 // ReleaseFlags08Slot: GUESS(low); the image calls it with the address of flags08 from the destructor, after clearing its low two bits
-void ReleaseFlags08Slot(std::uint64_t* a_slot);
+void ReleaseFlags08Slot(std::uint64_t* a_slot) noexcept;
 
 class IPackageData
 {
 public:
-    virtual ~IPackageData() = default;
+    virtual ~IPackageData() {}
 };
 static_assert(sizeof(IPackageData) == 0x8, "IPackageData size");
 
@@ -66,8 +67,22 @@ public:
     // LoadPackage: GUESS(low); the base load that BGSPackageDataBool calls first, declared without a body
     void LoadPackage(TESFile* a_mod);
 
+    // PackedName, bits: GUESS(low)
+    struct PackedName
+    {
+        // PackedName::~PackedName, PackedName::operator std::uint64_t, PackedName::operator=: GUESS(low)
+        ~PackedName() { ReleaseFlags08Slot(&bits); }
+        operator std::uint64_t() const { return bits; }
+        PackedName& operator=(std::uint64_t a_bits)
+        {
+            bits = a_bits;
+            return *this;
+        }
+
+        std::uint64_t bits;
+    };
     // flags08: GUESS(low); bit one holds the boolean value, read and written as a qword by the compared code
-    std::uint64_t flags08;  // 08
+    PackedName flags08;  // 08
 };
 static_assert(sizeof(BGSNamedPackageData_VIPackageData) == 0x10, "BGSNamedPackageData_VIPackageData size");
 

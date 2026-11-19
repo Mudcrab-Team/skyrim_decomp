@@ -1,6 +1,9 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from a local listing of the pinned image
-// with types from the header beside this file.
-// FindOutfitExtra: GUESS; callee of HasOutfitItems at RVA 0x1648b0.
+// Source exposure: mixed. Existing bodies were drafted by claude-sonnet-5-5 from the pinned image.
+// Code origin: original reconstruction from the pinned image and community declarations.
+// Consulted (private, not in repo): decompiler control-flow hints.
+// Adapted bodies: none in this change.
+// FindOutfitExtra: GUESS(low); callee of HasOutfitItems.
+// 0x6b21b0 Actor::ProcessEvent
 // 0x2e7fc0 Actor::HasOutfitItems
 // 0x6797a0 Actor::GetLevel
 // 0x6cb920 Actor::IsAttacking
@@ -105,4 +108,97 @@ bool Actor::HasOutfitItems(BGSOutfit* a_outfit)
         }
     }
     return false;
+}
+
+// CHARACTER_FLAGS, kHitDamage, bhkCharacterController::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// GetFallDistance, unk00: GUESS(low); distance accessor and unresolved controller prefix.
+enum class CHARACTER_FLAGS : std::uint32_t { kHitDamage = 1u << 7 };
+class bhkCharacterController {
+public:
+    float GetFallDistance() const;
+    std::uint8_t unk00[0x218];
+    CHARACTER_FLAGS flags;
+};
+static_assert(offsetof(bhkCharacterController, flags) == 0x218, "controller flags offset");
+
+// RACE_DATA, RACE_DATA::Flag, kFlies, TESRace::data, RACE_DATA::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// unk00: GUESS(low); unresolved race prefix.
+struct RACE_DATA {
+    enum Flag : std::uint32_t { kFlies = 1u << 7 };
+    Flag flags;
+};
+class TESRace {
+public:
+    std::uint8_t unk00[0x108];
+    RACE_DATA data;
+};
+static_assert(offsetof(TESRace, data) == 0x108, "race data offset");
+
+// BSSoundHandle, kInvalidID, soundID, assumeSuccess, AssumedState, kInitialized, state, Play: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSAudioManager, GetSingleton, BuildSoundDataFromEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+struct BSSoundHandle {
+    enum : std::uint32_t { kInvalidID = static_cast<std::uint32_t>(-1) };
+    enum class AssumedState { kInitialized };
+    bool Play();
+
+    std::uint32_t soundID = kInvalidID;
+    bool assumeSuccess = false;
+    AssumedState state = AssumedState::kInitialized;
+};
+static_assert(sizeof(BSSoundHandle) == 0xc, "sound handle layout");
+
+class BSAudioManager {
+public:
+    static BSAudioManager* GetSingleton();
+    void BuildSoundDataFromEditorID(BSSoundHandle& a_sound, const char* a_name, std::uint32_t a_flags);
+};
+
+// playerActor, defaultFallScale, landingSoundThreshold, heavyLandingSound, lightLandingSound: GUESS(low); fall-damage and audio inputs.
+// HasLandingFlag: GUESS(low); common bit extraction for two flag types.
+extern Actor* playerActor;
+extern const float defaultFallScale;
+extern float landingSoundThreshold;
+extern const char heavyLandingSound[];
+extern const char lightLandingSound[];
+
+static bool HasLandingFlag(std::uint32_t a_flags)
+{
+    return ((a_flags >> 7) & 1) != 0;
+}
+
+int Actor::ProcessEvent(MoveFinishSink* a_sink, const bhkCharacterMoveFinishEvent* a_event)
+{
+    auto* sinkAddress = reinterpret_cast<char*>(a_sink);
+    auto* actor = reinterpret_cast<Actor*>(sinkAddress - offsetof(Actor, moveFinishSink));
+    auto& parentCell = *reinterpret_cast<TESObjectCELL**>(
+        sinkAddress + (static_cast<std::ptrdiff_t>(offsetof(TESObjectREFR, parentCell)) -
+                       static_cast<std::ptrdiff_t>(offsetof(Actor, moveFinishSink))));
+    if (actor->Get3D2() && parentCell) {
+        actor->HandleMoveFinish(a_event);
+        auto* process = *reinterpret_cast<AIProcess**>(
+            sinkAddress + (offsetof(Actor, currentProcess) - offsetof(Actor, moveFinishSink)));
+        auto* controller = process ? process->GetCharController() : nullptr;
+        if (controller && HasLandingFlag(static_cast<std::uint32_t>(controller->flags))) {
+            const auto* race = *reinterpret_cast<TESRace* const*>(
+                sinkAddress + (offsetof(Actor, race) - offsetof(Actor, moveFinishSink)));
+            if (!HasLandingFlag(race->data.flags)) {
+                const float damage = actor->Function6bd530(controller->GetFallDistance(), defaultFallScale);
+                if (damage > 0.0f) {
+                    actor->ApplyFallDamage(damage, nullptr, true);
+                    if (actor == playerActor) {
+                        BSSoundHandle sound;
+                        const char* soundName = !(damage > landingSoundThreshold) ? lightLandingSound : heavyLandingSound;
+                        BSAudioManager::GetSingleton()->BuildSoundDataFromEditorID(sound, soundName, 0x12);
+                        sound.Play();
+                    }
+                    actor->SetFallDamageState(true, true);
+                }
+            }
+            controller->flags = static_cast<CHARACTER_FLAGS>(
+                static_cast<std::uint32_t>(controller->flags) &
+                ~static_cast<std::uint32_t>(CHARACTER_FLAGS::kHitDamage));
+        }
+        actor->Unk_68();
+    }
+    return 0;
 }

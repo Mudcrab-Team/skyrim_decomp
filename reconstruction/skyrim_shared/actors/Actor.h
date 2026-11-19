@@ -1,5 +1,7 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold (0.75) at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8. NG's licence notice, from its LICENSE at b93280e, is kept as it requires:
+// Code origin: original reconstruction from the pinned image and community declarations.
+// Adapted bodies: ActorState::IsUnconscious, from CharmedBaryon/CommonLibSSE-NG at b93280e (MIT), include/RE/A/ActorState.h.
+// Consulted (private, not in repo): decompiler control-flow hints.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Actor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the bases, members and virtual slots the functions use
 // TESObjectREFR MagicTarget ActorValueOwner: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); base subobjects at 0x00, 0xa0, 0xb8, sized only
@@ -50,6 +52,12 @@
 
 class BGSPerk;
 class TESForm;
+// bhkCharacterController, bhkCharacterMoveFinishEvent, TESObjectCELL, TESRace, NiAVObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+class bhkCharacterController;
+struct bhkCharacterMoveFinishEvent;
+class TESObjectCELL;
+class TESRace;
+class NiAVObject;
 
 template <class T>
 struct BSSimpleList {
@@ -140,6 +148,8 @@ class AIProcess {
 public:
     float GetMoveDirectionRelativeToFacing();
     float GetVoiceRecoveryTime() const;
+    // AIProcess::GetCharController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    bhkCharacterController* GetCharController();
 };
 
 struct OBJ_REFR {
@@ -261,7 +271,8 @@ public:
     virtual void Unk_6D();
     virtual void Unk_6E();
     virtual void Unk_6F();
-    virtual void Unk_70();
+    // Get3D2: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    virtual NiAVObject* Get3D2() const;
     virtual void Unk_71();
     virtual void Unk_72();
     virtual void Unk_73();
@@ -308,7 +319,17 @@ public:
 
     std::uint8_t unk08[0x38];
     OBJ_REFR     data;  // 0x40
-    std::uint8_t unk60[0x40];
+    // parentCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    // unk68: GUESS(low); unresolved fields after the cell pointer.
+    TESObjectCELL* parentCell;
+    std::uint8_t unk68[0x38];
+
+    // GetScale: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    float GetScale() const;
+
+    // Function6bd530: GUESS(low)
+    float Function6bd530(float a_distance, float a_scale);
+
 };
 
 class MagicTarget {
@@ -366,19 +387,47 @@ public:
         kParalyzed = 1u << 31,
     };
 
+    // BOOL_FLAGS, kIsAMount, boolFlags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    enum class BOOL_FLAGS : std::uint32_t {
+        kIsAMount = 1u << 1,
+    };
+
     bool IsParalyzed() const noexcept { return (boolBits & static_cast<std::uint32_t>(BOOL_BITS::kParalyzed)) != 0; }
 
-    std::uint8_t      unkD0[0x18];
+    // MoveFinishSink, moveFinishSink: GUESS(low); event sink member view at the target offset
+    // unkD0, unkE0, unk200: GUESS(low); unresolved fields adjacent to represented members.
+    struct MoveFinishSink {
+        virtual ~MoveFinishSink();
+    };
+
+    std::uint64_t     unkD0;
+    MoveFinishSink    moveFinishSink;  // 0xd8
+    std::uint64_t     unkE0;
     std::uint32_t     boolBits;  // 0xe8
     std::uint8_t      unkEC[0xc];
     AIProcess*        currentProcess;  // 0xf8
-    std::uint8_t      unk100[0x108];
+    std::uint8_t      unk100[0xf8];
+    // race: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    TESRace*          race;
+    std::uint32_t     unk200;
+    BOOL_FLAGS       boolFlags;       // 0x204
     ActorValueStorage avStorage;        // 0x208
     void*             exclusiveBranch;  // 0x228
     Modifiers         healthModifiers;       // 0x230
     Modifiers         magickaModifiers;      // 0x23c
     Modifiers         staminaModifiers;      // 0x248
     Modifiers         voicePointsModifiers;  // 0x254
+
+    // ProcessEvent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); receiver model inferred from the adjusted entry.
+    // HandleMoveFinish, ApplyFallDamage, SetFallDamageState: GUESS(low)
+    static int ProcessEvent(MoveFinishSink* a_sink, const bhkCharacterMoveFinishEvent* a_event);
+    void HandleMoveFinish(const bhkCharacterMoveFinishEvent* a_event);
+    void ApplyFallDamage(float a_damage, Actor* a_attacker, bool a_falling);
+    void SetFallDamageState(bool a_falling, bool a_notify);
+
+    // GetCharController, IsOnMount: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    bhkCharacterController* GetCharController() const;
+    bool IsOnMount() const;
 
     bool          HasOutfitItems(BGSOutfit* a_outfit);
     std::uint16_t GetLevel() const;
@@ -394,7 +443,10 @@ public:
     void AddPerk(BGSPerk* a_perk, std::uint32_t a_rank = 0);  // compared: 0x69f8e0
 };
 
+static_assert(offsetof(Actor, moveFinishSink) == 0xd8, "Actor::moveFinishSink offset");
+static_assert(offsetof(Actor, race) == 0x1f8, "Actor::race offset");
 static_assert(offsetof(Actor, boolBits) == 0xe8, "Actor::boolBits offset");
 static_assert(offsetof(Actor, currentProcess) == 0xf8, "Actor::currentProcess offset");
+static_assert(offsetof(Actor, boolFlags) == 0x204, "Actor::boolFlags offset");
 static_assert(offsetof(Actor, avStorage) == 0x208, "Actor::avStorage offset");
 static_assert(offsetof(Actor, voicePointsModifiers) == 0x254, "Actor::voicePointsModifiers offset");

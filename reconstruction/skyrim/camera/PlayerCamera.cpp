@@ -1,3 +1,7 @@
+// Code origin: original camera-mode bodies from the pinned image and community declarations.
+// 0x8fb1e0 PlayerCamera::GetCurrentNormalFOV
+// 0x8f8de0 PlayerCamera::ForceFirstPerson
+// 0x8f8f40 PlayerCamera::ForceThirdPerson
 // CreateRefHandle: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); output parameter declaration adapted from include/RE/M/Misc.h; target callee identity remains inferred.
 // Source exposure: mixed
 // Origin: independently decoded target, anonymous sibling and public declarations.
@@ -9,3 +13,39 @@
 // 0x8fb250 PlayerCamera::SetCameraTarget
 #include "PlayerCamera.h"
 void PlayerCamera::SetCameraTarget(Actor* actor) { if (actor) { if (!(actor->refCount & 0x3ff)) cameraTarget = nullHandle; else { unsigned bits; CreateRefHandle(bits, actor); cameraTarget = bits; } } }
+
+// defaultFirstPersonFOV, defaultWorldFOV, playerHandle: GUESS(low)
+extern float defaultFirstPersonFOV;
+extern float defaultWorldFOV;
+extern unsigned playerHandle;
+
+float PlayerCamera::GetCurrentNormalFOV() const
+{
+    if (currentState == cameraStates[CameraStates::kFirstPerson]) {
+        return defaultFirstPersonFOV;
+    }
+    return defaultWorldFOV;
+}
+
+void PlayerCamera::ForceFirstPerson()
+{
+    if (cameraTarget == playerHandle && currentState != cameraStates[CameraStates::kFirstPerson]) {
+        SetFirstPersonMode();
+        SetState(cameraStates[CameraStates::kFirstPerson]);
+    }
+}
+
+// IsThirdPersonOrLater: GUESS(low)
+static bool IsThirdPersonOrLater(const TESCameraState* a_state)
+{
+    return a_state ? a_state->id >= CameraStates::kThirdPerson : false;
+}
+
+void PlayerCamera::ForceThirdPerson()
+{
+    if (!IsThirdPersonOrLater(currentState)) {
+        auto* thirdPerson = static_cast<ThirdPersonState*>(cameraStates[CameraStates::kThirdPerson]);
+        thirdPerson->PrepareThirdPerson(false, false);
+        SetState(thirdPerson);
+    }
+}

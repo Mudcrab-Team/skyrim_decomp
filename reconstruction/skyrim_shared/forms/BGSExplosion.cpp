@@ -10,8 +10,9 @@ BGSExplosion::BGSExplosion() {}
 BGSExplosion::~BGSExplosion() {}
 void BGSExplosion::UnClone3D(TESObjectREFR* a_ref)
 {
-    const std::uint32_t flags = *reinterpret_cast<const std::uint32_t*>(reinterpret_cast<const char*>(a_ref) + 0x144);
-    if (!TestBit(flags, 5)) {
+    const auto* explosion = static_cast<const Explosion*>(a_ref);
+    // Explosion::Flags::kInWater is bit 5 of the flag word; the test takes the bit index.
+    if (!TestBit(static_cast<std::uint32_t>(explosion->flags), 5)) {
         TESObject::UnClone3D(a_ref);
     }
 }

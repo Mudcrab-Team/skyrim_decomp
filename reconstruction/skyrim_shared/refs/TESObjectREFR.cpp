@@ -1,7 +1,11 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original reconstruction from the pinned image and community declarations.
+// Consulted (private, not in repo): decompiler control-flow hints.
+// Adapted bodies: none in this change.
+// 0x6bd530 TESObjectREFR::Function6bd530
+// 0x22b2c0 TESObjectREFR::GetInventoryChanges
 // Licence: uses the GetEncounterZone and BGSEncounterZone names from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
-// with types from the header beside this file.
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
+// Existing bodies were drafted by claude-sonnet-5-5 from local listings and the accompanying header.
 // 0x2e6f30 TESObjectREFR::GetScale
 // 0x2f3b70 TESObjectREFR::GetCurrentLocation
 // 0x300b90 TESObjectREFR::GetCalcLevel
@@ -16,7 +20,56 @@
 // 0x2f41e0 TESObjectREFR::GetDistanceBetweenSquared
 #include "TESObjectREFR.h"
 
+#include <cmath>
 #include <limits>
+
+// playerActor, maximumFallSubmersion: GUESS(low); player identity and fall-damage water cutoff.
+// playerMinimumFallHeight, playerFallMultiplier, playerFallExponent: GUESS(low); player fall-damage settings.
+// npcMinimumFallHeight, npcFallMultiplier, npcFallExponent: GUESS(low); non-player fall-damage settings.
+extern Actor* playerActor;
+extern const float maximumFallSubmersion;
+extern float playerMinimumFallHeight;
+extern float playerFallMultiplier;
+extern float playerFallExponent;
+extern float npcMinimumFallHeight;
+extern float npcFallMultiplier;
+extern float npcFallExponent;
+
+// BGSEntryPoint, kModFallingDamage, HandleEntryPoint: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+class BGSEntryPoint {
+public:
+    // ENTRY_POINT: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    enum class ENTRY_POINT : unsigned { kModFallingDamage = 58 };
+    static void HandleEntryPoint(ENTRY_POINT a_entry, Actor* a_actor, float* a_value);
+};
+
+float TESObjectREFR::Function6bd530(float a_distance, float a_scale)
+{
+    float damage = 0.0f;
+    if (a_distance > damage) {
+        if (!(Function685c30(data.location.z, parentCell) >= maximumFallSubmersion)) {
+            float minimum;
+            float multiplier;
+            float exponent;
+            if (this == playerActor) {
+                minimum = playerMinimumFallHeight;
+                multiplier = playerFallMultiplier;
+                exponent = playerFallExponent;
+            } else {
+                minimum = npcMinimumFallHeight;
+                multiplier = npcFallMultiplier;
+                exponent = npcFallExponent;
+            }
+            const float threshold = minimum * a_scale;
+            if (a_distance > threshold) {
+                damage = powf((a_distance - threshold) * multiplier, exponent);
+                BGSEntryPoint::HandleEntryPoint(BGSEntryPoint::ENTRY_POINT::kModFallingDamage,
+                                               static_cast<Actor*>(this), &damage);
+            }
+        }
+    }
+    return damage;
+}
 
 
 // Globals read by GetCalcLevel; the image keeps them at fixed addresses.
@@ -204,4 +257,18 @@ float TESObjectREFR::GetDistanceBetweenSquared(const TESObjectREFR* a_other, boo
 bool TESObjectREFR::GetAllowPromoteToPersistent() const
 {
     return true;
+}
+
+// RVA 0x22b2c0, 18 bytes. The pinned image guards a null reference and a null list before the delegating call.
+// The null-this guard follows the pinned compiler behavior; a null member call is undefined in portable C++.
+InventoryChanges* TESObjectREFR::GetInventoryChanges(FormType a_baseType) const
+{
+    if (this == nullptr) {
+        return nullptr;
+    }
+    const ExtraDataList* list = &extraList;
+    if (list == nullptr) {
+        return nullptr;
+    }
+    return list->GetInventoryChanges(a_baseType);
 }
