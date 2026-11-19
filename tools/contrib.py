@@ -56,6 +56,7 @@ import profiles
 import rva_headers
 import agent_advice
 import agent_identity
+import repo_slug
 import attempt_progress
 from local_paths import local_dir, local_path, main_worktree_local, no_sibling_names
 
@@ -66,7 +67,7 @@ for _p in (TOOLS, TOOLS / 'verifier', TOOLS / 'analysis', TOOLS / 'ghidra'):
         sys.path.insert(0, str(_p))
 
 OK, FAILED, USAGE, COMPILE, UNIT, MISSING, CLAIMED, CONSENT, NETWORK = 0, 1, 2, 3, 4, 5, 6, 7, 8
-UPSTREAM = 'Mudcrab-Team/skyrim_decomp'
+UPSTREAM = repo_slug.DEFAULT_SLUG
 COMPILE_TIMEOUT = 180
 # Contributor units are small; a cap keeps a pathological file away from the compiler and reviewers.
 MAX_UNIT_FILE_BYTES = 64 * 1024
@@ -2150,7 +2151,7 @@ def cmd_preflight(ctx, args):
 def upstream_remote(ctx):
     """(upstream remote name or None, push remote name or None)."""
     up, push = None, None
-    slugs = {UPSTREAM.lower(), 'awarebayes/skyrim-research', 'awarebayes/skyrim_decomp',
+    slugs = {*repo_slug.aliases(UPSTREAM),
              (ctx.env.get('SR_UPSTREAM') or UPSTREAM).lower()}
     remotes = []
     for line in git(ctx, 'remote', '-v', check=False).splitlines():

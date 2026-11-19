@@ -29,7 +29,9 @@ from source_digest import include_closure
 from digest_v2 import DIGEST_METHOD, tu_digest
 import target_hashes
 
-REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
+import repo_slug
+
+REPOSITORY = repo_slug.current_slug()
 
 
 def command(argv, root, data=None, env=None):

@@ -49,13 +49,14 @@ import uuid
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
+sys.path.insert(1, str(HERE.parent))
+import repo_slug  # noqa: E402
 import starts  # noqa: E402
 
 SCHEMA = 1
 BACKENDS = ('boat', 'local', 'ssh', 'ci-hash')
 # The repository moved organizations; GitHub redirects the old name, so a runners file written with
 # either name addresses the same hash job.
-CI_REPOSITORIES = ('awarebayes/skyrim_decomp', 'Mudcrab-Team/skyrim_decomp')
 LOADERS = ('wine', 'native')
 HOST_ID = re.compile(r'[a-z0-9][a-z0-9-]{1,39}')
 # Everything on an ssh command line must survive PowerShell, cmd and POSIX shells unquoted.
@@ -124,7 +125,7 @@ def validate(raw, root=None):
         if backend == 'ci-hash':
             if (hid != 'github-windows-native' or machine != 'github-hosted-windows'
                     or h['loader'] != 'native'
-                    or h.get('repository') not in CI_REPOSITORIES):
+                    or not repo_slug.same_repo(h.get('repository'), repo_slug.DEFAULT_SLUG)):
                 raise RunnerError(f'{where}: ci-hash requires the approved GitHub Windows host')
             host.update(max_parallel=1, batch=4096)
             out[name] = host

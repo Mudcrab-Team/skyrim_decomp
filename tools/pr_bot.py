@@ -47,11 +47,11 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import mapping_check  # noqa: E402
 import rva_headers  # noqa: E402
+import repo_slug  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
-# The maintainer is a person; the repository belongs to an organisation.
-OWNER = 'awarebayes'
+REPOSITORY = repo_slug.current_slug()
+OWNER = repo_slug.MAINTAINER_LOGIN
 # An owner PR is skipped unless it carries this label, which asks for the same acceptance as an outside PR.
 OPT_IN_LABEL = 'bot-process'
 SHA = re.compile(r'[0-9a-f]{40}')

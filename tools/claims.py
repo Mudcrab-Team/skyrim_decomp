@@ -16,9 +16,10 @@ import time
 import tempfile
 
 import agent_advice
+import repo_slug
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = 'Mudcrab-Team/skyrim_decomp'
+REPO = repo_slug.current_slug()
 MARKER = 'skyrim-claim-v1'
 MANAGED = '<!-- skyrim-project-claim -->'
 BODY_LIMIT = 60000
