@@ -1457,5 +1457,16 @@ class NewFunctionsTest(unittest.TestCase):
         self.assertEqual(bot.new_functions('base', units), {0x20, 0x30})
 
 
+class TargetRvasTest(unittest.TestCase):
+    def test_target_rvas_read_the_shards(self):
+        work = Path(tempfile.mkdtemp())
+        bot = pr_bot.Bot(root=ROOT, work=work)
+        shards = bot.tree / 'data/target-hashes'
+        shards.mkdir(parents=True)
+        (shards / 'sse-steam-1-7-104-part-000.json').write_text(json.dumps({'functions': [{'rva': 16}, {'rva': 32}]}))
+        self.assertEqual(bot.target_rvas(), {16, 32})
+        self.assertEqual(pr_bot.Bot(root=ROOT, work=Path(tempfile.mkdtemp())).target_rvas(), set())
+
+
 if __name__ == '__main__':
     unittest.main()

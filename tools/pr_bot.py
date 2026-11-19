@@ -1361,6 +1361,13 @@ class Bot:
             fresh |= set(rvas) - set(functions_of(texts))
         return fresh
 
+    def target_rvas(self):
+        """RVAs with a published target hash in the bot's tree; empty when the shards are absent."""
+        found = set()
+        for shard in sorted((self.tree / 'data/target-hashes').glob('sse-steam-1-7-104-part-*.json')):
+            found.update(row['rva'] for row in json.loads(shard.read_text())['functions'])
+        return found
+
     def units(self, files):
         units = {}
         for item in files:
@@ -1371,6 +1378,11 @@ class Bot:
                 continue
             texts = [(self.tree / (cpp[:-4] + s)).read_text() for s in ('.h', '.cpp') if (self.tree / (cpp[:-4] + s)).is_file()]
             units.setdefault(cpp, set()).update(functions_of(texts))
+        targets = self.target_rvas()
+        if targets:
+            # A header may name a data address (`RVA 0x...` in a provenance line); the hash job reports
+            # those as no-target and the verifier cannot build a task row for them.
+            units = {u: {r for r in rs if r in targets} for u, rs in units.items()}
         if not units or any(not rs for rs in units.values()):
             raise Rejected('rva-headers')
         return {u: sorted(rs) for u, rs in units.items()}
