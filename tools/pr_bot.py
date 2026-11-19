@@ -1114,7 +1114,7 @@ class Bot:
         self.overlay(head, files)
         units = state.once('units', lambda: self.units(files))
         functions = sorted({r for rs in units.values() for r in rs})
-        if not functions or len(functions) > self.config['max_functions']:
+        if not functions or len(self.new_functions(base, units)) > self.config['max_functions']:
             raise Rejected('functions')
         state.once('batch', lambda: wants_batching(functions, self.header_sizes(units)))
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
@@ -1347,6 +1347,19 @@ class Bot:
         return {r: ('preexisting-fail' if r in suspects and at_base.get(str(r)) == 'fail' else
                     'regressed' if r in suspects and at_base.get(str(r)) == 'pass' else v)
                 for r, v in host2.items()}
+
+    def new_functions(self, base, units):
+        """Functions the PR adds to its units. Functions a unit already claimed on base are compared again
+        (a regression check) but are not the contributor's batch, so they do not count against the cap."""
+        fresh = set()
+        for unit, rvas in units.items():
+            texts = []
+            for suffix in ('.h', '.cpp'):
+                shown = self.run(['git', 'show', f'{base}:{unit[:-4]}{suffix}'], check=False)
+                if shown.returncode == 0:
+                    texts.append(shown.stdout.decode('utf-8', 'replace'))
+            fresh |= set(rvas) - set(functions_of(texts))
+        return fresh
 
     def units(self, files):
         units = {}

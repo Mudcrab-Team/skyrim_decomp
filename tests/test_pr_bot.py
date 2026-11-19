@@ -1444,5 +1444,18 @@ class StickyCommentTests(unittest.TestCase):
         self.assertEqual(bot.header_sizes({'reconstruction/a/B.cpp': [0x10, 0x20]}), {0x10: 40, 0x20: 8})
 
 
+class NewFunctionsTest(unittest.TestCase):
+    def test_functions_already_on_base_do_not_count(self):
+        bot = pr_bot.Bot(root=ROOT, work=Path(tempfile.mkdtemp()))
+        shown = {'base:reconstruction/a/B.h': b'// RVA 0x10, 4 bytes: B::f\n', 'base:reconstruction/a/B.cpp': b''}
+
+        def run(argv, **kw):
+            out = shown.get(argv[-1])
+            return subprocess.CompletedProcess(argv, 0 if out is not None else 128, out or b'')
+        bot.run = run
+        units = {'reconstruction/a/B.cpp': [0x10, 0x20], 'reconstruction/a/C.cpp': [0x30]}
+        self.assertEqual(bot.new_functions('base', units), {0x20, 0x30})
+
+
 if __name__ == '__main__':
     unittest.main()
