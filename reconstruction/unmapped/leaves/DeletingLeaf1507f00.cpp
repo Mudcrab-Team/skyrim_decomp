@@ -1,6 +1,7 @@
 // Source exposure: binary-analysis (the shape of the compared function in the pinned image).
 // Code origin: original stand-in stamped from matched exemplar 0x1507e00 (reconstruction/bsshader/BSImagespaceShaderBlur3.cpp); no external declaration or body reused.
 // 0x1507f00 DeletingLeaf1507f00::~DeletingLeaf1507f00
+// CI hash: 0x1507f00 ??_GDeletingLeaf1507f00@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeaf1507f00.h"
 
