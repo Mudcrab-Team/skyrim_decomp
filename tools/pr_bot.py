@@ -692,7 +692,10 @@ class Bot:
                 raise GhFailure('gh timed out')
             raise
         if check and result.returncode:
-            raise (GhFailure if name == 'gh' else Stop)(f'{name} failed')
+            # A bare "git failed" hid which command broke; keep the last stderr line and the subcommand.
+            lines = result.stderr.decode(errors='replace').strip().splitlines() if name == 'git' else []
+            suffix = f' ({" ".join(str(a) for a in argv[1:3])}: {lines[-1][:200]})' if lines else ''
+            raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
 
     def gh_json(self, *args):

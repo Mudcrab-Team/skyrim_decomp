@@ -490,3 +490,13 @@ class PoolTests(WorkDir):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class GitFailureTextTests(unittest.TestCase):
+    def test_a_failed_git_command_names_its_subcommand_and_last_stderr_line(self):
+        with tempfile.TemporaryDirectory() as d:
+            bot = pr_bot.Bot(root=Path(d), work=Path(d) / 'w')
+            with self.assertRaises(pr_bot.Stop) as caught:
+                bot.run(['git', 'rev-parse', '--verify', 'nonexistent-ref'])
+        text = str(caught.exception)
+        self.assertIn('git failed (rev-parse --verify:', text)
