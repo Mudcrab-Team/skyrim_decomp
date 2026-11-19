@@ -4,7 +4,7 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // BSLightingShaderMaterialEye: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
-// BSLightingShaderMaterialEye::SaveBinary, BSLightingShaderMaterialEye::LoadBinary, BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEye::Ctor, BSLightingShaderMaterialEye::GetTextures, BSLightingShaderMaterialEye::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BSLightingShaderMaterialEye::SaveBinary, BSLightingShaderMaterialEye::LoadBinary, BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEye::Ctor, BSLightingShaderMaterialEye::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // eyeEnvMask, eyeCubemap, unkB0, colorB4, colorC0, pad_CC: GUESS(low)
 // Adapted bodies: NiBinaryStream::read, NiBinaryStream::write from
 // CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h (MIT);
@@ -313,7 +313,6 @@ public:
     virtual void LoadBinary(NiStream& a_stream);  // compared: 0x15257f0
     virtual void ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, std::uintptr_t a_extra1, std::uintptr_t a_extra2);  // compared: 0x1525640
     BSLightingShaderMaterialEye();  // compared: 0x15250e0
-    std::uint32_t GetTextures(NiSourceTexture** a_textures);  // compared: 0x15256d0
     std::uint32_t ComputeCRC32(std::uint32_t a_crcSeed) override;  // compared: 0x15253e0
 
     NiPointer<NiSourceTexture> eyeEnvMask;  // A0

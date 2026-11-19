@@ -1,7 +1,3 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: bodies written from the local listings; names and declarations follow CommonLibSSE-NG.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// 0x15256d0 BSLightingShaderMaterialEye::GetTextures
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
@@ -63,27 +59,3 @@ BSLightingShaderMaterialEye::BSLightingShaderMaterialEye() : eyeEnvMask{}, eyeCu
     colorC0.blue = NiPoint3::Zero.z;
 }
 
-
-std::uint32_t BSLightingShaderMaterialEye::GetTextures(NiSourceTexture** a_textures)
-{
-    std::uint32_t count = 0;
-    if (diffuseTexture) {
-        a_textures[count++] = diffuseTexture._ptr;
-    }
-    if (normalTexture) {
-        a_textures[count++] = normalTexture._ptr;
-    }
-    if (rimSoftLightingTexture) {
-        a_textures[count++] = rimSoftLightingTexture._ptr;
-    }
-    if (specularBackLightingTexture) {
-        a_textures[count++] = specularBackLightingTexture._ptr;
-    }
-    if (eyeEnvMask) {
-        a_textures[count++] = eyeEnvMask._ptr;
-    }
-    if (eyeCubemap) {
-        a_textures[count++] = eyeCubemap._ptr;
-    }
-    return count;
-}
