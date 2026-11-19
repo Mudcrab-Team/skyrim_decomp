@@ -342,6 +342,8 @@ def comment_body(sha, decision, leak_codes=()):
             lines = [f'Both hosts were compared, but the review found material that must not be published '
                      f'(evidence kind: {kinds}), so nothing was merged. Please remove it and push again; the bot '
                      f're-checks the new head.']
+            for file, category in decision.get('origin_problems', []):
+                lines.append(f'- {file}: {category} ({ORIGIN_CATEGORIES[category]})')
             for r, ns in sorted(decision.get('notes', {}).items()):
                 lines += [f'- 0x{r:x}:'] + [f'  - {n}' for n in ns]
             return '\n'.join(lines)
@@ -377,6 +379,9 @@ def comment_body(sha, decision, leak_codes=()):
                      'again; the bot re-checks the new head.')
         return '\n'.join(lines)
     lines = []
+    if decision.get('origin_permitted'):
+        lines.append('Note, not a block: origin similarity to an admitted sibling body, correctly labelled, in '
+                     + ', '.join(decision['origin_permitted']) + '.')
     done = [r for r, v in decision['verdicts'].items() if v == 'matched']
     if done:
         lines.append('Merged and recorded: ' + ', '.join(f'0x{r:x}' for r in sorted(done)) + '.')
@@ -399,6 +404,48 @@ def review_leak_evidence(text):
     except (ValueError, KeyError, TypeError, AttributeError):
         return []
     return sorted({k for k in kinds if k in LEAK_EVIDENCE}) if isinstance(kinds, list) else []
+
+
+ORIGIN_CATEGORIES = {
+    'unpermitted-source': 'the body resembles a source that is not an admitted sibling',
+    'unlabelled': 'the body resembles an admitted sibling but the unit header has no `Sibling source:` line for that file',
+    'invalid-label': 'the unit header cites the sibling with a malformed, unpinned or wrong-permission label',
+    'excluded-source': 'the cited fo4-private path is outside the admitted game-code folders',
+    'unconfirmed': 'the review reported origin similarity that the origin check could not confirm',
+}
+
+
+def origin_findings(hits, headers, unverified=False):
+    """([(file, category)], [file]) from check_origin hits: what blocks and what is an admitted sibling body.
+
+    A hit is informational only when its source is an admitted sibling, the unit header names that
+    sibling path in a valid `Sibling source:` line, and (for fo4-private) the path is a game-code folder.
+    Trivial bodies and fork duplicates carry no provenance claim. Anything else, or a check that could not
+    run, stays blocking so a reviewer's origin claim is never waved through unverified.
+    """
+    import check_origin
+    from fo4_private import allowed_path
+    from lint_reconstruction import SIBLING_HEADER, sibling_header_problems
+    problems, permitted = [], []
+    for hit in hits:
+        if hit['trivial'] or hit.get('fork_of'):
+            continue
+        file, repo = hit['file'], hit['repo']
+        header = headers.get(file, '')
+        if repo not in check_origin.SIBLINGS:
+            problems.append((file, 'unpermitted-source'))
+        elif repo == 'fo4-private' and not allowed_path(hit['path']):
+            problems.append((file, 'excluded-source'))
+        elif not hit.get('declared'):
+            problems.append((file, 'unlabelled'))
+        elif sibling_header_problems(file, header) or not any(
+                m.group(1) == repo and m.group(3) == hit['path'] for m in SIBLING_HEADER.finditer(header)):
+            problems.append((file, 'invalid-label'))
+        else:
+            permitted.append(file)
+    if unverified or not (problems or permitted):
+        problems.append(('(origin check)', 'unconfirmed'))
+    return sorted(set(problems)), sorted(set(permitted))
 
 
 def parse_review(text, functions):
@@ -1191,10 +1238,20 @@ class Bot:
             leak, verdict = parse_review(text, passed)
             notes = review_notes(text, passed)
             evidence_kinds = review_leak_evidence(text)
+        origin_problems, origin_permitted = [], []
+        if leak == 'yes' and 'origin-similarity' in evidence_kinds:
+            # The claim is checked against the origin tool: a body that only resembles an admitted,
+            # correctly labelled sibling is provenance the project allows, not a leak.
+            hits, headers, unverified = self.origin_hits(check_units)
+            origin_problems, origin_permitted = origin_findings(hits, headers, unverified)
+            if not origin_problems and set(evidence_kinds) == {'origin-similarity'}:
+                leak = 'no'
         verdict = {r: verdict.get(r, 'reject') for r in everything}
         decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra, stale=stale,
                           leak_evidence=evidence_kinds)
         state.set('decision', decision)
+        decision['origin_problems'] = origin_problems
+        decision['origin_permitted'] = origin_permitted
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
@@ -1208,6 +1265,28 @@ class Bot:
                 state.set('decision', decision)
             state.set('records', str(records))
         return self.finish(pr, state, decision, started)
+
+    def origin_hits(self, units):
+        """(hits, {unit file: leading comment of its header and source}, unverified) from tools/check_origin.py.
+
+        The pinned clones live under the bot's own root, not the scratch tree. `unverified` is set when a
+        clone the unit header cites cannot be read, since a hit from it could not be seen.
+        """
+        import check_origin
+        try:
+            clones, missing = check_origin.open_clones(self.root)
+        except (OSError, ValueError):
+            return [], {}, True
+        hits, headers, unverified = [], {}, False
+        for cpp in sorted(units):
+            stem = cpp.rsplit('.', 1)[0]
+            files = [self.tree / name for name in (stem + '.h', cpp) if (self.tree / name).is_file()]
+            header = '\n'.join(check_origin.leading_comment(f.read_text(errors='replace')) for f in files)
+            unverified |= any(f'{repo}@' in header for repo in missing)
+            for f in files:
+                headers[f.relative_to(self.tree).as_posix()] = header
+            hits += check_origin.check_unit(files, clones, root=self.tree)
+        return hits, headers, unverified
 
     def mapping_problems(self, base, head):
         """Reason codes from tools/mapping_check.py (trusted tools, the PR only as data); [] when it is valid.
@@ -1424,6 +1503,8 @@ class Bot:
         verdicts = decision['verdicts']
         summary = dict(pr=number, head=head, blocked=decision['blocked'], merge=decision['merge'],
                        verdicts={f'0x{int(r):x}': v for r, v in verdicts.items()}, seconds=round(time.time() - started, 1))
+        if decision.get('origin_permitted'):
+            summary['origin_note'] = decision['origin_permitted']
         state.set('summary', summary)
         if self.dry_run:
             return summary
