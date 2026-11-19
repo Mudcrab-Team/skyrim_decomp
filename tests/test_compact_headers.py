@@ -129,5 +129,33 @@ class WrapTests(unittest.TestCase):
         self.assertEqual(self.rewrite(once)[0], once)
 
 
+class ScopeTests(unittest.TestCase):
+    def test_default_scope_is_what_the_branch_changed(self):
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def git(*args):
+                subprocess.run(['git', '-c', 'user.name=t', '-c', 'user.email=t@t', *args], cwd=root, check=True,
+                               capture_output=True)
+            git('init', '-q', '-b', 'main')
+            (root / 'reconstruction').mkdir()
+            for name in ('old.cpp', 'edited.h'):
+                (root / 'reconstruction' / name).write_text('int a;\n')
+            git('add', '.')
+            git('commit', '-q', '-m', 'base')
+            git('checkout', '-q', '-b', 'work')
+            (root / 'reconstruction/edited.h').write_text('int b;\n')
+            (root / 'reconstruction/new.cpp').write_text('int c;\n')
+            (root / 'reconstruction/notes.md').write_text('x\n')
+            self.assertEqual(c.changed_units(root, 'main'), ['reconstruction/edited.h', 'reconstruction/new.cpp'])
+            self.assertIsNone(c.changed_units(root, 'no-such-rev'))
+
+    def test_unresolvable_base_requires_explicit_paths(self):
+        with self.assertRaises(SystemExit):
+            c.main(['--root', str(ROOT), '--base', 'no-such-rev'])
+
+
 if __name__ == '__main__':
     unittest.main()

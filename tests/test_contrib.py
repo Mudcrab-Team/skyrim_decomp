@@ -944,6 +944,16 @@ class JoinPageTests(unittest.TestCase):
         self.assertNotIn('%', page.split('<main>')[1].split('</main>')[0].replace('100%', ''))
 
 
+class SymbolMapPathTests(unittest.TestCase):
+    def test_missing_map_names_the_path_and_the_sparse_fix(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(contrib.Stop) as caught:
+                contrib.symbol_map_path(tmp, 'some-build')
+        self.assertIn('reports/some-build/symbol-map.json', caught.exception.message)
+        self.assertIn("git sparse-checkout set --no-cone '/*' '!/site/'", caught.exception.next_action)
+
+
 class CommandLineTests(unittest.TestCase):
     def test_non_tty_json_never_prompts(self):
         proc = subprocess.run([sys.executable, str(ROOT / 'tools/contrib.py'), '--json', 'doctor'],

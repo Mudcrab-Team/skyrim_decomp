@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Rewrite the leading comment of reconstruction units to the compact header.
 
-    python3 tools/compact_headers.py [--apply] [--skip-list FILE] [files or directories...]
+    python3 tools/compact_headers.py [--apply] [--skip-list FILE] [--base REV | --all-tree | files or directories...]
 
 The compact header keeps what a reader or a validator needs and drops what the records, git and
 the docs already say: the full MIT text becomes the one SPDX line, label lines, `Source exposure`,
@@ -19,11 +19,15 @@ as it is and reported:
 Comments that carry provenance are kept by the same predicate the digest uses
 (digest_v2.is_provenance), so what the label checker and the reviewers read is untouched.
 Without --apply nothing is written.
+With no path it takes the .h and .cpp files under reconstruction/ that this checkout changed against
+origin/main (committed, modified or untracked), lists them, and touches nothing else; --base picks
+another revision. Rewriting the whole tree needs the explicit --all-tree.
 """
 import argparse
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -258,18 +262,48 @@ def process(root, rel, names, canon, apply):
     return 'rewritten', f'{len(old.splitlines())}->{len(new.splitlines())}'
 
 
+def changed_units(root, base='origin/main'):
+    """Reconstruction .h/.cpp files this checkout changed since it left `base`; None if git cannot say."""
+    def git(*args):
+        proc = subprocess.run(['git', *args], cwd=root, capture_output=True, text=True)
+        return proc.stdout.splitlines() if proc.returncode == 0 else None
+    fork = git('merge-base', base, 'HEAD')
+    if not fork:
+        return None
+    committed = git('diff', '--name-only', '--diff-filter=ACMR', fork[0], '--', 'reconstruction')
+    fresh = git('ls-files', '--others', '--exclude-standard', '--', 'reconstruction')
+    if committed is None or fresh is None:
+        return None
+    return sorted(n for n in {*committed, *fresh} if n.endswith(('.h', '.cpp')) and (root / n).is_file())
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--apply', action='store_true')
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--skip-list', type=Path, help='file of repository paths to leave alone')
     p.add_argument('--report', type=Path, help='write the per-file outcomes here')
+    p.add_argument('--base', default='origin/main', help='default scope: files changed against this revision')
+    p.add_argument('--all-tree', action='store_true', help='rewrite every unit under reconstruction/')
     p.add_argument('paths', nargs='*')
     a = p.parse_args(argv)
     root = a.root
     skip = set(a.skip_list.read_text().split()) if a.skip_list else set()
     targets = []
-    for arg in a.paths or ['reconstruction']:
+    paths = a.paths
+    if a.all_tree and paths:
+        p.error('--all-tree takes no paths')
+    if a.all_tree:
+        paths = ['reconstruction']
+    elif not paths:
+        paths = changed_units(root, a.base)
+        if paths is None:
+            p.error(f'cannot tell what changed against {a.base}; give file paths, or --all-tree for the whole tree')
+        print(f'{len(paths)} file(s) changed against {a.base}:', *paths, sep='\n  ' if paths else '')
+        if not paths:
+            print('nothing to do')
+            return 0
+    for arg in paths:
         base = root / arg
         found = sorted(q for q in base.rglob('*') if q.suffix in ('.h', '.cpp')) if base.is_dir() else [base]
         targets += [q.relative_to(root).as_posix() for q in found]
