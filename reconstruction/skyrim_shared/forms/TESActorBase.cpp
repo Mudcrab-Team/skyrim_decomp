@@ -1,7 +1,8 @@
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
-// Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
-// otherwise name each adapted body, its upstream file, revision and licence).
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: GetHasPLSpecTex uses the existing project body from d7bcc19aa9.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x3cc6d0 TESActorBase::GetHasPLSpecTex
+// Adapted bodies: none
 // 0x3b03a0 TESActorBase::GetIsPlayerOwner
 // 0x3afed0 TESActorBase::IsAutoCalc
 // 0x3afef0 TESActorBase::SetAutoCalc

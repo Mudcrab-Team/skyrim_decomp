@@ -29,6 +29,15 @@ class HintTests(unittest.TestCase):
         self.assertEqual(pr_bot.ci_hash_hints(text, [0xeee380]), {'?Impl@A@@QEAAXXZ': '0xeee380'})
         self.assertEqual(pr_bot.ci_hash_hints(text, []), {})
 
+    def test_recorded_symbol_hints_pick_the_overload_by_record(self):
+        task = {'export': {'unit_already_records': [
+            {'rva': '0x1900a0', 'symbol': '?F@A@@QEAAXXZ'}, {'rva': '0x405a50', 'symbol': '?F@A@@QEBAXXZ'},
+            {'rva': '0x10', 'symbol': None}]}}
+        self.assertEqual(pr_bot.recorded_symbol_hints(task, [0x1900a0, 0x405a50, 0x10]),
+                         {'?F@A@@QEAAXXZ': '0x1900a0', '?F@A@@QEBAXXZ': '0x405a50'})
+        self.assertEqual(pr_bot.recorded_symbol_hints(task, [0x405a50]), {'?F@A@@QEBAXXZ': '0x405a50'})
+        self.assertEqual(pr_bot.recorded_symbol_hints({}, [1]), {})
+
 
 class PollableTests(unittest.TestCase):
     def pr(self, login, labels=(), base='main', draft=False):
@@ -1095,6 +1104,10 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.state.data['ci']['rows'].pop('16')
         out, failed = self.build()
         self.assertEqual(failed, {0x10})
+
+    def test_a_matched_function_with_no_task_in_the_tree_is_refused_not_skipped(self):
+        out, failed = self.build({0x10, 0x20, 0x30})
+        self.assertEqual(failed, {0x30})
 
     def test_a_stale_record_file_never_stands_in_for_a_refused_one(self):
         out, _ = self.build()

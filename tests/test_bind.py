@@ -314,6 +314,46 @@ DTOR = 'SyntheticDtor'
 DTOR_RVA = fx.LAYOUT[fx.OTHER_CALLEE]
 
 
+class ClassSpecialNameTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.task_dir = self.root / 'task'
+        self.task_dir.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_ctor(self, defined, community='RE::BSLightingShaderMaterialEye::Ctor', size=3):
+        unit = fx.Unit()
+        for name, length in defined.items():
+            sec = unit.section('.text$mn', b'\xc3' * length, fx.SCN_CODE)
+            unit.define(name, sec, storage=fx.STORAGE_EXTERNAL, function=True)
+        (self.root / 'obj').write_bytes(unit.coff())
+        task = {'symbols': 'symbols.json', 'functions': [
+            {'rva': '0x1000', 'size': size, 'symbol': 'unbound:Eye', 'community_name': community}]}
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': {}}))
+        report = bind.bind(self.task_dir, self.root / 'obj', None, repo=self.root)
+        return report, json.loads((self.task_dir / 'task.json').read_text())['functions'][0]
+
+    def test_other_classes_constructor_does_not_make_it_ambiguous(self):
+        report, fn = self.run_ctor({'??0BSLightingShaderMaterialEye@@QEAA@XZ': 3, '??0NiColor@@QEAA@XZ': 3})
+        self.assertEqual(fn['symbol'], '??0BSLightingShaderMaterialEye@@QEAA@XZ')
+        self.assertEqual(report['unbound_functions'], [])
+
+    def test_single_constructor(self):
+        report, fn = self.run_ctor({'??0BSLightingShaderMaterialEye@@QEAA@XZ': 3})
+        self.assertEqual(fn['symbol'], '??0BSLightingShaderMaterialEye@@QEAA@XZ')
+
+    def test_overloaded_constructors_stay_unbound_with_hint_advice(self):
+        report, fn = self.run_ctor({'??0BSLightingShaderMaterialEye@@QEAA@XZ': 3,
+                                    '??0BSLightingShaderMaterialEye@@QEAA@H@Z': 3, '??0NiColor@@QEAA@XZ': 3})
+        self.assertEqual(fn['symbol'], 'unbound:Eye')
+        self.assertEqual(len(report['unbound_functions'][0]['overloads']), 2)
+        self.assertIn('CI hash:', '\n'.join(bind.describe(report, self.task_dir)))
+
+
 class FuncletTests(unittest.TestCase):
     """References made only from funclets, on the synthetic catch unit (catch$0 and dtor$0)."""
 

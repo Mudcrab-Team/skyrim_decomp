@@ -83,6 +83,8 @@ GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/pro
 # Per-function hashes of the newly mapped functions: test_target_hashes fails on main until they exist, and only
 # this machine holds the image they are computed from.
 TARGET_HASH_DIR = 'data/target-hashes/'
+REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
+REFILL_EVERY = 3600  # seconds between looks at that count
 
 
 def is_generated(name):
@@ -187,6 +189,18 @@ def ci_hash_hints(text, rvas):
     only statement of which symbol is the function.
     """
     return {sym: rva.lower() for rva, sym in CI_HASH_LINE.findall(text) if int(rva, 16) in set(rvas)}
+
+
+def recorded_symbol_hints(task, rvas):
+    """{decorated symbol: rva} from the task's already-accepted records of the unit.
+
+    Overloads that differ only in constness share a community name, so binding by name leaves both
+    unbound on the standing host although each record names the exact symbol that matched; the
+    comparator still byte-compares whatever the hint selects.
+    """
+    wanted = {hex(r) for r in rvas}
+    return {rec['symbol']: rec['rva'].lower() for rec in task.get('export', {}).get('unit_already_records', [])
+            if rec.get('symbol') and str(rec.get('rva', '')).lower() in wanted}
 
 
 def scope_problem(files):
@@ -690,7 +704,10 @@ class Bot:
                 raise GhFailure('gh timed out')
             raise
         if check and result.returncode:
-            raise (GhFailure if name == 'gh' else Stop)(f'{name} failed')
+            # A bare "git failed" hid which command broke; keep the last stderr line and the subcommand.
+            lines = result.stderr.decode(errors='replace').strip().splitlines() if name == 'git' else []
+            suffix = f' ({" ".join(str(a) for a in argv[1:3])}: {lines[-1][:200]})' if lines else ''
+            raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
 
     def gh_json(self, *args):
@@ -1069,6 +1086,9 @@ class Bot:
         out = {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
+            # A task the export did not write has no records to hint from.
+            made = task / 'task.json'
+            hints = {**recorded_symbol_hints(json.loads(made.read_text()) if made.is_file() else {}, rvas), **hints}
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
         for task in tasks:
@@ -1233,7 +1253,7 @@ class Bot:
         ci = state.get('ci')
         if not ci:
             raise Stop('no hash run evidence to build records from')
-        out, failed = self.work / 'records' / tag, set()
+        out, failed, built = self.work / 'records' / tag, set(), set()
         for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{tag.split("/")[0]}-*')):
             info = json.loads((task / 'task.json').read_text())
             wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
@@ -1275,11 +1295,16 @@ class Bot:
                 if row is None:
                     failed.add(rva)
                     continue
-                built = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
+                built_run = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
                     dict(run=ci['run'], report=ci['report'], row=row, map_status=ci['map'].get(str(rva))))],
                     cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
-                if built.returncode or not made.is_file():
+                if not built_run.returncode and made.is_file():
+                    built.add(rva)
+                else:
                     failed.add(rva)  # the validator refused it: the function stays drafted
+        # A function with no task directory in the tree was never confirmed at all; leaving it out of `failed`
+        # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
+        failed |= set(rvas) - built - failed
         return out, failed
 
     # ---- one PR head ----
@@ -1635,6 +1660,30 @@ class Bot:
             return dict(blocked, blocked='review', count=len(added), notes=notes)
         return dict(blocked=None, merge=True, verdicts={}, count=len(added))
 
+    def offered_open(self):
+        """Offered functions nobody has recorded yet, counted on a fresh origin/main from the published lists.
+
+        Open claims are not subtracted: a claim is advisory, and the count only decides when the window needs
+        topping up, so overcounting the few functions in flight is harmless.
+        """
+        import contrib
+        self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+        self.run(['git', 'checkout', '--quiet', '--force', '-B', 'regen', 'origin/main'], cwd=self.tree)
+        data = contrib.inventory(self.tree)
+        return sum(1 for c in contrib.candidates(self.tree, data, published=True) if c['startable'])
+
+    def refill_offers(self, threshold=REFILL_BELOW):
+        """Top the offered window back up when fewer than `threshold` functions are left to claim.
+
+        Regenerating recomputes the window from the private function table, smallest first and classes with
+        layouts first, so recorded functions leave it and new ones enter. Returns the count that was seen.
+        """
+        with self.land_lock:  # the push to main takes its turn with merges and records
+            left = self.offered_open()
+            if left < threshold:
+                self.regenerate(None)
+        return left
+
     def regenerate(self, number):
         """Rebuild the generated index and pictures on main after a mapping merge; push only those files.
 
@@ -1665,8 +1714,9 @@ class Bot:
             if not changed:
                 return
             self.run(['git', 'add', '--', *sorted(changed)], cwd=self.tree)
-            self.run(['git', 'commit', '--quiet', '-m', f'Regenerate the index and pictures after mapping PR #{number}'],
-                     cwd=self.tree)
+            why = (f'Regenerate the index and pictures after mapping PR #{number}' if number else
+                   'Refill the offered target window')
+            self.run(['git', 'commit', '--quiet', '-m', why], cwd=self.tree)
             if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
                 return
         raise Stop('push of the regenerated files kept losing the race; retry next tick')
@@ -1826,7 +1876,11 @@ class Bot:
                 '--records', state.get('records')]
         for r in rvas:
             argv += ['--rva', hex(r)]
-        self.run(argv, cwd=self.tree, timeout=1800)
+        done = self.run(argv, cwd=self.tree, timeout=1800, check=False)
+        if done.returncode:
+            # record.py prints which function it refused and why; without it the log only says "python3.13 failed".
+            tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
+            raise Stop(f'record step failed after the merge: {tail[0][:300]}')
         state.set('recorded', True)
 
 
@@ -1863,12 +1917,13 @@ def work_one(slots, gh, pr):
         slots.put(slot)
 
 
-def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None):
+def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
+         refill_every=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
 
     A PR is never queued twice, and a finished head or one that is backing off costs no worker. After a
     `gh` failure nothing is listed or run until the shared GitHub backoff has passed. `rounds` bounds the
-    loop for tests.
+    loop for tests. With `refill_every`, an idle bot checks the offered window at most that often.
     """
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
@@ -1882,6 +1937,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     for index in range(workers):
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
+    refilled = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -1895,6 +1951,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             if wait:
                 sleep(min(wait, interval))
                 continue
+            if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
+                refilled = time.time()  # a failure waits for the next window, not the next tick
+                try:
+                    left = bot.for_slot(0).refill_offers()
+                    print(f'{stamp()} offered window: {left} claimable left', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
@@ -1945,7 +2008,7 @@ def main(argv=None):
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
-        return poll(bot, a.interval, a.restart_after)
+        return poll(bot, a.interval, a.restart_after, refill_every=REFILL_EVERY)
     if a.command != 'pr' or not a.number:
         p.error('give `pr NUMBER` or --poll')
     pr = bot.gh_json('pr', 'view', str(a.number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
