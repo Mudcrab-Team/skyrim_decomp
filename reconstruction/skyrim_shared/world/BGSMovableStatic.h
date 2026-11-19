@@ -1,10 +1,12 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Source exposure: mixed (pinned image listing and community declarations).
+// Code origin: original reconstruction from the pinned image and community declarations.
+// Adapted bodies: none.
 // BGSMovableStatic: EXE_RTTI; bases in the order of the image's vftables
 #pragma once
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class BGSSoundDescriptorForm;
 
@@ -86,6 +88,8 @@ public:
 
 	// BGSMovableStatic::InitializeData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 04 of TESForm
 	void InitializeData() override;  // 04
+	// BGSMovableStatic::InitItemImpl: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 13 of TESForm
+	void InitItemImpl() override;  // 13
 
 	// soundLoop: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG places it at A0
 	BGSSoundDescriptorForm* soundLoop;  // A0
@@ -93,3 +97,14 @@ public:
 	std::uint8_t unkA8[0x8];  // A8
 };
 static_assert(sizeof(BGSMovableStatic) == 0xB0, "layout");
+
+// InitDestructibleObjectFormState: GUESS(low); the callee at RVA 0x1d2dc0 takes one component and the form that owns it.
+void InitDestructibleObjectFormState(BGSDestructibleObjectForm* a_component, TESForm* a_owner);
+// InitModelTextureSwapState: GUESS(low); the callee at RVA 0x1ed110 takes one component and the form that owns it.
+void InitModelTextureSwapState(void* a_component, TESForm* a_owner);
+// AddCompileIndex, GetFile, LookupByID: GUESS(low); callees at RVAs 0x1e6d00, 0x1e5ae0 and 0x559a10, the helpers the other InitItemImpl units declare.
+void  AddCompileIndex(std::uint32_t& a_id, void* a_file);
+void* GetFile(TESForm* a_form, std::int32_t a_index);
+void* LookupByID(std::uint32_t a_formID);
+// SetFormFlag: GUESS(low); the non-virtual TESForm helper at RVA 0x1e60b0 taking the form and a bool.
+void SetFormFlag(TESForm* a_form, bool a_flag);

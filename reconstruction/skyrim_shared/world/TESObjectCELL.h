@@ -1,8 +1,9 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Source exposure: mixed (pinned image listing and community declarations; a local decompile informed control flow and is not in the repo).
+// Code origin: original reconstruction from the pinned listing and community declarations.
+// Adapted bodies: none.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// The names CreateDuplicateForm and IsParentForm come from powerof3/CommonLibSSE 654e55f, which is GPL-3.0; that licence applies to those declarations.
-// Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
+// SPDX-License-Identifier: GPL-3.0-only (declarations adapted from powerof3/CommonLibSSE; full text: licenses/CommonLibSSE-GPL-3.0.txt)
+// The names CreateDuplicateForm and IsParentForm come from powerof3/CommonLibSSE 654e55f (GPL-3.0); that licence applies to those declarations.
 // TESObjectCELL, GetbhkWorld, GetCoordinates, GetLocation, GetOwner: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // EnterReferenceListLock, ExitReferenceListLock, GetEncounterZone: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); names from the Address Library function table, no declaration in the community headers.
 // BaseFormComponent, TESForm, BGSEncounterZone, BGSLocation, bhkWorld, TESWorldSpace, LOADED_CELL_DATA, EXTERIOR_DATA, INTERIOR_DATA, ExtraDataList, BSSpinLock: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -16,6 +17,11 @@ class BGSLocation;
 class BGSLoadFormBuffer;
 class TESFile;
 class bhkWorld;
+
+// CellAmbientColors: GUESS(low)
+// NiColor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+struct CellAmbientColors;
+class NiColor;
 
 // GetCurrentThreadId: OBSERVED; the lock reads the calling thread through the import at RVA 0x17c8440.
 extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
@@ -174,10 +180,45 @@ struct EXTERIOR_DATA {
     std::uint8_t unk08[0x18];  // 08
 };
 
-// INTERIOR_DATA: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); XCLL data of an interior cell.
-struct INTERIOR_DATA {
-    std::uint8_t unk00[0x60];  // 00
+// INTERIOR_DATA, Inherit, kAmbientColor, ambient, directional, fogColorNear,
+// fogNear, fogFar, directionalXY, directionalZ, directionalFade, clipDist, fogPower,
+// directionalAmbientLightingColors, fogColorFar, fogClamp, lightFadeStart, lightFadeEnd,
+// lightingTemplateInheritanceFlags, unk5C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// PackedDirectionalLighting, colors: GUESS(low)
+// BGSDirectionalAmbientLightingColors::fresnelPower: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+struct PackedDirectionalLighting {
+    std::uint32_t colors[7];  // Six directional colors followed by the specular color.
+    float fresnelPower;
 };
+
+struct INTERIOR_DATA {
+    enum class Inherit : std::uint32_t {
+        kAmbientColor = 1
+    };
+
+    std::uint32_t ambient;
+    std::uint32_t directional;
+    std::uint32_t fogColorNear;
+    float fogNear;
+    float fogFar;
+    std::uint32_t directionalXY;
+    std::uint32_t directionalZ;
+    float directionalFade;
+    float clipDist;
+    float fogPower;
+    PackedDirectionalLighting directionalAmbientLightingColors;
+    std::uint32_t fogColorFar;
+    float fogClamp;
+    float lightFadeStart;
+    float lightFadeEnd;
+    Inherit lightingTemplateInheritanceFlags;
+    std::uint32_t unk5C;
+};
+static_assert(sizeof(PackedDirectionalLighting) == 0x20, "Packed directional lighting size");
+static_assert(sizeof(INTERIOR_DATA) == 0x60, "Interior data size");
+static_assert(offsetof(INTERIOR_DATA, directionalAmbientLightingColors) == 0x28, "Directional lighting offset");
+static_assert(offsetof(PackedDirectionalLighting, fresnelPower) == 0x1C, "Fresnel power offset");
+static_assert(offsetof(INTERIOR_DATA, lightingTemplateInheritanceFlags) == 0x58, "Inheritance flags offset");
 
 // gExteriorbhkWorld: GUESS(low); global at RVA 0x21a0598, a pointer to the physics world pointer
 // that exterior cells answer with.
@@ -236,6 +277,9 @@ public:
         EXTERIOR_DATA* exterior;  // XCLC
         INTERIOR_DATA* interior;  // XCLL
     };
+
+    // Function2bc790: GUESS(low)
+    void Function2bc790(CellAmbientColors& a_colors, NiColor& a_specular, float& a_fresnelPower) const;
 
     void               EnterReferenceListLock();
     void               ExitReferenceListLock();

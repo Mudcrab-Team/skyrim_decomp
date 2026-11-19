@@ -1,4 +1,5 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Source exposure: mixed (pinned image listing, community declarations, and the FNV sibling for the shape of SaveGame).
+// Code origin: original reconstruction from the pinned image and community declarations; SaveGame follows the sibling source named in BGSEncounterZone.cpp.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSEncounterZone, ::InitializeData, ::SaveGame, ::LoadGame, ::Revert, ::InitItemImpl, ::data, ::gameData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSEncounterZone::~BGSEncounterZone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 0
@@ -17,7 +18,7 @@
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class BGSLocation : public TESForm {
 };
@@ -34,7 +35,7 @@ struct ENCOUNTER_ZONE_DATA {
     BGSLocation*  location;   // 08
     std::int8_t   ownerRank;  // 10
     std::uint8_t  minLevel;   // 11
-    std::uint8_t  flags;      // 12
+    std::int8_t   flags;      // 12
     std::uint8_t  maxLevel;   // 13
     std::uint32_t pad14;      // 14
 };
@@ -68,7 +69,7 @@ public:
     void Revert(BGSLoadFormBuffer* a_buf) override;    // 12
     void InitItemImpl() override;                      // 13
 
-    std::uint16_t GetLevel();
+    std::uint16_t GetLevel() const;
 
     static void     AddCompileIndex(std::uint32_t& a_id, TESFile* a_file);
     TESFile*        GetFile(std::int32_t a_idx = -1) const;

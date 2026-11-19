@@ -1,8 +1,9 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) and the shape of SaveGame read from momusdigital/fnv_decomp@91e1b6e8 src/bgsencounterzone.cpp:302 (names and order of the two guarded writes only; no layout taken).
+// Source exposure: mixed (pinned image listing, community declarations, and the FNV sibling for the shape of SaveGame).
+// Code origin: original reconstruction from the pinned image and community declarations; SaveGame follows the sibling source named below.
+// Adapted bodies: none.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/bgsencounterzone.cpp:302
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1e60b0 SetFormFlag, 0x207b5f8 the level scale float, 0x15a743c the global sized operator delete.
-// Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and fnv_decomp 91e1b6e8.
 // 0x28f5e0 BGSEncounterZone::InitializeData
 // 0x28fcb0 BGSEncounterZone::Revert
 // 0x28fe70 BGSEncounterZone::~BGSEncounterZone
@@ -13,10 +14,9 @@
 #include "BGSEncounterZone.h"
 
 #include <cstring>
-#include <typeinfo>
 
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value.
-inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
+static bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
 {
     return ((a_flags >> a_bit) & 1) != 0;
 }
@@ -78,7 +78,23 @@ void BGSEncounterZone::SaveGame(BGSSaveFormBuffer* a_buf)
     }
 }
 
-// BGSEncounterZone::GetLevel (0x28f9e0): near-miss at near-miss/0x28f9e0.cpp
+// BGSEncounterZone::GetLevel, RVA 0x28f9e0, 127 bytes. The player's level, raised to the zone minimum
+// and scaled, then capped by the zone maximum when that is set.
+std::uint16_t BGSEncounterZone::GetLevel() const
+{
+    std::uint16_t level = PlayerCharacter::singleton->GetLevel();
+    if (level < data.minLevel) {
+        if (!TestBit(data.flags, 1)) {
+            level = data.minLevel;
+        }
+    } else {
+        level = static_cast<std::uint16_t>((level - data.minLevel) * kLevelScale + data.minLevel);
+    }
+    if (data.maxLevel != 0) {
+        return data.maxLevel < level ? data.maxLevel : level;
+    }
+    return level;
+}
 
 void BGSEncounterZone::InitItemImpl()
 {
