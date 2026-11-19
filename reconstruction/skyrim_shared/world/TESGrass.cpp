@@ -1,7 +1,14 @@
-// Source exposure: mixed (pinned image listings and community headers).
+// Source exposure: mixed (pinned image listings, community headers and a permitted sibling reconstruction).
 // Code origin: project code with new methods based on the listings and CommonLibSSE-NG getter/setter notes.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: new TESGrass getters and setters use the method notes in CommonLibSSE-NG@b93280e include/RE/T/TESGrass.h (MIT).
+// Licence: fo4-private reused with author permission conditional on anonymity.
+// TESGrass::SetPositionRange: SIBLING(fo4-private@1b765c70, author-permission)
+// TESGrass::SetHeightRange: SIBLING(fo4-private@1b765c70, author-permission)
+// TESGrass::SetColorRange: SIBLING(fo4-private@1b765c70, author-permission)
+// Sibling source: fo4-private@1b765c70 src/Shared/TESForms/Objects/TESGrass.cpp:64
+// Sibling source: fo4-private@1b765c70 src/Shared/TESForms/Objects/TESGrass.cpp:73
+// Sibling source: fo4-private@1b765c70 src/Shared/TESForms/Objects/TESGrass.cpp:82
 // 0x2709a0 TESGrass::GetPositionRange
 // 0x270430 TESGrass::SetPositionRange
 // 0x270460 TESGrass::SetHeightRange
