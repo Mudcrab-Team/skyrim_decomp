@@ -3,7 +3,6 @@
 // Adapted bodies: none
 // 0x1528e80 BSLightingShaderMaterialFacegen::~BSLightingShaderMaterialFacegen
 // 0x1526760 BSLightingShaderMaterialFacegen::Ctor
-// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include <new>
 #include "BSLightingShaderMaterialFacegen.h"
 

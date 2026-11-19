@@ -8,7 +8,6 @@
 // eyeEnvMask, eyeCubemap, unkB0, colorB4, colorC0, pad_CC: GUESS(low)
 // Adapted bodies: NiBinaryStream::read, NiBinaryStream::write from
 // CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h (MIT);
-// Code origin: declarations follow CommonLibSSE-NG names; offsets, sizes and the compared bodies are read from the local listings.
 #pragma once
 
 #include <cstdint>
