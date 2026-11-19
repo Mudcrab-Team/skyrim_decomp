@@ -7,7 +7,7 @@
 // 0x8fd870 ThirdPersonState::GetRotation
 // 0x8fd880 ThirdPersonState::GetTranslation
 // 0x55d590 ThirdPersonState::GetFreeRotationMode
-// Adapted bodies: none
+// Adapted bodies: GetRotation and GetTranslation (fo4-private, see the Sibling source lines)
 #include "ThirdPersonState.h"
 
 void ThirdPersonState::GetRotation(NiQuaternion& value) const { value = rotation; }
