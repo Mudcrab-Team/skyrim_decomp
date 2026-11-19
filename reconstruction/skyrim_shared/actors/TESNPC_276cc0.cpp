@@ -16,7 +16,6 @@
 // 0x3bea80 TESNPC::Function3bea80
 // 0x3beda0 TESNPC::Function3beda0
 // 0x3bedf0 TESNPC::Function3bedf0
-// 0x3bf1a0 TESNPC::GetShortName
 // 0x3bf1e0 TESNPC::ResetFaceData
 // 0x3bf300 TESNPC::GetFaceMorph
 // 0x3bf400 TESNPC::GetFacePart
@@ -263,15 +262,6 @@ BGSRelationship* TESNPC::Function3bedf0() const
         return extremes.second;
     }
     return nullptr;
-}
-
-const char* TESNPC::GetShortName() const
-{
-    const char* name = shortName.GetData();
-    if (!name || !*name) {
-        return fullName.GetFullName();
-    }
-    return name;
 }
 
 void TESNPC::ResetFaceData()

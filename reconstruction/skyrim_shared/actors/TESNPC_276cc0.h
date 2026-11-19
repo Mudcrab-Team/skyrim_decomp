@@ -5,7 +5,7 @@
 // SetDefaultOutfit, SetSleepOutfit, GetHeadPartByType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // CopyObjectBounds, GetBoundMinimum, GetBoundMaximum, Function3b0080, Function3b0090: GUESS(low)
 // Function3bc100, GetBehaviorGraphName, CopyBehaviorGraphName, Function3be960, Function3be9c0: GUESS(low)
-// Function3bea20, Function3bea80, Function3beda0, Function3bedf0, GetShortName: GUESS(low)
+// Function3bea20, Function3bea80, Function3beda0, Function3bedf0: GUESS(low)
 // ResetFaceData, GetFaceMorph, GetFacePart, GetFaceParameter, GetFaceSetting: GUESS(low)
 // SetClass, GetSkin, MergeHeadPartsInto, MergeHeadParts, MergeHeadPartList: GUESS(low)
 // GetSoundLevel, GetRaceHeight, Function3c90c0: GUESS(low)
@@ -41,7 +41,6 @@ static_assert(sizeof(BOUND_DATA) == 0xC, "object bounds size");
 class BSFixedString
 {
 public:
-    const char* GetData() const;
     void AssignFrom(const BSFixedString& source);
     std::uint32_t Length() const;
 
@@ -80,7 +79,6 @@ public:
     TESPackage* Function3bea80(ActorReference* actor) const;
     BGSRelationship* Function3beda0() const;
     BGSRelationship* Function3bedf0() const;
-    const char* GetShortName() const;
     void ResetFaceData();
     float GetFaceMorph(std::int32_t index) const;
     std::int32_t GetFacePart(std::int32_t index) const;
