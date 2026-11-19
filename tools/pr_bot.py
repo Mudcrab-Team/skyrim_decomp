@@ -4,6 +4,8 @@
     python3 tools/pr_bot.py pr NUMBER [--dry-run] [--head SHA] [--base SHA] [--host1 check-run|assume-pass]
     python3 tools/pr_bot.py --poll [--interval 60]     # launchd entry point
 
+The poll skips PRs opened under the owner's account unless they carry the `bot-process` label.
+
 A function is `matched` only if host 1 (the PR's `hash` check run) and host 2 (the Mac Wine
 compare of the changed units) both byte-match and the single review approves it. A leakgrep hit,
 a review `leak: yes` or a regression of an already matched function blocks the whole PR. A
@@ -39,6 +41,8 @@ import rva_headers  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = 'awarebayes/skyrim_decomp'
 OWNER = REPOSITORY.split('/')[0]
+# An owner PR is skipped unless it carries this label, which asks for the same acceptance as an outside PR.
+OPT_IN_LABEL = 'bot-process'
 SHA = re.compile(r'[0-9a-f]{40}')
 SCOPE_PREFIX = 'reconstruction/'
 HASH_CHECKS = ('hash', 'pr-check / hash')
@@ -1501,6 +1505,14 @@ class Bot:
         state.set('recorded', True)
 
 
+def pollable(prs):
+    """The open PRs the poll loop processes: outside PRs, and owner PRs that opted in with the label."""
+    def opted_in(pr):
+        return any(label.get('name') == OPT_IN_LABEL for label in pr.get('labels') or [])
+    return [pr for pr in prs if (pr['author']['login'].casefold() != OWNER.casefold() or opted_in(pr))
+            and pr['baseRefName'] == 'main' and not pr['isDraft']]
+
+
 def poll(bot, interval, restart_after=None):
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
@@ -1514,12 +1526,11 @@ def poll(bot, interval, restart_after=None):
             return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
         try:
             prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
-                              'number,headRefOid,author,baseRefName,isDraft,mergeable')
+                              'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
         except (Stop, subprocess.SubprocessError, ValueError) as exc:
             print(stamp(), 'poll: gh failed:', exc, file=sys.stderr)
             prs = []
-        prs = [pr for pr in prs if pr['author']['login'].casefold() != OWNER.casefold()
-               and pr['baseRefName'] == 'main' and not pr['isDraft']]
+        prs = pollable(prs)
         for pr in prs:
             try:
                 bot.warm(pr)

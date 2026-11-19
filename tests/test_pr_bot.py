@@ -30,6 +30,26 @@ class HintTests(unittest.TestCase):
         self.assertEqual(pr_bot.ci_hash_hints(text, []), {})
 
 
+class PollableTests(unittest.TestCase):
+    def pr(self, login, labels=(), base='main', draft=False):
+        return {'number': 1, 'author': {'login': login}, 'baseRefName': base, 'isDraft': draft,
+                'labels': [{'name': n} for n in labels]}
+
+    def test_owner_pr_is_skipped_unless_it_carries_the_opt_in_label(self):
+        owner = pr_bot.OWNER
+        self.assertEqual(pr_bot.pollable([self.pr(owner), self.pr(owner, ['other'])]), [])
+        opted = self.pr(owner, [pr_bot.OPT_IN_LABEL])
+        self.assertEqual(pr_bot.pollable([opted]), [opted])
+
+    def test_outside_pr_needs_no_label_but_drafts_and_other_bases_stay_out(self):
+        outside = self.pr('alice')
+        self.assertEqual(pr_bot.pollable([outside, self.pr('alice', draft=True), self.pr('alice', base='dev'),
+                                          self.pr(pr_bot.OWNER, [pr_bot.OPT_IN_LABEL], draft=True)]), [outside])
+        self.assertEqual(pr_bot.pollable([{'number': 2, 'author': {'login': 'bob'}, 'baseRefName': 'main',
+                                           'isDraft': False}]), [{'number': 2, 'author': {'login': 'bob'},
+                                                                  'baseRefName': 'main', 'isDraft': False}])
+
+
 class DecisionTests(unittest.TestCase):
     def table(self, h1, h2, rv, **kw):
         return pr_bot.decide([0x10], {0x10: h1}, {0x10: h2}, {0x10: rv}, **kw)
