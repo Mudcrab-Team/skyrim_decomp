@@ -259,6 +259,20 @@ filter a base would share the primary vptr and lose the observed member offset. 
 inventory-named base definition still needs a passing comparison; declare an existing external
 constructor instead of emitting a partial local version.
 
+**29. Callee-saved stores that skip the first home slot: name the decremented reference count.** (high)
+Symptom: the prologue saves callee-saved registers from the second home slot on and never uses
+the first, while the rest of the body matches; the function inlines an intrusive reference-count
+release. Cause: when the inlined release keeps the decremented count in a named local before
+testing it (`std::uint32_t count = _InterlockedDecrement(&_refCount); if (count == 0) DeleteThis();`),
+the compiler reserves the first home slot for that local and then needs no memory for it. The
+same release written as one expression (`if (_InterlockedExchangeAdd(&_refCount, -1) == 1)`,
+`if (_InterlockedDecrement(...) == 0)` or a helper returning the call) saves into the first slot.
+Generated code is otherwise identical, so the change belongs in the shared release helper. Closed
+CopyMembers, ClearTextures and ComputeCRC32 members of five lighting material classes; companion
+functions compiled from the same header kept identical code. Rule 12's lock functions and rule 13
+are not explained by it (they inline no release). Not settled: with three or more inlined
+releases that store null (`ClearTextures`), `this` and the -1 constant still swap registers (rule 12 shape).
+
 ## Shaping ideas from one contributor's cheap-model runs
 
 These are observations from one contributor's drafting runs with a cheap model, not rules.
@@ -303,7 +317,7 @@ about 45 source spellings never move `this` out of rbx. Only spellings that add 
 references flip it, and those add instructions. Whole-program optimization is refuted as the
 cause, and so are the swept flags: `/GL` linked `/LTCG` gives byte-identical code for these
 sources, and no profile data exists ([finding](../findings/whole-program-optimization.md)).
-Cause unknown. Untested hypotheses from that finding: EH state removed after frame layout (a
+For the variant whose saves skip the first home slot, see rule 29. Otherwise cause unknown. Untested hypotheses from that finding: EH state removed after frame layout (a
 `noexcept` or `throw()` helper whose throwing path folds away), or frame layout kept from dead
 code (a parameter or `this` whose address is taken and then optimised out). Seen in
 BSReadWriteLock::LockForRead 0xce3250 and LockForWrite 0xce32d0.
