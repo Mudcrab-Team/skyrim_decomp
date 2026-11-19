@@ -1,16 +1,13 @@
-// Source exposure: mixed (pinned image listing and public names).
-// Code origin: original reconstruction from the pinned image and community declarations; the earlier leaf bodies came from the project's bounded leaf template.
-// Adapted bodies: none.
+// Source exposure: mixed (local binary analysis and public names).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// TESPackageObjectTypeNames: GUESS(low); a table of pointers indexed by objectType, bound by position.
+// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
+// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Adapted bodies for the new functions: none; each body is written from its listing.
+// TESPackageObjectTypeNames: GUESS(low); a table of pointers indexed by objectType, bound by address through bind-hints.json.
 // TESPackage::TESPackage: GUESS(low); constructor name from the class name, body empty
 // TESPackage::GetRefCount, TESPackage::GetObjectTypeName: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x49e8e0 TESPackage::IsPackageOwner
 // 0x49e8d0 TESPackage::GetRefCount
-// 0x498940 TESPackage::ClearData
-// 0x49d500 TESPackage::SaveGame
-// 0x49d7a0 TESPackage::Revert
 #include "TESPackage.h"
 
 extern const char* const TESPackageObjectTypeNames[];
@@ -34,64 +31,4 @@ std::uint32_t TESPackage::GetRefCount() const
 const char* TESPackage::GetObjectTypeName() const
 {
     return TESPackageObjectTypeNames[objectType];
-}
-
-void TESPackage::ClearData()
-{
-    delete packLoc;
-    delete packTarg;
-    delete idleCollection;
-    delete data;
-    packConditions.~TESCondition();
-    TESForm::ClearData();
-}
-
-void TESPackage::SaveGame(BGSSaveFormBuffer* a_buf)
-{
-    if (!TESDataHandler::singleton->IsTemporaryFormID(formID)) {
-        return;
-    }
-    a_buf->SaveDataEndian(&packFlags, 0xC, 1, 0);
-    std::uint8_t flags = 0;
-    if (packLoc) {
-        flags |= 1;
-    }
-    if (packTarg) {
-        flags |= 2;
-    }
-    if (data) {
-        flags |= 4;
-    }
-    a_buf->SaveDataEndian(&flags, 1, 1, 0);
-    if (packLoc) {
-        packLoc->SaveGame(a_buf);
-    }
-    if (packTarg) {
-        packTarg->SaveGame(a_buf);
-    }
-    if (data) {
-        data->SaveGame(a_buf);
-    }
-    a_buf->SaveDataEndian(&procedureType, 4, 4, 0);
-}
-
-// TestRevertBit: GUESS(low)
-static inline bool TestRevertBit(std::uint32_t a_flags, std::uint32_t a_bit)
-{
-    return ((a_flags >> a_bit) & 1u) != 0;
-}
-
-// RVA 0x49d7a0, 77 bytes. The sign test and the bit 30 test stay independent.
-void TESPackage::Revert(BGSLoadFormBuffer* a_buf)
-{
-    if (TESDataHandler::singleton->IsTemporaryFormID(formID)) {
-        return;
-    }
-    const std::uint32_t flags = a_buf->oldChangeFlags;
-    if (static_cast<std::int32_t>(flags) < 0) {
-        packFlags &= 0xFFFF7FFFu;
-    }
-    if (TestRevertBit(a_buf->oldChangeFlags, 30)) {
-        packFlags &= 0xFFFEFFFFu;
-    }
 }
