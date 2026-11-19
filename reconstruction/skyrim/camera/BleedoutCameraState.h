@@ -1,28 +1,9 @@
 // Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original reconstruction from the pinned image listing; type names, layout and
-// member names from CommonLibSSE-NG@b93280e (MIT). No community function body is copied.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Adapted bodies: none.
-// BleedoutCameraState, BleedoutCameraState::~BleedoutCameraState, BleedoutCameraState::Begin,
-// BleedoutCameraState::End, BleedoutCameraState::Update, ThirdPersonState,
-// ThirdPersonState::~ThirdPersonState, ThirdPersonState::Begin, ThirdPersonState::CanProcess,
-// ThirdPersonState::End, ThirdPersonState::Update, ThirdPersonState::GetRotation,
-// ThirdPersonState::ProcessButton, ThirdPersonState::GetTranslation, ThirdPersonState::SaveGame,
-// ThirdPersonState::LoadGame, ThirdPersonState::Revert, ThirdPersonState::SetCameraHandle,
-// ThirdPersonState::Unk_0A, ThirdPersonState::ProcessWeaponDrawnChange,
-// ThirdPersonState::GetFreeRotationMode, ThirdPersonState::SetFreeRotationMode,
-// ThirdPersonState::UpdateRotation, ThirdPersonState::HandleLookInput, PlayerInputHandler,
-// PlayerInputHandler::~PlayerInputHandler, PlayerInputHandler::CanProcess,
-// PlayerInputHandler::ProcessThumbstick, PlayerInputHandler::ProcessMouseMove,
-// PlayerInputHandler::ProcessButton, NiRefObject, NiRefObject::~NiRefObject,
-// NiRefObject::_refCount, NiRefObject::DeleteThis, NiAVObject, NiPointer, NiMatrix3, NiMatrix3::entry, BSSoundHandle,
-// BSSoundHandle::soundID, BSSoundHandle::assumeSuccess, BSSoundHandle::state: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT);
-// the same source names every ThirdPersonState and BleedoutCameraState member below.
-// NiPointer::pointer, NiPointer::~NiPointer: GUESS(low); the inline release is reconstructed from
-// the compared image listing (one interlocked decrement, then a virtual DeleteThis at count zero).
-// unknown05, unknown06, unknown09, unknown0A, unknown0C, unknown11C, unknown135, unknown136,
-// unknown8C, unknownDE, unknownE2, unknownE4: GUESS(low); typed fields at their observed offsets
-// whose meaning the pinned community headers do not name.
+// Code origin: original; the listing and community declarations only
+// BleedoutCameraState, BleedoutCameraState::~BleedoutCameraState, BleedoutCameraState::Begin, BleedoutCameraState::End, BleedoutCameraState::Update, ThirdPersonState, ThirdPersonState::~ThirdPersonState, ThirdPersonState::Begin, ThirdPersonState::CanProcess, ThirdPersonState::End, ThirdPersonState::Update, ThirdPersonState::GetRotation, ThirdPersonState::ProcessButton, ThirdPersonState::GetTranslation, ThirdPersonState::SaveGame, ThirdPersonState::LoadGame, ThirdPersonState::Revert, ThirdPersonState::SetCameraHandle, ThirdPersonState::Unk_0A, ThirdPersonState::ProcessWeaponDrawnChange, ThirdPersonState::GetFreeRotationMode, ThirdPersonState::SetFreeRotationMode, ThirdPersonState::UpdateRotation, ThirdPersonState::HandleLookInput, PlayerInputHandler, PlayerInputHandler::~PlayerInputHandler, PlayerInputHandler::CanProcess, PlayerInputHandler::ProcessThumbstick, PlayerInputHandler::ProcessMouseMove, PlayerInputHandler::ProcessButton, NiRefObject, NiRefObject::~NiRefObject, NiRefObject::_refCount, NiRefObject::DeleteThis, NiAVObject, NiPointer, NiMatrix3, NiMatrix3::entry, BSSoundHandle, BSSoundHandle::soundID, BSSoundHandle::assumeSuccess, BSSoundHandle::state: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the same source names every ThirdPersonState and BleedoutCameraState member below
+// NiPointer::pointer, NiPointer::~NiPointer: GUESS(low); the inline release is reconstructed from the compared image (one interlocked decrement, then a virtual DeleteThis at count zero)
+// unknown05, unknown06, unknown09, unknown0A, unknown0C, unknown11C, unknown135, unknown136, unknown8C, unknownDE, unknownE2, unknownE4: GUESS(low); typed fields at their observed offsets whose meaning the pinned community headers do not name
 #pragma once
 
 #include <cstdint>
