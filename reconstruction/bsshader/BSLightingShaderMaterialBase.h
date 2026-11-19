@@ -1,5 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Class, member and method names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT): include/RE/B/BSLightingShaderMaterialBase.h, BSShaderMaterial.h, NiBinaryStream.h, NiStream.h, NiSmartPointer.h, NiRefObject.h, NiColor.h. The declarations are minimal stand-ins, with two exceptions. The BSLightingShaderMaterialBase class declaration reproduces NG's full virtual and member list from include/RE/B/BSLightingShaderMaterialBase.h (MIT). The NiBinaryStream ReadFn and WriteFn aliases and the read, write, binary_read and binary_write bodies are adapted from NG b93280e include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp under its MIT licence (asserts dropped, binary_read and binary_write defined inline). NiRefObject's IncRefCount and DecRefCount follow the logic of NG src/RE/N/NiRefObject.cpp, written here with compiler intrinsics; they also closely parallel the inline NiRefObject reference-count bodies of momusdigital/fnv_decomp 91e1b6e8 (no licence; used by maintainer decision, docs/authorizations.md), which tools/check_origin.py reports at similarity 0.86 and 0.78. The
+// Class, member and method names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT): include/RE/B/BSLightingShaderMaterialBase.h, BSShaderMaterial.h, NiBinaryStream.h, NiStream.h, NiSmartPointer.h, NiRefObject.h, NiColor.h. The declarations are minimal stand-ins, with two exceptions. The BSLightingShaderMaterialBase class declaration reproduces NG's full virtual and member list from include/RE/B/BSLightingShaderMaterialBase.h (MIT). The NiBinaryStream ReadFn and WriteFn aliases and the read, write, binary_read and binary_write bodies are adapted from NG b93280e include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp under that project's MIT terms (asserts dropped, binary_read and binary_write defined inline). NiRefObject's IncRefCount and DecRefCount follow the logic of NG src/RE/N/NiRefObject.cpp, written here with compiler intrinsics; they also closely parallel the inline NiRefObject reference-count bodies of momusdigital/fnv_decomp 91e1b6e8 (no licence; used by maintainer decision, docs/authorizations.md), which tools/check_origin.py reports at similarity 0.86 and 0.78. The
 // Sibling source lines below declare that parallel; they do not record a copy.
 // Bodies adapted from community sources are listed above; tools/check_origin.py reports none other above its threshold (0.75) at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8. NG's licence notice, from its LICENSE at b93280e, is kept as it requires:
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
@@ -29,7 +29,9 @@ public:
 	void DecRefCount()
 	{
 		// atomic: the last releaser deletes the object
-		if (_InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&_refCount), -1) == 1) {
+		// named count: the callers' saved registers skip the first home slot only with this spelling
+		std::uint32_t count = static_cast<std::uint32_t>(_InterlockedDecrement(reinterpret_cast<volatile long*>(&_refCount)));
+		if (count == 0) {
 			DeleteThis();
 		}
 	}
@@ -63,6 +65,17 @@ public:
 			if (old) {
 				old->DecRefCount();
 			}
+		}
+		return *this;
+	}
+
+	// operator=(nullptr): COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+	NiPointer& operator=(decltype(nullptr))
+	{
+		T* old = _ptr;
+		if (old) {
+			_ptr = nullptr;
+			old->DecRefCount();
 		}
 		return *this;
 	}

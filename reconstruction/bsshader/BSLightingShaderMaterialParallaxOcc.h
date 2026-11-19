@@ -4,6 +4,7 @@
 // BSLightingShaderMaterialParallaxOcc: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialParallaxOcc::Ctor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknownA0: GUESS(low)
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #pragma once
 
 #include <cstdint>

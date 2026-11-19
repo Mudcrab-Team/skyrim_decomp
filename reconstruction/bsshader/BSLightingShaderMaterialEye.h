@@ -6,8 +6,10 @@
 // BSLightingShaderMaterialEye: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialEye::SaveBinary, BSLightingShaderMaterialEye::LoadBinary, BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEye::Ctor, BSLightingShaderMaterialEye::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // eyeEnvMask, eyeCubemap, unkB0, colorB4, colorC0, pad_CC: GUESS(low)
-// Adapted bodies: NiBinaryStream::read, NiBinaryStream::write from
-// CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h (MIT);
+// Adapted bodies: NiBinaryStream::read, NiBinaryStream::write, NiBinaryStream::binary_read, NiBinaryStream::binary_write from
+// CharmedBaryon/CommonLibSSE-NG@b93280e include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp (MIT);
+// NiRefObject::IncRefCount, NiRefObject::DecRefCount from CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/N/NiRefObject.cpp (MIT), written with intrinsics;
+// Code origin: declarations follow CommonLibSSE-NG names; offsets, sizes and the compared bodies are read from the local listings.
 #pragma once
 
 #include <cstdint>
@@ -85,7 +87,9 @@ public:
 	void DecRefCount()
 	{
 		// atomic: the last releaser deletes the object
-		if (_InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&_refCount), -1) == 1) {
+		// named count: the callers' saved registers skip the first home slot only with this spelling
+		std::uint32_t count = static_cast<std::uint32_t>(_InterlockedDecrement(reinterpret_cast<volatile long*>(&_refCount)));
+		if (count == 0) {
 			DeleteThis();
 		}
 	}
@@ -119,6 +123,17 @@ public:
 			if (old) {
 				old->DecRefCount();
 			}
+		}
+		return *this;
+	}
+
+	// operator=(nullptr): COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+	NiPointer& operator=(decltype(nullptr))
+	{
+		T* old = _ptr;
+		if (old) {
+			_ptr = nullptr;
+			old->DecRefCount();
 		}
 		return *this;
 	}
@@ -314,6 +329,7 @@ public:
     virtual void ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, std::uintptr_t a_extra1, std::uintptr_t a_extra2);  // compared: 0x1525640
     BSLightingShaderMaterialEye();  // compared: 0x15250e0
     std::uint32_t ComputeCRC32(std::uint32_t a_crcSeed) override;  // compared: 0x15253e0
+    void ClearTextures() override;  // compared: 0x15255c0
 
     NiPointer<NiSourceTexture> eyeEnvMask;  // A0
     NiPointer<NiSourceTexture> eyeCubemap;  // A8

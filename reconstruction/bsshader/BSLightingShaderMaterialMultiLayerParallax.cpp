@@ -8,6 +8,10 @@
 // 0x1529070 BSLightingShaderMaterialMultiLayerParallax::~BSLightingShaderMaterialMultiLayerParallax
 // 0x1528820 BSLightingShaderMaterialMultiLayerParallax::GetTextures
 // 0x1528770 BSLightingShaderMaterialMultiLayerParallax::ReceiveValuesFromRootMaterial
+// 0x15284c0 BSLightingShaderMaterialMultiLayerParallax::ComputeCRC32
+// 0x15288d0 BSLightingShaderMaterialMultiLayerParallax::SaveBinary
+// 0x1528a00 BSLightingShaderMaterialMultiLayerParallax::LoadBinary
+// Code origin: bodies written from local listings of the pinned image; names and declarations follow CommonLibSSE-NG; the reference-count release spelling follows cookbook rule 29.
 #include <cstring>
 
 #include "BSLightingShaderMaterialMultiLayerParallax.h"
@@ -110,4 +114,72 @@ std::uint32_t BSLightingShaderMaterialMultiLayerParallax::GetTextures(NiSourceTe
 		a_textures[count++] = m_texB0;
 	}
 	return count;
+}
+
+// MultiLayerParallaxCrcRecord: GUESS(low); the 0x24-byte record hashed by ComputeCRC32
+struct MultiLayerParallaxCrcRecord
+{
+	std::uint32_t ids[3];    // 00
+	float         fB8;       // 0C
+	float         fBC;       // 10
+	float         fC0;       // 14
+	float         fC4;       // 18
+	float         fC8;       // 1C
+	std::uint32_t flagHash;  // 20
+};
+static_assert(sizeof(MultiLayerParallaxCrcRecord) == 0x24, "MultiLayerParallaxCrcRecord size");
+
+std::uint32_t BSLightingShaderMaterialMultiLayerParallax::ComputeCRC32(std::uint32_t a_seed)
+{
+	MultiLayerParallaxCrcRecord record;
+	if (textureSet._ptr) {
+		CRCTermFromValue(&record.ids[0], reinterpret_cast<BSTextureSetSlots*>(textureSet._ptr)->GetCRCSource(3), 0);
+		CRCTermFromValue(&record.ids[1], reinterpret_cast<BSTextureSetSlots*>(textureSet._ptr)->GetCRCSource(4), 0);
+		CRCTermFromValue(&record.ids[2], reinterpret_cast<BSTextureSetSlots*>(textureSet._ptr)->GetCRCSource(5), 0);
+	}
+	else {
+		record.ids[0] = 0;
+		record.ids[1] = 0;
+		record.ids[2] = 0;
+	}
+	record.fB8 = reinterpret_cast<const float&>(m_flagB8);
+	record.fBC = m_fBC;
+	record.fC0 = m_fC0;
+	record.fC4 = m_fC4;
+	record.fC8 = m_fC8;
+	record.flagHash = ComputeCRCBase(this, a_seed);
+	std::uint32_t out[2];
+	CRC32Calculator_SizeOfSize(out, &record, sizeof(record));
+	return out[0];
+}
+
+void BSLightingShaderMaterialMultiLayerParallax::SaveBinary(NiStream& a_stream)
+{
+	BSLightingShaderMaterialBase::SaveBinary(a_stream);
+	a_stream.oStr->write(&m_flagB8, 1);
+	a_stream.oStr->write(&m_fBC, 1);
+	a_stream.oStr->write(&m_fC0, 1);
+	a_stream.oStr->write(&m_fC4, 1);
+	a_stream.oStr->write(&m_fC8, 1);
+}
+
+// StreamVersion: GUESS(low); the stream word at +0x08 that LoadBinary compares with 0x4A
+static std::uint32_t StreamVersion(const NiStream& a_stream)
+{
+	return *reinterpret_cast<const std::uint32_t*>(a_stream.unk08);
+}
+
+void BSLightingShaderMaterialMultiLayerParallax::LoadBinary(NiStream& a_stream)
+{
+	BSLightingShaderMaterialBase::LoadBinary(a_stream);
+	a_stream.iStr->read(&m_flagB8, 1);
+	a_stream.iStr->read(&m_fBC, 1);
+	a_stream.iStr->read(&m_fC0, 1);
+	a_stream.iStr->read(&m_fC4, 1);
+	if (StreamVersion(a_stream) > 0x4A) {
+		a_stream.iStr->read(&m_fC8, 1);
+	}
+	else {
+		m_fC8 = 0.0f;
+	}
 }

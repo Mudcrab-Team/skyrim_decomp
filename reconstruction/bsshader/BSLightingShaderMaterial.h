@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSLightingShaderMaterial: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterial::~BSLightingShaderMaterial: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #pragma once
 
 #include <cstdint>

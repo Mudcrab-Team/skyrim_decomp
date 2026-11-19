@@ -6,6 +6,7 @@
 // image).
 // Adapted bodies: none
 // 0x4b4a00 BSLightingShaderMaterial::~BSLightingShaderMaterial
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include "BSLightingShaderMaterial.h"
 
 // Not compared: defined so that the compiler emits the vftable and, beside it, the

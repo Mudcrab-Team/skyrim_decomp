@@ -5,7 +5,14 @@
 // 0x1523f00 BSLightingShaderMaterialBase::ReceiveValuesFromRootMaterial
 // 0x1524030 BSLightingShaderMaterialBase::SaveBinary
 // 0x15241d0 BSLightingShaderMaterialBase::LoadBinary
+// 0x15237e0 BSLightingShaderMaterialBase::CopyMembers
+// Code origin: bodies written from local listings of the pinned image; names and declarations follow CommonLibSSE-NG; the reference-count release spelling follows cookbook rule 29.
 #include "BSLightingShaderMaterialBase.h"
+
+// BSTextureSet: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the reference count is used here
+class BSTextureSet : public NiRefObject
+{
+};
 
 BSLightingShaderMaterialBase::Type BSLightingShaderMaterialBase::GetType() const
 {
@@ -70,4 +77,23 @@ BSLightingShaderMaterialBase::BSLightingShaderMaterialBase() {}
 BSLightingShaderMaterialBase::Feature BSLightingShaderMaterialBase::GetFeature() const
 {
 	return Feature::kDefault;
+}
+
+void BSLightingShaderMaterialBase::CopyMembers(BSShaderMaterial* a_other)
+{
+	BSShaderMaterial::CopyMembers(a_other);
+	auto* other = static_cast<BSLightingShaderMaterialBase*>(a_other);
+	diffuseTexture = other->diffuseTexture;
+	normalTexture = other->normalTexture;
+	rimSoftLightingTexture = other->rimSoftLightingTexture;
+	specularBackLightingTexture = other->specularBackLightingTexture;
+	textureClampMode = other->textureClampMode;
+	textureSet = other->textureSet;
+	materialAlpha = other->materialAlpha;
+	specularPower = other->specularPower;
+	specularColor = other->specularColor;
+	specularColorScale = other->specularColorScale;
+	refractionPower = other->refractionPower;
+	subSurfaceLightRolloff = other->subSurfaceLightRolloff;
+	rimLightPower = other->rimLightPower;
 }

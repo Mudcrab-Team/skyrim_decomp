@@ -7,6 +7,7 @@
 // Adapted bodies: none
 // 0x1527a80 BSLightingShaderMaterialLandscape::GetFeature
 // 0x1529030 BSLightingShaderMaterialLandscape::~BSLightingShaderMaterialLandscape
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include "BSLightingShaderMaterialLandscape.h"
 
 // Not compared on its own: the compiler emits the vftable here, and with it the deleting

@@ -3,6 +3,7 @@
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
 // 0x1526170 BSLightingShaderMaterialParallaxOcc::Ctor
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include <new>
 
 #include "BSLightingShaderMaterialParallaxOcc.h"

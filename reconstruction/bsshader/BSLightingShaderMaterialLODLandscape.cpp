@@ -6,6 +6,7 @@
 // image).
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // 0x1527fb0 BSLightingShaderMaterialLODLandscape::GetFeature
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include "BSLightingShaderMaterialLODLandscape.h"
 
 // TODO body: RVA 0x1527fb0, 6 bytes, BSLightingShaderMaterialLODLandscape::GetFeature.

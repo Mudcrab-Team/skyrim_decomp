@@ -4,6 +4,7 @@
 // BSLightingShaderMaterialLandscape: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSLightingShaderMaterialLandscape::GetFeature, BSLightingShaderMaterialLandscape::~BSLightingShaderMaterialLandscape: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknownA0: GUESS(low)
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #pragma once
 
 #include <cstdint>

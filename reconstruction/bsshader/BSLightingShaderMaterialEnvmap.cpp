@@ -10,6 +10,9 @@
 // 0x1525020 BSLightingShaderMaterialEnvmap::SaveBinary
 // 0x1525080 BSLightingShaderMaterialEnvmap::LoadBinary
 // 0x1524ce0 BSLightingShaderMaterialEnvmap::ComputeCRC32
+// 0x1524c20 BSLightingShaderMaterialEnvmap::CopyMembers
+// 0x1524e90 BSLightingShaderMaterialEnvmap::ClearTextures
+// Code origin: bodies written from local listings of the pinned image; names and declarations follow CommonLibSSE-NG; the reference-count release spelling follows cookbook rule 29.
 #include "BSLightingShaderMaterialEnvmap.h"
 
 // RVA 0x1525020, 82 bytes: the base writes its own fields, then this writes the float.
@@ -108,4 +111,20 @@ std::uint32_t BSLightingShaderMaterialEnvmap::GetTextures(NiSourceTexture** a_te
         a_textures[count++] = unkA8Texture._ptr;
     }
     return count;
+}
+
+void BSLightingShaderMaterialEnvmap::CopyMembers(BSShaderMaterial* a_other)
+{
+    BSLightingShaderMaterialBase::CopyMembers(a_other);
+    auto* other = static_cast<BSLightingShaderMaterialEnvmap*>(a_other);
+    unkA0Texture = other->unkA0Texture;
+    unkA8Texture = other->unkA8Texture;
+    unkB0 = other->unkB0;
+}
+
+void BSLightingShaderMaterialEnvmap::ClearTextures()
+{
+    BSLightingShaderMaterialBase::ClearTextures();
+    unkA0Texture = nullptr;
+    unkA8Texture = nullptr;
 }

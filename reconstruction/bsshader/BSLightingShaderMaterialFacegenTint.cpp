@@ -5,6 +5,7 @@
 // 0x1526e30 BSLightingShaderMaterialFacegenTint::Ctor
 // 0x1526f20 BSLightingShaderMaterialFacegenTint::CopyMembers
 // 0x1528ec0 BSLightingShaderMaterialFacegenTint::~BSLightingShaderMaterialFacegenTint
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include <new>
 #include "BSLightingShaderMaterialFacegenTint.h"
 

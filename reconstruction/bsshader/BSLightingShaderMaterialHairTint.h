@@ -5,6 +5,7 @@
 // BSLightingShaderMaterialHairTint::~BSLightingShaderMaterialHairTint, BSLightingShaderMaterialHairTint::Ctor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // g_hairTintDefaultA, g_hairTintDefaultB: GUESS(low)
 // fieldA0, fieldA8, unknownAC: GUESS(low)
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #pragma once
 
 #include <cstdint>

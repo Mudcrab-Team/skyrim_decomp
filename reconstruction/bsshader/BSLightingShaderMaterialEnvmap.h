@@ -5,6 +5,7 @@
 // BSLightingShaderMaterialEnvmap::Ctor, BSLightingShaderMaterialEnvmap::SaveBinary, BSLightingShaderMaterialEnvmap::LoadBinary, BSLightingShaderMaterialEnvmap::ReceiveValuesFromRootMaterial, BSLightingShaderMaterialEnvmap::GetTextures, BSLightingShaderMaterialEnvmap::ComputeCRC32: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unkA0Texture, unkA8Texture, unkB0, pad_B4: GUESS(low)
 // ComputeFlagHash: GUESS(low)
+// Code origin: declarations follow CommonLibSSE-NG names; offsets, sizes and the compared bodies are read from the local listings.
 #pragma once
 
 #include <cstdint>
@@ -76,6 +77,8 @@ public:
     Feature GetFeature() const override;
     BSLightingShaderMaterialEnvmap();
     BSLightingShaderMaterialEnvmap* Ctor();  // compared: 0x1524a60
+    void CopyMembers(BSShaderMaterial* a_other) override;  // compared: 0x1524c20
+    void ClearTextures() override;  // compared: 0x1524e90
     virtual void SaveBinary(NiStream& a_stream);  // compared: 0x1525020
     virtual void LoadBinary(NiStream& a_stream);  // compared: 0x1525080
     // the image passes two extra pointer arguments that the base ignores; NG declares five parameters
