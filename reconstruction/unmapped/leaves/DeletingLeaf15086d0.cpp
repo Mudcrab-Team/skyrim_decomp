@@ -1,0 +1,8 @@
+// Source exposure: binary-analysis (the shape of the compared function in the pinned image).
+// Code origin: original stand-in stamped from matched exemplar 0x1507e00 (reconstruction/bsshader/BSImagespaceShaderBlur3.cpp); no external declaration or body reused.
+// 0x15086d0 DeletingLeaf15086d0::~DeletingLeaf15086d0
+// Adapted bodies: none
+#include "DeletingLeaf15086d0.h"
+
+// The complete destructor stays undefined so that the deleting destructor calls it, as the target does.
+DeletingLeaf15086d0::DeletingLeaf15086d0() {}
