@@ -902,6 +902,11 @@ class Bot:
                 return 'merged'
         raise Stop('push of the merge kept losing the race; retry next tick')
 
+    def reports_present(self, tag, verdicts):
+        """True when this slot's tree holds a comparator report for every function the cached Mac verdict names."""
+        return all(next(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{int(r):x}/report.json'), None)
+                   for r in verdicts)
+
     def review_evidence(self, tag, functions, host1, host2, state):
         """What each host said about each function, with the Mac comparator report's path in the tree."""
         ci = state.get('ci') or {}
@@ -1465,6 +1470,11 @@ class Bot:
         tag = f'{number}-{head[:8]}'
 
         def mac():
+            # A retry can land on another slot whose scratch tree never held this head's comparator
+            # reports; the cached verdict would then reach the Reviewer with no report to bind.
+            cached = state.get('host2' + sfx)
+            if cached is not None and not self.reports_present(tag, cached):
+                state.drop('host2' + sfx)
             return state.once('host2' + sfx, lambda: {str(k): v for k, v in
                                                       self.mac_compare(check_units, tag).items()})
 

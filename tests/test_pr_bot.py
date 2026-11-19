@@ -235,6 +235,9 @@ class FakeBot(pr_bot.Bot):
         self.calls.append(['changed_files'])
         return self.files
 
+    def reports_present(self, tag, verdicts):
+        return not getattr(self, 'reports_gone', False)
+
     def prepare_tree(self, base):
         pass
 
@@ -451,6 +454,22 @@ class ProcessTests(unittest.TestCase):
         warmed = len(bot.calls)
         bot.warm(pr)
         self.assertEqual(len(bot.calls), warmed)
+
+    def test_a_cached_mac_verdict_whose_reports_are_not_in_this_slot_is_compared_again(self):
+        bot = FakeBot(self.work)
+        state = pr_bot.State(self.work / 'state', 7, HEAD)
+        state.set('host2', {'16': 'pass', '32': 'pass'})
+        bot.reports_gone = True
+        bot.process(PR)
+        self.assertEqual(len(bot.seen('mac')), 1)
+
+    def test_reports_present_needs_a_report_for_every_cached_function(self):
+        bot = pr_bot.Bot(self.work, work=self.work / 'w')
+        report = bot.tree / '.local/tasks/prbot-7-aaaaaaaa-0/attempts/001/0x10/report.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{}')
+        self.assertTrue(bot.reports_present('7-aaaaaaaa', {'16': 'pass'}))
+        self.assertFalse(bot.reports_present('7-aaaaaaaa', {'16': 'pass', '32': 'pass'}))
 
     def test_a_new_head_after_a_conflict_is_processed_normally(self):
         bot = FakeBot(self.work)
