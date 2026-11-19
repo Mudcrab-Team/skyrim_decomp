@@ -1414,6 +1414,46 @@ class StickyCommentTests(unittest.TestCase):
         self.assertIn('Merged and recorded: 0x10, 0x20.', other.comments[0]['body'])
         self.assertNotIn('Not accepted', other.comments[0]['body'])
 
+    def test_an_over_cap_pr_gets_the_reason_in_its_sticky_comment_once(self):
+        bot = FakeBot(self.work)
+        bot.config['max_functions'] = 1
+        for _ in range(3):
+            with self.assertRaises(pr_bot.Rejected):
+                bot.process(PR)
+        self.assertEqual(len(bot.comments), 1)
+        self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+        self.assertEqual(bot.seen('gh', 'api', '-X', 'PATCH'), [])
+        self.assertIn('2 functions, over the limit of 1', bot.comments[0]['body'])
+        self.assertTrue(bot.comments[0]['body'].startswith(pr_bot.STICKY))
+
+    def test_a_rejection_edits_the_existing_comment_in_place(self):
+        bot = FakeBot(self.work)
+        bot.config['max_functions'] = 1
+        bot.comments = [{'id': 5, 'login': pr_bot.OWNER, 'body': pr_bot.STICKY + '\nold'}]
+        with self.assertRaises(pr_bot.Rejected):
+            bot.process(PR)
+        self.assertEqual(bot.seen('gh', 'pr', 'comment'), [])
+        self.assertEqual(len(bot.comments), 1)
+        self.assertIn('limit of 1', bot.comments[0]['body'])
+
+    def test_a_header_rejection_is_posted_and_a_bot_stop_is_not(self):
+        bot = FakeBot(self.work)
+
+        def bad(files):
+            raise pr_bot.Rejected('rva-headers', 'fix the header')
+        bot.units = bad
+        with self.assertRaises(pr_bot.Rejected):
+            bot.process(PR)
+        self.assertIn('fix the header', bot.comments[0]['body'])
+        other = FakeBot(self.work / 's')
+
+        def down(units, tag):
+            raise pr_bot.Stop('verifier host did not complete')
+        other.mac_compare = down
+        with self.assertRaises(pr_bot.Stop):
+            other.process(PR)
+        self.assertEqual(other.comments, [])
+
     def test_the_batching_request_is_a_line_in_the_sticky_comment(self):
         bot = FakeBot(self.work)
         bot.sizes = {0x10: 40, 0x20: 60}

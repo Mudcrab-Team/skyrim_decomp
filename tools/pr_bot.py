@@ -137,7 +137,14 @@ class Stop(Exception):
 
 
 class Rejected(Exception):
-    pass
+    """The PR cannot proceed until the contributor changes it; `text` tells them what to do.
+
+    Bot-side failures are Stop instead and are never shown on the PR.
+    """
+
+    def __init__(self, reason, text=None):
+        super().__init__(reason)
+        self.text = text
 
 
 # ---- pure decisions -------------------------------------------------------------------------
@@ -1078,6 +1085,23 @@ class Bot:
 
     # ---- one PR head ----
     def process(self, pr, base=None):
+        try:
+            return self._process(pr, base)
+        except Rejected as exc:
+            if exc.text and not self.dry_run:
+                self.tell_rejection(pr, exc.text)
+            raise
+
+    def tell_rejection(self, pr, text):
+        """Show the contributor why the PR is stuck, in the sticky comment; once per head and wording."""
+        number, head = pr['number'], pr['headRefOid']
+        state = State(self.work / 'state', number, head)
+        if state.get('rejection') == text:
+            return
+        self.say(number, sticky_body(head, text))
+        state.set('rejection', text)
+
+    def _process(self, pr, base=None):
         number, head = pr['number'], pr['headRefOid']
         state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
         if state.get('done'):
@@ -1114,8 +1138,14 @@ class Bot:
         self.overlay(head, files)
         units = state.once('units', lambda: self.units(files))
         functions = sorted({r for rs in units.values() for r in rs})
-        if not functions or len(self.new_functions(base, units)) > self.config['max_functions']:
-            raise Rejected('functions')
+        if not functions:
+            raise Rejected('functions', 'No function headers were found in the changed units, so there is nothing '
+                           'to compare. Each function needs its `// RVA 0x..., N bytes` header; fix that and push.')
+        new = len(self.new_functions(base, units))
+        if new > self.config['max_functions']:
+            raise Rejected('functions', f'This PR adds {new} functions, over the limit of '
+                           f'{self.config["max_functions"]} per PR. Please split it into smaller PRs '
+                           f'and push (or open new PRs); the bot checks again on the next push.')
         state.once('batch', lambda: wants_batching(functions, self.header_sizes(units)))
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
         # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
@@ -1384,7 +1414,9 @@ class Bot:
             # those as no-target and the verifier cannot build a task row for them.
             units = {u: {r for r in rs if r in targets} for u, rs in units.items()}
         if not units or any(not rs for rs in units.values()):
-            raise Rejected('rva-headers')
+            raise Rejected('rva-headers', 'A changed unit has a function whose `// RVA 0x...` header names no '
+                           'function in the pinned target (a data address, a typo, or no header at all). '
+                           'Fix or remove that header and push; the bot checks again on the next push.')
         return {u: sorted(rs) for u, rs in units.items()}
 
     def finish(self, pr, state, decision, started, comment=None, leak_codes=(), land=None):
