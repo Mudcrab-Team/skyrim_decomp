@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiMultiTargetTransformController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiInterpController: STANDIN EXE_RTTI
@@ -210,6 +211,8 @@ public:
 
     // AllocateEntries: GUESS(low); the callee that sizes the entry arrays
     void AllocateEntries(std::uint16_t a_count);
+    // BaseLoadBinary: GUESS(low); the base-class loader the compared LoadBinary calls first
+    void BaseLoadBinary(NiStream& a_stream);
 
     // m_entries: GUESS(low); inline entries, stride 0x48
     ControlledEntry* m_entries;  // 48

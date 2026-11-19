@@ -1,5 +1,6 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image, with names from the community header; a byte match does not verify names.
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ApplyCollisionLayer, ApplyCollisionLayerAndGroup, FindCollisionObject: GUESS; unnamed callees, see the header
 // EnableRigidConstraints, DisableRigidConstraints: GUESS; unnamed callees, see the header
@@ -13,6 +14,8 @@
 // 0x1900a0 NiAVObject::GetCollisionObject
 // 0xfddac0 NiAVObject::GetBoneFromName
 // 0xeec1a0 NiAVObject::RecalculateWorldTransform
+// 0xee0700 NiAVObject::RegisterStreamables
+// Adapted bodies: none
 #include "NiAVObject.h"
 
 void NiAVObject::SetCollisionLayer(COL_LAYER a_collisionLayer)

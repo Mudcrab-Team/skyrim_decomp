@@ -1,5 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
+// Code origin: original; the listing and community declarations only
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
 // 0xf62970 NiColorInterpolator::GetKeyType
@@ -9,6 +10,7 @@
 // 0xf62b50 NiColorInterpolator::GuaranteeTimeRange
 // 0xf62980 NiColorInterpolator::GetKeyArray
 // 0xf629a0 NiColorInterpolator::GetKeyStride
+// 0xf628c0 NiColorInterpolator::IsColorAValueSupported
 #include "NiColorInterpolator.h"
 
 const NiRTTI NiRTTI_NiColorInterpolator{};
@@ -68,4 +70,9 @@ std::uint8_t NiColorInterpolator::GetKeyStride(std::uint16_t a_channel) const
         return 0;
     }
     return keyData->keyStride;
+}
+
+std::uint8_t NiColorInterpolator::IsColorAValueSupported() const
+{
+    return 0x1;
 }
