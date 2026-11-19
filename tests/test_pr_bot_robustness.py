@@ -451,6 +451,42 @@ class PoolTests(WorkDir):
         self.assertIs(first.ghidra_lock, second.ghidra_lock)
         self.assertIs(first.root_lock, second.root_lock)
 
+    def test_refill_regenerates_only_below_the_threshold_and_holds_the_push_turn(self):
+        bot = FakeBot(self.work)
+        regenerated = []
+        bot.regenerate = lambda number: regenerated.append((number, bot.land_lock.locked()))
+        for left, expected in ((1500, []), (1499, [(None, True)])):
+            regenerated.clear()
+            bot.offered_open = lambda left=left: left
+            self.assertEqual(bot.refill_offers(), left)
+            self.assertEqual(regenerated, expected)
+        self.assertFalse(bot.land_lock.locked())
+
+    def test_idle_poll_checks_the_window_at_start_and_then_once_per_period(self):
+        calls = []
+
+        class Refilling(PoolTests.PoolBot):
+            def refill_offers(self):
+                calls.append(1)
+                return 2000
+        bot = Refilling(self.work)
+        bot.gh_json = lambda *a: []
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3, refill_every=3600)
+        self.assertEqual(len(calls), 1)
+        calls.clear()
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(calls, [])
+
+    def test_a_failed_refill_does_not_stop_the_poll(self):
+        class Broken(PoolTests.PoolBot):
+            def refill_offers(self):
+                raise pr_bot.Stop('SR_TARGET_IMAGE is not set')
+        bot = Broken(self.work)
+        listed = []
+        bot.gh_json = lambda *a: listed.append(1) or []
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600)
+        self.assertEqual(len(listed), 2)
+
 
 if __name__ == '__main__':
     unittest.main()

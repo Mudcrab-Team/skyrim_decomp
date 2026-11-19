@@ -83,6 +83,8 @@ GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/pro
 # Per-function hashes of the newly mapped functions: test_target_hashes fails on main until they exist, and only
 # this machine holds the image they are computed from.
 TARGET_HASH_DIR = 'data/target-hashes/'
+REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
+REFILL_EVERY = 3600  # seconds between looks at that count
 
 
 def is_generated(name):
@@ -1635,6 +1637,30 @@ class Bot:
             return dict(blocked, blocked='review', count=len(added), notes=notes)
         return dict(blocked=None, merge=True, verdicts={}, count=len(added))
 
+    def offered_open(self):
+        """Offered functions nobody has recorded yet, counted on a fresh origin/main from the published lists.
+
+        Open claims are not subtracted: a claim is advisory, and the count only decides when the window needs
+        topping up, so overcounting the few functions in flight is harmless.
+        """
+        import contrib
+        self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+        self.run(['git', 'checkout', '--quiet', '--force', '-B', 'regen', 'origin/main'], cwd=self.tree)
+        data = contrib.inventory(self.tree)
+        return sum(1 for c in contrib.candidates(self.tree, data, published=True) if c['startable'])
+
+    def refill_offers(self, threshold=REFILL_BELOW):
+        """Top the offered window back up when fewer than `threshold` functions are left to claim.
+
+        Regenerating recomputes the window from the private function table, smallest first and classes with
+        layouts first, so recorded functions leave it and new ones enter. Returns the count that was seen.
+        """
+        with self.land_lock:  # the push to main takes its turn with merges and records
+            left = self.offered_open()
+            if left < threshold:
+                self.regenerate(None)
+        return left
+
     def regenerate(self, number):
         """Rebuild the generated index and pictures on main after a mapping merge; push only those files.
 
@@ -1665,8 +1691,9 @@ class Bot:
             if not changed:
                 return
             self.run(['git', 'add', '--', *sorted(changed)], cwd=self.tree)
-            self.run(['git', 'commit', '--quiet', '-m', f'Regenerate the index and pictures after mapping PR #{number}'],
-                     cwd=self.tree)
+            why = (f'Regenerate the index and pictures after mapping PR #{number}' if number else
+                   'Refill the offered target window')
+            self.run(['git', 'commit', '--quiet', '-m', why], cwd=self.tree)
             if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
                 return
         raise Stop('push of the regenerated files kept losing the race; retry next tick')
@@ -1863,12 +1890,13 @@ def work_one(slots, gh, pr):
         slots.put(slot)
 
 
-def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None):
+def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
+         refill_every=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
 
     A PR is never queued twice, and a finished head or one that is backing off costs no worker. After a
     `gh` failure nothing is listed or run until the shared GitHub backoff has passed. `rounds` bounds the
-    loop for tests.
+    loop for tests. With `refill_every`, an idle bot checks the offered window at most that often.
     """
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
@@ -1882,6 +1910,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     for index in range(workers):
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
+    refilled = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -1895,6 +1924,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             if wait:
                 sleep(min(wait, interval))
                 continue
+            if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
+                refilled = time.time()  # a failure waits for the next window, not the next tick
+                try:
+                    left = bot.for_slot(0).refill_offers()
+                    print(f'{stamp()} offered window: {left} claimable left', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
@@ -1945,7 +1981,7 @@ def main(argv=None):
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
-        return poll(bot, a.interval, a.restart_after)
+        return poll(bot, a.interval, a.restart_after, refill_every=REFILL_EVERY)
     if a.command != 'pr' or not a.number:
         p.error('give `pr NUMBER` or --poll')
     pr = bot.gh_json('pr', 'view', str(a.number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
