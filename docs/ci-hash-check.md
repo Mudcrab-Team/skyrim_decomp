@@ -60,7 +60,9 @@ unmatched functions, plus `contributor-targets.json`: the offered `contrib.py ne
 all functions in the current open claim snapshot. Claim addresses outside progress are resolved
 against local function/pdata boundaries; unresolved identities stop generation. The checked-in
 offered inventory records public claim URLs/scopes and hashes of its input snapshots. This
-coverage is smaller than the full executable census. Install the
+coverage is smaller than the full executable census. `target_hash_offers.py` also offers a bounded window (3,000 by
+default) of unmapped ordinary functions, small ones first, whose class already has a layout unit; `contrib.py` accepts
+them and `tools/record.py` creates their inventory entry on acceptance (`findings/claim-time-mapping.md`). Install the
 local extraction dependency `iced-x86==1.21.0` in an ignored environment. For example:
 
 ```sh

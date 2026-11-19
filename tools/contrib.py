@@ -299,6 +299,28 @@ def find_function(data, rva):
     return None
 
 
+def function_table_rows(ctx):
+    """The private function table by RVA when this machine has one (SR_FUNCTION_TABLE or the analysis export)."""
+    import claimable
+    path = ctx.env.get('SR_FUNCTION_TABLE') or str(Path(ctx.repo) / '.local/analysis/functions.jsonl')
+    return claimable.load_table(path)
+
+
+def resolve_function(ctx, data, rva):
+    """The inventory entry, else an entry for a published function the inventory does not hold, else None.
+
+    A published function is claimable without bulk mapping: record.py adds its entry when it is accepted.
+    """
+    import claimable
+    fn = find_function(data, rva)
+    if fn is not None:
+        return fn
+    held = {f['rva'] for f in data['functions']}
+    if rva in held or rva not in claimable.published_sizes(ctx.repo):
+        return None
+    return claimable.resolve(ctx.repo, data['target_build_id'], rva, held, function_table_rows(ctx))
+
+
 def community_label(name_source):
     """The COMMUNITY(...) label an inventory entry's name source supports, and its licence word."""
     text = name_source or ''
@@ -326,11 +348,23 @@ def unit_files(repo, cls, area=None):
     return area, f'reconstruction/{area}/{cls}.h', f'reconstruction/{area}/{cls}.cpp'
 
 
-def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None):
-    """Mapped, unclaimed targets ordered by advisory declaration/draft readiness, then size/RVA."""
+def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False):
+    """Unclaimed targets: small functions first (under 64 bytes, then 64-255), classes that already have
+    a layout before those that do not, then advisory declaration/draft readiness, size and RVA.
+
+    With `published`, functions of the target-hash list that have no inventory entry are included when
+    their offered row names a class; they are made `mapped` when recorded (tools/claimable.py).
+    """
+    import claimable
     from contrib_readiness import readiness
     out, headers, layouts = [], {}, {}
-    for fn in data['functions']:
+    pool = list(data['functions'])
+    if published:
+        held = {f['rva'] for f in pool}
+        sizes = claimable.published_sizes(repo)
+        pool += [claimable.entry(data['target_build_id'], rva, sizes[rva], cls)
+                 for rva, cls in sorted(claimable.offered_classes(repo).items()) if rva in sizes and rva not in held]
+    for fn in pool:
         if fn['status'] != 'mapped' or fn['rva'] in claimed:
             continue
         if max_size and fn['size'] > max_size:
@@ -349,8 +383,10 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None):
         out.append({'rva': f'0x{fn["rva"]:x}', 'size': fn['size'], 'name': fn.get('name'),
                     'name_origin': fn.get('name_origin'), 'unit': cpp, 'unit_exists': has_unit,
                     'startable': bool(m and area), 'readiness_rank': rank, 'reason': reason,
-                    'cautions': cautions,
-                    '_key': (not m or area is None, rank, fn['size'], fn['rva'])})
+                    'cautions': cautions, 'in_inventory': fn['owner'] != 'claim-time',
+                    'size_band': claimable.band(fn['size']), 'has_layout': bool(headers[header]),
+                    '_key': (not m or area is None, claimable.band(fn['size']), not headers[header],
+                             rank, fn['size'], fn['rva'])})
     out.sort(key=lambda c: c.pop('_key'))
     return out
 
@@ -1531,10 +1567,12 @@ def cmd_next(ctx, args):
     try:
         index = ctx.github().open_items()
         me = ctx.github().user()
-        claimed = {f['rva'] for f in data['functions']
-                   if batch_claims.claimed(index, f['rva'], me) and
-                   any(it.get('build_id') in (None, f['build_id']) for it in
-                       batch_claims.claimed(index, f['rva'], me))}
+        import claimable
+        pool = [(f['rva'], f['build_id']) for f in data['functions']]
+        pool += [(rva, data['target_build_id']) for rva in claimable.offered_classes(ctx.repo)]
+        claimed = {rva for rva, build in pool
+                   if batch_claims.claimed(index, rva, me) and
+                   any(it.get('build_id') in (None, build) for it in batch_claims.claimed(index, rva, me))}
     except Offline as exc:
         online = False
         ctx.say(f'claims unavailable: {exc}')
@@ -1547,7 +1585,13 @@ def cmd_next(ctx, args):
             facts = local_facts(args.function_table, data['target_build_id'], target['image_sha256'])
         except (OSError, ValueError, KeyError) as exc:
             raise Stop(USAGE, str(exc)) from None
-    rows = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts) if c['startable']][:args.count]
+    ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True) if c['startable']]
+    counts = {'claimable': len(ready), 'without_inventory_entry': sum(not c['in_inventory'] for c in ready),
+              'under_64_bytes': sum(c['size_band'] == 0 for c in ready),
+              '64_to_255_bytes': sum(c['size_band'] == 1 for c in ready),
+              'with_existing_layout': sum(c['has_layout'] for c in ready)}
+    rows = ready[:args.count]
+    ctx.say('claimable now: ' + ', '.join(f'{v} {k.replace("_", " ")}' for k, v in counts.items()))
     for c in rows:
         ctx.say(f'{c["rva"]:>10}  {c["size"]:>5} B  {c["name"]}  -> {c["unit"]}' + ('' if not c['unit_exists']
                                                                                    else '  (existing unit)')
@@ -1555,8 +1599,8 @@ def cmd_next(ctx, args):
     if not online:
         ctx.say('note: GitHub not reachable; claims by others are not excluded')
     if not rows:
-        return OK, {'candidates': [], 'claims_checked': online}, None
-    return OK, {'candidates': rows, 'claims_checked': online}, f'{ctx.cli} claim {rows[0]["rva"]}'
+        return OK, {'candidates': [], 'claims_checked': online, 'counts': counts}, None
+    return OK, {'candidates': rows, 'claims_checked': online, 'counts': counts}, f'{ctx.cli} claim {rows[0]["rva"]}'
 
 
 def claim_selection(ctx, args, data):
@@ -1594,9 +1638,9 @@ def claim_selection(ctx, args, data):
     ranges = merged
     functions = []
     for address in sorted(addresses):
-        fn = find_function(data, address)
+        fn = resolve_function(ctx, data, address)
         if fn is None:
-            raise Stop(USAGE, f'0x{address:x} is not in data/progress.json')
+            raise Stop(USAGE, f'0x{address:x} is not in data/progress.json or the published target-hash list')
         if fn['status'] == 'matched':
             raise Stop(USAGE, f'0x{address:x} is already matched', f'{ctx.cli} next')
         functions.append(fn)
@@ -1737,9 +1781,10 @@ def start(ctx, args, quiet=False):
     target = target_manifest(ctx.repo)
     fns = []
     for text in args.rva:
-        fn = find_function(data, parse_rva(text))
+        fn = resolve_function(ctx, data, parse_rva(text))
         if fn is None:
-            raise Stop(USAGE, f'{text} is not in data/progress.json', f'{ctx.cli} next')
+            raise Stop(USAGE, f'{text} is not in data/progress.json or the published target-hash list',
+                       f'{ctx.cli} next')
         if fn['status'] == 'matched' and not args.practice:
             raise Stop(USAGE, f'{text} is already matched; use --practice to try it as an exercise', f'{ctx.cli} next')
         fns.append(fn)

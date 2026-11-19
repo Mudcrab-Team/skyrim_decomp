@@ -22,6 +22,7 @@ import copy
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -29,6 +30,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
+import claimable  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
 from digest_v2 import review_binds  # noqa: E402
@@ -118,6 +120,11 @@ def build_match_record(root, task_dir, ci_run, out):
                                            ci_run['map_status'], unit['first_host'])
     record = assemble_record(root, task, unit, fn, json.loads(Path(reports[fn['rva']]).read_text()), build, ci)
     inventory = {f['rva']: f for f in _load(root, PROGRESS)['functions'] if f['build_id'] == task['build_id']}
+    if fn['rva'] not in inventory:
+        # A function claimed without an inventory entry is validated as the entry record.apply will add.
+        fresh = claimable.resolve(root, task['build_id'], fn['rva'], set(inventory), private_table(root))
+        ci_confirmation.require(fresh is not None, 'function is in neither the inventory nor the published target list')
+        inventory[fn['rva']] = fresh
     dest = Path(out) / task['build_id'] / f'0x{fn["rva"]:x}.json'
     scratch = root / 'reports' / task['build_id'] / f'.pr-{fn["rva"]:x}.json'
     scratch.parent.mkdir(parents=True, exist_ok=True)
@@ -129,6 +136,12 @@ def build_match_record(root, task_dir, ci_run, out):
     finally:
         scratch.unlink(missing_ok=True)
     return dest
+
+
+def private_table(root):
+    """The private function table by RVA when this host has one; None means the published bounds alone."""
+    import claimable
+    return claimable.load_table(os.environ.get('SR_FUNCTION_TABLE') or Path(root) / '.local/analysis/functions.jsonl')
 
 
 def _write_json(path, value):
@@ -160,12 +173,21 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     target = _load(root, TARGET)
     by_rva = {fn['rva']: (i, fn) for i, fn in enumerate(data['functions']) if fn['build_id'] == build_id}
     out = {'recorded': [], 'refused': {}, 'files': []}
-    changed = []
+    changed, created = [], set()
+    table = []
     for rva in sorted(set(rvas)):
-        if rva not in by_rva:
-            out['refused'][rva] = 'not in inventory'
-            continue
-        index, fn = by_rva[rva]
+        index = None
+        if rva in by_rva:
+            index, fn = by_rva[rva]
+        else:
+            # Published bounds make a function claimable without bulk mapping; its entry is made here,
+            # and only if the validator then accepts the match.
+            if not table:
+                table.append(private_table(root))
+            fn = claimable.resolve(root, build_id, rva, set(by_rva), table[0])
+            if fn is None:
+                out['refused'][rva] = 'not in inventory'
+                continue
         report = f'reports/{build_id}/0x{rva:x}.json'
         review_path = root / review_record_path(fn)
         written, prior = [], {}
@@ -201,7 +223,11 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                     path.write_bytes(prior[path])
             out['refused'][rva] = str(exc).splitlines()[0][:200] if str(exc) else type(exc).__name__
             continue
-        data['functions'][index] = candidate
+        if index is None:
+            data['functions'].append(candidate)
+            created.add(rva)
+        else:
+            data['functions'][index] = candidate
         changed.append(candidate)
         out['recorded'].append(rva)
         out['files'] += [report, review_record_path(fn)]
@@ -212,7 +238,10 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     if changed:
         data['updated_at'] = when.strftime('%Y-%m-%dT%H:%M:%SZ')
         (root / PROGRESS).write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
-        if _patch_index(root, changed):
+        if created:
+            build_index.write_index(data, root)
+            out['files'].append(build_index.INDEX)
+        elif _patch_index(root, changed):
             out['files'].append(build_index.INDEX)
         out['files'].append(PROGRESS)
         # check.py renders the README pictures from the data; a record that moves the counts must move them.

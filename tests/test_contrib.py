@@ -389,8 +389,9 @@ class SkeletonTests(Base):
         rows = contrib.candidates(ROOT, contrib.inventory(ROOT))
         self.assertTrue(any(r['unit_exists'] and r['startable'] for r in rows))
         self.assertTrue(all(r['reason'] for r in rows))
-        self.assertEqual([(not r['startable'], r['readiness_rank'], r['size'], int(r['rva'], 16)) for r in rows],
-                         sorted((not r['startable'], r['readiness_rank'], r['size'], int(r['rva'], 16)) for r in rows))
+        key = lambda r: (not r['startable'], r['size_band'], not r['has_layout'], r['readiness_rank'], r['size'],
+                         int(r['rva'], 16))
+        self.assertEqual([key(r) for r in rows], sorted(key(r) for r in rows))
 
 
 class IntakeTests(Base):

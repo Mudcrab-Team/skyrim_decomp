@@ -67,4 +67,7 @@ A PR that only names functions touches `data/progress.json` and, optionally, new
 - The `mapping` check and `tools/mapping_check.py` run these rules; one review checks names, evidence and that
   nothing is game-derived. No host runs, and no function can become `matched` this way.
 
+`next`, `claim` and `start` accept a function of the published target-hash list with no inventory entry; the bot
+creates its `mapped` entry when it records the match, so no mapping PR is needed for it.
+
 Stuck? Open an issue with `gh issue create --template contributor-help.yml --label from-agent` (RVA and name only, no listings); see [the guide](contributing-agent.md#getting-help).

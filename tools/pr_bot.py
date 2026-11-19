@@ -933,7 +933,9 @@ class Bot:
                               for c in closure)
             out.append(f'unit {cpp}: translation unit {names}; tu digest {digest}')
             for rva in rvas:
-                fn = rows.get(rva)
+                import claimable
+                # A published function without an entry is added as mapped when recorded; not an unknown address.
+                fn = rows.get(rva) or claimable.resolve(tree, target['build_id'], rva, set(rows))
                 out.append(f'  0x{rva:x}: ' + (f'inventory size {fn["size"]}, status {fn["status"]}, name '
                            f'{fn.get("name")} ({fn.get("name_origin")})' if fn else 'NOT in the inventory'))
                 out += self.binding_lines(rva, cpp, digest, evidence.get(rva, {}))

@@ -68,6 +68,51 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.assertEqual(out['recorded'], [])
         self.assertEqual(set(out['refused']), {0x9999, 0x3000})
 
+    def publish(self, *rvas):
+        """Publish bounds for functions the inventory does not hold, as the target-hash manifest does."""
+        import claimable
+        shard = 'data/target-hashes/sse-steam-1-7-104-part-000.json'
+        sizes = {self.fn['rva']: self.fn['size']}
+        self.write(shard, json.dumps({'functions': [{'rva': r, 'size': sizes.get(r, 4)} for r in rvas]}))
+        self.write(claimable.MANIFEST, json.dumps({'shards': [{'path': shard}]}))
+        self.write(claimable.EVIDENCE, 'shared evidence of claim-time entries\n')
+
+    def test_a_published_function_without_an_entry_gets_one_when_it_is_recorded(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        build_index.write_index(self.data, self.root)
+        self.publish(self.fn['rva'])
+        before = len(self.data['functions'])
+        out = self.apply()
+        self.assertEqual(out['recorded'], [self.fn['rva']])
+        data = json.loads((self.root / 'data/progress.json').read_text())
+        self.assertEqual(len(data['functions']), before + 1)
+        row = data['functions'][-1]
+        self.assertEqual((row['rva'], row['status'], row['name_origin'], row['owner'], row['report']),
+                         (self.fn['rva'], 'matched', 'GUESS', 'claim-time', RECORD))
+        self.assertEqual(row['name'], f'Function{self.fn["rva"]:x}')
+        validate(data, self.target, self.root)
+        self.assertEqual((self.root / build_index.INDEX).read_text(), build_index.render_index(data, self.root))
+
+    def test_an_unpublished_function_is_still_refused(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        self.publish(0x7777)
+        before = (self.root / 'data/progress.json').read_bytes()
+        out = self.apply()
+        self.assertEqual((out['recorded'], out['refused']), ([], {self.fn['rva']: 'not in inventory'}))
+        self.assertEqual((self.root / 'data/progress.json').read_bytes(), before)
+
+    def test_a_refused_claim_time_function_adds_no_entry(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        self.publish(self.fn['rva'])
+        self.write('reconstruction/synthetic/SyntheticSum.h', 'int SyntheticAddOne(int);\nint drift;\n')
+        before = (self.root / 'data/progress.json').read_bytes()
+        out = self.apply()
+        self.assertEqual(out['recorded'], [])
+        self.assertEqual((self.root / 'data/progress.json').read_bytes(), before)
+
     def test_second_run_is_a_no_op(self):
         self.apply()
         snapshot = (self.root / 'data/progress.json').read_bytes()
