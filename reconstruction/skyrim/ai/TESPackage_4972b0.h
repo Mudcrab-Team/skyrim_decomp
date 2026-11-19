@@ -3,12 +3,12 @@
 // Code origin: partial TESPackage layout adapted from CommonLibSSE-NG. Method signatures are inferred.
 // UnlocksDoorsAtStart, UnlocksDoorsAtEnd, IsOncePerDay, Function497360, Function4973d0: GUESS(low)
 // Function497410, Function4973e0, GetProcedureDataPointer, GetDialogueDataPointer, GetDialogueDataByte: GUESS(low)
-// GetSandboxLocationValue, SetOwnerQuest, GetInterruptOverrideType, SetInterruptOverrideType, GetMaxSpeed: GUESS(low)
+// GetSandboxLocationValue, GetInterruptOverrideType, SetInterruptOverrideType, GetMaxSpeed: GUESS(low)
 // SetMaxSpeed, GetCustomPackageData, GetLocationValue, GetUseWeaponData, GetPatrolData: GUESS(low)
 // GetFollowData, GetGuardData, GetEscortData, GetEscortValue, Function49d1c0: GUESS(low)
-// TESPackage, TESPackageData, PackageLocation, TESQuest, RE::PACKAGE_DATA: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESPackage, TESPackageData, PackageLocation, RE::PACKAGE_DATA: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // packData, PACKAGE_DATA::packFlags, PACKAGE_DATA::packType, PACKAGE_DATA::interruptOverrideType, PACKAGE_DATA::maxSpeed: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// data, packLoc, ownerQuest, procedureType, PACKAGE_PROCEDURE_TYPE::kFollow: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// data, packLoc, procedureType, PACKAGE_PROCEDURE_TYPE::kFollow: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // PACKAGE_PROCEDURE_TYPE::kEscort, PACKAGE_PROCEDURE_TYPE::kEat, PACKAGE_PROCEDURE_TYPE::kSleep, PACKAGE_PROCEDURE_TYPE::kWander, PACKAGE_PROCEDURE_TYPE::kUseItemAt: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // PACKAGE_PROCEDURE_TYPE::kAmbush, PACKAGE_PROCEDURE_TYPE::kSandbox, PACKAGE_PROCEDURE_TYPE::kPatrol, PACKAGE_PROCEDURE_TYPE::kGuard, PACKAGE_PROCEDURE_TYPE::kDialogue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // PACKAGE_PROCEDURE_TYPE::kUseWeapon, PACKAGE_PROCEDURE_TYPE::kPackage, PACKAGE_PROCEDURE_TYPE::kPackageTemplate, PACKAGE_PROCEDURE_TYPE::kSpectator, PACKAGE_PROCEDURE_TYPE::kInGameDialogue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -19,7 +19,6 @@
 
 class TESPackageData;
 class PackageLocation;
-class TESQuest;
 
 enum class PACKAGE_PROCEDURE_TYPE : std::uint8_t {
     kFollow = 1, kEscort = 2, kEat = 3, kSleep = 4, kWander = 5,
@@ -51,7 +50,6 @@ public:
     void* GetDialogueDataPointer() const;
     std::uint8_t GetDialogueDataByte() const;
     bool GetSandboxLocationValue(const void* context, float& result) const;
-    void SetOwnerQuest(TESQuest* quest);
     std::int32_t GetInterruptOverrideType() const;
     void SetInterruptOverrideType(std::int8_t type);
     std::uint32_t GetMaxSpeed() const;
@@ -76,8 +74,6 @@ private:
     std::uint8_t padding2C[4];
     TESPackageData* data;
     PackageLocation* packLoc;
-    std::uint8_t padding40[0x30];
-    TESQuest* ownerQuest;
-    std::uint8_t padding78[0x60];
+    std::uint8_t padding40[0x98];
     std::int32_t procedureType;
 };

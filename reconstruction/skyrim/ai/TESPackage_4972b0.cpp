@@ -13,7 +13,6 @@
 // 0x497680 TESPackage::GetDialogueDataPointer
 // 0x497710 TESPackage::GetDialogueDataByte
 // 0x4977a0 TESPackage::GetSandboxLocationValue
-// 0x498830 TESPackage::SetOwnerQuest
 // 0x498840 TESPackage::GetInterruptOverrideType
 // 0x498850 TESPackage::SetInterruptOverrideType
 // 0x498860 TESPackage::GetMaxSpeed
@@ -152,11 +151,6 @@ bool TESPackage::GetSandboxLocationValue(const void* context, float& result) con
         return true;
     }
     return false;
-}
-
-void TESPackage::SetOwnerQuest(TESQuest* quest)
-{
-    ownerQuest = quest;
 }
 
 std::int32_t TESPackage::GetInterruptOverrideType() const
