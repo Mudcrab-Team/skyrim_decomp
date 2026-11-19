@@ -1,10 +1,90 @@
 {
   "schema": 1,
   "build_id": "sse-steam-1-7-104",
-  "snapshot_utc": "2026-11-19T17:09:24.182982+00:00",
+  "snapshot_utc": "2026-11-19T18:33:47.110133+00:00",
   "function_metadata_sha256": "15ba17036f4312634d884316084923fbf3e4bdad61101ab28ae476b187376710",
-  "claims_snapshot_sha256": "249fb32d669cd743c689a1997cb697b6cb8d77ba7e83db03c6e3a88ff9524b9e",
+  "claims_snapshot_sha256": "af897f65c3087f8f2263d9dea422ff082d1b08c1b7bc4d2e363d7edbf3891d07",
   "claims": [
+    {
+      "number": 357,
+      "url": "https://github.com/awarebayes/skyrim_decomp/issues/357",
+      "entries": [
+        [
+          3983056,
+          3983057
+        ]
+      ]
+    },
+    {
+      "number": 352,
+      "url": "https://github.com/awarebayes/skyrim_decomp/issues/352",
+      "entries": [
+        [
+          1962000,
+          1962001
+        ],
+        [
+          4399936,
+          4399937
+        ],
+        [
+          5606864,
+          5606865
+        ],
+        [
+          5625232,
+          5625233
+        ],
+        [
+          9400576,
+          9400577
+        ],
+        [
+          9401936,
+          9401937
+        ],
+        [
+          9402784,
+          9402785
+        ],
+        [
+          15392032,
+          15392033
+        ],
+        [
+          15599360,
+          15599361
+        ],
+        [
+          15798560,
+          15798561
+        ],
+        [
+          16111520,
+          16111521
+        ],
+        [
+          16113216,
+          16113217
+        ],
+        [
+          16132288,
+          16132289
+        ],
+        [
+          16373600,
+          16373601
+        ],
+        [
+          16578176,
+          16578177
+        ],
+        [
+          22373632,
+          22373633
+        ]
+      ]
+    },
     {
       "number": 320,
       "url": "https://github.com/awarebayes/skyrim_decomp/issues/320",
@@ -2400,8 +2480,8 @@
       ]
     }
   ],
-  "next_candidate_count": 3544,
-  "claim_function_count": 457,
+  "next_candidate_count": 3937,
+  "claim_function_count": 474,
   "functions": [
     {
       "rva": 59232,
@@ -3014,6 +3094,12 @@
       "class": "ExtraEditorID"
     },
     {
+      "rva": 1402128,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "ExtraSeenData"
+    },
+    {
       "rva": 1550304,
       "size": 60,
       "extent_source": "local-function-table",
@@ -3042,6 +3128,24 @@
       "size": 66,
       "extent_source": "local-function-table",
       "class": "ExtraLastFinishedSequence"
+    },
+    {
+      "rva": 1561024,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "ExtraMissingLinkedRefIDs"
+    },
+    {
+      "rva": 1561120,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "ExtraMissingRefIDs"
+    },
+    {
+      "rva": 1562128,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "ExtraPrimitive"
     },
     {
       "rva": 1563184,
@@ -3524,6 +3628,12 @@
       "class": "ExtraFavorCost"
     },
     {
+      "rva": 1611888,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "ExtraTextDisplayData"
+    },
+    {
       "rva": 1611984,
       "size": 76,
       "extent_source": "local-function-table",
@@ -3642,6 +3752,12 @@
       "size": 79,
       "extent_source": "local-function-table",
       "class": "TESObjectREFR"
+    },
+    {
+      "rva": 1633648,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "ExtraAnimNoteReceiver"
     },
     {
       "rva": 1635088,
@@ -4106,14 +4222,14 @@
       "class": "BGSMessageIcon"
     },
     {
-      "rva": 1937984,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BGSMessageIcon"
-    },
-    {
       "rva": 1945792,
       "size": 52,
+      "extent_source": "local-function-table",
+      "class": "BGSPerkRankArray"
+    },
+    {
+      "rva": 1946576,
+      "size": 86,
       "extent_source": "local-function-table",
       "class": "BGSPerkRankArray"
     },
@@ -4568,12 +4684,6 @@
       "class": "TESBoundObject"
     },
     {
-      "rva": 2000304,
-      "size": 33,
-      "extent_source": "local-function-table",
-      "class": "TESIcon"
-    },
-    {
       "rva": 2000912,
       "size": 50,
       "extent_source": "local-function-table",
@@ -4588,6 +4698,12 @@
     {
       "rva": 2001072,
       "size": 7,
+      "extent_source": "local-function-table",
+      "class": "TESLeveledList"
+    },
+    {
+      "rva": 2005632,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "TESLeveledList"
     },
@@ -4940,6 +5056,30 @@
       "class": "TESRegion"
     },
     {
+      "rva": 2423072,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESRegion"
+    },
+    {
+      "rva": 2423168,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESRegion"
+    },
+    {
+      "rva": 2423264,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESRegion"
+    },
+    {
+      "rva": 2423360,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESRegion"
+    },
+    {
       "rva": 2423680,
       "size": 52,
       "extent_source": "local-function-table",
@@ -5048,6 +5188,12 @@
       "class": "TESRegionGrassObject"
     },
     {
+      "rva": 2459280,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "TESRegionObject"
+    },
+    {
       "rva": 2472880,
       "size": 62,
       "extent_source": "local-function-table",
@@ -5110,12 +5256,6 @@
     {
       "rva": 2495936,
       "size": 52,
-      "extent_source": "local-function-table",
-      "class": "BGSExplosion"
-    },
-    {
-      "rva": 2496076,
-      "size": 12,
       "extent_source": "local-function-table",
       "class": "BGSExplosion"
     },
@@ -5254,12 +5394,6 @@
     {
       "rva": 2543568,
       "size": 35,
-      "extent_source": "local-function-table",
-      "class": "TESEffectShader"
-    },
-    {
-      "rva": 2543616,
-      "size": 25,
       "extent_source": "local-function-table",
       "class": "TESEffectShader"
     },
@@ -5558,12 +5692,6 @@
       "class": "TESObjectREFR"
     },
     {
-      "rva": 2579184,
-      "size": 33,
-      "extent_source": "local-function-table",
-      "class": "TESObject"
-    },
-    {
       "rva": 2579232,
       "size": 15,
       "extent_source": "local-function-table",
@@ -5836,6 +5964,12 @@
     {
       "rva": 2654816,
       "size": 52,
+      "extent_source": "local-function-table",
+      "class": "TESObjectTREE"
+    },
+    {
+      "rva": 2655024,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "TESObjectTREE"
     },
@@ -6818,6 +6952,12 @@
       "class": "Character"
     },
     {
+      "rva": 3037888,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESObjectREFR"
+    },
+    {
       "rva": 3038112,
       "size": 40,
       "extent_source": "local-function-table",
@@ -6882,6 +7022,12 @@
       "size": 31,
       "extent_source": "local-function-table",
       "class": "Actor"
+    },
+    {
+      "rva": 3041296,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "Character"
     },
     {
       "rva": 3041904,
@@ -7508,6 +7654,12 @@
       "class": "BGSColorForm"
     },
     {
+      "rva": 3258224,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "BGSColorForm"
+    },
+    {
       "rva": 3258320,
       "size": 30,
       "extent_source": "local-function-table",
@@ -7556,12 +7708,6 @@
       "class": "BGSFootstepSet"
     },
     {
-      "rva": 3268336,
-      "size": 8,
-      "extent_source": "local-function-table",
-      "class": "BGSImpactData"
-    },
-    {
       "rva": 3268352,
       "size": 52,
       "extent_source": "local-function-table",
@@ -7572,12 +7718,6 @@
       "size": 9,
       "extent_source": "local-function-table",
       "class": "BGSImpactData"
-    },
-    {
-      "rva": 3273584,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BGSImpactDataSet"
     },
     {
       "rva": 3273792,
@@ -7592,8 +7732,26 @@
       "class": "BGSImpactDataSet"
     },
     {
+      "rva": 3277328,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "BGSListForm"
+    },
+    {
+      "rva": 3277424,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "BGSListForm"
+    },
+    {
       "rva": 3277520,
       "size": 19,
+      "extent_source": "local-function-table",
+      "class": "BGSListForm"
+    },
+    {
+      "rva": 3279440,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "BGSListForm"
     },
@@ -7612,12 +7770,6 @@
     {
       "rva": 3283824,
       "size": 52,
-      "extent_source": "local-function-table",
-      "class": "BGSMaterialObject"
-    },
-    {
-      "rva": 3284008,
-      "size": 9,
       "extent_source": "local-function-table",
       "class": "BGSMaterialObject"
     },
@@ -7672,6 +7824,12 @@
     {
       "rva": 3309168,
       "size": 67,
+      "extent_source": "local-function-table",
+      "class": "BGSMusicType"
+    },
+    {
+      "rva": 3309696,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "BGSMusicType"
     },
@@ -8270,6 +8428,12 @@
       "class": "TESNPC"
     },
     {
+      "rva": 3924832,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESNPC"
+    },
+    {
       "rva": 3926368,
       "size": 75,
       "extent_source": "local-function-table",
@@ -8678,6 +8842,12 @@
       "class": "TESQuest"
     },
     {
+      "rva": 4003648,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESQuest"
+    },
+    {
       "rva": 4003744,
       "size": 16,
       "extent_source": "local-function-table",
@@ -8858,6 +9028,12 @@
       "class": "TESTopicInfo"
     },
     {
+      "rva": 4138128,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESTopicInfo"
+    },
+    {
       "rva": 4138528,
       "size": 5,
       "extent_source": "local-function-table",
@@ -8866,6 +9042,12 @@
     {
       "rva": 4140640,
       "size": 16,
+      "extent_source": "local-function-table",
+      "class": "TESTopicInfo"
+    },
+    {
+      "rva": 4142864,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "TESTopicInfo"
     },
@@ -8982,6 +9164,12 @@
       "size": 43,
       "extent_source": "local-function-table",
       "class": "BGSExplosion"
+    },
+    {
+      "rva": 4332512,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESForm"
     },
     {
       "rva": 4397776,
@@ -9208,6 +9396,12 @@
     {
       "rva": 4514320,
       "size": 76,
+      "extent_source": "local-function-table",
+      "class": "BGSPackageDataLocationWrapper"
+    },
+    {
+      "rva": 4514448,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "BGSPackageDataLocationWrapper"
     },
@@ -10046,6 +10240,24 @@
       "class": "TESPackage"
     },
     {
+      "rva": 4844208,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESAmbushPackageData"
+    },
+    {
+      "rva": 4844480,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "TESAmbushPackageData"
+    },
+    {
+      "rva": 4852864,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "TESEscortPackageData"
+    },
+    {
       "rva": 4854160,
       "size": 85,
       "extent_source": "local-function-table",
@@ -10054,12 +10266,6 @@
     {
       "rva": 4854336,
       "size": 33,
-      "extent_source": "local-function-table",
-      "class": "TESPatrolPackageData"
-    },
-    {
-      "rva": 4854384,
-      "size": 9,
       "extent_source": "local-function-table",
       "class": "TESPatrolPackageData"
     },
@@ -10086,6 +10292,18 @@
       "size": 16,
       "extent_source": "local-function-table",
       "class": "TESPatrolPackageData"
+    },
+    {
+      "rva": 4855104,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "TESUseItemPackageData"
+    },
+    {
+      "rva": 4855360,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "TESUseItemPackageData"
     },
     {
       "rva": 4877328,
@@ -10288,18 +10506,6 @@
     {
       "rva": 5011008,
       "size": 59,
-      "extent_source": "local-function-table",
-      "class": "NavMeshInfoMap"
-    },
-    {
-      "rva": 5011072,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "NavMeshInfoMap"
-    },
-    {
-      "rva": 5011088,
-      "size": 9,
       "extent_source": "local-function-table",
       "class": "NavMeshInfoMap"
     },
@@ -10916,6 +11122,12 @@
       "class": "ActorMagicCaster"
     },
     {
+      "rva": 6033600,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "ActorMagicCaster"
+    },
+    {
       "rva": 6034032,
       "size": 35,
       "extent_source": "local-function-table",
@@ -10974,6 +11186,12 @@
       "size": 9,
       "extent_source": "local-function-table",
       "class": "DualValueModifierEffect"
+    },
+    {
+      "rva": 6067696,
+      "size": 87,
+      "extent_source": "local-function-table",
+      "class": "LightEffect"
     },
     {
       "rva": 6071424,
@@ -11068,6 +11286,12 @@
     {
       "rva": 6104848,
       "size": 55,
+      "extent_source": "local-function-table",
+      "class": "MagicTarget"
+    },
+    {
+      "rva": 6106432,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "MagicTarget"
     },
@@ -11290,6 +11514,12 @@
     {
       "rva": 6520496,
       "size": 45,
+      "extent_source": "local-function-table",
+      "class": "BGSLoadGameBuffer"
+    },
+    {
+      "rva": 6520560,
+      "size": 86,
       "extent_source": "local-function-table",
       "class": "BGSLoadGameBuffer"
     },
@@ -12086,6 +12316,12 @@
       "class": "Character"
     },
     {
+      "rva": 6790080,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "Actor"
+    },
+    {
       "rva": 6790272,
       "size": 28,
       "extent_source": "local-function-table",
@@ -12668,8 +12904,20 @@
       "class": "Character"
     },
     {
+      "rva": 7013872,
+      "size": 85,
+      "extent_source": "local-function-table",
+      "class": "Actor"
+    },
+    {
       "rva": 7016800,
       "size": 12,
+      "extent_source": "local-function-table",
+      "class": "Actor"
+    },
+    {
+      "rva": 7018016,
+      "size": 85,
       "extent_source": "local-function-table",
       "class": "Actor"
     },
@@ -13062,6 +13310,12 @@
       "size": 17,
       "extent_source": "local-function-table",
       "class": "Character"
+    },
+    {
+      "rva": 7160320,
+      "size": 85,
+      "extent_source": "local-function-table",
+      "class": "Actor"
     },
     {
       "rva": 7161312,
@@ -15014,6 +15268,12 @@
       "class": "PlayerCharacter"
     },
     {
+      "rva": 7652480,
+      "size": 85,
+      "extent_source": "local-function-table",
+      "class": "PlayerCharacter"
+    },
+    {
       "rva": 7652576,
       "size": 11,
       "extent_source": "local-function-table",
@@ -15052,6 +15312,12 @@
     {
       "rva": 7685696,
       "size": 59,
+      "extent_source": "local-function-table",
+      "class": "PlayerCharacter"
+    },
+    {
+      "rva": 7686528,
+      "size": 87,
       "extent_source": "local-function-table",
       "class": "PlayerCharacter"
     },
@@ -15172,6 +15438,12 @@
     {
       "rva": 7710272,
       "size": 13,
+      "extent_source": "local-function-table",
+      "class": "PlayerCharacter"
+    },
+    {
+      "rva": 7712352,
+      "size": 85,
       "extent_source": "local-function-table",
       "class": "PlayerCharacter"
     },
@@ -15842,6 +16114,12 @@
       "class": "ArrowProjectile"
     },
     {
+      "rva": 8381264,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "FlameProjectile"
+    },
+    {
       "rva": 8381376,
       "size": 37,
       "extent_source": "local-function-table",
@@ -16046,6 +16324,12 @@
       "class": "CombatMagicCasterRestore"
     },
     {
+      "rva": 8606800,
+      "size": 85,
+      "extent_source": "local-function-table",
+      "class": "CombatMagicCasterRestore"
+    },
+    {
       "rva": 8610352,
       "size": 58,
       "extent_source": "local-function-table",
@@ -16072,6 +16356,12 @@
     {
       "rva": 8818464,
       "size": 81,
+      "extent_source": "local-function-table",
+      "class": "Character"
+    },
+    {
+      "rva": 8818624,
+      "size": 85,
       "extent_source": "local-function-table",
       "class": "Character"
     },
@@ -16304,6 +16594,12 @@
       "class": "Character"
     },
     {
+      "rva": 9381328,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "Character"
+    },
+    {
       "rva": 9381536,
       "size": 84,
       "extent_source": "local-function-table",
@@ -16402,6 +16698,12 @@
     {
       "rva": 9409104,
       "size": 55,
+      "extent_source": "local-function-table",
+      "class": "PlayerCamera"
+    },
+    {
+      "rva": 9409168,
+      "size": 85,
       "extent_source": "local-function-table",
       "class": "PlayerCamera"
     },
@@ -16544,6 +16846,12 @@
       "class": "MagicMenu"
     },
     {
+      "rva": 9777168,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "MagicMenu"
+    },
+    {
       "rva": 9778192,
       "size": 53,
       "extent_source": "local-function-table",
@@ -16666,6 +16974,12 @@
     {
       "rva": 10484080,
       "size": 54,
+      "extent_source": "local-function-table",
+      "class": "Actor"
+    },
+    {
+      "rva": 10487904,
+      "size": 86,
       "extent_source": "local-function-table",
       "class": "Actor"
     },
@@ -17372,16 +17686,16 @@
       "class": "BSDynamicTriShape"
     },
     {
+      "rva": 15644576,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "NiAVObject"
+    },
+    {
       "rva": 15646432,
       "size": 53,
       "extent_source": "local-function-table",
       "class": "NiSingleInterpController"
-    },
-    {
-      "rva": 15651312,
-      "size": 15,
-      "extent_source": "local-function-table",
-      "class": "NiLight"
     },
     {
       "rva": 15661760,
@@ -17394,12 +17708,6 @@
       "size": 67,
       "extent_source": "local-function-table",
       "class": "NiProperty"
-    },
-    {
-      "rva": 15676704,
-      "size": 24,
-      "extent_source": "local-function-table",
-      "class": "NiSourceTexture"
     },
     {
       "rva": 15677008,
@@ -17620,12 +17928,6 @@
     {
       "rva": 15775696,
       "size": 17,
-      "extent_source": "local-function-table",
-      "class": "NiGeometry"
-    },
-    {
-      "rva": 15780320,
-      "size": 9,
       "extent_source": "local-function-table",
       "class": "NiGeometry"
     },
@@ -18062,18 +18364,6 @@
       "class": "NiPathInterpolator"
     },
     {
-      "rva": 16153824,
-      "size": 33,
-      "extent_source": "local-function-table",
-      "class": "NiBlendTransformInterpolator"
-    },
-    {
-      "rva": 16154272,
-      "size": 33,
-      "extent_source": "local-function-table",
-      "class": "NiBlendTransformInterpolator"
-    },
-    {
       "rva": 16154320,
       "size": 13,
       "extent_source": "local-function-table",
@@ -18134,12 +18424,6 @@
       "class": "NiBlendFloatInterpolator"
     },
     {
-      "rva": 16160560,
-      "size": 33,
-      "extent_source": "local-function-table",
-      "class": "NiTransformController"
-    },
-    {
       "rva": 16162624,
       "size": 60,
       "extent_source": "local-function-table",
@@ -18172,12 +18456,6 @@
     {
       "rva": 16180736,
       "size": 15,
-      "extent_source": "local-function-table",
-      "class": "NiKeyBasedInterpolator"
-    },
-    {
-      "rva": 16181696,
-      "size": 33,
       "extent_source": "local-function-table",
       "class": "NiKeyBasedInterpolator"
     },
@@ -19106,38 +19384,14 @@
       "class": "NiPSysEmitterCtlr"
     },
     {
-      "rva": 16361680,
-      "size": 45,
-      "extent_source": "local-function-table",
-      "class": "NiPSysEmitterCtlr"
-    },
-    {
-      "rva": 16362192,
-      "size": 19,
-      "extent_source": "local-function-table",
-      "class": "NiPSysEmitterCtlr"
-    },
-    {
       "rva": 16365184,
       "size": 70,
       "extent_source": "local-function-table",
       "class": "NiPSysEmitterCtlr"
     },
     {
-      "rva": 16365424,
-      "size": 28,
-      "extent_source": "local-function-table",
-      "class": "NiPSysEmitterCtlr"
-    },
-    {
       "rva": 16365472,
       "size": 77,
-      "extent_source": "local-function-table",
-      "class": "NiPSysEmitterCtlr"
-    },
-    {
-      "rva": 16365568,
-      "size": 24,
       "extent_source": "local-function-table",
       "class": "NiPSysEmitterCtlr"
     },
@@ -19202,26 +19456,14 @@
       "class": "NiMeshParticleSystem"
     },
     {
-      "rva": 16386384,
-      "size": 44,
+      "rva": 16378224,
+      "size": 86,
       "extent_source": "local-function-table",
-      "class": "NiPSysEmitterCtlr"
+      "class": "NiMeshParticleSystem"
     },
     {
       "rva": 16386448,
       "size": 70,
-      "extent_source": "local-function-table",
-      "class": "NiPSysModifierCtlr"
-    },
-    {
-      "rva": 16386560,
-      "size": 43,
-      "extent_source": "local-function-table",
-      "class": "NiPSysModifierCtlr"
-    },
-    {
-      "rva": 16386832,
-      "size": 48,
       "extent_source": "local-function-table",
       "class": "NiPSysModifierCtlr"
     },
@@ -19244,12 +19486,6 @@
       "class": "NiPSysModifier"
     },
     {
-      "rva": 16388960,
-      "size": 51,
-      "extent_source": "local-function-table",
-      "class": "NiPSysModifier"
-    },
-    {
       "rva": 16389024,
       "size": 83,
       "extent_source": "local-function-table",
@@ -19262,14 +19498,14 @@
       "class": "NiObject"
     },
     {
-      "rva": 16488592,
-      "size": 66,
+      "rva": 16486912,
+      "size": 86,
       "extent_source": "local-function-table",
       "class": "NiPSysSpawnModifier"
     },
     {
-      "rva": 16488880,
-      "size": 52,
+      "rva": 16488592,
+      "size": 66,
       "extent_source": "local-function-table",
       "class": "NiPSysSpawnModifier"
     },
@@ -19370,12 +19606,6 @@
       "class": "BSPortalGraph"
     },
     {
-      "rva": 16625856,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BSPortalGraph"
-    },
-    {
       "rva": 16639952,
       "size": 29,
       "extent_source": "local-function-table",
@@ -19384,12 +19614,6 @@
     {
       "rva": 16666416,
       "size": 19,
-      "extent_source": "local-function-table",
-      "class": "BSMultiBoundShape"
-    },
-    {
-      "rva": 16666944,
-      "size": 50,
       "extent_source": "local-function-table",
       "class": "BSMultiBoundShape"
     },
@@ -19514,12 +19738,6 @@
       "class": "BSMultiBoundNode"
     },
     {
-      "rva": 16731968,
-      "size": 46,
-      "extent_source": "local-function-table",
-      "class": "NiPSysEmitterCtlr"
-    },
-    {
       "rva": 16737920,
       "size": 49,
       "extent_source": "local-function-table",
@@ -19634,6 +19852,12 @@
       "class": "BSMultiBoundCapsule"
     },
     {
+      "rva": 16787824,
+      "size": 86,
+      "extent_source": "local-function-table",
+      "class": "BSPSysStripUpdateModifier"
+    },
+    {
       "rva": 16787952,
       "size": 79,
       "extent_source": "local-function-table",
@@ -19642,12 +19866,6 @@
     {
       "rva": 16788048,
       "size": 65,
-      "extent_source": "local-function-table",
-      "class": "BSPSysStripUpdateModifier"
-    },
-    {
-      "rva": 16788640,
-      "size": 33,
       "extent_source": "local-function-table",
       "class": "BSPSysStripUpdateModifier"
     },
@@ -19892,22 +20110,10 @@
       "class": "BSShaderProperty"
     },
     {
-      "rva": 21921472,
-      "size": 28,
-      "extent_source": "local-function-table",
-      "class": "BSShaderProperty"
-    },
-    {
       "rva": 21921600,
       "size": 46,
       "extent_source": "local-function-table",
       "class": "BSEffectShaderProperty"
-    },
-    {
-      "rva": 21922640,
-      "size": 39,
-      "extent_source": "local-function-table",
-      "class": "BSLightingShaderProperty"
     },
     {
       "rva": 21923120,
@@ -19976,38 +20182,8 @@
       "class": "BSLightingShaderProperty"
     },
     {
-      "rva": 22124928,
-      "size": 30,
-      "extent_source": "local-function-table",
-      "class": "BSLightingShaderProperty"
-    },
-    {
       "rva": 22135728,
       "size": 61,
-      "extent_source": "local-function-table",
-      "class": "BSLightingShaderProperty"
-    },
-    {
-      "rva": 22137472,
-      "size": 24,
-      "extent_source": "local-function-table",
-      "class": "BSLightingShaderProperty"
-    },
-    {
-      "rva": 22140192,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BSLightingShaderProperty"
-    },
-    {
-      "rva": 22140240,
-      "size": 13,
-      "extent_source": "local-function-table",
-      "class": "BSLightingShaderProperty"
-    },
-    {
-      "rva": 22140256,
-      "size": 13,
       "extent_source": "local-function-table",
       "class": "BSLightingShaderProperty"
     },
@@ -20018,34 +20194,10 @@
       "class": "BSLightingShaderProperty"
     },
     {
-      "rva": 22141840,
-      "size": 10,
-      "extent_source": "local-function-table",
-      "class": "BSGrassShaderProperty"
-    },
-    {
       "rva": 22141856,
       "size": 67,
       "extent_source": "local-function-table",
       "class": "BSGrassShaderProperty"
-    },
-    {
-      "rva": 22142576,
-      "size": 7,
-      "extent_source": "local-function-table",
-      "class": "BSGrassShaderProperty"
-    },
-    {
-      "rva": 22142592,
-      "size": 7,
-      "extent_source": "local-function-table",
-      "class": "BSGrassShaderProperty"
-    },
-    {
-      "rva": 22143984,
-      "size": 49,
-      "extent_source": "local-function-table",
-      "class": "BSShaderAccumulator"
     },
     {
       "rva": 22152640,
@@ -20056,30 +20208,6 @@
     {
       "rva": 22153472,
       "size": 83,
-      "extent_source": "local-function-table",
-      "class": "BSShaderAccumulator"
-    },
-    {
-      "rva": 22153712,
-      "size": 19,
-      "extent_source": "local-function-table",
-      "class": "BSShaderAccumulator"
-    },
-    {
-      "rva": 22154384,
-      "size": 20,
-      "extent_source": "local-function-table",
-      "class": "BSShaderAccumulator"
-    },
-    {
-      "rva": 22154608,
-      "size": 12,
-      "extent_source": "local-function-table",
-      "class": "BSShaderAccumulator"
-    },
-    {
-      "rva": 22155600,
-      "size": 14,
       "extent_source": "local-function-table",
       "class": "BSShaderAccumulator"
     },
@@ -20156,40 +20284,10 @@
       "class": "BSEffectShaderProperty"
     },
     {
-      "rva": 22195616,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BSEffectShaderProperty"
-    },
-    {
-      "rva": 22195680,
-      "size": 10,
-      "extent_source": "local-function-table",
-      "class": "BSEffectShaderProperty"
-    },
-    {
-      "rva": 22195696,
-      "size": 17,
-      "extent_source": "local-function-table",
-      "class": "BSEffectShaderProperty"
-    },
-    {
       "rva": 22206800,
       "size": 75,
       "extent_source": "local-function-table",
       "class": "BSBloodSplatterShaderProperty"
-    },
-    {
-      "rva": 22239616,
-      "size": 19,
-      "extent_source": "local-function-table",
-      "class": "BSParticleShaderGeometryEmitter"
-    },
-    {
-      "rva": 22241920,
-      "size": 13,
-      "extent_source": "local-function-table",
-      "class": "BSParticleShaderRayEmitter"
     },
     {
       "rva": 22286192,
@@ -20306,12 +20404,6 @@
       "class": "BSImagespaceShader"
     },
     {
-      "rva": 22434560,
-      "size": 12,
-      "extent_source": "local-function-table",
-      "class": "BSImagespaceShader"
-    },
-    {
       "rva": 22439648,
       "size": 31,
       "extent_source": "local-function-table",
@@ -20396,22 +20488,16 @@
       "class": "BSMultiIndexTriShape"
     },
     {
+      "rva": 22501312,
+      "size": 85,
+      "extent_source": "local-function-table",
+      "class": "BSShaderMaterial"
+    },
+    {
       "rva": 22506128,
       "size": 46,
       "extent_source": "local-function-table",
       "class": "BSLight"
-    },
-    {
-      "rva": 22517424,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BSShader"
-    },
-    {
-      "rva": 22517440,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BSShader"
     },
     {
       "rva": 22517468,
@@ -20430,12 +20516,6 @@
       "size": 18,
       "extent_source": "local-function-table",
       "class": "BSShadowParabolicLight"
-    },
-    {
-      "rva": 22585712,
-      "size": 9,
-      "extent_source": "local-function-table",
-      "class": "BSComputeShader"
     },
     {
       "rva": 22648928,

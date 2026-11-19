@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/912bfe7efb94e21c5700be4644fe93f52bf9dcb4ab2f9651d971b51ed7fa4a86.json",
+  "versions": [
+    {
+      "sha256": "912bfe7efb94e21c5700be4644fe93f52bf9dcb4ab2f9651d971b51ed7fa4a86",
+      "base": null,
+      "added": [
+        "?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z",
+        "?GetTranslation@ThirdPersonState@@QEBAXAEAUNiPoint3@@@Z",
+        "?GetFreeRotationMode@ThirdPersonState@@QEBA_NXZ",
+        "?playerControls@@3PEAVPlayerControls@@EA"
+      ]
+    }
+  ]
+}

@@ -26,27 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "c4ca5d1a6ba0cb0694d0863ef53f5199d2853d8cc98ccb45a9888dba9267eed7",
-        "opened_equals_closure": true,
-        "repository_files_opened": [
-          "reconstruction/skyrim/camera/ThirdPersonState.cpp",
-          "reconstruction/skyrim/camera/ThirdPersonState.h"
-        ]
-      },
-      "winpc-native": {
-        "command_flags": [
-          "/nologo",
-          "/c",
-          "/O2",
-          "/MD",
-          "/GS-",
-          "/EHsc",
-          "/GR",
-          "/fp:precise",
-          "/Gy",
-          "/showIncludes"
-        ],
-        "object_sha256": "52eac3a2fcfe7dea381171987eab9874d1dc56b52a8266c385e8869da5fe3272",
+        "object_sha256": "9600a5ae7d83ca018f7aa43094f5b928a0bf57f6ed3835390b965548b5c128b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/camera/ThirdPersonState.cpp",
@@ -55,23 +35,60 @@
       }
     }
   },
+  "ci_confirmation": {
+    "base_sha": "466aa251a623c4b93e3a55606365b62b58a8a486",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "dfd5929b0bbff818bf4f9a2d1313af931dd493b4",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "6bc425bdec0dc81fffc81706a9d8fcd1ea01366e1c5d9a5ac0617d72bbe3a55f",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "23095d862269a49ebde2531a36f1a03e5ef70debf790c6d41979c5a6198a26af",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44592756335,
+    "rva": "0x8fd870",
+    "schema": 2,
+    "source_sha256": "60f9ddf13307e8d6c572a49ba52526e9df84680b90ce4b8f05413d1849ecbb4b",
+    "status": "pass",
+    "symbols": [
+      "?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "6bc425bdec0dc81fffc81706a9d8fcd1ea01366e1c5d9a5ac0617d72bbe3a55f",
+      "normalized_sha256": "23095d862269a49ebde2531a36f1a03e5ef70debf790c6d41979c5a6198a26af",
+      "rva": 9427056,
+      "size": 8
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim/camera/ThirdPersonState.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
   "function_id": "sse-steam-1-7-104-0x8fd870",
   "match_record_schema": 2,
   "notes": [
-    "Comparator reports are embedded verbatim. Their acceptance field is the comparator's own and stays not-evaluated. Acceptance follows the acceptance rule in docs/verification.md: this record, a sanitized Reviewer approve bound to the same source digest, and integration by tools/accept_function.py.",
-    "independence: separate-machine, different-loader. The compile hosts are the maintainer's own machines, each with its own install of the pinned toolchain, reached by tools/verifier/runners.py: mac-wine (machine maintainer-mac; macos arm64; the pinned compiler run under Wine; compiler binaries sha256: c1xx.dll 4d5f2f8c1ed3384ae15be5b31e2918e4a200913cb58374543b7a05762de234be, c2.dll 03627abf4cde10390bc086ba1a85625ed61c2708838db9fff0dc9830040bbf2b, cl.exe 5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e, link.exe 70e987473cc4c67f65cdcabb82b3dc4827cb9d224d6016843051363b4cacb099); winpc-native (machine maintainer-winpc; windows amd64; the pinned compiler run natively; compiler binaries sha256: c1xx.dll 4d5f2f8c1ed3384ae15be5b31e2918e4a200913cb58374543b7a05762de234be, c2.dll 03627abf4cde10390bc086ba1a85625ed61c2708838db9fff0dc9830040bbf2b, cl.exe 5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e, link.exe 70e987473cc4c67f65cdcabb82b3dc4827cb9d224d6016843051363b4cacb099). Each host hashed its compiler binaries during this confirm run and checked them against pinned.sha256, checked its own copy of the image against builds/target.json before compiling, and compared its own object; the local host also compared the other hosts' objects. Host facts are self-reported by tools/verifier/unit_build.py.",
-    "Build environment on both compile hosts: INCLUDE, LIB, LIBPATH, CL, _CL_ and EXTERNAL_INCLUDE removed before the compile, INCLUDE then set to toolchain and SDK directories only (by the msvc-wine wrapper under Wine, by tools/verifier/unit_build.py from the same directory list natively); /showIncludes added after the recipe flags, and the repository files the compiler opened equalled the include closure. Each host's flags, cleared variables, object hash and opened files are in the build block, as that host reported them; the gate checks that block for presence and consistency with the runs, not for truth.",
-    "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
-    "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
-    "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Fresh Terra-first drafting from target-specific private listings and anonymous authorized sibling hints; names and original signature remain unverified.",
-    "Source state: working tree on base commit 8292d7bf3b0e006a010a23cee3ce467cd7600bf7, with uncommitted changes to reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp, reconstruction/fo4fresh_eed73f81/ThirdPersonState.h, reports/sse-steam-1-7-104/unit-symbols/2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
     "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
   },
-  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_boat_machine.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x8fd870 --symbol '?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z' --compiled reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp --unit reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp reconstruction/fo4fresh_eed73f81/ThirdPersonState.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -81,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "392389bc68834d9e91db6650e89a821456e90b4c98d33592b72d5f7d7d1e4db1",
           "code_sections": 1,
-          "object_sha256": "c4ca5d1a6ba0cb0694d0863ef53f5199d2853d8cc98ccb45a9888dba9267eed7"
+          "object_sha256": "9600a5ae7d83ca018f7aa43094f5b928a0bf57f6ed3835390b965548b5c128b1"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -141,168 +158,10 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp",
-          "source_revision": "39737c18ebc9f0c955d38950f58b804a2df6f42b4c359c6b98b5baa7e1b151f9"
+          "path": "reconstruction/skyrim/camera/ThirdPersonState.cpp",
+          "source_revision": "60f9ddf13307e8d6c572a49ba52526e9df84680b90ce4b8f05413d1849ecbb4b"
         },
-        "symbol_map_sha256": "2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff",
-        "target": {
-          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
-          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
-        },
-        "task_id": "sse-steam-1-7-104-0x8fd870"
-      }
-    },
-    {
-      "compared_on": "winpc-native",
-      "compiled_on": "winpc-native",
-      "report": {
-        "acceptance": "not-evaluated",
-        "candidate": {
-          "code_section_sha256": "392389bc68834d9e91db6650e89a821456e90b4c98d33592b72d5f7d7d1e4db1",
-          "code_sections": 1,
-          "object_sha256": "52eac3a2fcfe7dea381171987eab9874d1dc56b52a8266c385e8869da5fe3272"
-        },
-        "comparator": {
-          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
-          "version": "0.6.1-runtime"
-        },
-        "contract_version": 2,
-        "coverage": {
-          "aliases_declared": [],
-          "code_bytes_by_reference": 0,
-          "code_bytes_exact": 8,
-          "code_bytes_total": 8,
-          "eh": {
-            "bytes": 0,
-            "handlers": {},
-            "int_fields": 0,
-            "ref_fields": 0,
-            "structures": {},
-            "type_names_compared": 0
-          },
-          "funclet_bytes_by_reference": 0,
-          "funclet_bytes_exact": 0,
-          "funclet_bytes_total": 0,
-          "funclet_end_evidence": {},
-          "funclet_ranges": [],
-          "funclet_sections": 0,
-          "relocations_by_type": {},
-          "self_rva_fields": 0,
-          "unwind": "none-in-range",
-          "unwind_bytes_exact": 0,
-          "unwind_chained_entries": 0,
-          "unwind_entries": 0
-        },
-        "detail": "all contract v2 checks passed",
-        "function": {
-          "build_id": "sse-steam-1-7-104",
-          "rva": 9427056,
-          "size": 8,
-          "symbol": "?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z"
-        },
-        "reason": "all-checks-passed",
-        "recipe": {
-          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
-          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
-          "flags": [
-            "/nologo",
-            "/c",
-            "/O2",
-            "/MD",
-            "/GS-",
-            "/EHsc",
-            "/GR",
-            "/fp:precise",
-            "/Gy"
-          ],
-          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
-        },
-        "report_schema": 1,
-        "result": "pass",
-        "source": {
-          "path": "reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp",
-          "source_revision": "39737c18ebc9f0c955d38950f58b804a2df6f42b4c359c6b98b5baa7e1b151f9"
-        },
-        "symbol_map_sha256": "2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff",
-        "target": {
-          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
-          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
-        },
-        "task_id": "sse-steam-1-7-104-0x8fd870"
-      }
-    },
-    {
-      "compared_on": "mac-wine",
-      "compiled_on": "winpc-native",
-      "report": {
-        "acceptance": "not-evaluated",
-        "candidate": {
-          "code_section_sha256": "392389bc68834d9e91db6650e89a821456e90b4c98d33592b72d5f7d7d1e4db1",
-          "code_sections": 1,
-          "object_sha256": "52eac3a2fcfe7dea381171987eab9874d1dc56b52a8266c385e8869da5fe3272"
-        },
-        "comparator": {
-          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
-          "version": "0.6.1-runtime"
-        },
-        "contract_version": 2,
-        "coverage": {
-          "aliases_declared": [],
-          "code_bytes_by_reference": 0,
-          "code_bytes_exact": 8,
-          "code_bytes_total": 8,
-          "eh": {
-            "bytes": 0,
-            "handlers": {},
-            "int_fields": 0,
-            "ref_fields": 0,
-            "structures": {},
-            "type_names_compared": 0
-          },
-          "funclet_bytes_by_reference": 0,
-          "funclet_bytes_exact": 0,
-          "funclet_bytes_total": 0,
-          "funclet_end_evidence": {},
-          "funclet_ranges": [],
-          "funclet_sections": 0,
-          "relocations_by_type": {},
-          "self_rva_fields": 0,
-          "unwind": "none-in-range",
-          "unwind_bytes_exact": 0,
-          "unwind_chained_entries": 0,
-          "unwind_entries": 0
-        },
-        "detail": "all contract v2 checks passed",
-        "function": {
-          "build_id": "sse-steam-1-7-104",
-          "rva": 9427056,
-          "size": 8,
-          "symbol": "?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z"
-        },
-        "reason": "all-checks-passed",
-        "recipe": {
-          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
-          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
-          "flags": [
-            "/nologo",
-            "/c",
-            "/O2",
-            "/MD",
-            "/GS-",
-            "/EHsc",
-            "/GR",
-            "/fp:precise",
-            "/Gy"
-          ],
-          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
-        },
-        "report_schema": 1,
-        "result": "pass",
-        "source": {
-          "path": "reconstruction/fo4fresh_eed73f81/ThirdPersonState.cpp",
-          "source_revision": "39737c18ebc9f0c955d38950f58b804a2df6f42b4c359c6b98b5baa7e1b151f9"
-        },
-        "symbol_map_sha256": "2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff",
+        "symbol_map_sha256": "912bfe7efb94e21c5700be4644fe93f52bf9dcb4ab2f9651d971b51ed7fa4a86",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -313,18 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/camera/ThirdPersonState.cpp",
-    "digest": "098b175041bdd5f4067cfa91abc85fd6249d4de59b773d9b2351ca9445685411",
+    "digest": "60f9ddf13307e8d6c572a49ba52526e9df84680b90ce4b8f05413d1849ecbb4b",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "39737c18ebc9f0c955d38950f58b804a2df6f42b4c359c6b98b5baa7e1b151f9",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/skyrim/camera/ThirdPersonState.cpp",
       "reconstruction/skyrim/camera/ThirdPersonState.h"
     ]
   },
+  "submitter": "taylorturnerit",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff.json",
-    "sha256": "2fc4381034deab808f094455433c55811198f0535d3a5e7ec723712474a6f8ff"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/912bfe7efb94e21c5700be4644fe93f52bf9dcb4ab2f9651d971b51ed7fa4a86.json",
+    "sha256": "912bfe7efb94e21c5700be4644fe93f52bf9dcb4ab2f9651d971b51ed7fa4a86"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

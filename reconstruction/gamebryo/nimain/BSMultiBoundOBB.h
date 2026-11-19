@@ -8,6 +8,8 @@
 // unknown10, unknown18, unknown40, unknown64: GUESS(low)
 // BSMultiBoundOBBData: GUESS(low); serialized member storage in this stand-in.
 // unknown65: GUESS(low); padding after the compared flag field.
+// Code origin: original; the listing and community declarations only
+// BSMultiBoundOBB::RegisterStreamables, BSMultiBoundAABB::RegisterStreamables: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 
@@ -120,6 +122,7 @@ class BSMultiBoundAABB : public BSMultiBoundShape
 public:
     void SaveBinary(NiStream& a_stream) override;
     void LoadBinary(NiStream& a_stream) override;
+    bool RegisterStreamables(NiStream& a_stream) override;  // not compared here: slot 1A, 0xfce8c0
     std::uint8_t unknown18[0x28];  // 18
 };
 static_assert(sizeof(BSMultiBoundAABB) == 0x40, "BSMultiBoundAABB size");
@@ -142,6 +145,7 @@ public:
     virtual void SaveBinary(NiStream& a_stream);  // compared: 0xfcf6a0
     virtual ~BSMultiBoundOBB();  // compared: 0x213af0 (scalar deleting destructor)
     virtual void LoadBinary(NiStream& a_stream);  // compared: 0xfcf630
+    bool RegisterStreamables(NiStream& a_stream) override;  // compared: 0xfcf680
 
     BSMultiBoundOBBData unknown40;  // 40
     bool unknown64;  // 64

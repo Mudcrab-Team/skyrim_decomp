@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z": {
+      "rva": 9427056,
+      "size": 8
+    },
+    "?GetTranslation@ThirdPersonState@@QEBAXAEAUNiPoint3@@@Z": {
+      "rva": 9427072,
+      "size": 18
+    },
+    "?GetFreeRotationMode@ThirdPersonState@@QEBA_NXZ": {
+      "rva": 5625232,
+      "size": 37
+    },
+    "?playerControls@@3PEAVPlayerControls@@EA": {
+      "rva": 52057752,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetRotation@ThirdPersonState@@QEBAXAEAUNiQuaternion@@@Z",
+        "rva": "0x8fd870",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetTranslation@ThirdPersonState@@QEBAXAEAUNiPoint3@@@Z",
+        "rva": "0x8fd880",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetFreeRotationMode@ThirdPersonState@@QEBA_NXZ",
+        "rva": "0x55d590",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?playerControls@@3PEAVPlayerControls@@EA",
+        "rva": "0x31a5698",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

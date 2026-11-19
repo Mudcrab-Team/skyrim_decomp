@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/9cd8d2fa9fe82814602e520f30d39f67ca808cf07bd7e0cb97c147e4ac81c45a.json",
+  "versions": [
+    {
+      "sha256": "9cd8d2fa9fe82814602e520f30d39f67ca808cf07bd7e0cb97c147e4ac81c45a",
+      "base": null,
+      "added": [
+        "?GetCollisionObject@NiAVObject@@QEAAPEAVbhkCollisionObject@@XZ",
+        "??DNiTransform@@QEBA?AV0@AEBV0@@Z",
+        "?GetCollisionObject@NiAVObject@@QEBAPEAVbhkCollisionObject@@XZ",
+        "?FindCollisionObject@@YAXPEBVNiAVObject@@AEAPEAVbhkCollisionObject@@@Z",
+        "?Copy@BSFixedString@@QEAAXAEBV1@@Z",
+        "?HasValue@BSFixedString@@QEBAHXZ",
+        "?RegisterStreamables@NiAVObject@@UEAA_NAEAVNiStream@@@Z",
+        "?RegisterStreamables@NiObjectNET@@UEAA_NAEAVNiStream@@@Z",
+        "?SetName@NiAVObject@@QEAAXAEBVBSFixedString@@@Z",
+        "?GetExtraData@NiObjectNET@@QEBAPEAVNiExtraData@@AEBVBSFixedString@@@Z",
+        "?RecalculateWorldTransform@NiAVObject@@QEAAXXZ",
+        "?FindFlattenedBone@@YAPEAVNiAVObject@@PEAV1@AEBVBSFixedString@@_N@Z",
+        "?IsInvalid@@YA_NPEBVNiTransform@@@Z",
+        "?GetBoneFromName@NiAVObject@@SAPEAV1@PEAV1@AEBVBSFixedString@@_N@Z",
+        "?FindBone@@YA_NPEAVNiExtraData@@AEBVBSFixedString@@AEAPEAVNiAVObject@@@Z",
+        "?SetCollisionLayer@NiAVObject@@QEAAXW4COL_LAYER@@@Z",
+        "?SetCollisionLayerAndGroup@NiAVObject@@QEAAXW4COL_LAYER@@I@Z",
+        "?ApplyCollisionLayerAndGroup@@YAXPEAVNiAVObject@@AEBUCollisionLayerAndGroup@@@Z",
+        "?ApplyCollisionLayer@@YAXPEAVNiAVObject@@AEBW4COL_LAYER@@@Z",
+        "?UpdateRigidConstraints@NiAVObject@@QEAAX_NEI@Z",
+        "?EnableRigidConstraints@@YAXPEAVNiAVObject@@AEBE@Z",
+        "?DisableRigidConstraints@@YAXPEAVNiAVObject@@AEBE@Z",
+        "__CxxFrameHandler3",
+        "?NiRTTI_BSFlattenedBoneTree@@3VNiRTTI@@B",
+        "?kBoneMapName@@3VBSFixedString@@B",
+        "?NiRTTI_bhkCollisionObject@@3VNiRTTI@@B"
+      ]
+    }
+  ]
+}

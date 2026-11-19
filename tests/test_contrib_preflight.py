@@ -178,10 +178,10 @@ class Ranking(unittest.TestCase):
 
     def test_existing_usable_accessor_beats_smaller_new_class_and_destructor(self):
         rows = contrib.candidates(self.root, self.data)
-        self.assertEqual([r['rva'] for r in rows], ['0x4000', '0x2000', '0x1000', '0x3000'])
+        self.assertEqual([r['rva'] for r in rows], ['0x4000', '0x2000', '0x3000', '0x1000'])
         self.assertTrue(rows[0]['unit_exists'])
         self.assertIn('usable declaration', rows[0]['reason'])
-        self.assertIn('ABI preparation', rows[-1]['reason'])
+        self.assertIn('ABI preparation', rows[2]['reason'])  # a class with a layout still outranks a new one
 
     def test_local_eh_unsupported_and_parked_facts_deprioritize(self):
         for fact, text in [({'eh': {'handler_kind': 'c++'}}, 'exception-handling'),

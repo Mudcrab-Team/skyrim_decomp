@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/0ef87aa8d268ac69000a2e1d58e95dfde9a95d59773de1ab5d780304473598f5.json",
+  "versions": [
+    {
+      "sha256": "0ef87aa8d268ac69000a2e1d58e95dfde9a95d59773de1ab5d780304473598f5",
+      "base": null,
+      "added": [
+        "?SaveBinary@BSLightingShaderMaterialEnvmap@@UEAAXAEAVNiStream@@@Z",
+        "?LoadBinary@BSLightingShaderMaterialEnvmap@@UEAAXAEAVNiStream@@@Z",
+        "?SaveBinary@BSLightingShaderMaterialBase@@UEAAXAEAVNiStream@@@Z",
+        "?LoadBinary@BSLightingShaderMaterialBase@@UEAAXAEAVNiStream@@@Z",
+        "?ComputeCRC32@BSLightingShaderMaterialEnvmap@@QEAAII@Z",
+        "?ComputeFlagHash@BSLightingShaderMaterialEnvmap@@QEAAII@Z",
+        "?SizeOfSize@CRC32Calculator@@SAXPEAIPEBXI@Z",
+        "?SizeOf32@CRC32Calculator@@SAXPEAI_KI@Z",
+        "?GetFeature@BSLightingShaderMaterialEnvmap@@UEBA?AW4Feature@BSShaderMaterial@@XZ",
+        "?Ctor@BSLightingShaderMaterialEnvmap@@QEAAPEAV1@XZ",
+        "?ReceiveValuesFromRootMaterial@BSLightingShaderMaterialEnvmap@@UEAAX_N0000PEAX1@Z",
+        "?GetTextures@BSLightingShaderMaterialEnvmap@@QEAAIPEAPEAVNiSourceTexture@@@Z",
+        "??0BSLightingShaderMaterialBase@@QEAA@XZ",
+        "??_7BSLightingShaderMaterialEnvmap@@6B@",
+        "?BaseReceiveValues@@YAXPEAVBSLightingShaderMaterialBase@@_N1111PEAX2@Z",
+        "?g_defaultEnvmapTexture@@3V?$NiPointer@VNiSourceTexture@@@@A",
+        "?CopyMembers@BSLightingShaderMaterialEnvmap@@UEAAXPEAVBSShaderMaterial@@@Z",
+        "?ClearTextures@BSLightingShaderMaterialEnvmap@@UEAAXXZ",
+        "?CopyMembers@BSLightingShaderMaterialBase@@UEAAXPEAVBSShaderMaterial@@@Z",
+        "?ClearTextures@BSLightingShaderMaterialBase@@UEAAXXZ"
+      ]
+    }
+  ]
+}
