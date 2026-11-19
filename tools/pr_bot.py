@@ -438,7 +438,12 @@ def origin_findings(hits, headers, unverified=False):
         file, repo = hit['file'], hit['repo']
         header = headers.get(file, '')
         if repo not in check_origin.SIBLINGS:
-            problems.append((file, 'unpermitted-source'))
+            # An MIT community body that the unit header names with its upstream file is the adaptation
+            # the header's own Adapted bodies line declares; any other non-sibling source still blocks.
+            if hit.get('licence') == 'MIT' and hit.get('declared'):
+                permitted.append(file)
+            else:
+                problems.append((file, 'unpermitted-source'))
         elif repo == 'fo4-private' and not allowed_path(hit['path']):
             problems.append((file, 'excluded-source'))
         elif not hit.get('declared'):

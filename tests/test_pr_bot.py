@@ -297,6 +297,14 @@ class OriginFindingTests(unittest.TestCase):
                        '// Sibling source: momusdigital/fnv_decomp@deadbeef src/Game/Thing.cpp'):
             self.assertEqual(pr_bot.origin_findings([origin_hit()], {UNIT: header})[0], [(UNIT, 'invalid-label')])
 
+    def test_a_declared_mit_community_body_is_a_note(self):
+        hit = dict(origin_hit('CharmedBaryon/CommonLibSSE-NG', 'src/Thing.cpp'), licence='MIT')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: '// Adapted bodies: Thing::Run'}), ([], [UNIT]))
+
+    def test_an_undeclared_mit_community_body_blocks(self):
+        hit = dict(origin_hit('CharmedBaryon/CommonLibSSE-NG', 'src/Thing.cpp', declared=False), licence='MIT')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: FNV_HEADER})[0], [(UNIT, 'unpermitted-source')])
+
     def test_an_unpermitted_origin_blocks_even_when_declared(self):
         hit = origin_hit('CharmedBaryon/CommonLibSSE-NG', 'src/Thing.cpp')
         self.assertEqual(pr_bot.origin_findings([hit], {UNIT: FNV_HEADER})[0], [(UNIT, 'unpermitted-source')])
