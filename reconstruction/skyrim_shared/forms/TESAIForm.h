@@ -70,6 +70,9 @@ static_assert(sizeof(AIDATA_GAME) == 0xC, "layout");
 // PackageList: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the BSSimpleList of packages is modelled as two pointers
 struct PackageList
 {
+	// PackageList::~PackageList: GUESS(low); the deleting destructor of TESAIForm calls this complete destructor out of line, target 0x4a2620
+	~PackageList();
+
 	// Clear: GUESS(low); helper ClearDataComponent tail-calls on the list, target 0x4a2c50
 	void Clear();
 
@@ -86,8 +89,11 @@ static_assert(sizeof(PackageList) == 0x10, "layout");
 class TESAIForm : public ::BaseFormComponent
 {
 public:
+	// TESAIForm::TESAIForm: EXE_RTTI; the constructor is spelled from the class name in the image RTTI. Not compared: it is defined so the unit emits the class vftable and, beside it, the deleting destructor the image keeps at 0x1df010.
+	TESAIForm();
+
 	// TESAIForm::~TESAIForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 0, target 0x1df010, inherited name
-	~TESAIForm() override;  // 00
+	~TESAIForm() override;  // 00, compared: 0x1df010
 	// TESAIForm::InitializeDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 1, target 0x1de800, inherited name
 	void InitializeDataComponent() override;  // 01
 	// TESAIForm::ClearDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 2, target 0x1de820, inherited name

@@ -383,7 +383,7 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
         out.append({'rva': f'0x{fn["rva"]:x}', 'size': fn['size'], 'name': fn.get('name'),
                     'name_origin': fn.get('name_origin'), 'unit': cpp, 'unit_exists': has_unit,
                     'startable': bool(m and area), 'readiness_rank': rank, 'reason': reason,
-                    'cautions': cautions, 'in_inventory': fn['owner'] != 'claim-time',
+                    'cautions': cautions, 'in_inventory': fn.get('owner') != 'claim-time',
                     'size_band': claimable.band(fn['size']), 'has_layout': bool(headers[header]),
                     '_key': (not m or area is None, claimable.band(fn['size']), not headers[header],
                              rank, fn['size'], fn['rva'])})

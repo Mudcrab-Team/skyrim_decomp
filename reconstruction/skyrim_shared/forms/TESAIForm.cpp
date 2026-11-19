@@ -4,6 +4,7 @@
 // 0x1de820 TESAIForm::ClearDataComponent
 // 0x1de800 TESAIForm::InitializeDataComponent
 // 0x1de830 TESAIForm::CopyComponent
+// 0x1df010 TESAIForm::~TESAIForm
 // Adapted bodies: none
 #include "TESAIForm.h"
 #include <cstring>
@@ -49,4 +50,15 @@ void TESAIForm::CopyComponent(BaseFormComponent* a_rhs)
     }
     memcpy_s(&aiData, sizeof(aiData), &rhs->aiData, sizeof(aiData));
     aiPackages.CopyPackages(rhs->aiPackages);
+}
+
+// Not compared: defined so the unit emits the class vftable and, beside it, the deleting destructor
+// compared at 0x1df010.
+TESAIForm::TESAIForm()
+{
+}
+
+TESAIForm::~TESAIForm()
+{
+    aiPackages.Clear();
 }

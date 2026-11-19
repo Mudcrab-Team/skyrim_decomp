@@ -5,6 +5,7 @@
 // Adapted bodies: none
 // 0x558e10 TESCamera::GetNode
 // 0x558f90 TESCamera::SetState
+// 0x558dd0 TESCamera::SetCameraRoot
 #include "TESCamera.h"
 
 #include <intrin.h>
@@ -26,4 +27,9 @@ bool TESCamera::GetNode(NiPointer<NiNode>& a_out)
 {
     a_out = cameraRoot;
     return a_out.pointer != nullptr;
+}
+
+void TESCamera::SetCameraRoot(NiPointer<NiNode> a_root)
+{
+    cameraRoot = a_root;
 }

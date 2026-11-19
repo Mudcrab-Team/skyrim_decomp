@@ -67,7 +67,7 @@ def screen(blob, name, *, headers=STANDARD_HEADERS):
             if not PRAGMAS.fullmatch(match.group(1).strip()):
                 problems.add('unsafe-pragma')
         # A path or escape in any literal/macro/comment must not name a host location.
-        if (re.search(r'(?:(?<![A-Za-z0-9_])[A-Za-z]:[\\/]|["\'][A-Za-z]:|\\\\|(?:^|[\s"\'(<>=])/[^/*\s])', text_variant)
+        if (re.search(r'(?:(?<![A-Za-z0-9_])[A-Za-z]:[\\/]|["\'][A-Za-z]:|\\\\|(?:^|[\s"\'(<>=])/[^/*=\s])', text_variant)
                 or re.search(r'\.\.[\\/]|[\\/]\.\.(?:[\\/"\']|$)', text_variant)
                 or re.search(r'~[\\/]|\.(?:local|git)(?:[\\/"\']|$)', text_variant)
                 or re.search(r'\\(?:x[0-9a-fA-F]|[uU][0-9a-fA-F]|[0-7])', text_variant)):

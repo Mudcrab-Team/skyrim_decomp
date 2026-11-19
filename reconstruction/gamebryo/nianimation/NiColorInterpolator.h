@@ -1,4 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// Code origin: original; the listing and community declarations only
+// NiColorInterpolator::IsColorAValueSupported: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiColorInterpolator: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiColorInterpolator::GetKeyType, NiColorInterpolator::GetRTTI, NiColorInterpolator::GetKeyCount, NiColorInterpolator::GetKeyContent, NiColorInterpolator::GuaranteeTimeRange, NiColorInterpolator::GetKeyArray, NiColorInterpolator::GetKeyStride: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -41,6 +43,7 @@ public:
     virtual void GuaranteeTimeRange(float a_start, float a_end);  // compared: 0xf62b50
     virtual void* GetKeyArray(std::uint16_t a_channel) const;  // compared: 0xf62980
     virtual std::uint8_t GetKeyStride(std::uint16_t a_channel) const;  // compared: 0xf629a0
+    virtual std::uint8_t IsColorAValueSupported() const;  // compared: 0xf628c0
 
     // TODO members: replace part of the padding with the members the bodies read,
     // keeping every offset and the size check true.

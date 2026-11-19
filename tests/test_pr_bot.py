@@ -29,6 +29,15 @@ class HintTests(unittest.TestCase):
         self.assertEqual(pr_bot.ci_hash_hints(text, [0xeee380]), {'?Impl@A@@QEAAXXZ': '0xeee380'})
         self.assertEqual(pr_bot.ci_hash_hints(text, []), {})
 
+    def test_recorded_symbol_hints_pick_the_overload_by_record(self):
+        task = {'export': {'unit_already_records': [
+            {'rva': '0x1900a0', 'symbol': '?F@A@@QEAAXXZ'}, {'rva': '0x405a50', 'symbol': '?F@A@@QEBAXXZ'},
+            {'rva': '0x10', 'symbol': None}]}}
+        self.assertEqual(pr_bot.recorded_symbol_hints(task, [0x1900a0, 0x405a50, 0x10]),
+                         {'?F@A@@QEAAXXZ': '0x1900a0', '?F@A@@QEBAXXZ': '0x405a50'})
+        self.assertEqual(pr_bot.recorded_symbol_hints(task, [0x405a50]), {'?F@A@@QEBAXXZ': '0x405a50'})
+        self.assertEqual(pr_bot.recorded_symbol_hints({}, [1]), {})
+
 
 class PollableTests(unittest.TestCase):
     def pr(self, login, labels=(), base='main', draft=False):
@@ -118,6 +127,28 @@ class DecisionTests(unittest.TestCase):
         self.assertIn('  - Accessed field hidden in a byte array.', body)
         self.assertNotIn('0x48', body)
         self.assertEqual(pr_bot.review_notes('nonsense', [0x10]), {})
+
+    def test_review_rejection_names_the_unit_and_a_category_in_every_blocking_comment(self):
+        text = json.dumps({'functions': {
+            '0x10': {'verdict': 'reject', 'ground': 'provenance', 'why': 'Header contradicts itself.'},
+            '0x20': {'verdict': 'reject', 'ground': 'surprise', 'why': 'x'},
+            '0x30': {'verdict': 'approve', 'ground': 'none', 'why': 'fine'}}})
+        grounds = pr_bot.review_grounds(text, [0x10, 0x20, 0x30])
+        self.assertEqual(grounds, {0x10: 'provenance', 0x20: 'other'})
+        self.assertEqual(pr_bot.review_grounds('nonsense', [0x10]), {})
+        units = {0x10: 'reconstruction/a/Foo.cpp', 0x20: 'reconstruction/a/Bar.cpp'}
+        d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'pass'}, {0x10: 'pass', 0x20: 'pass'},
+                          {0x10: 'reject', 0x20: 'reject'})
+        body = pr_bot.comment_body(HEAD, dict(d, grounds=grounds, unit_files=units))
+        self.assertIn('- 0x10: the review did not approve it (unit reconstruction/a/Foo.cpp; provenance label', body)
+        self.assertIn('- 0x20: the review did not approve it (unit reconstruction/a/Bar.cpp; no category given)', body)
+        self.assertNotIn('contradicts', body)
+        stale = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'pass'}, {0x10: 'pass', 0x20: 'pass'},
+                              {0x10: 'reject', 0x20: 'approve'}, stale=[0x10])
+        body = pr_bot.comment_body(HEAD, dict(stale, grounds=grounds, unit_files=units))
+        self.assertIn('go stale', body)
+        self.assertIn('0x10: the review did not approve it (unit reconstruction/a/Foo.cpp; provenance', body)
+        self.assertNotIn('0x20', body)
 
     def test_a_bad_review_answer_never_approves(self):
         self.assertEqual(pr_bot.parse_review('nonsense', [0x10]), ('unreadable', {}))
@@ -1095,6 +1126,10 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.state.data['ci']['rows'].pop('16')
         out, failed = self.build()
         self.assertEqual(failed, {0x10})
+
+    def test_a_matched_function_with_no_task_in_the_tree_is_refused_not_skipped(self):
+        out, failed = self.build({0x10, 0x20, 0x30})
+        self.assertEqual(failed, {0x30})
 
     def test_a_stale_record_file_never_stands_in_for_a_refused_one(self):
         out, _ = self.build()

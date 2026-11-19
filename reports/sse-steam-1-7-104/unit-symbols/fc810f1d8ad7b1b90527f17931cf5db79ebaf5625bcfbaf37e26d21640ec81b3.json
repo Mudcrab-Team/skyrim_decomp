@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetRotation@IronSightsState@@QEBAXAEAVNiQuaternion@@@Z": {
+      "rva": 9402736,
+      "size": 35
+    },
+    "?FromRotation@NiQuaternion@@QEAAXAEBUNiMatrix3@@@Z": {
+      "rva": 15700560,
+      "size": null
+    },
+    "?identityQuaternion@@3VNiQuaternion@@B": {
+      "rva": 34402320,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetRotation@IronSightsState@@QEBAXAEAVNiQuaternion@@@Z",
+        "rva": "0x8f7970",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?FromRotation@NiQuaternion@@QEAAXAEBUNiMatrix3@@@Z",
+        "rva": "0xef9250",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?identityQuaternion@@3VNiQuaternion@@B",
+        "rva": "0x20cf010",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -406,6 +406,59 @@ def dtor_decoration(name):
     return None
 
 
+SPECIAL_KINDS = {'ctor': '??0', 'constructor': '??0', 'dtor': '??1', 'destructor': '??1'}
+
+
+def special_decoration(name):
+    """(prefix, class) of a plain constructor or destructor decoration (`??0`, `??1`, `??_G`, `??_E`).
+
+    Unlike `dtor_decoration` this includes constructors; template scopes and thunks yield None.
+    """
+    if name.startswith('??0'):
+        rest = name[3:]
+        if '@@' not in rest or rest.startswith('?'):
+            return None
+        scope, tail = rest.split('@@', 1)
+        if not scope or not tail or tail[0] in THUNK_ACCESS or '?' in scope:
+            return None
+        return '??0', '::'.join(reversed(scope.split('@')))
+    return dtor_decoration(name)
+
+
+def special_kind(cls, last):
+    """Decoration prefixes a `Class::<last>` community name denotes, or None when it is no ctor/dtor name."""
+    base = cls.split('::')[-1]
+    key = last.lower()
+    if key in SPECIAL_KINDS:
+        return (SPECIAL_KINDS[key],) if SPECIAL_KINDS[key] == '??0' else ('??1', '??_G', '??_E')
+    if last == base:
+        return ('??0',)
+    if last == '~' + base:
+        return ('??1', '??_G', '??_E')
+    return None
+
+
+def class_special_candidates(community, defined, taken):
+    """Definitions whose decorated name is the constructor/destructor of the community name's class.
+
+    Several classes' constructors can share one object (a base member's, a helper type's), so
+    a name that is only `Class::Ctor` must be narrowed by the decorated class, not by the last
+    component. Returns None when the community name is not of that form.
+    """
+    if not community or '::' not in community:
+        return None
+    cls, last = community.rsplit('::', 1)
+    kinds = special_kind(cls, last)
+    if kinds is None:
+        return None
+    hits = []
+    for d in defined:
+        dec = special_decoration(d)
+        if d not in taken and dec and dec[0] in kinds and (dec[1] == cls or member(dec[1]) == member(cls)):
+            hits.append(d)
+    return sorted(hits)
+
+
 def reg_family(op):
     """Architectural register of an operand (`EBX` -> `B`, `R8D` -> `R8`), or None for memory/immediates."""
     op = op.strip().upper()
@@ -610,6 +663,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
         old = fn.get('symbol') or ''
         community = community_qualified(fn.get('community_name'))
         how, new = None, None
+        ambiguous = []
         spec = fn.get('destructor')
         cls = community.rsplit('::', 1)[0] if community and '::' in community else None
 
@@ -652,11 +706,17 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                 hits = [d for d in defined if member(names(d)) == member(community) and d not in taken]
                 if len(hits) == 1:
                     how, new = 'member name', hits[0]
+            if new is None and community:
+                hits = class_special_candidates(community, defined, taken)
+                if hits and len(hits) == 1:
+                    how, new = 'class constructor/destructor name', hits[0]
+                elif hits:
+                    ambiguous = hits
         if new is None:
             candidates = sorted(d for d in defined if d not in taken)
             report['unbound_functions'].append({'rva': hex(rva), 'community_name': fn.get('community_name'),
                                                 'symbol': old, 'defined_in_object': candidates[:12],
-                                                'expected': spec})
+                                                'expected': spec, 'overloads': ambiguous})
             continue
         taken.add(new)
         if new != old:
@@ -869,6 +929,11 @@ def describe(report, task_dir):
                          f'({spec["evidence"]}); the object defines no {"/".join(spec["symbols"])} of the class. '
                          'A deleting destructor is emitted beside the vftable, so the unit must define a '
                          f'constructor (or otherwise reference the vftable); or add a hint to {hints}')
+        elif f.get('overloads'):
+            lines.append(f'  UNBOUND function {f["rva"]} ({f["community_name"]}): the object defines '
+                         f'{len(f["overloads"])} overloads of that class\'s constructor/destructor '
+                         f'({", ".join(f["overloads"][:4])}); add a `CI hash:` hint line naming the one at this '
+                         f'address, or {{"<decorated name>": "{f["rva"]}"}} to {hints}')
         else:
             lines.append(f'  UNBOUND function {f["rva"]} ({f["community_name"]}): no unique definition in the object; '
                          f'add {{"<decorated or Class::Method name>": "{f["rva"]}"}} to {hints}')
