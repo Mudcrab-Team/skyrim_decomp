@@ -1,0 +1,9 @@
+// Source exposure: binary-analysis (the shape of the compared function in the pinned image).
+// Code origin: original stand-in stamped from matched exemplar 0x10fd30 (reconstruction/bscore/ArrayAllocatorLeafLayout.cpp); no external declaration or body reused.
+// 0x6dab40 DeletingLeaf6dab40::~DeletingLeaf6dab40
+// Adapted bodies: none
+#include "DeletingLeaf6dab40.h"
+
+DeletingLeaf6dab40::DeletingLeaf6dab40() {}
+
+DeletingLeaf6dab40::~DeletingLeaf6dab40() {}
