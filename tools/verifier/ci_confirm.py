@@ -28,7 +28,7 @@ import runners
 from source_digest import DIGEST_METHOD, include_closure, tu_digest
 import target_hashes
 
-REPOSITORY = 'awarebayes/skyrim_decomp'
+REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
 
 
 def command(argv, root, data=None, env=None):

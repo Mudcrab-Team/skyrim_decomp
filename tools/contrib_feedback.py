@@ -241,7 +241,8 @@ def collect_outcome(github, number):
     head = pr['head']['sha']
     comments = reader.pages(f'repos/{reader.repo}/issues/{number}/comments')
     marker = f'<!-- contrib-autopilot:{number}:{head}:feedback -->'
-    owner = reader.repo.split('/')[0].casefold()
+    # Comments come from the maintainer account, not from the owning organisation.
+    owner = 'awarebayes'
     matches = [row for row in comments if marker in (row.get('body') or '')
                and author(row).casefold() == owner]
     if not matches:

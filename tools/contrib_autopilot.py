@@ -27,7 +27,9 @@ import contributor_standing
 from contrib_screen import screen, screen_tree, STANDARD_HEADERS, MAX_BYTES
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = 'awarebayes/skyrim_decomp'
+REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
+# Account that runs the autopilot and posts its comments; not the org that owns the repo.
+MAINTAINER_LOGIN = 'awarebayes'
 UNIT = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 SHA = re.compile(r'[0-9a-f]{40}\Z')
 DEFAULTS = dict(max_functions=60, daily_compiles=240, daily_reviews=80, command_timeout=120,
@@ -296,7 +298,7 @@ class Runtime:
 
     def require_account(self):
         login = self.command(['gh', 'api', 'user', '--jq', '.login']).stdout.decode().strip()
-        if login.casefold() != REPOSITORY.split('/')[0].casefold():
+        if login.casefold() != MAINTAINER_LOGIN.casefold():
             raise Stop('gh must use the maintainer account')
 
     def ci_hash_signal(self, head):
@@ -406,7 +408,7 @@ class Runtime:
             pages = json.loads(comments)
             prior_marker = re.compile(r'<!-- contrib-autopilot:' + str(revision['number']) + r':[0-9a-f]{40}:feedback -->') if key == 'feedback' else None
             existing = next((c for page in pages for c in page if (marker in c.get('body', '') or (prior_marker and prior_marker.search(c.get('body', ''))))
-                             and (c.get('user') or {}).get('login', '').casefold() == REPOSITORY.split('/')[0].casefold()), None)
+                             and (c.get('user') or {}).get('login', '').casefold() == MAINTAINER_LOGIN.casefold()), None)
             if existing and replace and existing.get('body', '').strip() != body.strip():
                 self.command(['gh', 'api', '--method', 'PATCH',
                               f'repos/{REPOSITORY}/issues/comments/{existing["id"]}', '-f', 'body=' + body])
@@ -677,7 +679,7 @@ class Runtime:
         name = 'pc' if first else 'wine'
         profile = dict(runners_schema=1, attempt=name, confirm=[name, 'ci'], hosts={
             name: first or wines[0], 'ci': dict(backend='ci-hash', host_id='github-windows-native',
-                machine='github-hosted-windows', loader='native', repository='awarebayes/skyrim_decomp')})
+                machine='github-hosted-windows', loader='native', repository='Mudcrab-Team/skyrim_decomp')})
         path = directory / 'intake-runners.json'
         save_json(path, profile)
         return path

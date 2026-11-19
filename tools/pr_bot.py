@@ -27,8 +27,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rva_headers  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-REPOSITORY = 'awarebayes/skyrim_decomp'
-OWNER = REPOSITORY.split('/')[0]
+REPOSITORY = 'Mudcrab-Team/skyrim_decomp'
+# The maintainer is a person; the repository now belongs to an organisation.
+OWNER = 'awarebayes'
 SHA = re.compile(r'[0-9a-f]{40}')
 SCOPE_PREFIX = 'reconstruction/'
 HASH_CHECKS = ('hash', 'pr-check / hash')

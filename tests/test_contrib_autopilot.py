@@ -1068,7 +1068,7 @@ class RuntimeEffects(unittest.TestCase):
             self.runtime.feedback(rev, 'published', None, 'Submitted functions: 2.', replace=True)
         self.assertEqual(command.call_count, 2)
         self.assertIn('PATCH', command.call_args.args[0])
-        self.assertIn('repos/awarebayes/skyrim_decomp/issues/comments/42', command.call_args.args[0])
+        self.assertIn('repos/Mudcrab-Team/skyrim_decomp/issues/comments/42', command.call_args.args[0])
         gh.assert_not_called()
 
     def test_plural_rvas_discover_every_member(self):

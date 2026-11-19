@@ -249,7 +249,7 @@ class Config(unittest.TestCase):
         mac=dict(backend='local',host_id='mac-wine',machine='maintainer-mac',loader='wine',
                  msvc='msvc',work='work',wine_bin='wine',image='private-image')
         ci=dict(backend='ci-hash',host_id='github-windows-native',machine='github-hosted-windows',
-                loader='native',repository='awarebayes/skyrim_decomp')
+                loader='native',repository='Mudcrab-Team/skyrim_decomp')
         raw=dict(runners_schema=1,hosts=dict(mac=mac,ci=ci),attempt='mac',confirm=['mac','ci'])
         hosts=runners.for_confirm(runners.validate(raw))
         self.assertEqual([h['backend'] for h in hosts],['local','ci-hash'])
