@@ -1,0 +1,573 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetEquippedLeftHand@ActorProcess@@UEBAPEAXXZ": {
+      "rva": 7255200,
+      "size": 8
+    },
+    "?Function7265a0@ActorProcess@@QEAAXXZ": {
+      "rva": 7497120,
+      "size": 17
+    },
+    "?Function726fa0@ActorProcess@@QEAAX_K@Z": {
+      "rva": 7499680,
+      "size": 17
+    },
+    "?Function726fc0@ActorProcess@@QEBA_KXZ": {
+      "rva": 7499712,
+      "size": 18
+    },
+    "?Function727020@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7499808,
+      "size": 16
+    },
+    "?Function727060@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7499872,
+      "size": 16
+    },
+    "?Function727080@ActorProcess@@QEBA_NXZ": {
+      "rva": 7499904,
+      "size": 24
+    },
+    "?Function7270d0@ActorProcess@@QEAAXM@Z": {
+      "rva": 7499984,
+      "size": 18
+    },
+    "?Function7270f0@ActorProcess@@QEBAMXZ": {
+      "rva": 7500016,
+      "size": 22
+    },
+    "?Function727110@ActorProcess@@QEAAXM@Z": {
+      "rva": 7500048,
+      "size": 18
+    },
+    "?Function7271e0@ActorProcess@@QEAAXXZ": {
+      "rva": 7500256,
+      "size": 17
+    },
+    "?Function727200@ActorProcess@@QEBA_KXZ": {
+      "rva": 7500288,
+      "size": 18
+    },
+    "?Function727220@ActorProcess@@QEAAX_K@Z": {
+      "rva": 7500320,
+      "size": 17
+    },
+    "?Function727240@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7500352,
+      "size": 16
+    },
+    "?Function727260@ActorProcess@@QEBA_NXZ": {
+      "rva": 7500384,
+      "size": 24
+    },
+    "?Function727280@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7500416,
+      "size": 16
+    },
+    "?Function7272a0@ActorProcess@@QEBA_NXZ": {
+      "rva": 7500448,
+      "size": 24
+    },
+    "?Function727420@ActorProcess@@QEBAPEAVNiNode@@H@Z": {
+      "rva": 7500832,
+      "size": 24
+    },
+    "?Function727440@ActorProcess@@QEBAPEAVNiAVObject@@XZ": {
+      "rva": 7500864,
+      "size": 18
+    },
+    "?Function727460@ActorProcess@@QEBAPEAVNiAVObject@@XZ": {
+      "rva": 7500896,
+      "size": 18
+    },
+    "?Function7274a0@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7500960,
+      "size": 16
+    },
+    "?Function727ae0@ActorProcess@@QEBAPEAVBSFaceGenNiNode@@XZ": {
+      "rva": 7502560,
+      "size": 18
+    },
+    "?Function727b00@ActorProcess@@QEAAXPEAVBSFaceGenNiNode@@@Z": {
+      "rva": 7502592,
+      "size": 17
+    },
+    "?Function727cf0@ActorProcess@@QEBA_NXZ": {
+      "rva": 7503088,
+      "size": 24
+    },
+    "?Function727d10@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7503120,
+      "size": 16
+    },
+    "?Function727d30@ActorProcess@@QEBA_NXZ": {
+      "rva": 7503152,
+      "size": 24
+    },
+    "?Function727d50@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7503184,
+      "size": 16
+    },
+    "?Function727d70@ActorProcess@@QEBA_NXZ": {
+      "rva": 7503216,
+      "size": 24
+    },
+    "?Function727d90@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7503248,
+      "size": 16
+    },
+    "?Function727db0@ActorProcess@@QEAAXPEAVBSFaceGenAnimationData@@@Z": {
+      "rva": 7503280,
+      "size": 17
+    },
+    "?Function727df0@ActorProcess@@QEAAXM@Z": {
+      "rva": 7503344,
+      "size": 18
+    },
+    "?Function727e10@ActorProcess@@QEBAMXZ": {
+      "rva": 7503376,
+      "size": 22
+    },
+    "?Function727e30@ActorProcess@@QEAAXM@Z": {
+      "rva": 7503408,
+      "size": 18
+    },
+    "?Function727e50@ActorProcess@@QEBAMXZ": {
+      "rva": 7503440,
+      "size": 22
+    },
+    "?Function727e70@ActorProcess@@QEAAXM@Z": {
+      "rva": 7503472,
+      "size": 18
+    },
+    "?Function727e90@ActorProcess@@QEAAXAEBI@Z": {
+      "rva": 7503504,
+      "size": 19
+    },
+    "?Function727ee0@ActorProcess@@QEBA_NXZ": {
+      "rva": 7503584,
+      "size": 24
+    },
+    "?Function727f00@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7503616,
+      "size": 16
+    },
+    "?Function727f20@ActorProcess@@QEBA_NXZ": {
+      "rva": 7503648,
+      "size": 24
+    },
+    "?Function727f40@ActorProcess@@QEAAX_N@Z": {
+      "rva": 7503680,
+      "size": 16
+    },
+    "?Function727f60@ActorProcess@@QEAAXW4WardState@MagicSystem@@@Z": {
+      "rva": 7503712,
+      "size": 16
+    },
+    "?Function7284e0@ActorProcess@@QEAAXXZ": {
+      "rva": 7505120,
+      "size": 14
+    },
+    "?Function728500@ActorProcess@@QEAAXXZ": {
+      "rva": 7505152,
+      "size": 14
+    },
+    "?Function728520@ActorProcess@@QEAAXXZ": {
+      "rva": 7505184,
+      "size": 14
+    },
+    "?Function728540@ActorProcess@@QEAAXXZ": {
+      "rva": 7505216,
+      "size": 14
+    },
+    "?Function728560@ActorProcess@@QEAAXXZ": {
+      "rva": 7505248,
+      "size": 17
+    },
+    "?Function728580@ActorProcess@@QEBA_NXZ": {
+      "rva": 7505280,
+      "size": 24
+    },
+    "?Function733f00@ProcessData@ActorProcess@@QEAAXXZ": {
+      "rva": 7552768,
+      "size": null
+    },
+    "?Function736230@ProcessData@ActorProcess@@QEAAXXZ": {
+      "rva": 7561776,
+      "size": null
+    },
+    "?Function736a30@ProcessData@ActorProcess@@QEAAXXZ": {
+      "rva": 7563824,
+      "size": null
+    },
+    "?Function736c00@ProcessData@ActorProcess@@QEAAXXZ": {
+      "rva": 7564288,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetEquippedLeftHand@ActorProcess@@UEBAPEAXXZ",
+        "rva": "0x6eb4a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7265a0@ActorProcess@@QEAAXXZ",
+        "rva": "0x7265a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function726fa0@ActorProcess@@QEAAX_K@Z",
+        "rva": "0x726fa0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function726fc0@ActorProcess@@QEBA_KXZ",
+        "rva": "0x726fc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727020@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727020",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727060@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727060",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727080@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727080",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7270d0@ActorProcess@@QEAAXM@Z",
+        "rva": "0x7270d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7270f0@ActorProcess@@QEBAMXZ",
+        "rva": "0x7270f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727110@ActorProcess@@QEAAXM@Z",
+        "rva": "0x727110",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7271e0@ActorProcess@@QEAAXXZ",
+        "rva": "0x7271e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727200@ActorProcess@@QEBA_KXZ",
+        "rva": "0x727200",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727220@ActorProcess@@QEAAX_K@Z",
+        "rva": "0x727220",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727240@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727240",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727260@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727260",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727280@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727280",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7272a0@ActorProcess@@QEBA_NXZ",
+        "rva": "0x7272a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727420@ActorProcess@@QEBAPEAVNiNode@@H@Z",
+        "rva": "0x727420",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727440@ActorProcess@@QEBAPEAVNiAVObject@@XZ",
+        "rva": "0x727440",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727460@ActorProcess@@QEBAPEAVNiAVObject@@XZ",
+        "rva": "0x727460",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7274a0@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x7274a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727ae0@ActorProcess@@QEBAPEAVBSFaceGenNiNode@@XZ",
+        "rva": "0x727ae0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727b00@ActorProcess@@QEAAXPEAVBSFaceGenNiNode@@@Z",
+        "rva": "0x727b00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727cf0@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727cf0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727d10@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727d10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727d30@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727d30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727d50@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727d50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727d70@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727d70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727d90@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727d90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727db0@ActorProcess@@QEAAXPEAVBSFaceGenAnimationData@@@Z",
+        "rva": "0x727db0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727df0@ActorProcess@@QEAAXM@Z",
+        "rva": "0x727df0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727e10@ActorProcess@@QEBAMXZ",
+        "rva": "0x727e10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727e30@ActorProcess@@QEAAXM@Z",
+        "rva": "0x727e30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727e50@ActorProcess@@QEBAMXZ",
+        "rva": "0x727e50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727e70@ActorProcess@@QEAAXM@Z",
+        "rva": "0x727e70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727e90@ActorProcess@@QEAAXAEBI@Z",
+        "rva": "0x727e90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727ee0@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727ee0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727f00@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727f00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727f20@ActorProcess@@QEBA_NXZ",
+        "rva": "0x727f20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727f40@ActorProcess@@QEAAX_N@Z",
+        "rva": "0x727f40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function727f60@ActorProcess@@QEAAXW4WardState@MagicSystem@@@Z",
+        "rva": "0x727f60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7284e0@ActorProcess@@QEAAXXZ",
+        "rva": "0x7284e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function728500@ActorProcess@@QEAAXXZ",
+        "rva": "0x728500",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function728520@ActorProcess@@QEAAXXZ",
+        "rva": "0x728520",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function728540@ActorProcess@@QEAAXXZ",
+        "rva": "0x728540",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function728560@ActorProcess@@QEAAXXZ",
+        "rva": "0x728560",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function728580@ActorProcess@@QEBA_NXZ",
+        "rva": "0x728580",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function733f00@ProcessData@ActorProcess@@QEAAXXZ",
+        "rva": "0x733f00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function736230@ProcessData@ActorProcess@@QEAAXXZ",
+        "rva": "0x736230",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function736a30@ProcessData@ActorProcess@@QEAAXXZ",
+        "rva": "0x736a30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function736c00@ProcessData@ActorProcess@@QEAAXXZ",
+        "rva": "0x736c00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

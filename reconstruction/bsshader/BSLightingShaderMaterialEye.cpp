@@ -5,7 +5,6 @@
 // 0x15257f0 BSLightingShaderMaterialEye::LoadBinary
 // 0x1525640 BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial
 // 0x15250e0 BSLightingShaderMaterialEye::Ctor
-// CI hash: 0x15250e0 ??0BSLightingShaderMaterialEye@@QEAA@XZ
 // 0x15255c0 BSLightingShaderMaterialEye::ClearTextures
 // 0x15253e0 BSLightingShaderMaterialEye::ComputeCRC32
 // Code origin: bodies written from local listings of the pinned image; names and declarations follow CommonLibSSE-NG; the reference-count release spelling follows cookbook rule 29.

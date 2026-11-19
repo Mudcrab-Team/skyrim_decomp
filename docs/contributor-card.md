@@ -45,9 +45,7 @@ Source rules:
 - `static_assert` needs a message.
 - A tail jump (`JMP <function>`) is `return Callee(...);` as the last statement.
 
-Diagnostics: read `functions[].reason`, sizes, `first_mismatch` and `hint` from `compare`. Bind hints stay local: `bind-hints.json` is never
-submitted, and intake binds by position with no hints. An unbound symbol needs your local bind hint, using an RVA from
-your own pack; thread-locals are the exception and need a `tls:` hint. A compile or include
+Diagnostics: read `functions[].reason`, sizes, `first_mismatch` and `hint` from `compare`. A compile or include
 failure is not comparison evidence. Under `cheap`, stop after 3 attempts without an improvement in
 matching bytes (hard cap 6 comparisons); under `full`, 4 and 10. Keep the source and the sanitized
 reason when you stop.
@@ -55,6 +53,21 @@ reason when you stop.
 A local PASS is a candidate, not acceptance: the project confirms on two hosts and one review
 approves the source before a function counts as `matched`. Ask once before reading listings or
 pseudo-C; see [the guide](contributing-agent.md).
+
+## When a function needs a hint
+
+`compare` and intake find each function's decorated symbol from its `// 0x<rva> Class::Method` header
+line and community name, with no hint, for: const and non-const or static and member overloads (told
+apart by size, then by the published target hash), `Class::Ctor`/`Class::dtor` names, deleting
+destructors and their adjustor thunks, and overrides named for their base class. Add a hint only when
+`compare` says UNBOUND:
+
+- The unit defines the function under another name (a `Slot195` for `Unk_C3`): write that name on its
+  header line, `// 0x7ddfd0 ArrowProjectile::Slot195`.
+- Same-named overloads of equal size and hash: put the signature on the header line,
+  `// 0x1900a0 NiAVObject::GetCollisionObject() const`, or paste the `// CI hash: 0x<rva> <symbol>`
+  line `compare` prints. Both are read by every host; `bind-hints.json` stays on your machine.
+- A thread-local: name the variable `..._tls_0x<offset>` (or a local `tls:` hint).
 
 ## Mapping-only PRs
 

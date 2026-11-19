@@ -203,6 +203,14 @@ def matching_symbols(blob, target):
     return found
 
 
+def defines(blob, name):
+    """Whether the object defines `name` in one of its sections."""
+    try:
+        return any(sym.name == name and sym.section > 0 for sym in CoffObject(blob).symbols.values())
+    except Reject:
+        return False
+
+
 def compile_requests(root, tree, requests_, bindir, work, manifest):
     ctx = contrib.Ctx(repo=root, platform='win32', interactive=False)
     tool = dict(status='ok', flavour='native', bin=str(bindir), root=str(bindir.parents[6]))
@@ -234,7 +242,10 @@ def compile_requests(root, tree, requests_, bindir, work, manifest):
             row['reason'] = 'published-target-or-binding-unavailable'
         else:
             try:
-                if ref['symbol'] is None:
+                # A record's or request line's decorated name goes stale when the declaration changes
+                # (a void return made bool, a parameter retyped); the function is then found by its
+                # hash like a header-claimed one, never by the stale name.
+                if ref['symbol'] is None or not defines(built[key], ref['symbol']):
                     symbols = matching_symbols(built[key], target)
                     row['result'] = 'hash-match' if symbols else 'mismatch'
                     if not symbols:

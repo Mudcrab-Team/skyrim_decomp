@@ -1,16 +1,87 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"member-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"1254832e5ca7cdca7f6330a2018dde32919625f6149744dd0138e59a943106d8"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Source exposure: mixed (pinned image listings and community declarations).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ActorProcess: EXE_RTTI
 // GetEquippedLeftHand: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Code origin: project ActorProcess declaration with a partial layout adapted from CommonLibSSE-NG.
+// ProcessData, padding, member: STANDIN GUESS(low)
+// AIProcess::middleHigh, MagicSystem, MagicSystem::WardState, BSFaceGenAnimationData, BSFaceGenNiNode: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiAVObject, NiNode: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// Function7265a0, Function726fa0, Function726fc0, Function727020, Function727060: GUESS(low)
+// Function727080, Function7270d0, Function7270f0, Function727110, Function7271e0: GUESS(low)
+// Function727200, Function727220, Function727240, Function727260, Function727280: GUESS(low)
+// Function7272a0, Function727420, Function727440, Function727460, Function7274a0: GUESS(low)
+// Function727ae0, Function727b00, Function727cf0, Function727d10, Function727d30: GUESS(low)
+// Function727d50, Function727d70, Function727d90, Function727db0, Function727df0: GUESS(low)
+// Function727e10, Function727e30, Function727e50, Function727e70, Function727e90: GUESS(low)
+// Function727ee0, Function727f00, Function727f20, Function727f40, Function727f60: GUESS(low)
+// Function7284e0, Function728500, Function728520, Function728540, Function728560: GUESS(low)
+// Function728580: GUESS(low)
 #pragma once
+
 #include <cstdint>
-// GetEquippedLeftHand: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
+
+class BSFaceGenAnimationData;
+class BSFaceGenNiNode;
+class NiAVObject;
+class NiNode;
+namespace MagicSystem
+{
+    enum class WardState;
+}
+
 class ActorProcess
 {
 public:
     virtual void* GetEquippedLeftHand() const;
-    std::uint8_t padding[0xe8];
+    void Function7265a0();
+    void Function726fa0(std::uint64_t a_value);
+    std::uint64_t Function726fc0() const;
+    void Function727020(bool a_value);
+    void Function727060(bool a_value);
+    bool Function727080() const;
+    void Function7270d0(float a_value);
+    float Function7270f0() const;
+    void Function727110(float a_value);
+    void Function7271e0();
+    std::uint64_t Function727200() const;
+    void Function727220(std::uint64_t a_value);
+    void Function727240(bool a_value);
+    bool Function727260() const;
+    void Function727280(bool a_value);
+    bool Function7272a0() const;
+    NiNode* Function727420(std::int32_t a_index) const;
+    NiAVObject* Function727440() const;
+    NiAVObject* Function727460() const;
+    void Function7274a0(bool a_value);
+    BSFaceGenNiNode* Function727ae0() const;
+    void Function727b00(BSFaceGenNiNode* a_value);
+    bool Function727cf0() const;
+    void Function727d10(bool a_value);
+    bool Function727d30() const;
+    void Function727d50(bool a_value);
+    bool Function727d70() const;
+    void Function727d90(bool a_value);
+    void Function727db0(BSFaceGenAnimationData* a_value);
+    void Function727df0(float a_value);
+    float Function727e10() const;
+    void Function727e30(float a_value);
+    float Function727e50() const;
+    void Function727e70(float a_value);
+    void Function727e90(const std::uint32_t& a_value);
+    bool Function727ee0() const;
+    void Function727f00(bool a_value);
+    bool Function727f20() const;
+    void Function727f40(bool a_value);
+    void Function727f60(MagicSystem::WardState a_value);
+    void Function7284e0();
+    void Function728500();
+    void Function728520();
+    void Function728540();
+    void Function728560();
+    bool Function728580() const;
+
+    struct ProcessData;
+    ProcessData* middleHigh;
+    std::uint8_t padding[0xe0];
     void* member;
 };
