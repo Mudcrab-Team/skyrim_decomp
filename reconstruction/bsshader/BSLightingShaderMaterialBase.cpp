@@ -5,6 +5,7 @@
 // 0x1523f00 BSLightingShaderMaterialBase::ReceiveValuesFromRootMaterial
 // 0x1524030 BSLightingShaderMaterialBase::SaveBinary
 // 0x15241d0 BSLightingShaderMaterialBase::LoadBinary
+// Code origin: existing unit text, declarations after CommonLibSSE-NG names; this change only adds the origin line.
 #include "BSLightingShaderMaterialBase.h"
 
 BSLightingShaderMaterialBase::Type BSLightingShaderMaterialBase::GetType() const
