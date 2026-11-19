@@ -1257,6 +1257,12 @@ class ReviewContextTests(unittest.TestCase):
         self.assertNotIn('DIFFER', prompt)
         self.assertIn('second-host run 555 (CI hash job, which compares the published target hashes) on head ' + HEAD[:12] + ': pass; its source digest agrees, its recipe hash agrees', prompt)
 
+    def test_the_sheet_names_the_digest_method_so_the_reviewer_does_not_hash_with_v1(self):
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, self.evidence())
+        prompt = self.prompts[0]
+        self.assertIn('digest method: tu-sha256-v2 (python3 tools/digest_v2.py', prompt)
+        self.assertIn('never equal to it', prompt)
+
     def test_the_prompt_lists_body_origin_hits_or_says_none_were_found(self):
         units = {'reconstruction/a/B.cpp': [0x10]}
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, self.evidence())

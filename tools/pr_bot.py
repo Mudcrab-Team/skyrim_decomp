@@ -976,6 +976,12 @@ class Bot:
         pins = (tree / 'tools/verifier/pinned.sha256').read_text().strip().splitlines()
         out = ['## Binding sheet (computed from the tree and the host results; public facts)',
                f'build: {target["build_id"]}; target image sha256: {target.get("image_sha256")}',
+               # The reports and CI rows bind tu-sha256-v2. The runbook names tools/source_digest.py, which
+               # is the raw-bytes v1 and never equals a v2 digest, so a reviewer who hashed with it rejected
+               # sources that both hosts had bound correctly.
+               'digest method: tu-sha256-v2 (python3 tools/digest_v2.py <unit files>). Item 3 compares the "tu digest" '
+               'below, not the raw-bytes digest of tools/source_digest.py, which is a different method and is never '
+               'equal to it; each agreement stated below is computed with the v2 method.',
                'compiler and toolchain pins (sha256 name):'] + [f'  {line}' for line in pins]
         files, packs = set(), []
         for cpp, rvas in sorted(units.items()):
