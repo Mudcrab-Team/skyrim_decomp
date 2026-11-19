@@ -326,20 +326,14 @@ TESObjectARMO* TESNPC::GetSkin() const
 
 BGSHeadPart* TESNPC::GetHeadPartByType(std::uint32_t type) const
 {
-    const std::uint32_t count = numHeadParts;
-    BGSHeadPart** const volatile& parts = headParts;
     BGSHeadPart* result = nullptr;
     std::uint32_t index = 0;
-    do {
-        if (index >= count) {
-            break;
-        }
-        auto* part = parts[index];
-        if (part && part->type == type) {
-            result = part;
+    while (!result && index < numHeadParts) {
+        if (auto* part = headParts[index]) {
+            result = part->type == type ? part : result;
         }
         ++index;
-    } while (!result);
+    }
     return result;
 }
 
