@@ -2,6 +2,7 @@
 // Code origin: bodies written from the local listings; names and declarations follow CommonLibSSE-NG.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0xeed200 NiLight::~NiLight
 #include "NiLight.h"
 
