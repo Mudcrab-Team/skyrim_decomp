@@ -3,8 +3,10 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import os
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
@@ -407,6 +409,44 @@ class FuncletTests(unittest.TestCase):
         self.assertEqual(symbols[DTOR]['rva'], DTOR_RVA)
         self.assertEqual({r['symbol']: r['how'] for r in report['references']}[DTOR], 'community name')
 
+    def table(self, *rvas):
+        path = self.root / 'functions.jsonl'
+        path.write_text(''.join(json.dumps({'rva': r}) + '\n' for r in rvas))
+        return mock.patch.dict(os.environ, {'SR_FUNCTION_TABLE': str(path)})
+
+    def test_unlisted_destructor_binds_when_the_target_is_a_function_start(self):
+        # The pack lists no destructor call at all, as for a compiler-generated local destructor.
+        self.setup_task([], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with self.table(DTOR_RVA, 0x1000):
+            report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_references'], [])
+        got = {r['symbol']: r for r in report['references']}
+        self.assertEqual((got[DTOR]['how'], got[DTOR]['from']), ('unwind funclet position', 'funclet'))
+        self.assertEqual(symbols[DTOR]['rva'], DTOR_RVA)
+
+    def test_unlisted_destructor_stays_unbound_when_the_target_is_not_in_the_table(self):
+        self.setup_task([], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with self.table(0x1000):
+            report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_references'], [DTOR])
+        self.assertNotIn(DTOR, symbols)
+
+    def test_unlisted_destructor_stays_unbound_without_a_table(self):
+        self.setup_task([], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with mock.patch.dict(os.environ, {'SR_FUNCTION_TABLE': str(self.root / 'absent.jsonl')}), \
+                mock.patch.object(bind, 'function_starts', return_value=None):
+            report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_references'], [DTOR])
+
+    def test_function_table_does_not_bind_a_reference_of_the_function_itself(self):
+        # Only unwind funclets get the rule; the parent's own references still need the pack.
+        self.setup_task([hex(DTOR_RVA)], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with self.table(DTOR_RVA, fx.LAYOUT[fx.CALLEE]):
+            report, symbols = self.run_bind()
+        got = {r['symbol']: r['how'] for r in report['references']}
+        self.assertEqual(got[fx.CALLEE], 'position')
+        self.assertEqual(got[DTOR], 'object lifetime position')
+
 
 class PublicMapBindTests(BindTests):
     """A task naming the repository map: bind adds through tools/symbol_map.py, never by hand."""
@@ -550,6 +590,72 @@ class ThreadLocalBindTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'stale.*thread-local entry'):
             bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
         self.assertEqual(path.read_bytes(), blob)
+
+
+class DeclaredTlsNameTests(unittest.TestCase):
+    """With no hint, a variable named `tls_0x<offset>` binds when the target's own field agrees."""
+
+    VAR = '?tGuard_tls_0x768@@3HA'
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.task_dir = self.root / 'task'
+        self.task_dir.mkdir()
+        self.old = fx.TLS_VAR
+        fx.TLS_VAR = self.VAR  # the fixture's unit and link layout read this module name at call time
+
+    def tearDown(self):
+        fx.TLS_VAR = self.old
+        self.tmp.cleanup()
+
+    def prepare(self, var=None, target_offset=fx.TLS_OFFSET, addend=0):
+        if var is not None:
+            fx.TLS_VAR = var
+        unit = fx.tls_unit(addend=addend)
+        (self.root / 'obj').write_bytes(unit.coff())
+        image = unit.link({fx.TLS_INDEX: fx.TLS_INDEX_RVA}, tls=fx.tls_layout(offset=target_offset))
+        (self.root / 'image').write_bytes(image)
+        rva = unit.default_placement()[1]
+        pack = self.root / 'packs' / 't'
+        pack.mkdir(parents=True)
+        (pack / 'pack.json').write_text(json.dumps({'references': []}))
+        (self.task_dir / 'task.json').write_text(json.dumps({'symbols': 'symbols.json', 'functions': [
+            {'rva': hex(rva), 'size': len(fx.TLS_CODE), 'symbol': fx.TLS_FUNCTION,
+             'community_name': 'SyntheticTlsRead', 'pack': 'packs/t'}]}))
+        (self.task_dir / 'symbols.json').write_text(json.dumps(
+            {'schema': 1, 'symbols': {fx.TLS_FUNCTION: {'rva': rva, 'size': len(fx.TLS_CODE)}}}))
+        report = bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
+        return report, json.loads((self.task_dir / 'symbols.json').read_text())['symbols']
+
+    def test_declared_offset_binds_without_a_hint(self):
+        report, symbols = self.prepare()
+        self.assertEqual(report['unbound_thread_locals'], [])
+        self.assertEqual(symbols[self.VAR], {'kind': 'thread-local', 'tls_offset': fx.TLS_OFFSET, 'size': None})
+        self.assertEqual([r['how'] for r in report['references']], ['thread-local name'])
+        self.assertNotIn(fx.TLS_INDEX, symbols)
+
+    def test_declared_offset_that_the_target_does_not_use_binds_nothing(self):
+        report, symbols = self.prepare(target_offset=0x770)
+        self.assertEqual(report['unbound_thread_locals'], [self.VAR])
+        self.assertNotIn(self.VAR, symbols)
+
+    def test_name_without_a_declared_offset_binds_nothing(self):
+        report, symbols = self.prepare(var='?tGuard@@3HA')
+        self.assertEqual(report['unbound_thread_locals'], ['?tGuard@@3HA'])
+
+    def test_declared_offset_outside_the_template_binds_nothing(self):
+        report, symbols = self.prepare(var='?tFar_tls_0x7f768@@3HA', target_offset=0x7f768)
+        self.assertEqual(report['unbound_thread_locals'], ['?tFar_tls_0x7f768@@3HA'])
+
+    def test_declared_offset_is_the_variable_start_not_the_field(self):
+        report, symbols = self.prepare(addend=4)
+        self.assertEqual(symbols[self.VAR]['tls_offset'], fx.TLS_OFFSET)
+
+    def test_hint_still_wins_over_the_name(self):
+        (self.task_dir / bind.HINTS).write_text(json.dumps({self.VAR: 'tls:0x768'}))
+        report, symbols = self.prepare()
+        self.assertEqual([r['how'] for r in report['references']], ['thread-local hint'])
 
 
 if __name__ == '__main__':

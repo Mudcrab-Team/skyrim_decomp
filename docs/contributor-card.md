@@ -47,7 +47,7 @@ Source rules:
 
 Diagnostics: read `functions[].reason`, sizes, `first_mismatch` and `hint` from `compare`. Bind hints stay local: `bind-hints.json` is never
 submitted, and intake binds by position with no hints. An unbound symbol needs your local bind hint, using an RVA from
-your own pack; thread-locals are the exception and need a `tls:` hint. A compile or include
+your own pack; a thread-local binds in intake when its variable name carries the offset the target adds (`<name>_tls_0x768`); the offset must equal the target's own field and lie in its TLS template, otherwise it needs a local `tls:` hint. A compile or include
 failure is not comparison evidence. Under `cheap`, stop after 3 attempts without an improvement in
 matching bytes (hard cap 6 comparisons); under `full`, 4 and 10. Keep the source and the sanitized
 reason when you stop.
