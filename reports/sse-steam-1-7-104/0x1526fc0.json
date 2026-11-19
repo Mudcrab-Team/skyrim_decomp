@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "3ef6deb60da61d331d630e3b19027039c4f77e83e291d87d94db756243cc3a6e",
+        "object_sha256": "d81a380da7fb2980c999eb7d9a5ab3a52bb24bc249d2734cb19d7dbe3d8410cb",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSLightingShaderMaterial.h",
@@ -38,7 +38,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "0b8e5daeafc049323d5a9e4911819366bda839cc",
+    "base_sha": "23b1ccebe8acf8dd96f0b2908b52545bf678be2f",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -49,7 +49,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "7d5367fee2f6411c97be877f44f9e3991882d3a1",
+    "head_sha": "faa23a9fc573b93805801bce6b147c25b11c27f9",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -62,10 +62,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44565179859,
+    "run_id": 44576538905,
     "rva": "0x1526fc0",
     "schema": 2,
-    "source_sha256": "c0fab0fca8e567a375599c5bad6e2e68db4522137e82077639e521b0f5d4ebdb",
+    "source_sha256": "cabde18a3a19b30f4a8bb9b08649966f70b4f94d899f25111aaa84c329a24a79",
     "status": "pass",
     "symbols": [
       "?GetFeature@BSLightingShaderMaterialFacegenTint@@UEBA?AW4Feature@BSShaderMaterial@@XZ"
@@ -100,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "81b1bbbf19305e5cd1ea51ed437c8e80e50b41ed8211477a30cf2cc2957f1aad",
           "code_sections": 1,
-          "object_sha256": "3ef6deb60da61d331d630e3b19027039c4f77e83e291d87d94db756243cc3a6e"
+          "object_sha256": "d81a380da7fb2980c999eb7d9a5ab3a52bb24bc249d2734cb19d7dbe3d8410cb"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,7 +161,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.cpp",
-          "source_revision": "c0fab0fca8e567a375599c5bad6e2e68db4522137e82077639e521b0f5d4ebdb"
+          "source_revision": "cabde18a3a19b30f4a8bb9b08649966f70b4f94d899f25111aaa84c329a24a79"
         },
         "symbol_map_sha256": "1daec4e52ab6b77fa43cad230aa4bd36c0ac22fd9462d8a364b21821a9c5f11c",
         "target": {
@@ -174,7 +174,7 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSLightingShaderMaterialFacegenTint.cpp",
-    "digest": "c0fab0fca8e567a375599c5bad6e2e68db4522137e82077639e521b0f5d4ebdb",
+    "digest": "cabde18a3a19b30f4a8bb9b08649966f70b4f94d899f25111aaa84c329a24a79",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSLightingShaderMaterial.h",
