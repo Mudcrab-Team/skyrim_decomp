@@ -5,20 +5,13 @@
 // 0x1dca70 TESActorBaseData::HasCopiedTemplate
 // 0x1dca80 TESActorBaseData::SetCopiedTemplate
 // 0x1dcb20 TESActorBaseData::GetBaseTemplateForm
-// 0x1dcb30 TESActorBaseData::SetBaseTemplateForm
-// 0x1dcb50 TESActorBaseData::SetTemplateUseFlags
 // 0x1dcb60 TESActorBaseData::HasLeveledBaseTemplate
 // 0x1dcb80 TESActorBaseData::Function1dcb80
 // 0x1dd2a0 TESActorBaseData::SetActorBaseFlags
-// 0x1dd430 TESActorBaseData::SetLevel
-// 0x1dd450 TESActorBaseData::SetCalcLevelMin
-// 0x1dd470 TESActorBaseData::SetCalcLevelMax
-// 0x1dd490 TESActorBaseData::SetBaseDisposition
 // 0x1dd4b0 TESActorBaseData::SetMagickaOffset
 // 0x1dd4d0 TESActorBaseData::SetStaminaOffset
 // 0x1dd4f0 TESActorBaseData::SetHealthOffset
 // 0x1dd960 TESActorBaseData::SetSpeedMult
-// 0x1dd980 TESActorBaseData::SetVoiceType
 // 0x1dd9f0 TESActorBaseData::AddTemplateState
 // 0x1dda00 TESActorBaseData::RemoveTemplateState
 #include "TESActorBaseData_1dca70.h"
@@ -51,16 +44,6 @@ TESForm* TESActorBaseData::GetBaseTemplateForm() const
     return baseTemplateForm;
 }
 
-void TESActorBaseData::SetBaseTemplateForm(TESForm* form)
-{
-    baseTemplateForm = form;
-}
-
-void TESActorBaseData::SetTemplateUseFlags(std::uint16_t flags)
-{
-    actorData.templateUseFlags = flags;
-}
-
 bool TESActorBaseData::HasLeveledBaseTemplate() const
 {
     return baseTemplateForm && baseTemplateForm->formType == kLeveledNPC;
@@ -74,38 +57,6 @@ bool TESActorBaseData::Function1dcb80() const
 void TESActorBaseData::SetActorBaseFlags(std::uint32_t value)
 {
     actorData.actorBaseFlags = value;
-    if (auto* actor = static_cast<TESActorBase*>(this)) {
-        actor->AddChange(kBaseDataChange);
-    }
-}
-
-void TESActorBaseData::SetLevel(std::uint16_t value)
-{
-    actorData.level = value;
-    if (auto* actor = static_cast<TESActorBase*>(this)) {
-        actor->AddChange(kBaseDataChange);
-    }
-}
-
-void TESActorBaseData::SetCalcLevelMin(std::uint16_t value)
-{
-    actorData.calcLevelMin = value;
-    if (auto* actor = static_cast<TESActorBase*>(this)) {
-        actor->AddChange(kBaseDataChange);
-    }
-}
-
-void TESActorBaseData::SetCalcLevelMax(std::uint16_t value)
-{
-    actorData.calcLevelMax = value;
-    if (auto* actor = static_cast<TESActorBase*>(this)) {
-        actor->AddChange(kBaseDataChange);
-    }
-}
-
-void TESActorBaseData::SetBaseDisposition(std::uint16_t value)
-{
-    actorData.baseDisposition = value;
     if (auto* actor = static_cast<TESActorBase*>(this)) {
         actor->AddChange(kBaseDataChange);
     }
@@ -141,11 +92,6 @@ void TESActorBaseData::SetSpeedMult(std::uint16_t value)
     if (auto* actor = static_cast<TESActorBase*>(this)) {
         actor->AddChange(kBaseDataChange);
     }
-}
-
-void TESActorBaseData::SetVoiceType(BGSVoiceType* value)
-{
-    voiceType = value;
 }
 
 void TESActorBaseData::AddTemplateState(std::uint32_t flags)

@@ -4,18 +4,17 @@
 // ClearPackageList, CopyPackageList: GUESS(low)
 // GetAggressionLevel, GetAssistanceLevel, GetConfidenceLevel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetEnergyLevel, GetMoodLevel, AggroRadiusBehaviourIsEnabled, SetAggressionLevel, SetConfidenceLevel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// SetEnergyLevel, SetMoralityLevel, SetMoodLevel, GetConfidenceSettingValue, GetAggroRadius: GUESS(low)
+// SetEnergyLevel, SetMoralityLevel, SetMoodLevel, GetConfidenceSettingValue: GUESS(low)
 #pragma once
 
 #include "TESBoundAnimObject.h"
 
-// AIDATA_GAME, aggroRadius, PackageList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// AIDATA_GAME, PackageList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // flags, padding, Function4a2ce0, CopyFrom: STANDIN GUESS(low)
 struct AIDATA_GAME
 {
     std::uint32_t flags;
-    std::uint16_t aggroRadius[3];
-    std::uint8_t padding[2];
+    std::uint8_t padding[8];
 };
 static_assert(sizeof(AIDATA_GAME) == 0xC, "AI data size");
 
@@ -44,7 +43,6 @@ public:
     std::uint8_t GetMoodLevel() const;
     void SetMoodLevel(std::uint8_t value);
     bool AggroRadiusBehaviourIsEnabled() const;
-    std::uint16_t GetAggroRadius(std::uint32_t index) const;
 
 private:
     // aiData, aiPackages: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

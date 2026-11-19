@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: partial form declarations adapted from CommonLibSSE-NG.
 // templateState: STANDIN GUESS(low)
-// HasCopiedTemplate, SetCopiedTemplate, GetBaseTemplateForm, SetBaseTemplateForm, SetTemplateUseFlags: GUESS(low)
-// HasLeveledBaseTemplate, Function1dcb80, ResolveTemplateForm, SetActorBaseFlags, SetLevel: GUESS(low)
-// SetCalcLevelMin, SetCalcLevelMax, SetBaseDisposition, SetMagickaOffset, SetStaminaOffset: GUESS(low)
-// SetHealthOffset, SetSpeedMult, SetVoiceType, AddTemplateState, RemoveTemplateState: GUESS(low)
+// HasCopiedTemplate, SetCopiedTemplate, GetBaseTemplateForm: GUESS(low)
+// HasLeveledBaseTemplate, Function1dcb80, ResolveTemplateForm, SetActorBaseFlags: GUESS(low)
+// SetMagickaOffset, SetStaminaOffset: GUESS(low)
+// SetHealthOffset, SetSpeedMult, AddTemplateState, RemoveTemplateState: GUESS(low)
 #pragma once
 
 #include "TESBoundAnimObject.h"
@@ -28,7 +28,6 @@ struct ACTOR_BASE_DATA
 };
 static_assert(sizeof(ACTOR_BASE_DATA) == 0x18, "actor data size");
 
-class BGSVoiceType;
 
 class TESActorBaseData : public BaseFormComponent
 {
@@ -36,29 +35,21 @@ public:
     bool HasCopiedTemplate() const;
     void SetCopiedTemplate(bool copied);
     TESForm* GetBaseTemplateForm() const;
-    void SetBaseTemplateForm(TESForm* form);
-    void SetTemplateUseFlags(std::uint16_t flags);
     bool HasLeveledBaseTemplate() const;
     bool Function1dcb80() const;
     void SetActorBaseFlags(std::uint32_t value);
-    void SetLevel(std::uint16_t value);
-    void SetCalcLevelMin(std::uint16_t value);
-    void SetCalcLevelMax(std::uint16_t value);
-    void SetBaseDisposition(std::uint16_t value);
     void SetMagickaOffset(std::int16_t value);
     void SetStaminaOffset(std::int16_t value);
     void SetHealthOffset(std::int16_t value);
     void SetSpeedMult(std::uint16_t value);
-    void SetVoiceType(BGSVoiceType* value);
     void AddTemplateState(std::uint32_t flags);
     void RemoveTemplateState(std::uint32_t flags);
 
 
 private:
-    // actorData, voiceType, baseTemplateForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    // actorData, baseTemplateForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     ACTOR_BASE_DATA actorData;
-    std::uint8_t padding20[8];
-    BGSVoiceType* voiceType;
+    std::uint8_t padding20[0x10];
     TESForm* baseTemplateForm;
     std::uint32_t templateState;
 };

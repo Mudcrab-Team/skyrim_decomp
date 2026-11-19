@@ -16,7 +16,6 @@
 // 0x1debb0 TESAIForm::GetMoodLevel
 // 0x1debc0 TESAIForm::SetMoodLevel
 // 0x1dede0 TESAIForm::AggroRadiusBehaviourIsEnabled
-// 0x1dee20 TESAIForm::GetAggroRadius
 #include "TESAIForm_1de8d0.h"
 
 // TESActorBase: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -145,9 +144,4 @@ void TESAIForm::SetMoodLevel(std::uint8_t value)
 bool TESAIForm::AggroRadiusBehaviourIsEnabled() const
 {
     return (aiData.flags >> 20) & 1;
-}
-
-std::uint16_t TESAIForm::GetAggroRadius(std::uint32_t index) const
-{
-    return aiData.aggroRadius[index];
 }
