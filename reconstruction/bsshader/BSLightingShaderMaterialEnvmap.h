@@ -66,15 +66,20 @@ public:
     static void SizeOfSize(std::uint32_t* a_out, const void* a_data, std::uint32_t a_size);  // 0xce2510
 };
 
+// g_defaultEnvmapTexture: GUESS(low); default texture pointer at 0x3336430
+extern NiPointer<NiSourceTexture> g_defaultEnvmapTexture;
+
 class BSLightingShaderMaterialEnvmap : public BSLightingShaderMaterialBase
 {
 public:
     // GetFeature: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
     Feature GetFeature() const override;
+    BSLightingShaderMaterialEnvmap();
     BSLightingShaderMaterialEnvmap* Ctor();  // compared: 0x1524a60
     virtual void SaveBinary(NiStream& a_stream);  // compared: 0x1525020
     virtual void LoadBinary(NiStream& a_stream);  // compared: 0x1525080
-    virtual void ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN);  // compared: 0x1524f10
+    // the image passes two extra pointer arguments that the base ignores; NG declares five parameters
+    virtual void ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, void* a_unk6, void* a_unk7);  // compared: 0x1524f10
     // NG declares GetTextures() returning void; the image returns the count of filled slots and takes the output array in RDX
     std::uint32_t GetTextures(NiSourceTexture** a_textures);  // compared: 0x1524f80
     // compared: 0x1524ce0; NG declares no parameter, but the image reads a flag word from EDX

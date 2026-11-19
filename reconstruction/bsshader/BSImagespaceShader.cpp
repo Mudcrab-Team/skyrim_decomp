@@ -1,5 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
+// Code origin: bodies written from the local listings; names and declarations follow CommonLibSSE-NG.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none
 // 0x15651e0 BSImagespaceShader::Unk_0D
@@ -101,4 +102,30 @@ std::uint32_t BSImagespaceShader::DispatchCopySubRegion(CopySubRegionRequest* a_
     g_renderer.SetFlagA(0, 0);
     g_renderer.SetFlagB(0, 0);
     return 0;
+}
+
+bool BSImagespaceShader::Setup(ImageSpaceManager*, ImageSpaceEffectParam*)
+{
+    bool ready = IsReady(0, 0, 0);
+    if (ready) {
+        std::uint32_t pending = g_pendingShadowSlot;
+        if (g_shadowSlotB != pending) {
+            g_shadowSlotB = pending;
+            g_shadowFlags |= 0x80;
+        }
+        if (g_shadowDirtyB) {
+            g_shadowFlags |= 0x100;
+            g_shadowDirtyB = false;
+        }
+        if (g_shadowModeA != 0) {
+            bool modeBSet = g_shadowModeB != 0;
+            g_shadowModeA = 0;
+            if (modeBSet) {
+                g_shadowFlags |= 4;
+            } else {
+                g_shadowFlags &= ~0x4u;
+            }
+        }
+    }
+    return ready;
 }

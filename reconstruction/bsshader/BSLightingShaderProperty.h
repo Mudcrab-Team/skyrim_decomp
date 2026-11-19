@@ -12,4 +12,6 @@ class BSLightingShaderProperty
 {
 public:
     virtual std::uint32_t QShader() const;
+    // IsEqual: GUESS(low); parameter type unrecovered
+    virtual bool IsEqual(void* a_object);  // compared: 0x1518d60
 };

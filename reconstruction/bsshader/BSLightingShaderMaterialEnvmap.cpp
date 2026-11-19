@@ -1,3 +1,9 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: bodies written from the local listings; names and declarations follow CommonLibSSE-NG.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x1524a60 BSLightingShaderMaterialEnvmap::Ctor
+// 0x1524f10 BSLightingShaderMaterialEnvmap::ReceiveValuesFromRootMaterial
+// 0x1524f80 BSLightingShaderMaterialEnvmap::GetTextures
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
@@ -54,4 +60,52 @@ std::uint32_t BSLightingShaderMaterialEnvmap::ComputeCRC32(std::uint32_t a_flags
 BSShaderMaterial::Feature BSLightingShaderMaterialEnvmap::GetFeature() const
 {
     return static_cast<Feature>(0x1);
+}
+
+#include <new>
+
+// BaseReceiveValues: GUESS(low); the base function as the image calls it, with the two extra pointer arguments
+void BaseReceiveValues(BSLightingShaderMaterialBase* a_this, bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, void* a_unk6, void* a_unk7);  // 0x1523f00
+
+BSLightingShaderMaterialEnvmap::BSLightingShaderMaterialEnvmap() :
+    unkA0Texture{},
+    unkA8Texture{},
+    unkB0(1.0f)
+{}
+
+BSLightingShaderMaterialEnvmap* BSLightingShaderMaterialEnvmap::Ctor()
+{
+    return ::new (this) BSLightingShaderMaterialEnvmap;
+}
+
+void BSLightingShaderMaterialEnvmap::ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, void* a_unk6, void* a_unk7)
+{
+    BaseReceiveValues(this, a_skinned, a_rimLighting, a_softLighting, a_backLighting, a_MSN, a_unk6, a_unk7);
+    if (!unkA0Texture) {
+        unkA0Texture = g_defaultEnvmapTexture;
+    }
+}
+
+std::uint32_t BSLightingShaderMaterialEnvmap::GetTextures(NiSourceTexture** a_textures)
+{
+    std::uint32_t count = 0;
+    if (diffuseTexture) {
+        a_textures[count++] = diffuseTexture._ptr;
+    }
+    if (normalTexture) {
+        a_textures[count++] = normalTexture._ptr;
+    }
+    if (rimSoftLightingTexture) {
+        a_textures[count++] = rimSoftLightingTexture._ptr;
+    }
+    if (specularBackLightingTexture) {
+        a_textures[count++] = specularBackLightingTexture._ptr;
+    }
+    if (unkA0Texture) {
+        a_textures[count++] = unkA0Texture._ptr;
+    }
+    if (unkA8Texture) {
+        a_textures[count++] = unkA8Texture._ptr;
+    }
+    return count;
 }

@@ -12,6 +12,8 @@
 class BSLightingShaderMaterialLODLandscape : public BSLightingShaderMaterialBase
 {
 public:
+    BSLightingShaderMaterialLODLandscape();
+    virtual ~BSLightingShaderMaterialLODLandscape();  // compared: 0x1528ff0 (scalar deleting destructor)
     virtual Feature GetFeature() const;  // compared: 0x1527fb0
 
     // TODO members: replace part of the padding with the members the bodies read,

@@ -74,12 +74,26 @@ extern void* const g_BSLightingShaderMaterialMultiLayerParallaxVtable[1];
 // g_defaultMultiLayerTexture: GUESS(low); the second default texture read at 0x3336430
 extern NiPointer<NiSourceTexture> g_defaultMultiLayerTexture;
 
+// MemoryManager: STANDIN GUESS(low); the allocator object the image reads at 0x369a810, with its once-init guard at 0x369ac98
+class MemoryManager
+{
+public:
+    void* Allocate(std::uint32_t a_size, std::int32_t a_alignment, bool a_alignmentRequired);  // 0xcde250
+};
+// g_memoryManager, g_memoryManagerGuard, InitMemoryManager: GUESS(low)
+extern MemoryManager g_memoryManager;
+extern std::int32_t  g_memoryManagerGuard;
+void InitMemoryManager(MemoryManager* a_manager, std::int32_t* a_guard);  // 0xcde810
+
 class BSLightingShaderMaterialMultiLayerParallax : public BSLightingShaderMaterialBase
 {
 public:
     // GetFeature: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
     Feature GetFeature() const override;
 	BSLightingShaderMaterialMultiLayerParallax();
+	static void* operator new(std::size_t a_size) throw();
+	static void* operator new(std::size_t, void* a_place) throw() { return a_place; }
+	BSShaderMaterial* Create() override;
 	// the deleting destructor (slot 0) is emitted with the constructor; the plain one is external
 	virtual ~BSLightingShaderMaterialMultiLayerParallax();  // compared: 0x1529070 (scalar deleting destructor)
 	// Ctor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); returns this after the base constructor

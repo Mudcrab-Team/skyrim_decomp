@@ -12,6 +12,7 @@ class BSLightingShaderMaterial : public BSLightingShaderMaterialBase
 {
 public:
     BSLightingShaderMaterial();
+    Feature GetFeature() const override;  // compared: 0x1524940
     virtual ~BSLightingShaderMaterial();  // compared: 0x4b4a00 (scalar deleting destructor)
 };
 static_assert(sizeof(BSLightingShaderMaterial) == 0xA0, "BSLightingShaderMaterial size");

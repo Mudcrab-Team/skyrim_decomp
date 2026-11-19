@@ -84,6 +84,7 @@ class BSLightingShaderMaterialSnow : public BSLightingShaderMaterialBase
 {
 public:
     BSLightingShaderMaterialSnow();
+    virtual ~BSLightingShaderMaterialSnow();  // compared: 0x1529210 (scalar deleting destructor)
     virtual Feature GetFeature() const;  // compared: 0x1528110
     virtual void CopyMembers(BSShaderMaterial* a_src);  // compared: 0x1528090
     BSLightingShaderMaterialSnow* Ctor();  // compared: 0x1527fc0

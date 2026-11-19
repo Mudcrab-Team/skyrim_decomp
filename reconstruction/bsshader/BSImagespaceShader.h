@@ -87,6 +87,8 @@ extern std::uint32_t g_shadowModeA;
 extern std::uint32_t g_shadowModeB;
 extern std::uint32_t g_shadowSlotB;
 extern bool g_shadowDirtyB;
+// g_pendingShadowSlot: GUESS(low); value Setup copies into g_shadowSlotB
+extern std::uint32_t g_pendingShadowSlot;
 
 void SetSlotIndex(ImageSpaceSlot* a_slot, std::uint32_t a_index);
 bool ApplyRenderStates(ImageSpaceRenderState* a_state);
@@ -101,7 +103,8 @@ public:
     virtual void UpdateParams(ImageSpaceEffectParam* a_param);  // compared: 0x1564d90
     virtual void Unk_0C(std::uint32_t a_x, std::uint32_t a_y, std::uint32_t a_z);  // compared: 0x1565170
     virtual void ShutDown();  // compared: 0x1564a00
-    virtual void Setup(ImageSpaceManager* a_manager, ImageSpaceEffectParam* a_param);  // compared: 0x1564960
+    // the image leaves the result of IsReady in AL on return; NG declares void
+    virtual bool Setup(ImageSpaceManager* a_manager, ImageSpaceEffectParam* a_param);  // compared: 0x1564960
     // Unk_07, Unk_08, Unk_09: GUESS(low); placeholders for vtable slots 7 to 9
     virtual void Unk_07();
     virtual void Unk_08();
@@ -111,6 +114,8 @@ public:
     virtual void Unk_0B();
 
     bool ResetRenderStates();
+    // IsReady: GUESS(low); non-virtual member Setup calls with three zero arguments (0x1579120)
+    bool IsReady(std::uint32_t a_arg1, std::uint32_t a_arg2, std::uint32_t a_arg3);
 
     // The first qword of the request is a target object, not a vtable, so this stays a static function.
     static std::uint32_t DispatchCopySubRegion(struct CopySubRegionRequest* a_request);  // compared: 0x1540db0

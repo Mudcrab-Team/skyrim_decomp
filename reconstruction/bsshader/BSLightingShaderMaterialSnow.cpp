@@ -1,7 +1,9 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x1529210 BSLightingShaderMaterialSnow::~BSLightingShaderMaterialSnow
 // Code origin: SaveBinary and LoadBinary bodies written from the local listings; declarations added to the existing unit header.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none
 // 0x1528120 BSLightingShaderMaterialSnow::SaveBinary
 // 0x1528160 BSLightingShaderMaterialSnow::LoadBinary
