@@ -1086,7 +1086,9 @@ class Bot:
         out = {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
-            hints = {**recorded_symbol_hints(json.loads((task / 'task.json').read_text()), rvas), **hints}
+            # A task the export did not write has no records to hint from.
+            made = task / 'task.json'
+            hints = {**recorded_symbol_hints(json.loads(made.read_text()) if made.is_file() else {}, rvas), **hints}
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
         for task in tasks:
