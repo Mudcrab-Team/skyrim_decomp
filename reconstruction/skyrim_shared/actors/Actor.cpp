@@ -110,27 +110,48 @@ bool Actor::HasOutfitItems(BGSOutfit* a_outfit)
     return false;
 }
 
-// CHARACTER_FLAGS, kHitDamage, bhkCharacterController::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// GetFallDistance, unk00: GUESS(low); distance accessor and unresolved controller prefix.
-enum class CHARACTER_FLAGS : std::uint32_t { kHitDamage = 1u << 7 };
-class bhkCharacterController {
-public:
-    float GetFallDistance() const;
-    std::uint8_t unk00[0x218];
-    CHARACTER_FLAGS flags;
-};
-static_assert(offsetof(bhkCharacterController, flags) == 0x218, "controller flags offset");
-
 // RACE_DATA, RACE_DATA::Flag, kFlies, TESRace::data, RACE_DATA::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// unk00: GUESS(low); unresolved race prefix.
+// unknown20 to unknown100: GUESS(low); the race bases and members before data, as unresolved words at their offsets.
 struct RACE_DATA {
     enum Flag : std::uint32_t { kFlies = 1u << 7 };
     Flag flags;
 };
 class TESRace {
 public:
-    std::uint8_t unk00[0x108];
-    RACE_DATA data;
+    virtual ~TESRace();
+    std::uint64_t unknown08;  // 08
+    std::uint64_t unknown10;  // 10
+    std::uint64_t unknown18;  // 18
+    std::uint64_t unknown20;  // 20
+    std::uint64_t unknown28;  // 28
+    std::uint64_t unknown30;  // 30
+    std::uint64_t unknown38;  // 38
+    std::uint64_t unknown40;  // 40
+    std::uint64_t unknown48;  // 48
+    std::uint64_t unknown50;  // 50
+    std::uint64_t unknown58;  // 58
+    std::uint64_t unknown60;  // 60
+    std::uint64_t unknown68;  // 68
+    std::uint64_t unknown70;  // 70
+    std::uint64_t unknown78;  // 78
+    std::uint64_t unknown80;  // 80
+    std::uint64_t unknown88;  // 88
+    std::uint64_t unknown90;  // 90
+    std::uint64_t unknown98;  // 98
+    std::uint64_t unknownA0;  // A0
+    std::uint64_t unknownA8;  // A8
+    std::uint64_t unknownB0;  // B0
+    std::uint64_t unknownB8;  // B8
+    std::uint64_t unknownC0;  // C0
+    std::uint64_t unknownC8;  // C8
+    std::uint64_t unknownD0;  // D0
+    std::uint64_t unknownD8;  // D8
+    std::uint64_t unknownE0;  // E0
+    std::uint64_t unknownE8;  // E8
+    std::uint64_t unknownF0;  // F0
+    std::uint64_t unknownF8;  // F8
+    std::uint64_t unknown100;  // 100
+    RACE_DATA data;  // 108
 };
 static_assert(offsetof(TESRace, data) == 0x108, "race data offset");
 

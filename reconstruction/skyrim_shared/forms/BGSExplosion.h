@@ -5,11 +5,11 @@
 // BGSExplosion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSExplosion::UnClone3D, TESObject::UnClone3D: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); bodies written from the listing
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
-// Explosion, Explosion::Flags, kNone, kIgnoreImageSpaceSwap, kInWater, unk98, startKeyTime, endKeyTime, hitKeyTime, radius, imodRadius, unkB4, unkB8, unkC0, unkC8, sound01, sound02, light, actorOwner, unkF4, unkF8, padFC, actorCause, magicCaster, weaponSource, unk118, unk11C, negativeVelocity, damage, unk138, flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG lays the members out from 0x98 with flags at 0x13C, the pinned image has them 8 bytes higher with flags at 0x144
-// TESObjectREFR: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); sized only (0xA0), no member of it is read here
-// BSSoundHandle, soundID, assumeSuccess, pad05, state: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the layout is declared
+// Explosion, Explosion::Flags, kNone, kIgnoreImageSpaceSwap, kInWater, unk98, startKeyTime, endKeyTime, hitKeyTime, radius, imodRadius, unkB4, unkB8, unkC0, unkC8, sound01, sound02, light, actorOwner, unkF4, unkF8, actorCause, magicCaster, weaponSource, unk118, unk11C, negativeVelocity, damage, unk138, flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG lays the members out from 0x98 with flags at 0x13C, the pinned image has them 8 bytes higher with flags at 0x144
+// TESObjectREFR: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); no member of it is read here
+// BSSoundHandle, soundID, assumeSuccess, state: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the layout is declared
 // NiPoint3, NiPointLight, bhkSimpleShapePhantom, ActorCause, NonActorMagicCaster, TESObjectWEAP: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the layout of the members is declared
-// unrepresented: GUESS(low); the bytes of the TESObjectREFR stand-in whose members are not declared
+// unknown20 to unknown98, unknown05, unknown06, unknownFC: GUESS(low); unresolved words at their offsets
 #pragma once
 #include <cstdint>
 #include <cstddef>
@@ -259,14 +259,30 @@ class TESObject : public TESForm { public: virtual void UnClone3D(TESObjectREFR*
 
 class TESObjectREFR : public TESForm {
 public:
-    std::uint8_t unrepresented[0x80];  // 20
+    std::uint64_t unknown20;  // 20
+    std::uint64_t unknown28;  // 28
+    std::uint64_t unknown30;  // 30
+    std::uint64_t unknown38;  // 38
+    std::uint64_t unknown40;  // 40
+    std::uint64_t unknown48;  // 48
+    std::uint64_t unknown50;  // 50
+    std::uint64_t unknown58;  // 58
+    std::uint64_t unknown60;  // 60
+    std::uint64_t unknown68;  // 68
+    std::uint64_t unknown70;  // 70
+    std::uint64_t unknown78;  // 78
+    std::uint64_t unknown80;  // 80
+    std::uint64_t unknown88;  // 88
+    std::uint64_t unknown90;  // 90
+    std::uint64_t unknown98;  // 98
 };
 static_assert(sizeof(TESObjectREFR) == 0xA0, "TESObjectREFR stand-in size");
 
 struct BSSoundHandle {
     std::uint32_t soundID;         // 00
     bool          assumeSuccess;   // 04
-    std::uint8_t  pad05[3];        // 05
+    std::uint8_t  unknown05;       // 05
+    std::uint16_t unknown06;       // 06
     std::uint32_t state;           // 08
 };
 static_assert(sizeof(BSSoundHandle) == 0xC, "sound handle size");
@@ -303,7 +319,7 @@ public:
     std::uint32_t          actorOwner;        // F8
     std::uint32_t          unkF4;             // FC
     std::uint32_t          unkF8;             // 100
-    std::uint32_t          padFC;             // 104
+    std::uint32_t          unknownFC;         // 104
     ActorCause*            actorCause;        // 108
     NonActorMagicCaster*   magicCaster;       // 110
     TESObjectWEAP*         weaponSource;      // 118

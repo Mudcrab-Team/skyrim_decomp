@@ -53,11 +53,129 @@
 class BGSPerk;
 class TESForm;
 // bhkCharacterController, bhkCharacterMoveFinishEvent, TESObjectCELL, TESRace, NiAVObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// bhkCharacterController, hkpCharacterContext, hkpCharacterStateType, kSwimming, CHARACTER_FLAGS, kHitDamage, hkVector4, BSBound, hkpSurfaceInfo, hkStepInfo, collisionBound, bumperCollisionBound, forwardVec, stepInfo, outVelocity, initialVelocity, velocityMod, direction, rotCenter, pushDelta, fakeSupportStart, up, supportNorm, orientationCtrl, surfaceInfo, context, flags, GetPositionImpl, SetPositionImpl, GetTransformImpl, SetTransformImpl, GetLinearVelocityImpl, SetLinearVelocityImpl, GetCollisionFilterInfo, CheckSupportImpl, Unk_09, Unk_0A, Unk_0B, Unk_0C, Unk_0E, Unk_0F: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); a prefix of NG's layout up to flags at 0x218; the members after flags are not declared
+// GetFallDistance, SetJumpHeight, Unk_01, unknown008 to unknown068, unknown180, unknown188, unknown198, hkTransform: GUESS(low); unresolved words at their offsets and the two calls the compared code makes
+// GetFallDistance and SetJumpHeight are calls of the compared code; Unk_0F is NG's void slot, declared with the result the compared code tests.
 class bhkCharacterController;
 struct bhkCharacterMoveFinishEvent;
 class TESObjectCELL;
 class TESRace;
 class NiAVObject;
+
+enum class hkpCharacterStateType : std::uint32_t { kSwimming = 5 };
+
+enum class CHARACTER_FLAGS : std::uint32_t { kHitDamage = 1u << 7 };
+
+struct hkVector4 {
+    float x;
+    float y;
+    float z;
+    float w;
+};
+
+struct hkTransform;
+
+struct hkStepInfo {
+    std::uint64_t unknown00;  // 00
+    std::uint64_t unknown08;  // 08
+};
+
+struct BSBound {
+    std::uint64_t unknown00;  // 00
+    std::uint64_t unknown08;  // 08
+    std::uint64_t unknown10;  // 10
+    std::uint64_t unknown18;  // 18
+    std::uint64_t unknown20;  // 20
+    std::uint64_t unknown28;  // 28
+};
+static_assert(sizeof(BSBound) == 0x30, "BSBound size");
+
+struct hkpSurfaceInfo {
+    std::uint64_t unknown00;  // 00
+    std::uint64_t unknown08;  // 08
+    std::uint64_t unknown10;  // 10
+    std::uint64_t unknown18;  // 18
+    std::uint64_t unknown20;  // 20
+    std::uint64_t unknown28;  // 28
+    std::uint64_t unknown30;  // 30
+    std::uint64_t unknown38;  // 38
+};
+static_assert(sizeof(hkpSurfaceInfo) == 0x40, "hkpSurfaceInfo size");
+
+class hkpCharacterContext {
+public:
+    virtual ~hkpCharacterContext();
+    hkpCharacterStateType GetState() const;
+
+    std::uint64_t unknown08;  // 08
+    std::uint64_t unknown10;  // 10
+    std::uint64_t unknown18;  // 18
+    std::uint64_t unknown20;  // 20
+    std::uint64_t unknown28;  // 28
+    std::uint64_t unknown30;  // 30
+};
+static_assert(sizeof(hkpCharacterContext) == 0x38, "hkpCharacterContext size");
+
+class bhkICharOrientationController;
+
+class bhkCharacterController {
+public:
+    virtual ~bhkCharacterController();                                                       // 00
+    virtual void  Unk_01();                                                                  // 01
+    virtual void  GetPositionImpl(hkVector4& a_pos, bool a_applyCenterOffset) const;         // 02
+    virtual void  SetPositionImpl(const hkVector4& a_pos, bool a_applyCenterOffset, bool a_forceWarp);  // 03
+    virtual void  GetTransformImpl(hkTransform& a_transform) const;                          // 04
+    virtual void  SetTransformImpl(const hkTransform& a_transform);                          // 05
+    virtual void  GetLinearVelocityImpl(hkVector4& a_velocity) const;                        // 06
+    virtual void  SetLinearVelocityImpl(const hkVector4& a_velocity);                        // 07
+    virtual void  GetCollisionFilterInfo(std::uint32_t& a_collisionFilterInfo) const;        // 08
+    virtual void  Unk_09();                                                                  // 09
+    virtual void  Unk_0A();                                                                  // 0A
+    virtual void  Unk_0B();                                                                  // 0B
+    virtual void  Unk_0C();                                                                  // 0C
+    virtual void  CheckSupportImpl();                                                        // 0D
+    virtual void  Unk_0E();                                                                  // 0E
+    virtual void* Unk_0F();                                                                  // 0F
+
+    float GetFallDistance() const;
+    void  SetJumpHeight(float a_height);
+
+    std::uint64_t unknown008;  // 008
+    std::uint64_t unknown010;  // 010
+    std::uint64_t unknown018;  // 018
+    std::uint64_t unknown020;  // 020
+    std::uint64_t unknown028;  // 028
+    std::uint64_t unknown030;  // 030
+    std::uint64_t unknown038;  // 038
+    std::uint64_t unknown040;  // 040
+    std::uint64_t unknown048;  // 048
+    std::uint64_t unknown050;  // 050
+    std::uint64_t unknown058;  // 058
+    std::uint64_t unknown060;  // 060
+    std::uint64_t unknown068;  // 068
+    hkVector4                      forwardVec;        // 070
+    hkStepInfo                     stepInfo;          // 080
+    hkVector4                      outVelocity;       // 090
+    hkVector4                      initialVelocity;   // 0A0
+    hkVector4                      velocityMod;       // 0B0
+    hkVector4                      direction;         // 0C0
+    hkVector4                      rotCenter;         // 0D0
+    hkVector4                      pushDelta;         // 0E0
+    hkVector4                      fakeSupportStart;  // 0F0
+    hkVector4                      up;                // 100
+    hkVector4                      supportNorm;       // 110
+    BSBound                        collisionBound;    // 120
+    BSBound                        bumperCollisionBound;  // 150
+    std::uint64_t                  unknown180;        // 180
+    std::uint64_t                  unknown188;        // 188
+    bhkICharOrientationController* orientationCtrl;   // 190
+    std::uint64_t                  unknown198;        // 198
+    hkpSurfaceInfo                 surfaceInfo;       // 1A0
+    hkpCharacterContext            context;           // 1E0
+    CHARACTER_FLAGS                flags;             // 218
+};
+static_assert(offsetof(bhkCharacterController, context) == 0x1e0, "bhkCharacterController::context offset");
+static_assert(offsetof(bhkCharacterController, flags) == 0x218, "bhkCharacterController::flags offset");
 
 template <class T>
 struct BSSimpleList {

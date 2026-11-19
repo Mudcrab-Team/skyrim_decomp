@@ -13,7 +13,6 @@ BGSPackageDataBool::BGSPackageDataBool()
 }
 
 // RVA 0x44d7b0, 40 bytes
-// Near-miss: near-miss/0x44d7b0.cpp
 
 // RVA 0x44d980, 54 bytes
 void BGSPackageDataBool::Unk_07(BGSSaveGameBuffer* a_buf)
@@ -23,7 +22,6 @@ void BGSPackageDataBool::Unk_07(BGSSaveGameBuffer* a_buf)
 }
 
 // RVA 0x44d9c0, 85 bytes
-// Near-miss: near-miss/0x44d9c0.cpp
 
 // RVA 0x44d8e0, 107 bytes
 void BGSPackageDataBool::LoadPackage(TESFile* a_mod)
@@ -41,10 +39,8 @@ void BGSPackageDataBool::LoadPackage(TESFile* a_mod)
 }
 
 // RVA 0x44d7e0, 87 bytes
-// Near-miss: near-miss/0x44d7e0.cpp
 
 // RVA 0x44d840, 151 bytes
-// Near-miss: near-miss/0x44d840.cpp
 
 // RVA 0x44e660, 81 bytes. The packed-name member releases its storage in its own destructor.
 BGSPackageDataBool::~BGSPackageDataBool()
