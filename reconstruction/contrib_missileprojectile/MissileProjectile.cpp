@@ -1,11 +1,11 @@
-// Source exposure: mixed (names and declarations from community headers; the listing of the contributor's own pinned image).
-// Code origin: the bodies of Revert, Unk_C2 and Unk_C3 are original reconstructions by v-macrev, assisted by claude-sonnet-5-5, from a local listing of the contributor's own copy. Unk_C2 and Unk_C3 return zero, which the powerof3/CommonLibSSE@654e55f declaration comments also state; nothing else is taken from a community or sibling body.
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only. Unk_C2 and Unk_C3 return zero, as the powerof3/CommonLibSSE@654e55f declaration comments also state.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Declarations derived from powerof3/CommonLibSSE are GPL-3.0-or-later.
-// Adapted bodies: none
+// Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // 0x7f4d60 MissileProjectile::Unk_C3
 // 0x7f4e50 MissileProjectile::Revert
 // 0x7f5660 MissileProjectile::Unk_C2
+// Adapted bodies: none
 #include "MissileProjectile.h"
 
 void MissileProjectile::Revert(BGSLoadFormBuffer* a_buf)

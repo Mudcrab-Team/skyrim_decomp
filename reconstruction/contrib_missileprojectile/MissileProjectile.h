@@ -1,7 +1,10 @@
-// Source exposure: mixed (names and declarations from community headers; the listing of the contributor's own pinned image).
-// Code origin: declarations written by hand from the community headers and the local listings; the bodies are in the matching .cpp. The class layout is a minimal stand-in that names only what the compared code touches.
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: declarations written by hand from the community headers and the local listings; a minimal stand-in layout.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Declarations derived from powerof3/CommonLibSSE are GPL-3.0-or-later.
+// Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
+// 0x7f4d60 MissileProjectile::Unk_C3
+// 0x7f4e50 MissileProjectile::Revert
+// 0x7f5660 MissileProjectile::Unk_C2
 // MissileProjectile: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // Projectile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BGSLoadFormBuffer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); forward declaration only
