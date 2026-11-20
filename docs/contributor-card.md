@@ -57,7 +57,9 @@ Source rules:
   already declares the class takes just the members it needs into its own header (a second definition of the class
   in one include closure fails); a unit that does not may include it as `"generated/crashlogger_pdb/types/X.h"` with
   `Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json`. Label a name or layout taken from it
-  `CRASHLOGGER_PDB(59818@2026.10.24)`; it is a guess until `compare` matches.
+  `CRASHLOGGER_PDB(59818@2026.10.24)`; it is a guess until `compare` matches. `PDB prototype` gives the signature
+  the PDB records (the first parameter of a method is its `this`, often another class), and `PDB boundary warning`
+  means a claimed RVA is inside a PDB function, not at its start.
 - Declare, do not define, a function the target calls; `compare` binds the call.
 - Write assignments in the order the listing stores them; keep a repeated null test as a repeat read.
 - `static_assert` needs a message.

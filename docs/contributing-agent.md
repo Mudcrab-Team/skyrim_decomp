@@ -112,6 +112,10 @@ The repository carries names and layouts generated from the community "CrashLogg
   (`reconstruction/generated/crashlogger_pdb/types/<Class>.h`: fields, offsets, padding and `_base` members). A unit
   that already declares the class copies only the members it needs; a unit that does not may include the header.
   Layouts are community guesses; `compare` decides.
+- `start` prints `PDB prototype ...` (return type, parameter types, calling convention, from `prototypes/<NN>.tsv`) for a
+  function whose PDB type is more than a bare `void()` stub; a method's first parameter is its `this`, often typed as
+  another class. It also prints `PDB boundary warning` when a claimed RVA is inside a function that
+  `boundaries/<NN>.tsv` records but is not its start; `intake` and `submit` give the same warning. It never blocks.
 - Never commit the `.pdb`, or a name list from it outside the generated directory.
 
 ## Mapping-only PRs

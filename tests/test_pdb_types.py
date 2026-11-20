@@ -87,8 +87,13 @@ def build_pdb():
     thing_b = struct_record('Thing', 4, 0x100D, 'thing-b')                                 # 0x100e
     packed_fields = fieldlist([(0, 0x73, 'a'), (2, 0x75, 'b')])                            # 0x100f
     packed = struct_record('Packed', 6, 0x100F, 'packed-u')                                # 0x1010
+    args2 = record(P.LF_ARGLIST, struct.pack('<III', 2, 0x1006, 0x74))                      # 0x1011
+    proc = record(P.LF_PROCEDURE, struct.pack('<IBBHI', 0x74, 11, 0, 2, 0x1011))            # 0x1012
+    args0 = record(P.LF_ARGLIST, struct.pack('<I', 0))                                     # 0x1013
+    stub = record(P.LF_PROCEDURE, struct.pack('<IBBHI', 3, 1, 0, 0, 0x1013))               # 0x1014
     records = [ptr_void, gizmo_fields, gizmo, gizmo_fwd, low, high, gizmo_ptr, widget_fields, widget,
-               mode_fields, mode, thing_a_fields, thing_a, thing_b_fields, thing_b, packed_fields, packed]
+               mode_fields, mode, thing_a_fields, thing_a, thing_b_fields, thing_b, packed_fields, packed,
+               args2, proc, args0, stub]
     blob = b''.join(records)
     tpi = struct.pack('<IIIIIHHIIIIII', 20040203, 56, 0x1000, 0x1000 + len(records), len(blob),
                       0xFFFF, 0xFFFF, 4, 8, 0, 0, 0, 0)
@@ -97,8 +102,9 @@ def build_pdb():
     pub = lambda off, name, flags=2: record(0x110E, struct.pack('<IIH', flags, off, 1) + name.encode() + b'\0')  # noqa: E731
     syms = b''.join([pub(0x200, 'Widget::Reset'), pub(0x300, 'FUN_140001300'), pub(0x2000, 'Gizmo::Tick_140003000'),
                      pub(0x400, 'g_table', 0)])
-    proc = record(0x1110, struct.pack('<IIIIIIIIHB', 0, 0, 0, 16, 0, 0, 0x1000, 0x100, 1, 0) + b'Widget::Update\0')
-    module = struct.pack('<I', 4) + proc
+    gproc = lambda name, size, ti, off: record(0x1110, struct.pack('<IIIIIIIIHB', 0, 0, 0, size, 0, 0, ti, off, 1, 0)  # noqa: E731
+                                               + name.encode() + b'\0')
+    module = struct.pack('<I', 4) + gproc('Widget::Update', 16, 0x1012, 0x100) + gproc('Widget::Stub', 4, 0x1014, 0x400)
     info = bytearray(64)
     struct.pack_into('<H', info, 34, 5)               # the module's symbol stream
     struct.pack_into('<I', info, 36, len(module))     # its symbol byte count
@@ -136,8 +142,21 @@ class PdbTypesTest(unittest.TestCase):
         for name, text in self.files.items():
             if name.startswith('names/'):
                 rows.update(line.split('\t') for line in text.splitlines() if not line.startswith('#'))
-        self.assertEqual(rows, {'0x1100': 'Widget::Update', '0x1200': 'Widget::Reset',
+        self.assertEqual(rows, {'0x1100': 'Widget::Update', '0x1200': 'Widget::Reset', '0x1400': 'Widget::Stub',
                                 '0x3000': 'Gizmo::Tick_140003000'})
+
+    def test_prototypes_skip_void_stubs_and_keep_conventions(self):
+        rows = [line.split('\t') for n, t in self.files.items() if n.startswith('prototypes/')
+                for line in t.splitlines() if not line.startswith('#')]
+        self.assertEqual(rows, [['0x1100', 'thiscall', 'int (Gizmo*, int)']])
+
+    def test_boundaries_list_every_function_start_and_size(self):
+        rows = [line.split('\t') for n, t in self.files.items() if n.startswith('boundaries/')
+                for line in t.splitlines() if not line.startswith('#')]
+        self.assertEqual(rows, [['1100', '10'], ['1400', '4']])
+
+    def test_enum_count_in_readme(self):
+        self.assertIn('1 of them enums with\n  2 enumerators', self.files['README.md'])
 
     def test_layout_header_of_a_derived_class(self):
         text = self.files['types/Widget.h']
@@ -185,7 +204,7 @@ class PdbTypesTest(unittest.TestCase):
 
     def test_hint_names_the_owning_class_header(self):
         root = self.make_repo()
-        hint = P.hint_for_rva(0x1100, root)
+        hint = ' '.join(P.hint_for_rvas([0x1100], root))
         self.assertIn('Widget::Update', hint)
         self.assertIn('PDB layout', hint)
         self.assertIn(f'{P.GENERATED}/types/Widget.h', hint)
@@ -194,11 +213,28 @@ class PdbTypesTest(unittest.TestCase):
         self.assertEqual(P.lookup_rva(0x3000, root)['class'], 'Gizmo')
         self.assertIsNone(P.hint_for_rva(0x9999, root))
 
+    def test_boundary_warning_names_the_containing_function(self):
+        root = self.make_repo()
+        self.assertEqual(P.boundary_warnings([0x1100, 0x1400, 0x2000, 0x5000], root), [])
+        warned = P.boundary_warnings([0x1108], root)
+        self.assertEqual(len(warned), 1)
+        self.assertIn('0x8 bytes into the function at 0x1100', warned[0])
+        self.assertEqual(P.boundary_of(0x1403, root), (0x1400, 4))
+        self.assertIsNone(P.boundary_of(0x1404, root))
+
+    def test_start_lines_carry_prototype_and_warning(self):
+        root = self.make_repo()
+        lines = contrib.pdb_hints(root, [{'rva': 0x1100}, {'rva': 0x1108}])
+        self.assertTrue(lines[0].startswith('PDB prototype for 0x1100: int (Gizmo*, int) [thiscall]'))
+        self.assertIn(LABEL, lines[0])
+        self.assertTrue(any(line.startswith('PDB boundary warning: 0x1108') for line in lines))
+
     def test_start_hint_is_silent_without_the_tree(self):
         root = self.make_repo()
         lines = contrib.pdb_hints(root, [{'rva': 0x1100}, {'rva': 0x1200}])
-        self.assertEqual(len(lines), 1)  # one layout line per class, however many of its functions
-        self.assertIn('PDB layout for Widget::Update', lines[0])
+        layout = [line for line in lines if line.startswith('PDB layout')]
+        self.assertEqual(len(layout), 1)  # one layout line per class, however many of its functions
+        self.assertIn('PDB layout for Widget::Update', layout[0])
         self.assertEqual(contrib.pdb_hints(Path(tempfile.mkdtemp(dir=self.tmp.name)), [{'rva': 0x1100}]), [])
 
     def test_lint_leaves_generated_files_to_the_label_rule(self):

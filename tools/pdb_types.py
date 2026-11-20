@@ -30,6 +30,8 @@ SOURCE_ID = '59818'
 DEFAULT_VERSION = '2026.10.24'
 TYPES_DIR = 'types'
 NAMES_DIR = 'names'
+PROTOTYPES_DIR = 'prototypes'
+BOUNDARIES_DIR = 'boundaries'
 SHARD_BITS = 20  # one names file per MiB of RVA, to stay under the scanner's per-file size limit
 INDEX_FILE = 'types.tsv'
 README = 'README.md'
@@ -175,7 +177,7 @@ class Tpi:
             return {'base': base, 'length': length, 'position': position}
         if kind == LF_PROCEDURE:
             ret, conv, _, count, args = struct.unpack_from('<IBBHI', buf, 0)
-            return {'ret': ret, 'args': args, 'count': count}
+            return {'ret': ret, 'args': args, 'count': count, 'conv': conv}
         if kind == LF_ARGLIST:
             count = struct.unpack_from('<I', buf, 0)[0]
             return {'types': list(struct.unpack_from(f'<{count}I', buf, 4))}
@@ -223,7 +225,7 @@ class Tpi:
 
 def read_symbols(msf):
     """(sections, publics, procs): section virtual addresses, public functions and module procedures
-    as lists of (rva, name) / (rva, name, type index)."""
+    as lists of (rva, name) / (rva, name, type index, code size)."""
     dbi = msf.stream(3)
     sym_stream = struct.unpack_from('<H', dbi, 20)[0]
     mod_size, contrib_size, section_map, source_info, type_map, _, dbg_size, ec_size = \
@@ -260,9 +262,10 @@ def read_symbols(msf):
         while p + 4 <= len(data):
             length, kind = struct.unpack_from('<HH', data, p)
             if kind in (0x1110, 0x1111):
+                size = struct.unpack_from('<I', data, p + 4 + 12)[0]
                 type_index, offset, segment = struct.unpack_from('<IIH', data, p + 4 + 24)
                 if 0 < segment <= len(sections):
-                    procs.append((sections[segment - 1] + offset, cstring(data, p + 4 + 35)[0], type_index))
+                    procs.append((sections[segment - 1] + offset, cstring(data, p + 4 + 35)[0], type_index, size))
             p += 2 + length
     return sections, publics, procs
 
@@ -829,44 +832,95 @@ def build_files(pdb, version):
         shards[rva >> SHARD_BITS].append(f'0x{rva:x}\t{name}\n')
     for shard, lines in sorted(shards.items()):
         files[f'{NAMES_DIR}/{shard:02x}.tsv'] = f'# {label(version)}\n# rva, public name; RVAs 0x{shard << SHARD_BITS:x}-0x{((shard + 1) << SHARD_BITS) - 1:x}\n' + ''.join(lines)
-    files[README] = readme_text(version, msf, len(rows), len(names), model)
+    protos, bounds = prototype_rows(model, renderer, procs), boundary_rows(procs)
+    for directory, rows_by_rva, header in ((PROTOTYPES_DIR, protos, 'rva, calling convention, prototype'),
+                                           (BOUNDARIES_DIR, bounds, 'function start rva, size in bytes (hex)')):
+        shards = defaultdict(list)
+        for rva, line in rows_by_rva:
+            shards[rva >> SHARD_BITS].append(line)
+        for shard, lines in sorted(shards.items()):
+            files[f'{directory}/{shard:02x}.tsv'] = (f'# {label(version)}\n# {header}; RVAs 0x{shard << SHARD_BITS:x}-0x'
+                                                     f'{((shard + 1) << SHARD_BITS) - 1:x}\n' + ''.join(lines))
+    stats = dict(types=len(rows), functions=len(names), prototypes=len(protos), boundaries=len(bounds),
+                 enums=sum(1 for r in rows if r.split('\t')[2] == 'enum'),
+                 enumerators=sum(len(model.fields(i)[1]) for vs in model.variants.values() for _, i in vs
+                                 if tpi.record(i)['kind'] == LF_ENUM))
+    files[README] = readme_text(version, msf, stats, model)
     return files
 
 
-def readme_text(version, msf, types, functions, model):
+CONVENTIONS = {0: 'cdecl', 1: 'cdecl', 4: 'fastcall', 11: 'thiscall'}
+
+
+def prototype_rows(model, renderer, procs):
+    """(rva, line) for every function whose type is more than a bare `void()` stub, in RVA order. The
+    signature uses the identifiers of the generated headers; a method's first parameter is its `this`."""
+    rows = {}
+    for rva, _name, ti, _size in procs:
+        rec = model.tpi.record(ti)
+        if rec is None or rec['kind'] != LF_PROCEDURE:
+            continue
+        types = model.tpi.record(rec['args'])['types'] if rec['args'] >= model.tpi.begin else []
+        if not types and rec['ret'] == 3:
+            continue
+        sig = re.sub(r'([*&])\s+([,)])', r'\1\2', fix_pointer_spacing(Declarator(model, renderer).decl(ti, '')))
+        rows[rva] = f'0x{rva:x}\t{CONVENTIONS.get(rec["conv"], str(rec["conv"]))}\t{sig}\n'
+    return sorted(rows.items())
+
+
+def boundary_rows(procs):
+    """(rva, line) of every function start with its exact code size."""
+    rows = {rva: f'{rva:x}\t{size:x}\n' for rva, _name, _ti, size in procs}
+    return sorted(rows.items())
+
+
+def readme_text(version, msf, stats, model):
     guid = msf.stream(1)[12:28]
     guid_text = '{%08X-%04X-%04X-%s-%s}' % (struct.unpack('<IHH', guid[:8]) + (guid[8:10].hex().upper(), guid[10:].hex().upper()))
+    multi = sum(1 for v in model.variants.values() if len(v) > 1)
     return f'''<!-- {label(version)} -->
 # CrashLogger community PDB output
 
-Names and class layouts generated from the community PDB published with CrashLogger.
+Names, class layouts, enums, function prototypes and function boundaries generated from the community PDB
+published with CrashLogger.
 
 - Source: Nexus Mods mod {SOURCE_ID}, CrashLogger Contributors (alandtse/CrashLoggerSSE), version {version}.
 - PDB signature: {guid_text}. The PDB itself is never committed.
-- Label: every name or layout taken from here into a unit carries `{label(version)}`.
+- Label: every name, layout or signature taken from here into a unit carries `{label(version)}`.
 - Regenerate with `python3 tools/pdb_types.py generate <SkyrimSE.pdb> --version {version}`; the whole directory is
   rewritten deterministically, so a diff shows exactly what a new PDB changed.
 
 ## Contents
 
-- `types/<identifier>.h`: one layout header per class, union or enum ({types} types). Each holds the PDB's fields and
-  offsets with explicit padding, includes the headers of the types it holds by value, forward-declares the ones it
-  only points to, and ends with a `static_assert` on the PDB size. Nothing includes them until a unit does.
+- `types/<identifier>.h`: one header per class, union or enum ({stats['types']} types, {stats['enums']} of them enums with
+  {stats['enumerators']} enumerators). A struct header holds the PDB's fields and offsets with explicit padding,
+  includes the headers of the types it holds by value, forward-declares the ones it only points to, and ends with a
+  `static_assert` on the PDB size. An enum is an `enum class` with the PDB's underlying type and values. Nothing
+  includes these headers until a unit does.
 - `types.tsv`: PDB name, identifier, kind and size of every type.
-- `names/<NN>.tsv`: RVA to public name for the {functions} functions whose name is not a decompiler placeholder, one
-  file per MiB of RVA (`NN` is the RVA shifted right by 20).
+- `names/<NN>.tsv`: RVA to public name for the {stats['functions']} functions whose name is not a decompiler
+  placeholder, one file per MiB of RVA (`NN` is the RVA shifted right by 20, in hex).
+- `prototypes/<NN>.tsv`: RVA, calling convention and prototype of the {stats['prototypes']} functions whose type is more
+  than a bare `void()` stub, spelled with the identifiers of `types/`. Same sharding.
+- `boundaries/<NN>.tsv`: the exact start and code size, both in hex without a prefix, of the {stats['boundaries']}
+  functions the PDB records. Same sharding. A function missing here is not known to be absent: the PDB does not
+  cover every function.
 
 ## Cautions
 
-- These are community reconstructions of the game's types, not the game's own declarations. A field name or
-  offset is a guess until the compiled function matches.
+- These are community reconstructions of the game's types, not the game's own declarations. A field name, offset,
+  parameter type or calling convention is a guess until the compiled function matches.
+- A prototype lists a method's `this` as its first parameter, and the class named there is often another class
+  that shares the code: take the owning class from the name, not from that parameter. `thiscall` marks a function
+  the exporter believes is a method; `cdecl` is its default.
 - A base class appears as an ordinary member named `_base`, `_base_<Name>`: the PDB has no inheritance records.
   The first base carries the virtual-table pointer.
 - Names containing `::`, `<`, `>` or other punctuation are written with `__` and `_` in identifiers; `types.tsv`
   maps the PDB spelling to the identifier. Template instantiations are kept, with long names cut and tagged by a
   hash of the original.
 - The exporter drops namespaces, so one name can stand for several unrelated types. Each distinct type gets its
-  own header; the fullest keeps the plain identifier and the others add a hash suffix ({sum(1 for v in model.variants.values() if len(v) > 1)} names have more than one).
+  own header; the fullest keeps the plain identifier and the others add a hash suffix ({multi} names have more than one).
+- Enumerators of different enums share names such as `kNone`, so enums are scoped (`Type::kNone`).
 - `const` and `volatile` are dropped; member and function pointers are plain `void*`.
 - An RVA belongs to the build the PDB was made for (`builds/target.json`); do not reuse it for another build.
 '''
@@ -927,6 +981,47 @@ def lookup_class(name, root=ROOT, tree=None):
     return f'{GENERATED}/{TYPES_DIR}/{got[0]}.h' if got else None
 
 
+def shard_rows(directory, rva, root=ROOT):
+    """The rows of the one shard of `directory` that can hold `rva`, as lists of tab-separated fields."""
+    path = Path(root) / GENERATED / directory / f'{rva >> SHARD_BITS:02x}.tsv'
+    try:
+        lines = path.read_text(encoding='utf-8').splitlines()
+    except OSError:
+        return []
+    return [line.split('\t') for line in lines if line and not line.startswith('#')]
+
+
+def lookup_prototype(rva, root=ROOT):
+    """(calling convention, prototype) of a function, or None when the PDB has only a `void()` stub or no entry."""
+    key = f'0x{rva:x}'
+    return next(((conv, sig) for r, conv, sig in shard_rows(PROTOTYPES_DIR, rva, root) if r == key), None)
+
+
+def boundary_of(rva, root=ROOT):
+    """(start, size) of the PDB function that contains `rva`, or None when no recorded function does. The
+    function may start before the shard's range, so the previous shard is read too."""
+    best = None
+    for rows in (shard_rows(BOUNDARIES_DIR, rva, root), shard_rows(BOUNDARIES_DIR, max(rva - (1 << SHARD_BITS), 0), root)):
+        for start, size in rows:
+            start, size = int(start, 16), int(size, 16)
+            if start <= rva < start + max(size, 1) and (best is None or start > best[0]):
+                best = (start, size)
+    return best
+
+
+def boundary_warnings(rvas, root=ROOT):
+    """One warning per RVA that lies inside a function the PDB records but is not that function's start. An RVA
+    the table does not cover gives no warning: the PDB lacks many functions, so absence proves nothing."""
+    out = []
+    for rva in rvas:
+        found = boundary_of(rva, root)
+        if found and found[0] != rva:
+            out.append(f'0x{rva:x} is 0x{rva - found[0]:x} bytes into the function at 0x{found[0]:x} '
+                       f'(size 0x{found[1]:x}) per the CrashLogger PDB table, not a function start; '
+                       f'check the claim ({label(tree_version(root))}, a community guess)')
+    return out
+
+
 def tree_version(root=ROOT):
     """The version in the committed names map's label line, or the default when there is none."""
     try:
@@ -938,14 +1033,20 @@ def tree_version(root=ROOT):
 
 
 def hint_for_rvas(rvas, root=ROOT, tree=None):
-    """The lines `./sr start` prints about class layouts: one per class header, for the first function that
-    belongs to it. Names are suggested separately (tools/crashlogger_pdb.py); empty when the committed tree
-    holds no layout for the functions' classes."""
+    """The lines `./sr start` prints from the generated output: a prototype for each function that has one, and
+    one class-layout line per class header for the first function that belongs to it. Names are suggested
+    separately (tools/crashlogger_pdb.py)."""
     tree = tree or load_tree(root)
     text = label(tree_version(root))
     lines, headers = [], set()
     for rva in rvas:
         got = lookup_rva(rva, root, tree)
+        proto = lookup_prototype(rva, root)
+        if proto:
+            lines.append(f"PDB prototype for 0x{rva:x}: {proto[1]} [{proto[0]}] (community guess: the first parameter "
+                         f"of a method is its `this`, often another class; a signature taken from it gets the label "
+                         f"{text})")
+        lines += ['PDB boundary warning: ' + w for w in boundary_warnings([rva], root)]
         if not got or not got['header'] or got['header'] in headers:
             continue
         headers.add(got['header'])
