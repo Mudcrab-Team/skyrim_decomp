@@ -36,13 +36,8 @@ Main*                       Main::singleton;
 // IsReservedFormID, CopyBytes, g_secondRecordType: GUESS(low); callees at RVAs 0x1e6600 and 0x10c240 and a global at 0x2078a30, no community name
 // CopyBytes: GUESS(low); its two sizes are taken as pointer-width counts (the caller widens them)
 namespace {
-    // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value.
-    inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
-    {
-        return ((a_flags >> a_bit) & 1) != 0;
-    }
-
     const std::uint32_t kCompressedFlag = 0x00040000;
+    const std::uint32_t kSmallFileBit   = 9;
 }
 
 void TESFile::EnsureOpen()
@@ -104,16 +99,11 @@ bool TESFile::ReadFormHeader()
     }
     if (count == 0x18) {
         if (bigEndian) {
-            // byte-swap intrinsics: the image swaps each header field of a big-endian file
             std::uint32_t* words = reinterpret_cast<std::uint32_t*>(header);
             for (std::uint32_t i = 0; i < 5; ++i) {
-                // byte-swap intrinsic: swaps one 32-bit header field
                 words[i] = _byteswap_ulong(words[i]);
             }
-            // byte-swap intrinsics: the two 16-bit fields at the end of the header
-            // byte-swap intrinsic: swaps the 16-bit version field
             header->formVersion = _byteswap_ushort(header->formVersion);
-            // byte-swap intrinsic: swaps the 16-bit control version field
             header->vcVersion   = _byteswap_ushort(header->vcVersion);
         }
         if (currentform.form == g_tes4RecordType || currentform.form == g_secondRecordType) {
@@ -127,10 +117,9 @@ bool TESFile::ReadFormHeader()
             return true;
         }
         reinterpret_cast<std::uint8_t*>(&currentform.formID)[3] = 0;
-        if (TestBit(owner->flags, 9)) {
-            const std::uint32_t low = (currentform.formID & 0xFFF) | 0xFE000000;
-            currentform.formID = low;
-            currentform.formID = (static_cast<std::uint32_t>(owner->smallFileCompileIndex) << 12) | low;
+        if ((static_cast<std::uint8_t>(owner->flags >> kSmallFileBit) & 1) != 0) {
+            currentform.formID = (currentform.formID & 0xFFF) | 0xFE000000;
+            currentform.formID |= static_cast<std::uint32_t>(owner->smallFileCompileIndex) << 12;
             return true;
         }
         currentform.formID |= static_cast<std::uint32_t>(owner->compileIndex) << 24;
