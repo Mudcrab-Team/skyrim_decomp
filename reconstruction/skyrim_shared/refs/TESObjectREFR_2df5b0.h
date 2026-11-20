@@ -1,36 +1,33 @@
 // Source exposure: mixed (pinned image, project slot layout, and CommonLibSSE-NG).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// SPDX-License-Identifier: GPL-3.0-or-later (powerof3/CommonLibSSE declarations; full text: licenses/CommonLibSSE-GPL-3.0.txt)
 // Code origin: partial layout follows the project TESObjectREFR header and the cited declarations.
 // TESObjectREFR: EXE_RTTI
 // TESForm, TESBoundObject, FormType, OBJ_REFR, NiPoint3, ExtraDataList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// InventoryChanges, BGSKeyword, BipedAnim, NiAVObject, BSFaceGenNiNode, BSTSmartPointer: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// TESObjectCELL, formFlags, formID, inGameFormFlags, formType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// InventoryChanges, BGSDecalGroup, BipedAnim, NiAVObject, BSFaceGenNiNode, BSTSmartPointer: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESObjectCELL, TESWorldSpace, formFlags, formID, inGameFormFlags, formType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // objectReference, angle, location, data, parentCell, extraList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetGoldValue, Get3D, Get3D2, GetBiped, GetBiped2, GetFaceNode, GetFaceNodeSkinned, GetMustUpdate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// BaseExtraList, PresenceBitfield, BSExtraData, BSReadWriteLock, _extraData, _writerThread, _lock: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// BaseExtraList::data, BaseExtraList::presence, ShouldBackgroundClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// WorldLookup, worldLookup, padding, FunctionSlot declarations: STANDIN GUESS(low)
-// ExtraDataList::SetLinkedRef: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
-// Function1f37b0, Function15eb00, Function1a2200, SetActionReference, TESObjectREFR::SetLinkedRef: GUESS(low)
-// Function16c9c0, Function16c9f0, Function16cb90, Function16a8a0: GUESS(low)
+// WorldLookup, worldLookup, padding, storage, FunctionSlot declarations: STANDIN GUESS(low)
+// Function1f37b0, Function15eb00, Function172b80, Function170b50, Function1a2200: GUESS(low)
+// Function166af0, Function16c9c0, Function16c9f0, Function16cb90, Function16a8a0, Function1675c0: GUESS(low)
 // Function2df5b0, Function2e3a80, Function2e3bf0, Function2e4950, Function2e4a20, Function2e4b10: GUESS(low)
-// Function2e6600, Function2f39c0, Function2ffa40, Function300250, Function3002f0, Function300310: GUESS(low)
-// Function300ed0, Function300ee0, Function301940, Function301bc0: GUESS(low)
+// Function2e6600, Function2e6a70, Function2e7b40, Function2ebcb0, Function2f39c0: GUESS(low)
+// Function2f6280, Function2ffa40, Function300250, Function3002f0, Function300310, Function300ed0: GUESS(low)
+// Function300ee0, Function301940, Function301bc0, Function302060: GUESS(low)
 
 #pragma once
 
 #include <cstdint>
 
-class BGSKeyword;
+class BGSDecalGroup;
 class BipedAnim;
 class BSFaceGenNiNode;
-class BSExtraData;
 class InventoryChanges;
 class NiAVObject;
 class TESBoundObject;
 class TESObjectCELL;
 class TESObjectREFR;
+class TESWorldSpace;
 
 template <class T> class BSTSmartPointer;
 
@@ -58,41 +55,22 @@ struct OBJ_REFR
     NiPoint3 location;
 };
 
-class BaseExtraList
-{
-public:
-    virtual ~BaseExtraList();
-
-private:
-    struct PresenceBitfield;
-    BSExtraData* data;
-    PresenceBitfield* presence;
-};
-static_assert(sizeof(BaseExtraList) == 0x18, "base extra list size");
-
-class BSReadWriteLock
-{
-private:
-    volatile std::uint32_t _writerThread;
-    volatile std::uint32_t _lock;
-};
-
 class ExtraDataList
 {
 public:
     InventoryChanges* Function15eb00(TESObjectREFR* reference);
-    void SetActionReference(TESObjectREFR* reference);
+    void Function172b80();
+    TESObjectREFR* Function170b50() const;
+    BGSDecalGroup* Function166af0();
     float Function16c9c0() const;
-    void Function16c9f0(bool value);
+    void Function16c9f0();
     bool Function16cb90() const;
     void Function16a8a0(bool value);
-    void SetLinkedRef(TESObjectREFR* reference, BGSKeyword* keyword);
+    TESObjectREFR* Function1675c0() const;
 
 private:
-    BaseExtraList _extraData;
-    BSReadWriteLock _lock;
+    std::uint8_t storage[0x20];
 };
-static_assert(sizeof(ExtraDataList) == 0x20, "extra data list size");
 
 class TESForm
 {
@@ -227,7 +205,7 @@ public:
     virtual void FunctionSlot6A();  // 6A
     virtual void FunctionSlot6B();  // 6B
     virtual void FunctionSlot6C();  // 6C
-    virtual bool ShouldBackgroundClone() const;  // 6D
+    virtual void FunctionSlot6D();  // 6D
     virtual void FunctionSlot6E();  // 6E
     virtual void FunctionSlot6F();  // 6F
     virtual NiAVObject* Get3D2() const;  // 70
@@ -254,19 +232,22 @@ public:
     bool Function2e4a20() const;
     bool Function2e4b10() const;
     bool Function2e6600() const;
-    void SetActionReference(TESObjectREFR* reference);
+    void Function2e6a70();
+    TESObjectREFR* Function2e7b40() const;
+    TESWorldSpace* Function2ebcb0() const;
     TESObjectREFR* Function2f39c0();
+    BGSDecalGroup* Function2f6280();
     const BSTSmartPointer<BipedAnim>& GetBiped() const;
     NiAVObject* Get3D() const;
     bool Function2ffa40() const;
     float Function300250() const;
-    void Function3002f0(bool value);
+    void Function3002f0();
     bool Function300310() const;
     std::int32_t Function300ed0() const;
     float Function300ee0() const;
     bool Function301940();
     void Function301bc0();
-    void SetLinkedRef(TESObjectREFR* reference, BGSKeyword* keyword);
+    TESObjectREFR* Function302060() const;
 
 private:
     std::uint8_t padding020[0x20];
