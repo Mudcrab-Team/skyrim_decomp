@@ -727,6 +727,53 @@ class ThreadLocalBindTests(unittest.TestCase):
         self.assertNotIn(fx.TLS_INDEX, symbols)
         self.assertIn('thread-local hint', '\n'.join(bind.describe(report, self.task_dir)))
 
+    def test_underscore_prefixed_hint_keys_are_hints(self):
+        (self.task_dir / bind.HINTS).write_text(json.dumps({
+            '_Init_thread_epoch': 'tls:0x2a08', '_Init_thread_abort': '0x15a7c7c', '_note': 'free text',
+            '_empty': ''}))
+        self.assertEqual(bind.load_tls_hints(self.task_dir), {'_Init_thread_epoch': 0x2a08})
+        self.assertEqual(bind.load_hints(self.task_dir), {'_Init_thread_abort': 0x15a7c7c})
+
+    def test_non_underscore_key_with_bad_value_still_rejected(self):
+        (self.task_dir / bind.HINTS).write_text(json.dumps({'Class::Method': 'note'}))
+        with self.assertRaises(ValueError):
+            bind.load_hints(self.task_dir)
+
+    def crt_defaults(self, table, build='synthetic-fixture'):
+        path = self.root / bind.CRT_DEFAULTS
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({build: table}))
+        task = json.loads((self.task_dir / 'task.json').read_text())
+        task['build_id'] = build
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+
+    def test_crt_default_binds_thread_local_without_a_hint(self):
+        self.crt_defaults({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+        report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_thread_locals'], [])
+        self.assertEqual(symbols[fx.TLS_VAR], {'kind': 'thread-local', 'tls_offset': fx.TLS_OFFSET, 'size': None})
+        self.assertEqual(report['ignored_hints'], [])
+
+    def test_crt_default_for_an_unreferenced_name_is_not_listed_as_ignored(self):
+        self.crt_defaults({'_Init_thread_epoch': 'tls:0x2a08', '_Init_thread_abort': '0x15a7c7c'})
+        report, symbols = self.run_bind()
+        self.assertEqual(report['ignored_hints'], [])
+        self.assertNotIn('_Init_thread_epoch', symbols)
+        self.assertEqual(report['unbound_thread_locals'], [fx.TLS_VAR])
+
+    def test_private_hint_overrides_crt_default(self):
+        self.crt_defaults({fx.TLS_VAR: 'tls:0x40'})
+        _, symbols = self.run_bind({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+        self.assertEqual(symbols[fx.TLS_VAR]['tls_offset'], fx.TLS_OFFSET)
+
+    def test_crt_defaults_of_another_build_are_not_used(self):
+        self.crt_defaults({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')}, build='other-build')
+        task = json.loads((self.task_dir / 'task.json').read_text())
+        task['build_id'] = 'synthetic-fixture'
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+        report, _ = self.run_bind()
+        self.assertEqual(report['unbound_thread_locals'], [fx.TLS_VAR])
+
     def test_malformed_tls_hint_rejected(self):
         with self.assertRaises(ValueError):
             self.run_bind({fx.TLS_VAR: 'tls:seven'})
