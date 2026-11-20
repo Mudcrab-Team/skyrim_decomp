@@ -17,7 +17,7 @@
 #pragma once
 
 #include <cstdint>
-#include "declarations/NiObject.h"
+#include "../gamebryo/nimain/NiObject.h"
 
 class NiStream;
 class BSShaderMaterial;

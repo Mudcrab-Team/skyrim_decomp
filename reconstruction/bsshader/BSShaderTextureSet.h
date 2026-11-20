@@ -11,7 +11,7 @@
 #pragma once
 
 #include <cstdint>
-#include "declarations/NiObject.h"
+#include "../gamebryo/nimain/NiObject.h"
 
 enum Texture : std::int32_t
 {

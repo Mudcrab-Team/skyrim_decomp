@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cstdint>
-#include "gamebryo/nimain/NiRefObject.h"
+#include "../gamebryo/nimain/NiRefObject.h"
 
 // ArrayStorage, ArraySize, ShadowArray, FreeArrayStorage: GUESS(low); a stand-in for a dynamic array modelled as its
 // allocator part (data pointer and capacity) and its size part at offset 0x10, each with an empty out-of-line destructor
