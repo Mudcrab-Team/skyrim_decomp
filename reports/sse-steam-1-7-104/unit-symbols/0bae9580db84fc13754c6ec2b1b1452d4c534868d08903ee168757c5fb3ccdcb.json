@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetTargetValue@NiPSysInitialRotAngleVarCtlr@@QEBAXAEAM@Z": {
+      "rva": 16458432,
+      "size": 10
+    },
+    "?SetTargetValue@NiPSysInitialRotAngleVarCtlr@@QEAAXM@Z": {
+      "rva": 16458448,
+      "size": 10
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetTargetValue@NiPSysInitialRotAngleVarCtlr@@QEBAXAEAM@Z",
+        "rva": "0xfb22c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetTargetValue@NiPSysInitialRotAngleVarCtlr@@QEAAXM@Z",
+        "rva": "0xfb22d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -27,7 +27,7 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
 - No game files, binary bytes, disassembly, dumps, proprietary symbols/SDKs, leaked code or
   unlicensed copied code in commits, PRs, issues, logs, releases or CI artifacts. Maintainer
   exceptions: names, declarations and code from the FNV decompilation `momusdigital/fnv_decomp@91e1b6e8`
-  may be reused in reconstructions, labelled `SIBLING(...)`, although its LICENSE grants none
+  may be reused in reconstructions, labelled `SIBLING(...)`, which is itself CC0 1.0 (`LICENSE`)
   (`docs/authorizations.md`, Notes; `LEGAL.md`). The anonymous private Fallout 4 sibling
   `fo4-private@1b765c70` is also permitted for game-code folders only, with author permission conditional on anonymity, labelled
   `SIBLING(fo4-private@1b765c70, author-permission)` (same policy references). Its middleware

@@ -912,6 +912,41 @@ class CompanionDiscoveryTests(unittest.TestCase):
         self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}), {})
 
 
+class RecordStaleTests(unittest.TestCase):
+    """A function matched by an earlier PR is recorded again when this PR's unit text outdated its record."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        tree = Path(self.tmp.name) / 'tree'
+        (tree / 'builds').mkdir(parents=True)
+        (tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        (tree / 'data').mkdir()
+        (tree / 'data/progress.json').write_text(json.dumps({'functions': [
+            {'build_id': 'b', 'rva': r, 'status': 'matched'} for r in (0x10, 0x20, 0x30)]}))
+        (tree / 'reports/b').mkdir(parents=True)
+        for rva, task in ((0x10, 'pr-bot-7-aaaaaaaa'), (0x20, 'pr-bot-3-bbbbbbbb')):
+            (tree / f'reports/b/0x{rva:x}.review.json').write_text(json.dumps({'review_task_id': task}))
+        self.argv = []
+        bot = pr_bot.Bot(root=ROOT, work=Path(self.tmp.name))
+        bot.tree, bot.run = tree, self.fake_run
+        self.bot = bot
+        self.state = pr_bot.State(Path(self.tmp.name) / 's', 7, 'a' * 40)
+        self.state.set('records', {})
+
+    def fake_run(self, argv, **kw):
+        argv = [str(a) for a in argv]
+        if argv[1].endswith('record.py'):
+            self.argv = argv
+        return subprocess.CompletedProcess(argv, 0, b'', b'')
+
+    def test_only_this_prs_own_finished_record_is_skipped(self):
+        pr = {'number': 7, 'headRefOid': 'a' * 40, 'author': {'login': 'x'}}
+        self.bot.record(pr, self.state, [0x10, 0x20, 0x30, 0x40])
+        offered = [self.argv[i + 1] for i, a in enumerate(self.argv) if a == '--rva']
+        self.assertEqual(offered, ['0x20', '0x30', '0x40'])
+
+
 class LeakgrepContractTests(unittest.TestCase):
     OUTPUT = ('reconstruction/a/B.cpp:3 asm-mnemonic\nreconstruction/a/B.h:10 include-outside-roots\n'
               'reconstruction/a/B.h:11 asm-mnemonic\nleakgrep: 3 hit(s)\n')

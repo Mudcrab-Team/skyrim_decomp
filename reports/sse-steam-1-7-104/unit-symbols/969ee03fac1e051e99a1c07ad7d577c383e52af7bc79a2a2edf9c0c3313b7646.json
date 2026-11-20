@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?LoadBinary@NiPSysMeshUpdateModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16389840,
+      "size": 46
+    },
+    "?LoadBinary@NiPSysModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16387904,
+      "size": null
+    },
+    "?SkipLinkIDs@@YAXPEAVNiStream@@@Z": {
+      "rva": 15618464,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?LoadBinary@NiPSysMeshUpdateModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfa16d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiPSysModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfa0f40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SkipLinkIDs@@YAXPEAVNiStream@@@Z",
+        "rva": "0xee51a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

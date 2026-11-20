@@ -405,6 +405,18 @@ class CompactHeaderTests(LintTests):
         self.write(header=header)
         self.assertTrue(any('write the MIT notice' in p for p in self.problems()))
 
+    def test_cc0_line_is_exact_and_not_mixed_with_third_party_notices(self):
+        self.write(header=HEADER.replace('// Widget', f'// {lint.SPDX_CC0}\n// Widget'))
+        self.assertFalse(any('CC0' in p for p in self.problems()))
+        self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: CC0-1.0 (x)\n// Widget'))
+        self.assertTrue(any('write the dedication' in p for p in self.problems()))
+        self.write(header=HEADER.replace('// Widget', f'// {lint.SPDX_CC0}\n// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
+        self.assertTrue(any('keeps that licence' in p for p in self.problems()))
+
+    def test_gpl_spdx_line_is_not_flagged(self):
+        self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
+        self.assertFalse(any('SPDX' in p or 'write the' in p for p in self.problems()))
+
     def test_missing_licence_text_file_is_reported_once_the_line_is_used(self):
         one = HEADER.replace('// Widget, Get, value: GUESS(low)', f'// {lint.SPDX_MIT}\n// Widget, Get, value: {self.NG}')
         self.write(header=one)

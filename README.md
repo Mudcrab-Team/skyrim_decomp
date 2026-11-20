@@ -114,6 +114,6 @@ Related work:
 Independent fan research, unaffiliated with Bethesda or its affiliates; trademarks belong to their owners.
 Use your own legally obtained copy. Never commit or publish game-derived bytes, disassembly, assets, dumps, saves, proprietary SDKs or symbols.
 Do not submit leaked or unlawfully obtained material; the project provides no copy-protection removal tools.
-Reconstructed source is published under the maintainer's decision; original infrastructure has a limited MIT license.
+Reconstructions, docs and research are dedicated under CC0 1.0 (infrastructure under MIT); some units keep a third-party licence or are not CC0, see [LICENSE](LICENSE).
 See [LEGAL.md](LEGAL.md), [PROVENANCE.md](PROVENANCE.md), and the [clean-room boundary](docs/clean-room.md).
 Contributors must comply with applicable law and agreements.
