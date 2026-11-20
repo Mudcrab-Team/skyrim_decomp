@@ -68,7 +68,8 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit 9dd17400e03c3d57b952f54d86f121ed759d9545, with uncommitted changes to reconstruction/conditions_isindialoguewithplayer/Actor.h, reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.cpp, reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.h, reconstruction/conditions_isindialoguewithplayer/TESForm.h, reports/sse-steam-1-7-104/unit-symbols/28dedab698997448a4cf5c1cac921c4b4151bae2a12fa8bf8f4f58249a212258.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit 9dd17400e03c3d57b952f54d86f121ed759d9545, with uncommitted changes to reconstruction/conditions_isindialoguewithplayer/Actor.h, reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.cpp, reconstruction/conditions_isindialoguewithplayer/ConditionFunctions.h, reconstruction/conditions_isindialoguewithplayer/TESForm.h, reports/sse-steam-1-7-104/unit-symbols/28dedab698997448a4cf5c1cac921c4b4151bae2a12fa8bf8f4f58249a212258.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in.",
+    "Carried to new source: the unit differs from the text its runs compared only in comments, and the function has no published target hash, so the runs are unchanged."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
@@ -325,7 +326,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_33bfc0.cpp",
-    "digest": "726e8b490bba8b58e50be8ae644b99a85de651d136cd9b875d8291321bcb9e68",
+    "digest": "a2e96ce7ebc03807992d60f73a94b8a1a0fee02b6543b27d11caa24246cbe7ac",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7c8c02f989c7f07bcbe83c4457c3c632ba121979448444d22080726520dab2ce",
     "run_digest_method": "tu-sha256-v1",
