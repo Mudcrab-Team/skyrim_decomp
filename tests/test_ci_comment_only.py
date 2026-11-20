@@ -61,6 +61,27 @@ class CommentOnlyTests(unittest.TestCase):
         changed = self.prepare(reconstruction__misc__Widget_h=HEADER.replace('GUESS(low)', 'GUESS(high)'))
         self.assertEqual(changed, [HDR])
 
+    def commit_files(self, **files):
+        for name, text in files.items():
+            path = self.root / name.replace('__', '/').replace('_cpp', '.cpp').replace('_py', '.py')
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, newline='\n')
+        run(self.root, 'add', '.')
+        run(self.root, 'commit', '-q', '-m', 'head')
+        head = run(self.root, 'rev-parse', 'HEAD')
+        run(self.root, 'checkout', '-q', self.base)
+        return head
+
+    def test_a_tooling_only_pr_reads_nothing_and_skips_cleanly(self):
+        head = self.commit_files(tools__x_py='print(1)\n', tests__test_x_py='pass\n')
+        tree, changed = ci.prepare(self.root, self.base, head, Path(self.tmp.name) / 'work-tool')
+        self.assertEqual((tree, changed), (self.root, []))
+
+    def test_a_pr_mixing_units_and_tooling_is_still_refused(self):
+        head = self.commit_files(tools__x_py='print(1)\n', reconstruction__misc__Widget_cpp=SOURCE + '\n')
+        with self.assertRaises(ValueError):
+            ci.prepare(self.root, self.base, head, Path(self.tmp.name) / 'work-mixed')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__CxxFrameHandler3": {
+      "rva": 22714324,
+      "size": null
+    },
+    "__std_terminate": {
+      "rva": 22714318,
+      "size": 6
+    },
+    "??1NiMemStream@@UEAA@XZ": {
+      "rva": 22456800,
+      "size": 63
+    },
+    "?get_info@NiMemStream@@UEAAXAEAUBufferInfo@NiBinaryStream@@@Z": {
+      "rva": 22456896,
+      "size": 38
+    },
+    "?seek@NiMemStream@@UEAAXH@Z": {
+      "rva": 22456944,
+      "size": 24
+    },
+    "?ReleaseBuffer@NiMemStream@@QEAAPEAXXZ": {
+      "rva": 22456976,
+      "size": 9
+    },
+    "?ReadBytes@NiMemStream@@QEAAIPEAXI@Z": {
+      "rva": 22457072,
+      "size": 67
+    },
+    "??_7NiMemStream@@6B@": {
+      "rva": 28618504,
+      "size": null
+    },
+    "?FreeStreamBuffer@@YAXPEAX@Z": {
+      "rva": 15387184,
+      "size": null
+    },
+    "??1NiBinaryStream@@UEAA@XZ": {
+      "rva": 15393120,
+      "size": null
+    },
+    "memcpy": {
+      "rva": 22714348,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__CxxFrameHandler3",
+        "rva": "0x15a97d4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__std_terminate",
+        "rva": "0x15a97ce",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiMemStream@@UEAA@XZ",
+        "rva": "0x156a9e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?get_info@NiMemStream@@UEAAXAEAUBufferInfo@NiBinaryStream@@@Z",
+        "rva": "0x156aa40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?seek@NiMemStream@@UEAAXH@Z",
+        "rva": "0x156aa70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReleaseBuffer@NiMemStream@@QEAAPEAXXZ",
+        "rva": "0x156aa90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadBytes@NiMemStream@@QEAAIPEAXI@Z",
+        "rva": "0x156aaf0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiMemStream@@6B@",
+        "rva": "0x1b4af08",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?FreeStreamBuffer@@YAXPEAX@Z",
+        "rva": "0xeaca30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiBinaryStream@@UEAA@XZ",
+        "rva": "0xeae160",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "memcpy",
+        "rva": "0x15a97ec",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

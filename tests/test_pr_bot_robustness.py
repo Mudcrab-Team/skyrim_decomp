@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from unittest import mock
 
@@ -363,6 +364,9 @@ class VerifierHostTests(WorkDir):
 
 class PoolTests(WorkDir):
     class PoolBot(FakeBot):
+        def close_done_claims(self):
+            return []
+
         def attempt(self, pr, now=None):
             self.arrived(pr, self.tree)
             return {'pr': pr['number'], 'head': pr['headRefOid'], 'blocked': None, 'merge': False}
@@ -443,6 +447,65 @@ class PoolTests(WorkDir):
         self.assertEqual(held, [True])
         self.assertFalse(bot.land_lock.locked())
 
+    def test_a_merged_pr_without_records_is_retried_and_a_recorded_one_is_not(self):
+        state = self.work / 'state'
+        head = 'c' * 40
+        summary = dict(pr=7, head=head, merge=True, verdicts={'0x10': 'matched', '0x20': 'fail:x'})
+        first = pr_bot.State(state, 7, head)
+        first.set('merged', True)
+        first.set('records', '/r')
+        first.set('summary', summary)
+        other = pr_bot.State(state, 8, 'd' * 40)
+        other.set('merged', True)
+        other.set('records', '/r')
+        other.set('recorded', True)
+        other.set('summary', dict(summary, pr=8, head='d' * 40))
+        unmerged = pr_bot.State(state, 9, 'e' * 40)
+        unmerged.set('summary', dict(summary, pr=9, head='e' * 40))
+        self.assertEqual(pr_bot.merged_unrecorded(state, time.time()), [(7, head, [0x10])])
+        self.assertEqual(pr_bot.merged_unrecorded(state, time.time() + 10 * 86400), [])
+        bot = FakeBot(self.work)
+        bot.gh_json = lambda *a: dict(number=7, headRefOid='z', author=dict(login='x'))
+        seen = []
+        bot.record = lambda pr, st, rvas: (seen.append((pr['headRefOid'], rvas, bot.land_lock.locked())),
+                                           st.set('recorded', True))
+        self.assertEqual(bot.retry_records(state), [7])
+        self.assertEqual(seen, [(head, [0x10], True)])
+        self.assertEqual(bot.retry_records(state), [])
+        failing = pr_bot.State(state, 11, 'f' * 40)
+        failing.set('merged', True)
+        failing.set('records', '/r')
+        failing.set('summary', dict(summary, pr=11, head='f' * 40))
+        bot.record = lambda pr, st, rvas: (_ for _ in ()).throw(pr_bot.Stop('again'))
+        self.assertEqual(bot.retry_records(state), [])
+        self.assertFalse(pr_bot.State(state, 11, 'f' * 40).get('recorded'))
+
+    def test_a_retry_binds_a_dropped_unit_map_again_in_the_tree_that_holds_the_tasks(self):
+        bot = FakeBot(self.work)
+        task = self.work / 'tree-1/.local/tasks/prbot-7-cccccccc-0'
+        task.mkdir(parents=True)
+        info = dict(task_id='t', symbols='reports/b/unit-symbols/gone.json',
+                    functions=[dict(rva='0x10'), dict(rva='0x20')])
+        (task / 'task.json').write_text(json.dumps(info))
+        ran = []
+
+        def run(argv, **kw):
+            ran.append((argv[1:2], kw.get('cwd')))
+            written = json.loads((task / 'task.json').read_text())
+            self.assertEqual([f['rva'] for f in written['functions']], ['0x10'])  # only what is recorded is bound
+            (task / 'task.json').write_text(json.dumps(dict(written, symbols='reports/b/unit-symbols/new.json')))
+            return subprocess.CompletedProcess(argv, 0, b'', b'')
+        bot.run = run
+        bot.config = dict(compare_timeout=5)
+        slot = bot.task_slot(7, 'c' * 40)
+        self.assertEqual(slot.tree, self.work / 'tree-1')
+        self.assertIs(bot.task_slot(8, 'd' * 40), bot)
+        slot.rebind_unit_maps(7, 'c' * 40, [0x10])
+        self.assertEqual(ran, [(['tools/verifier/bind.py'], self.work / 'tree-1')])
+        restored = json.loads((task / 'task.json').read_text())
+        self.assertEqual(([f['rva'] for f in restored['functions']], restored['symbols']),
+                         (['0x10', '0x20'], 'reports/b/unit-symbols/new.json'))
+
     def test_slots_share_the_locks_but_not_the_tree(self):
         bot = FakeBot(self.work)
         first, second = bot.for_slot(0), bot.for_slot(1)
@@ -486,6 +549,40 @@ class PoolTests(WorkDir):
         bot.gh_json = lambda *a: listed.append(1) or []
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600)
         self.assertEqual(len(listed), 2)
+
+    def test_idle_poll_sweeps_finished_claims_once_per_period_and_survives_a_failure(self):
+        calls = []
+
+        class Sweeping(PoolTests.PoolBot):
+            def close_done_claims(self):
+                calls.append(1)
+                if len(calls) == 1:
+                    raise RuntimeError('gh failed')
+                return [5]
+        bot = Sweeping(self.work)
+        listed = []
+        bot.gh_json = lambda *a: listed.append(1) or []
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(listed), 3)
+        calls.clear()
+        with mock.patch.object(pr_bot, 'CLAIM_SWEEP_EVERY', 0):
+            pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(len(calls), 3)
+
+    def test_close_done_claims_reads_origin_main_and_closes_through_the_claims_tool(self):
+        bot = FakeBot(self.work)
+        seen = {}
+
+        def fake_close(gh, public):
+            seen['public'] = public
+            return [9]
+        with mock.patch('claims.git_json', return_value={'functions': []}) as read, \
+                mock.patch('claims.close_completed', side_effect=fake_close):
+            self.assertEqual(bot.close_done_claims(), [9])
+        read.assert_called_once_with(bot.tree, 'origin/main')
+        self.assertEqual(seen['public'], {'functions': []})
+        self.assertEqual(bot.calls[-1][:4], ['git', 'fetch', '--quiet', 'origin'])
 
 
 if __name__ == '__main__':

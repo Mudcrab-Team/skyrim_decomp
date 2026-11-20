@@ -1,16 +1,15 @@
 Licensing scope
 
-No license is granted to game code, reconstructed game implementations, research notes,
-behavioral specifications, or third-party material by this file. Rights are reserved to their
-respective holders. Viewing or forking on GitHub does not provide a general reuse license.
-No assertion is made that the maintainer owns third-party rights.
+CC0 1.0 Universal (licenses/CC0-1.0.txt): everything in this repository, reconstructions,
+docs, research and data.
 
-Exception for original infrastructure only:
-The original project-authored files in tools/, tests/, site/, .github/, and the original
-.gitignore and .gitattributes are licensed under licenses/MIT.txt. This exception does not
-extend to game-derived content, third-party code or dependencies placed in those paths.
-All future third-party additions require an explicit license and attribution record.
+MIT (licenses/MIT.txt): the infrastructure in tools/, tests/, site/ and .github/.
 
-Documentation and research material have no general license grant at bootstrap. A broader
-license can be considered later after provenance and contributor rights are established.
-Nothing here grants rights in Skyrim, middleware, trademarks, executable files or game assets.
+Exceptions, because they are third-party:
+- Units carrying GPL-3.0 declarations or headers (powerof3/CommonLibSSE, per their SPDX line or
+  GPL notice) stay GPL-3.0; units with a CommonLibSSE-NG SPDX line keep its MIT notice.
+- Units labelled SIBLING(fo4-private@1b765c70, author-permission) are used with the author's
+  permission and are not dedicated under CC0.
+
+Not covered: game assets, executables, trademarks and other third-party material. Nothing here
+grants rights in Skyrim or Bethesda's IP.

@@ -50,8 +50,10 @@ def is_provenance(comment):
     return bool(LABEL_WORD.search(comment) or PROVENANCE_FIELD.search(comment))
 
 
-def strip_comments(blob, name):
+def strip_comments(blob, name, keep_provenance=True):
     """The file's text with every comment removed except provenance comments, as tu-sha256-v2 hashes it.
+
+    `keep_provenance=False` removes those too, leaving only what the compiler sees (see `same_code`).
 
     Strings and character literals are copied as written and code is untouched. A removed `//`
     comment leaves nothing and a removed block comment one space; a line that held a removed
@@ -85,7 +87,7 @@ def strip_comments(blob, name):
         elif c == '/' and text.startswith('//', i):
             end = text.find('\n', i)
             end = n if end < 0 else end
-            if is_provenance(text[i:end]):
+            if keep_provenance and is_provenance(text[i:end]):
                 out.append(text[i:end])
             else:
                 touched = True
@@ -95,7 +97,7 @@ def strip_comments(blob, name):
             if end < 0:
                 _refuse(name, 'unterminated block comment')
             body = text[i:end + 2]
-            if is_provenance(body):
+            if keep_provenance and is_provenance(body):
                 for k, part in enumerate(body.split('\n')):
                     if k:
                         flush()
@@ -128,6 +130,18 @@ def strip_comments(blob, name):
             i += 1
     flush()
     return '\n'.join(lines)
+
+
+def same_code(old, new, name):
+    """Whether two versions of a file differ only in comments, provenance labels included.
+
+    False when either text cannot be classified by the comment scan, so only a change that cannot
+    reach the compiler counts as comment-only.
+    """
+    try:
+        return strip_comments(old, name, False) == strip_comments(new, name, False)
+    except ValueError:
+        return False
 
 
 REPO_INCLUDE = '#include @repo'

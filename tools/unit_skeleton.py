@@ -813,13 +813,15 @@ def render_unit(unit, drafted_by=None, repo=None):
     gpl = any(is_gpl(label) for label in labels)
     label_lines = [f'// {", ".join(names)}: {label}' for label, names in labels.items() if names]
     from declaration_kit import GPL_NOTICE
-    from lint_reconstruction import SPDX_MIT
+    from lint_reconstruction import SPDX_CC0, SPDX_MIT
     notices = list(unit.get('notices', []))
     for text, needed in ((SPDX_MIT, p['inline_base'] or any('CommonLibSSE' in label for label in labels)),
                          (GPL_NOTICE, gpl)):
         notice_text = '\n'.join('// ' + line if line else '//' for line in text.splitlines())
         if needed and not any(notice_text in n for n in notices):
             notices.append(notice_text)
+    if not gpl and not any('SPDX-License-Identifier' in n for n in notices):
+        notices.insert(0, '// ' + SPDX_CC0)
     header = [
         ('// Source exposure: mixed (community headers; compared functions from the pinned image).'
          if not p['facts'] else '// Source exposure: mixed (community declarations and the contributor-owned pack).'),

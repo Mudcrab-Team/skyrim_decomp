@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "4602db0da428e38009ebd59ba3203989421fa2de20e763e6605e25cc0997ef54",
+        "object_sha256": "4d3f341d9c4a1f5e117c79ad08840855f4b49c2a6df3918e2be76b82740ccdf3",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nianimation/NiBSplineColorInterpolator_f77f10.h",
@@ -39,7 +39,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "d3ecab108d6146fb7e96611d42eef84e44c871f2",
+    "base_sha": "f8d7f7a4cf4f1c5c70cf7478f5adfa0e827e813a",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -50,7 +50,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "1809003739f109e6c37a47f7b00b419a510ae24b",
+    "head_sha": "8523f92011af38700521e54580f86ec3e22d7a56",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -63,10 +63,10 @@
     "recipe_sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44722309017,
+    "run_id": 44729563492,
     "rva": "0xf78770",
     "schema": 2,
-    "source_sha256": "f5333b6cdd4a16187d13fd918da9e0fdd5f807fc26c83cabe42be36fd785774a",
+    "source_sha256": "262c0f537c1a57bd2be68290c3e7ccfe41bf55b341d7b6d3aa170964eb64f2fd",
     "status": "pass",
     "symbols": [
       "?IsEqual@NiBSplineCompColorInterpolator@@UEAA_NPEAVNiObject@@@Z"
@@ -101,7 +101,7 @@
         "candidate": {
           "code_section_sha256": "2994646cf58424973c5e7c7d1f470cdf292347b500a8f6f1766cbb6893056076",
           "code_sections": 1,
-          "object_sha256": "4602db0da428e38009ebd59ba3203989421fa2de20e763e6605e25cc0997ef54"
+          "object_sha256": "4d3f341d9c4a1f5e117c79ad08840855f4b49c2a6df3918e2be76b82740ccdf3"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -164,7 +164,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/gamebryo/nianimation/NiBSplineCompColorInterpolator_f78640.cpp",
-          "source_revision": "f5333b6cdd4a16187d13fd918da9e0fdd5f807fc26c83cabe42be36fd785774a"
+          "source_revision": "262c0f537c1a57bd2be68290c3e7ccfe41bf55b341d7b6d3aa170964eb64f2fd"
         },
         "symbol_map_sha256": "1806dedc407e1267dbbb8c3cf938349eb5a1b85d3126e5aa5ae4f40933766b31",
         "target": {
@@ -177,7 +177,7 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nianimation/NiBSplineCompColorInterpolator_f78640.cpp",
-    "digest": "f5333b6cdd4a16187d13fd918da9e0fdd5f807fc26c83cabe42be36fd785774a",
+    "digest": "262c0f537c1a57bd2be68290c3e7ccfe41bf55b341d7b6d3aa170964eb64f2fd",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/gamebryo/nianimation/NiBSplineColorInterpolator_f77f10.h",

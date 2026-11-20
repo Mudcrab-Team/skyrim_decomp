@@ -393,6 +393,9 @@ def notice_problems(name, text, sources=None):
 # The one-line form of the CommonLibSSE-NG notice; the full text lives once in LICENCE_TEXT.
 SPDX_MIT = ('SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; '
             'full text: licenses/CommonLibSSE-NG.txt)')
+# The dedication for project-authored units with no third-party licence obligation. Units whose
+# header carries another SPDX line (NG MIT, powerof3 GPL) keep that licence and take no CC0 line.
+SPDX_CC0 = 'SPDX-License-Identifier: CC0-1.0'
 LICENCE_TEXT = 'licenses/CommonLibSSE-NG.txt'
 SPDX_LINE = re.compile(r'^//[ \t]*SPDX-License-Identifier:.*$', re.M)
 # Header lines that carry per-unit information and do not count against the header budget.
@@ -402,9 +405,16 @@ FULL_LICENCE = re.compile(r'Permission is hereby granted|THE SOFTWARE IS PROVIDE
 
 
 def spdx_problems(name, header):
-    """A `SPDX-License-Identifier: MIT` line is the exact one-line NG notice."""
-    return [f'{name}: write the MIT notice as "// {SPDX_MIT}"' for line in SPDX_LINE.findall(header)
-            if 'SPDX-License-Identifier: MIT' in line and line.lstrip('/ \t').rstrip() != SPDX_MIT]
+    """A `SPDX-License-Identifier: MIT` line is the exact one-line NG notice; a CC0 line is exact
+    and does not share a unit with an MIT or GPL line (those units keep their own licence)."""
+    lines = [line.lstrip('/ \t').rstrip() for line in SPDX_LINE.findall(header)]
+    problems = [f'{name}: write the MIT notice as "// {SPDX_MIT}"' for line in lines
+                if line.startswith('SPDX-License-Identifier: MIT') and line != SPDX_MIT]
+    if any('CC0' in line and line != SPDX_CC0 for line in lines):
+        problems.append(f'{name}: write the dedication as "// {SPDX_CC0}"')
+    if SPDX_CC0 in lines and any(line != SPDX_CC0 for line in lines):
+        problems.append(f'{name}: a unit with an MIT or GPL notice keeps that licence; drop "// {SPDX_CC0}"')
+    return problems
 
 
 def licence_text_problems(root):

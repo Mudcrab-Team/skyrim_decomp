@@ -551,11 +551,37 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual((bot.seen('review'), bot.seen('gh', 'pr', 'merge')), ([], []))
 
     def test_scope_rejection_never_compiles_reviews_or_merges(self):
-        bot = FakeBot(self.work, files=[{'filename': '.github/workflows/pr-check.yml', 'status': 'modified'}])
+        bot = FakeBot(self.work, files=[{'filename': 'reconstruction/a/B.cpp', 'status': 'added'},
+                                        {'filename': '.github/workflows/pr-check.yml', 'status': 'modified'}])
         out = bot.process(PR)
         self.assertEqual(out['blocked'], 'scope')
         self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
         self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+
+    def test_a_pr_with_no_reconstruction_file_is_tooling_labelled_and_never_merged(self):
+        files = [{'filename': 'tools/ghidra/x.py', 'status': 'added'},
+                 {'filename': 'tests/test_x.py', 'status': 'added'}]
+        self.assertTrue(pr_bot.tooling_lane(files))
+        self.assertFalse(pr_bot.tooling_lane([]))
+        self.assertFalse(pr_bot.tooling_lane(files + [{'filename': 'reconstruction/a/B.cpp'}]))
+        bot = FakeBot(self.work, files=files)
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'tooling')
+        self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'edit')), 1)
+        self.assertIn('--add-label', bot.seen('gh', 'pr', 'edit')[0])
+        comment = bot.seen('gh', 'pr', 'comment')
+        self.assertEqual(len(comment), 1)
+        self.assertIn('tooling PR', comment[0][-1])
+        self.assertNotIn('outside reconstruction', comment[0][-1])
+
+    def test_a_mixed_pr_keeps_the_scope_block_with_a_clear_message(self):
+        bot = FakeBot(self.work, files=[{'filename': 'reconstruction/a/B.cpp', 'status': 'added'},
+                                        {'filename': 'tools/x.py', 'status': 'added'}])
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'scope')
+        self.assertEqual(bot.seen('gh', 'pr', 'edit'), [])
+        self.assertIn('separate PR', bot.seen('gh', 'pr', 'comment')[0][-1])
 
     def test_a_pr_with_no_changed_files_is_marked_landed_not_called_out_of_scope(self):
         bot = FakeBot(self.work, files=[])
@@ -886,6 +912,41 @@ class CompanionDiscoveryTests(unittest.TestCase):
         self.assertEqual(self.find(['reconstruction/a/B.h'], {'reconstruction/a/B.cpp': [0x10]}), {})
 
 
+class RecordStaleTests(unittest.TestCase):
+    """A function matched by an earlier PR is recorded again when this PR's unit text outdated its record."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        tree = Path(self.tmp.name) / 'tree'
+        (tree / 'builds').mkdir(parents=True)
+        (tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        (tree / 'data').mkdir()
+        (tree / 'data/progress.json').write_text(json.dumps({'functions': [
+            {'build_id': 'b', 'rva': r, 'status': 'matched'} for r in (0x10, 0x20, 0x30)]}))
+        (tree / 'reports/b').mkdir(parents=True)
+        for rva, task in ((0x10, 'pr-bot-7-aaaaaaaa'), (0x20, 'pr-bot-3-bbbbbbbb')):
+            (tree / f'reports/b/0x{rva:x}.review.json').write_text(json.dumps({'review_task_id': task}))
+        self.argv = []
+        bot = pr_bot.Bot(root=ROOT, work=Path(self.tmp.name))
+        bot.tree, bot.run = tree, self.fake_run
+        self.bot = bot
+        self.state = pr_bot.State(Path(self.tmp.name) / 's', 7, 'a' * 40)
+        self.state.set('records', {})
+
+    def fake_run(self, argv, **kw):
+        argv = [str(a) for a in argv]
+        if argv[1].endswith('record.py'):
+            self.argv = argv
+        return subprocess.CompletedProcess(argv, 0, b'', b'')
+
+    def test_only_this_prs_own_finished_record_is_skipped(self):
+        pr = {'number': 7, 'headRefOid': 'a' * 40, 'author': {'login': 'x'}}
+        self.bot.record(pr, self.state, [0x10, 0x20, 0x30, 0x40])
+        offered = [self.argv[i + 1] for i, a in enumerate(self.argv) if a == '--rva']
+        self.assertEqual(offered, ['0x20', '0x30', '0x40'])
+
+
 class LeakgrepContractTests(unittest.TestCase):
     OUTPUT = ('reconstruction/a/B.cpp:3 asm-mnemonic\nreconstruction/a/B.h:10 include-outside-roots\n'
               'reconstruction/a/B.h:11 asm-mnemonic\nleakgrep: 3 hit(s)\n')
@@ -1194,6 +1255,25 @@ class NewFunctionRecordTests(unittest.TestCase):
         out, failed = self.build()
         self.assertEqual(failed, {0x10, 0x20})
         self.assertEqual(self.seen('wine_confirm.py'), [])
+
+    def test_a_carried_function_is_recorded_from_its_own_record_with_no_hash_row_or_confirmation(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON}
+        self.state.data['ci']['rows'].pop('16')
+        asked = []
+        self.bot.carried_records = lambda tag, rvas, build: (asked.append((set(rvas), build)), (self.work, set()))[1]
+        out, failed = self.build()
+        self.assertEqual((failed, asked), (set(), [({0x10}, 'b')]))
+        self.assertEqual(len(self.seen('wine_confirm.py')), 1)
+
+    def test_a_carried_record_that_cannot_be_built_refuses_only_that_function(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON}
+        self.bot.carried_records = lambda tag, rvas, build: (self.work, set(rvas))
+        out, failed = self.build()
+        self.assertEqual(failed, {0x10})
 
     def test_a_record_the_validator_refuses_fails_only_that_function(self):
         self.record_ok[0x10] = False
@@ -1599,6 +1679,8 @@ class MappingLaneTests(unittest.TestCase):
         status[:] = ['data/target-hashes/contributor-targets.json', 'data/target-hashes/sse-steam-1-7-104-part-003.json',
                      'data/target-hashes/sse-steam-1-7-104.json']
         bot.regenerate(7)
+        # A shard the manifest newly names is untracked; the status must report it or main loses the file.
+        self.assertIn('--untracked-files=all', [c for c in calls if c[:2] == ['git', 'status']][0])
         self.assertTrue(any(c[:2] == ['git', 'push'] for c in calls))
         calls.clear()
         status[:] = ['data/target-hashes/sub/x.json']
@@ -1788,3 +1870,151 @@ class OutcomeLineTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CarryHost1Tests(unittest.TestCase):
+    """The comment-only exception: host 1 is carried only for a no-target function with an unchanged-code unit."""
+    UNIT = 'reconstruction/a/U.cpp'
+    OLD = b'// U: GUESS(low)\nint f() { return 1; }\n'
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.repo, self.tree = Path(tmp.name) / 'repo', Path(tmp.name) / 'tree'
+        for root in (self.repo, self.tree):
+            (root / 'reconstruction/a').mkdir(parents=True)
+            (root / 'data/target-hashes').mkdir(parents=True)
+        self.write(self.repo, 'data/target-hashes/sse-steam-1-7-104.json',
+                   json.dumps({'shards': [{'path': 'data/target-hashes/sse-steam-1-7-104-part-000.json'}]}))
+        self.write(self.repo, 'data/target-hashes/sse-steam-1-7-104-part-000.json',
+                   json.dumps({'functions': [{'rva': 0x40, 'extraction': 'masked'},
+                                             {'rva': 0x50, 'extraction': 'unmasked-unsupported'}]}))
+        self.write(self.repo, self.UNIT, self.OLD)
+        self.git('init', '-q', '-b', 'main')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'base')
+        self.base = self.git('rev-parse', 'HEAD')
+        for name in ('data/target-hashes/sse-steam-1-7-104.json', 'data/target-hashes/sse-steam-1-7-104-part-000.json'):
+            self.write(self.tree, name, (self.repo / name).read_bytes())
+        self.set_head(b'// U: OBSERVED; table entry\n// more prose\nint f() { return 1; }\n')
+        self.accepted(0x10, 0x20, 0x40, 0x50)
+        self.bot = pr_bot.Bot(root=self.repo, work=self.tree / 'w')
+        self.bot.tree = self.tree
+        self.state = pr_bot.State(self.tree / 'w', 7, HEAD)
+        self.hash_run(16)
+        self.files = [{'filename': self.UNIT}]
+
+    def hash_run(self, *rvas, base='no-target', result='no-target', status='unverified'):
+        """The `ci` state the bot keeps from a hash run whose rows are all alike, built from the artifact's rows."""
+        report = {'functions': [{'rva': hex(r), 'unit': self.UNIT, 'result': result, 'base': base, 'status': status}
+                                for r in rvas]}
+        self.state.data['ci'] = dict(report={}, rows={}, map={str(r): status for r in rvas}, **pr_bot.row_facts(report))
+
+    def no_run(self):
+        self.state.data['ci'] = dict(report={}, rows={}, map={}, seen=[], no_target_base=[])
+
+    def write(self, root, name, data):
+        path = Path(root) / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data if isinstance(data, bytes) else data.encode())
+
+    def git(self, *args):
+        return subprocess.run(['git', '-C', str(self.repo), '-c', 'user.email=t@example.invalid', '-c',
+                               'user.name=T', *args], check=True, capture_output=True).stdout.decode().strip()
+
+    def set_head(self, text):
+        self.write(self.tree, self.UNIT, text)
+
+    def accepted(self, *rvas):
+        self.write(self.tree, 'data/progress.json', json.dumps({'functions': [
+            {'build_id': 'b', 'rva': r, 'status': 'matched', 'report': f'r{r}.json'} for r in rvas]}))
+
+    def carry(self, host1=None, host2=None, rvas=(0x10,), units=None):
+        return self.bot.carry_host1(self.base, self.files, list(rvas), units or {self.UNIT: list(rvas)},
+                                    host1 or {r: 'unverified' for r in rvas}, host2 or {r: 'pass' for r in rvas},
+                                    self.state)
+
+    def test_a_comment_only_unit_without_a_target_carries_host_1(self):
+        got = self.carry()
+        self.assertEqual(got, {'16': 'host1: carried (comment-only, no-target at base)'})
+        self.assertEqual(got['16'], pr_bot.CARRY_REASON)
+
+    def test_a_unit_the_job_skipped_for_comments_carries_when_no_target_was_ever_published(self):
+        self.no_run()
+        self.assertEqual(list(self.carry(host1={0x10: 'fail'})), ['16'])
+        self.assertEqual(list(self.carry(rvas=(0x50,), host1={0x50: 'fail'})), ['80'])  # unmasked-unsupported row
+        self.assertEqual(self.carry(rvas=(0x40,), host1={0x40: 'fail'}), {})  # a target was published at base
+
+    def test_a_target_published_after_base_blocks_the_carry_for_a_skipped_unit(self):
+        self.no_run()
+        self.write(self.tree, 'data/target-hashes/sse-steam-1-7-104-part-000.json',
+                   json.dumps({'functions': [{'rva': 0x10, 'extraction': 'masked'}]}))
+        self.assertEqual(self.carry(host1={0x10: 'fail'}), {})
+
+    def test_the_job_must_have_found_no_target_at_base_too(self):
+        for base in ('hash-match', 'mismatch', None):
+            self.hash_run(16, base=base)
+            self.assertEqual(self.carry(), {}, base)
+
+    def test_a_published_target_does_not_matter_when_the_job_itself_found_no_target_at_base(self):
+        self.hash_run(64)
+        self.assertEqual(list(self.carry(rvas=(0x40,))), ['64'])
+
+    def test_a_code_change_never_carries(self):
+        self.set_head(b'// U: GUESS(low)\nint f() { return 2; }\n')
+        self.assertEqual(self.carry(), {})
+
+    def test_a_string_or_include_change_is_code(self):
+        self.set_head(b'// U: GUESS(low)\nconst char* s = "x";\nint f() { return 1; }\n')
+        self.assertEqual(self.carry(), {})
+
+    def test_a_unit_that_is_new_in_the_pr_never_carries(self):
+        self.files = [{'filename': 'reconstruction/a/N.cpp'}]
+        self.write(self.tree, 'reconstruction/a/N.cpp', b'int g() { return 1; }\n')
+        self.assertEqual(self.carry(units={'reconstruction/a/N.cpp': [0x10]}), {})
+
+    def test_a_header_changed_in_code_blocks_the_carry_for_the_units_that_include_it(self):
+        self.write(self.repo, 'reconstruction/a/H.h', b'// h\nint h;\n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'header')
+        self.base = self.git('rev-parse', 'HEAD')
+        self.write(self.repo, self.UNIT, b'#include "H.h"\n' + self.OLD)
+        self.git('commit', '-qam', 'include')
+        self.base = self.git('rev-parse', 'HEAD')
+        self.write(self.tree, 'reconstruction/a/H.h', b'// h\nint h;\n')
+        self.set_head(b'#include "H.h"\n// U: OBSERVED\nint f() { return 1; }\n')
+        self.files = [{'filename': self.UNIT}, {'filename': 'reconstruction/a/H.h'}]
+        self.assertEqual(list(self.carry()), ['16'])
+        self.write(self.tree, 'reconstruction/a/H.h', b'// h\nint h2;\n')
+        self.assertEqual(self.carry(), {})
+
+    def test_host_2_must_pass_on_the_new_text(self):
+        for bad in ('fail', 'preexisting-fail', None):
+            self.assertEqual(self.carry(host2={0x10: bad}), {}, bad)
+
+    def test_a_real_host_1_failure_is_not_carried(self):
+        for result, status in (('mismatch', 'fail'), ('mismatch', 'regressed'), ('hash-match', 'pass')):
+            self.hash_run(16, result=result, status=status)
+            self.assertEqual(self.carry(host1={0x10: 'fail'}), {}, (result, status))
+        self.no_run()
+        self.state.data['ci']['report'] = {'error': 'ValueError'}
+        self.assertEqual(self.carry(host1={0x10: 'fail'}), {})
+
+    def test_a_function_with_no_accepted_record_has_nothing_to_carry(self):
+        self.hash_run(48)
+        self.assertEqual(self.carry(rvas=(0x30,)), {})
+
+    def test_without_hash_evidence_nothing_carries(self):
+        self.state.data.pop('ci')
+        self.assertEqual(self.carry(), {})
+
+
+class RowFactsTests(unittest.TestCase):
+    def test_a_function_is_no_target_at_base_only_if_every_row_for_it_says_so(self):
+        rows = [{'rva': '0x10', 'unit': 'a.cpp', 'result': 'no-target', 'base': 'no-target'},
+                {'rva': '0x20', 'unit': 'a.cpp', 'result': 'no-target', 'base': 'no-target'},
+                {'rva': '0x20', 'unit': 'b.cpp', 'result': 'hash-match', 'base': 'hash-match'},
+                {'rva': '0x30', 'unit': 'a.cpp', 'result': 'no-target', 'base': None},
+                {'rva': None, 'unit': 'c.cpp', 'result': 'no-target', 'base': 'no-target'}]
+        self.assertEqual(pr_bot.row_facts({'functions': rows}), {'seen': [0x10, 0x20, 0x30], 'no_target_base': [0x10]})
+        self.assertEqual(pr_bot.row_facts({}), {'seen': [], 'no_target_base': []})
