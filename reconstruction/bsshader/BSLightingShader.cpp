@@ -1,6 +1,5 @@
 // Source exposure: community-headers (declarations); compared bodies written from the local listing.
 // Code origin: original bodies written from the local listing; declarations from CommonLibSSE-NG and powerof3 CommonLibSSE.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x15896a0 BSLightingShader::GetVertexTechnique
 // 0x154af70 BSLightingShader::Function154af70
 #include "BSLightingShader.h"

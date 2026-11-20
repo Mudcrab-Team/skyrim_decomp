@@ -2,7 +2,6 @@
 // image).
 // Code origin: original bodies written from the local listing; declarations from CommonLibSSE-NG.
 // Adapted bodies: none
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1576a90 BSLight::Function1576a90
 // 0x1578880 BSLight::Unk_03
 // 0x1578840 BSLight::~BSLight

@@ -3,7 +3,6 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Code origin: original body written from the local listing; declarations from powerof3/CommonLibSSE and CommonLibSSE-NG.
 // Adapted bodies: none
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1553750 BSSkyShaderProperty::ForEachTexture
 // 0x1553540 BSSkyShaderProperty::QShader
 // 0x1553930 BSSkyShaderProperty::GetBaseTexture

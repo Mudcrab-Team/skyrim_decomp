@@ -1,7 +1,6 @@
 // Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Function14e77f0, Function14e7a80, SetNextPass: GUESS(low); bodies written from the local listing
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x14e77f0 BSShaderProperty::Function14e77f0
 // 0x14e7a80 BSShaderProperty::Function14e7a80
 // 0x14e85f0 BSShaderProperty::ForEachTexture

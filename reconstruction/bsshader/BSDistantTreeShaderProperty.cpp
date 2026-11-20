@@ -3,7 +3,6 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Code origin: original bodies written from the local listing; declarations from powerof3/CommonLibSSE.
 // Adapted bodies: none.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1558cb0 BSDistantTreeShaderProperty::SetupGeometry
 // 0x1558dc0 BSDistantTreeShaderProperty::Function1558dc0
 // 0x1558eb0 BSDistantTreeShaderProperty::GetBaseTexture

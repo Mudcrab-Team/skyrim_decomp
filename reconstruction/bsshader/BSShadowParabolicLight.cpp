@@ -2,7 +2,6 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Code origin: original bodies written from the local listing; declarations from the pinned community headers.
 // Adapted bodies: none
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1588da0 ShadowRefLeaf::~ShadowRefLeaf
 // 0x1588e20 BSShadowParabolicLight::GetIsOmniLight
 // 0x1588d50 BSShadowParabolicLight::ReturnShadowmaps

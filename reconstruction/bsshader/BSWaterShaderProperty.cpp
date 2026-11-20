@@ -3,7 +3,6 @@
 // Code origin: original bodies written from the local listing; declarations from CommonLibSSE-NG.
 // Adapted bodies: none
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x152c470 BSWaterShaderProperty::IsEqual
 // 0x152d190 BSWaterShaderProperty::DoClearRenderPasses
 // 0x152c410 BSWaterShaderProperty::SaveBinary

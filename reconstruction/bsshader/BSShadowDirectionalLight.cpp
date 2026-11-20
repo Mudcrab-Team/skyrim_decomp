@@ -2,7 +2,6 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Code origin: original bodies written from the local listing; declarations from the pinned community headers.
 // Adapted bodies: none
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1581e30 ShadowArray::~ShadowArray
 // 0x157ed10 BSShadowDirectionalLight::GetPassExtraParam
 #include "BSShadowDirectionalLight.h"

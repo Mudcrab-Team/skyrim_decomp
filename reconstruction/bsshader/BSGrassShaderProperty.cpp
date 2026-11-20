@@ -4,7 +4,6 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Code origin: original bodies written from the local listing; declarations from powerof3/CommonLibSSE and CommonLibSSE-NG.
 // Adapted bodies: none.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x151de70 BSGrassShaderProperty::Function151de70
 // 0x151de80 BSGrassShaderProperty::Function151de80
 // 0x151d6d0 BSGrassShaderProperty::IsEqual

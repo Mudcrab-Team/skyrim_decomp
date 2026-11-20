@@ -2,7 +2,6 @@
 // image).
 // Code origin: original body written from the local listing; declarations from CommonLibSSE-NG.
 // Adapted bodies: none.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x15666e0 BSUtilityShader::Function15666e0
 // 0x15673e0 Leaf15673e0::Invoke
 #include "BSUtilityShader.h"

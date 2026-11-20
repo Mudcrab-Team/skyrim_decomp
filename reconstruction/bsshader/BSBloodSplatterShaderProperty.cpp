@@ -2,7 +2,6 @@
 // image).
 // Code origin: original body written from the local listing; declarations from CommonLibSSE-NG.
 // Adapted bodies: none
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x152d950 BSBloodSplatterShaderProperty::ForEachTexture
 // 0x152d8a0 BSBloodSplatterShaderProperty::QShader
 // 0x152db70 BSBloodSplatterShaderProperty::GetBaseTexture
