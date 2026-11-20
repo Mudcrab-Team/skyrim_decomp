@@ -9,7 +9,6 @@ Describe the result, exact target/source revisions, reproduction and limitations
 ## Publication and provenance
 
 - [ ] I read LEGAL.md, PROVENANCE.md and the licensing scope, and can contribute this material.
-  By submitting I dedicate it under CC0 1.0, or under the file's stated exception licence.
 - [ ] No game bytes, raw exports, dumps, proprietary symbols, assets, secrets or unlicensed code
   (FNV decompilation material allowed by the maintainer decision aside, labelled `SIBLING`).
 - [ ] External sources, AI assistance and source exposure are declared.

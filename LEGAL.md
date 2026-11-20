@@ -51,13 +51,7 @@ decompiler output, objects, or leaked or proprietary material. Following FNV's m
 publication is not by itself a licence to reuse FNV's material; reuse rests on the separate
 decision below.
 
-**Project licensing.** Project-authored reconstructions, documentation and research are dedicated
-under CC0 1.0 (`licenses/CC0-1.0.txt`); original infrastructure stays MIT. Units carrying
-CommonLibSSE-NG (MIT) or powerof3/CommonLibSSE (GPL-3.0) declarations keep those licences per file,
-and units with `SIBLING(fo4-private@1b765c70, author-permission)` content are use-permitted by their
-author and are not dedicated under CC0. `LICENSE` has the scope and the exception rules. Contributors
-dedicate their contributions under CC0 unless the file states an exception. CC0 grants nothing in
-game assets, executables, trademarks or other third-party rights.
+**Project licensing.** See `LICENSE`: CC0 1.0 for project-authored reconstructions, docs and research, with per-file exceptions.
 
 **Sibling decompilation (FNV): maintainer decision.** The maintainer (awarebayes) has decided
 that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `91e1b6e8` may be
