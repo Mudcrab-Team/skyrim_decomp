@@ -950,8 +950,9 @@ def hint_for_rvas(rvas, root=ROOT, tree=None):
         if got['header'] and got['header'] not in headers:
             headers.add(got['header'])
             include = got['header'].split('reconstruction/', 1)[1]
-            lines.append(f"PDB hint: {got['name']}: class layout {got['header']} (community guess; include it as "
-                         f'"{include}"; a name or layout taken from it gets the label {text})')
+            lines.append(f"PDB hint: {got['name']}: class layout {got['header']} (community guess; copy the members you "
+                         f'need into your unit\'s header, or include it as "{include}" when the unit does not declare '
+                         f'the class itself; a name or layout taken from it gets the label {text})')
         else:
             lines.append(f"PDB name: {got['name']}" + (' (same class layout)' if got['header'] else ''))
     return lines

@@ -47,9 +47,11 @@ Source rules:
   resolves to a regular file inside the repository; host paths and paths that leave it are refused.
 - `compare` builds with the recipe the unit's own `Recipe:` line names (the first `reconstruction/recipes/*.json`
   path in the source), as CI does, and with the task's recipe when the unit names none.
-- PDB layouts: when `start` prints `PDB hint:`, include that class header by its root path
-  (`"generated/crashlogger_pdb/types/X.h"`, with `Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json`)
-  and label a name or layout taken from it `CRASHLOGGER_PDB(59818@2026.10.24)`; it is a guess until `compare` matches.
+- PDB layouts: when `start` prints `PDB hint:`, read that class header for field names, offsets and bases. A unit that
+  already declares the class takes just the members it needs into its own header (a second definition of the class
+  in one include closure fails); a unit that does not may include it as `"generated/crashlogger_pdb/types/X.h"` with
+  `Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json`. Label a name or layout taken from it
+  `CRASHLOGGER_PDB(59818@2026.10.24)`; it is a guess until `compare` matches.
 - Declare, do not define, a function the target calls; `compare` binds the call.
 - Write assignments in the order the listing stores them; keep a repeated null test as a repeat read.
 - `static_assert` needs a message.
