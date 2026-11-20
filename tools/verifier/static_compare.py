@@ -14,7 +14,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import compare_internal as ci
 from pecoff import CoffObject, PeImage
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE_ROOT = 'tools/verifier/synthetic'

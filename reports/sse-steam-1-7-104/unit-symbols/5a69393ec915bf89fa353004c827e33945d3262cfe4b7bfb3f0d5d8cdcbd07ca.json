@@ -1,0 +1,254 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__imp_strcpy_s": {
+      "rva": 24941040,
+      "size": null
+    },
+    "?Function1cd5d0@TESFile@@QEAA_NXZ": {
+      "rva": 1889744,
+      "size": 26
+    },
+    "?Function1cd780@TESFile@@QEAAX_N@Z": {
+      "rva": 1890176,
+      "size": 67
+    },
+    "?Function1cdb10@TESFile@@QEAAII@Z": {
+      "rva": 1891088,
+      "size": 57
+    },
+    "?Function1cdf40@TESFile@@QEAA_NPEBD@Z": {
+      "rva": 1892160,
+      "size": 65
+    },
+    "?Function1ce2d0@TESFile@@QEAA_NXZ": {
+      "rva": 1893072,
+      "size": 76
+    },
+    "?IsRecordFileLoaded@TESFile@@QEAA_NXZ": {
+      "rva": 1893344,
+      "size": 10
+    },
+    "?Function1ce420@TESFile@@QEBA_NXZ": {
+      "rva": 1893408,
+      "size": 12
+    },
+    "?Function1ce4c0@TESFile@@QEBA_NXZ": {
+      "rva": 1893568,
+      "size": 13
+    },
+    "?Function1ce4e0@TESFile@@QEAAX_N@Z": {
+      "rva": 1893600,
+      "size": 31
+    },
+    "?Function1ce510@TESFile@@QEBA_NXZ": {
+      "rva": 1893648,
+      "size": 13
+    },
+    "?Function1ce580@TESFile@@QEAAX_N@Z": {
+      "rva": 1893760,
+      "size": 31
+    },
+    "?Function1ce5b0@TESFile@@QEBA_NXZ": {
+      "rva": 1893808,
+      "size": 13
+    },
+    "?Function1ce650@TESFile@@QEBA_NXZ": {
+      "rva": 1893968,
+      "size": 12
+    },
+    "?Function27d2e0@TESFile@@QEAA_NAEAUSubrecordValue@@@Z": {
+      "rva": 2609888,
+      "size": 81
+    },
+    "?ReadChunkHeader@TESFile@@AEAA_NXZ": {
+      "rva": 1897184,
+      "size": null
+    },
+    "?ReadFormHeader@TESFile@@AEAA_NXZ": {
+      "rva": 1896688,
+      "size": null
+    },
+    "?seekOrigin@@3IB": {
+      "rva": 27530240,
+      "size": null
+    },
+    "?SeekRaw@TESFile@@AEAAXII@Z": {
+      "rva": 1899760,
+      "size": null
+    },
+    "?ConvertFormType@@YA?AW4FormType@@I@Z": {
+      "rva": 1989648,
+      "size": null
+    },
+    "?Function1cfe50@TESFile@@AEAA_NPEBXI@Z": {
+      "rva": 1900112,
+      "size": null
+    },
+    "?Function1cdd10@TESFile@@AEAA_NPEAXI@Z": {
+      "rva": 1891600,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__imp_strcpy_s",
+        "rva": "0x17c91f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1cd5d0@TESFile@@QEAA_NXZ",
+        "rva": "0x1cd5d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1cd780@TESFile@@QEAAX_N@Z",
+        "rva": "0x1cd780",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1cdb10@TESFile@@QEAAII@Z",
+        "rva": "0x1cdb10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1cdf40@TESFile@@QEAA_NPEBD@Z",
+        "rva": "0x1cdf40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce2d0@TESFile@@QEAA_NXZ",
+        "rva": "0x1ce2d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsRecordFileLoaded@TESFile@@QEAA_NXZ",
+        "rva": "0x1ce3e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce420@TESFile@@QEBA_NXZ",
+        "rva": "0x1ce420",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce4c0@TESFile@@QEBA_NXZ",
+        "rva": "0x1ce4c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce4e0@TESFile@@QEAAX_N@Z",
+        "rva": "0x1ce4e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce510@TESFile@@QEBA_NXZ",
+        "rva": "0x1ce510",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce580@TESFile@@QEAAX_N@Z",
+        "rva": "0x1ce580",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce5b0@TESFile@@QEBA_NXZ",
+        "rva": "0x1ce5b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1ce650@TESFile@@QEBA_NXZ",
+        "rva": "0x1ce650",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function27d2e0@TESFile@@QEAA_NAEAUSubrecordValue@@@Z",
+        "rva": "0x27d2e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadChunkHeader@TESFile@@AEAA_NXZ",
+        "rva": "0x1cf2e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadFormHeader@TESFile@@AEAA_NXZ",
+        "rva": "0x1cf0f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?seekOrigin@@3IB",
+        "rva": "0x1a41400",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SeekRaw@TESFile@@AEAAXII@Z",
+        "rva": "0x1cfcf0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ConvertFormType@@YA?AW4FormType@@I@Z",
+        "rva": "0x1e5c10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1cfe50@TESFile@@AEAA_NPEBXI@Z",
+        "rva": "0x1cfe50",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1cdd10@TESFile@@AEAA_NPEAXI@Z",
+        "rva": "0x1cdd10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

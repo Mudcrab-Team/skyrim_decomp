@@ -95,6 +95,10 @@ Sync counts only acceptances on `origin/main`, updates the accepted count, and c
 an issue when every member is accepted. It leaves unknown range members open. Fetch origin before
 running sync manually. Issues without the new claim block are left alone.
 
+Contributor claims are closed separately: the PR bot runs `claims.close_completed` every ten minutes, and
+`python3 tools/claims.py close-done [--dry-run]` does the same by hand. Any open `claim:` issue whose
+functions are all `matched` on `origin/main` gets one closing comment.
+
 ## The loop
 
 1. `python3 tools/flow.py session-start --profile <profile>` (once per session). It prints which

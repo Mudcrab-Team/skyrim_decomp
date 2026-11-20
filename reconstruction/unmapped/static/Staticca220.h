@@ -1,0 +1,13 @@
+// Source exposure: binary-analysis
+// Staticca220, Descriptor, descriptor, construct, destroy, object: GUESS(low) STANDIN
+#pragma once
+struct Descriptor;
+extern Descriptor descriptor;
+struct Staticca220;
+extern void construct(Staticca220*, const Descriptor*);
+extern void destroy(Staticca220*);
+struct Staticca220 {
+    void* value;
+    Staticca220() { construct(this, &descriptor); }
+    ~Staticca220() { destroy(this); }
+};

@@ -1,0 +1,8 @@
+// Source exposure: binary-analysis
+// Leaf31d640, Invoke, object, construct: GUESS(low) STANDIN
+// Origin: primitive-constant-entry v1
+#pragma once
+class Leaf31d640 {
+public:
+    unsigned int Invoke() const;
+};

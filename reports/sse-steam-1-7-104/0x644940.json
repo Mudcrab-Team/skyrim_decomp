@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "45a9daac0967cf445e69e4cc515833f5c39afee9ec9c6da267ef1571acdcfd27",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/quest/BGSMoviePlayer.cpp",
+          "reconstruction/skyrim_shared/quest/BGSMoviePlayer.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "b3e61b838b5f7436a0f293038dbd2ea38a2a613e",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "178f4b1b705be3df9f852524311b483115b6247c",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "de37f83707f10ffa33231365b67bdc1138ff510ae91a05136cfd0a4611f20dd2",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "96a203d7944f04bceb3232ca9dc04c78f49b1239f9d3c5df6f5c952416bb0041",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44299678880,
+    "rva": "0x644940",
+    "schema": 2,
+    "source_sha256": "51a2740f040bf959437c1d26df4d8975b3b571c60a7d9671ab0560b08ea9cbb3",
+    "status": "pass",
+    "symbols": [
+      "?Unk_0C@BGSMoviePlayer@@UEAAIXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "de37f83707f10ffa33231365b67bdc1138ff510ae91a05136cfd0a4611f20dd2",
+      "normalized_sha256": "96a203d7944f04bceb3232ca9dc04c78f49b1239f9d3c5df6f5c952416bb0041",
+      "rva": 6572352,
+      "size": 17
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/forms/BGSMoviePlayer.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x644940",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "29c4703bc7c7237781af60d560194ffb6814c4d3da884c9b7f0faf954c8979b4",
+          "code_sections": 1,
+          "object_sha256": "45a9daac0967cf445e69e4cc515833f5c39afee9ec9c6da267ef1571acdcfd27"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 13,
+          "code_bytes_total": 17,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 6572352,
+          "size": 17,
+          "symbol": "?Unk_0C@BGSMoviePlayer@@UEAAIXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/forms/BGSMoviePlayer.cpp",
+          "source_revision": "51a2740f040bf959437c1d26df4d8975b3b571c60a7d9671ab0560b08ea9cbb3"
+        },
+        "symbol_map_sha256": "bd82e94a553c9214234844618372850d97a7599facb6f3d6a045193d5da0c7cc",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x644940"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/quest/BGSMoviePlayer.cpp",
+    "digest": "542042266d7b620804f0c516caf16b143fb89623c41d29f0053eaefcd4ec65ea",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "51a2740f040bf959437c1d26df4d8975b3b571c60a7d9671ab0560b08ea9cbb3",
+    "run_digest_method": "tu-sha256-v1",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/quest/BGSMoviePlayer.cpp",
+      "reconstruction/skyrim_shared/quest/BGSMoviePlayer.h"
+    ]
+  },
+  "submitter": "hinkiii",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/bd82e94a553c9214234844618372850d97a7599facb6f3d6a045193d5da0c7cc.json",
+    "sha256": "bd82e94a553c9214234844618372850d97a7599facb6f3d6a045193d5da0c7cc"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

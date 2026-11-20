@@ -1,0 +1,6 @@
+// Source exposure: binary-analysis
+// Leaf2669a0, Invoke, object, construct: GUESS(low) STANDIN
+// Origin: primitive-constant-entry v1
+// 0x2669a0 Leaf2669a0::Invoke
+#include "Leaf2669a0.h"
+unsigned int Leaf2669a0::Invoke() const { return 69u; }

@@ -109,6 +109,7 @@ class AuditTests(unittest.TestCase):
             # Use the real scanner, copied only as original test infrastructure.
             scanner = Path(__file__).resolve().parents[1] / 'tools/source_digest.py'
             (repo / 'tools/source_digest.py').write_bytes(scanner.read_bytes())
+            (repo / 'tools/digest_v2.py').write_bytes(scanner.with_name('digest_v2.py').read_bytes())
             (repo / 'tools/check_source_digest.py').write_bytes(scanner.with_name('check_source_digest.py').read_bytes())
             (repo / 'a.cpp').write_text('#include "a.h"\n')
             (repo / 'a.h').write_text('// original synthetic header\n')

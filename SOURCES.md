@@ -83,3 +83,7 @@ labels, MIT attribution and GPL-3.0-or-later notices when applicable.
 `licenses/CommonLibSSE-GPL-3.0.txt` retains the full, unmodified `COPYING.txt` from
 powerof3 at the pinned revision; it applies to GPL-derived declarations, not the MIT-only kit.
 No community implementation body is adapted by the declaration-kit generator.
+
+The full MIT licence text of CommonLibSSE-NG (Copyright (c) 2018 Ryan-rsm-McKenzie) is kept once in
+`licenses/CommonLibSSE-NG.txt`; unit headers carry the one-line `SPDX-License-Identifier: MIT
+(CommonLibSSE-NG declarations, ...)` notice that points at it.

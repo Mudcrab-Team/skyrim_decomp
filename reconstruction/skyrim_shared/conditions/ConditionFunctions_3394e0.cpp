@@ -1,0 +1,27 @@
+// Source exposure: mixed
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Origin: independently reconstructed from target observations and public declarations.
+// TESForm fields: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); included header.
+// names: GUESS(low); names and signatures are tentative.
+// ConditionFunctions: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions::HasPerk: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
+// 0x3394e0 Condition::HasPerk
+#include "ConditionFunctions_3394e0.h"
+#include "../forms/TESForm_1467c0.h"
+class TESObjectREFR; class BGSPerk;
+extern bool ActorHasPerk(TESObjectREFR*, BGSPerk*);
+extern void* conditionLogger;
+extern const char perkLogFormat[];
+extern thread_local bool conditionLoggingEnabled;
+extern void LogCondition(void*, const char*, ...);
+bool ConditionFunctions::HasPerk(TESForm* reference, BGSPerk* perk, void*, double* result)
+{
+    *result = 0.0;
+    TESForm* actor = reference ? (reference->formType == static_cast<FormType>(0x3e) ? reference : nullptr) : nullptr;
+    if (actor) {
+        int hasPerk = ActorHasPerk(reinterpret_cast<TESObjectREFR*>(actor), perk);
+        if (conditionLoggingEnabled) LogCondition(conditionLogger, perkLogFormat, hasPerk);
+        if (hasPerk) *result = 1.0;
+    }
+    return true;
+}

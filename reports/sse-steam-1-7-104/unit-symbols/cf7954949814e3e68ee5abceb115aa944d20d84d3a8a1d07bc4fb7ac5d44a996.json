@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?ClearPackageList@TESAIForm@@QEAAXXZ": {
+      "rva": 1960144,
+      "size": 19
+    },
+    "?CopyPackageList@TESAIForm@@QEAAXAEBV1@@Z": {
+      "rva": 1960256,
+      "size": 13
+    },
+    "?skipPackageClear@@3_NB": {
+      "rva": 34046304,
+      "size": null
+    },
+    "?Function4a2ce0@PackageList@@QEAAXXZ": {
+      "rva": 4861152,
+      "size": null
+    },
+    "?CopyFrom@PackageList@@QEAAXAEBU1@@Z": {
+      "rva": 4861712,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?ClearPackageList@TESAIForm@@QEAAXXZ",
+        "rva": "0x1de8d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyPackageList@TESAIForm@@QEAAXAEBV1@@Z",
+        "rva": "0x1de940",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?skipPackageClear@@3_NB",
+        "rva": "0x2078160",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function4a2ce0@PackageList@@QEAAXXZ",
+        "rva": "0x4a2ce0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyFrom@PackageList@@QEAAXAEBU1@@Z",
+        "rva": "0x4a2f10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

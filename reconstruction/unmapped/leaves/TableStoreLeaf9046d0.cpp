@@ -1,0 +1,6 @@
+// Source exposure: binary-analysis
+// TableStoreLeaf9046d0, TableStoreLeaf9046d0::~TableStoreLeaf9046d0: GUESS(low) STANDIN
+// Origin: primary-table-store-leaf v1
+// 0x9046d0 TableStoreLeaf9046d0::~TableStoreLeaf9046d0
+#include "TableStoreLeaf9046d0.h"
+TableStoreLeaf9046d0::~TableStoreLeaf9046d0() {}

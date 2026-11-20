@@ -25,10 +25,13 @@ import ci_confirmation as evidence
 import lint_reconstruction
 import pipeline
 import runners
-from source_digest import DIGEST_METHOD, include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import DIGEST_METHOD, tu_digest
 import target_hashes
 
-REPOSITORY = 'awarebayes/skyrim_decomp'
+import repo_slug
+
+REPOSITORY = repo_slug.current_slug()
 
 
 def command(argv, root, data=None, env=None):

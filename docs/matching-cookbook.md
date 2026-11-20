@@ -259,6 +259,65 @@ filter a base would share the primary vptr and lose the observed member offset. 
 inventory-named base definition still needs a passing comparison; declare an existing external
 constructor instead of emitting a partial local version.
 
+**29. Callee-saved stores that skip the first home slot: name the decremented reference count.** (high)
+Symptom: the prologue saves callee-saved registers from the second home slot on and never uses
+the first, while the rest of the body matches; the function inlines an intrusive reference-count
+release. Cause: when the inlined release keeps the decremented count in a named local before
+testing it (`std::uint32_t count = _InterlockedDecrement(&_refCount); if (count == 0) DeleteThis();`),
+the compiler reserves the first home slot for that local and then needs no memory for it. The
+same release written as one expression (`if (_InterlockedExchangeAdd(&_refCount, -1) == 1)`,
+`if (_InterlockedDecrement(...) == 0)` or a helper returning the call) saves into the first slot.
+Generated code is otherwise identical, so the change belongs in the shared release helper. Closed
+CopyMembers, ClearTextures and ComputeCRC32 members of five lighting material classes; companion
+functions compiled from the same header kept identical code. Rule 12's lock functions and rule 13
+are not explained by it (they inline no release). When three or more inlined releases store null
+and `this` and the -1 constant swap registers, see rule 30.
+
+**30. Releases that store null with `this` and the -1 constant swapped: assign a raw null pointer
+through the generic assignment.** (medium)
+Symptom: a run of smart-pointer clears (`ClearTextures`) matches except that `this` and the -1
+release constant sit in each other's callee-saved registers, and the candidate builds the -1 as
+`lea r, [zero - 1]` where the target writes `mov r, 0xFFFFFFFF`. Cause: a `nullptr_t` overload
+(`if (_ptr) { old = _ptr; _ptr = nullptr; release }`) lets the compiler derive the -1 from the zero
+register. Fix: clear each pointer through the generic raw-pointer assignment, with a null argument:
+`if (_ptr != p) { if (p) p->IncRefCount(); T* old = _ptr; _ptr = p; if (old) old->DecRefCount(); }`.
+Keep rule 29's named count in the release. If the shared header must stay unchanged, define the
+assignment as a small template helper in the unit. Closed BSLightingShaderMaterialBase::ClearTextures
+0x1523e50 in a one-host attempt. The other variants tried here, a `nullptr_t` overload, `reset()` with
+release then store, and store then release, all kept the swap.
+
+**31. Immediate versus xor-zero stores, or a constant store scheduled above the vptr store: default-construct
+smart-pointer members.** (medium)
+Symptom: a constructor that zeroes pointer members and stores float constants differs only in
+scheduling: one 1.0f store moves above the vtable store. Or a `Create` that inlines the constructor
+stores immediate zeros where the out-of-line constructor stores a zeroed register, and no single
+spelling gives both. Cause: value-initialising a smart-pointer aggregate (`member{}`, `member()`)
+or assigning its field in the body is lowered differently from a pointer whose own default
+constructor sets it. Fix: give the smart pointer a non-trivial default constructor, for example NG's
+`T* _ptr{ nullptr };` default member initializer, leave those members out of the init list, and
+initialise the scalars in the init list. Closed BSLightingShaderMaterialEnvmap::Create 0x1524b80, with
+its accepted constructor 0x1524a60 reproduced by the same source in a lab compile, and the
+BSLightingShaderMaterialMultiLayerParallax constructor 0x15281a0, both in one-host attempts. When the
+shared header's pointer is an aggregate, put the class in a standalone unit rather than change
+the header under other accepted units.
+
+**32. One 16-bit immediate store over two members: two adjacent bytes.** (medium)
+Symptom: the target clears a 16-bit field with `mov word ptr [m], 0`, and the candidate writes it from
+a zeroed register (`xor eax, eax; mov word ptr [m], ax`), so it is shorter. Cause: a 16-bit member
+(`std::uint16_t`, `std::int16_t`, a wrapping struct) shares the zero register with the
+neighbouring stores. Two adjacent `bool` (or byte) members merge into one immediate word store.
+Fix: declare two byte members. Closed BGSSceneActionTimer::Unk_0D 0x3ad170 in a one-host attempt.
+
+**33. The argument of the next call comes from `rax` after a constructor-like call: a by-value return.**
+(medium)
+Symptom: the target builds a temporary in a stack slot (`lea rcx, [rsp+n]; call X`), then passes
+`rax`, the callee's return, to the next call (`mov rdx, rax`). The candidate passes the temporary's
+address again (`lea rdx, [rsp+n]`). Cause: a constructor call does not tell the compiler that `rax`
+holds the object, but a by-value return through a hidden return pointer does. Fix: produce the
+temporary with a function returning the type by value (`member = Make(a_str);`). Label it GUESS,
+because the image function may be the type's constructor. Closed BGSKeyword::SetFormEditorID
+0x29e720 in a one-host attempt.
+
 ## Shaping ideas from one contributor's cheap-model runs
 
 These are observations from one contributor's drafting runs with a cheap model, not rules.
@@ -303,7 +362,7 @@ about 45 source spellings never move `this` out of rbx. Only spellings that add 
 references flip it, and those add instructions. Whole-program optimization is refuted as the
 cause, and so are the swept flags: `/GL` linked `/LTCG` gives byte-identical code for these
 sources, and no profile data exists ([finding](../findings/whole-program-optimization.md)).
-Cause unknown. Untested hypotheses from that finding: EH state removed after frame layout (a
+For the variant whose saves skip the first home slot, see rule 29. Otherwise cause unknown. Untested hypotheses from that finding: EH state removed after frame layout (a
 `noexcept` or `throw()` helper whose throwing path folds away), or frame layout kept from dead
 code (a parameter or `this` whose address is taken and then optimised out). Seen in
 BSReadWriteLock::LockForRead 0xce3250 and LockForWrite 0xce32d0.

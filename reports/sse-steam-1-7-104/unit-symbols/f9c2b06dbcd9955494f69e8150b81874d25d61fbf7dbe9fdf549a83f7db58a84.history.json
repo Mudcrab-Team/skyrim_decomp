@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/f9c2b06dbcd9955494f69e8150b81874d25d61fbf7dbe9fdf549a83f7db58a84.json",
+  "versions": [
+    {
+      "sha256": "f9c2b06dbcd9955494f69e8150b81874d25d61fbf7dbe9fdf549a83f7db58a84",
+      "base": null,
+      "added": [
+        "?IsEqual@NiSwitchNode@@UEAA_NPEAVNiObject@@@Z",
+        "?NiNodeIsEqual@@YA_NPEAVNiNode@@PEAVNiObject@@@Z",
+        "?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z",
+        "?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z",
+        "?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z",
+        "?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z",
+        "?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "?UpdateWorldBound@NiSwitchNode@@UEAAXXZ",
+        "?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z",
+        "?NiNodeLoadBinary@@YAXPEAVNiNode@@AEAVNiStream@@@Z",
+        "?NiNodeSaveBinary@@YAXPEAVNiNode@@AEAVNiStream@@@Z",
+        "?NiNodeAttachChild@@YAXPEAVNiNode@@PEAVNiAVObject@@_N@Z",
+        "?SwitchTableGrow@@YAXPEAV?$NiTArray@I@@I@Z",
+        "?NiNodeSetAt1@@YAXPEAVNiNode@@IPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z",
+        "?SwitchTableSet@@YAXPEAV?$NiTArray@I@@IPEAI@Z",
+        "?NiNodeUpdateSelectedDownwardPass@@YAXPEAVNiNode@@AEAVNiUpdateData@@I@Z",
+        "?NiNodeUpdateRigidDownwardPass@@YAXPEAVNiNode@@AEAVNiUpdateData@@I@Z",
+        "?Cull@NiAVObject@@QEAAXPEAVNiCullingProcess@@H@Z",
+        "?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ",
+        "?UpdateDownwardPass@NiNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "?UpdateWorldBound@NiNode@@UEAAXXZ"
+      ]
+    }
+  ]
+}

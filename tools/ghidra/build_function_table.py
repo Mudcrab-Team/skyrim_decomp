@@ -39,15 +39,16 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import export_pack as ep  # noqa: E402
+import harvest_handlers as hh  # noqa: E402
 
 TABLE_SCHEMA = 1
-DISASM_SCHEMA = 2
+DISASM_SCHEMA = 3
 OBJDUMP_CANDIDATES = ('llvm-objdump', '/opt/homebrew/opt/llvm/bin/llvm-objdump', '/usr/local/opt/llvm/bin/llvm-objdump')
 FUNCLET_PREFIXES = ('Unwind@', 'Catch@', 'Catch_All@')
 CXX_HANDLERS = ('__CxxFrameHandler3', '__GSHandlerCheck_EH')
 
 # Source tags. Labels are the `Labels: v2` forms of docs/drafter-card.md.
-SOURCES = ('ng-id', 'po3-id', 'ng-slot', 'po3-slot', 'meh321')
+SOURCES = ('ng-id', 'po3-id', 'ng-slot', 'po3-slot', 'meh321', 'exe-table', 'exe-reg')
 
 
 def community_label(source, cfg):
@@ -57,6 +58,8 @@ def community_label(source, cfg):
         return f'COMMUNITY(powerof3/CommonLibSSE@{cfg["po3_revision"][:7]}, GPL-3.0)'
     if source == 'meh321':
         return f'COMMUNITY(meh321/AddressLibrary@{cfg.get("meh321_revision", "0000000")[:12]}, permission)'
+    if source in ('exe-table', 'exe-reg'):
+        return 'OBSERVED'
     return 'GUESS'
 
 
@@ -96,7 +99,7 @@ def setup_of(window):
     slots at [rsp+0x20+8k]. A register already holding the value (passed through unchanged) is not
     visible here, so this undercounts; callers read it as evidence, never as a signature."""
     out = {}
-    for mn, ops in window:
+    for mn, ops, *_ in window:
         if mn in NO_DEST or not ops:
             continue
         dest = ops[0]
@@ -118,7 +121,7 @@ def setup_of(window):
 
 
 def edx_immediate(window):
-    for mn, ops in reversed(window):
+    for mn, ops, *_ in reversed(window):
         if mn in NO_DEST or not ops:
             continue
         if ops[0] in ('edx', 'rdx', 'dx', 'dl'):
@@ -193,6 +196,7 @@ class DisasmPass:
         self.import_calls = defaultdict(set)
         self.first = {}
         self.edx_calls = defaultdict(list)
+        self.reg_calls = []
         self.census = {}
         self.window = []
         self.after = None
@@ -205,13 +209,16 @@ class DisasmPass:
             return self.owner[i]
         return None
 
-    def _site(self, caller, callee, kind):
+    def _site(self, caller, callee, kind, callsite=None):
         setup = setup_of(self.window)
         imm = edx_immediate(self.window)
         if imm is not None:
             self.edx_calls[caller].append((callee, imm, kind))
         if kind != 'call':
             return
+        lea_targets = hh.lea_arg_targets(self.window, self.base)
+        if len(lea_targets) >= 2 and callsite is not None:
+            self.reg_calls.append((callsite, caller, callee, lea_targets))
         c = self.census.get(callee)
         if c is None:
             c = self.census[callee] = {'sites': 0, 'arity': Counter(), 'slots': defaultdict(Counter),
@@ -263,7 +270,7 @@ class DisasmPass:
                     if mn == 'call':
                         self.callees[f].add(t)
                         self._finish_after()
-                        self._site(f, t, 'call')
+                        self._site(f, t, 'call', rva)
                         self.window = []
                         line = mn + ' ' + text + '\n'
                         self.h1[f].update(line.encode())
@@ -271,7 +278,7 @@ class DisasmPass:
                         return
                     if mn == 'jmp':
                         self.tail_callees[f].add(t)
-                        self._site(f, t, 'jmp')
+                        self._site(f, t, 'jmp', rva)
         line = mn + ' ' + text + '\n'
         self.h1[f].update(line.encode())
         self.h2[f].update(NUM.sub('#', line).encode())
@@ -282,7 +289,7 @@ class DisasmPass:
         if mn.startswith('j') or mn in ('call', 'ret'):
             self.window = []
         else:
-            self.window.append((mn, ops))
+            self.window.append((mn, ops, comment_target))
             if len(self.window) > WINDOW:
                 self.window.pop(0)
 
@@ -325,7 +332,8 @@ class DisasmPass:
                 'callees': {k: sorted(v) for k, v in self.callees.items()},
                 'tail_callees': {k: sorted(v) for k, v in self.tail_callees.items()},
                 'import_calls': {k: sorted(v) for k, v in self.import_calls.items()},
-                'first': self.first, 'edx_calls': dict(self.edx_calls), 'census': census}
+                'first': self.first, 'edx_calls': dict(self.edx_calls),
+                'reg_calls': self.reg_calls, 'census': census}
 
 
 def find_objdump(cfg):
@@ -973,6 +981,10 @@ def build(cfg, ghidra_dir, out_dir, rerun_ghidra=False, rerun_disasm=False):
                             else 'name', 'ae_id': i})
         return out
 
+    # Names from the executable's own command/script tables and registration calls (OBSERVED).
+    table_names, table_stats = hh.harvest_script_functions(img)
+    reg_names, reg_stats = hh.harvest_registrations(img, dis.get('reg_calls', []), entries)
+
     # Callers.
     callers = defaultdict(set)
     for f, cs in dis['callees'].items():
@@ -1057,6 +1069,10 @@ def build(cfg, ghidra_dir, out_dir, rerun_ghidra=False, rerun_disasm=False):
             row['v2'] = None
         # Names and owner.
         names = id_names(rva)
+        if rva in table_names:
+            names.append(dict(table_names[rva]))
+        if rva in reg_names:
+            names.append(dict(reg_names[rva]))
         so = slot_owner.get(rva)
         if so:
             sn = slot_name(so[0], so[1])
@@ -1177,6 +1193,7 @@ def build(cfg, ghidra_dir, out_dir, rerun_ghidra=False, rerun_disasm=False):
               'meh321_names': cfg.get('meh321_revision'), 'ghidra_dir': str(ghidra_dir),
               'delete_callees': len(deletes)}
     meta_out = {'schema': TABLE_SCHEMA, 'build_id': target['build_id'], 'inputs': inputs, 'timing': timing,
+                'harvest': {'script_table': table_stats, 'registrations': reg_stats},
                 'functions': len(rows), 'classes': len(classes)}
     (out_dir / 'table-meta.json').write_text(json.dumps(meta_out, indent=2) + '\n')
     return rows, classes, meta_out

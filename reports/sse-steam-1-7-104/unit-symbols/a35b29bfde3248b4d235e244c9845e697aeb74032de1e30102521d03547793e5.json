@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0C@BSFaceGenKeyframe@@QEAA_NXZ": {
+      "rva": 4400400,
+      "size": 3
+    },
+    "?Unk_0D@BSFaceGenKeyframe@@QEAA_NXZ": {
+      "rva": 4400368,
+      "size": 3
+    },
+    "??_GBSFaceGenKeyframe@@UEAAPEAXI@Z": {
+      "rva": 4399936,
+      "size": 43
+    },
+    "??_7BSFaceGenKeyframe@@6B@": {
+      "rva": 25947152,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0C@BSFaceGenKeyframe@@QEAA_NXZ",
+        "rva": "0x432510",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk_0D@BSFaceGenKeyframe@@QEAA_NXZ",
+        "rva": "0x4324f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GBSFaceGenKeyframe@@UEAAPEAXI@Z",
+        "rva": "0x432340",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BSFaceGenKeyframe@@6B@",
+        "rva": "0x18bec10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

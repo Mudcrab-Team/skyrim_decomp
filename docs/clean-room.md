@@ -21,3 +21,8 @@ reconstructed function line-for-line into prose and call it a clean specificatio
 Every specification begins `Transfer status: UNREVIEWED` and includes an exposure declaration.
 Approval is a project process decision, not a legal certification. Do not automatically copy
 files into Mudcrab, add research as its dependency, or port recovered code there.
+
+Running a matched pure leaf unit (or a closed chain of matched units with no stubs) locally as an
+input/output oracle is a local-only research aid: commit and publish none of its inputs, outputs or
+traces (at most aggregated pass/fail counts per RVA), and it is never evidence for `matched`, which
+stays a byte match on two hosts plus one review.

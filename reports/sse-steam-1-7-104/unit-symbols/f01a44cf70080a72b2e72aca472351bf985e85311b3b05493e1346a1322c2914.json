@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetSourceActorState@TESActionData@@QEBAPEAVActorState@@XZ": {
+      "rva": 7920416,
+      "size": 36
+    },
+    "?Process@TESActionData@@QEAAXXZ": {
+      "rva": 7920512,
+      "size": 15
+    },
+    "?g_actionProcessor@@3PEAVActionProcessor@@EA": {
+      "rva": 52628024,
+      "size": null
+    },
+    "?Apply@ActionProcessor@@QEAAXPEAVTESActionData@@@Z": {
+      "rva": 7207872,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetSourceActorState@TESActionData@@QEBAPEAVActorState@@XZ",
+        "rva": "0x78db20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Process@TESActionData@@QEAAXXZ",
+        "rva": "0x78db80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_actionProcessor@@3PEAVActionProcessor@@EA",
+        "rva": "0x3230a38",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Apply@ActionProcessor@@QEAAXPEAVTESActionData@@@Z",
+        "rva": "0x6dfbc0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

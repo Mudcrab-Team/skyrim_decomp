@@ -1,0 +1,529 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function667b10@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6716176,
+      "size": 47
+    },
+    "?Function667c20@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z": {
+      "rva": 6716448,
+      "size": 52
+    },
+    "?Function667f10@TaskQueueInterface@@QEAAXPEAX@Z": {
+      "rva": 6717200,
+      "size": 43
+    },
+    "?Function667f50@TaskQueueInterface@@QEAAXPEAX@Z": {
+      "rva": 6717264,
+      "size": 43
+    },
+    "?Function667ff0@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z": {
+      "rva": 6717424,
+      "size": 52
+    },
+    "?Function668140@TaskQueueInterface@@QEAAXXZ": {
+      "rva": 6717760,
+      "size": 33
+    },
+    "?Function668170@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6717808,
+      "size": 47
+    },
+    "?Function668310@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6718224,
+      "size": 47
+    },
+    "?Function668350@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6718288,
+      "size": 42
+    },
+    "?Function668380@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6718336,
+      "size": 42
+    },
+    "?Function6683b0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6718384,
+      "size": 47
+    },
+    "?Function668440@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6718528,
+      "size": 47
+    },
+    "?Function668480@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6718592,
+      "size": 47
+    },
+    "?Function668500@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z": {
+      "rva": 6718720,
+      "size": 52
+    },
+    "?Function668540@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z": {
+      "rva": 6718784,
+      "size": 52
+    },
+    "?Function668580@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z": {
+      "rva": 6718848,
+      "size": 52
+    },
+    "?Function668680@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6719104,
+      "size": 47
+    },
+    "?Function668780@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z": {
+      "rva": 6719360,
+      "size": 52
+    },
+    "?Function6688b0@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z": {
+      "rva": 6719664,
+      "size": 47
+    },
+    "?Function6688f0@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6719728,
+      "size": 47
+    },
+    "?Function668930@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6719792,
+      "size": 47
+    },
+    "?Function668a50@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720080,
+      "size": 47
+    },
+    "?Function668a90@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720144,
+      "size": 47
+    },
+    "?Function668ad0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720208,
+      "size": 47
+    },
+    "?Function668b10@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720272,
+      "size": 47
+    },
+    "?Function668b50@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720336,
+      "size": 47
+    },
+    "?Function668c40@TaskQueueInterface@@QEAAXAEBIM@Z": {
+      "rva": 6720576,
+      "size": 45
+    },
+    "?Function668c80@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z": {
+      "rva": 6720640,
+      "size": 52
+    },
+    "?Function668da0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720928,
+      "size": 47
+    },
+    "?Function668de0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6720992,
+      "size": 47
+    },
+    "?Function668e20@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6721056,
+      "size": 47
+    },
+    "?Function669010@TaskQueueInterface@@QEAAXAEBIPEAX@Z": {
+      "rva": 6721552,
+      "size": 44
+    },
+    "?Function6691b0@TaskQueueInterface@@QEAAXPEAUTaskReference@@I@Z": {
+      "rva": 6721968,
+      "size": 52
+    },
+    "?Function6691f0@TaskQueueInterface@@QEAAXIE@Z": {
+      "rva": 6722032,
+      "size": 42
+    },
+    "?Function669220@TaskQueueInterface@@QEAAXE@Z": {
+      "rva": 6722080,
+      "size": 37
+    },
+    "?Function669250@TaskQueueInterface@@QEAAXII@Z": {
+      "rva": 6722128,
+      "size": 42
+    },
+    "?Function6692d0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6722256,
+      "size": 47
+    },
+    "?Function669310@TaskQueueInterface@@QEAAXE@Z": {
+      "rva": 6722320,
+      "size": 37
+    },
+    "?Function669340@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6722368,
+      "size": 42
+    },
+    "?Function669370@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6722416,
+      "size": 42
+    },
+    "?Function6693a0@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z": {
+      "rva": 6722464,
+      "size": 42
+    },
+    "?Function6693d0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6722512,
+      "size": 47
+    },
+    "?Function669450@TaskQueueInterface@@QEAAXI@Z": {
+      "rva": 6722640,
+      "size": 37
+    },
+    "?Function669480@TaskQueueInterface@@QEAAXPEAXE@Z": {
+      "rva": 6722688,
+      "size": 43
+    },
+    "?Function669550@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z": {
+      "rva": 6722896,
+      "size": 47
+    },
+    "?Function669590@TaskQueueInterface@@QEAAXAEBIE@Z": {
+      "rva": 6722960,
+      "size": 44
+    },
+    "?QueueIfActive@TaskQueueInterface@@QEAAXAEAUBSPackedTask@@@Z": {
+      "rva": 6733760,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function667b10@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x667b10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function667c20@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z",
+        "rva": "0x667c20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function667f10@TaskQueueInterface@@QEAAXPEAX@Z",
+        "rva": "0x667f10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function667f50@TaskQueueInterface@@QEAAXPEAX@Z",
+        "rva": "0x667f50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function667ff0@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z",
+        "rva": "0x667ff0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668140@TaskQueueInterface@@QEAAXXZ",
+        "rva": "0x668140",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668170@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668170",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668310@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668310",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668350@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668350",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668380@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668380",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6683b0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x6683b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668440@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x668440",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668480@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x668480",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668500@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z",
+        "rva": "0x668500",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668540@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z",
+        "rva": "0x668540",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668580@TaskQueueInterface@@QEAAXPEAUTaskObject@@I@Z",
+        "rva": "0x668580",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668680@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668680",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668780@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z",
+        "rva": "0x668780",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6688b0@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z",
+        "rva": "0x6688b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6688f0@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x6688f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668930@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668930",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668a50@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668a50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668a90@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668a90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668ad0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668ad0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668b10@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668b10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668b50@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668b50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668c40@TaskQueueInterface@@QEAAXAEBIM@Z",
+        "rva": "0x668c40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668c80@TaskQueueInterface@@QEAAXPEAUTaskReference@@E@Z",
+        "rva": "0x668c80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668da0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668da0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668de0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668de0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function668e20@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x668e20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669010@TaskQueueInterface@@QEAAXAEBIPEAX@Z",
+        "rva": "0x669010",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6691b0@TaskQueueInterface@@QEAAXPEAUTaskReference@@I@Z",
+        "rva": "0x6691b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6691f0@TaskQueueInterface@@QEAAXIE@Z",
+        "rva": "0x6691f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669220@TaskQueueInterface@@QEAAXE@Z",
+        "rva": "0x669220",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669250@TaskQueueInterface@@QEAAXII@Z",
+        "rva": "0x669250",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6692d0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x6692d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669310@TaskQueueInterface@@QEAAXE@Z",
+        "rva": "0x669310",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669340@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x669340",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669370@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x669370",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6693a0@TaskQueueInterface@@QEAAXPEAUTaskObject@@@Z",
+        "rva": "0x6693a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6693d0@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x6693d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669450@TaskQueueInterface@@QEAAXI@Z",
+        "rva": "0x669450",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669480@TaskQueueInterface@@QEAAXPEAXE@Z",
+        "rva": "0x669480",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669550@TaskQueueInterface@@QEAAXPEAUTaskReference@@@Z",
+        "rva": "0x669550",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function669590@TaskQueueInterface@@QEAAXAEBIE@Z",
+        "rva": "0x669590",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?QueueIfActive@TaskQueueInterface@@QEAAXAEAUBSPackedTask@@@Z",
+        "rva": "0x66bfc0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

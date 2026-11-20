@@ -1,0 +1,13 @@
+// Source exposure: binary-analysis
+// Static97630, Descriptor, descriptor, construct, destroy, object: GUESS(low) STANDIN
+#pragma once
+struct Descriptor;
+extern Descriptor descriptor;
+struct Static97630;
+extern void construct(Static97630*, const Descriptor*);
+extern void destroy(Static97630*);
+struct Static97630 {
+    void* value;
+    Static97630() { construct(this, &descriptor); }
+    ~Static97630() { destroy(this); }
+};

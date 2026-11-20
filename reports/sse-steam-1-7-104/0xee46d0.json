@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "81d0b0fad03cda56f06f003026f0432463f467636d7dbe04bbd81d94aec96229",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/bssystem/NiStream_19e930.cpp",
+          "reconstruction/bssystem/NiStream_19e930.h",
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "fc9ab0dc4a804377e2d1d3d53442dcbdc84680c7",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "0dd0a56774ff28b4b0b91ab42ae1bec2968ea333",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "92fb1b71d835bf29d51b4d8670780523c130a59e50c3ab4f3989a59c7c76a8e6",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "80deeaae63d0d8e0067072e9da2fd635ba49b01ee5e0bf8e110db270b9b04f50",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44734981281,
+    "rva": "0xee46d0",
+    "schema": 2,
+    "source_sha256": "d630580455b8509940792a1fe882a463994df1efbe61ec83a380996837b7bcea",
+    "status": "pass",
+    "symbols": [
+      "?ClearLoadContext@NiStream@@QEAAXXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "92fb1b71d835bf29d51b4d8670780523c130a59e50c3ab4f3989a59c7c76a8e6",
+      "normalized_sha256": "80deeaae63d0d8e0067072e9da2fd635ba49b01ee5e0bf8e110db270b9b04f50",
+      "rva": 15615696,
+      "size": 52
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/bssystem/NiStream_19e930.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xee46d0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "1a3f83cbf183c4b95f05f4d8e7d2511f1194169bd617500220e5d901a150ac23",
+          "code_sections": 1,
+          "object_sha256": "81d0b0fad03cda56f06f003026f0432463f467636d7dbe04bbd81d94aec96229"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 52,
+          "code_bytes_total": 52,
+          "eh": {
+            "bytes": 8,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 8,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 15615696,
+          "size": 52,
+          "symbol": "?ClearLoadContext@NiStream@@QEAAXXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/bssystem/NiStream_19e930.cpp",
+          "source_revision": "d630580455b8509940792a1fe882a463994df1efbe61ec83a380996837b7bcea"
+        },
+        "symbol_map_sha256": "d8ee00d440d6844cd6d005ee293f4bf776c2fec1f182889dac04f8e35a0bc01a",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xee46d0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/bssystem/NiStream_19e930.cpp",
+    "digest": "d630580455b8509940792a1fe882a463994df1efbe61ec83a380996837b7bcea",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/bssystem/NiStream_19e930.cpp",
+      "reconstruction/bssystem/NiStream_19e930.h",
+      "reconstruction/gamebryo/nianimation/NiInterpolator.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/d8ee00d440d6844cd6d005ee293f4bf776c2fec1f182889dac04f8e35a0bc01a.json",
+    "sha256": "d8ee00d440d6844cd6d005ee293f4bf776c2fec1f182889dac04f8e35a0bc01a"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

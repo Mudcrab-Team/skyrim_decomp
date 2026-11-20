@@ -84,6 +84,8 @@ class Fixture(unittest.TestCase):
         shutil.copyfile(ROOT / 'builds/target.json', r / 'builds/target.json')
         (r / 'findings').mkdir()
         (r / 'findings/batch.md').write_text('x\n')
+        (r / 'licenses').mkdir()
+        shutil.copyfile(ROOT / 'licenses/CommonLibSSE-NG.txt', r / 'licenses/CommonLibSSE-NG.txt')
         (r / 'reconstruction/recipes').mkdir(parents=True)
         (r / 'reconstruction/recipes/r.json').write_text('{"flags": ["/Ireconstruction"]}\n')
         (r / 'reconstruction/recipes/r-reconstruction.json').write_text('{"flags": ["/I", "reconstruction"]}\n')
@@ -163,11 +165,13 @@ class SkeletonText(Fixture):
         h_rel, h, cpp_rel, cpp = self.files()
         self.assertEqual((h_rel, cpp_rel), ('reconstruction/misc/FancyWidget.h', 'reconstruction/misc/FancyWidget.cpp'))
         for text in (h, cpp):
-            self.assertIn(BUILD, text)
-            self.assertIn('Labels: v2', text)
+            self.assertNotIn(BUILD, text)
+            for dropped in ('Labels: v2', 'Task:', 'Evidence:', 'Drafted by', 'A byte match shows', 'MIT License'):
+                self.assertNotIn(dropped, text)
             self.assertIn('Source exposure: mixed', text)
-            self.assertIn('Task: g1-fancywidget', text)
+            self.assertIn('SPDX-License-Identifier: MIT (CommonLibSSE-NG', text)
             self.assertIn('GPL-3.0', text)  # a po3 label makes both files state the licence
+            self.assertLessEqual(len(lint.leading_comment(text).splitlines()), 40)
         self.assertIn(f'// FancyWidget: COMMUNITY({NG}) EXE_RTTI', h)
         self.assertIn(f'// FancyWidget::GetFlag, FancyWidget::Mystery: COMMUNITY({NG})', h)
         self.assertIn(f'// FancyWidget::~FancyWidget: COMMUNITY({PO3})', h)
@@ -191,12 +195,11 @@ class SkeletonText(Fixture):
         self.assertIn('FancyWidget::FancyWidget(Cell* a_cell, float a_life)\n    : MidWidget(a_cell, a_life)', cpp)
         # One unfilled stub per compared function, and the paperwork placeholders.
         self.assertEqual(cpp.count(f'    {us.BODY_MARKER};'), 3)
-        self.assertIn(us.MODEL_MARKER, cpp)
         self.assertIn(us.ORIGIN_MARKER, cpp)
-        for line in ('RVA 0x1000, 8 bytes: FancyWidget::GetFlag', 'RVA 0x1100, 50 bytes', 'RVA 0x1200, 12 bytes'):
+        for line in ('// 0x1000 FancyWidget::GetFlag', '// 0x1100 ', '// 0x1200 '):
             self.assertIn(line, cpp)
-        self.assertIn('Evidence: findings/batch.md', cpp)
-        self.assertIn('Recipe: reconstruction/recipes/r.json', cpp)
+        self.assertIn('Recipe: reconstruction/recipes/r.json', cpp)  # written only because it is not the default
+        self.assertNotIn(us.DEFAULT_RECIPE, cpp)
 
     def test_write_binds_additive_include_recipe_in_task_and_source(self):
         recipes = self.root / 'reconstruction/recipes'
@@ -277,9 +280,9 @@ class SkeletonText(Fixture):
         self.assertNotIn('#include "WidgetBase.h"', h)
         self.assertIn('class WidgetBase', h)
 
-    def test_drafted_by_fills_the_model_line(self):
+    def test_drafted_by_is_accepted_and_not_written(self):
         _h, _ht, _c, cpp = us.skeleton_files(self.unit, drafted_by='test-model', repo=self.root)
-        self.assertIn('Drafted by test-model', cpp)
+        self.assertNotIn('test-model', cpp)
         self.assertNotIn(us.MODEL_MARKER, cpp)
 
     def test_untouched_skeleton_lints_clean_except_the_placeholders(self):
@@ -289,7 +292,7 @@ class SkeletonText(Fixture):
         strict = lint.lint_tree(self.root, names)
         self.assertTrue(strict)
         self.assertTrue(all('skeleton not filled' in p for p in strict), strict)
-        self.assertEqual(len(strict), 3 + 2)  # three stub bodies, the model and origin placeholders
+        self.assertEqual(len(strict), 3 + 1)  # three stub bodies and the origin placeholder
 
     def test_filled_skeleton_passes_strict_lint(self):
         h_rel, cpp_rel = us.write_skeleton(self.unit, drafted_by='test-model', repo=self.root)

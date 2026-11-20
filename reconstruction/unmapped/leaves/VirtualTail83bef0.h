@@ -1,0 +1,9 @@
+// Source exposure: binary-analysis; no external implementation reused.
+// VirtualTail83bef0, Dispatch, Invoke, object: GUESS(low) STANDIN
+// Origin: nullable-virtual-tail v1
+#pragma once
+class VirtualTail83bef0 {
+public:
+    virtual void Invoke(unsigned int);
+    void Dispatch(VirtualTail83bef0* object);
+};

@@ -15,7 +15,8 @@ import contrib_readiness
 import contrib_validation
 import test_contrib as fixtures
 import test_match_gate as gate
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 
 class Preflight(fixtures.SubmitTests):
@@ -144,9 +145,10 @@ class Preflight(fixtures.SubmitTests):
                 patch.object(contrib, 'refresh_symbols'), patch.object(contrib, 'sibling_section', return_value=[]):
             contrib.start(ctx, args)
         header = source.read_text().split('#include', 1)[0]
-        for text in (hex(extra['rva']), '4 bytes', extra['build_id'], extra['evidence'],
-                     contrib.DEFAULT_RECIPE, 'Drafted by synthetic model', 'SKELETON_TODO_CODE_ORIGIN'):
+        for text in (f'// {hex(extra["rva"])} ', 'SKELETON_TODO_CODE_ORIGIN'):
             self.assertIn(text, header)
+        for text in (extra['build_id'], extra['evidence'], contrib.DEFAULT_RECIPE, 'Drafted by', '4 bytes'):
+            self.assertNotIn(text, header)  # the short header leaves out what the records hold
         self.assertIn('original synthetic fixture', header)  # the older declaration was preserved
 
 
@@ -176,10 +178,10 @@ class Ranking(unittest.TestCase):
 
     def test_existing_usable_accessor_beats_smaller_new_class_and_destructor(self):
         rows = contrib.candidates(self.root, self.data)
-        self.assertEqual([r['rva'] for r in rows], ['0x4000', '0x2000', '0x1000', '0x3000'])
+        self.assertEqual([r['rva'] for r in rows], ['0x4000', '0x2000', '0x3000', '0x1000'])
         self.assertTrue(rows[0]['unit_exists'])
         self.assertIn('usable declaration', rows[0]['reason'])
-        self.assertIn('ABI preparation', rows[-1]['reason'])
+        self.assertIn('ABI preparation', rows[2]['reason'])  # a class with a layout still outranks a new one
 
     def test_local_eh_unsupported_and_parked_facts_deprioritize(self):
         for fact, text in [({'eh': {'handler_kind': 'c++'}}, 'exception-handling'),

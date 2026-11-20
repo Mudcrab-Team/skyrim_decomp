@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0D@BSImagespaceShaderCopyScaleBias@@QEAAPEAPEBXPEAPEBX@Z": {
+      "rva": 22061104,
+      "size": 35
+    },
+    "?Unk_0A@BSImagespaceShaderCopyScaleBias@@QEAAXXZ": {
+      "rva": 22066480,
+      "size": 21
+    },
+    "?g_copyScaleBiasBinding@@3QBDB": {
+      "rva": 28527288,
+      "size": null
+    },
+    "?kEmptyString@@3QBDB": {
+      "rva": 28672032,
+      "size": null
+    },
+    "?Select@ScaleBiasRenderState@@QEAAXI@Z": {
+      "rva": 22368560,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0D@BSImagespaceShaderCopyScaleBias@@QEAAPEAPEBXPEAPEBX@Z",
+        "rva": "0x150a030",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk_0A@BSImagespaceShaderCopyScaleBias@@QEAAXXZ",
+        "rva": "0x150b530",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_copyScaleBiasBinding@@3QBDB",
+        "rva": "0x1b34ab8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?kEmptyString@@3QBDB",
+        "rva": "0x1b58020",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Select@ScaleBiasRenderState@@QEAAXI@Z",
+        "rva": "0x1555130",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

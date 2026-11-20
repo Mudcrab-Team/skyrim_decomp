@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "c53d6c035ef6fcbf52642cb0520e0827f2ed7665edeb7f63c4c775d775098b5e",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/bsshader/BSGrassShaderProperty.cpp",
+          "reconstruction/bsshader/BSGrassShaderProperty.h",
+          "reconstruction/bsshader/BSShaderProperty.h",
+          "reconstruction/gamebryo/nimain/NiObject.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "6871664d22b4ba01749559f6873a231b8fa8940a",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "c60bf514c6137534831fb2c50bda447e3c6fe70a",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "84ed92d00c3944d93ac0256a15094bc9dfe2d8c23384eea923f2fcd507816e0b",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "394ab99f164e215a9b0671ac430e6fafa9d12fb2d5dc76699640939a4d800dd3",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44715502992,
+    "rva": "0x151de80",
+    "schema": 2,
+    "source_sha256": "acd39cdf09f0f95aad38698aab00e63e9560485ecb848eb6376c939ff9d2a9bc",
+    "status": "pass",
+    "symbols": [
+      "?Function151de80@BSGrassShaderProperty@@QEAAXI@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "84ed92d00c3944d93ac0256a15094bc9dfe2d8c23384eea923f2fcd507816e0b",
+      "normalized_sha256": "394ab99f164e215a9b0671ac430e6fafa9d12fb2d5dc76699640939a4d800dd3",
+      "rva": 22142592,
+      "size": 7
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/bsshader/BSGrassShaderProperty.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x151de80",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "86a26f6206b9cb1c916d13c4ca7ad452a351d34358ea8fda042f7d0462085c20",
+          "code_sections": 1,
+          "object_sha256": "c53d6c035ef6fcbf52642cb0520e0827f2ed7665edeb7f63c4c775d775098b5e"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 7,
+          "code_bytes_total": 7,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 22142592,
+          "size": 7,
+          "symbol": "?Function151de80@BSGrassShaderProperty@@QEAAXI@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/bsshader/BSGrassShaderProperty.cpp",
+          "source_revision": "acd39cdf09f0f95aad38698aab00e63e9560485ecb848eb6376c939ff9d2a9bc"
+        },
+        "symbol_map_sha256": "8836a567e8f68f3363cbc5b4574bb480e47136cb1cd7b5b72e34aa024742d09b",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x151de80"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/bsshader/BSGrassShaderProperty.cpp",
+    "digest": "acd39cdf09f0f95aad38698aab00e63e9560485ecb848eb6376c939ff9d2a9bc",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/bsshader/BSGrassShaderProperty.cpp",
+      "reconstruction/bsshader/BSGrassShaderProperty.h",
+      "reconstruction/bsshader/BSShaderProperty.h",
+      "reconstruction/gamebryo/nimain/NiObject.h"
+    ]
+  },
+  "submitter": "awarebayes",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/8836a567e8f68f3363cbc5b4574bb480e47136cb1cd7b5b72e34aa024742d09b.json",
+    "sha256": "8836a567e8f68f3363cbc5b4574bb480e47136cb1cd7b5b72e34aa024742d09b"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

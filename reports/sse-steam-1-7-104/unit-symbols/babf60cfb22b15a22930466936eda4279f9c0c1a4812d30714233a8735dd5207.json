@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__CxxFrameHandler3": {
+      "rva": 22714324,
+      "size": null
+    },
+    "?Create@BSLightingShaderMaterialEnvmap@@UEAAPEAVBSShaderMaterial@@XZ": {
+      "rva": 22170496,
+      "size": 146
+    },
+    "?g_memoryManagerGuard@@3HA": {
+      "rva": 57257112,
+      "size": null
+    },
+    "?g_memoryManager@@3VMemoryManager@@A": {
+      "rva": 57255952,
+      "size": null
+    },
+    "?InitMemoryManager@@YAXPEAVMemoryManager@@PEAH@Z": {
+      "rva": 13494288,
+      "size": null
+    },
+    "?Allocate@MemoryManager@@QEAAPEAXIH_N@Z": {
+      "rva": 13492816,
+      "size": null
+    },
+    "??0BSLightingShaderMaterialBase@@QEAA@XZ": {
+      "rva": 22164976,
+      "size": null
+    },
+    "??_7BSLightingShaderMaterialEnvmap@@6B@": {
+      "rva": 28573280,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__CxxFrameHandler3",
+        "rva": "0x15a97d4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Create@BSLightingShaderMaterialEnvmap@@UEAAPEAVBSShaderMaterial@@XZ",
+        "rva": "0x1524b80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_memoryManagerGuard@@3HA",
+        "rva": "0x369ac98",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_memoryManager@@3VMemoryManager@@A",
+        "rva": "0x369a810",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitMemoryManager@@YAXPEAVMemoryManager@@PEAH@Z",
+        "rva": "0xcde810",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Allocate@MemoryManager@@QEAAPEAXIH_N@Z",
+        "rva": "0xcde250",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0BSLightingShaderMaterialBase@@QEAA@XZ",
+        "rva": "0x15235f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BSLightingShaderMaterialEnvmap@@6B@",
+        "rva": "0x1b3fe60",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

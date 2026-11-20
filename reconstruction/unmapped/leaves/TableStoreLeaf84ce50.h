@@ -1,0 +1,8 @@
+// Source exposure: binary-analysis
+// TableStoreLeaf84ce50, TableStoreLeaf84ce50::~TableStoreLeaf84ce50: GUESS(low) STANDIN
+// Origin: primary-table-store-leaf v1
+#pragma once
+class TableStoreLeaf84ce50 {
+public:
+    virtual ~TableStoreLeaf84ce50();
+};

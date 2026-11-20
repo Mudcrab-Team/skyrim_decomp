@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__CxxFrameHandler3": {
+      "rva": 22714324,
+      "size": null
+    },
+    "__imp_GetActiveWindow": {
+      "rva": 24938864,
+      "size": null
+    },
+    "__std_terminate": {
+      "rva": 22714318,
+      "size": 6
+    },
+    "??_GBSWin32MouseDevice@@UEAAPEAXI@Z": {
+      "rva": 14085552,
+      "size": 104
+    },
+    "?Initialize@BSWin32MouseDevice@@UEAAXXZ": {
+      "rva": 14758016,
+      "size": 165
+    },
+    "??_7BSInputDevice@@6B@": {
+      "rva": 27410832,
+      "size": null
+    },
+    "?ResetButtonMaps@BSInputDevice@@QEAAXXZ": {
+      "rva": 14086944,
+      "size": null
+    },
+    "??1NameMapTail@@QEAA@XZ": {
+      "rva": 2157360,
+      "size": null
+    },
+    "??1ButtonMapTail@@QEAA@XZ": {
+      "rva": 13614864,
+      "size": null
+    },
+    "??_7BSIInputDevice@@6B@": {
+      "rva": 27410752,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    },
+    "?Reset@BSWin32MouseDevice@@UEAAXXZ": {
+      "rva": 14758576,
+      "size": 38
+    },
+    "?MouseGUID@@3QB_KB": {
+      "rva": 26276496,
+      "size": null
+    },
+    "?DirectInputManager@@3PEAXEA": {
+      "rva": 52627920,
+      "size": null
+    },
+    "?CreateMouseDevice@@YAPEAVDirectInputDevice@@PEAXPEBX@Z": {
+      "rva": 13610608,
+      "size": null
+    },
+    "?BackgroundMouseSetting@@3_NA": {
+      "rva": 34399672,
+      "size": null
+    },
+    "?MouseDataFormat@@3QB_KB": {
+      "rva": 27526592,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__CxxFrameHandler3",
+        "rva": "0x15a97d4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__imp_GetActiveWindow",
+        "rva": "0x17c8970",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__std_terminate",
+        "rva": "0x15a97ce",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GBSWin32MouseDevice@@UEAAPEAXI@Z",
+        "rva": "0xd6edb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Initialize@BSWin32MouseDevice@@UEAAXXZ",
+        "rva": "0xe13080",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BSInputDevice@@6B@",
+        "rva": "0x1a24190",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ResetButtonMaps@BSInputDevice@@QEAAXXZ",
+        "rva": "0xd6f320",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NameMapTail@@QEAA@XZ",
+        "rva": "0x20eb30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1ButtonMapTail@@QEAA@XZ",
+        "rva": "0xcfbf10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BSIInputDevice@@6B@",
+        "rva": "0x1a24140",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Reset@BSWin32MouseDevice@@UEAAXXZ",
+        "rva": "0xe132b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?MouseGUID@@3QB_KB",
+        "rva": "0x190f290",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DirectInputManager@@3PEAXEA",
+        "rva": "0x32309d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CreateMouseDevice@@YAPEAVDirectInputDevice@@PEAXPEBX@Z",
+        "rva": "0xcfae70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?BackgroundMouseSetting@@3_NA",
+        "rva": "0x20ce5b8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?MouseDataFormat@@3QB_KB",
+        "rva": "0x1a405c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

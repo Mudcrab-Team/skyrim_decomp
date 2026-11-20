@@ -63,21 +63,31 @@ rejecting source whose content is raw bytes in any spelling (docs/verification.m
 
     python3 tools/lint_reconstruction.py [files...]   # default: every file under reconstruction/
     python3 tools/lint_reconstruction.py --skeleton-ok [files...]   # a fresh skeleton: all else must pass
+    python3 tools/lint_reconstruction.py --compact [files...]       # also the compact-header budget
 """
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+import posixpath
 import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, logical_lines, quoted_includes  # noqa: E402
+from digest_v2 import LABEL_WORD  # noqa: E402
+import unit_paths  # noqa: E402
 
+DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
+COMPARED_LINE = re.compile(r'^//[ \t]*0x[0-9a-fA-F]+(?:[ \t]|$)', re.M)
 EXPOSURE = ('black-box', 'community-headers', 'binary-analysis', 'mixed')
 NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'GUESS', 'EXE_RTTI', 'OBSERVED')
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
-SOURCE = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+# The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
+# single-level layout is accepted too while units written against it are still landing.
+SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+# A second unit of a split class is named `<Class>_<lowest rva>`; the class it declares is the base.
+SPLIT_TAG = re.compile(r'_[0-9a-f]{3,8}$')
 CODEGEN_DECLSPEC = r'naked|code_seg|allocate|safebuffers'
 ASM = r'__asm__|__asm|_asm|asm'
 # Applied to the whole spliced text with no comment or literal state, so nothing can be hidden
@@ -114,10 +124,22 @@ JUSTIFIED = (
 )
 JUSTIFICATION = re.compile(r'//\s*(\S+\s+){2,}\S')
 DECLSPEC = re.compile(r'(?<![A-Za-z0-9_])__declspec\s*\(')
-# Name-origin label grammar, enforced in files whose leading comment says `Labels: v2`
-# (docs/drafter-card.md). Older units keep free-form labels: editing them would change their
-# digests and reopen accepted matches.
+# Name-origin label grammar (docs/drafter-card.md), enforced in every unit file except the
+# few that predate it and keep free-form labels: editing them would change their digests and
+# reopen accepted matches. A `Labels: v2` line is still accepted but carries no information.
 LABELS_VERSION = re.compile(r'\bLabels:\s*v(\d+)\b')
+FREEFORM_LABEL_FILES = frozenset((
+    'reconstruction/gamebryo/nianimation/NiTimeController.h', 'reconstruction/gamebryo/nianimation/NiTimeController.cpp',
+    'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.h',
+    'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp',
+    'reconstruction/bscore/BSPointerHandleManagerInterface.h',
+    'reconstruction/bscore/BSPointerHandleManagerInterface.cpp',
+    'reconstruction/bscore/BSTimer.h', 'reconstruction/bscore/BSTimer.cpp'))
+
+
+def label_grammar_applies(name, text):
+    """Whether the v2 label grammar applies to this file."""
+    return name not in FREEFORM_LABEL_FILES or bool(LABELS_VERSION.search(text[:4000]))
 LABEL = (r'(?:COMMUNITY\([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{7,40}, [A-Za-z0-9.+-]+\)'
          r'|SIBLING\((?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|fo4-private)@[0-9a-f]{7,40}, [A-Za-z0-9.+-]+\)'
          r'|GUESS(?:\((?:low|medium|high)\))?|EXE_RTTI|STANDIN|OBSERVED)')
@@ -135,8 +157,6 @@ SIBLING_HEADER = re.compile(rf'Sibling source:\s*({SIBLING_ID})@([0-9a-f]{{7,40}
                             r'((?:src|include)/[^\s:]+)(?::(\d+))?')
 LABEL_LINE = re.compile(rf'^\s*//\s*(?P<names>\S(?:.*?\S)?)\s*:\s*(?P<labels>{LABEL}(?:\s+{LABEL})*)'
                         r'\s*(?:;\s*(?P<note>.*))?$')
-LABEL_WORD = re.compile(r'(?<![A-Za-z0-9_])(?:COMMUNITY|SIBLING|GUESS|EXE_RTTI|STANDIN|OBSERVED)[A-Za-z0-9_]*'
-                        r'|(?<![A-Za-z0-9_])(?:EXE[- ]RTTI|STAND[- _]IN)(?![A-Za-z0-9_])')
 ORIGIN_LABEL = re.compile(r'COMMUNITY\(|SIBLING\(|GUESS|EXE_RTTI|OBSERVED')
 DEFINE = re.compile(r'^[ \t]*#[ \t]*define\b(.*)$', re.M)
 DEFINE_BANNED = re.compile(rf'(?<![A-Za-z0-9_])(?:__declspec|__pragma|_Pragma|{ASM}|__emit|{CODEGEN_DECLSPEC})'
@@ -145,9 +165,9 @@ INT_LITERAL = re.compile(r'(?<![\w.])(0[xX][0-9A-Fa-f]+|\d+)[uUlL]*(?![\w.])')
 CHAR_LITERAL = re.compile(r"(?:u8|u|U|L)?'(\\x[0-9A-Fa-f]+|\\[0-7]{1,3}|\\.|[^'\\\n])'")
 BRACED = re.compile(r'\{([^{}]*)\}', re.S)
 INCLUDE_NAME = re.compile(r'[A-Za-z0-9_][A-Za-z0-9_.+-]*(?:/[A-Za-z0-9_][A-Za-z0-9_.+-]*)*')
-# Legacy accepted units can spell one parent step to another reconstruction area. New units
+# Accepted units spell a header in another area by walking up from their own folder. New units
 # use same-directory or reconstruction-root paths (docs/drafter-card.md).
-SHARED_HEADER = re.compile(r'\.\./[a-z][a-z0-9_]*/[A-Z][A-Za-z0-9_]*\.h')
+SHARED_HEADER = re.compile(r'(?:\.\./)+(?:[a-z][a-z0-9_]*/)+[A-Z][A-Za-z0-9_]*\.h')
 PRAGMA_LINE = re.compile(r'^[ \t]*#[ \t]*pragma\b(.*)$', re.M)
 # Placeholders of tools/skeleton.py (unit_skeleton.py): the stub body and the header fields the
 # Drafter has to fill. Any spelling that starts with the prefix counts, so a new placeholder is
@@ -270,13 +290,13 @@ def sibling_header_problems(name, header):
 
 
 def label_problems(name, text, header, ext):
-    """`Labels: v2` grammar: a label line is `// <names>: <LABEL> [<LABEL>...][; note]`, and no
+    """Label grammar: a label line is `// <names>: <LABEL> [<LABEL>...][; note]`, and no
     label word appears anywhere else, so every label is attached to the names it describes."""
     version = LABELS_VERSION.search(header)
-    if not version:
-        return []
-    if version.group(1) != '2':
+    if version and version.group(1) != '2':
         return [f'{name}: unknown "Labels: v{version.group(1)}" (only v2 is defined)']
+    if not label_grammar_applies(name, header):
+        return []
     problems, labelled = [], 0
     for number, line in enumerate(text.split('\n'), 1):
         if not LABEL_WORD.search(line):
@@ -294,7 +314,7 @@ def label_problems(name, text, header, ext):
                             'GUESS, EXE_RTTI or OBSERVED)')
         labelled += 1
     if ext == 'h' and not labelled:
-        problems.append(f'{name}: a "Labels: v2" header needs at least one "// <names>: <LABEL>" line')
+        problems.append(f'{name}: a header needs at least one "// <names>: <LABEL>" line')
     return problems
 
 
@@ -367,6 +387,75 @@ def notice_problems(name, text, sources=None):
             continue
         if not any(normalised(path.read_text()) in notice for notice in notices):
             problems.append(f'{name}: no complete copy of the LICENSE of {repo} (pinned clone {licence})')
+    return problems
+
+
+# The one-line form of the CommonLibSSE-NG notice; the full text lives once in LICENCE_TEXT.
+SPDX_MIT = ('SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; '
+            'full text: licenses/CommonLibSSE-NG.txt)')
+# The dedication for project-authored units with no third-party licence obligation. Units whose
+# header carries another SPDX line (NG MIT, powerof3 GPL) keep that licence and take no CC0 line.
+SPDX_CC0 = 'SPDX-License-Identifier: CC0-1.0'
+LICENCE_TEXT = 'licenses/CommonLibSSE-NG.txt'
+SPDX_LINE = re.compile(r'^//[ \t]*SPDX-License-Identifier:.*$', re.M)
+# Header lines that carry per-unit information and do not count against the header budget.
+HEADER_LIMIT = 6
+FULL_LICENCE = re.compile(r'Permission is hereby granted|THE SOFTWARE IS PROVIDED|^//[ \t]*MIT License[ \t]*$|'
+                          r'GNU GENERAL PUBLIC LICENSE|Apache License', re.M)
+
+
+def spdx_problems(name, header):
+    """A `SPDX-License-Identifier: MIT` line is the exact one-line NG notice; a CC0 line is exact
+    and does not share a unit with an MIT or GPL line (those units keep their own licence)."""
+    lines = [line.lstrip('/ \t').rstrip() for line in SPDX_LINE.findall(header)]
+    problems = [f'{name}: write the MIT notice as "// {SPDX_MIT}"' for line in lines
+                if line.startswith('SPDX-License-Identifier: MIT') and line != SPDX_MIT]
+    if any('CC0' in line and line != SPDX_CC0 for line in lines):
+        problems.append(f'{name}: write the dedication as "// {SPDX_CC0}"')
+    if SPDX_CC0 in lines and any(line != SPDX_CC0 for line in lines):
+        problems.append(f'{name}: a unit with an MIT or GPL notice keeps that licence; drop "// {SPDX_CC0}"')
+    return problems
+
+
+def licence_text_problems(root):
+    """The one full copy of the NG licence that SPDX_MIT points at is present and complete."""
+    path = Path(root) / LICENCE_TEXT
+    if not path.is_file():
+        return [f'{LICENCE_TEXT} is missing; the one-line notice in unit headers points at it']
+    joined = normalised(path.read_text(encoding='utf-8'))
+    start, end = joined.find(MIT_BODY_START), joined.find(MIT_BODY_END)
+    if (start < 0 or end < 0 or 'Copyright (c) 2018 Ryan-rsm-McKenzie' not in joined[:start]
+            or hashlib.sha256(joined[start:end + len(MIT_BODY_END)].encode()).hexdigest() != MIT_BODY_SHA256):
+        return [f'{LICENCE_TEXT} is not the complete MIT licence with the Ryan-rsm-McKenzie copyright line']
+    return []
+
+
+def counted_header_lines(header):
+    """The header lines that count against HEADER_LIMIT: everything but labels, sibling citations,
+    compared-function lines and the SPDX line."""
+    return [ln for ln in header.split('\n') if ln.strip() and ln.strip() != '//'
+            and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
+            and 'SPDX-License-Identifier' not in ln]
+
+
+def header_budget_problems(name, header, old_header=None):
+    """The compact-header rule for a new or changed unit file: no licence text in the file, one
+    SPDX line for NG declarations, and at most HEADER_LIMIT header lines besides labels, sibling
+    citations and compared-function lines. A change that only removes lines from `old_header`
+    makes nothing longer and is not held to the line count."""
+    problems = []
+    if FULL_LICENCE.search(header):
+        problems.append(f'{name}: remove the licence text from the header; use the one line "// {SPDX_MIT}" '
+                        '(docs/contributor-lessons.md, compact headers)')
+    if 'CharmedBaryon/CommonLibSSE-NG@' in header and 'SPDX-License-Identifier: MIT' not in header \
+            and not FULL_LICENCE.search(header):
+        problems.append(f'{name}: NG declarations need the line "// {SPDX_MIT}"')
+    counted = counted_header_lines(header)
+    shrinks = old_header is not None and set(counted) <= set(counted_header_lines(old_header))
+    if len(counted) > HEADER_LIMIT and not shrinks:
+        problems.append(f'{name}: header has {len(counted)} lines besides labels, sources and compared functions; '
+                        f'keep at most {HEADER_LIMIT}: drop Task, Labels, Recipe, Evidence, Drafted by, disclaimers '
+                        '(docs/contributor-lessons.md, compact headers)')
     return problems
 
 
@@ -472,8 +561,9 @@ def skeleton_problems(name, text):
     return problems
 
 
-def lint_file(root, name, target_build, skeleton_ok=False):
-    """Findings for one file; `skeleton_ok` skips only the skeleton-placeholder rule."""
+def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_files=None):
+    """Findings for one file; `skeleton_ok` skips only the skeleton-placeholder rule, `compact` adds
+    the header budget that new and changed units must meet."""
     root = Path(root)
     problems = []
     path = PurePosixPath(name)
@@ -487,6 +577,8 @@ def lint_file(root, name, target_build, skeleton_ok=False):
     if not m:
         return [f'{name}: sources are reconstruction/<area>/<Class>.h or .cpp (lowercase area, one class per pair)']
     area, cls, ext = m.groups()
+    if '/' in area and area not in unit_paths.AREAS:
+        return [f'{name}: area {area} is not one of tools/unit_paths.py AREAS']
     blob = (root / name).read_bytes()
     try:
         text = blob.decode('utf-8')
@@ -502,7 +594,8 @@ def lint_file(root, name, target_build, skeleton_ok=False):
         # The compiler opens an include before the verifier's /showIncludes check can refuse it, so a
         # name that could reach a host file (drive letter, backslash, absolute or parent path) is
         # refused here, before any compile of contributed source.
-        shared = kind == '"' and SHARED_HEADER.fullmatch(target)
+        shared = (kind == '"' and SHARED_HEADER.fullmatch(target)
+                  and posixpath.normpath(posixpath.join(posixpath.dirname(name), target)).startswith('reconstruction/'))
         if not shared and (not INCLUDE_NAME.fullmatch(target) or '..' in target.split('/')):
             problems.append(f'{name}: include name {target!r} must be a plain relative path '
                             '(letters, digits, _ . + - and /; no drive, backslash, leading / or ..), '
@@ -520,11 +613,14 @@ def lint_file(root, name, target_build, skeleton_ok=False):
     if not skeleton_ok:
         problems += skeleton_problems(name, spliced)
     header = leading_comment(text)
-    if target_build and target_build not in header:
-        problems.append(f'{name}: header comment must name the build id {target_build}')
     problems += label_problems(name, spliced, header, ext)
     problems += licence_problems(name, spliced, header)
     problems += notice_problems(name, text)
+    problems += spdx_problems(name, header)
+    if spdx_files is not None and SPDX_MIT in header:
+        spdx_files.add(name)
+    if compact:
+        problems += header_budget_problems(name, header)
     problems += sibling_label_problems(name, spliced)
     problems += sibling_header_problems(name, header)
     if 'Sibling source:' in spliced and spliced.count('Sibling source:') != header.count('Sibling source:'):
@@ -533,21 +629,17 @@ def lint_file(root, name, target_build, skeleton_ok=False):
     if not exposure or exposure.group(1) not in EXPOSURE:
         problems.append(f'{name}: header comment needs "Source exposure: <{"|".join(EXPOSURE)}>"')
     if ext == 'cpp':
-        if not re.search(r'\bRVA 0x[0-9a-fA-F]+', header) or not re.search(r'\b\d+ bytes\b', header):
-            problems.append(f'{name}: header comment needs "RVA 0x<rva>" and "<n> bytes" for each compared function')
-        if 'Drafted by' not in header:
-            problems.append(f'{name}: header comment needs "Drafted by <model or person>"')
-        evidence = re.findall(r'Evidence:\s*([^\s,;]+)', header)
-        if not evidence:
-            problems.append(f'{name}: header comment needs "Evidence: <findings/ or reports/ path>"')
-        for ref in evidence:
+        if not COMPARED_LINE.search(header) and not re.search(r'\bRVA 0x[0-9a-fA-F]+', header):
+            problems.append(f'{name}: header comment needs one "// 0x<rva> <Name>" line per compared function')
+        for ref in re.findall(r'Evidence:\s*([^\s,;]+)', header):
             ref = ref.rstrip('.')
             if PurePosixPath(ref).parts[:1] not in {('findings',), ('reports',)} or not (root / ref).is_file():
                 problems.append(f'{name}: evidence {ref} is not an existing findings/ or reports/ file')
         recipe = re.search(r'Recipe:\s*(\S+)', header)
-        if not recipe or not recipe.group(1).startswith('reconstruction/recipes/') \
-                or not (root / recipe.group(1).rstrip('.,;')).is_file():
-            problems.append(f'{name}: header comment needs "Recipe: reconstruction/recipes/<name>.json" (existing)')
+        if recipe and (not recipe.group(1).startswith('reconstruction/recipes/')
+                       or not (root / recipe.group(1).rstrip('.,;')).is_file()):
+            problems.append(f'{name}: "Recipe:" must name an existing reconstruction/recipes/<name>.json; '
+                            'leave it out for the default recipe')
         if ('"', f'{cls}.h') not in targets:
             problems.append(f'{name}: must include its own header as #include "{cls}.h"')
         if not (root / f'reconstruction/{area}/{cls}.h').is_file():
@@ -555,30 +647,34 @@ def lint_file(root, name, target_build, skeleton_ok=False):
     else:
         if not any(re.search(rf'\b{o}\b', header) for o in NAME_ORIGINS):
             problems.append(f'{name}: header comment must label name origin ({", ".join(NAME_ORIGINS)})')
-        if not re.search(rf'\b(?:class|struct)\s+{re.escape(cls)}\b(?!\s*;)', spliced):
-            problems.append(f'{name}: header must declare class {cls}')
+        declared = (cls, SPLIT_TAG.sub('', cls))
+        if not any(re.search(rf'\b(?:class|struct)\s+{re.escape(c)}\b(?!\s*;)', spliced) for c in declared):
+            problems.append(f'{name}: header must declare class {declared[-1]}')
     return problems
 
 
-def lint_tree(root=ROOT, names=None, skeleton_ok=()):
+def lint_tree(root=ROOT, names=None, skeleton_ok=(), compact=()):
     """Findings for `names` (default: every file under reconstruction/); files in `skeleton_ok`
     may still hold skeleton placeholders."""
     root = Path(root)
-    skeleton_ok = set(skeleton_ok)
+    skeleton_ok, compact = set(skeleton_ok), set(compact)
     target = json.loads((root / 'builds/target.json').read_text())
     if names is None:
         base = root / 'reconstruction'
         names = sorted(p.relative_to(root).as_posix() for p in base.rglob('*') if p.is_file()) if base.is_dir() else []
-    problems = []
+    problems, spdx_files = [], set()
     for name in names:
-        problems += lint_file(root, name, target.get('build_id'), name in skeleton_ok)
+        problems += lint_file(root, name, target.get('build_id'), name in skeleton_ok, name in compact, spdx_files)
+    if spdx_files:
+        problems += licence_text_problems(root)
     return problems
 
 
 def main(argv):
     skeleton_ok = '--skeleton-ok' in argv
-    names = [a for a in argv if a != '--skeleton-ok']
-    problems = lint_tree(ROOT, names or None, names if skeleton_ok else ())
+    compact = '--compact' in argv
+    names = [a for a in argv if a not in ('--skeleton-ok', '--compact')]
+    problems = lint_tree(ROOT, names or None, names if skeleton_ok else (), names if compact else ())
     for p in problems:
         print(p)
     print(f'lint_reconstruction: {"FAIL" if problems else "PASS"} ({len(problems)} problem(s))')

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function159df60@BSStreamSystemUtility@@QEBAMXZ": {
+      "rva": 22667104,
+      "size": 4
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function159df60@BSStreamSystemUtility@@QEBAMXZ",
+        "rva": "0x159df60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools'), str(ROOT / 'tools/verifier')]
 import ci_confirmation as evidence
 import ci_confirm
-from source_digest import include_closure, tu_digest
+from source_digest import include_closure
+from digest_v2 import tu_digest
 
 
 class PrimaryHost(unittest.TestCase):

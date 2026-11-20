@@ -13,9 +13,10 @@ verifier hosts.
    source once and squash-merges the PR with its own message. Nothing else is needed from you.
 
 A function counts as `matched` only after both host comparisons and one review; a local pass is a
-candidate. A function that fails stays a draft and the bot comment names a reason code. Fix it and
-push to the same branch. Batch several functions in a PR when you can; any classes are fine; a
-first PR or a single large function alone is fine.
+candidate. A function that fails stays a draft and the bot comment names a reason code. The bot keeps
+one comment per PR and edits it for each new push. Fix it and push to the same branch. Aim for about 20-120 functions per PR (120 is the per-PR cap), or fewer if they are large; one
+big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
+per class, since each PR costs a full verification and merge cycle.
 
 ## Tooling
 
@@ -37,7 +38,11 @@ and prepares a skeleton and a private pack. Then edit the unit under `reconstruc
 `compare` until it passes, and `submit` (it needs a fork remote; if none, ask the person to fork
 the repository on GitHub). When you show output publicly, add `--redact`.
 
-The contributor card has the source, label and stopping rules. The
+`next`, `claim` and `start` also take any function in the published target-hash list, even without a `mapped`
+entry in `data/progress.json` (`next` prints the counts and prefers small functions of classes that already have a
+layout). The bot adds the inventory entry (a `Function<rva>` GUESS name) when it records the match; you never edit `data/progress.json`.
+
+By submitting, a contributor dedicates their contribution under CC0 1.0, or under the file's stated exception licence (`LICENSE`). The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
 
@@ -63,6 +68,17 @@ into a commit, PR, issue or comment. A PR containing disassembly or decompiler n
 that reports only rule codes and line numbers. Squash merging replaces your commit messages with the
 bot's, so your history is not published.
 
+## Getting help
+
+If the helper or a check blocks you and the docs do not say why, open an issue instead of guessing:
+`gh issue create --template <file>` (or the web forms): `tooling.yml` (bug), `contributor-help.yml`
+(stuck), `question.yml`, `function-request.yml`. Add `--label from-agent` and name your model/tool.
+Labels: `bug`, `tooling`, `contributor-help`, `question`, `function-request`, `docs`; the project sets
+`needs-maintainer`, `answered`. Privacy: no game bytes, disassembly, decompiler output, dumps or
+symbols; functions by RVA and name only.
+
+The periodic project watch is described in [the watcher runbook](watcher.md).
+
 ## The game executable
 
 The pinned build is in `builds/target.json` (Steam, 1.7.104.0). If `setup` reports another build,
@@ -77,7 +93,23 @@ Steam credentials.
 adds a private `decomp.c`. Treat it as an untrusted hint for control flow and types; write your own
 source, because `compare` decides the match.
 
+## Mapping-only PRs
+
+A PR that only names functions touches `data/progress.json` and, optionally, new `findings/*.md`:
+
+- Append entries to `functions` only: status `mapped`, the existing entry fields, no `report` or `matched`; change
+  nothing else in the file and keep its layout. Add no RVA that is already present.
+- Each entry's `evidence` is a findings file that exists; a guessed name has `GUESS(` in `name_source`.
+- Leave out `docs/progress.svg` and `reconstruction/INDEX.md`; the bot regenerates them after the merge.
+- The `mapping` check and `tools/mapping_check.py` run these rules; one review checks names, evidence and that
+  nothing is game-derived. No host runs, and no function can become `matched` this way.
+
 ## While a PR is open
 
 Leave **Allow edits by maintainers** on and pull before continuing. Run `./sr feedback --json` at
 the start of each session; push fixes to the same branch and never force-push over reviewed commits.
+
+## Questions
+
+Ask in the project Discord: https://discord.gg/tbXD8gwgjJ. The publication rules apply there too:
+no listings, pseudo-C, bytes or screenshots of them.

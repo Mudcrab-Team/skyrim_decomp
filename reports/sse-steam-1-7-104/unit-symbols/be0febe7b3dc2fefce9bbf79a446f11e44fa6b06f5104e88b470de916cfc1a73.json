@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Size@BSSmallBlockAllocator@@UEBA_KPEBX@Z": {
+      "rva": 13542384,
+      "size": 43
+    },
+    "?TryAllocateImpl@BSSmallBlockAllocator@@UEAAPEAX_KI@Z": {
+      "rva": 13542816,
+      "size": 8
+    },
+    "?ContainsBlockImpl@BSSmallBlockAllocator@@UEBA_NPEBX@Z": {
+      "rva": 13543184,
+      "size": 24
+    },
+    "?AllocateInternal@BSSmallBlockAllocator@@QEAAPEAX_KI_N@Z": {
+      "rva": 13543216,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Size@BSSmallBlockAllocator@@UEBA_KPEBX@Z",
+        "rva": "0xcea3f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TryAllocateImpl@BSSmallBlockAllocator@@UEAAPEAX_KI@Z",
+        "rva": "0xcea5a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ContainsBlockImpl@BSSmallBlockAllocator@@UEBA_NPEBX@Z",
+        "rva": "0xcea710",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AllocateInternal@BSSmallBlockAllocator@@QEAAPEAX_KI_N@Z",
+        "rva": "0xcea730",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

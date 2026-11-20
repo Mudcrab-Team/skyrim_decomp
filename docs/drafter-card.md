@@ -57,14 +57,15 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   translation-unit boundary. If the callee is not compared in the unit, declare it without
   defining it instead. Remove the attribute when no caller in the unit is left (cookbook rule 27).
 - One class per `reconstruction/<area>/<Class>.{h,cpp}`; the area follows the rule in
-  `reconstruction/README.md` (`Ni*` netimmerse, `BS*` bsengine, `TES*`/`BGS*` forms, actor
-  classes actors, or the owning system your brief names). The .cpp includes its header as
+  `reconstruction/README.md` (`python3 tools/unit_paths.py <Class>` prints it, for example
+  `gamebryo/nimain` for `Ni*` scene-graph classes or `skyrim_shared/forms` for `TES*` forms, or the
+  area your brief names). The .cpp includes its header as
   `#include "<Class>.h"`.
 - Other classes the function uses may be declared in your header as minimal stand-ins (only the
   members and virtual slots the code needs). Say in the header comment which declarations are
   stand-ins and where each name comes from. Do not edit another unit to share a class.
 - If the brief lists a shared header, use a same-directory name or a reconstruction-root path
-  such as `"forms/TESForm.h"`. Cross-area includes require the additive `-reconstruction` recipe
+  such as `"skyrim_shared/forms/TESForm.h"`. Cross-area includes require the additive `-reconstruction` recipe
   variant with `/I reconstruction`; new skeletons select it without changing existing accepted
   recipes. Never use parent-directory include paths. If a shared header lacks a member or slot,
   declare your own stand-in and report `header-gap <Class>` in your result line.
@@ -72,14 +73,13 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   never `#` and `include` together in a comment or string; no include inside `/* */` or `#if`
   (header guard aside); repository headers quoted. `attempt` refuses a unit whose compiler include
   list differs from the derived closure.
-- Header comment of each file: build id and `Source exposure: <black-box|community-headers|binary-analysis|mixed>`.
-  The .cpp adds `RVA 0x<rva>` and `<n> bytes` per compared function, `Evidence:`, `Drafted by <model>`,
-  `Recipe: reconstruction/recipes/<name>.json` and which functions are compared. For `Evidence:`
-  cite the `findings/` file your brief names for the function (the one its inventory entry cites);
-  never cite a `reports/` path that does not exist yet. The match record is linked from the
-  inventory later, so the source never has to change when it is written.
-  Put `Labels: v2` in the leading comment of both files and label names only on lines of this
-  form (the lint enforces it in v2 files):
+- Header comment of each file, kept short (docs/contributor-card.md shows one): `Source exposure:
+  <black-box|community-headers|binary-analysis|mixed>`, the one-line `SPDX-License-Identifier: MIT
+  (CommonLibSSE-NG ...)` notice when NG declarations are used (never the licence text), and in the .cpp one
+  `// 0x<rva> <Name>` line per compared function. `Recipe:` only when it is not the default. No
+  build id, Task, Labels, Evidence, Drafted by or disclaimer lines; git and the records hold them.
+  Label names only on lines of this form (the lint enforces it in every unit file except eight
+  legacy ones):
   `// <names>: <LABEL> [<LABEL>...][; note]`, LABEL one of
   `COMMUNITY(<owner>/<repo>@<rev>, <licence>)` (e.g. `COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)`),
   `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` (a name or declaration taken from the
@@ -132,8 +132,7 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   reconstruction/<area>/<Class>.cpp` (also printed by `attempt` as `label warning:` lines). It
   checks every `COMMUNITY` name and enumerator value against the pinned checkout and every
   `SIBLING` name against its permitted sibling clone, flags `GUESS` names either declares in that class, and
-  checks that each `Evidence:` file exists, is tracked, and names the unit (its class, a
-  `// Task: <task-id>` header line, or every compared RVA). Fix each warning or explain it in
+  checks, when a legacy `Evidence:` line is present, that its file exists, is tracked, and names the unit. Fix each warning or explain it in
   your result line.
   Labels are still expected on every name; they no longer block acceptance (a Reviewer lists
   label problems as naming findings, `docs/verification.md`, "Tier 2"), but they decide `named`.

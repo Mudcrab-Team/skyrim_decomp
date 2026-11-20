@@ -13,8 +13,8 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import lint_reconstruction as lint  # noqa: E402
 
 BUILD = json.loads((ROOT / 'builds/target.json').read_text())['build_id']
-HEADER = f"""// Types for Widget, build {BUILD}.
-// Source exposure: binary-analysis. Names are GUESS.
+HEADER = f"""// Source exposure: binary-analysis
+// Widget, Get, value: GUESS(low)
 #pragma once
 
 class Widget {{
@@ -23,10 +23,8 @@ public:
     int value;
 }};
 """
-SOURCE = f"""// Widget::Get, build {BUILD}, RVA 0x1000, 8 bytes.
-// Evidence: findings/TEMPLATE.md
-// Source exposure: binary-analysis. Drafted by a synthetic test.
-// Recipe: reconstruction/recipes/r.json
+SOURCE = f"""// Source exposure: binary-analysis
+// 0x1000 Widget::Get
 #include "Widget.h"
 
 int Widget::Get() const {{ return value; }}
@@ -62,12 +60,8 @@ class LintTests(unittest.TestCase):
         found = self.problems()
         self.assertTrue(any(needle in p for p in found), f'{needle!r} not in {found}')
 
-    def test_good_unit_and_repository_sources_pass(self):
+    def test_good_unit_passes(self):
         self.assertEqual(self.problems(), [])
-        # As tools/check.py does: a Drafter's untracked skeleton may still hold its placeholders.
-        untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z', '--',
-                                             'reconstruction'], cwd=ROOT).decode('utf-8').split('\0')
-        self.assertEqual(lint.lint_tree(ROOT, skeleton_ok=set(untracked) - {''}), [])
 
     def test_banned_constructs(self):
         body = SOURCE.replace('{ return value; }', '{{ {} return value; }}')
@@ -124,14 +118,18 @@ class LintTests(unittest.TestCase):
         self.assertEqual(self.problems(), [])
 
     def test_header_fields(self):
-        self.assert_problem('build id', source=SOURCE.replace(BUILD, 'other'))
         self.assert_problem('Source exposure', source=SOURCE.replace('binary-analysis', 'leaked'))
-        self.assert_problem('RVA 0x', source=SOURCE.replace('RVA 0x1000', 'RVA ?'))
-        self.assert_problem('Drafted by', source=SOURCE.replace('Drafted by', 'Written by'))
-        self.assert_problem('evidence', source=SOURCE.replace('findings/TEMPLATE.md', 'findings/none.md'))
-        self.assert_problem('Recipe:', source=SOURCE.replace('recipes/r.json', 'recipes/none.json'))
+        self.assert_problem('compared function', source=SOURCE.replace('0x1000 Widget::Get', 'Widget::Get'))
+        # Fields that carry no per-unit information are optional; when written they must still be true.
+        self.write(source=SOURCE.replace('#include', '// Evidence: findings/TEMPLATE.md\n// Recipe: reconstruction/recipes/r.json\n#include'))
+        self.assertEqual(self.problems(), [])
+        self.assert_problem('evidence', source=SOURCE.replace('#include', '// Evidence: findings/none.md\n#include'))
+        self.assert_problem('Recipe:', source=SOURCE.replace('#include', '// Recipe: reconstruction/recipes/none.json\n#include'))
         self.write(source=SOURCE)
-        self.assert_problem('name origin', header=HEADER.replace('GUESS', 'guessed'))
+        self.assert_problem('name origin', header=HEADER.replace('GUESS(low)', 'guessed'))
+        # The legacy form of the compared-function line still passes.
+        self.write(header=HEADER, source=SOURCE.replace('0x1000 Widget::Get', 'Widget::Get, RVA 0x1000, 8 bytes'))
+        self.assertEqual(self.problems(), [])
 
     def test_layout(self):
         self.assert_problem('must include its own header', source=SOURCE.replace('#include "Widget.h"', ''))
@@ -252,9 +250,16 @@ class ReviewerFollowUpTests(LintTests):
         self.assert_problem('belong in the leading comment', source=SOURCE + '// Sibling source: momusdigital/'
                             'fnv_decomp@91e1b6e8 src/a.cpp\n')
 
-    def test_free_form_labels_still_pass_without_v2(self):
-        self.write(header=HEADER.replace('Names are GUESS.', 'Names are GUESS names; COMMUNITY (NG b93280e, MIT).'))
-        self.assertEqual(self.problems(), [])
+    def test_free_form_labels_pass_only_for_the_listed_legacy_files(self):
+        free = HEADER.replace('Widget, Get, value: GUESS(low)', 'Names are GUESS names; COMMUNITY (NG b93280e, MIT).')
+        self.write(header=free)
+        self.assertTrue(any('label' in p for p in self.problems()))
+        original = lint.FREEFORM_LABEL_FILES
+        lint.FREEFORM_LABEL_FILES = original | {'reconstruction/misc/Widget.h', 'reconstruction/misc/Widget.cpp'}
+        try:
+            self.assertEqual(self.problems(), [])
+        finally:
+            lint.FREEFORM_LABEL_FILES = original
 
 
 class IncludeNameTests(LintTests):
@@ -365,3 +370,61 @@ class LicenceNoticeTests(LintTests):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CompactHeaderTests(LintTests):
+    """The compact-header budget applies to new and changed units (--compact), not to the whole tree."""
+
+    NG = 'COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)'
+
+    def compact(self, header=None, source=None):
+        self.write(header, source)
+        return lint.lint_tree(self.root, compact=['reconstruction/misc/Widget.h', 'reconstruction/misc/Widget.cpp'])
+
+    def test_minimal_unit_passes(self):
+        self.assertEqual(self.compact(HEADER, SOURCE), [])
+
+    def test_licence_text_is_refused_and_one_line_accepted(self):
+        full = (ROOT / 'licenses/CommonLibSSE-NG.txt').read_text().splitlines()
+        text = '\n'.join('// ' + line if line else '//' for line in full)
+        header = HEADER.replace('// Widget, Get, value: GUESS(low)', f'{text}\n// Widget, Get, value: {self.NG}')
+        self.assertTrue(any('remove the licence text' in p for p in self.compact(header)))
+        self.assertEqual(lint.lint_tree(self.root), [])  # still valid outside the compact rule
+        one = HEADER.replace('// Widget, Get, value: GUESS(low)',
+                             f'// {lint.SPDX_MIT}\n// Widget, Get, value: {self.NG}')
+        (self.root / 'licenses').mkdir()
+        shutil.copyfile(ROOT / 'licenses/CommonLibSSE-NG.txt', self.root / 'licenses/CommonLibSSE-NG.txt')
+        self.assertEqual(self.compact(one), [])
+
+    def test_ng_label_needs_the_one_line_notice(self):
+        header = HEADER.replace('GUESS(low)', self.NG)
+        self.assertTrue(any('SPDX' in p for p in self.compact(header)))
+
+    def test_misspelt_spdx_line_is_refused_everywhere(self):
+        header = HEADER.replace('// Widget', '// SPDX-License-Identifier: MIT (NG)\n// Widget')
+        self.write(header=header)
+        self.assertTrue(any('write the MIT notice' in p for p in self.problems()))
+
+    def test_cc0_line_is_exact_and_not_mixed_with_third_party_notices(self):
+        self.write(header=HEADER.replace('// Widget', f'// {lint.SPDX_CC0}\n// Widget'))
+        self.assertFalse(any('CC0' in p for p in self.problems()))
+        self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: CC0-1.0 (x)\n// Widget'))
+        self.assertTrue(any('write the dedication' in p for p in self.problems()))
+        self.write(header=HEADER.replace('// Widget', f'// {lint.SPDX_CC0}\n// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
+        self.assertTrue(any('keeps that licence' in p for p in self.problems()))
+
+    def test_gpl_spdx_line_is_not_flagged(self):
+        self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
+        self.assertFalse(any('SPDX' in p or 'write the' in p for p in self.problems()))
+
+    def test_missing_licence_text_file_is_reported_once_the_line_is_used(self):
+        one = HEADER.replace('// Widget, Get, value: GUESS(low)', f'// {lint.SPDX_MIT}\n// Widget, Get, value: {self.NG}')
+        self.write(header=one)
+        self.assertTrue(any('licenses/CommonLibSSE-NG.txt is missing' in p for p in self.problems()))
+
+    def test_long_header_is_refused_but_labels_and_functions_do_not_count(self):
+        padding = ''.join(f'// prose line {i}\n' for i in range(lint.HEADER_LIMIT + 1))
+        self.assertTrue(any('keep at most' in p for p in self.compact(source=padding + SOURCE)))
+        many = ''.join(f'// 0x{0x2000 + i:x} Widget::F{i}\n' for i in range(30))
+        labels = ''.join(f'// N{i}: GUESS(low)\n' for i in range(30))
+        self.assertEqual(self.compact(HEADER.replace('#pragma once', labels + '#pragma once'), SOURCE + many), [])

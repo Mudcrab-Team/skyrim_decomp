@@ -12,7 +12,9 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import build_index  # noqa: E402
 import record  # noqa: E402
 from check import validate  # noqa: E402
-from test_match_gate import GateFixture, RECORD, REVIEW  # noqa: E402
+from check import DIGEST_METHOD  # noqa: E402
+from digest_v2 import tu_digest  # noqa: E402
+from test_match_gate import CPP, GateFixture, HDR, RECORD, REVIEW  # noqa: E402
 
 OTHER = {'id': 'synthetic-fixture-0x3000', 'build_id': 'synthetic-fixture', 'rva': 0x3000, 'size': 8,
          'status': 'mapped', 'name': 'Other', 'name_origin': 'GUESS', 'owner': 'test',
@@ -67,6 +69,51 @@ class RecordTests(GateFixture, unittest.TestCase):
         out = self.apply([0x9999, 0x3000])
         self.assertEqual(out['recorded'], [])
         self.assertEqual(set(out['refused']), {0x9999, 0x3000})
+
+    def publish(self, *rvas):
+        """Publish bounds for functions the inventory does not hold, as the target-hash manifest does."""
+        import claimable
+        shard = 'data/target-hashes/sse-steam-1-7-104-part-000.json'
+        sizes = {self.fn['rva']: self.fn['size']}
+        self.write(shard, json.dumps({'functions': [{'rva': r, 'size': sizes.get(r, 4)} for r in rvas]}))
+        self.write(claimable.MANIFEST, json.dumps({'shards': [{'path': shard}]}))
+        self.write(claimable.EVIDENCE, 'shared evidence of claim-time entries\n')
+
+    def test_a_published_function_without_an_entry_gets_one_when_it_is_recorded(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        build_index.write_index(self.data, self.root)
+        self.publish(self.fn['rva'])
+        before = len(self.data['functions'])
+        out = self.apply()
+        self.assertEqual(out['recorded'], [self.fn['rva']])
+        data = json.loads((self.root / 'data/progress.json').read_text())
+        self.assertEqual(len(data['functions']), before + 1)
+        row = data['functions'][-1]
+        self.assertEqual((row['rva'], row['status'], row['name_origin'], row['owner'], row['report']),
+                         (self.fn['rva'], 'matched', 'GUESS', 'claim-time', RECORD))
+        self.assertEqual(row['name'], f'Function{self.fn["rva"]:x}')
+        validate(data, self.target, self.root)
+        self.assertEqual((self.root / build_index.INDEX).read_text(), build_index.render_index(data, self.root))
+
+    def test_an_unpublished_function_is_still_refused(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        self.publish(0x7777)
+        before = (self.root / 'data/progress.json').read_bytes()
+        out = self.apply()
+        self.assertEqual((out['recorded'], out['refused']), ([], {self.fn['rva']: 'not in inventory'}))
+        self.assertEqual((self.root / 'data/progress.json').read_bytes(), before)
+
+    def test_a_refused_claim_time_function_adds_no_entry(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        self.publish(self.fn['rva'])
+        self.write('reconstruction/synthetic/SyntheticSum.h', 'int SyntheticAddOne(int);\nint drift;\n')
+        before = (self.root / 'data/progress.json').read_bytes()
+        out = self.apply()
+        self.assertEqual(out['recorded'], [])
+        self.assertEqual((self.root / 'data/progress.json').read_bytes(), before)
 
     def test_second_run_is_a_no_op(self):
         self.apply()
@@ -138,3 +185,88 @@ class PushRetryTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CarriedRecordTests(GateFixture, unittest.TestCase):
+    """A record whose unit changed only in comments moves to the new text with its runs unchanged."""
+
+    def setUp(self):
+        super().setUp()
+        (self.root / REVIEW).unlink()
+        # The runs embed the v1 digest of the text they compared; the record's own digest is the v2 one.
+        old = self.record['source']['digest']
+        self.record['source'].update(digest_method=DIGEST_METHOD, digest=tu_digest(self.root, [CPP, HDR], DIGEST_METHOD),
+                                     run_digest=old, run_digest_method='tu-sha256-v1')
+        self.save_record()
+        self.write('data/progress.json', json.dumps(self.data))
+        self.write('builds/target.json', json.dumps(self.target))
+        self.out = self.root / 'out'
+
+    def carry(self):
+        return record.build_carried_record(self.root, 'synthetic-fixture', self.fn['rva'], self.out, 'carried note')
+
+    def test_a_provenance_only_edit_gives_a_record_the_validator_accepts_with_the_old_runs(self):
+        old = json.loads((self.root / RECORD).read_text())
+        self.write(HDR, '// SyntheticAddOne: OBSERVED; confirmed in the table\nint SyntheticAddOne(int);\n')
+        made = self.carry()
+        new = json.loads(made.read_text())
+        self.assertEqual(new['runs'], old['runs'])
+        self.assertEqual(new['source']['run_digest'], old['source']['run_digest'])
+        self.assertEqual(new['source']['digest'], tu_digest(self.root, [CPP, HDR], DIGEST_METHOD))
+        self.assertNotEqual(new['source']['digest'], old['source']['digest'])
+        self.assertEqual(new['notes'], old['notes'] + ['carried note'])
+        self.assertFalse(list((self.root / 'reports/synthetic-fixture').glob('.pr-*')))
+
+    def test_a_record_that_binds_its_runs_to_the_current_digest_cannot_be_carried(self):
+        self.record['source'].pop('run_digest')
+        self.record['source'].pop('run_digest_method')
+        self.save_record()
+        with self.assertRaisesRegex(ValueError, 'cannot carry'):
+            self.carry()
+
+    def test_a_function_without_an_accepted_record_has_nothing_to_carry(self):
+        self.fn['status'] = 'mapped'
+        self.write('data/progress.json', json.dumps(self.data))
+        with self.assertRaisesRegex(ValueError, 'accepted function'):
+            self.carry()
+
+    def test_a_changed_unit_closure_is_refused(self):
+        self.write(CPP, '#include "SyntheticSum.h"\n#include "Extra.h"\nint SyntheticSum(int* p) { return SyntheticAddOne(*p); }\n')
+        self.write('reconstruction/synthetic/Extra.h', '// extra\n')
+        with self.assertRaisesRegex(ValueError, 'translation unit changed'):
+            self.carry()
+
+    def carry_edited(self):
+        """The accepted review bound the text the runs compared; a comment-only edit then moves the record."""
+        self.save_review()
+        self.write('reconstruction/synthetic/SyntheticSum.h',
+                   '// SyntheticAddOne: OBSERVED; confirmed in the table\nint SyntheticAddOne(int);\n')
+        self.carry()
+
+    def record_carried(self):
+        return record.apply(self.root, 'synthetic-fixture', [self.fn['rva']], BLOB, model='gpt-6.1-terra',
+                            task_id='pr-bot-482-abcd', records=self.out)
+
+    def test_a_carried_function_is_recorded_at_the_new_digest_not_refused_as_already_matched(self):
+        self.carry_edited()
+        out = self.record_carried()
+        self.assertEqual((out['recorded'], out['refused']), ([self.fn['rva']], {}))
+        new = json.loads((self.root / RECORD).read_text())
+        self.assertEqual(new['source']['digest'], tu_digest(self.root, [CPP, HDR], DIGEST_METHOD))
+        self.assertIn(RECORD, out['files'])
+        review = json.loads((self.root / REVIEW).read_text())
+        self.assertEqual(review['source_digest'], new['source']['digest'])
+        validate(json.loads((self.root / 'data/progress.json').read_text()), self.target, self.root)
+
+    def test_a_carried_function_recorded_twice_is_a_no_op_the_second_time(self):
+        self.carry_edited()
+        self.record_carried()
+        again = self.record_carried()
+        self.assertEqual(again['recorded'], [])
+        self.assertEqual(again['refused'][self.fn['rva']], 'already matched')
+
+    def test_a_record_that_did_not_move_is_still_already_matched(self):
+        self.save_review()
+        self.carry()
+        out = self.record_carried()
+        self.assertEqual((out['recorded'], out['refused']), ([], {self.fn['rva']: 'already matched'}))

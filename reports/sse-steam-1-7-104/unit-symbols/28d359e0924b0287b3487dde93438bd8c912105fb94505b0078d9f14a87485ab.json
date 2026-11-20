@@ -1,0 +1,837 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function674b70@Actor@@QEBAPEAXXZ": {
+      "rva": 6769520,
+      "size": 20
+    },
+    "?Function675310@Actor@@QEBAIXZ": {
+      "rva": 6771472,
+      "size": 19
+    },
+    "?Function675540@Actor@@QEAAX_N@Z": {
+      "rva": 6772032,
+      "size": 17
+    },
+    "?Function675560@Actor@@QEBA_NXZ": {
+      "rva": 6772064,
+      "size": 19
+    },
+    "?GetBoundRadius@Actor@@QEBAMXZ": {
+      "rva": 6838528,
+      "size": 41
+    },
+    "?IsMovementAnimationDriven@Actor@@QEBA_NXZ": {
+      "rva": 6847168,
+      "size": 61
+    },
+    "?Function687c00@Actor@@QEAAX_N@Z": {
+      "rva": 6847488,
+      "size": 11
+    },
+    "?Function687f30@Actor@@QEBA_NXZ": {
+      "rva": 6848304,
+      "size": 19
+    },
+    "?Function692320@Actor@@QEAAXPEAVNiNode@@@Z": {
+      "rva": 6890272,
+      "size": 17
+    },
+    "?Function696a40@Actor@@QEBAIXZ": {
+      "rva": 6908480,
+      "size": 12
+    },
+    "?Function69f8c0@Actor@@QEBAPEAXXZ": {
+      "rva": 6944960,
+      "size": 16
+    },
+    "?ApplySoundEvent@@YAXPEAVActor@@H@Z": {
+      "rva": 6946384,
+      "size": 23
+    },
+    "?Function6a15c0@Actor@@QEBAPEAVTESPackage@@XZ": {
+      "rva": 6952384,
+      "size": 19
+    },
+    "?Function6a51b0@Actor@@QEBAAEBQEAVMovementControllerNPC@@XZ": {
+      "rva": 6967728,
+      "size": 8
+    },
+    "?Function6af0d0@Actor@@QEBAMXZ": {
+      "rva": 7008464,
+      "size": 20
+    },
+    "?Function6b1160@Actor@@QEBA_NXZ": {
+      "rva": 7016800,
+      "size": 12
+    },
+    "?Function6b5770@Actor@@UEBAIXZ": {
+      "rva": 7034736,
+      "size": 7
+    },
+    "?Function6b57d0@Actor@@UEBAXAEAUNiPoint3@@@Z": {
+      "rva": 7034832,
+      "size": 18
+    },
+    "?DoGetMovementSpeed@Actor@@UEAAMXZ": {
+      "rva": 7034976,
+      "size": 17
+    },
+    "?Function6b59f0@Actor@@UEBAIXZ": {
+      "rva": 7035376,
+      "size": 12
+    },
+    "?GetAnimationGraphManagerImpl@Actor@@UEBA_NAEAV?$BSTSmartPointer@VBSAnimationGraphManager@@@@@Z": {
+      "rva": 7037104,
+      "size": 19
+    },
+    "??_EActor@@WKA@EAAPEAXI@Z": {
+      "rva": 7060744,
+      "size": 12
+    },
+    "??_EActor@@WLI@EAAPEAXI@Z": {
+      "rva": 7060756,
+      "size": 12
+    },
+    "??_EActor@@WMA@EAAPEAXI@Z": {
+      "rva": 7060768,
+      "size": 12
+    },
+    "??_EActor@@WNA@EAAPEAXI@Z": {
+      "rva": 7060780,
+      "size": 12
+    },
+    "??_EActor@@WNI@EAAPEAXI@Z": {
+      "rva": 7060792,
+      "size": 12
+    },
+    "??_EActor@@WOA@EAAPEAXI@Z": {
+      "rva": 7060804,
+      "size": 12
+    },
+    "?Function6bdd60@Actor@@QEAAMXZ": {
+      "rva": 7069024,
+      "size": 9
+    },
+    "?Function6bde50@Actor@@QEBAPEAVBGSDialogueBranch@@XZ": {
+      "rva": 7069264,
+      "size": 8
+    },
+    "?Function6bde70@Actor@@QEBAIXZ": {
+      "rva": 7069296,
+      "size": 7
+    },
+    "?Function6bde80@Actor@@QEBAIXZ": {
+      "rva": 7069312,
+      "size": 7
+    },
+    "?GetTargetStatsObject@Actor@@UEAAPEAVTESObjectREFR@@XZ": {
+      "rva": 7069328,
+      "size": 8
+    },
+    "?Function6c1170@Actor@@QEBAAEAIAEAI@Z": {
+      "rva": 7082352,
+      "size": 12
+    },
+    "?Function6c1180@Actor@@QEBA_NXZ": {
+      "rva": 7082368,
+      "size": 14
+    },
+    "?Function6c2b90@Actor@@QEAAXPEAVBGSDialogueBranch@@@Z": {
+      "rva": 7089040,
+      "size": 8
+    },
+    "?Function6c2d00@Actor@@QEAAXI@Z": {
+      "rva": 7089408,
+      "size": 7
+    },
+    "?Function6c2d10@Actor@@QEAAXI@Z": {
+      "rva": 7089424,
+      "size": 7
+    },
+    "?Function6c8a40@Actor@@QEBA_NPEBX@Z": {
+      "rva": 7113280,
+      "size": 7
+    },
+    "?Function6c9f00@Actor@@QEAAMXZ": {
+      "rva": 7118592,
+      "size": 19
+    },
+    "?Function6ca270@Actor@@QEBAAEBUAttackDataPointer@@XZ": {
+      "rva": 7119472,
+      "size": 24
+    },
+    "?Function6cc8f0@Actor@@QEBA_NXZ": {
+      "rva": 7129328,
+      "size": 12
+    },
+    "?Function6d4d20@Actor@@QEBAPEAVActorMagicCaster@@H@Z": {
+      "rva": 7163168,
+      "size": 20
+    },
+    "?Function6d7070@Actor@@QEBAPEAVTESForm@@XZ": {
+      "rva": 7172208,
+      "size": 21
+    },
+    "?Function6d7090@Actor@@QEBAPEAVTESForm@@XZ": {
+      "rva": 7172240,
+      "size": 21
+    },
+    "?InvalidateCommandedActorEffect@Actor@@UEAAXPEAVActiveEffect@@@Z": {
+      "rva": 7179728,
+      "size": 14
+    },
+    "?Function6d9250@Actor@@QEBA?AW4VOICE_STATE@@XZ": {
+      "rva": 7180880,
+      "size": 19
+    },
+    "?Function6d9270@Actor@@QEBAPEAVTESShout@@XZ": {
+      "rva": 7180912,
+      "size": 19
+    },
+    "?Function6d92d0@Actor@@QEAAXW4TESShoutVariation@@@Z": {
+      "rva": 7181008,
+      "size": 17
+    },
+    "?Function6d92f0@Actor@@QEBA?AW4TESShoutVariation@@XZ": {
+      "rva": 7181040,
+      "size": 22
+    },
+    "?Function2e6a90@TESObjectREFR@@QEBAPEAXXZ": {
+      "rva": 3041936,
+      "size": null
+    },
+    "?Function722110@AIProcess@@QEBAIXZ": {
+      "rva": 7479568,
+      "size": null
+    },
+    "?SetAlert@AIProcess@@QEAAX_N@Z": {
+      "rva": 7249952,
+      "size": null
+    },
+    "?IsAlert@AIProcess@@QEBA_NXZ": {
+      "rva": 7249920,
+      "size": null
+    },
+    "?Function6a7910@Actor@@AEBAMXZ": {
+      "rva": 6977808,
+      "size": null
+    },
+    "?animationMovementKey@@3UMovementKey@@B": {
+      "rva": 52752560,
+      "size": null
+    },
+    "?Function693200@Actor@@AEAAXI@Z": {
+      "rva": 6894080,
+      "size": null
+    },
+    "?Function6f5120@AIProcess@@QEBA_NXZ": {
+      "rva": 7295264,
+      "size": null
+    },
+    "?SetWeaponBone@AIProcess@@QEAAXPEAVNiNode@@@Z": {
+      "rva": 7476048,
+      "size": null
+    },
+    "?Function7231e0@AIProcess@@QEBAIXZ": {
+      "rva": 7483872,
+      "size": null
+    },
+    "?Function1db3d0@BGSPerkRankArray@@QEBAPEAXXZ": {
+      "rva": 1946576,
+      "size": null
+    },
+    "?initialActionTimer@@3MB": {
+      "rva": 34205392,
+      "size": null
+    },
+    "?GetPackageThatIsRunning@AIProcess@@QEBAPEAVTESPackage@@XZ": {
+      "rva": 7248512,
+      "size": null
+    },
+    "?GetCurrentMovementSpeed@AIProcess@@QEBAMXZ": {
+      "rva": 7484208,
+      "size": null
+    },
+    "?Function685a30@Actor@@AEBAIXZ": {
+      "rva": 6838832,
+      "size": null
+    },
+    "?Function7217e0@AIProcess@@QEBA_NAEAV?$BSTSmartPointer@VBSAnimationGraphManager@@@@@Z": {
+      "rva": 7477216,
+      "size": null
+    },
+    "??_EActor@@UEAAPEAXI@Z": {
+      "rva": 7062752,
+      "size": null
+    },
+    "?defaultActorFloat@@3MB": {
+      "rva": 28687912,
+      "size": null
+    },
+    "?defaultActorWord@@3IB": {
+      "rva": 35251548,
+      "size": null
+    },
+    "?GetAttackData@AIProcess@@QEBAAEBUAttackDataPointer@@XZ": {
+      "rva": 7343200,
+      "size": null
+    },
+    "?emptyAttackData@@3UAttackDataPointer@@B": {
+      "rva": 52328784,
+      "size": null
+    },
+    "?Function726ee0@AIProcess@@QEAAXPEAVActiveEffect@@@Z": {
+      "rva": 7499488,
+      "size": null
+    },
+    "?GetVoiceState@AIProcess@@QEBA?AW4VOICE_STATE@@XZ": {
+      "rva": 7340064,
+      "size": null
+    },
+    "?GetCurrentShout@AIProcess@@QEBAPEAVTESShout@@XZ": {
+      "rva": 7340128,
+      "size": null
+    },
+    "?SetCurrentShoutVariation@AIProcess@@QEAAXW4TESShoutVariation@@@Z": {
+      "rva": 7340320,
+      "size": null
+    },
+    "?GetCurrentShoutVariation@AIProcess@@QEBA?AW4TESShoutVariation@@XZ": {
+      "rva": 7340160,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function674b70@Actor@@QEBAPEAXXZ",
+        "rva": "0x674b70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function675310@Actor@@QEBAIXZ",
+        "rva": "0x675310",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function675540@Actor@@QEAAX_N@Z",
+        "rva": "0x675540",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function675560@Actor@@QEBA_NXZ",
+        "rva": "0x675560",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetBoundRadius@Actor@@QEBAMXZ",
+        "rva": "0x685900",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsMovementAnimationDriven@Actor@@QEBA_NXZ",
+        "rva": "0x687ac0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function687c00@Actor@@QEAAX_N@Z",
+        "rva": "0x687c00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function687f30@Actor@@QEBA_NXZ",
+        "rva": "0x687f30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function692320@Actor@@QEAAXPEAVNiNode@@@Z",
+        "rva": "0x692320",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function696a40@Actor@@QEBAIXZ",
+        "rva": "0x696a40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function69f8c0@Actor@@QEBAPEAXXZ",
+        "rva": "0x69f8c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ApplySoundEvent@@YAXPEAVActor@@H@Z",
+        "rva": "0x69fe50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6a15c0@Actor@@QEBAPEAVTESPackage@@XZ",
+        "rva": "0x6a15c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6a51b0@Actor@@QEBAAEBQEAVMovementControllerNPC@@XZ",
+        "rva": "0x6a51b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6af0d0@Actor@@QEBAMXZ",
+        "rva": "0x6af0d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6b1160@Actor@@QEBA_NXZ",
+        "rva": "0x6b1160",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6b5770@Actor@@UEBAIXZ",
+        "rva": "0x6b5770",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6b57d0@Actor@@UEBAXAEAUNiPoint3@@@Z",
+        "rva": "0x6b57d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetMovementSpeed@Actor@@UEAAMXZ",
+        "rva": "0x6b5860",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6b59f0@Actor@@UEBAIXZ",
+        "rva": "0x6b59f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetAnimationGraphManagerImpl@Actor@@UEBA_NAEAV?$BSTSmartPointer@VBSAnimationGraphManager@@@@@Z",
+        "rva": "0x6b60b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@WKA@EAAPEAXI@Z",
+        "rva": "0x6bbd08",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@WLI@EAAPEAXI@Z",
+        "rva": "0x6bbd14",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@WMA@EAAPEAXI@Z",
+        "rva": "0x6bbd20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@WNA@EAAPEAXI@Z",
+        "rva": "0x6bbd2c",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@WNI@EAAPEAXI@Z",
+        "rva": "0x6bbd38",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@WOA@EAAPEAXI@Z",
+        "rva": "0x6bbd44",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6bdd60@Actor@@QEAAMXZ",
+        "rva": "0x6bdd60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6bde50@Actor@@QEBAPEAVBGSDialogueBranch@@XZ",
+        "rva": "0x6bde50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6bde70@Actor@@QEBAIXZ",
+        "rva": "0x6bde70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6bde80@Actor@@QEBAIXZ",
+        "rva": "0x6bde80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetTargetStatsObject@Actor@@UEAAPEAVTESObjectREFR@@XZ",
+        "rva": "0x6bde90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c1170@Actor@@QEBAAEAIAEAI@Z",
+        "rva": "0x6c1170",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c1180@Actor@@QEBA_NXZ",
+        "rva": "0x6c1180",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c2b90@Actor@@QEAAXPEAVBGSDialogueBranch@@@Z",
+        "rva": "0x6c2b90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c2d00@Actor@@QEAAXI@Z",
+        "rva": "0x6c2d00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c2d10@Actor@@QEAAXI@Z",
+        "rva": "0x6c2d10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c8a40@Actor@@QEBA_NPEBX@Z",
+        "rva": "0x6c8a40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6c9f00@Actor@@QEAAMXZ",
+        "rva": "0x6c9f00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6ca270@Actor@@QEBAAEBUAttackDataPointer@@XZ",
+        "rva": "0x6ca270",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6cc8f0@Actor@@QEBA_NXZ",
+        "rva": "0x6cc8f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d4d20@Actor@@QEBAPEAVActorMagicCaster@@H@Z",
+        "rva": "0x6d4d20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d7070@Actor@@QEBAPEAVTESForm@@XZ",
+        "rva": "0x6d7070",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d7090@Actor@@QEBAPEAVTESForm@@XZ",
+        "rva": "0x6d7090",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InvalidateCommandedActorEffect@Actor@@UEAAXPEAVActiveEffect@@@Z",
+        "rva": "0x6d8dd0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d9250@Actor@@QEBA?AW4VOICE_STATE@@XZ",
+        "rva": "0x6d9250",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d9270@Actor@@QEBAPEAVTESShout@@XZ",
+        "rva": "0x6d9270",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d92d0@Actor@@QEAAXW4TESShoutVariation@@@Z",
+        "rva": "0x6d92d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6d92f0@Actor@@QEBA?AW4TESShoutVariation@@XZ",
+        "rva": "0x6d92f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function2e6a90@TESObjectREFR@@QEBAPEAXXZ",
+        "rva": "0x2e6a90",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function722110@AIProcess@@QEBAIXZ",
+        "rva": "0x722110",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetAlert@AIProcess@@QEAAX_N@Z",
+        "rva": "0x6ea020",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsAlert@AIProcess@@QEBA_NXZ",
+        "rva": "0x6ea000",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6a7910@Actor@@AEBAMXZ",
+        "rva": "0x6a7910",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?animationMovementKey@@3UMovementKey@@B",
+        "rva": "0x324f0b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function693200@Actor@@AEAAXI@Z",
+        "rva": "0x693200",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6f5120@AIProcess@@QEBA_NXZ",
+        "rva": "0x6f5120",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetWeaponBone@AIProcess@@QEAAXPEAVNiNode@@@Z",
+        "rva": "0x721350",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7231e0@AIProcess@@QEBAIXZ",
+        "rva": "0x7231e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1db3d0@BGSPerkRankArray@@QEBAPEAXXZ",
+        "rva": "0x1db3d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?initialActionTimer@@3MB",
+        "rva": "0x209eed0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetPackageThatIsRunning@AIProcess@@QEBAPEAVTESPackage@@XZ",
+        "rva": "0x6e9a80",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetCurrentMovementSpeed@AIProcess@@QEBAMXZ",
+        "rva": "0x723330",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function685a30@Actor@@AEBAIXZ",
+        "rva": "0x685a30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7217e0@AIProcess@@QEBA_NAEAV?$BSTSmartPointer@VBSAnimationGraphManager@@@@@Z",
+        "rva": "0x7217e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_EActor@@UEAAPEAXI@Z",
+        "rva": "0x6bc4e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?defaultActorFloat@@3MB",
+        "rva": "0x1b5be28",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?defaultActorWord@@3IB",
+        "rva": "0x219e55c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetAttackData@AIProcess@@QEBAAEBUAttackDataPointer@@XZ",
+        "rva": "0x700c60",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?emptyAttackData@@3UAttackDataPointer@@B",
+        "rva": "0x31e7950",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function726ee0@AIProcess@@QEAAXPEAVActiveEffect@@@Z",
+        "rva": "0x726ee0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetVoiceState@AIProcess@@QEBA?AW4VOICE_STATE@@XZ",
+        "rva": "0x700020",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetCurrentShout@AIProcess@@QEBAPEAVTESShout@@XZ",
+        "rva": "0x700060",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetCurrentShoutVariation@AIProcess@@QEAAXW4TESShoutVariation@@@Z",
+        "rva": "0x700120",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetCurrentShoutVariation@AIProcess@@QEBA?AW4TESShoutVariation@@XZ",
+        "rva": "0x700080",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

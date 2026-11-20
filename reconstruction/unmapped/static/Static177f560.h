@@ -1,0 +1,18 @@
+// Source exposure: binary-analysis; no external implementation source reused.
+// Static177f560, Manager, manager, reserved, construct, release, value: GUESS(low) STANDIN
+#pragma once
+struct Static177f560;
+struct Manager {
+    virtual void reserved();
+    virtual void construct(Static177f560*);
+    virtual void release(Static177f560*);
+};
+extern Manager* manager();
+// empty_resource, cleanup: GUESS(low) STANDIN
+extern unsigned char empty_resource;
+extern void cleanup(Static177f560*);
+struct Static177f560 {
+    void* value;
+    Static177f560();
+    ~Static177f560() { value = &empty_resource; manager()->release(this); cleanup(this); }
+};

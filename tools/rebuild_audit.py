@@ -22,7 +22,7 @@ import sys
 import time
 
 TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py',
-              'tools/pecoff.py', 'tools/source_digest.py', 'tools/verifier/verify_function.py',
+              'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py', 'tools/verifier/verify_function.py',
               'tools/verifier/unit_build.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
 CAUSES = ('header-drift', 'recipe-or-compiler-mismatch', 'missing-file', 'other')
 
@@ -75,7 +75,7 @@ def prepare(repo, out, revision):
         raise ValueError('export already exists; resume run or use a new export directory')
     # Import only the source-closure scanner from the audited tree, not the working tree.
     sys.path.insert(0, str(repo / 'tools'))
-    from source_digest import tu_digest
+    from digest_v2 import tu_digest
     from check_source_digest import include_closure, source_digest_cache
     target = json.loads((repo / 'builds/target.json').read_text())
     progress = json.loads((repo / 'data/progress.json').read_text())
@@ -115,7 +115,7 @@ def prepare(repo, out, revision):
                 groups[key] = group
                 try:
                     closure = include_closure(repo, compiled)
-                    group['digest'] = tu_digest(repo, closure)
+                    group['digest'] = tu_digest(repo, closure, rec['source'].get('digest_method'))
                     if snapshot_hash(group['symbols']) != rec['symbol_map']['sha256']:
                         # Rebuild the exact historical map using the gate's existing content proof.
                         # Compiler source/headers still come only from the current clean checkout.

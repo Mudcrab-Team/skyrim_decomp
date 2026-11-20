@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "??_GBSEffectShaderMaterial@@UEAAPEAXI@Z": {
+      "rva": 22373936,
+      "size": 52
+    },
+    "??1BSEffectShaderMaterial@@UEAA@XZ": {
+      "rva": 22372656,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    },
+    "?GetDefault@BSEffectShaderMaterial@@UEAAPEAVBSShaderMaterial@@XZ": {
+      "rva": 22373632,
+      "size": 8
+    },
+    "?g_defaultEffectShaderMaterial@@3PEAVBSShaderMaterial@@EA": {
+      "rva": 55076576,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "??_GBSEffectShaderMaterial@@UEAAPEAXI@Z",
+        "rva": "0x1556630",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1BSEffectShaderMaterial@@UEAA@XZ",
+        "rva": "0x1556130",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetDefault@BSEffectShaderMaterial@@UEAAPEAVBSShaderMaterial@@XZ",
+        "rva": "0x1556500",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_defaultEffectShaderMaterial@@3PEAVBSShaderMaterial@@EA",
+        "rva": "0x34866e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

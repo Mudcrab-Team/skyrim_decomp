@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@BSLightingShaderMaterialParallaxOcc@@UEAAXPEAVBSShaderMaterial@@@Z": {
+      "rva": 22176464,
+      "size": 117
+    },
+    "?ReceiveValuesFromRootMaterial@BSLightingShaderMaterialParallaxOcc@@QEAAX_N0000PEAX1@Z": {
+      "rva": 22177072,
+      "size": 97
+    },
+    "?CopyMembers@BSLightingShaderMaterialBase@@UEAAXPEAVBSShaderMaterial@@@Z": {
+      "rva": 22165472,
+      "size": null
+    },
+    "?ReceiveRootValues@@YAXPEAVBSLightingShaderMaterialBase@@_N1111PEAX2@Z": {
+      "rva": 22167296,
+      "size": null
+    },
+    "?gDefaultHeightTexture@@3V?$NiPointer@VNiSourceTexture@@@@A": {
+      "rva": 53699624,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@BSLightingShaderMaterialParallaxOcc@@UEAAXPEAVBSShaderMaterial@@@Z",
+        "rva": "0x15262d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReceiveValuesFromRootMaterial@BSLightingShaderMaterialParallaxOcc@@QEAAX_N0000PEAX1@Z",
+        "rva": "0x1526530",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@BSLightingShaderMaterialBase@@UEAAXPEAVBSShaderMaterial@@@Z",
+        "rva": "0x15237e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReceiveRootValues@@YAXPEAVBSLightingShaderMaterialBase@@_N1111PEAX2@Z",
+        "rva": "0x1523f00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gDefaultHeightTexture@@3V?$NiPointer@VNiSourceTexture@@@@A",
+        "rva": "0x3336428",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

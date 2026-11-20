@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?SaveBinary@BSPSysScaleModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16791952,
+      "size": 43
+    },
+    "?SaveBinary@NiPSysModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16388240,
+      "size": null
+    },
+    "?SaveBinary@ParticleScaleData@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 16808064,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?SaveBinary@BSPSysScaleModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x1003990",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPSysModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfa1090",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@ParticleScaleData@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0x1007880",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

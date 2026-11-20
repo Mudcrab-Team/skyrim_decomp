@@ -1,0 +1,20 @@
+// PlayerCharacter: STANDIN GUESS(low); partial target view; original identities and ownership remain hypotheses.
+// Source exposure: mixed; Drafted by gpt-6.1-terra.
+// Origin: original implementation informed by pinned community declarations.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
+// PlayerCharacter, NiPoint3: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
+// PositionOrAlternate, Predicate, alternatePosition, unknownPrefix: STANDIN GUESS(medium); names and alternate global inferred, only the accessed prefix is declared.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+#pragma once
+#include <cstdint>
+namespace P2073 {
+struct NiPoint3 { float x, y, z; };
+extern NiPoint3 alternatePosition;
+class PlayerCharacter {
+public:
+    bool Predicate();
+    const NiPoint3* PositionOrAlternate();
+    std::uint8_t unknownPrefix[0x54];
+    NiPoint3 position;
+};
+}

@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@NiBillboardNode@@QEAAXPEAV1@@Z": {
+      "rva": 15740064,
+      "size": 46
+    },
+    "?LoadBinary@NiBillboardNode@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15740128,
+      "size": 82
+    },
+    "?SaveBinary@NiBillboardNode@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15740256,
+      "size": 82
+    },
+    "?CopyNodeMembers@@YAXAEAVNiNode@@PEAV1@@Z": {
+      "rva": 15602848,
+      "size": null
+    },
+    "?LoadBinary@NiNode@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15603040,
+      "size": null
+    },
+    "?SaveBinary@NiNode@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15603424,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@NiBillboardNode@@QEAAXPEAV1@@Z",
+        "rva": "0xf02ca0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiBillboardNode@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf02ce0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiBillboardNode@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf02d60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyNodeMembers@@YAXAEAVNiNode@@PEAV1@@Z",
+        "rva": "0xee14a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiNode@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xee1560",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiNode@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xee16e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

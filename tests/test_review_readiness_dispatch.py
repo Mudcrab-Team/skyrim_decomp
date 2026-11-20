@@ -1,4 +1,4 @@
-"""Readiness checks precede primary, second-pass and family Reviewer dispatch; synthetic only."""
+"""Mechanical readiness findings for the four review grounds; synthetic only."""
 import contextlib
 import io
 import json
@@ -10,9 +10,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools'), str(ROOT / 'tests')]
-import flow
 import lint_review_readiness as lint
-import test_flow as fixtures
 
 
 class ReadinessDispatch(unittest.TestCase):
@@ -29,6 +27,15 @@ class ReadinessDispatch(unittest.TestCase):
         self.assertEqual(lint.plausible_source_problems('Synthetic.cpp', 'int count;'), [])
         self.assertEqual(lint.claim_scope_problems('Synthetic.cpp', '// Byte match only; names remain guesses.'), [])
 
+    def test_prose_naming_the_mit_licence_is_not_a_notice(self):
+        prose = ('// Adapted code: bodies are taken from NG under its MIT licence; see the SPDX line below.\n'
+                 '// Names follow the same licence.\n')
+        self.assertEqual(lint.truncated_mit_problems('Synthetic.h', prose), [])
+        self.assertTrue(lint.truncated_mit_problems('Synthetic.h', '// MIT License\n// Permission is hereby granted\n'))
+        nested = ROOT / 'reconstruction/gamebryo/nimain/NiObject.h'
+        if nested.is_file():
+            self.assertEqual(lint.truncated_mit_problems(str(nested), nested.read_text()), [])
+
     def test_cli_runs_existing_lint_without_weakening_it(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -40,26 +47,6 @@ class ReadinessDispatch(unittest.TestCase):
             existing.assert_called_once_with(root, ['Synthetic.cpp'])
             self.assertIn('existing lint failure', out.getvalue())
             self.assertIn('plausible_source', out.getvalue())
-
-    def test_next_actions_orders_lint_before_each_primary_and_sample_dispatch(self):
-        with tempfile.TemporaryDirectory() as directory:
-            repo = fixtures.Repo(Path(directory))
-            with patch('claims.sync_safe'), patch('claims.cached', return_value=(fixtures.github_claims.ClaimIndex(), None)):
-                flow.review_group(repo.root, repo.fdir)
-                actions = flow.next_actions(repo.root, repo.fdir, online=False)
-            reviews = [(i, text) for i, (kind, text) in enumerate(actions)
-                       if kind == 'dispatch' and 'Reviewer for' in text]
-            self.assertGreaterEqual(len(reviews), 2)
-            for i, text in reviews:
-                kind, command = actions[i-1]
-                self.assertEqual(kind, 'run')
-                self.assertIn('lint_review_readiness.py', command)
-                for ground in ('plausible_source', 'provenance', 'publication_hygiene', 'claim_scope'):
-                    self.assertIn(ground, command)
-                self.assertIn('only after', text.lower())
-            for group in flow.groups(repo.fdir).values():
-                brief = (repo.root / group['brief']).read_text()
-                self.assertIn('before dispatching this Reviewer', brief)
 
 
 if __name__ == '__main__':

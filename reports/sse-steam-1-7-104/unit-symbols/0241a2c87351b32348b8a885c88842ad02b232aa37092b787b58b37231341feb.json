@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?ForwardSlot06@BGSProcedureTreeProcedure@@QEAAXXZ": {
+      "rva": 4761264,
+      "size": 11
+    },
+    "?ForwardSlot07@BGSProcedureTreeProcedure@@QEAAXXZ": {
+      "rva": 4761296,
+      "size": 11
+    },
+    "?ForwardSlot1D@BGSProcedureTreeProcedure@@QEAAXXZ": {
+      "rva": 4761328,
+      "size": 20
+    },
+    "?ForwardSlot08@BGSProcedureTreeProcedure@@QEAAXXZ": {
+      "rva": 4761360,
+      "size": 11
+    },
+    "?ForwardSlot1B@BGSProcedureTreeProcedure@@QEAAXXZ": {
+      "rva": 4761504,
+      "size": 14
+    },
+    "?ForwardSlot1C@BGSProcedureTreeProcedure@@QEAAXXZ": {
+      "rva": 4761536,
+      "size": 14
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?ForwardSlot06@BGSProcedureTreeProcedure@@QEAAXXZ",
+        "rva": "0x48a6b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForwardSlot07@BGSProcedureTreeProcedure@@QEAAXXZ",
+        "rva": "0x48a6d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForwardSlot1D@BGSProcedureTreeProcedure@@QEAAXXZ",
+        "rva": "0x48a6f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForwardSlot08@BGSProcedureTreeProcedure@@QEAAXXZ",
+        "rva": "0x48a710",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForwardSlot1B@BGSProcedureTreeProcedure@@QEAAXXZ",
+        "rva": "0x48a7a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForwardSlot1C@BGSProcedureTreeProcedure@@QEAAXXZ",
+        "rva": "0x48a7c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

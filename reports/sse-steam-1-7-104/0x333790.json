@@ -29,9 +29,9 @@
         "object_sha256": "738152e3ec61058d236d43b1ac3efd2949e0475a80b666196902b2fa28ed7fef",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getisrace/ConditionFunctions.cpp",
-          "reconstruction/conditions_getisrace/ConditionFunctions.h",
-          "reconstruction/fo4b4c_686600/Actor.h"
+          "reconstruction/skyrim_shared/actors/Actor_686600.h",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.h"
         ]
       },
       "winpc-native": {
@@ -50,9 +50,9 @@
         "object_sha256": "47cfb8030790e09ec2a4fc72b4e9b901d7b273129d8f9ae161cf27da2ffcee2f",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/conditions_getisrace/ConditionFunctions.cpp",
-          "reconstruction/conditions_getisrace/ConditionFunctions.h",
-          "reconstruction/fo4b4c_686600/Actor.h"
+          "reconstruction/skyrim_shared/actors/Actor_686600.h",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.cpp",
+          "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.h"
         ]
       }
     }
@@ -66,7 +66,8 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit e0aafee384b7f68e13cd9a29f9459e6911b9d1ff, with uncommitted changes to reconstruction/conditions_getisrace/ConditionFunctions.cpp, reconstruction/conditions_getisrace/ConditionFunctions.h, reports/sse-steam-1-7-104/unit-symbols/b8ad98ea29d8415cf0d1840194e2a4bb4c49504d354eb48fab6e1ff9f623c0fa.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit e0aafee384b7f68e13cd9a29f9459e6911b9d1ff, with uncommitted changes to reconstruction/conditions_getisrace/ConditionFunctions.cpp, reconstruction/conditions_getisrace/ConditionFunctions.h, reports/sse-steam-1-7-104/unit-symbols/b8ad98ea29d8415cf0d1840194e2a4bb4c49504d354eb48fab6e1ff9f623c0fa.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in.",
+    "Carried to new source: the unit differs from the text its runs compared only in comments, and the function has no published target hash, so the runs are unchanged."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
@@ -322,13 +323,15 @@
     }
   ],
   "source": {
-    "compiled": "reconstruction/conditions_getisrace/ConditionFunctions.cpp",
-    "digest": "b958fd7b6b1a440d5466a590904a46324347176fae535cfb9a6cbe042a08e4b7",
-    "digest_method": "tu-sha256-v1",
+    "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.cpp",
+    "digest": "97ca2e2d307705ece18e1ab8d69cff3cb93ee7440d81ce045d9fcdd004c6fad0",
+    "digest_method": "tu-sha256-v2",
+    "run_digest": "b958fd7b6b1a440d5466a590904a46324347176fae535cfb9a6cbe042a08e4b7",
+    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/conditions_getisrace/ConditionFunctions.cpp",
-      "reconstruction/conditions_getisrace/ConditionFunctions.h",
-      "reconstruction/fo4b4c_686600/Actor.h"
+      "reconstruction/skyrim_shared/actors/Actor_686600.h",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.cpp",
+      "reconstruction/skyrim_shared/conditions/ConditionFunctions_333790.h"
     ]
   },
   "symbol_map": {

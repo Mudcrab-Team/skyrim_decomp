@@ -36,7 +36,7 @@ class TaskFiles(unittest.TestCase):
         shutil.rmtree(self.tmp)
 
     def write(self, **overrides):
-        task = {'build_id': TARGET['build_id'], 'compiled': 'reconstruction/inventory/ArmorRatingVisitor.cpp',
+        task = {'build_id': TARGET['build_id'], 'compiled': 'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp',
                 'recipe_name': 'msvc-19.16.27054-o2',
                 'functions': [{'rva': '0x73ad90', 'size': 84, 'symbol': '?F@@YAXXZ'}]}
         task.update(overrides)
@@ -50,8 +50,8 @@ class TaskFiles(unittest.TestCase):
         self.assertEqual(task['functions'], [{'rva': 0x73ad90, 'size': 84, 'symbol': '?F@@YAXXZ'}])
         self.assertIsNone(task['symbols_repo'])
         files, closure = pipeline.unit_manifest(task)
-        self.assertEqual(closure, ['reconstruction/inventory/ArmorRatingVisitor.cpp',
-                                   'reconstruction/inventory/ArmorRatingVisitor.h'])
+        self.assertEqual(closure, ['reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp',
+                                   'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.h'])
         self.assertEqual(files[pipeline.PRIVATE_SYMBOLS], self.task_dir / 'symbols.json')
         for name in pipeline.TOOL_FILES:
             self.assertIn(name, files)

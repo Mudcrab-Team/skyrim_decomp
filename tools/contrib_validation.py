@@ -3,17 +3,19 @@
 Only trusted tooling runs. A submitted revision is materialized as data for closure/lint checks.
 """
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import tempfile
 
 import contrib_screen
 import lint_reconstruction
 import lint_review_readiness
-from source_digest import include_closure, tu_digest, _repo_file
+import unit_paths
+from source_digest import include_closure, _repo_file
+from digest_v2 import tu_digest
 from local_paths import local_path, no_sibling_names
 
-UNIT = re.compile(r'reconstruction/([a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
+UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 
 
 def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
@@ -101,7 +103,7 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
     """Screen exactly the changed files and their complete compiler input closures."""
     root = Path(root)
     problems, all_names = [], set(names)
-    compiled = {str(Path(n).with_suffix('.cpp')) for n in names
+    compiled = {PurePosixPath(n).with_suffix('.cpp').as_posix() for n in names
                 if (root / Path(n).with_suffix('.cpp')).is_file()} | set(companions)
     if not compiled:
         problems.append(diagnostic(f'{names[0]}: no companion translation unit identifies this contribution'))
@@ -119,6 +121,9 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
                 problems += [diagnostic(f'{cpp}: deterministic screen: {code}') for code in codes]
         except (OSError, ValueError) as exc:
             problems.append(diagnostic(str(exc)))
+    own_headers = {PurePosixPath(c).with_suffix('.h').as_posix() for c in compiled}
+    # Shared declarations are only included, never compiled as a unit; a unit's own header is not.
+    included_only = {n for n in all_names if n.endswith('.h') and n not in own_headers}
     for name in sorted(all_names):
         path = root / name
         if _repo_file(root, name) != name:
@@ -134,7 +139,7 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
         problems += screen_diagnostics(blob, name, headers=headers)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
-            problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name])]
+            problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]
         except (UnicodeError, ValueError) as exc:
             problems.append(diagnostic(f'{name}: source lint failed ({type(exc).__name__})'))
     return sorted(set(problems))
@@ -179,6 +184,8 @@ def intake_problems(ctx, rows, head=None, details=None):
             problems.append(diagnostic(f'{name}: outside contributor scope (reconstruction/<area>/<Class>.h or .cpp only)'))
         elif status == 'D':
             problems.append(diagnostic(f'{name}: deleting a unit file is for maintainers'))
+        elif status == 'A' and not unit_paths.area_accepted(UNIT.fullmatch(name).group(1)):
+            problems.append(diagnostic(f'{name}: area is not one of the unit areas in tools/unit_paths.py'))
         else:
             names.append(name)
     if not names:
@@ -214,7 +221,7 @@ def intake_problems(ctx, rows, head=None, details=None):
                 problems.append(diagnostic(f'{name}: intake requires a regular non-executable source file'))
         # Headers are small public source. Include all repository headers so the canonical closure
         # resolver sees ambiguity, transitive and includer-chain resolution exactly as intake does.
-        wanted = set(names) | {str(Path(n).with_suffix('.cpp')) for n in names} | companions
+        wanted = set(names) | {PurePosixPath(n).with_suffix('.cpp').as_posix() for n in names} | companions
         wanted.update(n for n in entries if n.startswith('reconstruction/') and n.endswith('.h'))
         sources = blobs(ctx.repo, entries, wanted)
         sources.update(blobs(ctx.repo, entries, lint_dependencies(sources)))
@@ -251,7 +258,7 @@ def project_reconfirmation(root, changed):
         if not changed.intersection(source['translation_unit']):
             continue
         try:
-            stale = tu_digest(root, include_closure(root, source['compiled'])) != source['digest']
+            stale = tu_digest(root, include_closure(root, source['compiled']), source.get('digest_method')) != source['digest']
         except (OSError, ValueError):
             stale = True  # the source preflight reports the closure fault; no acceptance is renewed
         if stale:

@@ -1,0 +1,9 @@
+// Recipe: reconstruction/recipes/represented-magic-wrapper-o2.json
+// Source exposure: mixed (public typed storage and independent target RTTI/call operands).
+// Code origin: original wrapper emission unit; public data declarations carry their notices below.
+// F004Recovered17de70, object: GUESS(low) STANDIN
+// ExtraWaterLightRefs: EXE_RTTI
+// 0x17de70 F004Recovered17de70::~F004Recovered17de70
+void operator delete(void*, unsigned __int64) noexcept;
+#include "F004Recovered17de70.h"
+static ResearchLayouts::F004Recovered17de70 object;

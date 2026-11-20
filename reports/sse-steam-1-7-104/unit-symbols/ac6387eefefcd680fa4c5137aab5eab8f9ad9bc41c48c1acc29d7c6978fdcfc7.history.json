@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/ac6387eefefcd680fa4c5137aab5eab8f9ad9bc41c48c1acc29d7c6978fdcfc7.json",
+  "versions": [
+    {
+      "sha256": "ac6387eefefcd680fa4c5137aab5eab8f9ad9bc41c48c1acc29d7c6978fdcfc7",
+      "base": null,
+      "added": [
+        "?IsIgnoringCombat@ActorProcess@@QEBA_NXZ",
+        "?AdvanceEssentialDownTimer@ActorProcess@@QEAAXXZ",
+        "?GetEssentialDownTimer@ActorProcess@@QEBAMXZ",
+        "?SetEssentialDownTimer@ActorProcess@@QEAAXM@Z",
+        "?SetCurrentActionComplete@ActorProcess@@QEAAX_N@Z",
+        "?IsCurrentActionComplete@ActorProcess@@QEBA_NXZ",
+        "?GetTarget@ActorProcess@@QEBA?AURefHandle@@XZ",
+        "?GetFollowTarget@ActorProcess@@QEBA?AURefHandle@@XZ",
+        "?IsEscortingPlayer@ActorProcess@@QEBA_NXZ",
+        "?SetTarget@ActorProcess@@QEAAXPEAVActor@@AEBURefHandle@@@Z",
+        "?SetFollowTarget@ActorProcess@@QEAAXAEBURefHandle@@@Z",
+        "?SetEscortingPlayer@ActorProcess@@QEAAX_N@Z",
+        "?SetNumberItemsActivate@ActorProcess@@QEAAXH@Z",
+        "?Function6e9840@ActorProcess@@QEBA_NXZ",
+        "?Function6e9860@ActorProcess@@QEAAX_N@Z",
+        "?Function6e9890@ActorProcess@@QEAAX_K@Z",
+        "?IsProcessTimerExpired@ActorProcess@@QEBA_NXZ",
+        "?GetCurrentProcedureIndex@ActorProcess@@QEBAHXZ",
+        "?AdvanceProcedureIndex@ActorProcess@@QEAAXI@Z",
+        "?IsAlert@ActorProcess@@QEBA_NXZ",
+        "?SetAlert@ActorProcess@@QEAAX_N@Z",
+        "?IsFollower@ActorProcess@@QEBA_NXZ",
+        "?SetFollower@ActorProcess@@QEAAX_N@Z",
+        "?Function6ea7e0@ActorProcess@@QEAAX_K@Z",
+        "?Function6ea7f0@ActorProcess@@QEBA_KXZ",
+        "?IsTargetActivated@ActorProcess@@QEBA_NXZ",
+        "?SetTargetActivated@ActorProcess@@QEAAX_N@Z",
+        "?Function6ea950@ActorProcess@@QEBA?AURefHandle@@XZ",
+        "?Function6ea9c0@ActorProcess@@QEBA?AURefHandle@@XZ",
+        "?IsPackageDoneOnce@ActorProcess@@QEBA_NXZ",
+        "?SetPackageDoneOnce@ActorProcess@@QEAAX_N@Z",
+        "?GetDeathTime@ActorProcess@@QEBAMXZ",
+        "?SetDeathTime@ActorProcess@@QEAAXM@Z",
+        "?AddTrackedDamage@ActorProcess@@QEAAXPEBXM@Z",
+        "?GetEquippedRightHand@ActorProcess@@QEBAPEAVTESForm@@XZ",
+        "?elapsedFrameTime@@3MB",
+        "?Function720440@ActorProcess@@AEAAXPEAVActor@@AEBURefHandle@@@Z",
+        "?processTime@@3MB",
+        "?trackedDamageSource@@3PEBXEB"
+      ]
+    }
+  ]
+}

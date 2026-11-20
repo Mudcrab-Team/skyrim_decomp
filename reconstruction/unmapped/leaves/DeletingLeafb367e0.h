@@ -1,0 +1,10 @@
+// Source exposure: binary-analysis
+// DeletingLeafb367e0, object: GUESS(low) STANDIN
+// Origin: scalar-deleting-eight-byte-leaf v3
+#pragma once
+void operator delete(void*, unsigned __int64) noexcept;
+class DeletingLeafb367e0 {
+public:
+    virtual ~DeletingLeafb367e0() {}
+};
+static_assert(sizeof(DeletingLeafb367e0) == 8, "minimal virtual interface size");

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/86127ddedc38b94f532aa4ff52180ffd502cbfd533d1e2baeddf997034102f5d.json",
+  "versions": [
+    {
+      "sha256": "86127ddedc38b94f532aa4ff52180ffd502cbfd533d1e2baeddf997034102f5d",
+      "base": null,
+      "added": [
+        "?SetCameraTarget@PlayerCamera@@QEAAXPEAVActor@@@Z",
+        "?nullHandle@@3IA",
+        "?CreateRefHandle@@YAXAEAIPEAVTESObjectREFR@@@Z",
+        "?ForceFirstPerson@PlayerCamera@@QEAAXXZ",
+        "?ForceThirdPerson@PlayerCamera@@QEAAXXZ",
+        "?GetCurrentNormalFOV@PlayerCamera@@QEBAMXZ",
+        "?playerHandle@@3IA",
+        "?SetFirstPersonMode@PlayerCamera@@QEAAXXZ",
+        "?SetState@TESCamera@@QEAAXPEAVTESCameraState@@@Z",
+        "?PrepareThirdPerson@ThirdPersonState@@QEAAX_N0@Z",
+        "?defaultFirstPersonFOV@@3MA",
+        "?defaultWorldFOV@@3MA"
+      ]
+    }
+  ]
+}

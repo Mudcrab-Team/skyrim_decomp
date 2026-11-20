@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Functioncd6ae0@BSNullImplGameSound@@QEAA_NXZ": {
+      "rva": 13462240,
+      "size": 35
+    },
+    "?Functioncd6b10@BSNullImplGameSound@@QEAAXAEBUNiPoint3@@@Z": {
+      "rva": 13462288,
+      "size": 27
+    },
+    "?Functioncd6b40@BSNullImplGameSound@@QEBAXAEAUNiPoint3@@@Z": {
+      "rva": 13462336,
+      "size": 27
+    },
+    "?Functioncd6b70@BSNullImplGameSound@@QEAAXMM@Z": {
+      "rva": 13462384,
+      "size": 11
+    },
+    "?Functioncd6be0@BSNullImplGameSound@@QEAAXXZ": {
+      "rva": 13462496,
+      "size": 9
+    },
+    "?Functioncd5af0@BSGameSound@@IEAAXXZ": {
+      "rva": 13458160,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Functioncd6ae0@BSNullImplGameSound@@QEAA_NXZ",
+        "rva": "0xcd6ae0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioncd6b10@BSNullImplGameSound@@QEAAXAEBUNiPoint3@@@Z",
+        "rva": "0xcd6b10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioncd6b40@BSNullImplGameSound@@QEBAXAEAUNiPoint3@@@Z",
+        "rva": "0xcd6b40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioncd6b70@BSNullImplGameSound@@QEAAXMM@Z",
+        "rva": "0xcd6b70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioncd6be0@BSNullImplGameSound@@QEAAXXZ",
+        "rva": "0xcd6be0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioncd5af0@BSGameSound@@IEAAXXZ",
+        "rva": "0xcd5af0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

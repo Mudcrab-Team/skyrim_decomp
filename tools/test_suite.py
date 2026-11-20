@@ -48,14 +48,9 @@ def shard_modules(modules, index, count):
     return {name: modules[name] for offset, name in enumerate(sorted(modules)) if offset % count == index}
 
 
-def run(root, jobs, listing=False, shard_index=0, shard_count=1, changed_since=None):
+def run(root, jobs, listing=False, shard_index=0, shard_count=1):
     modules = inventory(root)
     discovered = sum(map(len, modules.values()))
-    selection = 'full inventory'
-    if changed_since:
-        import test_selection
-        selected, selection = test_selection.select(root, changed_since, 'HEAD', modules)
-        modules = {name: ids for name, ids in modules.items() if name in selected}
     modules = shard_modules(modules, shard_index, shard_count)
     if listing:
         print(json.dumps(modules, indent=2))
@@ -84,7 +79,6 @@ def run(root, jobs, listing=False, shard_index=0, shard_count=1, changed_since=N
     report.write_text(json.dumps(dict(discovered=discovered, selected=expected, executed=total,
                                       shard_index=shard_index, shard_count=shard_count,
                                       skipped=skipped, failed=failed,
-                                      selection=selection,
                                       jobs=jobs, seconds=seconds, python=sys.version.split()[0]), indent=2)+'\n')
     print(f'\nRan {total} tests in {time.monotonic()-started:.3f}s; discovered {discovered}; '
           f'selected {expected}; shard {shard_index}/{shard_count}; module processes {jobs}')
@@ -99,7 +93,6 @@ def main():
     p.add_argument('--list', action='store_true')
     p.add_argument('--shard-index', type=int, default=0, help='zero-based CI shard (whole modules)')
     p.add_argument('--shard-count', type=int, default=1)
-    p.add_argument('--changed-since', help='local dependency selection; omit in CI for the full inventory')
     p.add_argument('--worker', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--result', type=Path, help=argparse.SUPPRESS)
     a = p.parse_args()
@@ -107,8 +100,6 @@ def main():
         p.error('--jobs must be positive')
     if a.shard_count < 1 or not 0 <= a.shard_index < a.shard_count:
         p.error('require --shard-count > 0 and 0 <= --shard-index < --shard-count')
-    if a.changed_since and a.shard_count != 1:
-        p.error('local --changed-since cannot be combined with CI shards')
     root = a.root.resolve()
     os.chdir(root)
     sys.path.insert(0, str(root / 'tests'))
@@ -121,7 +112,7 @@ def main():
         result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(suite)
         a.result.write_text(json.dumps(dict(run=result.testsRun, skipped=len(result.skipped))))
         return 0 if result.wasSuccessful() else 1
-    return run(root, a.jobs, a.list, a.shard_index, a.shard_count, a.changed_since)
+    return run(root, a.jobs, a.list, a.shard_index, a.shard_count)
 
 
 if __name__ == '__main__':

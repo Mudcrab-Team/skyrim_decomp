@@ -79,7 +79,7 @@ def header_entry(root, path):
 
 
 def index(root=ROOT, cls=None):
-    paths = sorted((Path(root) / 'reconstruction').glob(f'*/{cls or "*"}.h'))
+    paths = sorted((Path(root) / 'reconstruction').rglob(f'{cls or "*"}.h'))
     return [entry for path in paths if (entry := header_entry(root, path))]
 
 

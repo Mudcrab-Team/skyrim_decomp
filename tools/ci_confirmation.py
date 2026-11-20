@@ -12,6 +12,8 @@ from pathlib import Path
 import compare
 from pecoff import CoffObject
 import target_hashes
+from digest_v2 import run_revision
+import source_moves
 
 WORKFLOW = '.github/workflows/ci-confirm.yml'
 PR_WORKFLOW = '.github/workflows/pr-check.yml'
@@ -138,7 +140,8 @@ def validate_pr_check(root, record, fn, target, c):
                                c['base_sha'], 'HEAD'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     require(ancestry.returncode == 0, 'CI tools revision is not an ancestor')
     require(c.get('build_id') == target['build_id'] and c.get('rva') == hex(fn['rva'])
-            and c.get('unit') == record['source']['compiled'], 'function or unit binding differs')
+            and c.get('unit') in source_moves.accepted_paths(record['source']['compiled'], root),
+            'function or unit binding differs')
     require(c.get('status') == c.get('map_status') == 'pass' and c.get('result') == 'hash-match',
             'hash did not pass')
     require(c.get('toolset') == 'MATCH' and c.get('compiler_pins_sha256') ==
@@ -149,7 +152,7 @@ def validate_pr_check(root, record, fn, target, c):
             'no supported published target hash')
     require(c.get('target') == row and c.get('normalized_sha256') == row['normalized_sha256']
             and c.get('layout_sha256') == row['layout_sha256'], 'target binding differs')
-    require(c.get('source_sha256') == record['source']['digest']
+    require(c.get('source_sha256') == run_revision(record['source'])
             and c.get('recipe_sha256') == record['recipe']['sha256'], 'source or recipe differs')
     # CI found the function by hash, so it must be the one the first host's comparator bound.
     symbols = {(run['report'].get('function') or {}).get('symbol') for run in record['runs']}
@@ -188,8 +191,8 @@ def validate(root, record, fn, target):
     require(row is not None and row['size'] == fn['size'] and row['extraction'] != 'unmasked-unsupported',
             'no supported published target hash')
     require(c.get('target') == row and c.get('build_id') == target['build_id'], 'target binding differs')
-    require(c.get('source_sha256') == record['source']['digest']
-            and c.get('unit') == record['source']['compiled']
+    require(c.get('source_sha256') == run_revision(record['source'])
+            and c.get('unit') in source_moves.accepted_paths(record['source']['compiled'], root)
             and c.get('recipe_sha256') == record['recipe']['sha256'], 'source or recipe differs')
     require(c.get('result') == 'hash-match' and c.get('deterministic') is True,
             'hash mismatch or nondeterminism')

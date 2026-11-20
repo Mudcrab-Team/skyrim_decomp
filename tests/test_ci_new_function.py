@@ -80,6 +80,10 @@ class HeaderClaims(Fixture):
         self.write(HEADER, '// ' + ''.join(f'RVA 0x{0x2000 + i:x}\n// ' for i in range(ci.MAX_CLAIMS_PER_UNIT + 20)))
         self.assertEqual(len(ci.requests(self.root, [HEADER], {})), ci.MAX_CLAIMS_PER_UNIT)
 
+    def test_the_claim_cap_covers_a_whole_pr_in_one_unit(self):
+        import pr_bot
+        self.assertGreaterEqual(ci.MAX_CLAIMS_PER_UNIT, pr_bot.Bot(root=ROOT, work=self.root).config['max_functions'])
+
     def test_a_unit_without_claims_or_bindings_is_still_one_unbound_request(self):
         self.write(HEADER, 'int f();\n')
         self.assertEqual(ci.requests(self.root, [HEADER], {}),
@@ -126,6 +130,19 @@ class Discovery(Fixture):
                            [target_row()])
         self.assertEqual((row['result'], row['symbols']), ('hash-match', [fx.FUNCTION]))
 
+
+    def test_a_stale_recorded_symbol_is_found_again_by_its_hash(self):
+        # A declaration change (void made bool) renames the decorated symbol a record names.
+        stale = '?Setup@Shader@@UEAAXXZ'
+        (row,) = self.rows(fx.coff_object(), [dict(unit=UNIT, rva=0x1010, symbol=stale, recipe=RECIPE)],
+                           [target_row()])
+        self.assertEqual((row['result'], row['symbols']), ('hash-match', [fx.FUNCTION]))
+
+    def test_a_stale_recorded_symbol_with_changed_code_still_fails(self):
+        (row,) = self.rows(fx.coff_object(code=fx.CODE[:-1] + bytes([0x90])),
+                           [dict(unit=UNIT, rva=0x1010, symbol='?Setup@Shader@@UEAAXXZ', recipe=RECIPE)],
+                           [target_row()])
+        self.assertEqual((row['result'], row['reason']), ('mismatch', 'no-matching-function'))
 
 if __name__ == '__main__':
     unittest.main()

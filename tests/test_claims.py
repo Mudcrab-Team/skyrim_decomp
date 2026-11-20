@@ -133,20 +133,6 @@ class ClaimsTests(unittest.TestCase):
                             claims.sync(self.root, fake.client)
                 self.assertEqual(fake.writes, [('comment', 8)])
 
-    def test_active_entries_exclude_planned_families(self):
-        import flow
-        (self.root / 'data').mkdir()
-        (self.root / 'data/progress.json').write_text(json.dumps(PUBLIC))
-        family = self.root / 'reports' / BUILD / 'families'
-        family.mkdir(parents=True)
-        (family / 'plan.json').write_text('{}')
-        states = {'0x1000': {'state': 'queued'}, '0x1020': {'state': 'rejected'},
-                  '0x2000': {'state': 'review-pending'}, '0x3000': {'state': 'pushed'}}
-        with patch.object(claims, 'planned_family', return_value={0x4000}), \
-                patch.object(flow, 'function_states', return_value=states):
-            entries = claims.active_entries(self.root, PUBLIC)
-        self.assertEqual(set(entries), {(0x1000, 0x1001), (0x2000, 0x2001)})
-
     def test_comment_and_linked_pr_extend_lapse(self):
         issue = raw(old=True)
         def api(_):
@@ -290,6 +276,64 @@ class ClaimsTests(unittest.TestCase):
         self.assertTrue(any(a <= 0x1030 < b for a, b in remaining))
         self.assertEqual(fake.writes, [('comment', 8), ('edit', 8)])
 
+    def matched_public(self, *rvas):
+        public = json.loads(json.dumps(PUBLIC))
+        for fn in public['functions']:
+            if fn['rva'] in rvas:
+                fn['status'] = 'matched'
+        return public
+
+    def close_with(self, rows, public, dry_run=False):
+        fake = FakeGh(rows)
+        return fake, claims.close_completed(fake.client, public, dry_run)
+
+    def test_any_authors_claim_closes_once_every_function_is_matched(self):
+        rows = [raw(1, entries=((0x1000, 0x1001), (0x1020, 0x1021)), me='contributor'),
+                raw(2, entries=((0x2000, 0x2001),), me='contributor')]
+        fake, done = self.close_with(rows, self.matched_public(0x1000, 0x1020))
+        self.assertEqual(done, [1])
+        self.assertEqual(fake.closed, [1])
+        close = next(c for c in fake.calls if c[1:3] == ['issue', 'close'])
+        self.assertEqual(close[close.index('--comment') + 1], claims.DONE_COMMENT)
+        self.assertEqual(fake.writes, [])
+
+    def test_one_unmatched_function_keeps_the_claim_open(self):
+        rows = [raw(1, entries=((0x1000, 0x1001), (0x1020, 0x1021)))]
+        fake, done = self.close_with(rows, self.matched_public(0x1000))
+        self.assertEqual((done, fake.closed), ([], []))
+
+    def test_a_claim_of_functions_missing_from_the_inventory_is_not_complete(self):
+        row = raw(1, entries=((0x1000, 0x1001), (0x5000, 0x5001)))
+        fake, done = self.close_with([row], self.matched_public(0x1000))
+        self.assertEqual(done, [])
+
+    def test_a_claim_filed_with_zero_functions_closes_when_its_addresses_are_matched(self):
+        row = raw(1, entries=((0x1000, 0x1001),))
+        row['body'] = row['body'].replace('Functions: 1', 'Functions: 0')
+        fake, done = self.close_with([row], self.matched_public(0x1000))
+        self.assertEqual(done, [1])
+
+    def test_a_range_is_complete_only_when_its_declared_count_is_met(self):
+        row = raw(1, entries=((0x1000, 0x1100),))
+        row['body'] = claims.body(BUILD, [(0x1000, 0x1100)], PUBLIC, 'other', total=3)
+        fake, done = self.close_with([row], self.matched_public(0x1000, 0x1020))
+        self.assertEqual(done, [])
+        row['body'] = claims.body(BUILD, [(0x1000, 0x1100)], PUBLIC, 'other', total=2)
+        fake, done = self.close_with([row], self.matched_public(0x1000, 0x1020))
+        self.assertEqual(done, [1])
+
+    def test_other_builds_pull_requests_and_plain_issues_are_left_alone(self):
+        other_build = raw(1)
+        other_build['body'] = other_build['body'].replace(BUILD, 'other-build')
+        pull = dict(raw(2), pull_request={'url': 'u'})
+        plain = dict(raw(3), title='Active workstreams')
+        fake, done = self.close_with([other_build, pull, plain], self.matched_public(0x1000, 0x1020, 0x2000))
+        self.assertEqual((done, fake.closed), ([], []))
+
+    def test_dry_run_closes_nothing(self):
+        fake, done = self.close_with([raw(1)], self.matched_public(0x1000), dry_run=True)
+        self.assertEqual((done, fake.closed), ([1], []))
+
     def test_sync_failure_is_nonfatal(self):
         with patch.object(claims, 'sync', side_effect=RuntimeError('offline')), contextlib.redirect_stderr(io.StringIO()) as err:
             claims.sync_safe(self.root)
@@ -357,8 +401,7 @@ class ClaimsTests(unittest.TestCase):
         clusters = self.root / 'clusters.json'
         clusters.write_text(json.dumps({'build_id': BUILD, 'clusters': [{'members': ['0x3000', '0x3010'],
                             'ranges': [{'start': '0x3000', 'end': '0x3020'}]}]}))
-        import flow
-        with patch.object(flow, 'function_states', return_value={'0x2000': {'state': 'confirmed'}}):
+        with patch.object(claims, 'active_entries', return_value=[(0x2000, 0x2001)]):
             build, groups = claims.collect(self.root, PUBLIC, cluster_lists=[clusters])
         self.assertEqual(build, BUILD)
         self.assertEqual(groups, [([(0x2000, 0x2001)], {})])

@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?SaveGame@BarrierProjectile@@UEAAXPEAVBGSSaveFormBuffer@@@Z": {
+      "rva": 8255152,
+      "size": 64
+    },
+    "?LoadGame@BarrierProjectile@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 8255232,
+      "size": 55
+    },
+    "?SaveGame@Projectile@@UEAAXPEAVBGSSaveFormBuffer@@@Z": {
+      "rva": 8368128,
+      "size": null
+    },
+    "?SaveDataEndian@BGSSaveGameBuffer@@QEAAXPEBXIII@Z": {
+      "rva": 6528768,
+      "size": null
+    },
+    "?LoadGame@Projectile@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 8369072,
+      "size": null
+    },
+    "?LoadDataEndian@BGSLoadGameBuffer@@QEAAXPEAXII@Z": {
+      "rva": 6520432,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?SaveGame@BarrierProjectile@@UEAAXPEAVBGSSaveFormBuffer@@@Z",
+        "rva": "0x7df6b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@BarrierProjectile@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x7df700",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveGame@Projectile@@UEAAXPEAVBGSSaveFormBuffer@@@Z",
+        "rva": "0x7fb000",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveDataEndian@BGSSaveGameBuffer@@QEAAXPEBXIII@Z",
+        "rva": "0x639f00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@Projectile@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x7fb3b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadDataEndian@BGSLoadGameBuffer@@QEAAXPEAXII@Z",
+        "rva": "0x637e70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

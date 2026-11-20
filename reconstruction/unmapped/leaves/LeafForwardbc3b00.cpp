@@ -1,0 +1,7 @@
+// Source exposure: binary-analysis; no external implementation reused.
+// LeafForwardbc3b00, Forward, leaf_target, leaf_global: GUESS(low) STANDIN
+// Origin: census-forward-leaf v1
+// 0xbc3b00 LeafForwardbc3b00::Forward
+#include "LeafForwardbc3b00.h"
+extern "C" void* leaf_target(void*);
+void* LeafForwardbc3b00::Forward() { return leaf_target(this); }

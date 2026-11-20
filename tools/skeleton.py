@@ -3,11 +3,11 @@
 
     python3 tools/skeleton.py .local/tasks/<group>/<unit dir>        # one unit
     python3 tools/skeleton.py .local/tasks/<group>                   # every unit of a group without files
-    python3 tools/skeleton.py <dir> --drafted-by <model>             # fill the "Drafted by" line now
+    python3 tools/skeleton.py <dir> --drafted-by <model>             # accepted and ignored: credit lives in git
     python3 tools/skeleton.py <dir> --sheets [--sibling | --no-sibling]  # also write sheets (both variants
                                                                          # unless one is chosen; tools/sheet.py)
 
-The files have every header line and label the lint needs, the class shell and one stub per
+The files have the short header the lint needs (docs/contributor-lessons.md, compact headers) and the class shell and one stub per
 compared function (tools/unit_skeleton.py). A stub body is `SKELETON_TODO_BODY;`, which does not
 compile, and the lint refuses every `SKELETON_TODO...` word outside an untracked working file, so
 an unfilled skeleton can never pass the comparator, be committed or be accepted. Existing files
@@ -40,7 +40,7 @@ def resolve(arg):
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('task_dir', help='a unit task directory, or a group directory for all its units')
-    p.add_argument('--drafted-by', help='model or person who will write the bodies')
+    p.add_argument('--drafted-by', help='accepted for old command lines; credit lives in git and the records')
     p.add_argument('--sheets', action='store_true', help='also write sheet.md and sheet-<rva>.md files')
     p.add_argument('--sibling', '--sibling-snippet', dest='sibling', action=argparse.BooleanOptionalAction,
                    default=None, help='only the sheet variant with (or without) FNV bodies; default both')

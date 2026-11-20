@@ -5,6 +5,7 @@ tests/stub_cl.py, GitHub is a fake object, and Windows paths are exercised throu
 helpers on any host.
 """
 import contextlib
+import hashlib
 from datetime import datetime, timedelta, timezone
 import io
 import json
@@ -340,6 +341,45 @@ class ClaimTests(Base):
         self.assertEqual(code, 0)
         self.assertIn('issues/new', out['link'])
 
+    def claim_with(self, gh, functions, entries):
+        data = contrib.inventory(ROOT)
+        build = data['target_build_id']
+        rows = [{'rva': r, 'build_id': build, 'status': 'mapped'} for r in functions]
+        out = io.StringIO()
+        with unittest.mock.patch.object(contrib, 'claim_selection', return_value=(rows, entries)), \
+                contextlib.redirect_stdout(out):
+            code = contrib.main(['--json', 'claim', '--model', 'synthetic-agent', f'0x{MAPPED:x}'],
+                                ctx=self.ctx(github=gh))
+        return code, json.loads(out.getvalue())
+
+    def test_offered_function_outside_the_inventory_is_counted(self):
+        held = {f['rva'] for f in contrib.inventory(ROOT)['functions']}
+        offered = next(r for r in range(0x7f000000, 0x7f001000, 0x10) if r not in held)
+        gh = FakeGitHub()
+        code, _ = self.claim_with(gh, [offered], [(offered, offered + 1)])
+        self.assertEqual(code, 0)
+        self.assertEqual(len(gh.created), 1)
+        self.assertIn('(1 functions)', gh.created[0])
+        self.assertNotIn('(0 functions)', gh.created[0])
+
+    def test_a_claim_that_resolves_to_no_function_opens_no_issue(self):
+        gh = FakeGitHub()
+        nothing = 0x7f800000
+        code, out = self.claim_with(gh, [MAPPED], [(nothing, nothing + 0x10)])
+        self.assertEqual(code, contrib.USAGE)
+        self.assertIn('0 functions', out['error'])
+        self.assertEqual(gh.created, [])
+
+    def test_a_range_without_unmatched_functions_is_refused(self):
+        gh = FakeGitHub()
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = contrib.main(['--json', 'claim', '--model', 'synthetic-agent', '--range', '0x1-0x2'],
+                                ctx=self.ctx(github=gh))
+        self.assertEqual(code, contrib.USAGE)
+        self.assertIn('nothing to claim', json.loads(out.getvalue())['error'])
+        self.assertEqual(gh.created, [])
+
     def test_matched_function_cannot_be_claimed(self):
         ctx = self.ctx(github=FakeGitHub())
         with contextlib.redirect_stdout(io.StringIO()):
@@ -353,6 +393,21 @@ def filled_skeleton(*args):
 
 
 class SkeletonTests(Base):
+    def test_skeleton_header_carries_cc0_only_without_a_third_party_notice(self):
+        data = contrib.inventory(ROOT)
+        seen = set()
+        for fn in data['functions']:
+            if fn['status'] != 'mapped' or not contrib.PLAIN_NAME.fullmatch(fn['name']):
+                continue
+            cls, method = contrib.PLAIN_NAME.fullmatch(fn['name']).groups()
+            h, _cpp = contrib.skeleton(fn, cls, method, 'forms', 'tester, no AI', contrib.DEFAULT_RECIPE)
+            third_party = 'SPDX-License-Identifier: MIT' in h or 'GPL-3.0' in h
+            self.assertEqual('SPDX-License-Identifier: CC0-1.0' in h, not third_party, fn['name'])
+            seen.add(third_party)
+            if len(seen) == 2:
+                break
+        self.assertTrue(seen)
+
     def test_skeleton_passes_the_lint(self):
         data = contrib.inventory(ROOT)
         fn = next(f for f in data['functions'] if f['status'] == 'mapped' and 'powerof3' in f['name_source']
@@ -367,7 +422,7 @@ class SkeletonTests(Base):
         cpp = cpp.replace('SKELETON_TODO_BODY;', '').replace('SKELETON_TODO_ORIGIN', 'none').replace(
             'SKELETON_TODO_CODE_ORIGIN', 'original synthetic fixture')
         root = self.tmp / 'repo'
-        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, fn['evidence']):
+        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, fn['evidence'], 'licenses/CommonLibSSE-NG.txt'):
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(ROOT / rel, root / rel)
         unit = root / 'reconstruction' / 'forms'
@@ -377,7 +432,7 @@ class SkeletonTests(Base):
         for rel in (f'reconstruction/forms/{cls}.h', f'reconstruction/forms/{cls}.cpp'):
             self.assertEqual(lint_reconstruction.lint_file(root, rel, TARGET['build_id']), [])
         self.assertIn('GPL-3.0', h)
-        self.assertIn(f'RVA 0x{fn["rva"]:x}', cpp)
+        self.assertIn(f'// 0x{fn["rva"]:x} ', cpp)
 
     def test_unit_files_are_written_with_lf(self):
         path = self.tmp / 'u.cpp'
@@ -388,8 +443,9 @@ class SkeletonTests(Base):
         rows = contrib.candidates(ROOT, contrib.inventory(ROOT))
         self.assertTrue(any(r['unit_exists'] and r['startable'] for r in rows))
         self.assertTrue(all(r['reason'] for r in rows))
-        self.assertEqual([(not r['startable'], r['readiness_rank'], r['size'], int(r['rva'], 16)) for r in rows],
-                         sorted((not r['startable'], r['readiness_rank'], r['size'], int(r['rva'], 16)) for r in rows))
+        key = lambda r: (not r['startable'], r['size_band'], not r['has_layout'], r['readiness_rank'], r['size'],
+                         int(r['rva'], 16))
+        self.assertEqual([key(r) for r in rows], sorted(key(r) for r in rows))
 
 
 class IntakeTests(Base):
@@ -399,7 +455,7 @@ class IntakeTests(Base):
     def setUp(self):
         super().setUp()
         self.repo = self.tmp / 'repo'
-        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, 'findings/fifth-batch-selection.md'):
+        for rel in ('builds/target.json', contrib.DEFAULT_RECIPE, 'findings/fifth-batch-selection.md', 'licenses/CommonLibSSE-NG.txt'):
             (self.repo / rel).parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(ROOT / rel, self.repo / rel)
         self.git('init', '-q')
@@ -588,11 +644,13 @@ class SubmitTests(Base):
                      'functions': [{'rva': f'0x{self.RVA:x}', 'size': fn['size'], 'symbol': 'x',
                                     'community_name': fn['name']}],
                      'contrib': {'practice': False, 'unit': self.unit}}
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         digest = tu_digest(self.repo, include_closure(self.repo, self.unit[1]))
         self.summary = {
             'task': self.tdir.name, 'run': 1, 'unit': self.unit[1], 'source_revision': digest,
-            'recipe': contrib.DEFAULT_RECIPE, 'recipe_sha256': 'ab' * 32, 'compiler': 'pinned',
+            'recipe': contrib.DEFAULT_RECIPE, 'compiler': 'pinned',
+            'recipe_sha256': hashlib.sha256((self.repo / contrib.DEFAULT_RECIPE).read_bytes()).hexdigest(),
             'image_sha256_pinned': True, 'comparator': {'version': 'x'}, 'contract_version': 2, 'practice': False,
             'functions': [{'rva': f'0x{self.RVA:x}', 'name': fn['name'], 'result': 'pass', 'reason': 'all-checks-passed',
                            'detail': self.SECRETS[0], 'hint': 'h', 'first_mismatch': self.SECRETS[1],
@@ -653,6 +711,11 @@ class SubmitTests(Base):
         code, out = self.submit(gh)
         self.assertEqual(code, contrib.FAILED)
         return '\n'.join(out['blockers'])
+
+    def test_a_recipe_that_changed_since_the_compare_blocks(self):
+        self.summary['recipe_sha256'] = 'ab' * 32
+        self.write()
+        self.assertIn('changed since the last compare', self.blockers())
 
     def test_stand_in_compiler_blocks(self):
         self.summary['compiler'] = 'override'
@@ -943,6 +1006,16 @@ class JoinPageTests(unittest.TestCase):
         self.assertNotIn('%', page.split('<main>')[1].split('</main>')[0].replace('100%', ''))
 
 
+class SymbolMapPathTests(unittest.TestCase):
+    def test_missing_map_names_the_path_and_the_sparse_fix(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(contrib.Stop) as caught:
+                contrib.symbol_map_path(tmp, 'some-build')
+        self.assertIn('reports/some-build/symbol-map.json', caught.exception.message)
+        self.assertIn("git sparse-checkout set --no-cone '/*' '!/site/'", caught.exception.next_action)
+
+
 class CommandLineTests(unittest.TestCase):
     def test_non_tty_json_never_prompts(self):
         proc = subprocess.run([sys.executable, str(ROOT / 'tools/contrib.py'), '--json', 'doctor'],
@@ -1053,7 +1126,8 @@ class SubmitPreflightTests(SubmitTests):
     def test_renamed_or_legacy_upstream_can_never_receive_submit_push(self):
         self.git('remote', 'remove', 'fork')
         self.git('remote', 'add', 'origin', 'https://github.com/awarebayes/skyrim_decomp.git')
-        for url in ('https://github.com/awarebayes/skyrim_decomp.git',
+        for url in ('https://github.com/Mudcrab-Team/skyrim_decomp.git',
+                    'https://github.com/awarebayes/skyrim_decomp.git',
                     'git@github.com:awarebayes/skyrim-research.git',
                     'https://github.com/AWAREBAYES/SKYRIM_DECOMP.git/'):
             with self.subTest(url=url):
@@ -1183,11 +1257,10 @@ class ContributorActionsTests(Base):
             self.assertFalse(any('drafter-card' in doc for doc in docs))
 
 class StructuredFeedbackParsingTests(unittest.TestCase):
-    def test_marker_delimited_lessons_and_findings(self):
+    def test_bot_sticky_findings(self):
         import contrib_feedback
-        body = ('### What needs changing\n- Fix the binding.\n\n### For your agent\n'
-                '<!-- agent-lessons:start -->\n- Check binding (docs/verification.md).\n'
-                '<!-- agent-lessons:end -->\n')
-        parsed = contrib_feedback.parse_outcome(body)
-        self.assertEqual(parsed['what_needs_changing'], ['Fix the binding.'])
-        self.assertEqual(parsed['for_your_agent'], '- Check binding (docs/verification.md).')
+        body = ('<!-- pr-bot -->\nBot status for head 0123abcd (updated in place).\n\n'
+                'Not accepted yet:\n- 0x1000: the review did not approve it\n  - Fix the binding.\n')
+        parsed = contrib_feedback.parse_sticky(body)
+        self.assertEqual(parsed['head'], '0123abcd')
+        self.assertEqual(parsed['what_needs_changing'], ['0x1000: the review did not approve it (Fix the binding.)'])

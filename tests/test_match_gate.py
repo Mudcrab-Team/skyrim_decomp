@@ -21,6 +21,7 @@ import check
 from check import BUILD_ADDED_FLAGS, BUILD_CLEARED_ENV, MATCH_RECORD_SCHEMA, validate, validate_match
 from compare import compare
 from source_digest import tu_digest
+import digest_v2
 import synthetic_pecoff as fx
 
 CPP = 'reconstruction/synthetic/SyntheticSum.cpp'
@@ -826,7 +827,7 @@ class TuTaskUnitTests(GateFixture, unittest.TestCase):
         result = self.run_task([CPP, HDR])
         self.assertEqual(result.returncode, 0, result.stderr)
         task = json.loads((self.root / 'work/task/task-file.json').read_text())['task']
-        self.assertEqual(task['source_revision'], tu_digest(self.root, [CPP, HDR]))
+        self.assertEqual(task['source_revision'], digest_v2.tu_digest(self.root, [CPP, HDR]))
 
     def test_unlisted_header_refused(self):
         result = self.run_task([CPP])
@@ -899,7 +900,8 @@ class IntegratedRecordTests(unittest.TestCase):
             for path in records:
                 source = json.loads(path.read_text())['source']
                 self.assertEqual(include_closure(root, source['compiled']), sorted(source['translation_unit']))
-                self.assertEqual(tu_digest(root, source['translation_unit']), source['digest'])
+                self.assertEqual(digest_v2.tu_digest(root, source['translation_unit'], source['digest_method']),
+                                 source['digest'])
 
 
 class SourceDigestTests(unittest.TestCase):

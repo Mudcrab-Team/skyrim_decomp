@@ -11,7 +11,10 @@ sys.path.insert(0, str(ROOT / 'tools' / 'ghidra'))
 import build_function_table as bft  # noqa: E402
 import class_skeleton  # noqa: E402
 import export_pack as ep  # noqa: E402
+import harvest_handlers as hh  # noqa: E402
 import lint_reconstruction as lint  # noqa: E402
+import struct
+from types import SimpleNamespace
 
 BASE = 0x140000000
 
@@ -258,6 +261,133 @@ class ScopeTests(unittest.TestCase):
                                                          'basis': 'measured'})
         self.assertEqual(blocks['havok']['treatment'], 'out_of_scope')
         self.assertEqual(blocks['unattributed']['adjacent_estimate']['functions'], 1)
+
+
+class _FakeImg:
+    """Minimal synthetic PE64 image for harvest_handlers unit tests (no game data)."""
+
+    def __init__(self, rdata, data, text_size=0x10000):
+        self._secs = [
+            SimpleNamespace(name='.text', vaddr=0x1000, vsize=text_size, raw_ptr=0, raw_size=text_size,
+                            flags=0x60000020),
+            SimpleNamespace(name='.rdata', vaddr=0x20000, vsize=len(rdata), raw_ptr=text_size, raw_size=len(rdata),
+                            flags=0x40000040),
+            SimpleNamespace(name='.data', vaddr=0x40000, vsize=len(data), raw_ptr=text_size + len(rdata),
+                            raw_size=len(data), flags=0xC0000040),
+        ]
+        self.blob = b'\x90' * text_size + bytes(rdata) + bytes(data)
+        self.pe = SimpleNamespace(image_base=BASE, sections=self._secs)
+
+    def section(self, rva):
+        for s in self._secs:
+            if s.vaddr <= rva < s.vaddr + s.vsize:
+                return s
+        return None
+
+
+class HarvestHandlersTests(unittest.TestCase):
+    def _build_table_image(self, n_good=22, include_gap=True, include_leading_space=True, include_shared=True):
+        rdata = bytearray()
+        strings = {}
+
+        def add_str(s):
+            if s not in strings:
+                strings[s] = BASE + 0x20000 + len(rdata)
+                rdata.extend(s.encode('ascii') + b'\0')
+            return strings[s]
+
+        records = []
+        for i in range(n_good):
+            nm = add_str(f'CmdAlpha{i}')
+            ex = BASE + 0x2000 + i * 0x20
+            cd = (BASE + 0x6000 + i * 0x20) if i < 3 else 0
+            records.append((nm, ex, cd))
+        if include_gap:
+            records.append((add_str('UnusedSlot'), 0, 0))
+        if include_leading_space:
+            records.append((add_str(' TrimmedCmd'), BASE + 0x3000, 0))
+        if include_shared:
+            records.append((add_str('SharedA'), BASE + 0x3800, 0))
+            records.append((add_str('SharedB'), BASE + 0x3800, 0))
+
+        data = bytearray(0x40)  # leading padding
+        for nm, ex, cd in records:
+            rec = bytearray(0x50)
+            struct.pack_into('<Q', rec, 0x00, nm)
+            struct.pack_into('<Q', rec, 0x30, ex)
+            struct.pack_into('<Q', rec, 0x40, cd)
+            data.extend(rec)
+        return _FakeImg(rdata, data)
+
+    def test_harvest_script_functions_expands_gaps_and_skips_shared(self):
+        img = self._build_table_image(n_good=22)
+        out, stats = hh.harvest_script_functions(img, min_entries=20)
+        self.assertEqual(stats['tables'], 1)
+        self.assertEqual(out[0x2000]['name'], 'Cmd_CmdAlpha0')
+        self.assertEqual(out[0x2000]['source'], 'exe-table')
+        self.assertEqual(out[0x2000]['how'], 'script-exec')
+        # Leading-space entry past the null gap is recovered
+        self.assertEqual(out[0x3000]['name'], 'Cmd_TrimmedCmd')
+        # Condition function at +0x40 is recovered
+        self.assertEqual(out[0x6000]['name'], 'Cond_CmdAlpha0')
+        self.assertEqual(out[0x6000]['how'], 'script-cond')
+        # Shared handler is excluded
+        self.assertNotIn(0x3800, out)
+        self.assertEqual(bft.community_label('exe-table', {}), 'OBSERVED')
+
+    def test_harvest_script_functions_rejects_below_threshold(self):
+        img = self._build_table_image(n_good=10, include_gap=False, include_leading_space=False, include_shared=False)
+        out, stats = hh.harvest_script_functions(img, min_entries=20)
+        self.assertEqual(out, {})
+        self.assertEqual(stats['tables'], 0)
+
+    def test_disasm_records_reg_calls_and_respects_clobbers(self):
+        lines = [
+            line(0x1000, 'lea', 'rcx, [rip + 0x1ef00]  # 0x140020000'),
+            line(0x1007, 'lea', 'rdx, [rip + 0x1f00]  # 0x140003000'),
+            line(0x100e, 'call', '0x140002000 <reg>'),
+            line(0x1013, 'lea', 'rcx, [rip + 0x1ef00]  # 0x140020000'),
+            line(0x101a, 'mov', 'rcx, rax'),  # clobbers rcx
+            line(0x101d, 'lea', 'rdx, [rip + 0x1f00]  # 0x140003000'),
+            line(0x1024, 'call', '0x140002000 <reg>'),
+            line(0x1029, 'ret'),
+            line(0x2000, 'ret'),
+            line(0x3000, 'ret'),
+        ]
+        fns = {0x1000: [(0x1000, 0x102a)], 0x2000: [(0x2000, 0x2001)], 0x3000: [(0x3000, 0x3001)]}
+        d = bft.DisasmPass(fns, BASE).feed(lines)
+        self.assertEqual(len(d['reg_calls']), 1)
+        callsite, caller, callee, targets = d['reg_calls'][0]
+        self.assertEqual((callsite, caller, callee), (0x100e, 0x1000, 0x2000))
+        self.assertEqual(targets, {0: 0x20000, 1: 0x3000})
+
+    def test_harvest_registrations_enforces_threshold_and_1to1(self):
+        rdata = bytearray()
+        str_rvas = []
+        for i in range(24):
+            str_rvas.append(0x20000 + len(rdata))
+            rdata.extend(f'FactoryType{i}'.encode('ascii') + b'\0')
+        img = _FakeImg(rdata, b'\0' * 0x40)
+        entries = {0x2000} | {0x3000 + i * 0x20 for i in range(24)}
+        reg_calls = []
+        for i in range(22):
+            reg_calls.append((0x1000 + i * 0x10, 0x1000, 0x2000, {0: str_rvas[i], 1: 0x3000 + i * 0x20}))
+        # Two names sharing one handler (0x3400) must be excluded
+        entries.add(0x3400)
+        reg_calls.append((0x1500, 0x1000, 0x2000, {0: str_rvas[22], 1: 0x3400}))
+        reg_calls.append((0x1510, 0x1000, 0x2000, {0: str_rvas[23], 1: 0x3400}))
+        # A second callee with fewer than 20 sites must be rejected
+        entries.add(0x2100)
+        for i in range(5):
+            reg_calls.append((0x1800 + i * 0x10, 0x1800, 0x2100, {0: str_rvas[i], 1: 0x3000 + i * 0x20}))
+        out, stats = hh.harvest_registrations(img, reg_calls, entries, min_sites=20)
+        self.assertEqual(stats['callees'], 1)
+        self.assertNotIn(0x3400, out)
+        # Entries 0..4 also appear in callee 0x2100 with the same name<->handler pair, so still globally 1-to-1
+        self.assertEqual(len(out), 22)
+        self.assertEqual(out[0x3000]['name'], 'FactoryType0')
+        self.assertEqual(out[0x3000]['source'], 'exe-reg')
+        self.assertEqual(bft.community_label('exe-reg', {}), 'OBSERVED')
 
 
 if __name__ == '__main__':

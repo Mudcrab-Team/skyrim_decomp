@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@BSLightingShaderPropertyUShortController@@QEAAXPEAV1@@Z": {
+      "rva": 22524272,
+      "size": 38
+    },
+    "?LoadBinary@BSLightingShaderPropertyUShortController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 22524320,
+      "size": 79
+    },
+    "?SaveBinary@BSLightingShaderPropertyUShortController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 22524528,
+      "size": 79
+    },
+    "?InitializeValueLookup@BSLightingShaderPropertyUShortController@@SAXXZ": {
+      "rva": 22524880,
+      "size": 17
+    },
+    "?IsValidTarget@BSLightingShaderPropertyUShortController@@QEBA_NPEBVNiObjectNET@@@Z": {
+      "rva": 22524912,
+      "size": 60
+    },
+    "?GetControlledValue@BSLightingShaderPropertyUShortController@@QEBAXAEAM@Z": {
+      "rva": 22524992,
+      "size": 39
+    },
+    "?CopyMembers@NiFloatInterpController@@IEAAXPEAV1@@Z": {
+      "rva": 16350928,
+      "size": null
+    },
+    "?LoadBinary@NiFloatInterpController@@MEAAXAEAVNiStream@@@Z": {
+      "rva": 16350944,
+      "size": null
+    },
+    "?SaveBinary@NiFloatInterpController@@MEAAXAEAVNiStream@@@Z": {
+      "rva": 16350992,
+      "size": null
+    },
+    "?gLightingUShortIndices@@3PAIA": {
+      "rva": 57248912,
+      "size": null
+    },
+    "?NiRTTI_BSLightingShaderProperty@@3VNiRTTI@@B": {
+      "rva": 54348248,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@BSLightingShaderPropertyUShortController@@QEAAXPEAV1@@Z",
+        "rva": "0x157b170",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@BSLightingShaderPropertyUShortController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x157b1a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@BSLightingShaderPropertyUShortController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x157b270",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitializeValueLookup@BSLightingShaderPropertyUShortController@@SAXXZ",
+        "rva": "0x157b3d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsValidTarget@BSLightingShaderPropertyUShortController@@QEBA_NPEBVNiObjectNET@@@Z",
+        "rva": "0x157b3f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetControlledValue@BSLightingShaderPropertyUShortController@@QEBAXAEAM@Z",
+        "rva": "0x157b440",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiFloatInterpController@@IEAAXPEAV1@@Z",
+        "rva": "0xf97ed0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiFloatInterpController@@MEAAXAEAVNiStream@@@Z",
+        "rva": "0xf97ee0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiFloatInterpController@@MEAAXAEAVNiStream@@@Z",
+        "rva": "0xf97f10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gLightingUShortIndices@@3PAIA",
+        "rva": "0x3698c90",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiRTTI_BSLightingShaderProperty@@3VNiRTTI@@B",
+        "rva": "0x33d49d8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

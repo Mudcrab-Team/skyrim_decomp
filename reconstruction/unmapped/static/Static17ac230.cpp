@@ -1,0 +1,6 @@
+// Source exposure: binary-analysis; no external implementation source reused.
+// object: GUESS(low) STANDIN
+// Origin: static-resource-teardown v1
+// 0x17ac230 Static17ac230::teardown
+#include "Static17ac230.h"
+static Static17ac230 object;

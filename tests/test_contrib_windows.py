@@ -116,7 +116,8 @@ class ToolchainCacheTests(unittest.TestCase):
             return subprocess.CompletedProcess(cmd, 0, '', '')
         ctx = contrib.Ctx(repo=ROOT, platform='win32', env={'PATH': ''}, as_json=True, private=self.private,
                           runner=runner)
-        with unittest.mock.patch.object(contrib, 'recipe_constants', return_value=pins):
+        with unittest.mock.patch.object(contrib, 'recipe_constants', return_value=pins), \
+                unittest.mock.patch.object(contrib, 'main_checkout_local', return_value=None):
             try:
                 result = contrib.install_toolchain(ctx, accept=True)
             except contrib.Stop as exc:
@@ -136,6 +137,23 @@ class ToolchainCacheTests(unittest.TestCase):
         _ran, cache, result = self.install(vsdownload_rc=0)
         self.assertNotIsInstance(result, contrib.Stop)
         self.assertFalse(cache.exists())
+
+
+class SubmitFalsePositiveTests(unittest.TestCase):
+    def test_compound_division_is_not_a_host_path(self):
+        import contrib_screen
+        body = b'#include "A.h"\nvoid f(float& d, float m) {\n  d /= m;\n}\n'
+        self.assertNotIn('path-or-encoded-escape', contrib_screen.screen(body, 'reconstruction/a/A.cpp'))
+
+    def test_absolute_host_path_is_still_flagged(self):
+        import contrib_screen
+        body = b'const char* p = "/etc/passwd";\nconst char* q = " /usr/lib";\n'
+        self.assertIn('path-or-encoded-escape', contrib_screen.screen(body, 'reconstruction/a/A.cpp'))
+
+    def test_companion_names_are_posix_whatever_the_host(self):
+        text = (ROOT / 'tools/contrib_validation.py').read_text()
+        self.assertNotIn("str(Path(n).with_suffix", text)
+        self.assertNotIn("str(Path(c).with_suffix", text)
 
 
 if __name__ == '__main__':

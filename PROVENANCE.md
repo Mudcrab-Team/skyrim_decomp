@@ -26,9 +26,9 @@ when a reviewer could not independently reproduce a claim. Preserve failed exper
 revision, inspect the license at that revision, retain notices and record exactly what was used.
 A retained notice (or licence statement) sits in every file that contains adapted code from that
 source, header or `.cpp`; a pointer to the notice in another file of the unit is not enough.
-`momusdigital/fnv_decomp` at `91e1b6e8` is an unlicensed source the maintainer has allowed
-for reuse (names, declarations and code in reconstructions; `docs/authorizations.md`, Notes): its
-`LICENSE` grants no licence and its README tags some names as from an Xbox 360 development-build
+`momusdigital/fnv_decomp` at `91e1b6e8` is a source the maintainer has allowed
+for reuse (names, declarations and code in reconstructions; `docs/authorizations.md`, Notes): the
+project is now CC0 1.0 (the label keeps the historic `no-licence` token) and its README tags some names as from an Xbox 360 development-build
 PDB and from Havok/Gamebryo source. Label what is taken `SIBLING(...)`, cite a reused body in the
 unit header, and do not vendor its tree or website assets wholesale. Apart from that decision, do
 not import leaked/proprietary symbols or middleware source, and never obtain them yourself. The

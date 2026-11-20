@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?AsNiTriBasedGeom@NiTriBasedGeom@@UEAAPEAV1@XZ": {
+      "rva": 15828256,
+      "size": 4
+    },
+    "?Unk_36@NiTriBasedGeom@@UEAAIXZ": {
+      "rva": 15856624,
+      "size": 28
+    },
+    "??_GNiTriBasedGeom@@UEAAPEAXI@Z": {
+      "rva": 15856768,
+      "size": 62
+    },
+    "??_7NiTriBasedGeom@@6B@": {
+      "rva": 27592200,
+      "size": null
+    },
+    "??1NiGeometry@@UEAA@XZ": {
+      "rva": 15773504,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?AsNiTriBasedGeom@NiTriBasedGeom@@UEAAPEAV1@XZ",
+        "rva": "0xf18520",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk_36@NiTriBasedGeom@@UEAAIXZ",
+        "rva": "0xf1f3f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GNiTriBasedGeom@@UEAAPEAXI@Z",
+        "rva": "0xf1f480",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiTriBasedGeom@@6B@",
+        "rva": "0x1a50608",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiGeometry@@UEAA@XZ",
+        "rva": "0xf0af40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

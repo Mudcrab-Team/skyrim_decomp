@@ -1,0 +1,6 @@
+// Source exposure: binary-analysis
+// Leaf3931d0, Invoke, object, construct: GUESS(low) STANDIN
+// Origin: primitive-constant-entry v1
+// 0x3931d0 Leaf3931d0::Invoke
+#include "Leaf3931d0.h"
+unsigned int Leaf3931d0::Invoke() const { return 91u; }

@@ -16,15 +16,17 @@ import time
 import tempfile
 
 import agent_advice
+import repo_slug
 
 ROOT = Path(__file__).resolve().parents[1]
-REPO = 'awarebayes/skyrim_decomp'
+REPO = repo_slug.current_slug()
 MARKER = 'skyrim-claim-v1'
 MANAGED = '<!-- skyrim-project-claim -->'
 BODY_LIMIT = 60000
 TTL = 600
 CLAIM_LAPSE = timedelta(hours=24)
 RENEWAL = 'skyrim-claim-renewal-v1'
+DONE_COMMENT = 'All claimed functions are matched \u2014 closing. Thanks!'
 TOKEN = re.compile(r'(?<![A-Za-z0-9])0x([0-9a-fA-F]+)\b')
 ENTRY = re.compile(r'0x([0-9a-fA-F]+)(?:-0x([0-9a-fA-F]+))?(?:\s+[^\r\n]+)?')
 
@@ -216,6 +218,18 @@ class GitHub:
                 return result
         raise RuntimeError('open issue pagination limit reached')
 
+    def open_claims(self):
+        """Open claim issues of any author, parsed without the per-issue timeline reads `issues` makes."""
+        result = []
+        for page in range(1, 101):
+            rows = self.api(f'repos/{REPO}/issues?state=open&per_page=100&page={page}')
+            for raw in rows:
+                if 'pull_request' not in raw and (raw.get('title') or '').startswith('claim:'):
+                    result.append(parse_issue(raw))
+            if len(rows) < 100:
+                return result
+        raise RuntimeError('open issue pagination limit reached')
+
     def label(self):
         self.run('label', 'create', 'claim', '--repo', REPO, '--color', '1d76db',
                  '--description', 'Function work claimed by a contributor or the project', '--force')
@@ -380,17 +394,8 @@ def collect(root, public, family_roots=(), cluster_lists=()):
 
 
 def active_entries(root, public, family_roots=()):
-    """Only active flow batches renew; planned families and static reservations do not."""
-    root = Path(root)
-    if not (root / 'data/progress.json').is_file():
-        return []
-    build = public['target_build_id']
-    accepted = {f['rva'] for f in public['functions'] if f['build_id'] == build and f['status'] == 'matched'}
-    import flow
-    states = flow.function_states(root, flow.flow_dir(root), online=False, tolerate_review_path_errors=True)
-    active = {'queued', 'drafting', 'confirmed', 'review-pending'}
-    addresses = {rva(a) for a, state in states.items() if state.get('state') in active}
-    return [(a, a + 1) for a in addresses - accepted]
+    """Entries whose claim is renewed as active work; none are tracked locally, so every claim lapses on its own."""
+    return []
 
 
 def keep_alive(gh, issue, active, done, total):
@@ -556,6 +561,37 @@ def sync(root, gh=None):
         print(f'#{it["number"]}: accepted {done}/{total}' + ('; closed' if done == total else ''))
 
 
+def completed(item, public):
+    """True when every function a claim names is matched on `public`; unknown scope is never complete."""
+    build = public.get('target_build_id')
+    if item.get('pull_request') or item.get('build_id') != build or not item.get('entries'):
+        return False
+    rows = {f['rva']: f for f in public['functions'] if f['build_id'] == build}
+    found = [f for r, f in rows.items() if any(a <= r < b for a, b in item['entries'])]
+    # A single address missing from the inventory is a function that is not mapped yet, so not matched.
+    if not found or any(b == a + 1 and a not in rows for a, b in item['entries']):
+        return False
+    declared = re.search(r'^Functions: (\d+)$', item.get('body') or '', re.M)
+    # A range may also hold starts the inventory does not list; its declared count says how many to expect.
+    if declared and any(b > a + 1 for a, b in item['entries']) and int(declared[1]) > len(found):
+        return False
+    return all(f['status'] == 'matched' for f in found)
+
+
+def close_completed(gh, public, dry_run=False):
+    """Close every open claim whose functions are all matched, whoever filed it. Returns the numbers.
+
+    Claims are advisory, so closing only tidies the list; the single comment says why.
+    """
+    closed = []
+    for item in gh.open_claims():
+        if completed(item, public):
+            if not dry_run:
+                gh.close(item['number'], DONE_COMMENT)
+            closed.append(item['number'])
+    return closed
+
+
 def sync_safe(root):
     try:
         sync(root)
@@ -568,13 +604,14 @@ def main(argv=None):
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--cache-dir', type=Path)
     sub = p.add_subparsers(dest='cmd', required=True)
-    for cmd in ('list', 'check', 'publish', 'sync'):
+    for cmd in ('list', 'check', 'publish', 'sync', 'close-done'):
         s = sub.add_parser(cmd)
         s.add_argument('--refresh', action='store_true')
         if cmd == 'check':
             s.add_argument('rvas', nargs='+')
-        if cmd == 'publish':
+        if cmd in ('publish', 'close-done'):
             s.add_argument('--dry-run', action='store_true')
+        if cmd == 'publish':
             s.add_argument('--family-root', type=Path, action='append', default=[])
             s.add_argument('--cluster-list', type=Path, action='append', default=[])
     a = p.parse_args(argv)
@@ -584,6 +621,9 @@ def main(argv=None):
             publish(a.root, gh, git_json(a.root), a.family_root, a.cluster_list, a.dry_run)
         elif a.cmd == 'sync':
             sync(a.root, gh)
+        elif a.cmd == 'close-done':
+            done = close_completed(gh, git_json(a.root, 'origin/main'), a.dry_run)
+            print(('would close: ' if a.dry_run else 'closed: ') + (', '.join(f'#{n}' for n in done) or 'none'))
         else:
             index, _ = cached(a.root, a.refresh, gh, a.cache_dir)
             public = git_json(a.root)

@@ -24,6 +24,8 @@ first Reviewer. Strong duties (sampling, non-Opus escalation confirmation, and r
 reviews) are done by Sol or Opus, never Terra, and by a different model from the first review; an
 independent Opus does the second pass for a Sol first review.
 
+The pr-bot's reviewer is codex; when codex fails for an account or capacity reason (out of credits, quota, rate limit, expired login, missing binary) it reruns the same review with the Claude CLI on Sonnet (read-only tools), skips codex for 30 minutes after an out-of-credits failure, and records `reviewer: codex|claude-sonnet` in the PR state and log. A reject verdict or malformed output never triggers the fallback.
+
 ## Limits
 
 - Independence is per run: use fresh context, never the run that drafted, engineered, triaged
@@ -96,8 +98,15 @@ blocks; list what you find as `naming_findings` and still approve.
    - no byte steering: no nonsensical control flow, dead code, helper, attribute or intrinsic
      whose only plausible reason is forcing bytes; a justification comment that is not a reason a
      programmer had counts here;
-   - opaque storage used to force allocation size is banned; require the represented layout
-     (maintainer decision, 2026-11-14);
+   - named unknown members (for example `std::uint64_t unk10;`) at their offsets are acceptable for
+     regions the reviewed function does not access. Reject only when a field the function reads or
+     writes is hidden in opaque storage, a byte array or filler, or when one big array stands in for
+     the whole class (maintainer decision, 2026-11-14, narrowed in `docs/authorizations.md`, Notes);
+   - exception: an opaque, correctly sized stand-in type (a byte array of the class size) may be
+     approved when the function uses only the class size and the destructor call, as deleting and
+     scalar-deleting destructors typically do. It never covers a function that touches a field,
+     and an opaque stand-in must not be used to fake field access; plausibility still applies to
+     everything else (`docs/authorizations.md`, Notes);
    - nothing that cannot be what it claims: an unreachable branch or impossible type use that
      signals a wrong binding or a wrong class.
 2. **Provenance.** No code from unlicensed projects other than the FNV decompilation
@@ -105,7 +114,7 @@ blocks; list what you find as `naming_findings` and still approve.
    material. The source header states provenance and source exposure, and what it says about
    origin and licence is true. Start from the packet's `body origin` list and its per-function
    `community/sibling body similarity` line: every `adapted` body must be named in the unit
-   header with its upstream file, revision and licence (NG: MIT with NG's notice kept in the file;
+   header with its upstream file, revision and licence (NG: MIT, with NG's notice kept in the file as the one-line `SPDX-License-Identifier: MIT (... Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)`, which is the whole notice the header policy asks for; do not reject because the full licence text was removed;
    powerof3: GPL-3.0; FNV: a `Sibling source:` line), and a header claim about what is not copied
    must be true. `trivial` bodies need no statement.
    Admitted Reviewers are authorized to read the FNV source and local index for this comparison (see `docs/authorizations.md`, Notes).
@@ -258,7 +267,7 @@ review_kind: <full|delta>
 previous_source_digest: <delta only: the approved digest the packet names>
 code_section_unchanged: <delta only: yes, as the packet shows>
 source_paths: <translation-unit files>
-source_digest: <tu-sha256-v1 digest you computed>
+source_digest: <digest you computed with the record method>
 report_path: <path>
 report_binding: <agree|disagree|missing>, <one line>
 checks:

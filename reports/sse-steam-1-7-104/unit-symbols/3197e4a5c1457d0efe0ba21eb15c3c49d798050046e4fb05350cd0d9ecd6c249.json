@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?SaveGame@TESLevSpell@@UEAAXPEAVBGSSaveFormBuffer@@@Z": {
+      "rva": 2567904,
+      "size": 43
+    },
+    "?LoadGame@TESLevSpell@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 2567968,
+      "size": 43
+    },
+    "?Revert@TESLevSpell@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 2568032,
+      "size": 43
+    },
+    "?SaveGame@TESForm@@UEAAXPEAVBGSSaveFormBuffer@@@Z": {
+      "rva": 1988352,
+      "size": null
+    },
+    "?SaveGame@TESLeveledList@@QEAAXPEAVBGSSaveFormBuffer@@@Z": {
+      "rva": 2007968,
+      "size": null
+    },
+    "?LoadGame@TESForm@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 1988464,
+      "size": null
+    },
+    "?LoadGame@TESLeveledList@@QEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 2008208,
+      "size": null
+    },
+    "?Revert@TESForm@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 1988688,
+      "size": null
+    },
+    "?Revert@TESLeveledList@@QEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 2008816,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?SaveGame@TESLevSpell@@UEAAXPEAVBGSSaveFormBuffer@@@Z",
+        "rva": "0x272ee0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@TESLevSpell@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x272f20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Revert@TESLevSpell@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x272f60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveGame@TESForm@@UEAAXPEAVBGSSaveFormBuffer@@@Z",
+        "rva": "0x1e5700",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveGame@TESLeveledList@@QEAAXPEAVBGSSaveFormBuffer@@@Z",
+        "rva": "0x1ea3a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@TESForm@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x1e5770",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@TESLeveledList@@QEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x1ea490",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Revert@TESForm@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x1e5850",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Revert@TESLeveledList@@QEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x1ea6f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

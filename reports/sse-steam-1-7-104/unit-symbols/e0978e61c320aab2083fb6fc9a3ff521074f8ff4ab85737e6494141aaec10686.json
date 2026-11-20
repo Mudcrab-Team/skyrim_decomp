@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@NiFogProperty@@QEAAXPEAV1@@Z": {
+      "rva": 15801008,
+      "size": 78
+    },
+    "?ReleaseDefault@NiFogProperty@@SAXXZ": {
+      "rva": 15801936,
+      "size": 46
+    },
+    "?CopyMembers@NiProperty@@QEAAXPEAV1@@Z": {
+      "rva": 15672912,
+      "size": null
+    },
+    "?gDefaultFogProperty@@3PEAVNiFogProperty@@EA": {
+      "rva": 53598936,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@NiFogProperty@@QEAAXPEAV1@@Z",
+        "rva": "0xf11ab0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReleaseDefault@NiFogProperty@@SAXXZ",
+        "rva": "0xf11e50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiProperty@@QEAAXPEAV1@@Z",
+        "rva": "0xef2650",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gDefaultFogProperty@@3PEAVNiFogProperty@@EA",
+        "rva": "0x331dad8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

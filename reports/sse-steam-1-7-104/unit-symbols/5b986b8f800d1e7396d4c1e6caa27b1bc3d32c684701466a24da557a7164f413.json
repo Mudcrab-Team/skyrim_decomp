@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?LoadBinary@NiBoxBV@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15915744,
+      "size": 43
+    },
+    "?SaveBinary@NiBoxBV@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15915808,
+      "size": 43
+    },
+    "?IsSameVolume@NiBoxBV@@QEBA_NAEBVNiBoundingVolume@@@Z": {
+      "rva": 15917120,
+      "size": 73
+    },
+    "?Differs@NiBoxBV@@QEBA_NAEBVNiBoundingVolume@@@Z": {
+      "rva": 15917200,
+      "size": 20
+    },
+    "?LoadBinary@NiBoundingVolume@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15883056,
+      "size": null
+    },
+    "?LoadBinary@BoxShape@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 16004416,
+      "size": null
+    },
+    "?SaveBinary@NiBoundingVolume@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15883072,
+      "size": null
+    },
+    "?SaveBinary@BoxShape@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 16004560,
+      "size": null
+    },
+    "?IsEqual@BoxShape@@QEBA_NAEBV1@@Z": {
+      "rva": 16002736,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?LoadBinary@NiBoxBV@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xf2dae0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiBoxBV@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xf2db20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsSameVolume@NiBoxBV@@QEBA_NAEBVNiBoundingVolume@@@Z",
+        "rva": "0xf2e040",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Differs@NiBoxBV@@QEBA_NAEBVNiBoundingVolume@@@Z",
+        "rva": "0xf2e090",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiBoundingVolume@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xf25b30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@BoxShape@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xf43540",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiBoundingVolume@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xf25b40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@BoxShape@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xf435d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsEqual@BoxShape@@QEBA_NAEBV1@@Z",
+        "rva": "0xf42eb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

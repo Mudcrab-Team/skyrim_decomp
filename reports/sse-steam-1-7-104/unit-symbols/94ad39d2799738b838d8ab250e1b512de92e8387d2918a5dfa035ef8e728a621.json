@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetInterpolatorIndexFx@NiMultiTargetTransformController@@QEBAGAEBVBSFixedString@@@Z": {
+      "rva": 16113344,
+      "size": 58
+    },
+    "?GetInterpolator@NiMultiTargetTransformController@@QEBAPEAVNiInterpolator@@G@Z": {
+      "rva": 16113408,
+      "size": 16
+    },
+    "?CreateBlendInterpolator@NiMultiTargetTransformController@@QEBAPEAVNiBlendInterpolator@@G_N0ME@Z": {
+      "rva": 16114272,
+      "size": 16
+    },
+    "?TargetIsRequiredType@NiMultiTargetTransformController@@QEBA_NXZ": {
+      "rva": 16114432,
+      "size": 60
+    },
+    "?InterpolatorIsCorrectType@NiMultiTargetTransformController@@QEBA_NPEBVTransformValueSupport@@G@Z": {
+      "rva": 16114992,
+      "size": 13
+    },
+    "?invalidInterpolatorIndex@@3GB": {
+      "rva": 27603340,
+      "size": null
+    },
+    "?NiRTTI_NiAVObject@@3VNiRTTI@@A": {
+      "rva": 53593256,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetInterpolatorIndexFx@NiMultiTargetTransformController@@QEBAGAEBVBSFixedString@@@Z",
+        "rva": "0xf5dec0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetInterpolator@NiMultiTargetTransformController@@QEBAPEAVNiInterpolator@@G@Z",
+        "rva": "0xf5df00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CreateBlendInterpolator@NiMultiTargetTransformController@@QEBAPEAVNiBlendInterpolator@@G_N0ME@Z",
+        "rva": "0xf5e260",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TargetIsRequiredType@NiMultiTargetTransformController@@QEBA_NXZ",
+        "rva": "0xf5e300",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InterpolatorIsCorrectType@NiMultiTargetTransformController@@QEBA_NPEBVTransformValueSupport@@G@Z",
+        "rva": "0xf5e530",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?invalidInterpolatorIndex@@3GB",
+        "rva": "0x1a5318c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiRTTI_NiAVObject@@3VNiRTTI@@A",
+        "rva": "0x331c4a8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

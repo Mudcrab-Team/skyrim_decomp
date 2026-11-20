@@ -4,13 +4,26 @@
 step; `python3 tools/ghidra/export_pack.py bind --task <dir>` runs the same code by hand.
 
 Compared functions (`task.json` `functions[].symbol`). The decorated name is whatever the
-Drafter's declarations produce, so it is found in the object, in this order:
+Drafter's declarations produce, so it is found in the object (`resolve_functions`). Each function
+is declared under up to two names: its compact header line `// 0x<rva> Class::Method` in the
+unit (optionally with the parameter list and cv-qualifier, `// 0x<rva> Class::Method(int) const`)
+and its community name. In passes over all functions, so one function never takes another's
+exact match by coming first:
 
-1. a hint in `<task dir>/bind-hints.json` whose RVA is the function's RVA;
-2. the current symbol, if the object still defines it;
-3. the one defined function whose qualified name (template arguments, return type and
-   parameters dropped) equals the community name;
-4. the one defined function whose member name (last component) equals the community name's.
+1. a hint in `<task dir>/bind-hints.json` whose RVA is the function's RVA, else the current
+   symbol if the object still defines it;
+2. the definitions whose qualified name (template arguments, return type and parameters
+   dropped) equals a declared name; failing that, for `Class::Ctor`, `Class::Class`,
+   `Class::dtor` or `Class::~Class`, the class's constructors or destructors (plain, deleting,
+   and deleting-destructor adjustor thunks);
+3. the definitions whose member name (last component) equals a declared one's, except those
+   whose qualified name another compared function declares (an override named for its base).
+
+Several definitions under one name (const and non-const overloads, a static and a member,
+overloaded constructors, a destructor and its thunks) are narrowed, each step only when it
+leaves at least one: by the header line's declared signature, by the target's size, by the
+published target hash (data/target-hashes). Still several is unbound, listing the `// CI hash:`
+line that would name each. None of this decides a match: the comparator checks the bound symbol.
 
 Destructors are special. A virtual destructor's vtable slot 0 in the image is the scalar
 (`??_G`) or vector (`??_E`) deleting destructor, not the plain `??1` the community name
@@ -46,7 +59,10 @@ The same applies to references made from the function's funclets (catch and unwi
 comparator compares with it, found through its .pdata, unwind info and FuncInfo). For an unwind
 funclet the pack's `object_lifetimes` adds the destructor calls of its state: by position at the
 state's funclet RVA when the decoded value is one of them, by community name, or, when the state
-lists exactly one call and the funclet leaves exactly one name unbound, that call.
+lists exactly one call and the funclet leaves exactly one name unbound, that call. A destructor the
+compiler generates for a local is often not in the pack at all; a call from an unwind funclet whose
+decoded target is a function start of the private function table (`SR_FUNCTION_TABLE`, else
+`.local/analysis/functions.jsonl` of the checkout or of the main checkout) binds by position too.
 
 Anything left is listed with the file to edit. The comparator still checks every binding: a
 wrong RVA fails with relocation-target-mismatch, it cannot pass.
@@ -58,9 +74,13 @@ match record in the checkout valid (a draft renaming its own function); otherwis
 and the change needs `tools/symbol_map.py add --allow-change`. A private `symbols.json` is edited
 in place as before.
 
-Thread-local variables (references by a SECREL relocation) are never bound by position or name:
-only a hint `"<name>": "tls:0x<offset>"` binds one, as a `thread-local` map entry with that
-TLS-template offset (docs/comparator-contract.md, "Thread-local variables"). `_tls_index` needs
+Thread-local variables (references by a SECREL relocation) are never bound by position alone or by
+community name. Two things bind one, as a `thread-local` map entry with a TLS-template offset
+(docs/comparator-contract.md, "Thread-local variables"): a private hint `"<name>": "tls:0x<offset>"`,
+or, with no hint, the offset the unit declares in the variable's own name, `tls_0x<offset>` anywhere
+in the member name (`playerState_tls_0x768`). The declared offset is accepted only when the target's
+own field at the same position, less the unit's addend, equals it and it lies inside the image's TLS
+template; a name that disagrees with the target binds nothing. `_tls_index` needs
 no entry; the comparator takes it from the image's TLS directory. A `tls:` hint that no compared
 SECREL reference uses is listed under ignored hints. A thread-local entry is published to the
 repository map like any other, with a provenance entry giving its offset; because the comparator
@@ -101,6 +121,7 @@ REL32_TAIL = {0x04: 0, 0x05: 1, 0x06: 2, 0x07: 3, 0x08: 4, 0x09: 5}
 ADDR32NB = 0x03
 SECREL = 0x0B
 TLS_HINT = re.compile(r'tls:(0x[0-9a-fA-F]+|[0-9]+)')
+TLS_NAME = re.compile(r'(?:^|_)tls_0x([0-9a-fA-F]{1,8})(?:_|$)')
 # Resolved by the comparator from the image's TLS directory, so it never gets a map entry.
 DIRECTORY_SYMBOLS = {'_tls_index'}
 UNDNAME = ('llvm-undname', '/opt/homebrew/opt/llvm/bin/llvm-undname', '/usr/local/opt/llvm/bin/llvm-undname')
@@ -171,7 +192,7 @@ class Names:
     """Qualified names of decorated symbols, demangled with llvm-undname when available."""
 
     def __init__(self, tool=None):
-        self.tool, self.cache = tool, {}
+        self.tool, self.cache, self.text = tool, {}, {}
 
     def load(self, names):
         todo = [n for n in names if n not in self.cache and n.startswith('?')]
@@ -181,6 +202,7 @@ class Names:
             for block in blocks:
                 if len(block) >= 2 and not block[1].startswith('error'):
                     self.cache[block[0]] = qualified(block[1])
+                    self.text[block[0]] = block[1]
         for n in names:
             # Undecorated names (extern "C", tests) are their own qualified name; compiler-made
             # names such as __real@ or $unwind$ are never bound by name.
@@ -316,6 +338,45 @@ def lifetime_calls(repo, fn):
     return calls, places
 
 
+_function_starts = {}
+
+
+def function_starts(repo):
+    """Set of function-start RVAs of the private function table, or None when no table is present."""
+    candidates = []
+    if os.environ.get('SR_FUNCTION_TABLE'):
+        candidates.append(Path(os.environ['SR_FUNCTION_TABLE']))
+    candidates.append(Path(repo) / '.local/analysis/functions.jsonl')
+    try:
+        out = subprocess.run(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir'], cwd=repo,
+                             capture_output=True, text=True)
+        if out.returncode == 0 and out.stdout.strip():
+            candidates.append(Path(out.stdout.strip()).parent / '.local/analysis/functions.jsonl')
+    except OSError:
+        pass
+    # The intake tree is a clone under the main checkout's .local, so its own .local holds no tables.
+    candidates += [d / '.local/analysis/functions.jsonl' for d in Path(repo).resolve().parents]
+    for path in candidates:
+        if not path.is_file():
+            continue
+        key = (str(path), path.stat().st_mtime_ns)
+        if key not in _function_starts:
+            starts = set()
+            with open(path) as fh:
+                for line in fh:
+                    if line.strip():
+                        starts.add(json.loads(line)['rva'])
+            _function_starts[key] = starts
+        return _function_starts[key]
+    return None
+
+
+def declared_tls_offset(name):
+    """The TLS-template offset a variable's member name declares as `tls_0x<offset>`, or None."""
+    m = TLS_NAME.search(name or '')
+    return int(m.group(1), 16) if m else None
+
+
 def by_position(image, fn_rva, rel):
     """The RVA the target's own field at the relocation's offset encodes, or None."""
     if image is None:
@@ -357,6 +418,277 @@ def dtor_decoration(name):
             return None
         return prefix, '::'.join(reversed(scope.split('@')))
     return None
+
+
+SPECIAL_KINDS = {'ctor': '??0', 'constructor': '??0', 'dtor': '??1', 'destructor': '??1'}
+
+
+def special_decoration(name):
+    """(prefix, class) of a plain constructor or destructor decoration (`??0`, `??1`, `??_G`, `??_E`).
+
+    Unlike `dtor_decoration` this includes constructors; template scopes and thunks yield None.
+    """
+    if name.startswith('??0'):
+        rest = name[3:]
+        if '@@' not in rest or rest.startswith('?'):
+            return None
+        scope, tail = rest.split('@@', 1)
+        if not scope or not tail or tail[0] in THUNK_ACCESS or '?' in scope:
+            return None
+        return '??0', '::'.join(reversed(scope.split('@')))
+    return dtor_decoration(name)
+
+
+def special_kind(cls, last):
+    """Decoration prefixes a `Class::<last>` community name denotes, or None when it is no ctor/dtor name."""
+    base = cls.split('::')[-1]
+    key = last.lower()
+    if key in SPECIAL_KINDS:
+        return (SPECIAL_KINDS[key],) if SPECIAL_KINDS[key] == '??0' else ('??1', '??_G', '??_E')
+    if last == base:
+        return ('??0',)
+    if last == '~' + base:
+        return ('??1', '??_G', '??_E')
+    return None
+
+
+def class_special_candidates(community, defined, taken):
+    """Definitions whose decorated name is the constructor/destructor of the community name's class.
+
+    Several classes' constructors can share one object (a base member's, a helper type's), so
+    a name that is only `Class::Ctor` must be narrowed by the decorated class, not by the last
+    component. Returns None when the community name is not of that form.
+    """
+    if not community or '::' not in community:
+        return None
+    cls, last = community.rsplit('::', 1)
+    kinds = special_kind(cls, last)
+    if kinds is None:
+        return None
+    hits = []
+    for d in defined:
+        dec = special_decoration(d)
+        if d not in taken and dec and dec[0] in kinds and (dec[1] == cls or member(dec[1]) == member(cls)):
+            hits.append(d)
+    return sorted(hits)
+
+
+def dtor_thunk_decoration(name):
+    """(prefix, class) of an adjustor thunk of a deleting destructor (`??_G<class>@@W<n>...`), else None.
+
+    A class with several bases gets one such thunk per secondary vftable; its slot 0 in the image is
+    the thunk, so a `Class::~Class` or `Class::dtor` target can be one.
+    """
+    for prefix in ('??_G', '??_E'):
+        if not name.startswith(prefix):
+            continue
+        rest = name[len(prefix):]
+        if '@@' not in rest or rest.startswith('?'):
+            return None
+        scope, tail = rest.split('@@', 1)
+        if not scope or not tail or tail[0] not in THUNK_ACCESS or '?' in scope:
+            return None
+        return prefix, '::'.join(reversed(scope.split('@')))
+    return None
+
+
+# Access codes of non-static member functions (private, protected, public; plain and virtual).
+# After them a member decoration has `E` (__ptr64) and one cv code for `this`.
+MEMBER_ACCESS = set('ABEFIJMNQRUV')
+STATIC_ACCESS = set('CDKLST')
+CV_CODES = {'A': '', 'B': 'const', 'C': 'volatile', 'D': 'const volatile'}
+# The compact source header line: `// 0x<rva> Class::Method`, optionally followed by the
+# declaration's parameter list and cv-qualifier, `// 0x<rva> Class::Method(int) const`.
+HEADER_LINE = re.compile(r'//[ \t]*0x([0-9a-fA-F]+)[ \t]+([A-Za-z_~][\w:~<>,]*)'
+                         r'(?:[ \t]*(\([^)]*\))[ \t]*((?:const|volatile)(?:[ \t]+(?:const|volatile))?)?)?[ \t]*$')
+
+
+def decoration_traits(name, text=None):
+    """{'static', 'cv', 'params'} of a member-function decoration; params only with demangled text.
+
+    The decoration itself gives static-ness and the cv-qualifier of `this` for plain (non-template)
+    scopes; the demangled text, when llvm-undname is present, adds the parameter list.
+    """
+    traits = {'static': None, 'cv': None, 'params': None}
+    m = re.match(r'\?(?:\?[0-9A-Z]|\?_[0-9A-Z]|[A-Za-z_]\w*@)((?:[A-Za-z_]\w*@)*)@([A-Z])(E?)([A-D])?', name)
+    if m:
+        access = m.group(2)
+        if access in STATIC_ACCESS or access in ('Y', 'Z'):
+            traits['static'] = True
+            traits['cv'] = ''
+        elif access in MEMBER_ACCESS and m.group(3) == 'E' and m.group(4):
+            traits['static'] = False
+            traits['cv'] = CV_CODES[m.group(4)]
+    if text:
+        if traits['cv'] is None:
+            tail = text.rsplit(')', 1)[-1].strip() if ')' in text else ''
+            traits['cv'] = ' '.join(w for w in tail.split() if w in ('const', 'volatile'))
+        depth, start = 0, None
+        head = text.split('`', 1)[0]
+        for i, ch in enumerate(head):
+            if ch == '(' and depth == 0 and start is None:
+                start = i
+            if ch == '(':
+                depth += 1
+            elif ch == ')':
+                depth -= 1
+                if depth == 0 and start is not None:
+                    traits['params'] = normalize_params(head[start + 1:i])
+                    break
+    return traits
+
+
+FIXED_WIDTH = {'int8_t': 'signedchar', 'uint8_t': 'unsignedchar', 'int16_t': 'short', 'uint16_t': 'unsignedshort',
+               'int32_t': 'int', 'uint32_t': 'unsignedint', 'int64_t': '__int64', 'uint64_t': 'unsigned__int64'}
+
+
+def split_params(text):
+    """Top-level comma-separated parts of a parameter list (commas inside <> or () stay)."""
+    parts, depth, start = [], 0, 0
+    for i, ch in enumerate(text):
+        if ch in '<(':
+            depth += 1
+        elif ch in '>)':
+            depth -= 1
+        elif ch == ',' and depth == 0:
+            parts.append(text[start:i])
+            start = i + 1
+    parts.append(text[start:])
+    return parts
+
+
+def east_const(param):
+    """One parameter with leading cv-qualifiers moved behind the base type, as the demangler prints them.
+
+    A source line says `const T&`; the demangled symbol says `T const &`. Both must compare equal.
+    """
+    m = re.match(r'((?:(?:const|volatile)\s+)+)(.*)$', param.strip(), re.S)
+    if not m:
+        return param
+    quals, rest = ' '.join(sorted(m.group(1).split())), m.group(2)
+    depth = 0
+    for i, ch in enumerate(rest):
+        if ch == '<':
+            depth += 1
+        elif ch == '>':
+            depth -= 1
+        elif ch in '*&' and depth == 0:
+            return f'{rest[:i].strip()} {quals} {rest[i:]}'
+    return f'{rest.strip()} {quals}'
+
+
+def normalize_params(text):
+    """Comparable parameter list: elaborated-type keywords, `__ptr64`, spaces and `void` removed.
+
+    Fixed-width integer names read as the builtin the demangler prints, and a leading `const` reads
+    as the trailing form, so a source-style line equals the decorated symbol's own parameters.
+    """
+    text = re.sub(r'\b(class|struct|union|enum|__ptr64|RE::)\b|\bRE::', '', text or '')
+    text = re.sub(r'\b(?:std::)?(u?int(?:8|16|32|64)_t)\b', lambda m: ' ' + FIXED_WIDTH[m.group(1)] + ' ', text)
+    text = ','.join(east_const(p) for p in split_params(text))
+    text = re.sub(r'\s+', '', text)
+    return '' if text == 'void' else text
+
+
+def header_declarations(repo, unit):
+    """{rva: declaration} from the leading compact `// 0x<rva> Name[(params)][ const]` lines of a unit.
+
+    The unit's own header is its statement of which definition each compared RVA is, so a
+    stand-in named differently from the community map (a slot-number virtual, a renamed static)
+    still binds by name. Lines of the .cpp come before those of its .h.
+    """
+    out = {}
+    if not unit:
+        return out
+    from rva_headers import leading_lines
+    base = Path(repo) / unit
+    for path in (base.with_suffix('.cpp'), base.with_suffix('.h')):
+        if not path.is_file():
+            continue
+        for line in leading_lines(path.read_text(encoding='utf-8-sig', errors='replace')):
+            m = HEADER_LINE.match(line.rstrip())
+            if not m:
+                continue
+            decl = {'name': community_qualified(m.group(2)), 'params': None, 'cv': None}
+            if m.group(3) is not None:
+                decl['params'] = normalize_params(m.group(3)[1:-1])
+                decl['cv'] = ' '.join((m.group(4) or '').split())
+            out.setdefault(int(m.group(1), 16), decl)
+    return out
+
+
+def fits_declaration(traits, decl):
+    """Whether a definition's traits agree with what a header line declares (unknowns agree)."""
+    if not decl or decl.get('params') is None:
+        return True
+    if traits['cv'] is not None and traits['cv'] != decl['cv']:
+        return False
+    if traits['params'] is not None and traits['params'] != decl['params']:
+        return False
+    return True
+
+
+def target_matcher(repo, blob):
+    """callable(rva, symbol) -> bool | None: whether the object's function equals the published target hash.
+
+    It answers None when no current manifest is readable (a stale or partial checkout), so binding
+    then never narrows by hash. This only picks among definitions that already carry the right name; the
+    comparator still decides the match.
+    """
+    loaded = {}
+
+    def rows():
+        # Read on first use: most binds never need a hash to tell two definitions apart.
+        if 'rows' not in loaded:
+            try:
+                import target_hashes
+                manifest = target_hashes.load_manifest(Path(repo))
+                loaded['rows'] = {row['rva']: row for row in manifest['functions']}
+                loaded['module'] = target_hashes
+            except Exception:
+                loaded['rows'] = None
+        return loaded['rows']
+
+    def match(rva, symbol):
+        row = (rows() or {}).get(rva)
+        if row is None:
+            return None
+        try:
+            return loaded['module'].candidate(blob, symbol, row) == 'hash-match'
+        except Exception:
+            return None
+    return match
+
+
+def narrow(candidates, fn, decl, traits_of, size_of, matcher):
+    """(remaining candidates, [steps that removed some]) for one function among same-named definitions.
+
+    Each step keeps only the candidates that agree and is skipped when none would: the declared
+    signature of the unit's header line, the target's size, the published target hash.
+    """
+    steps = []
+    cands = list(candidates)
+
+    def apply(label, keep):
+        nonlocal cands
+        kept = [c for c in cands if keep(c)]
+        if kept and len(kept) < len(cands):
+            cands = kept
+            steps.append(label)
+    if len(cands) > 1 and decl and decl.get('params') is not None:
+        apply('declared signature', lambda c: fits_declaration(traits_of(c), decl))
+    if len(cands) > 1:
+        size = parse_rva(fn['size'])
+        apply('size', lambda c: size_of(c) == size)
+    if len(cands) > 1 and matcher is not None:
+        rva = parse_rva(fn['rva'])
+        apply('target hash', lambda c: matcher(rva, c) is True)
+    return cands, steps
+
+
+def hint_lines(rva, candidates):
+    """The `// CI hash:` lines a unit header can carry to name one of several candidates."""
+    return [f'// CI hash: {rva} {c}' for c in candidates]
 
 
 def reg_family(op):
@@ -495,6 +827,24 @@ def load_tls_hints(task_dir):
     return out
 
 
+CI_HASH_LINE = re.compile(r'^// CI hash: (0x[0-9a-fA-F]+)[ \t]+(\S+)[ \t]*$', re.M)
+
+
+def unit_hints(repo, task):
+    """{decorated symbol: rva} from the unit's `// CI hash:` lines for its compared RVAs.
+
+    The same lines the CI hash job and the PR bot read (first 8192 bytes), so one statement in the
+    source names a definition on every host; a private bind-hints.json entry overrides it.
+    """
+    unit = task.get('compiled')
+    path = Path(repo) / unit if unit else None
+    if not path or not path.is_file():
+        return {}
+    rvas = {parse_rva(f['rva']) for f in task['functions']}
+    text = path.read_text(encoding='utf-8-sig', errors='replace')[:8192]
+    return {sym: int(rva, 16) for rva, sym in CI_HASH_LINE.findall(text) if int(rva, 16) in rvas}
+
+
 def pack_references(repo, fn):
     """[(target rva, [community qualified names])] of a function's pack, or []."""
     if not fn.get('pack'):
@@ -510,6 +860,192 @@ def pack_references(repo, fn):
     return out
 
 
+def resolve_functions(task, defined, names, hints, size_of, matcher=None, header=None):
+    """{rva: result} binding each compared function to one definition of the object (no I/O).
+
+    A result is {'symbol', 'how', 'candidates', 'warnings', 'choice'}; `symbol` is None when the
+    function stays unbound, and `candidates` then lists the same-named definitions left.
+
+    Passes, so one function can never take another's exact match because it comes first in the
+    task: (0) hints and kept symbols; (1) the names each function declares, from the unit header
+    line and the community name, matched against parsed qualified names, constructor/destructor
+    kinds and the pack's destructor evidence; (2) the member name alone, skipping definitions whose
+    qualified name another compared function declares. Where several definitions share the name,
+    `narrow` picks by declared signature, then size, then published target hash.
+    """
+    header = header or {}
+    results, taken = {}, set()
+    fns = [fn for fn in task['functions']]
+
+    def result(symbol, how, candidates=(), choice=None):
+        return {'symbol': symbol, 'how': how, 'candidates': list(candidates), 'warnings': [], 'choice': choice}
+
+    def declared(fn):
+        """The qualified names a function is declared under: its header line, then its community name."""
+        out = []
+        decl = header.get(parse_rva(fn['rva']))
+        for n in ((decl or {}).get('name'), community_qualified(fn.get('community_name'))):
+            if n and n not in out:
+                out.append(n)
+        return out
+
+    def traits_of(d):
+        return decoration_traits(d, names.text.get(d))
+
+    # Pass 0: an explicit hint for the RVA, else the symbol the task already names.
+    for fn in fns:
+        rva = parse_rva(fn['rva'])
+        spec = fn.get('destructor')
+        community = community_qualified(fn.get('community_name'))
+        cls = community.rsplit('::', 1)[0] if community and '::' in community else None
+        for h in [n for n, r in hints.items() if r == rva]:
+            hits = [d for d in defined if d == h or names(d) == h]
+            if len(hits) == 1:
+                res = result(hits[0], 'hint')
+                dec = dtor_decoration(hits[0]) or dtor_thunk_decoration(hits[0])
+                if spec and not (dec and dec[0] in spec['symbols'] and cls
+                                 and (dec[1] == cls or member(dec[1]) == member(cls))):
+                    res['warnings'].append(f'hint {h} for {hex(rva)} overrides the pack evidence for a '
+                                           f'{spec["kind"]} ({spec["evidence"]})')
+                results[fn['rva']] = res
+                taken.add(hits[0])
+                break
+    for fn in fns:
+        if fn['rva'] in results:
+            continue
+        old = fn.get('symbol') or ''
+        spec = fn.get('destructor')
+        if old in defined and old not in taken:
+            if spec is None or destructor_fits(old, spec, fn):
+                results[fn['rva']] = result(old, 'kept')
+                taken.add(old)
+
+    # Pass 1: definitions whose parsed name is one the function declares.
+    exact_names = {}
+    for fn in fns:
+        for n in declared(fn):
+            exact_names.setdefault(n, set()).add(fn['rva'])
+    for fn in fns:
+        if fn['rva'] in results:
+            continue
+        rva = parse_rva(fn['rva'])
+        decl = header.get(rva)
+        spec = fn.get('destructor')
+        if spec is not None:
+            results[fn['rva']] = resolve_destructor(fn, spec, defined, taken, size_of, matcher)
+            if results[fn['rva']]['symbol']:
+                taken.add(results[fn['rva']]['symbol'])
+            continue
+        # A literal `X::Ctor` member the unit defines is the name itself; only without one does the
+        # name denote the class's constructor or destructor.
+        # `X::~X` demangles from the plain destructor only, but names all three destructor
+        # functions (plain, scalar and vector deleting), so it never counts as an exact match.
+        hits = []
+        for n in declared(fn):
+            if not is_destructor_name(n):
+                hits += [d for d in defined if d not in taken and d not in hits and names(d) == n]
+        if not hits:
+            for n in declared(fn):
+                hits += [d for d in (class_special_candidates(n, defined, taken) or []) if d not in hits]
+                hits += [d for d in class_thunk_candidates(n, defined, taken) if d not in hits]
+        if not hits:
+            continue
+        cands, steps = narrow(sorted(hits), fn, decl, traits_of, size_of, matcher)
+        if len(cands) == 1 and (len(hits) == 1 or steps):
+            q = names(cands[0])
+            how = ('header name' if decl and q == decl.get('name') and q != community_qualified(fn.get('community_name'))
+                   else 'community name' if q in declared(fn) else 'class constructor/destructor name')
+            if steps:
+                how += ', narrowed by ' + ', '.join(steps)
+            results[fn['rva']] = result(cands[0], how)
+            taken.add(cands[0])
+        else:
+            results[fn['rva']] = result(None, None, cands)
+
+    # Pass 2: the member name alone (a virtual override named for its base, a static moved to
+    # another class), never a definition whose exact name another compared function declares.
+    for fn in fns:
+        if fn['rva'] in results:
+            continue
+        rva = parse_rva(fn['rva'])
+        mine = declared(fn)
+        hits = []
+        for n in mine:
+            hits += [d for d in defined if d not in taken and d not in hits and names(d)
+                     and member(names(d)) == member(n)
+                     and not (exact_names.get(names(d), set()) - {fn['rva']})]
+        if not hits:
+            results[fn['rva']] = result(None, None)
+            continue
+        cands, steps = narrow(sorted(hits), fn, header.get(rva), traits_of, size_of, matcher)
+        if len(cands) == 1 and (len(hits) == 1 or steps):
+            results[fn['rva']] = result(cands[0], 'member name' if len(hits) == 1
+                                        else 'member name, narrowed by ' + ', '.join(steps))
+            taken.add(cands[0])
+        else:
+            results[fn['rva']] = result(None, None, cands)
+    return results
+
+
+def is_destructor_name(name):
+    if not name or '::' not in name:
+        return False
+    cls, last = name.rsplit('::', 1)
+    kinds = special_kind(cls, last)
+    return bool(kinds) and '??0' not in kinds
+
+
+def destructor_fits(d, spec, fn):
+    community = community_qualified(fn.get('community_name'))
+    cls = community.rsplit('::', 1)[0] if community and '::' in community else None
+    dec = dtor_decoration(d)
+    return bool(dec and dec[0] in spec['symbols'] and cls and (dec[1] == cls or member(dec[1]) == member(cls)))
+
+
+def class_thunk_candidates(name, defined, taken):
+    """Deleting-destructor adjustor thunks of the class a `Class::dtor`/`Class::~Class` name denotes."""
+    if not name or '::' not in name:
+        return []
+    cls, last = name.rsplit('::', 1)
+    kinds = special_kind(cls, last)
+    if not kinds or '??0' in kinds:
+        return []
+    hits = []
+    for d in defined:
+        dec = dtor_thunk_decoration(d)
+        if d not in taken and dec and (dec[1] == cls or member(dec[1]) == member(cls)):
+            hits.append(d)
+    return sorted(hits)
+
+
+def resolve_destructor(fn, spec, defined, taken, size_of, matcher):
+    """One function the pack's evidence says is a destructor: plain, deleting, or a deleting thunk."""
+    community = community_qualified(fn.get('community_name'))
+    cls = community.rsplit('::', 1)[0] if community and '::' in community else None
+    hits = sorted(d for d in defined if d not in taken and destructor_fits(d, spec, fn))
+    thunks = sorted(d for d in defined if d not in taken and cls and dtor_thunk_decoration(d)
+                    and dtor_thunk_decoration(d)[0] in spec['symbols']
+                    and member(dtor_thunk_decoration(d)[1]) == member(cls))
+    out = {'symbol': None, 'how': None, 'candidates': [], 'warnings': [], 'choice': None}
+    if len(hits) == 1 and not thunks:
+        out.update(symbol=hits[0], how='destructor kind')
+        return out
+    pool = hits + thunks
+    if thunks:
+        cands, steps = narrow(pool, fn, None, lambda d: {}, size_of, matcher)
+        if len(cands) == 1 and (len(pool) == 1 or steps):
+            out.update(symbol=cands[0], how='destructor kind' + (', narrowed by ' + ', '.join(steps) if steps else ''))
+            return out
+    if hits:
+        size = parse_rva(fn['size'])
+        ranked = sorted(hits, key=lambda d: (abs(size_of(d) - size), d))
+        exact = size_of(ranked[0]) == size
+        out.update(symbol=ranked[0], how='destructor kind, ' + ('size match' if exact else 'closest size'),
+                   choice={'rva': hex(parse_rva(fn['rva'])), 'bound': ranked[0], 'size': size,
+                           'candidates': [{'symbol': d, 'size': size_of(d)} for d in ranked]})
+    return out
+
+
 def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     """Update task.json and symbols.json in place; returns a report dict (see `describe`)."""
     task_dir = Path(task_dir)
@@ -521,9 +1057,10 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     before = json.loads(json.dumps(smap.get('symbols', {})))
     symbols = smap.setdefault('symbols', {})
     found = {}  # name -> (how, community name) for provenance of public additions
-    obj = CoffObject(Path(obj_path).read_bytes())
+    obj_bytes = Path(obj_path).read_bytes()
+    obj = CoffObject(obj_bytes)
     image = PeImage(Path(image_path).read_bytes()) if image_path and Path(image_path).is_file() else None
-    hints = load_hints(task_dir)
+    hints = {**unit_hints(repo, task), **load_hints(task_dir)}
     tls_hints = load_tls_hints(task_dir)
     tls_used = set()
     names = Names(find_undname(objdump))
@@ -557,61 +1094,23 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
         q = names(name)
         return hints.get(q) if q else None
 
-    taken = set()
+    header = header_declarations(repo, task.get('compiled'))
+    matcher = target_matcher(repo, obj_bytes)
+    resolved = resolve_functions(task, defined, names, hints, size_of, matcher, header)
     for fn in task['functions']:
         rva = parse_rva(fn['rva'])
         old = fn.get('symbol') or ''
-        community = community_qualified(fn.get('community_name'))
-        how, new = None, None
-        spec = fn.get('destructor')
-        cls = community.rsplit('::', 1)[0] if community and '::' in community else None
-
-        def dtor_ok(d):
-            dec = dtor_decoration(d)
-            return bool(spec and dec and dec[0] in spec['symbols'] and cls
-                        and (dec[1] == cls or member(dec[1]) == member(cls)))
-        hinted = [n for n, r in hints.items() if r == rva]
-        for h in hinted:
-            hits = [d for d in defined if d == h or names(d) == h]
-            if len(hits) == 1:
-                how, new = 'hint', hits[0]
-                if spec and not dtor_ok(new):
-                    report['warnings'].append(f'hint {h} for {hex(rva)} overrides the pack evidence for a '
-                                              f'{spec["kind"]} ({spec["evidence"]})')
-                break
-        if spec is not None:
-            if new is None and old in defined and dtor_ok(old):
-                how, new = 'kept', old
-            hits = sorted(d for d in defined if dtor_ok(d) and d not in taken)
-            if new is None and len(hits) == 1:
-                how, new = 'destructor kind', hits[0]
-            elif new is None and hits:
-                size = parse_rva(fn['size'])
-                ranked = sorted(hits, key=lambda d: (abs(size_of(d) - size), d))
-                new = ranked[0]
-                exact = size_of(new) == size
-                how = 'destructor kind, ' + ('size match' if exact else 'closest size')
-                report['destructor_choices'].append({
-                    'rva': hex(rva), 'bound': new, 'size': size,
-                    'candidates': [{'symbol': d, 'size': size_of(d)} for d in ranked]})
-        else:
-            if new is None and old in defined:
-                how, new = 'kept', old
-            if new is None and community:
-                hits = [d for d in defined if names(d) == community and d not in taken]
-                if len(hits) == 1:
-                    how, new = 'community name', hits[0]
-            if new is None and community:
-                hits = [d for d in defined if member(names(d)) == member(community) and d not in taken]
-                if len(hits) == 1:
-                    how, new = 'member name', hits[0]
+        res = resolved[fn['rva']]
+        how, new = res['how'], res['symbol']
+        report['warnings'] += res['warnings']
+        if res['choice']:
+            report['destructor_choices'].append(res['choice'])
         if new is None:
-            candidates = sorted(d for d in defined if d not in taken)
+            candidates = sorted(d for d in defined if d not in {r['symbol'] for r in resolved.values()})
             report['unbound_functions'].append({'rva': hex(rva), 'community_name': fn.get('community_name'),
                                                 'symbol': old, 'defined_in_object': candidates[:12],
-                                                'expected': spec})
+                                                'expected': fn.get('destructor'), 'overloads': res['candidates']})
             continue
-        taken.add(new)
         if new != old:
             if old and not old.startswith(UNBOUND):
                 report['renamed'].append({'rva': hex(rva), 'old': old, 'new': new})
@@ -642,6 +1141,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                        'that defines a constructor or otherwise references the vftable')
         report['ignored_hints'].append({'hint': h, 'rva': hex(r), 'reason': reason})
     compared = {fn['symbol']: fn for fn in task['functions'] if fn['symbol'] in defined}
+    starts = function_starts(repo)
     own = set(compared)
     defined_sections = set(defined.values())
     for name, fn in compared.items():
@@ -675,6 +1175,23 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                     if ref in symbols:
                         continue
                     if key is None:
+                        offset = declared_tls_offset(member(q) if q else ref)
+                        if offset is not None and base is not None and image is not None:
+                            sec = obj.section(index)
+                            try:
+                                addend = struct.unpack_from('<I', sec.data, rel.offset)[0]
+                                (field,) = struct.unpack('<I', image.read(base + rel.offset, 4, 'bind')[1])
+                                start, end, _ = image.tls_template()
+                            except (Reject, struct.error, TypeError):
+                                field = None
+                            if field is not None and field - addend == offset and offset < end - start:
+                                symbols[ref] = {'kind': 'thread-local', 'tls_offset': offset, 'size': None}
+                                found[ref] = ('thread-local name', None)
+                                report['references'].append({'symbol': ref, 'tls_offset': hex(offset),
+                                                             'how': 'thread-local name',
+                                                             **({'from': 'funclet'} if is_funclet else {})})
+                                report['changed'] = True
+                                continue
                         if ref not in report['unbound_thread_locals']:
                             report['unbound_thread_locals'].append(ref)
                         continue
@@ -710,7 +1227,12 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                     if pos is not None and pos in accept:
                         how, value = ('object lifetime position' if pos in life_known and pos not in known
                                       else 'position'), pos
-                    contradicted = pos is not None and pos not in accept
+                    elif (pos is not None and is_funclet and state is not None and rel.kind in REL32_TAIL
+                          and starts is not None and pos in starts):
+                        # The compiler's own destructor of a local is a function of the image the pack
+                        # need not list; the relocated target being a known function start is the evidence.
+                        how, value = 'unwind funclet position', pos
+                    contradicted = value is None and pos is not None and pos not in accept
                 if value is None:
                     q = names(ref)
                     pool = refs + life_refs if is_funclet else refs
@@ -756,7 +1278,7 @@ def provenance_entry(name, entry, found):
     how = found.get(name, ('unknown', None))[0]
     if entry.get('kind') == 'thread-local':
         return {'name': name, 'tls_offset': hex(entry['tls_offset']), 'size_from': None, 'community_name': None,
-                'note': f'bound by tools/verifier/bind.py ({how}) from a tls: bind hint; the offset is the one the '
+                'note': f'bound by tools/verifier/bind.py ({how}) from a tls: bind hint or the tls_0x<offset> name; the offset is the one the '
                         'target code adds to the TLS block, the decorated name is the reconstruction\'s'}
     return {'name': name, 'rva': hex(entry['rva']), 'size_from': 'task' if entry.get('size') else None,
             'community_name': found.get(name, (None, None))[1],
@@ -799,9 +1321,17 @@ def describe(report, task_dir):
                          f'({spec["evidence"]}); the object defines no {"/".join(spec["symbols"])} of the class. '
                          'A deleting destructor is emitted beside the vftable, so the unit must define a '
                          f'constructor (or otherwise reference the vftable); or add a hint to {hints}')
+        elif f.get('overloads'):
+            lines.append(f'  UNBOUND function {f["rva"]} ({f["community_name"]}): {len(f["overloads"])} definitions '
+                         'carry that name and neither the declared signature, the size nor the published target '
+                         'hash tells them apart. Put the signature on the header line '
+                         f'(`// {f["rva"]} Class::Method(int) const`), or add the one `CI hash:` line that names it:')
+            lines += ['    ' + line for line in hint_lines(f['rva'], f['overloads'][:6])]
         else:
-            lines.append(f'  UNBOUND function {f["rva"]} ({f["community_name"]}): no unique definition in the object; '
-                         f'add {{"<decorated or Class::Method name>": "{f["rva"]}"}} to {hints}')
+            lines.append(f'  UNBOUND function {f["rva"]} ({f["community_name"]}): the object defines nothing under '
+                         'that name. If the unit defines it under another name, write that name on its header line '
+                         f'(`// {f["rva"]} Class::Method`) or add `// CI hash: {f["rva"]} <decorated name>`; '
+                         f'locally {{"<decorated or Class::Method name>": "{f["rva"]}"}} in {hints} also works')
         if f['defined_in_object']:
             lines.append('    defined in object: ' + ', '.join(f['defined_in_object'][:6]))
     for name in report['unbound_references']:

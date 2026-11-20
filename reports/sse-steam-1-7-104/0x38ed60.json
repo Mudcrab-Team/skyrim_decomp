@@ -1,0 +1,193 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "18b55273d59a252536b67d7a70d527d5e80cd8a998d3d6be99b52ba31036597a",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/unmapped/leaves/DeletingLeaf38ed60.cpp",
+          "reconstruction/unmapped/leaves/DeletingLeaf38ed60.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "e0e49c3da4b4e3fd045816bb641e444b2826ae30",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "eac7fbe98d02bbf9f74db04da0e67e2964075c94",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "1f032ba7271b2aea22ace1991e084a011d020ff3eee52ad203ec52e32b011aee",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44602623747,
+    "rva": "0x38ed60",
+    "schema": 2,
+    "source_sha256": "da9a312f0b7ea4cfed494bec33230a1133d9ed049455aee51715dba9b0f6569c",
+    "status": "pass",
+    "symbols": [
+      "??_GDeletingLeaf38ed60@@UEAAPEAXI@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
+      "normalized_sha256": "1f032ba7271b2aea22ace1991e084a011d020ff3eee52ad203ec52e32b011aee",
+      "rva": 3730784,
+      "size": 43
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/unmapped/leaves/DeletingLeaf38ed60.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x38ed60",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "46468a5cfadadca4c6c1e6fa67a0dcd2acd6a8516cd6451e6d3a4278cf6a10e4",
+          "code_sections": 1,
+          "object_sha256": "18b55273d59a252536b67d7a70d527d5e80cd8a998d3d6be99b52ba31036597a"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 8,
+          "code_bytes_exact": 35,
+          "code_bytes_total": 43,
+          "eh": {
+            "bytes": 8,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 2
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 8,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 3730784,
+          "size": 43,
+          "symbol": "??_GDeletingLeaf38ed60@@UEAAPEAXI@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/unmapped/leaves/DeletingLeaf38ed60.cpp",
+          "source_revision": "da9a312f0b7ea4cfed494bec33230a1133d9ed049455aee51715dba9b0f6569c"
+        },
+        "symbol_map_sha256": "625002581c9db6a6b9b569c6a851c9882e0b60da1e169eb45c6e8e302eba2eab",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x38ed60"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/unmapped/leaves/DeletingLeaf38ed60.cpp",
+    "digest": "da9a312f0b7ea4cfed494bec33230a1133d9ed049455aee51715dba9b0f6569c",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/unmapped/leaves/DeletingLeaf38ed60.cpp",
+      "reconstruction/unmapped/leaves/DeletingLeaf38ed60.h"
+    ]
+  },
+  "submitter": "awarebayes",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/625002581c9db6a6b9b569c6a851c9882e0b60da1e169eb45c6e8e302eba2eab.json",
+    "sha256": "625002581c9db6a6b9b569c6a851c9882e0b60da1e169eb45c6e8e302eba2eab"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

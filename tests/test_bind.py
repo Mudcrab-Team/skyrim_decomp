@@ -3,8 +3,10 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import os
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
@@ -312,6 +314,198 @@ DTOR = 'SyntheticDtor'
 DTOR_RVA = fx.LAYOUT[fx.OTHER_CALLEE]
 
 
+class ClassSpecialNameTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.task_dir = self.root / 'task'
+        self.task_dir.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_ctor(self, defined, community='RE::BSLightingShaderMaterialEye::Ctor', size=3):
+        unit = fx.Unit()
+        for name, length in defined.items():
+            sec = unit.section('.text$mn', b'\xc3' * length, fx.SCN_CODE)
+            unit.define(name, sec, storage=fx.STORAGE_EXTERNAL, function=True)
+        (self.root / 'obj').write_bytes(unit.coff())
+        task = {'symbols': 'symbols.json', 'functions': [
+            {'rva': '0x1000', 'size': size, 'symbol': 'unbound:Eye', 'community_name': community}]}
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': {}}))
+        report = bind.bind(self.task_dir, self.root / 'obj', None, repo=self.root)
+        return report, json.loads((self.task_dir / 'task.json').read_text())['functions'][0]
+
+    def test_other_classes_constructor_does_not_make_it_ambiguous(self):
+        report, fn = self.run_ctor({'??0BSLightingShaderMaterialEye@@QEAA@XZ': 3, '??0NiColor@@QEAA@XZ': 3})
+        self.assertEqual(fn['symbol'], '??0BSLightingShaderMaterialEye@@QEAA@XZ')
+        self.assertEqual(report['unbound_functions'], [])
+
+    def test_single_constructor(self):
+        report, fn = self.run_ctor({'??0BSLightingShaderMaterialEye@@QEAA@XZ': 3})
+        self.assertEqual(fn['symbol'], '??0BSLightingShaderMaterialEye@@QEAA@XZ')
+
+    def test_overloaded_constructors_stay_unbound_with_hint_advice(self):
+        report, fn = self.run_ctor({'??0BSLightingShaderMaterialEye@@QEAA@XZ': 3,
+                                    '??0BSLightingShaderMaterialEye@@QEAA@H@Z': 3, '??0NiColor@@QEAA@XZ': 3})
+        self.assertEqual(fn['symbol'], 'unbound:Eye')
+        self.assertEqual(len(report['unbound_functions'][0]['overloads']), 2)
+        self.assertIn('CI hash:', '\n'.join(bind.describe(report, self.task_dir)))
+
+
+
+COLL = '?GetCollisionObject@NiAVObject@@QEAAPEAVbhkCollisionObject@@XZ'
+COLL_CONST = '?GetCollisionObject@NiAVObject@@QEBAPEAVbhkCollisionObject@@XZ'
+
+
+class NormalizeParamsTests(unittest.TestCase):
+    def test_source_style_equals_demangled_style(self):
+        pairs = [
+            ('NiBSplineData*, std::uint32_t, NiBSplineBasisData*',
+             'class NiBSplineData *, unsigned int, class NiBSplineBasisData *'),
+            ('const NiColorA&', 'class NiColorA const &'),
+            ('const char*, std::int64_t', 'char const *, __int64'),
+            ('volatile const T*, uint8_t', 'T const volatile *, unsigned char'),
+            ('const std::pair<int, char const*>&', 'std::pair<int, char const *> const &'),
+            ('void', ''),
+        ]
+        for source, demangled in pairs:
+            with self.subTest(source=source):
+                self.assertEqual(bind.normalize_params(source), bind.normalize_params(demangled))
+
+    def test_distinct_signatures_stay_distinct(self):
+        self.assertNotEqual(bind.normalize_params('const NiColorA&'), bind.normalize_params('NiColorA&'))
+        self.assertNotEqual(bind.normalize_params('std::uint32_t'), bind.normalize_params('std::uint64_t'))
+
+
+class OverloadAndOrderTests(unittest.TestCase):
+    """Name-to-definition rules for C++ forms that share or rename a community name (no demangler)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.task_dir = self.root / 'task'
+        self.task_dir.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_bind(self, defined, functions, header=None, hints=None, matcher=None):
+        """`defined` is {decorated name: section bytes}; `functions` [(rva, size, community name)]."""
+        unit = fx.Unit()
+        for name, code in defined.items():
+            sec = unit.section('.text$mn', code if isinstance(code, bytes) else b'\xc3' * code, fx.SCN_CODE)
+            unit.define(name, sec, storage=fx.STORAGE_EXTERNAL, function=True)
+        (self.root / 'obj').write_bytes(unit.coff())
+        task = {'symbols': 'symbols.json', 'compiled': 'unit.cpp', 'functions': [
+            {'rva': rva, 'size': size, 'symbol': f'unbound:{rva}', 'community_name': name}
+            for rva, size, name in functions]}
+        if header is not None:
+            (self.root / 'unit.cpp').write_text(''.join(f'// {line}\n' for line in header) + '#include "unit.h"\n')
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': {}}))
+        if hints is not None:
+            (self.task_dir / bind.HINTS).write_text(json.dumps(hints))
+        with mock.patch.object(bind, 'target_matcher', return_value=matcher):
+            report = bind.bind(self.task_dir, self.root / 'obj', None, repo=self.root)
+        bound = {f['rva']: f['symbol'] for f in json.loads((self.task_dir / 'task.json').read_text())['functions']}
+        return report, bound
+
+    def test_const_and_non_const_overloads_split_by_size(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 20}, [
+            ('0x1900a0', 9, 'RE::NiAVObject::GetCollisionObject'),
+            ('0x405a50', 20, 'RE::NiAVObject::GetCollisionObject')])
+        self.assertEqual(bound, {'0x1900a0': COLL, '0x405a50': COLL_CONST})
+        self.assertEqual(report['unbound_functions'], [])
+        self.assertIn('narrowed by size', report['functions'][0]['how'])
+
+    def test_same_size_overloads_split_by_target_hash(self):
+        def matcher(rva, symbol):
+            return (rva, symbol) in {(0x1900a0, COLL), (0x405a50, COLL_CONST)}
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [
+            ('0x1900a0', 9, 'NiAVObject::GetCollisionObject'),
+            ('0x405a50', 9, 'NiAVObject::GetCollisionObject')], matcher=matcher)
+        self.assertEqual(bound, {'0x1900a0': COLL, '0x405a50': COLL_CONST})
+        self.assertIn('target hash', report['functions'][0]['how'])
+
+    def test_declared_signature_on_the_header_line_picks_the_overload(self):
+        static = '?GetContainer@TESObjectREFR@@SAPEAVTESContainer@@PEAVTESBoundObject@@@Z'
+        member_fn = '?GetContainer@TESObjectREFR@@QEBAPEAVTESContainer@@XZ'
+        report, bound = self.run_bind({static: 9, member_fn: 9}, [('0x2e8660', 9, 'TESObjectREFR::GetContainer')],
+                                      header=['0x2e8660 TESObjectREFR::GetContainer() const'])
+        self.assertEqual(bound['0x2e8660'], member_fn)
+        self.assertIn('declared signature', report['functions'][0]['how'])
+
+    def test_indistinguishable_overloads_list_the_hint_lines(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')])
+        self.assertEqual(bound['0x1900a0'], 'unbound:0x1900a0')
+        self.assertEqual(report['unbound_functions'][0]['overloads'], sorted([COLL, COLL_CONST]))
+        text = '\n'.join(bind.describe(report, self.task_dir))
+        self.assertIn(f'// CI hash: 0x1900a0 {COLL}', text)
+        self.assertIn(f'// CI hash: 0x1900a0 {COLL_CONST}', text)
+
+    def test_hint_still_decides_between_overloads(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      hints={COLL_CONST: '0x1900a0'})
+        self.assertEqual(bound['0x1900a0'], COLL_CONST)
+
+    def test_member_name_never_takes_another_functions_exact_name(self):
+        # The unit defines TESObjectCELL::GetOwner and calls ExtraDataList::GetOwner, and the task lists
+        # the callee first: the callee must not take the definition by member name.
+        owner = '?GetOwner@TESObjectCELL@@QEAAPEAVTESForm@@XZ'
+        report, bound = self.run_bind({owner: 33}, [('0x164570', 33, 'ExtraDataList::GetOwner'),
+                                                    ('0x2be530', 33, 'TESObjectCELL::GetOwner')])
+        self.assertEqual(bound['0x2be530'], owner)
+        self.assertEqual(bound['0x164570'], 'unbound:0x164570')
+
+    def test_member_name_still_binds_an_override_named_for_its_base(self):
+        derived = '?Update@Derived@@UEAAXXZ'
+        report, bound = self.run_bind({derived: 9}, [('0x1000', 9, 'Base::Update')])
+        self.assertEqual(bound['0x1000'], derived)
+        self.assertEqual(report['functions'][0]['how'], 'member name')
+
+    def test_header_line_names_a_stand_in_without_a_community_name(self):
+        slot = '?Slot8@PlayerCharacter@@UEBAEXZ'
+        report, bound = self.run_bind({slot: 9, '?Other@PlayerCharacter@@QEAAXXZ': 9}, [('0x75c2b0', 9, None)],
+                                      header=['0x75c2b0 PlayerCharacter::Slot8'])
+        self.assertEqual(bound['0x75c2b0'], slot)
+        self.assertEqual(report['functions'][0]['how'], 'header name')
+
+    def test_literal_ctor_member_beats_the_class_constructor(self):
+        literal = '?Ctor@BSLightingShaderMaterialSnow@@QEAAPEAV1@XZ'
+        report, bound = self.run_bind({literal: 9, '??0BSLightingShaderMaterialSnow@@QEAA@XZ': 9},
+                                      [('0x1527fc0', 9, 'BSLightingShaderMaterialSnow::Ctor')])
+        self.assertEqual(bound['0x1527fc0'], literal)
+
+    def test_deleting_destructor_adjustor_thunk_binds_by_size(self):
+        thunk = '??_EBGSMovableStatic@@WBA@EAAPEAXI@Z'
+        report, bound = self.run_bind({'??1BGSMovableStatic@@UEAA@XZ': 40, '??_GBGSMovableStatic@@UEAAPEAXI@Z': 60,
+                                       thunk: 9}, [('0x264444', 9, 'BGSMovableStatic::dtor')])
+        self.assertEqual(bound['0x264444'], thunk)
+
+    def test_ci_hash_line_in_the_unit_is_a_hint(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      header=['0x1900a0 NiAVObject::GetCollisionObject', f'CI hash: 0x1900a0 {COLL}'])
+        self.assertEqual(bound['0x1900a0'], COLL)
+        self.assertEqual(report['functions'][0]['how'], 'hint')
+
+    def test_decoration_traits(self):
+        self.assertEqual(bind.decoration_traits(COLL_CONST), {'static': False, 'cv': 'const', 'params': None})
+        self.assertEqual(bind.decoration_traits(COLL)['cv'], '')
+        self.assertTrue(bind.decoration_traits('?GetContainer@TESObjectREFR@@SAPEAVTESContainer@@XZ')['static'])
+        self.assertEqual(bind.decoration_traits('??0Eye@@QEAA@XZ')['cv'], '')
+        text = 'public: static class TESContainer * __cdecl TESObjectREFR::GetContainer(class TESBoundObject *)'
+        self.assertEqual(bind.decoration_traits('?x', text)['params'], 'TESBoundObject*')
+
+    def test_header_declarations(self):
+        (self.root / 'u.cpp').write_text('// Source exposure: original.\n// 0x10 A::F\n'
+                                         '// 0x20 RE::A::G(int, char const *) const\n// CI hash: 0x10 ?F@A@@QEAAXXZ\n#include "u.h"\n')
+        decls = bind.header_declarations(self.root, 'u.cpp')
+        self.assertEqual(decls[0x10], {'name': 'A::F', 'params': None, 'cv': None})
+        self.assertEqual(decls[0x20], {'name': 'A::G', 'params': 'int,charconst*', 'cv': 'const'})
+
+
 class FuncletTests(unittest.TestCase):
     """References made only from funclets, on the synthetic catch unit (catch$0 and dtor$0)."""
 
@@ -406,6 +600,44 @@ class FuncletTests(unittest.TestCase):
         report, symbols = self.run_bind(image=False)
         self.assertEqual(symbols[DTOR]['rva'], DTOR_RVA)
         self.assertEqual({r['symbol']: r['how'] for r in report['references']}[DTOR], 'community name')
+
+    def table(self, *rvas):
+        path = self.root / 'functions.jsonl'
+        path.write_text(''.join(json.dumps({'rva': r}) + '\n' for r in rvas))
+        return mock.patch.dict(os.environ, {'SR_FUNCTION_TABLE': str(path)})
+
+    def test_unlisted_destructor_binds_when_the_target_is_a_function_start(self):
+        # The pack lists no destructor call at all, as for a compiler-generated local destructor.
+        self.setup_task([], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with self.table(DTOR_RVA, 0x1000):
+            report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_references'], [])
+        got = {r['symbol']: r for r in report['references']}
+        self.assertEqual((got[DTOR]['how'], got[DTOR]['from']), ('unwind funclet position', 'funclet'))
+        self.assertEqual(symbols[DTOR]['rva'], DTOR_RVA)
+
+    def test_unlisted_destructor_stays_unbound_when_the_target_is_not_in_the_table(self):
+        self.setup_task([], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with self.table(0x1000):
+            report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_references'], [DTOR])
+        self.assertNotIn(DTOR, symbols)
+
+    def test_unlisted_destructor_stays_unbound_without_a_table(self):
+        self.setup_task([], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with mock.patch.dict(os.environ, {'SR_FUNCTION_TABLE': str(self.root / 'absent.jsonl')}), \
+                mock.patch.object(bind, 'function_starts', return_value=None):
+            report, symbols = self.run_bind()
+        self.assertEqual(report['unbound_references'], [DTOR])
+
+    def test_function_table_does_not_bind_a_reference_of_the_function_itself(self):
+        # Only unwind funclets get the rule; the parent's own references still need the pack.
+        self.setup_task([hex(DTOR_RVA)], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        with self.table(DTOR_RVA, fx.LAYOUT[fx.CALLEE]):
+            report, symbols = self.run_bind()
+        got = {r['symbol']: r['how'] for r in report['references']}
+        self.assertEqual(got[fx.CALLEE], 'position')
+        self.assertEqual(got[DTOR], 'object lifetime position')
 
 
 class PublicMapBindTests(BindTests):
@@ -550,6 +782,72 @@ class ThreadLocalBindTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'stale.*thread-local entry'):
             bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
         self.assertEqual(path.read_bytes(), blob)
+
+
+class DeclaredTlsNameTests(unittest.TestCase):
+    """With no hint, a variable named `tls_0x<offset>` binds when the target's own field agrees."""
+
+    VAR = '?tGuard_tls_0x768@@3HA'
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.task_dir = self.root / 'task'
+        self.task_dir.mkdir()
+        self.old = fx.TLS_VAR
+        fx.TLS_VAR = self.VAR  # the fixture's unit and link layout read this module name at call time
+
+    def tearDown(self):
+        fx.TLS_VAR = self.old
+        self.tmp.cleanup()
+
+    def prepare(self, var=None, target_offset=fx.TLS_OFFSET, addend=0):
+        if var is not None:
+            fx.TLS_VAR = var
+        unit = fx.tls_unit(addend=addend)
+        (self.root / 'obj').write_bytes(unit.coff())
+        image = unit.link({fx.TLS_INDEX: fx.TLS_INDEX_RVA}, tls=fx.tls_layout(offset=target_offset))
+        (self.root / 'image').write_bytes(image)
+        rva = unit.default_placement()[1]
+        pack = self.root / 'packs' / 't'
+        pack.mkdir(parents=True)
+        (pack / 'pack.json').write_text(json.dumps({'references': []}))
+        (self.task_dir / 'task.json').write_text(json.dumps({'symbols': 'symbols.json', 'functions': [
+            {'rva': hex(rva), 'size': len(fx.TLS_CODE), 'symbol': fx.TLS_FUNCTION,
+             'community_name': 'SyntheticTlsRead', 'pack': 'packs/t'}]}))
+        (self.task_dir / 'symbols.json').write_text(json.dumps(
+            {'schema': 1, 'symbols': {fx.TLS_FUNCTION: {'rva': rva, 'size': len(fx.TLS_CODE)}}}))
+        report = bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
+        return report, json.loads((self.task_dir / 'symbols.json').read_text())['symbols']
+
+    def test_declared_offset_binds_without_a_hint(self):
+        report, symbols = self.prepare()
+        self.assertEqual(report['unbound_thread_locals'], [])
+        self.assertEqual(symbols[self.VAR], {'kind': 'thread-local', 'tls_offset': fx.TLS_OFFSET, 'size': None})
+        self.assertEqual([r['how'] for r in report['references']], ['thread-local name'])
+        self.assertNotIn(fx.TLS_INDEX, symbols)
+
+    def test_declared_offset_that_the_target_does_not_use_binds_nothing(self):
+        report, symbols = self.prepare(target_offset=0x770)
+        self.assertEqual(report['unbound_thread_locals'], [self.VAR])
+        self.assertNotIn(self.VAR, symbols)
+
+    def test_name_without_a_declared_offset_binds_nothing(self):
+        report, symbols = self.prepare(var='?tGuard@@3HA')
+        self.assertEqual(report['unbound_thread_locals'], ['?tGuard@@3HA'])
+
+    def test_declared_offset_outside_the_template_binds_nothing(self):
+        report, symbols = self.prepare(var='?tFar_tls_0x7f768@@3HA', target_offset=0x7f768)
+        self.assertEqual(report['unbound_thread_locals'], ['?tFar_tls_0x7f768@@3HA'])
+
+    def test_declared_offset_is_the_variable_start_not_the_field(self):
+        report, symbols = self.prepare(addend=4)
+        self.assertEqual(symbols[self.VAR]['tls_offset'], fx.TLS_OFFSET)
+
+    def test_hint_still_wins_over_the_name(self):
+        (self.task_dir / bind.HINTS).write_text(json.dumps({self.VAR: 'tls:0x768'}))
+        report, symbols = self.prepare()
+        self.assertEqual([r['how'] for r in report['references']], ['thread-local hint'])
 
 
 if __name__ == '__main__':

@@ -1,0 +1,20 @@
+name: Bug or tooling problem
+description: Something in contrib.py, checks, CI or the site is broken
+title: "tooling: "
+labels: [bug, tooling]
+body:
+  - type: markdown
+    attributes:
+      value: "Privacy: no game bytes, disassembly, decompiler output, dumps or symbols; name functions by RVA and name only."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, expected, and the command
+      description: Include the command, its exit code and a one-line error; no paths to game files.
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Filed by an agent? (model/tool, optional)
+      description: "Agents: name your model/tool and add the from-agent label (gh issue create --label from-agent). Leave empty for a human."

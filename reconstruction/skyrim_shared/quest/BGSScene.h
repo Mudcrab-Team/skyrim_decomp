@@ -1,0 +1,19 @@
+// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// BGSScene: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// BGSScene::~BGSScene: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+#pragma once
+
+#include <cstdint>
+#include "../forms/TESForm.h"
+
+class BGSScene : public TESForm
+{
+public:
+    BGSScene();
+    virtual ~BGSScene();  // compared: 0x3aa560 (scalar deleting destructor); declared only, rule 18
+
+    // unknown20: GUESS(low); the padding to the size the sized operator delete receives
+    std::uint8_t unknown20[0xA8];  // 20
+};
+static_assert(sizeof(BGSScene) == 0xC8, "BGSScene size");

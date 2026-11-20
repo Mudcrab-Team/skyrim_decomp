@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@NiBlendBoolInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16198048,
+      "size": 39
+    },
+    "?LoadBinary@NiBlendBoolInterpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16198096,
+      "size": 79
+    },
+    "?SaveBinary@NiBlendBoolInterpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16198224,
+      "size": 79
+    },
+    "?IsEqual@NiBlendBoolInterpolator@@UEAA_NPEAVNiObject@@@Z": {
+      "rva": 16198320,
+      "size": 60
+    },
+    "?SupportsBlendValue@NiBlendBoolInterpolator@@QEBA_NPEBVBlendValueSupport@@@Z": {
+      "rva": 16199216,
+      "size": 13
+    },
+    "??_GNiBlendBoolInterpolator@@UEAAPEAXI@Z": {
+      "rva": 16199952,
+      "size": 52
+    },
+    "?CopyMembers@NiBlendInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16103392,
+      "size": null
+    },
+    "?LoadBinary@NiBlendInterpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16103872,
+      "size": null
+    },
+    "?SaveBinary@NiBlendInterpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16105040,
+      "size": null
+    },
+    "?IsEqual@NiBlendInterpolator@@UEAA_NPEAVNiObject@@@Z": {
+      "rva": 16105872,
+      "size": null
+    },
+    "??1NiBlendInterpolator@@UEAA@XZ": {
+      "rva": 16106240,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@NiBlendBoolInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xf729a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiBlendBoolInterpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf729d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiBlendBoolInterpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf72a50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsEqual@NiBlendBoolInterpolator@@UEAA_NPEAVNiObject@@@Z",
+        "rva": "0xf72ab0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SupportsBlendValue@NiBlendBoolInterpolator@@QEBA_NPEBVBlendValueSupport@@@Z",
+        "rva": "0xf72e30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GNiBlendBoolInterpolator@@UEAAPEAXI@Z",
+        "rva": "0xf73110",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiBlendInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xf5b7e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiBlendInterpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf5b9c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiBlendInterpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf5be50",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsEqual@NiBlendInterpolator@@UEAA_NPEAVNiObject@@@Z",
+        "rva": "0xf5c190",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiBlendInterpolator@@UEAA@XZ",
+        "rva": "0xf5c300",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

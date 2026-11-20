@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@NiPoint3Interpolator@@QEBAXPEAV1@@Z": {
+      "rva": 16271680,
+      "size": 108
+    },
+    "?LoadBinary@NiPoint3Interpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16271808,
+      "size": 100
+    },
+    "??0NiPoint3Interpolator@@QEAA@PEAVNiPosData@@@Z": {
+      "rva": 16272432,
+      "size": 104
+    },
+    "?CopyMembers@NiKeyBasedInterpolator@@QEBAXPEAV1@@Z": {
+      "rva": 16180640,
+      "size": null
+    },
+    "?LoadBinary@NiKeyBasedInterpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16180656,
+      "size": null
+    },
+    "?LoadBinary@NiPoint3@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15581104,
+      "size": null
+    },
+    "?ReadStreamObjectLink@@YAPEAVNiObject@@AEAVNiStream@@@Z": {
+      "rva": 15618832,
+      "size": null
+    },
+    "??0NiKeyBasedInterpolator@@QEAA@XZ": {
+      "rva": 16181696,
+      "size": null
+    },
+    "??_7NiPoint3Interpolator@@6B@": {
+      "rva": 27634312,
+      "size": null
+    },
+    "?gDefaultPose@@3UNiPoint3@@B": {
+      "rva": 34403008,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@NiPoint3Interpolator@@QEBAXPEAV1@@Z",
+        "rva": "0xf84940",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiPoint3Interpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf849c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiPoint3Interpolator@@QEAA@PEAVNiPosData@@@Z",
+        "rva": "0xf84c30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiKeyBasedInterpolator@@QEBAXPEAV1@@Z",
+        "rva": "0xf6e5a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiKeyBasedInterpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf6e5b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiPoint3@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xedbfb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadStreamObjectLink@@YAPEAVNiObject@@AEAVNiStream@@@Z",
+        "rva": "0xee5310",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiKeyBasedInterpolator@@QEAA@XZ",
+        "rva": "0xf6e9c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiPoint3Interpolator@@6B@",
+        "rva": "0x1a5aa88",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gDefaultPose@@3UNiPoint3@@B",
+        "rva": "0x20cf2c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

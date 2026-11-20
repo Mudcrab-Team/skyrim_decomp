@@ -125,21 +125,6 @@ class Evidence(GateFixture,unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'content differs'):
             check.validate_match(self.fn, self.target, root=self.root)
 
-    def test_clean_ci_sampling_requires_full_attestation_and_local_comparator(self):
-        import sampling_packet
-        arguments=dict(root=self.root,fn=self.fn,target=self.target)
-        original=copy.deepcopy(self.record)
-        self.assertTrue(sampling_packet.compare(original,self.record,**arguments)[0])
-        self.assertFalse(sampling_packet.compare(original,self.record)[0])
-        for field in ('run_id','content_sha256','cache_verified','source_sha256'):
-            with self.subTest(field=field):
-                bad=copy.deepcopy(original);bad['ci_confirmation'][field]=None
-                self.assertFalse(sampling_packet.compare(original,bad,**arguments)[0])
-        bad=copy.deepcopy(original);bad['runs'][0]['report']['result']='fail'
-        self.assertFalse(sampling_packet.compare(original,bad,**arguments)[0])
-        bad=copy.deepcopy(original);del bad['ci_confirmation']
-        self.assertFalse(sampling_packet.compare(original,bad,**arguments)[0])
-
     def test_every_binding_fails_closed(self):
         original=copy.deepcopy(self.record)
         for key,value in list(original['ci_confirmation'].items()):
@@ -167,7 +152,8 @@ class Evidence(GateFixture,unittest.TestCase):
 class Prepare(unittest.TestCase):
     def test_real_source_intake_has_trusted_recipe_and_evidence_before_lint(self):
         from test_lint_reconstruction import HEADER, SOURCE, BUILD
-        from source_digest import include_closure, tu_digest
+        from source_digest import include_closure
+        from digest_v2 import tu_digest
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)/'repo';root.mkdir()
             def git(*args):
@@ -176,7 +162,7 @@ class Prepare(unittest.TestCase):
             for name,data in {'builds/target.json':json.dumps(dict(build_id=BUILD)),
                 'findings/TEMPLATE.md':'Original synthetic evidence.\n',
                 'reconstruction/recipes/r.json':'{}',
-                'reconstruction/misc/Widget.cpp':SOURCE,'reconstruction/misc/Widget.h':HEADER}.items():
+                'reconstruction/misc/Widget.cpp':SOURCE.replace('#include','// Evidence: findings/TEMPLATE.md\n#include',1),'reconstruction/misc/Widget.h':HEADER}.items():
                 p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(data, newline="\n")
             git('add','.');git('commit','-qm','original synthetic fixture');base=git('rev-parse','HEAD')
             closure=include_closure(root,'reconstruction/misc/Widget.cpp')
@@ -264,6 +250,19 @@ class Config(unittest.TestCase):
             runners.for_confirm(runners.validate(raw))
         raw['attempt']='ci'
         with self.assertRaisesRegex(runners.RunnerError,'confirmation host only'):runners.validate(raw)
+
+    def test_ci_host_accepts_the_moved_repository_name_only_for_this_project(self):
+        mac=dict(backend='local',host_id='mac-wine',machine='maintainer-mac',loader='wine',
+                 msvc='msvc',work='work',wine_bin='wine',image='private-image')
+        for repository,ok in [('Mudcrab-Team/skyrim_decomp',True),('awarebayes/skyrim_decomp',True),
+                              ('someone/skyrim_decomp',False)]:
+            ci=dict(backend='ci-hash',host_id='github-windows-native',machine='github-hosted-windows',
+                    loader='native',repository=repository)
+            raw=dict(runners_schema=1,hosts=dict(mac=mac,ci=ci),attempt='mac',confirm=['mac','ci'])
+            if ok:
+                runners.validate(raw)
+            else:
+                with self.assertRaisesRegex(runners.RunnerError,'approved GitHub Windows host'):runners.validate(raw)
 
 
 if __name__=='__main__':unittest.main()

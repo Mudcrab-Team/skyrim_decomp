@@ -60,7 +60,9 @@ unmatched functions, plus `contributor-targets.json`: the offered `contrib.py ne
 all functions in the current open claim snapshot. Claim addresses outside progress are resolved
 against local function/pdata boundaries; unresolved identities stop generation. The checked-in
 offered inventory records public claim URLs/scopes and hashes of its input snapshots. This
-coverage is smaller than the full executable census. Install the
+coverage is smaller than the full executable census. `target_hash_offers.py` also offers a bounded window (3,000 by
+default) of unmapped ordinary functions, small ones first, whose class already has a layout unit; `contrib.py` accepts
+them and `tools/record.py` creates their inventory entry on acceptance (`findings/claim-time-mapping.md`). Install the
 local extraction dependency `iced-x86==1.21.0` in an ignored environment. For example:
 
 ```sh
@@ -109,6 +111,8 @@ these 50 public references twice against the same published target hashes. This 
 format across the accepted size range; it does not prove inferred masks for all unmatched code.
 The manifest is regenerated deliberately on a maintainer machine when inventory extents,
 normalization, comparator, pins or recipes change; CI never needs a game image.
+The PR bot refreshes it in its post-merge regenerate commit after a mapping-only PR, using
+`SR_TARGET_IMAGE` (and optionally `SR_FUNCTION_TABLE`) on its host, so main's hash test stays green.
 
 ## PR job and p123 integration
 

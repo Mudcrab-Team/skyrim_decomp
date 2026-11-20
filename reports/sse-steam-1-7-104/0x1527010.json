@@ -1,0 +1,194 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "44509c927f1e8cd0475829e526e7a5902906f021c981d8935b689f5f277c0ca5",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.cpp",
+          "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "3aca30dea439a6fc41f17379298f9c34552b9380",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "887dc18f5e4321446d19256e1e23c4bcb02c40a2",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "8521fb2114f40ca3e66582e7ca7be05b94d6d1b33ddc3d9854aac14fe67846bc",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "66da74610cadd5b335f4b40dbe48b509ffb649feb5088209990f08a754e54b4f",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44462488362,
+    "rva": "0x1527010",
+    "schema": 2,
+    "source_sha256": "83d2df65f20be36f194f6915aeef195c441ae1887e79df1ac13e2d9dd121dfca",
+    "status": "pass",
+    "symbols": [
+      "?LoadBinary@BSLightingShaderMaterialFacegenTint@@UEAAXAEAVNiStream@@@Z",
+      "?SaveBinary@BSLightingShaderMaterialFacegenTint@@UEAAXAEAVNiStream@@@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "8521fb2114f40ca3e66582e7ca7be05b94d6d1b33ddc3d9854aac14fe67846bc",
+      "normalized_sha256": "66da74610cadd5b335f4b40dbe48b509ffb649feb5088209990f08a754e54b4f",
+      "rva": 22179856,
+      "size": 46
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x1527010",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "015df54f63b4a95ff57eb968bae8d0b2c771ec3ecc9cb44e221e586dd70a2445",
+          "code_sections": 1,
+          "object_sha256": "44509c927f1e8cd0475829e526e7a5902906f021c981d8935b689f5f277c0ca5"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 8,
+          "code_bytes_exact": 38,
+          "code_bytes_total": 46,
+          "eh": {
+            "bytes": 12,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 2
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 12,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 22179856,
+          "size": 46,
+          "symbol": "?LoadBinary@BSLightingShaderMaterialFacegenTint@@UEAAXAEAVNiStream@@@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.cpp",
+          "source_revision": "83d2df65f20be36f194f6915aeef195c441ae1887e79df1ac13e2d9dd121dfca"
+        },
+        "symbol_map_sha256": "4a9e58d7231eca0cc25315bf987144e15b96324022e22aeb0b033dccc60af7f1",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x1527010"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.cpp",
+    "digest": "83d2df65f20be36f194f6915aeef195c441ae1887e79df1ac13e2d9dd121dfca",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.cpp",
+      "reconstruction/contrib_bslightingshadermaterialfacegentint/BSLightingShaderMaterialFacegenTint.h"
+    ]
+  },
+  "submitter": "v-macrev",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/4a9e58d7231eca0cc25315bf987144e15b96324022e22aeb0b033dccc60af7f1.json",
+    "sha256": "4a9e58d7231eca0cc25315bf987144e15b96324022e22aeb0b033dccc60af7f1"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

@@ -1,0 +1,485 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function8f8c70@PlayerCamera@@QEBAMXZ": {
+      "rva": 9407600,
+      "size": 31
+    },
+    "?Function8f8e30@PlayerCamera@@QEAAXPEAVActor@@@Z": {
+      "rva": 9408048,
+      "size": 54
+    },
+    "?Function8f8ff0@PlayerCamera@@QEBA_NXZ": {
+      "rva": 9408496,
+      "size": 50
+    },
+    "?Function8f9030@PlayerCamera@@QEAAXAEAUPoint3@@_N@Z": {
+      "rva": 9408560,
+      "size": 55
+    },
+    "?Function8f90e0@PlayerCamera@@QEAAXXZ": {
+      "rva": 9408736,
+      "size": 24
+    },
+    "?Function8f9100@PlayerCamera@@QEAAPEAUPoint2@@XZ": {
+      "rva": 9408768,
+      "size": 52
+    },
+    "?Function8f9140@PlayerCamera@@QEAAX_N@Z": {
+      "rva": 9408832,
+      "size": 29
+    },
+    "?Function8f9250@PlayerCamera@@QEAAXXZ": {
+      "rva": 9409104,
+      "size": 55
+    },
+    "?Function8f92f0@PlayerCamera@@QEAAXAEBUPoint3@@@Z": {
+      "rva": 9409264,
+      "size": 12
+    },
+    "?Function8f9310@PlayerCamera@@QEAAXMMM@Z": {
+      "rva": 9409296,
+      "size": 12
+    },
+    "?Function8f98f0@PlayerCamera@@QEAAX_N@Z": {
+      "rva": 9410800,
+      "size": 14
+    },
+    "?Function8f99c0@PlayerCamera@@QEAAXI@Z": {
+      "rva": 9411008,
+      "size": 12
+    },
+    "?Function8f99e0@PlayerCamera@@QEAAXXZ": {
+      "rva": 9411040,
+      "size": 12
+    },
+    "?Function8fb210@PlayerCamera@@QEAAXXZ": {
+      "rva": 9417232,
+      "size": 33
+    },
+    "?Function8fb240@PlayerCamera@@QEBA_NAEAUActorPointer@@@Z": {
+      "rva": 9417280,
+      "size": 9
+    },
+    "?Function8fb2a0@PlayerCamera@@QEBA_NXZ": {
+      "rva": 9417376,
+      "size": 46
+    },
+    "?Function8fb680@PlayerCamera@@QEAAX_N@Z": {
+      "rva": 9418368,
+      "size": 19
+    },
+    "?Function8fb6a0@PlayerCamera@@QEAAX_N@Z": {
+      "rva": 9418400,
+      "size": 19
+    },
+    "?Function8fc100@PlayerCamera@@QEAAXI@Z": {
+      "rva": 9421056,
+      "size": 19
+    },
+    "?Function8fc170@PlayerCamera@@QEAAXXZ": {
+      "rva": 9421168,
+      "size": 62
+    },
+    "?Function8fc1c0@PlayerCamera@@QEAAXXZ": {
+      "rva": 9421248,
+      "size": 54
+    },
+    "?Function8f5370@FirstPersonState@@QEAAXPEAVActor@@@Z": {
+      "rva": 9393008,
+      "size": null
+    },
+    "?Function8fda40@ThirdPersonState@@QEAAXAEAUPoint3@@_N@Z": {
+      "rva": 9427520,
+      "size": null
+    },
+    "?cameraOriginX@@3MA": {
+      "rva": 53593176,
+      "size": null
+    },
+    "?cameraOriginY@@3MA": {
+      "rva": 53593180,
+      "size": null
+    },
+    "?cameraOriginZ@@3MA": {
+      "rva": 53593184,
+      "size": null
+    },
+    "?cameraActor@@3PEAVActor@@EA": {
+      "rva": 52627320,
+      "size": null
+    },
+    "?Function6abb10@Actor@@QEBA_NXZ": {
+      "rva": 6994704,
+      "size": null
+    },
+    "?vanityModeRestricted@@3_NA": {
+      "rva": 34317296,
+      "size": null
+    },
+    "?playerHandle@@3IA": {
+      "rva": 52627316,
+      "size": null
+    },
+    "?Function8fc810@PlayerCamera@@QEBA_NXZ": {
+      "rva": 9422864,
+      "size": null
+    },
+    "?SetState@TESCamera@@QEAAXPEAVTESCameraState@@@Z": {
+      "rva": 5607312,
+      "size": null
+    },
+    "?Function9002a0@VATSCameraState@@QEAAXAEBUPoint3@@@Z": {
+      "rva": 9437856,
+      "size": null
+    },
+    "?Function900280@VATSCameraState@@QEAAXMMM@Z": {
+      "rva": 9437824,
+      "size": null
+    },
+    "?Function8ff750@TweenCameraState@@QEAAXI@Z": {
+      "rva": 9434960,
+      "size": null
+    },
+    "?Function8ff880@TweenCameraState@@QEAAXXZ": {
+      "rva": 9435264,
+      "size": null
+    },
+    "?defaultFirstPersonFOV@@3MA": {
+      "rva": 34404856,
+      "size": null
+    },
+    "?defaultWorldFOV@@3MA": {
+      "rva": 34404832,
+      "size": null
+    },
+    "?GetTarget@ActorHandle@@QEBA_NAEAUActorPointer@@@Z": {
+      "rva": 1638272,
+      "size": null
+    },
+    "?cameraInput@@3PEAVPlayerCameraInput@@EA": {
+      "rva": 52057752,
+      "size": null
+    },
+    "?Function7ae030@PlayerCameraInput@@QEBA_NXZ": {
+      "rva": 8052784,
+      "size": null
+    },
+    "?Function8fc920@PlayerCamera@@QEAAXW4CameraState@CameraStates@@@Z": {
+      "rva": 9423136,
+      "size": null
+    },
+    "?Function8fc8a0@PlayerCamera@@QEAAPEAVTESCameraState@@XZ": {
+      "rva": 9423008,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function8f8c70@PlayerCamera@@QEBAMXZ",
+        "rva": "0x8f8c70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f8e30@PlayerCamera@@QEAAXPEAVActor@@@Z",
+        "rva": "0x8f8e30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f8ff0@PlayerCamera@@QEBA_NXZ",
+        "rva": "0x8f8ff0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f9030@PlayerCamera@@QEAAXAEAUPoint3@@_N@Z",
+        "rva": "0x8f9030",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f90e0@PlayerCamera@@QEAAXXZ",
+        "rva": "0x8f90e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f9100@PlayerCamera@@QEAAPEAUPoint2@@XZ",
+        "rva": "0x8f9100",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f9140@PlayerCamera@@QEAAX_N@Z",
+        "rva": "0x8f9140",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f9250@PlayerCamera@@QEAAXXZ",
+        "rva": "0x8f9250",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f92f0@PlayerCamera@@QEAAXAEBUPoint3@@@Z",
+        "rva": "0x8f92f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f9310@PlayerCamera@@QEAAXMMM@Z",
+        "rva": "0x8f9310",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f98f0@PlayerCamera@@QEAAX_N@Z",
+        "rva": "0x8f98f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f99c0@PlayerCamera@@QEAAXI@Z",
+        "rva": "0x8f99c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f99e0@PlayerCamera@@QEAAXXZ",
+        "rva": "0x8f99e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fb210@PlayerCamera@@QEAAXXZ",
+        "rva": "0x8fb210",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fb240@PlayerCamera@@QEBA_NAEAUActorPointer@@@Z",
+        "rva": "0x8fb240",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fb2a0@PlayerCamera@@QEBA_NXZ",
+        "rva": "0x8fb2a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fb680@PlayerCamera@@QEAAX_N@Z",
+        "rva": "0x8fb680",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fb6a0@PlayerCamera@@QEAAX_N@Z",
+        "rva": "0x8fb6a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fc100@PlayerCamera@@QEAAXI@Z",
+        "rva": "0x8fc100",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fc170@PlayerCamera@@QEAAXXZ",
+        "rva": "0x8fc170",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fc1c0@PlayerCamera@@QEAAXXZ",
+        "rva": "0x8fc1c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8f5370@FirstPersonState@@QEAAXPEAVActor@@@Z",
+        "rva": "0x8f5370",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fda40@ThirdPersonState@@QEAAXAEAUPoint3@@_N@Z",
+        "rva": "0x8fda40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?cameraOriginX@@3MA",
+        "rva": "0x331c458",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?cameraOriginY@@3MA",
+        "rva": "0x331c45c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?cameraOriginZ@@3MA",
+        "rva": "0x331c460",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?cameraActor@@3PEAVActor@@EA",
+        "rva": "0x3230778",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function6abb10@Actor@@QEBA_NXZ",
+        "rva": "0x6abb10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?vanityModeRestricted@@3_NA",
+        "rva": "0x20ba3f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?playerHandle@@3IA",
+        "rva": "0x3230774",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fc810@PlayerCamera@@QEBA_NXZ",
+        "rva": "0x8fc810",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetState@TESCamera@@QEAAXPEAVTESCameraState@@@Z",
+        "rva": "0x558f90",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function9002a0@VATSCameraState@@QEAAXAEBUPoint3@@@Z",
+        "rva": "0x9002a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function900280@VATSCameraState@@QEAAXMMM@Z",
+        "rva": "0x900280",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8ff750@TweenCameraState@@QEAAXI@Z",
+        "rva": "0x8ff750",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8ff880@TweenCameraState@@QEAAXXZ",
+        "rva": "0x8ff880",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?defaultFirstPersonFOV@@3MA",
+        "rva": "0x20cf9f8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?defaultWorldFOV@@3MA",
+        "rva": "0x20cf9e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetTarget@ActorHandle@@QEBA_NAEAUActorPointer@@@Z",
+        "rva": "0x18ff80",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?cameraInput@@3PEAVPlayerCameraInput@@EA",
+        "rva": "0x31a5698",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function7ae030@PlayerCameraInput@@QEBA_NXZ",
+        "rva": "0x7ae030",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fc920@PlayerCamera@@QEAAXW4CameraState@CameraStates@@@Z",
+        "rva": "0x8fc920",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function8fc8a0@PlayerCamera@@QEAAPEAVTESCameraState@@XZ",
+        "rva": "0x8fc8a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

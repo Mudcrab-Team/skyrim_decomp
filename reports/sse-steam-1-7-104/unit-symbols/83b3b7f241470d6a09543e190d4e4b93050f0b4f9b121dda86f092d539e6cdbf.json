@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?SaveGame@BGSProcedureTreeStackedExecState@@QEAAXAEAVBGSSaveGameBuffer@@@Z": {
+      "rva": 4765968,
+      "size": 61
+    },
+    "?LoadGame@BGSProcedureTreeStackedExecState@@QEAAXAEAVBGSLoadGameBuffer@@@Z": {
+      "rva": 4766048,
+      "size": 52
+    },
+    "?ForwardChildSlot08@BGSProcedureTreeStackedExecState@@QEAAXXZ": {
+      "rva": 4766112,
+      "size": 17
+    },
+    "?SaveGame@BGSProcedureTreeOneChildExecState@@IEAAXAEAVBGSSaveGameBuffer@@@Z": {
+      "rva": 4764128,
+      "size": null
+    },
+    "?SaveDataEndian@BGSSaveGameBuffer@@QEAAXPEBXIII@Z": {
+      "rva": 6528768,
+      "size": null
+    },
+    "?LoadGame@BGSProcedureTreeOneChildExecState@@IEAAXAEAVBGSLoadGameBuffer@@@Z": {
+      "rva": 4764256,
+      "size": null
+    },
+    "?LoadDataEndian@BGSLoadGameBuffer@@QEAAXPEAXII@Z": {
+      "rva": 6520432,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?SaveGame@BGSProcedureTreeStackedExecState@@QEAAXAEAVBGSSaveGameBuffer@@@Z",
+        "rva": "0x48b910",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@BGSProcedureTreeStackedExecState@@QEAAXAEAVBGSLoadGameBuffer@@@Z",
+        "rva": "0x48b960",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForwardChildSlot08@BGSProcedureTreeStackedExecState@@QEAAXXZ",
+        "rva": "0x48b9a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveGame@BGSProcedureTreeOneChildExecState@@IEAAXAEAVBGSSaveGameBuffer@@@Z",
+        "rva": "0x48b1e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveDataEndian@BGSSaveGameBuffer@@QEAAXPEBXIII@Z",
+        "rva": "0x639f00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@BGSProcedureTreeOneChildExecState@@IEAAXAEAVBGSLoadGameBuffer@@@Z",
+        "rva": "0x48b260",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadDataEndian@BGSLoadGameBuffer@@QEAAXPEAXII@Z",
+        "rva": "0x637e70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,0 +1,265 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?IsEqual@NiSwitchNode@@UEAA_NPEAVNiObject@@@Z": {
+      "rva": 15652144,
+      "size": 82
+    },
+    "?NiNodeIsEqual@@YA_NPEAVNiNode@@PEAVNiObject@@@Z": {
+      "rva": 15603632,
+      "size": null
+    },
+    "?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15651776,
+      "size": 160
+    },
+    "?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15651984,
+      "size": 142
+    },
+    "?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z": {
+      "rva": 15652576,
+      "size": 143
+    },
+    "?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z": {
+      "rva": 15653600,
+      "size": 161
+    },
+    "?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z": {
+      "rva": 15653952,
+      "size": 341
+    },
+    "?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z": {
+      "rva": 15654304,
+      "size": 363
+    },
+    "?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z": {
+      "rva": 15654688,
+      "size": 339
+    },
+    "?UpdateWorldBound@NiSwitchNode@@UEAAXXZ": {
+      "rva": 15655040,
+      "size": 110
+    },
+    "?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z": {
+      "rva": 15655168,
+      "size": 170
+    },
+    "?NiNodeLoadBinary@@YAXPEAVNiNode@@AEAVNiStream@@@Z": {
+      "rva": 15603040,
+      "size": null
+    },
+    "?NiNodeSaveBinary@@YAXPEAVNiNode@@AEAVNiStream@@@Z": {
+      "rva": 15603424,
+      "size": null
+    },
+    "?NiNodeAttachChild@@YAXPEAVNiNode@@PEAVNiAVObject@@_N@Z": {
+      "rva": 15604480,
+      "size": null
+    },
+    "?SwitchTableGrow@@YAXPEAV?$NiTArray@I@@I@Z": {
+      "rva": 15655920,
+      "size": null
+    },
+    "?NiNodeSetAt1@@YAXPEAVNiNode@@IPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z": {
+      "rva": 15606096,
+      "size": null
+    },
+    "?SwitchTableSet@@YAXPEAV?$NiTArray@I@@IPEAI@Z": {
+      "rva": 15655824,
+      "size": null
+    },
+    "?NiNodeUpdateSelectedDownwardPass@@YAXPEAVNiNode@@AEAVNiUpdateData@@I@Z": {
+      "rva": 15607424,
+      "size": null
+    },
+    "?NiNodeUpdateRigidDownwardPass@@YAXPEAVNiNode@@AEAVNiUpdateData@@I@Z": {
+      "rva": 15608384,
+      "size": null
+    },
+    "?Cull@NiAVObject@@QEAAXPEAVNiCullingProcess@@H@Z": {
+      "rva": 15601456,
+      "size": null
+    },
+    "?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ": {
+      "rva": 15655808,
+      "size": 4
+    },
+    "?UpdateDownwardPass@NiNode@@UEAAXAEAVNiUpdateData@@I@Z": {
+      "rva": 15606992,
+      "size": null
+    },
+    "?UpdateWorldBound@NiNode@@UEAAXXZ": {
+      "rva": 15608096,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?IsEqual@NiSwitchNode@@UEAA_NPEAVNiObject@@@Z",
+        "rva": "0xeed530",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeIsEqual@@YA_NPEAVNiNode@@PEAVNiObject@@@Z",
+        "rva": "0xee17b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xeed3c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiSwitchNode@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xeed490",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AttachChild@NiSwitchNode@@UEAAXPEAVNiAVObject@@_N@Z",
+        "rva": "0xeed6e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetAt1@NiSwitchNode@@UEAAXIPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z",
+        "rva": "0xeedae0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "rva": "0xeedc40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateSelectedDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "rva": "0xeedda0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateRigidDownwardPass@NiSwitchNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "rva": "0xeedf20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateWorldBound@NiSwitchNode@@UEAAXXZ",
+        "rva": "0xeee080",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?OnVisible@NiSwitchNode@@UEAAXAEAVNiCullingProcess@@H@Z",
+        "rva": "0xeee100",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeLoadBinary@@YAXPEAVNiNode@@AEAVNiStream@@@Z",
+        "rva": "0xee1560",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeSaveBinary@@YAXPEAVNiNode@@AEAVNiStream@@@Z",
+        "rva": "0xee16e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeAttachChild@@YAXPEAVNiNode@@PEAVNiAVObject@@_N@Z",
+        "rva": "0xee1b00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SwitchTableGrow@@YAXPEAV?$NiTArray@I@@I@Z",
+        "rva": "0xeee3f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeSetAt1@@YAXPEAVNiNode@@IPEAVNiAVObject@@AEAV?$NiPointer@VNiAVObject@@@@@Z",
+        "rva": "0xee2150",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SwitchTableSet@@YAXPEAV?$NiTArray@I@@IPEAI@Z",
+        "rva": "0xeee390",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeUpdateSelectedDownwardPass@@YAXPEAVNiNode@@AEAVNiUpdateData@@I@Z",
+        "rva": "0xee2680",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiNodeUpdateRigidDownwardPass@@YAXPEAVNiNode@@AEAVNiUpdateData@@I@Z",
+        "rva": "0xee2a40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Cull@NiAVObject@@QEAAXPEAVNiCullingProcess@@H@Z",
+        "rva": "0xee0f30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AsSwitchNodeImpl@NiSwitchNode@@QEAAPEAV1@XZ",
+        "rva": "0xeee380",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateDownwardPass@NiNode@@UEAAXAEAVNiUpdateData@@I@Z",
+        "rva": "0xee24d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateWorldBound@NiNode@@UEAAXXZ",
+        "rva": "0xee2920",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

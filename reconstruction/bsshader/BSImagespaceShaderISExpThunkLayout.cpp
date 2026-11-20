@@ -1,0 +1,10 @@
+// Source exposure: mixed (RTTI and member-local tailcall; community base declarations).
+// BSImagespaceShaderISExp: EXE_RTTI
+// BSImagespaceShaderISExpThunkLayout: GUESS(low) STANDIN
+// Adapted bodies: none. Ordinary constructor over independently reconciled RTTI inheritance.
+// Origin: shader-destructor-adjustor v1
+// 0x15075b8 BSImagespaceShaderISExpThunkLayout secondary destructor adjustor
+#include "BSImagespaceShaderISExpThunkLayout.h"
+namespace ResearchLayouts {
+BSImagespaceShaderISExpThunkLayout::BSImagespaceShaderISExpThunkLayout() = default;
+}

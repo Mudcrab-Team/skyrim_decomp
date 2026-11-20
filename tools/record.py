@@ -22,6 +22,7 @@ import copy
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -29,8 +30,10 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
+import claimable  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
+from digest_v2 import review_binds  # noqa: E402
 from check import (ROOT, DIGEST_METHOD, REVIEW_RECORD_SCHEMA, TOOLCHAIN_PIN, file_sha256,  # noqa: E402
                    record_code_section, review_record_path, validate_match, validate_review)
 
@@ -52,7 +55,7 @@ def review_record(fn, record, model, task_id, blob, when):
     return {
         'review_record_schema': REVIEW_RECORD_SCHEMA,
         'function_id': fn['id'], 'build_id': fn['build_id'], 'rva': fn['rva'], 'size': fn['size'],
-        'source_digest_method': DIGEST_METHOD, 'source_digest': record['source']['digest'],
+        'source_digest_method': record['source']['digest_method'], 'source_digest': record['source']['digest'],
         'reviewer_model': model, 'review_task_id': task_id,
         'verdict': 'approve', 'escalation_category': 'none',
         'review_sha256': review_blob_digest(blob), 'review_date': when.date().isoformat(),
@@ -117,6 +120,11 @@ def build_match_record(root, task_dir, ci_run, out):
                                            ci_run['map_status'], unit['first_host'])
     record = assemble_record(root, task, unit, fn, json.loads(Path(reports[fn['rva']]).read_text()), build, ci)
     inventory = {f['rva']: f for f in _load(root, PROGRESS)['functions'] if f['build_id'] == task['build_id']}
+    if fn['rva'] not in inventory:
+        # A function claimed without an inventory entry is validated as the entry record.apply will add.
+        fresh = claimable.resolve(root, task['build_id'], fn['rva'], set(inventory), private_table(root))
+        ci_confirmation.require(fresh is not None, 'function is in neither the inventory nor the published target list')
+        inventory[fn['rva']] = fresh
     dest = Path(out) / task['build_id'] / f'0x{fn["rva"]:x}.json'
     scratch = root / 'reports' / task['build_id'] / f'.pr-{fn["rva"]:x}.json'
     scratch.parent.mkdir(parents=True, exist_ok=True)
@@ -128,6 +136,49 @@ def build_match_record(root, task_dir, ci_run, out):
     finally:
         scratch.unlink(missing_ok=True)
     return dest
+
+
+def build_carried_record(root, build_id, rva, out, note):
+    """Match record for an accepted function whose unit changed from base only in comments.
+
+    The runs stay as they were: they compared the old text, which the caller has shown to be the same
+    code, and only the record's digest moves to the new text. That is possible only for a record that
+    already keeps its runs' own digest (`run_digest`); the validator then checks the new digest against
+    the integrated source as for any record. Raises ValueError when the record cannot be carried.
+    """
+    root = Path(root)
+    from digest_v2 import tu_digest
+    from source_digest import include_closure
+    fn = next((f for f in _load(root, PROGRESS)['functions'] if f['build_id'] == build_id and f['rva'] == rva), None)
+    if fn is None or fn.get('status') != 'matched' or not fn.get('report'):
+        raise ValueError('only an accepted function has a record to carry')
+    old = _load(root, fn['report'])
+    source = old.get('source') or {}
+    if 'run_digest' not in source or 'ci_confirmation' in old:
+        raise ValueError('the record binds its runs to the current digest, so its runs cannot carry to new text')
+    closure = include_closure(root, source['compiled'])
+    if set(closure) != set(source['translation_unit']):
+        raise ValueError('the translation unit changed')
+    record = copy.deepcopy(old)
+    record['source'] = dict(source, digest=tu_digest(root, closure, DIGEST_METHOD), digest_method=DIGEST_METHOD)
+    record['notes'] = list(old.get('notes') or []) + [note]
+    dest = Path(out) / build_id / f'0x{rva:x}.json'
+    scratch = root / 'reports' / build_id / f'.pr-{rva:x}.json'
+    scratch.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        scratch.write_text(json.dumps(record, indent=2, sort_keys=True) + '\n')
+        validate_match(dict(fn, report=scratch.relative_to(root).as_posix()), _load(root, TARGET), root)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        scratch.replace(dest)
+    finally:
+        scratch.unlink(missing_ok=True)
+    return dest
+
+
+def private_table(root):
+    """The private function table by RVA when this host has one; None means the published bounds alone."""
+    import claimable
+    return claimable.load_table(os.environ.get('SR_FUNCTION_TABLE') or Path(root) / '.local/analysis/functions.jsonl')
 
 
 def _write_json(path, value):
@@ -159,12 +210,21 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     target = _load(root, TARGET)
     by_rva = {fn['rva']: (i, fn) for i, fn in enumerate(data['functions']) if fn['build_id'] == build_id}
     out = {'recorded': [], 'refused': {}, 'files': []}
-    changed = []
+    changed, created = [], set()
+    table = []
     for rva in sorted(set(rvas)):
-        if rva not in by_rva:
-            out['refused'][rva] = 'not in inventory'
-            continue
-        index, fn = by_rva[rva]
+        index = None
+        if rva in by_rva:
+            index, fn = by_rva[rva]
+        else:
+            # Published bounds make a function claimable without bulk mapping; its entry is made here,
+            # and only if the validator then accepts the match.
+            if not table:
+                table.append(private_table(root))
+            fn = claimable.resolve(root, build_id, rva, set(by_rva), table[0])
+            if fn is None:
+                out['refused'][rva] = 'not in inventory'
+                continue
         report = f'reports/{build_id}/0x{rva:x}.json'
         review_path = root / review_record_path(fn)
         written, prior = [], {}
@@ -180,8 +240,14 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                 record['submitter'] = handle(author)
             # A stacked PR re-confirms functions of a unit that grew; only the identical source is a repeat.
             previous = _json_or_none(review_path) if fn['status'] == 'matched' else None
-            if previous and previous.get('source_digest') == record['source']['digest']:
-                raise ValueError('already matched')
+            if previous and review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source']):
+                # A carried record keeps its runs' own digest, which the standing review still binds, so the
+                # binding alone cannot tell a repeat from a record moved to edited text; only the digest the
+                # record on main already carries can.
+                held = (_json_or_none(root / report) or {}).get('source') or {}
+                if (held.get('digest_method'), held.get('digest')) == (record['source'].get('digest_method'),
+                                                                       record['source'].get('digest')):
+                    raise ValueError('already matched')
             if records is not None or author:
                 prior[root / report] = (root / report).read_bytes() if (root / report).is_file() else None
                 _write_json(root / report, record)
@@ -200,7 +266,11 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                     path.write_bytes(prior[path])
             out['refused'][rva] = str(exc).splitlines()[0][:200] if str(exc) else type(exc).__name__
             continue
-        data['functions'][index] = candidate
+        if index is None:
+            data['functions'].append(candidate)
+            created.add(rva)
+        else:
+            data['functions'][index] = candidate
         changed.append(candidate)
         out['recorded'].append(rva)
         out['files'] += [report, review_record_path(fn)]
@@ -211,9 +281,19 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     if changed:
         data['updated_at'] = when.strftime('%Y-%m-%dT%H:%M:%SZ')
         (root / PROGRESS).write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
-        if _patch_index(root, changed):
+        if created:
+            build_index.write_index(data, root)
+            out['files'].append(build_index.INDEX)
+        elif _patch_index(root, changed):
             out['files'].append(build_index.INDEX)
         out['files'].append(PROGRESS)
+        # check.py renders the README pictures from the data; a record that moves the counts must move them.
+        import build_progress_svg
+        for name, render in (('docs/progress.svg', build_progress_svg.render),
+                             ('docs/progress-map.svg', build_progress_svg.render_map)):
+            if (root / 'data/scope.json').is_file():
+                (root / name).write_text(render(root))
+                out['files'].append(name)
     return out
 
 

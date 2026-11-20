@@ -1,0 +1,113 @@
+// Source exposure: mixed (pinned community storage declarations and independent target RTTI/secondary-slot analysis).
+// Code origin: adapted community storage declarations and original narrowed prefix construction; no external implementation body reused.
+// Declaration source: CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a include/RE/{T/TESProduceForm.h,S/SimpleAnimationGraphManagerHolder.h,M/MenuEventHandler.h,I/IMapCameraCallbacks.h,H/hkReferencedObject.h,H/hkpBroadPhaseCastCollector.h,H/hkpEntityListener.h,H/hkpPhantomListener.h,H/hkpWorldPostSimulationListener.h}; MIT.
+// TESProduceForm, SimpleAnimationGraphManagerHolder, MenuEventHandler, IMapCameraCallbacks, hkReferencedObject, hkpBroadPhaseCastCollector, hkpEntityListener, hkpPhantomListener, hkpWorldPostSimulationListener: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// All ResearchLayouts names ending Layout, PrefixLayout or StorageLayout, Identity tags and physical mirror member names: GUESS(medium) STANDIN
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x14644c AlchemyItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x146458 AlchemyItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x63ce38 AppResourceCaching___anonymous___ManagerAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x63ce44 AppResourceCaching___anonymous___ManagerAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x31a0a4 BGSCameraShotAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x31a0b0 BGSCameraShotAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x390e18 BGSHeadPartAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x390e24 BGSHeadPartAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x661a74 BSTEventSink_BGSCombatImpactEvent_::dtor
+// 0x661a80 BGSImpactManagerAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x29cce8 BGSLocationAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x29ccf4 BGSLocationAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x324554 BGSMessageAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x324560 BGSMessageAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x62dc84 BGSSaveLoadManagerAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x62dc90 BGSSaveLoadManagerAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x908a04 BookMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9089f8 BookMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x14e614 EnchantmentItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x14e620 EnchantmentItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x93bbb8 HUDMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x93bbc4 HUDMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x14fb1c IngredientItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x14fb28 IngredientItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9ad308 JournalMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9ad314 JournalMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9506c8 LockpickingMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9506d4 LockpickingMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x152430 MagicItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x15243c MagicItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x99f870 MapMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x99f87c MapMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x966bc0 MistMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x966bcc MistMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x5b7b00 ModManagerMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x5b7b0c ModManagerMenuAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9cb0d4 SkyrimScript__QuestCallbackMgrAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x9cb0e0 SkyrimScript__QuestCallbackMgrAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x155bdc SpellItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x155be8 SpellItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x3b3294 TESEyesAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x3b32a0 TESEyesAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x275924 TESObjectLIGHAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x275930 TESObjectLIGHAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x27593c TESObjectLIGHAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x286f54 TESObjectMISCAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x286f60 TESObjectMISCAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x286f6c TESObjectMISCAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x2f8c00 TESObjectREFRAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x2f8be8 TESObjectREFRAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x2f8bf4 TESObjectREFRAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x288504 TESObjectTREEAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x288510 TESObjectTREEAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28851c TESObjectTREEAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28e478 TESObjectWEAPAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28e484 TESObjectWEAPAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28e490 TESObjectWEAPAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28f174 TESSoulGemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28f180 TESSoulGemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x28f18c TESSoulGemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x10df620 ahkpCharacterRigidBodyAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x10df62c ahkpCharacterRigidBodyAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x1125e2c hkCpuWorldLinearCastCollectorAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x1125e38 hkCpuWorldLinearCastCollectorAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x1125e44 hkCpuWorldLinearCastCollectorAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x112742c hkCpuWorldRayCastCollectorAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x1127438 hkCpuWorldRayCastCollectorAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x1127444 hkCpuWorldRayCastCollectorAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x154c14 ScrollItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x154c20 ScrollItemAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x10deeb0 ahkpCharacterProxyAdditionalStoragePrefixLayout secondary destructor adjustor
+// 0x10deebc ahkpCharacterProxyAdditionalStoragePrefixLayout secondary destructor adjustor
+#include "AdditionalInterfacePrefixLayout.h"
+namespace ResearchLayouts {
+AlchemyItemAdditionalStoragePrefixLayout::AlchemyItemAdditionalStoragePrefixLayout() = default;
+AppResourceCaching___anonymous___ManagerAdditionalStoragePrefixLayout::AppResourceCaching___anonymous___ManagerAdditionalStoragePrefixLayout() = default;
+BGSCameraShotAdditionalStoragePrefixLayout::BGSCameraShotAdditionalStoragePrefixLayout() = default;
+BGSHeadPartAdditionalStoragePrefixLayout::BGSHeadPartAdditionalStoragePrefixLayout() = default;
+BGSImpactManagerAdditionalStoragePrefixLayout::BGSImpactManagerAdditionalStoragePrefixLayout() = default;
+BGSLocationAdditionalStoragePrefixLayout::BGSLocationAdditionalStoragePrefixLayout() = default;
+BGSMessageAdditionalStoragePrefixLayout::BGSMessageAdditionalStoragePrefixLayout() = default;
+BGSSaveLoadManagerAdditionalStoragePrefixLayout::BGSSaveLoadManagerAdditionalStoragePrefixLayout() = default;
+BookMenuAdditionalStoragePrefixLayout::BookMenuAdditionalStoragePrefixLayout() = default;
+EnchantmentItemAdditionalStoragePrefixLayout::EnchantmentItemAdditionalStoragePrefixLayout() = default;
+HUDMenuAdditionalStoragePrefixLayout::HUDMenuAdditionalStoragePrefixLayout() = default;
+IngredientItemAdditionalStoragePrefixLayout::IngredientItemAdditionalStoragePrefixLayout() = default;
+JournalMenuAdditionalStoragePrefixLayout::JournalMenuAdditionalStoragePrefixLayout() = default;
+LockpickingMenuAdditionalStoragePrefixLayout::LockpickingMenuAdditionalStoragePrefixLayout() = default;
+MagicItemAdditionalStoragePrefixLayout::MagicItemAdditionalStoragePrefixLayout() = default;
+MapMenuAdditionalStoragePrefixLayout::MapMenuAdditionalStoragePrefixLayout() = default;
+MistMenuAdditionalStoragePrefixLayout::MistMenuAdditionalStoragePrefixLayout() = default;
+ModManagerMenuAdditionalStoragePrefixLayout::ModManagerMenuAdditionalStoragePrefixLayout() = default;
+SkyrimScript__QuestCallbackMgrAdditionalStoragePrefixLayout::SkyrimScript__QuestCallbackMgrAdditionalStoragePrefixLayout() = default;
+SpellItemAdditionalStoragePrefixLayout::SpellItemAdditionalStoragePrefixLayout() = default;
+TESEyesAdditionalStoragePrefixLayout::TESEyesAdditionalStoragePrefixLayout() = default;
+TESObjectLIGHAdditionalStoragePrefixLayout::TESObjectLIGHAdditionalStoragePrefixLayout() = default;
+TESObjectMISCAdditionalStoragePrefixLayout::TESObjectMISCAdditionalStoragePrefixLayout() = default;
+TESObjectREFRAdditionalStoragePrefixLayout::TESObjectREFRAdditionalStoragePrefixLayout() = default;
+TESObjectTREEAdditionalStoragePrefixLayout::TESObjectTREEAdditionalStoragePrefixLayout() = default;
+TESObjectWEAPAdditionalStoragePrefixLayout::TESObjectWEAPAdditionalStoragePrefixLayout() = default;
+TESSoulGemAdditionalStoragePrefixLayout::TESSoulGemAdditionalStoragePrefixLayout() = default;
+ahkpCharacterRigidBodyAdditionalStoragePrefixLayout::ahkpCharacterRigidBodyAdditionalStoragePrefixLayout() = default;
+hkCpuWorldLinearCastCollectorAdditionalStoragePrefixLayout::hkCpuWorldLinearCastCollectorAdditionalStoragePrefixLayout() = default;
+hkCpuWorldRayCastCollectorAdditionalStoragePrefixLayout::hkCpuWorldRayCastCollectorAdditionalStoragePrefixLayout() = default;
+ScrollItemAdditionalStoragePrefixLayout::ScrollItemAdditionalStoragePrefixLayout() = default;
+ahkpCharacterProxyAdditionalStoragePrefixLayout::ahkpCharacterProxyAdditionalStoragePrefixLayout() = default;
+}

@@ -1,0 +1,13 @@
+// Source exposure: binary-analysis
+// Staticb52e0, Descriptor, descriptor, construct, destroy, object: GUESS(low) STANDIN
+#pragma once
+struct Descriptor;
+extern Descriptor descriptor;
+struct Staticb52e0;
+extern void construct(Staticb52e0*, const Descriptor*);
+extern void destroy(Staticb52e0*);
+struct Staticb52e0 {
+    void* value;
+    Staticb52e0() { construct(this, &descriptor); }
+    ~Staticb52e0() { destroy(this); }
+};
