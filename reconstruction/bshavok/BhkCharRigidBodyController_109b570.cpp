@@ -2,7 +2,7 @@
 // Code origin: original implementation from the world guard and rigid body support call.
 // Declarations informed by powerof3/CommonLibSSE, GPL-3.0.
 // Recipe: reconstruction/recipes/o2-fpfast-root-includes.json
-// 0x109b570 BhkCharRigidBodyController::CheckSupportImpl
+// 0x109b570 bhkCharacterController::CheckSupportImpl
 #include "BhkCharRigidBodyController_109b570.h"
 
 // ScopedWorldReadLock: GUESS(low)
@@ -36,17 +36,11 @@ private:
 void BhkCharRigidBodyController::CheckSupportImpl()
 {
     {
-        hkpCharacterRigidBody* body;
-        auto* world = charRigidBody.FetchWorld(body);
+        auto& rigidBody = charRigidBody;
+        auto* body = rigidBody.referencedObject;
+        auto* world = rigidBody.GetWorld();
         ScopedWorldReadLock guard(world ? world->userData : nullptr);
         body->vtable->CheckSupport(body, stepInfo, surfaceInfo);
     }
     supportNorm = surfaceInfo.surfaceNormal;
-}
-
-// Keeps the body fetch and virtual dispatch in the controller entry.
-__forceinline ahkpWorld* bhkCharacterRigidBody::FetchWorld(hkpCharacterRigidBody*& body)
-{
-    body = referencedObject;
-    return vtable->GetWorld1(this);
 }
