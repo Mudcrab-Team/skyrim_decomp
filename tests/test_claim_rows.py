@@ -159,6 +159,73 @@ class Host1FreshRunTests(unittest.TestCase):
             self.assertFalse(any(c[:3] == ['gh', 'run', 'download'] for c in calls))
 
 
+class Host1LateRowTests(unittest.TestCase):
+    """A finished run whose rows say `no-target` for a function main now has a row for was run against an old base."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+        self.bot = pr_bot.Bot(root=ROOT, work=self.work)
+        self.bot.config['hash_wait'] = 0
+        self.bot.config['download_retry_wait'] = 0
+        shards = self.bot.tree / 'data/target-hashes'
+        shards.mkdir(parents=True)
+        (shards / 'sse-steam-1-7-104-part-000.json').write_text(json.dumps({'functions': [{'rva': 0x10}, {'rva': 0x20}]}))
+        self.job = {'name': 'hash', 'head_sha': HEAD, 'status': 'completed', 'conclusion': 'success', 'id': 1,
+                    'started_at': '2026-01-01T00:00:00Z', 'details_url': 'https://github.com/o/r/actions/runs/555/job/9'}
+        self.rows = [{'rva': '0x10', 'unit': 'reconstruction/a/B.cpp', 'result': 'hash-match'},
+                     {'rva': '0x20', 'unit': 'reconstruction/a/B.cpp', 'result': 'no-target', 'base': 'no-target'},
+                     {'rva': '0x30', 'unit': 'reconstruction/a/B.cpp', 'result': 'no-target', 'base': 'no-target'}]
+        self.calls = []
+        self.bot.run = self.fake_run
+        self.bot.gh_json = self.gh
+        self.state = pr_bot.State(self.work / 's', 7, HEAD)
+
+    def gh(self, *args):
+        if '/check-runs' in args[1]:
+            return {'check_runs': [self.job]}
+        if '/artifacts' in args[1]:
+            return {'artifacts': [{'name': 'hash-result'}]}
+        if args[0] == 'pr':
+            return []
+        return {'id': 555, 'head_sha': HEAD}
+
+    def fake_run(self, argv, **kw):
+        argv = [str(a) for a in argv]
+        self.calls.append(argv)
+        if argv[:3] == ['gh', 'run', 'download']:
+            target = Path(argv[argv.index('-D') + 1])
+            (target / 'hash-result.json').write_text(json.dumps({'0x10': 'pass', '0x20': 'fail'}))
+            (target / 'target-result.json').write_text(json.dumps({'head_sha': HEAD, 'functions': self.rows}))
+        return subprocess.CompletedProcess(argv, 0, b'', b'')
+
+    def test_a_function_with_a_row_on_main_but_no_target_in_the_run_asks_for_a_fresh_run(self):
+        self.bot.config['hash_wait'] = 600
+
+        waits = []
+
+        def stop_waiting(_seconds):
+            waits.append(1)
+            if len(waits) > 1:
+                raise pr_bot.Stop('waiting for the fresh run')
+        with mock.patch.object(pr_bot.time, 'sleep', stop_waiting), self.assertRaises(pr_bot.Stop):
+            self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
+        self.assertEqual(self.state.get('rows_rerun'), [0x20])
+        self.assertIsNotNone(self.state.get('rows_at'))
+        self.assertTrue(any(c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c for c in self.calls))
+
+    def test_a_no_target_without_a_published_row_is_taken_as_it_is(self):
+        got = self.bot.host1(7, HEAD, [0x10, 0x30], self.state, {})
+        self.assertEqual(got[0x10], 'pass')
+        self.assertIsNone(self.state.get('rows_rerun'))
+
+    def test_the_rerun_is_asked_for_once(self):
+        self.state.set('rows_rerun', [0x20])
+        got = self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
+        self.assertEqual(got[0x20], 'fail')
+
+
 class HeaderBudgetMessageTests(unittest.TestCase):
     HEADER = '\n'.join(['// Source exposure: mixed', '// 0x1000 A::f', *(f'// extra line {i}' for i in range(9)),
                         '// Task: `x` @someone'])

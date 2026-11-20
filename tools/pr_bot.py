@@ -1595,15 +1595,23 @@ class Bot:
                 if meta.get('head_sha') != head or str(meta.get('id')) != run_id.group(1):
                     raise Stop('hash run belongs to another revision')
                 found = self.download_hash_result(run_id.group(1), target)
-                if found:
+                late = [] if not found or state is None or state.get('rows_rerun') else self.late_rows(target, functions)
+                if found and not late:
                     break
-                # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 unusable.add(run.get('id', run.get('details_url')))
+                if late:
+                    # The run's base predates rows that main has since published for these functions; ask for a
+                    # run against today's base, once.
+                    since = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    state.set('rows_at', since)
+                    state.set('rows_rerun', late)
+                    probed_at = None
+                # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 # A stale run that finished before the probe was requested says nothing about the probe's run,
                 # which has yet to start or finish; waiting for it is the point of the probe.
-                if probed_at is not None and (run.get('started_at') or '') >= probed_at:
+                elif probed_at is not None and (run.get('started_at') or '') >= probed_at:
                     raise Stop('hash check left no result')
-                if probed_at is None:
+                elif probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                     self.probe_hash_run(number, head)
             elif run is None:
@@ -1634,6 +1642,19 @@ class Bot:
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
+
+    def late_rows(self, directory, functions):
+        """RVAs the run's own rows call `no-target` although main now publishes a target row for them."""
+        reports = sorted(Path(directory).rglob('target-result.json'))
+        try:
+            rows = json.loads(reports[0].read_text()).get('functions') or [] if reports else []
+        except (OSError, ValueError):
+            return []
+        published = self.target_rvas()
+        wanted = {int(r) for r in functions}
+        late = {int(row['rva'], 16) for row in rows if isinstance(row, dict) and row.get('result') == 'no-target'
+                and re.fullmatch(r'0[xX][0-9a-fA-F]+', str(row.get('rva')))}
+        return sorted(late & wanted & published)
 
     def latest_hash_run(self, head, unusable=()):
         return self.latest_check_run(head, HASH_CHECKS, unusable)
