@@ -187,6 +187,7 @@ class PdbTypesTest(unittest.TestCase):
         root = self.make_repo()
         hint = P.hint_for_rva(0x1100, root)
         self.assertIn('Widget::Update', hint)
+        self.assertIn('PDB layout', hint)
         self.assertIn(f'{P.GENERATED}/types/Widget.h', hint)
         self.assertIn('"generated/crashlogger_pdb/types/Widget.h"', hint)
         self.assertIn(LABEL, hint)
@@ -196,10 +197,8 @@ class PdbTypesTest(unittest.TestCase):
     def test_start_hint_is_silent_without_the_tree(self):
         root = self.make_repo()
         lines = contrib.pdb_hints(root, [{'rva': 0x1100}, {'rva': 0x1200}])
-        self.assertEqual(len(lines), 2)
-        self.assertIn('class layout', lines[0])
-        self.assertNotIn('PDB hint', lines[1])
-        self.assertIn('Widget::Reset', lines[1])
+        self.assertEqual(len(lines), 1)  # one layout line per class, however many of its functions
+        self.assertIn('PDB layout for Widget::Update', lines[0])
         self.assertEqual(contrib.pdb_hints(Path(tempfile.mkdtemp(dir=self.tmp.name)), [{'rva': 0x1100}]), [])
 
     def test_lint_leaves_generated_files_to_the_label_rule(self):

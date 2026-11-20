@@ -938,28 +938,26 @@ def tree_version(root=ROOT):
 
 
 def hint_for_rvas(rvas, root=ROOT, tree=None):
-    """The lines `./sr start` prints for functions: the first function of each class says where the layout is,
-    later ones of the same class give only their name. Empty when the committed tree knows none of them."""
+    """The lines `./sr start` prints about class layouts: one per class header, for the first function that
+    belongs to it. Names are suggested separately (tools/crashlogger_pdb.py); empty when the committed tree
+    holds no layout for the functions' classes."""
     tree = tree or load_tree(root)
     text = label(tree_version(root))
     lines, headers = [], set()
     for rva in rvas:
         got = lookup_rva(rva, root, tree)
-        if not got:
+        if not got or not got['header'] or got['header'] in headers:
             continue
-        if got['header'] and got['header'] not in headers:
-            headers.add(got['header'])
-            include = got['header'].split('reconstruction/', 1)[1]
-            lines.append(f"PDB hint: {got['name']}: class layout {got['header']} (community guess; copy the members you "
-                         f'need into your unit\'s header, or include it as "{include}" when the unit does not declare '
-                         f'the class itself; a name or layout taken from it gets the label {text})')
-        else:
-            lines.append(f"PDB name: {got['name']}" + (' (same class layout)' if got['header'] else ''))
+        headers.add(got['header'])
+        include = got['header'].split('reconstruction/', 1)[1]
+        lines.append(f"PDB layout for {got['name']}: {got['header']} (community guess; copy the members you need "
+                     f'into your unit\'s header, or include it as "{include}" when the unit does not declare the '
+                     f'class itself; a name or layout taken from it gets the label {text})')
     return lines
 
 
 def hint_for_rva(rva, root=ROOT, tree=None):
-    """The hint of one function, or None when the committed tree knows nothing of it."""
+    """The layout hint of one function, or None when the committed tree has no layout for its class."""
     return next(iter(hint_for_rvas([rva], root, tree)), None)
 
 
