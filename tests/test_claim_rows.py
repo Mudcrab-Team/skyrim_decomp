@@ -286,3 +286,12 @@ class BlockCommentFindingsTests(unittest.TestCase):
         decision = self.decision('stale', 'stale')
         decision['verdicts'] = {0x10: 'fail:host1'}
         self.assertNotIn('Findings from', pr_bot.outcome_body(HEAD, decision))
+
+
+class OutsideFirstTests(unittest.TestCase):
+    def test_outside_prs_are_submitted_before_the_owners_in_listing_order(self):
+        def pr(number, login):
+            return {'number': number, 'author': {'login': login}}
+        listed = [pr(582, pr_bot.OWNER), pr(579, pr_bot.OWNER.upper()), pr(574, 'aivv73'), pr(570, pr_bot.OWNER),
+                  pr(550, 'eclepso')]
+        self.assertEqual([p['number'] for p in pr_bot.outside_first(listed)], [574, 550, 582, 579, 570])

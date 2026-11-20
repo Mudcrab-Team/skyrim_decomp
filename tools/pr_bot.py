@@ -2763,6 +2763,15 @@ def pollable(prs):
 POOL_SIZE = 2
 
 
+def outside_first(prs):
+    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+
+    The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
+    long-running ones.
+    """
+    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+
+
 def outcome(result, pr):
     """The log line for a finished PR: the summary, else the decision's keys.
 
@@ -2917,7 +2926,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                       flush=True)
                 continue
             now = time.time()
-            for pr in pollable(prs):
+            for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
                 if pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now:
