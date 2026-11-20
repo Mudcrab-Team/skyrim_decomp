@@ -354,6 +354,21 @@ def filled_skeleton(*args):
 
 
 class SkeletonTests(Base):
+    def test_skeleton_header_carries_cc0_only_without_a_third_party_notice(self):
+        data = contrib.inventory(ROOT)
+        seen = set()
+        for fn in data['functions']:
+            if fn['status'] != 'mapped' or not contrib.PLAIN_NAME.fullmatch(fn['name']):
+                continue
+            cls, method = contrib.PLAIN_NAME.fullmatch(fn['name']).groups()
+            h, _cpp = contrib.skeleton(fn, cls, method, 'forms', 'tester, no AI', contrib.DEFAULT_RECIPE)
+            third_party = 'SPDX-License-Identifier: MIT' in h or 'GPL-3.0' in h
+            self.assertEqual('SPDX-License-Identifier: CC0-1.0' in h, not third_party, fn['name'])
+            seen.add(third_party)
+            if len(seen) == 2:
+                break
+        self.assertTrue(seen)
+
     def test_skeleton_passes_the_lint(self):
         data = contrib.inventory(ROOT)
         fn = next(f for f in data['functions'] if f['status'] == 'mapped' and 'powerof3' in f['name_source']

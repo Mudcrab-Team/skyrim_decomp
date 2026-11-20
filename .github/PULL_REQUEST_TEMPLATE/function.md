@@ -31,6 +31,7 @@ reason codes only; no bytes, listings or decompiler output.
 ## Checklist
 
 - [ ] I read LEGAL.md, PROVENANCE.md and the licensing scope, and can contribute this material.
+  By submitting I dedicate it under CC0 1.0, or under the file's stated exception licence.
 - [ ] Only reconstruction source is in this pull request: no game files, bytes, listings,
   disassembly, decompiler output, dumps, proprietary symbols or secrets, here or in comments.
 - [ ] Every name carries its origin label (`docs/contributor-card.md`); a body adapted from a community

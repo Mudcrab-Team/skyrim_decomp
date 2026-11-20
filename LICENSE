@@ -1,16 +1,28 @@
 Licensing scope
 
-No license is granted to game code, reconstructed game implementations, research notes,
-behavioral specifications, or third-party material by this file. Rights are reserved to their
-respective holders. Viewing or forking on GitHub does not provide a general reuse license.
-No assertion is made that the maintainer owns third-party rights.
+CC0 1.0 Universal (licenses/CC0-1.0.txt): the reconstructions under reconstruction/, the
+documentation, research notes, reports and data that this project authored. Contributors
+dedicate their contributions the same way, unless a file states an exception below.
 
-Exception for original infrastructure only:
-The original project-authored files in tools/, tests/, site/, .github/, and the original
-.gitignore and .gitattributes are licensed under licenses/MIT.txt. This exception does not
-extend to game-derived content, third-party code or dependencies placed in those paths.
-All future third-party additions require an explicit license and attribution record.
+MIT (licenses/MIT.txt): original project-authored infrastructure in tools/, tests/, site/,
+.github/, and the original .gitignore and .gitattributes. Unchanged by the CC0 dedication.
 
-Documentation and research material have no general license grant at bootstrap. A broader
-license can be considered later after provenance and contributor rights are established.
-Nothing here grants rights in Skyrim, middleware, trademarks, executable files or game assets.
+Exceptions inside the CC0 scope. These are decided per file, by rule, and CC0 cannot cover them:
+- Units carrying a third-party SPDX line (`SPDX-License-Identifier: MIT (CommonLibSSE-NG ...)`,
+  `GPL-3.0-or-later`, `GPL-3.0-only`) keep that licence and its notice. This includes every unit
+  whose header declares GPL-3.0 declarations or labels (COMMUNITY(powerof3/CommonLibSSE@..., GPL-3.0),
+  the powerof3 or CommonLibSSE-GPL notice, or a GPL header block): such a unit stays GPL-3.0
+  (full text: licenses/CommonLibSSE-GPL-3.0.txt). CommonLibSSE-NG declarations stay MIT
+  (licenses/CommonLibSSE-NG.txt).
+- Units labelled SIBLING(fo4-private@1b765c70, author-permission): use was permitted by that
+  work's author; it is not dedicated under CC0 and no relicence is granted for it.
+- Material labelled SIBLING(momusdigital/fnv_decomp@...) is taken from a project that is itself
+  CC0 1.0, so it carries no exception; the label stays for provenance.
+A unit with no SPDX line and none of the markers above is CC0. New units carry
+`// SPDX-License-Identifier: CC0-1.0`.
+
+Not covered: Skyrim, its code, executables, assets and trademarks, middleware and any other
+third-party material are not licensed by this project. CC0 grants no rights in Bethesda's
+intellectual property or in anyone else's; it dedicates only what the project's authors can
+dedicate. Nothing here asserts that the maintainer owns third-party rights. All future third-party
+additions require an explicit license and attribution record.

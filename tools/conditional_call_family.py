@@ -33,7 +33,7 @@ def emit(members):
     header = (f'// Build: {BUILD}\n// Labels: v2\n'
               '// Source exposure: binary-analysis; original declarations and linkage unknown.\n'
               '// Adapted bodies: none; original bounded callback-dispatch template.\n'
-              '// Reconstruction carries no general licence grant; see LEGAL.md and PROVENANCE.md.\n'
+              '// Reconstruction is CC0-1.0 unless a notice below says otherwise; see LICENSE, LEGAL.md and PROVENANCE.md.\n'
               f'// {CLASS}, invoke, object, {STATE}, {CALLBACK}: GUESS(low) STANDIN\n')
     h = header + '#pragma once\n' + f'struct {CLASS} {{ virtual void invoke(unsigned int); }};\n'
     h += f'extern void* {STATE};\nextern void (*{CALLBACK})({CLASS}*);\n'

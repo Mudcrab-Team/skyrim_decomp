@@ -136,7 +136,7 @@ def emit_leaf(owner, method, *, family, width, value, virtual, name_label):
 
 
 def publication_header(owner, method, *, rva, size, origin, name_label, class_label, notice=''):
-    """Common leading comment for both files; no licence grant for reconstruction."""
+    """Common leading comment for both files; licence pointer for reconstruction."""
     lines = [f'// {owner}::{method}, build {BUILD}, RVA 0x{rva:x}, {size} bytes.',
              '// Labels: v2', '// Source exposure: mixed (local binary analysis and public names).',
              f'// Evidence: {EVIDENCE}', f'// Recipe: {RECIPE}',
@@ -145,7 +145,7 @@ def publication_header(owner, method, *, rva, size, origin, name_label, class_la
              '// Only the named leaf is compared. Types are minimal stand-ins; names are unverified.',
              '// Adapted bodies: none. Body synthesized from the bounded leaf template.',
              '// A comparator pass verifies code under the recipe, not names or original source form.',
-             '// Reconstruction carries no general licence grant; see LEGAL.md and PROVENANCE.md.',
+             '// Reconstruction is CC0-1.0 unless a notice below says otherwise; see LICENSE, LEGAL.md and PROVENANCE.md.',
              f'// {owner}: {class_label}', f'// {method}: {name_label}',
              '// member, padding: GUESS(low); storage names invented for the measured member offset']
     if name_label == 'GUESS(low)':

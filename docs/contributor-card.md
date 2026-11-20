@@ -18,6 +18,9 @@ including adaptations and sources. Community headers are
 hypotheses, not binary proof. Never write `asm`, `##`, `#pragma` (except `once`), byte arrays or
 `\x` strings, and never edit verifier inputs, tools, flags or another unit to force a pass.
 
+By submitting, you dedicate your contribution under CC0 1.0, or under the file's stated exception licence (`LICENSE`).
+A new unit's skeleton carries `// SPDX-License-Identifier: CC0-1.0`; units with NG or GPL declarations keep that notice instead.
+
 For FNV reuse use `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` and cite each reused
 body in a `Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>` header line. Another
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.
