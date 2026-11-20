@@ -11,10 +11,24 @@
 #include <cstddef>
 #include "BSLightingShaderMaterialBase.h"
 
+// MemoryManager: STANDIN GUESS(low); the allocator object the image reads at 0x369a810, with its once-init guard at 0x369ac98
+class MemoryManager
+{
+public:
+    void* Allocate(std::uint32_t a_size, std::int32_t a_alignment, bool a_alignmentRequired);  // 0xcde250
+};
+// g_memoryManager, g_memoryManagerGuard, InitMemoryManager: GUESS(low)
+extern MemoryManager g_memoryManager;
+extern std::int32_t  g_memoryManagerGuard;
+void InitMemoryManager(MemoryManager* a_manager, std::int32_t* a_guard);  // 0xcde810
+
 class BSLightingShaderMaterialLandscape : public BSLightingShaderMaterialBase
 {
 public:
-    BSLightingShaderMaterialLandscape();
+    static void* operator new(std::size_t a_size) throw();
+    BSShaderMaterial* Create() override;  // compared: 0x1527560
+    // the image's Create calls the constructor at its own address, so it stays a separate function
+    __declspec(noinline) BSLightingShaderMaterialLandscape();
     std::uint32_t GetTextures(NiSourceTexture** a_textures);  // compared: 0x15279b0
     virtual Feature GetFeature() const;  // compared: 0x1527a80
     virtual ~BSLightingShaderMaterialLandscape();  // compared: 0x1529030 (scalar deleting destructor)

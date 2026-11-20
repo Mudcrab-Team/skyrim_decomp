@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
@@ -40,6 +41,9 @@ public:
     virtual Feature GetFeature() const;  // compared: 0x1556680
     virtual Type GetType() const;  // compared: 0x1575920
     virtual BSShaderMaterial* GetDefault();  // compared: 0x1575820
+
+    // Function15757c0: GUESS(low); hashes the texture coordinate offset and scale with a seed
+    std::uint32_t Function15757c0(std::uint32_t a_seed);
 
     std::uint8_t unknown08[0x30];  // 08
 };

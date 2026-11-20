@@ -1,7 +1,9 @@
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1533bd0 BSParticleShaderProperty::GetBaseTexture
 // 0x1532ca0 BSParticleShaderProperty::SetupGeometry
 #include "BSParticleShaderProperty.h"

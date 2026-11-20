@@ -1,7 +1,10 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
+// Code origin: original bodies written from the local listing; declarations from CommonLibSSE-NG.
 // Adapted bodies: none
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// 0x152c470 BSWaterShaderProperty::IsEqual
 // 0x152d190 BSWaterShaderProperty::DoClearRenderPasses
 // 0x152c410 BSWaterShaderProperty::SaveBinary
 // 0x152c370 BSWaterShaderProperty::LinkObject
@@ -49,4 +52,10 @@ void BSWaterShaderProperty::LinkObject(NiStream& a_stream)
 std::uint32_t BSWaterShaderProperty::QShader() const
 {
     return 0x11;
+}
+
+// IsEqual: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+bool BSWaterShaderProperty::IsEqual(NiObject*)
+{
+    return false;
 }

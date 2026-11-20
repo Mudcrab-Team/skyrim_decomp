@@ -1,3 +1,4 @@
+// 0x1527140 BSLightingShaderMaterialHairTint::CopyMembers
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
@@ -17,4 +18,19 @@ BSLightingShaderMaterialHairTint::BSLightingShaderMaterialHairTint()
 BSLightingShaderMaterialHairTint* BSLightingShaderMaterialHairTint::Ctor()
 {
     return new (this) BSLightingShaderMaterialHairTint();
+}
+
+// TintPair: GUESS(low); the image copies the eight bytes at A0 as two adjacent floats
+struct TintPair
+{
+    float first;
+    float second;
+};
+
+void BSLightingShaderMaterialHairTint::CopyMembers(BSShaderMaterial* a_other)
+{
+    BSLightingShaderMaterial::CopyMembers(a_other);
+    const auto* other = static_cast<const BSLightingShaderMaterialHairTint*>(a_other);
+    *reinterpret_cast<TintPair*>(&fieldA0) = *reinterpret_cast<const TintPair*>(&other->fieldA0);
+    fieldA8 = other->fieldA8;
 }

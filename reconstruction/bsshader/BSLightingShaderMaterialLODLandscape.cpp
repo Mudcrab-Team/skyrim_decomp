@@ -1,6 +1,8 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: bodies written from the local listings; names and declarations follow CommonLibSSE-NG.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x1527a90 BSLightingShaderMaterialLODLandscape::Function1527a90
+// Function1527a90: GUESS(low); the constructor, bound by hint
 // 0x1528ff0 BSLightingShaderMaterialLODLandscape::~BSLightingShaderMaterialLODLandscape
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
@@ -15,7 +17,12 @@ BSShaderMaterial::Feature BSLightingShaderMaterialLODLandscape::GetFeature() con
     return static_cast<Feature>(0x12);
 }
 
-// Defined so that the compiler emits the vftable and the deleting destructor; the complete destructor stays undefined.
-BSLightingShaderMaterialLODLandscape::BSLightingShaderMaterialLODLandscape()
+// Also emits the vftable, and with it the deleting destructor; the complete destructor stays undefined.
+BSLightingShaderMaterialLODLandscape::BSLightingShaderMaterialLODLandscape() :
+    unkA0(0),
+    unkA8(0),
+    unkB0(0),
+    unkB8(0),
+    unkC0(0)
 {
 }

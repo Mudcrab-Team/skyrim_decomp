@@ -1,4 +1,9 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Function14e77f0, Function14e7a80, SetNextPass: GUESS(low); bodies written from the local listing
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// 0x14e77f0 BSShaderProperty::Function14e77f0
+// 0x14e7a80 BSShaderProperty::Function14e7a80
 // 0x14e85f0 BSShaderProperty::ForEachTexture
 // 0x14e8680 BSShaderProperty::QMaterialAlpha
 // 0x14e7fb0 BSShaderProperty::DoClearRenderPasses
@@ -69,4 +74,23 @@ void BSShaderProperty::SaveBinary(NiStream& a_stream)
 	}
 	material->texCoordOffset[0].SaveBinary(&a_stream);
 	material->texCoordScale[0].SaveBinary(&a_stream);
+}
+
+void BSShaderProperty::Function14e77f0(RenderPassArray* a_array)
+{
+	for (BSRenderPass* pass = a_array->head; pass;) {
+		BSRenderPass* next = pass->next;
+		pass->ClearRenderPass();
+		pass = next;
+	}
+	a_array->head = nullptr;
+}
+
+BSRenderPass* BSShaderProperty::Function14e7a80(RenderPassArray* a_array, BSRenderPass** a_other)
+{
+	BSRenderPass* pass = a_array->head;
+	a_array->head = pass->next;
+	pass->SetNextPass(*a_other);
+	*a_other = pass;
+	return pass;
 }
