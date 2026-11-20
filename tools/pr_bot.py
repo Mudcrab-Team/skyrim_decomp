@@ -2172,20 +2172,30 @@ class Bot:
         raise Stop(f'merge refused with the head unchanged (mergeable={now.get("mergeable")}, '
                    f'state={now.get("state")}); results kept, retrying next tick')
 
+    def recorded_by(self, build, rva, task_id):
+        """Whether the function's review record on the checked-out main came from this task."""
+        path = self.tree / 'reports' / build / f'0x{rva:x}.review.json'
+        try:
+            return json.loads(path.read_text()).get('review_task_id') == task_id
+        except (OSError, ValueError):
+            return False
+
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
         self.run(['git', 'checkout', '--quiet', '--force', '-B', 'record', 'origin/main'], cwd=self.tree)
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
-        # A retry after a partial record must not offer what is already matched on main.
+        # A retry after a partial record must not offer what this PR already recorded on main. A function
+        # matched by an earlier PR whose record this PR's unit text outdated is recorded again.
+        task_id = f'pr-bot-{pr["number"]}-{pr["headRefOid"][:8]}'
         inventory = json.loads((self.tree / 'data/progress.json').read_text())
         matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
-        rvas = [r for r in rvas if r not in matched]
+        rvas = [r for r in rvas if r not in matched or not self.recorded_by(build, r, task_id)]
         if not rvas:
             state.set('recorded', True)
             return
         review = Path(self.work / 'reviews' / f'pr{pr["number"]}-{pr["headRefOid"][:12]}.txt')
         argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--push',
-                '--task-id', f'pr-bot-{pr["number"]}-{pr["headRefOid"][:8]}', '--author', pr['author']['login'],
+                '--task-id', task_id, '--author', pr['author']['login'],
                 '--records', state.get('records')]
         for r in rvas:
             argv += ['--rva', hex(r)]
