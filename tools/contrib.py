@@ -40,6 +40,7 @@ import hashlib
 import json
 import ntpath
 import os
+import posixpath
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import shlex
@@ -248,7 +249,22 @@ def load_config(ctx):
     try:
         return json.loads(config_path(ctx).read_text())
     except (OSError, ValueError):
-        return {}
+        pass
+    # A worktree with a .local of its own but no config reads the main checkout's.
+    for base in main_local_fallback(ctx):
+        try:
+            return json.loads((base / 'contrib' / 'config.json').read_text())
+        except (OSError, ValueError):
+            continue
+    return {}
+
+
+def main_local_fallback(ctx):
+    """[main checkout's .local] for a linked worktree without SR_LOCAL_DIR, else []."""
+    if ctx.env.get('SR_LOCAL_DIR') or ctx._private is not None:
+        return []
+    main = main_checkout_local(ctx.repo)
+    return [main] if main is not None else []
 
 
 def save_config(ctx, **changes):
@@ -361,7 +377,7 @@ def unit_files(repo, cls, area=None, index=None):
     return area, f'reconstruction/{area}/{cls}.h', f'reconstruction/{area}/{cls}.cpp'
 
 
-def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False):
+def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None):
     """Unclaimed targets: small functions first (under 64 bytes, then 64-255), classes that already have
     a layout before those that do not, then advisory declaration/draft readiness, size and RVA.
 
@@ -385,6 +401,8 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
             continue
         m = PLAIN_NAME.fullmatch(fn.get('name') or '')
         cls, method = m.groups() if m else ('', '')
+        if class_filter is not None and not class_filter.search(cls):
+            continue
         if cls not in layouts:
             layouts[cls] = unit_files(repo, cls, index=units) if cls else (None, None, None)
         area, header, cpp = layouts[cls]
@@ -457,6 +475,7 @@ def exe_candidates(ctx, exists=os.path.isfile, dir_exists=os.path.isdir, read=No
     # The SteamCMD route installs into .local/contrib/game; its depot-only variant writes under
     # SteamCMD's own steamapps/content folder.
     own = [ctx.private / 'game' / 'SkyrimSE.exe']
+    own += [base / 'contrib' / 'game' / 'SkyrimSE.exe' for base in main_local_fallback(ctx)]
     own += [d / 'steamapps' / 'content' / f'app_{STEAM_APP_ID}' / f'depot_{STEAM_EXE_DEPOT}' / 'SkyrimSE.exe'
             for d in steamcmd_dirs(ctx)]
     for p in own:
@@ -748,8 +767,11 @@ def fold_case_includes(outside, root, closure, repo_files):
         path = raw.replace('\\', '/')
         if len(path) > 2 and path[1] == ':':
             path = path[2:]
-        hit = by_lower.get(path.lower()[len(prefix):]) if path.lower().startswith(prefix) else None
-        if hit and '/../' not in path and same_file(path, os.path.join(str(root), hit)):
+        # A relative include prints as `<dir>/../<other>/X.h`; fold the dots before looking it up, then
+        # let the file system confirm that the original spelling opens that very file.
+        folded = posixpath.normpath(path)
+        hit = by_lower.get(folded.lower()[len(prefix):]) if folded.lower().startswith(prefix) else None
+        if hit and same_file(path, os.path.join(str(root), hit)):
             if hit not in repo_files:
                 repo_files.append(hit)
         else:
@@ -1093,11 +1115,22 @@ def pick_current_task(ctx, pick):
     return chosen
 
 
+def task_files(ctx):
+    """Every task.json: this store's, then the main checkout's for ids this one lacks."""
+    bases = [ctx.private / 'tasks'] + [b / 'contrib' / 'tasks' for b in main_local_fallback(ctx)]
+    seen, out = set(), []
+    for base in bases:
+        for path in sorted(base.glob('*/task.json')) if base.is_dir() else []:
+            if path.parent.name not in seen:
+                seen.add(path.parent.name)
+                out.append(path)
+    return out
+
+
 def load_task(ctx, ident=None, pick_current=False):
     """The contributor task named by id, RVA or unit; the only one when none is named (with
     `pick_current`, the current one when several exist)."""
-    base = ctx.private / 'tasks'
-    tasks = sorted(p for p in base.glob('*/task.json')) if base.is_dir() else []
+    tasks = task_files(ctx)
     loaded = [(p.parent, json.loads(p.read_text())) for p in tasks]
     if ident:
         try:
@@ -1201,7 +1234,7 @@ def cmd_doctor(ctx, args):
         f'{ctx.cli} setup --yes', required=False)
     ok = all(c['ok'] for c in checks if c['required'])
     if ok and nxt is None:
-        tasks = list((ctx.private / 'tasks').glob('contrib-*/task.json')) if (ctx.private / 'tasks').is_dir() else []
+        tasks = [p for p in task_files(ctx) if p.parent.name.startswith('contrib-')]
         nxt = f'{ctx.cli} compare' if tasks else f'{ctx.cli} go'
     return (OK if ok else MISSING), {'checks': checks, 'platform': ctx.platform}, nxt
 
@@ -1657,7 +1690,14 @@ def cmd_next(ctx, args):
             facts = local_facts(args.function_table, data['target_build_id'], target['image_sha256'])
         except (OSError, ValueError, KeyError) as exc:
             raise Stop(USAGE, str(exc)) from None
-    ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True) if c['startable']]
+    class_filter = None
+    if getattr(args, 'class_regex', None):
+        try:
+            class_filter = re.compile(args.class_regex)
+        except re.error as exc:
+            raise Stop(USAGE, f'--class is not a regular expression: {exc}') from None
+    ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True,
+                                   class_filter=class_filter) if c['startable']]
     counts = {'claimable': len(ready), 'without_inventory_entry': sum(not c['in_inventory'] for c in ready),
               'under_64_bytes': sum(c['size_band'] == 0 for c in ready),
               '64_to_255_bytes': sum(c['size_band'] == 1 for c in ready),
@@ -1720,6 +1760,26 @@ def claim_selection(ctx, args, data):
     return functions, entries
 
 
+def claim_conflicts(index, blocked, addresses):
+    """{rva: [claim items]} for each requested address a blocking claim covers."""
+    where = {}
+    for address in addresses:
+        for it in blocked:
+            entries = it.get('entries')
+            hit = any(a <= address < b for a, b in entries) if entries else it in index.get(address, [])
+            if hit:
+                where.setdefault(address, []).append(it)
+    return where
+
+
+def describe_conflicts(where, extra=()):
+    parts = [f'0x{a:x} (' + ', '.join(f'#{i["number"]} {i["url"]} by {i["author"]}' for i in its) + ')'
+             for a, its in sorted(where.items())]
+    if not parts:
+        parts = [f'#{i["number"]} {i["url"]} by {i["author"]}' for i in extra]
+    return ', '.join(parts)
+
+
 def cmd_claim(ctx, args):
     config = load_config(ctx)
     try:
@@ -1765,12 +1825,26 @@ def cmd_claim(ctx, args):
         raise Stop(USAGE, 'GitHub login is unknown; cannot tell whether an existing claim is yours',
                    f'{ctx.cli} claim 0x{first:x} --github-user <your-login>', claims=items)
     mine, fresh, stale = claim_state(items, me)
-    if fresh:
-        raise Stop(CLAIMED, 'scope is claimed: ' + ', '.join(f'#{i["number"]} {i["url"]} by {i["author"]}' for i in fresh),
-                   f'{ctx.cli} next', claims=fresh)
-    if stale and not args.take_over:
-        raise Stop(CLAIMED, f'lapsed claim #{stale[0]["number"]}; use --take-over',
-                   f'{ctx.cli} claim 0x{first:x} --take-over', claims=stale)
+    blocked = fresh + ([] if args.take_over else stale)
+    if blocked:
+        where = claim_conflicts(index, blocked, addresses)
+        if getattr(args, 'skip_conflicts', False):
+            skipped = set(where)
+            functions = [f for f in functions if f['rva'] not in skipped]
+            if not functions:
+                raise Stop(CLAIMED, 'every selected function is already claimed: ' + describe_conflicts(where),
+                           f'{ctx.cli} next', claims=blocked)
+            addresses = [f['rva'] for f in functions]
+            first = addresses[0]
+            entries = [(a, a + 1) for a in addresses]
+            ctx.say('skipping claimed functions: ' + describe_conflicts(where))
+            mine, fresh, stale = claim_state(overlapping(index), me)
+        elif fresh:
+            raise Stop(CLAIMED, 'scope is claimed: ' + describe_conflicts(where, fresh),
+                       f'{ctx.cli} claim ... --skip-conflicts to claim the rest', claims=fresh)
+        else:
+            raise Stop(CLAIMED, 'lapsed claims: ' + describe_conflicts(where) + '; use --take-over',
+                       f'{ctx.cli} claim 0x{first:x} --take-over (or --skip-conflicts)', claims=stale)
     ranges_covered = all(any(a <= start and end <= b for it in mine for a, b in it.get('entries', []))
                          for start, end in entries if end > start + 1)
     if mine and ranges_covered and all(any(it in mine for it in index.get(address, [])) for address in addresses):
@@ -2045,6 +2119,24 @@ def compare_with_local_dir(ctx, task_file, built, exe, report_path, diagnostics)
     return 0 if report['result'] == 'pass' else 1
 
 
+UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
+
+
+def unit_recipe(root, compiled, fallback):
+    """The recipe the unit names, found the way CI finds it (the first recipe path in the source),
+    else `fallback`."""
+    try:
+        found = UNIT_RECIPE.search((Path(root) / compiled).read_text(errors='replace'))
+    except OSError:
+        return fallback
+    if not found:
+        return fallback
+    if not (Path(root) / found.group(0)).is_file():
+        raise Stop(UNIT, f'{compiled} names recipe {found.group(0)}, which does not exist',
+                   'name a recipe under reconstruction/recipes/ or drop the Recipe: line')
+    return found.group(0)
+
+
 def run_compare(ctx, ident=None, root=None):
     """Compile the task's unit and compare each function; returns (code, data, next)."""
     import bind
@@ -2061,11 +2153,15 @@ def run_compare(ctx, ident=None, root=None):
     number = len([p for p in runs.glob('[0-9][0-9][0-9]')]) + 1 if runs.is_dir() else 1
     out = runs / f'{number:03d}'
     refresh_symbols(ctx, tdir, task['build_id'])
-    built = compile_unit(ctx, root, task['compiled'], task['recipe'], out, tool)
+    recipe = unit_recipe(root, task['compiled'], task['recipe'])
+    if recipe != task['recipe']:
+        ctx.say(f'recipe: {recipe} (named by the unit; the task had {task["recipe"]})')
+    built = compile_unit(ctx, root, task['compiled'], recipe, out, tool)
     objdump = find_objdump(ctx)
     bound = bind.bind(tdir, built['object'], exe, objdump, repo=root)
     bind_lines = bind.describe(bound, tdir)
     task = json.loads((tdir / 'task.json').read_text())
+    task['recipe'] = recipe
     results, current = [], {}
     for fn in task['functions']:
         rva = parse_rva(fn['rva'])
@@ -2202,12 +2298,12 @@ def submission_files(ctx, base, unit, head='HEAD'):
 def cmd_preflight(ctx, args):
     """Source-only intake checks are useful before the first local comparator pass, too."""
     from contrib_validation import project_reconfirmation
-    _tdir, task = load_task(ctx, args.task)
+    picked = select_tasks(ctx, args)
     up, _push = upstream_remote(ctx)
     base = args.base or (f'{up}/main' if up else 'origin/main')
     if ctx.run(['git', 'rev-parse', '--verify', '--quiet', base], cwd=ctx.repo, capture_output=True).returncode:
         base = 'HEAD'
-    unit = task['contrib']['unit']
+    unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
     files = submission_files(ctx, base, unit)
     head = git(ctx, 'write-tree') if args.staged else None
     details = {}
@@ -2275,12 +2371,18 @@ def submit_preflight(ctx, push):
 
 def pr_body(ctx, task, summary, args, labels, origin):
     template = (ctx.repo / '.github/PULL_REQUEST_TEMPLATE/function.md').read_text()
+    summaries = summary if isinstance(summary, list) else [summary]
     rows = '\n'.join(f'| `{r["rva"]}` | `{r["name"]}` | {r["result"]} | `{r["reason"]}` | {r["candidate_size"]}/'
-                     f'{r["target_size"]} | `{(r["code_section_sha256"] or "")[:16]}` |' for r in summary['functions'])
-    report = {k: summary[k] for k in ('unit', 'source_revision', 'recipe', 'recipe_sha256', 'compiler',
+                     f'{r["target_size"]} | `{(r["code_section_sha256"] or "")[:16]}` |'
+                     for one in summaries for r in one['functions'])
+    reports = []
+    for one in summaries:
+        report = {k: one[k] for k in ('unit', 'source_revision', 'recipe', 'recipe_sha256', 'compiler',
                                       'image_sha256_pinned', 'comparator', 'contract_version')}
-    report['functions'] = [{k: r[k] for k in ('rva', 'result', 'reason', 'candidate_size', 'target_size',
-                                              'coverage', 'code_section_sha256')} for r in summary['functions']]
+        report['functions'] = [{k: r[k] for k in ('rva', 'result', 'reason', 'candidate_size', 'target_size',
+                                                  'coverage', 'code_section_sha256')} for r in one['functions']]
+        reports.append(report)
+    report = reports[0] if not isinstance(summary, list) else reports
     fields = {
         'functions_table': rows,
         'report_json': json.dumps(report, indent=1),
@@ -2294,14 +2396,43 @@ def pr_body(ctx, task, summary, args, labels, origin):
     return template
 
 
-def cmd_submit(ctx, args):
-    tdir, task = load_task(ctx, args.task)
-    practice = task.get('contrib', {}).get('practice')
-    blockers, warnings = [], []
+def select_tasks(ctx, args):
+    """[(dir, task)] for the task names given, or every unsubmitted task whose unit has uncommitted
+    changes with --all-dirty; one task when nothing is named, as before."""
+    names = getattr(args, 'task', None) or []
+    names = [names] if isinstance(names, str) else list(names)
+    if getattr(args, 'all_dirty', False):
+        if names:
+            raise Stop(USAGE, 'name tasks or pass --all-dirty, not both')
+        changed = changed_paths(ctx)
+        picked = []
+        for path in task_files(ctx):
+            task = json.loads(path.read_text())
+            contrib = task.get('contrib', {})
+            if contrib.get('practice') or contrib.get('submitted'):
+                continue
+            if task.get('compiled') in changed or set(contrib.get('unit', [])) & changed:
+                picked.append((path.parent, task))
+        if not picked:
+            raise Stop(USAGE, 'no task has uncommitted changes in its unit', f'{ctx.cli} start 0x<rva>')
+        return picked
+    if not names:
+        return [load_task(ctx, None)]
+    picked = []
+    for name in names:
+        item = load_task(ctx, name)
+        if all(item[0] != d for d, _t in picked):
+            picked.append(item)
+    return picked
+
+
+def submit_task_blockers(ctx, tdir, task):
+    """(blockers, last compare summary) of one task: compare current and passing, pinned compiler, not practice."""
+    blockers = []
     try:
         summary = json.loads((tdir / 'last-compare.json').read_text())
     except (OSError, ValueError):
-        raise Stop(USAGE, 'no comparison yet', f'{ctx.cli} compare')
+        raise Stop(USAGE, 'no comparison yet', f'{ctx.cli} compare {tdir.name}')
     from source_digest import include_closure
     from digest_v2 import tu_digest
     try:
@@ -2324,9 +2455,23 @@ def cmd_submit(ctx, args):
     if summary['compiler'] != 'pinned':
         blockers.append(f'{task["compiled"]}:1: the last compare used a stand-in compiler, not the pinned MSVC; '
                         'fix: install the pinned compiler with setup and compare again')
-    if practice:
+    if task.get('contrib', {}).get('practice'):
         blockers.append('practice tasks re-do accepted functions and are not submitted')
-    unit = [n for n in task['contrib']['unit'] if (ctx.repo / n).is_file()]
+    return blockers, summary
+
+
+def cmd_submit(ctx, args):
+    picked = select_tasks(ctx, args)
+    tdir, task = picked[0]
+    blockers, warnings = [], []
+    summaries, unit = [], []
+    for tdir_i, task_i in picked:
+        problems_i, summary_i = submit_task_blockers(ctx, tdir_i, task_i)
+        blockers += problems_i
+        summaries.append(summary_i)
+        unit += [n for n in task_i['contrib']['unit'] if (ctx.repo / n).is_file() and n not in unit]
+    summary = summaries[0] if len(picked) == 1 else dict(summaries[0], functions=[
+        r for s_ in summaries for r in s_['functions']])
     up, push = upstream_remote(ctx)
     preflight = submit_preflight(ctx, push)
     blockers += preflight['blockers']
@@ -2350,7 +2495,7 @@ def cmd_submit(ctx, args):
         open_items = ctx.github().open_items(refresh=True)
         me = ctx.github().user()
         own_urls = {c.get('url') for c in local_claims(ctx).values()}
-        for fn in task['functions']:
+        for fn in [f for _d, t_ in picked for f in t_['functions']]:
             items = [i for i in open_items.get(parse_rva(fn['rva']), []) if i['url'] not in own_urls]
             _mine, fresh, _stale = claim_state(items, me)
             if fresh and not args.ack_collision:
@@ -2359,7 +2504,7 @@ def cmd_submit(ctx, args):
                                 + ('' if me else '; if it is yours, give claim --github-user <your-login>'))
     except Offline as exc:
         warnings.append(f'GitHub claims not checked: {exc}')
-    body = pr_body(ctx, task, summary, args, labels, origin)
+    body = pr_body(ctx, task, summaries if len(picked) > 1 else summary, args, labels, origin)
     names = ', '.join(r['name'] for r in summary['functions'])
     title = f'Reconstruct {names} ({", ".join(r["rva"] for r in summary["functions"])})'
     (tdir / 'pr-body.md').write_text(body)
@@ -2416,8 +2561,9 @@ def cmd_submit(ctx, args):
                    f'git remote add fork https://github.com/<you>/{UPSTREAM.split("/")[-1]}.git and run submit again', **data)
     branch = git(ctx, 'rev-parse', '--abbrev-ref', 'HEAD')
     git(ctx, 'push', '-u', push, branch)
-    task['contrib']['submitted'] = branch
-    (tdir / 'task.json').write_text(json.dumps(task, indent=2) + '\n')
+    for tdir_i, task_i in picked:
+        task_i['contrib']['submitted'] = branch
+        (tdir_i / 'task.json').write_text(json.dumps(task_i, indent=2) + '\n')
     gh = ctx.github().gh()
     if gh:
         owner = preflight['fork_owner']
@@ -2484,8 +2630,7 @@ def cmd_go(ctx, args):
             raise
     if not args.rva:
         # Resume unfinished work instead of claiming a second function.
-        base = ctx.private / 'tasks'
-        for path in sorted(base.glob('*/task.json')) if base.is_dir() else []:
+        for path in task_files(ctx):
             task = json.loads(path.read_text())
             if not task.get('contrib', {}).get('practice') and not task['contrib'].get('submitted'):
                 ctx.say(f'resuming {task["task_id"]} ({task["compiled"]})')
@@ -2543,12 +2688,16 @@ def parser():
     s.add_argument('--count', type=int, default=5)
     s.add_argument('--max-size', type=int, default=64)
     s.add_argument('--function-table', help='optional private function table derived locally from your own pinned image')
+    s.add_argument('--class', dest='class_regex', metavar='REGEX',
+                   help='only classes whose name matches (re.search, e.g. "^Ni"); filters before readiness is computed')
     s = sub.add_parser('claim')
     s.add_argument('rva', nargs='*')
     s.add_argument('--class', dest='classes', action='append', default=[])
     s.add_argument('--list', dest='lists', action='append', default=[])
     s.add_argument('--range', dest='ranges', action='append', default=[])
     s.add_argument('--take-over', action='store_true')
+    s.add_argument('--skip-conflicts', action='store_true',
+                   help='claim the functions nobody else holds and name the ones skipped')
     s.add_argument('--offline-ok', action='store_true')
     s.add_argument('--github-user', help='your GitHub login, when gh is not signed in')
     s.add_argument('--model', '--agent', help='actual model id or agent/tool name, recorded before claiming')
@@ -2573,13 +2722,16 @@ def parser():
     s = sub.add_parser('compare')
     s.add_argument('task', nargs='?')
     s = sub.add_parser('submit')
-    s.add_argument('task', nargs='?')
+    s.add_argument('task', nargs='*', help='one or more task names; several make one pull request')
+    s.add_argument('--all-dirty', action='store_true',
+                   help='every unsubmitted task whose unit has uncommitted changes, in one pull request')
     s.add_argument('--dry-run', action='store_true')
     s.add_argument('--base')
     s.add_argument('--drafted-by')
     s.add_argument('--ack-collision', action='store_true')
     s = sub.add_parser('preflight')
-    s.add_argument('task', nargs='?')
+    s.add_argument('task', nargs='*', help='one or more task names')
+    s.add_argument('--all-dirty', action='store_true', help='every unsubmitted task whose unit has uncommitted changes')
     s.add_argument('--base')
     s.add_argument('--staged', action='store_true', help='validate index source, rather than working files')
     s = sub.add_parser('intake')

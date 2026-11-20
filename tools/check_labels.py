@@ -646,7 +646,7 @@ def community_excerpts(files, checkouts=None, root=ROOT):
 
 
 def configured_checkouts(root=ROOT, env=None):
-    config_path = local_dir(root, env) / 'verifier/config.json'
+    config_path = local_path(root, '.local/verifier/config.json', env)
     try:
         config = json.loads(config_path.read_text())
     except (OSError, ValueError):
@@ -659,7 +659,7 @@ def default_files(root=ROOT):
 
 
 def configured_siblings(root=ROOT, env=None):
-    config_path = local_dir(root, env) / 'verifier/config.json'
+    config_path = local_path(root, '.local/verifier/config.json', env)
     try:
         config = json.loads(config_path.read_text())
     except (OSError, ValueError):

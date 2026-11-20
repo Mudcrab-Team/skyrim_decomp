@@ -27,6 +27,15 @@ class ReadinessDispatch(unittest.TestCase):
         self.assertEqual(lint.plausible_source_problems('Synthetic.cpp', 'int count;'), [])
         self.assertEqual(lint.claim_scope_problems('Synthetic.cpp', '// Byte match only; names remain guesses.'), [])
 
+    def test_prose_naming_the_mit_licence_is_not_a_notice(self):
+        prose = ('// Adapted code: bodies are taken from NG under its MIT licence; see the SPDX line below.\n'
+                 '// Names follow the same licence.\n')
+        self.assertEqual(lint.truncated_mit_problems('Synthetic.h', prose), [])
+        self.assertTrue(lint.truncated_mit_problems('Synthetic.h', '// MIT License\n// Permission is hereby granted\n'))
+        nested = ROOT / 'reconstruction/gamebryo/nimain/NiObject.h'
+        if nested.is_file():
+            self.assertEqual(lint.truncated_mit_problems(str(nested), nested.read_text()), [])
+
     def test_cli_runs_existing_lint_without_weakening_it(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

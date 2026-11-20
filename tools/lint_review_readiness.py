@@ -30,7 +30,11 @@ def truncated_mit_problems(name, text):
     problems = []
     for run in existing.comment_runs(text):
         joined = existing.normalised(' '.join(run))
-        if not re.search(r'\b(?:MIT licen[cs]e|permission is hereby|the software is provided|in no event shall)\b', joined, re.I):
+        # A notice is the licence text itself: its title line or its permission or disclaimer wording.
+        # Prose that merely says code is used "under the MIT licence" is a statement, not a notice.
+        titled = any(re.fullmatch(r'MIT licen[cs]e', line.strip(), re.I) for line in run)
+        if not titled and not re.search(r'\b(?:permission is hereby|the software is provided|in no event shall)\b',
+                                       joined, re.I):
             continue
         start = joined.find(existing.MIT_BODY_START)
         end = joined.find(existing.MIT_BODY_END, max(start, 0))
