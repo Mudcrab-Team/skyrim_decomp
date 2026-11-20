@@ -803,6 +803,10 @@ class Bot:
             # A bare "git failed" hid which command broke; keep the last stderr line and the subcommand.
             lines = result.stderr.decode(errors='replace').strip().splitlines() if name == 'git' else []
             suffix = f' ({" ".join(str(a) for a in argv[1:3])}: {lines[-1][:200]})' if lines else ''
+            if name == 'codex':
+                # codex reports account problems (credits, login) as its last ERROR line; "codex failed" alone hid them.
+                errors = [l for l in result.stderr.decode(errors='replace').splitlines() if l.startswith('ERROR')]
+                suffix = f' ({errors[-1][:200]})' if errors else ''
             raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
 
