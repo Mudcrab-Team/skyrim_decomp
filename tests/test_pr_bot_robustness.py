@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from unittest import mock
 
@@ -442,6 +443,39 @@ class PoolTests(WorkDir):
         bot.process(PR)
         self.assertEqual(held, [True])
         self.assertFalse(bot.land_lock.locked())
+
+    def test_a_merged_pr_without_records_is_retried_and_a_recorded_one_is_not(self):
+        state = self.work / 'state'
+        head = 'c' * 40
+        summary = dict(pr=7, head=head, merge=True, verdicts={'0x10': 'matched', '0x20': 'fail:x'})
+        first = pr_bot.State(state, 7, head)
+        first.set('merged', True)
+        first.set('records', '/r')
+        first.set('summary', summary)
+        other = pr_bot.State(state, 8, 'd' * 40)
+        other.set('merged', True)
+        other.set('records', '/r')
+        other.set('recorded', True)
+        other.set('summary', dict(summary, pr=8, head='d' * 40))
+        unmerged = pr_bot.State(state, 9, 'e' * 40)
+        unmerged.set('summary', dict(summary, pr=9, head='e' * 40))
+        self.assertEqual(pr_bot.merged_unrecorded(state, time.time()), [(7, head, [0x10])])
+        self.assertEqual(pr_bot.merged_unrecorded(state, time.time() + 10 * 86400), [])
+        bot = FakeBot(self.work)
+        bot.gh_json = lambda *a: dict(number=7, headRefOid='z', author=dict(login='x'))
+        seen = []
+        bot.record = lambda pr, st, rvas: (seen.append((pr['headRefOid'], rvas, bot.land_lock.locked())),
+                                           st.set('recorded', True))
+        self.assertEqual(bot.retry_records(state), [7])
+        self.assertEqual(seen, [(head, [0x10], True)])
+        self.assertEqual(bot.retry_records(state), [])
+        failing = pr_bot.State(state, 11, 'f' * 40)
+        failing.set('merged', True)
+        failing.set('records', '/r')
+        failing.set('summary', dict(summary, pr=11, head='f' * 40))
+        bot.record = lambda pr, st, rvas: (_ for _ in ()).throw(pr_bot.Stop('again'))
+        self.assertEqual(bot.retry_records(state), [])
+        self.assertFalse(pr_bot.State(state, 11, 'f' * 40).get('recorded'))
 
     def test_slots_share_the_locks_but_not_the_tree(self):
         bot = FakeBot(self.work)

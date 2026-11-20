@@ -1599,6 +1599,8 @@ class MappingLaneTests(unittest.TestCase):
         status[:] = ['data/target-hashes/contributor-targets.json', 'data/target-hashes/sse-steam-1-7-104-part-003.json',
                      'data/target-hashes/sse-steam-1-7-104.json']
         bot.regenerate(7)
+        # A shard the manifest newly names is untracked; the status must report it or main loses the file.
+        self.assertIn('--untracked-files=all', [c for c in calls if c[:2] == ['git', 'status']][0])
         self.assertTrue(any(c[:2] == ['git', 'push'] for c in calls))
         calls.clear()
         status[:] = ['data/target-hashes/sub/x.json']
