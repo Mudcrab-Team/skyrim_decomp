@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).

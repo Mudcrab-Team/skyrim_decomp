@@ -1,0 +1,197 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/I",
+          "reconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "c13204fedae20172f18671d060a3c8ad6274d22a906cdc04e9314495fc4be3bb",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.cpp",
+          "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "6871664d22b4ba01749559f6873a231b8fa8940a",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "e0f71811dcc6b9c3dc917e76ff2014beabf6ca06",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "86c613a665bffb5eb545c1edb387ea551cf1aa0839a9227fa5998e48899eec7a",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "c84a337d285e299830f68c9a9ebd8a699e22b9abce11b356ef1b35bced32fb95",
+    "os": "windows",
+    "recipe_sha256": "1698d9007b615136ca0b49cc9429352698c68e3ff6b29a322f01b867d3d843d2",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44714637778,
+    "rva": "0x14b7e0",
+    "schema": 2,
+    "source_sha256": "2fc8dbfcb12ae88a675bda1772a37f1cb4f839df1a00e8bfda9e6a40ee9a03ad",
+    "status": "pass",
+    "symbols": [
+      "?Function14b7e0@EffectSetting@@QEBA_NXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "86c613a665bffb5eb545c1edb387ea551cf1aa0839a9227fa5998e48899eec7a",
+      "normalized_sha256": "c84a337d285e299830f68c9a9ebd8a699e22b9abce11b356ef1b35bced32fb95",
+      "rva": 1357792,
+      "size": 31
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x14b7e0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json",
+    "sha256": "1698d9007b615136ca0b49cc9429352698c68e3ff6b29a322f01b867d3d843d2"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "23808aa17ffe3a32027793406cafcaefe24d090d189b9d0a7dd3f8c8f4e68161",
+          "code_sections": 1,
+          "object_sha256": "c13204fedae20172f18671d060a3c8ad6274d22a906cdc04e9314495fc4be3bb"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 31,
+          "code_bytes_total": 31,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 1357792,
+          "size": 31,
+          "symbol": "?Function14b7e0@EffectSetting@@QEBA_NXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/I",
+            "reconstruction"
+          ],
+          "recipe_sha256": "1698d9007b615136ca0b49cc9429352698c68e3ff6b29a322f01b867d3d843d2"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.cpp",
+          "source_revision": "2fc8dbfcb12ae88a675bda1772a37f1cb4f839df1a00e8bfda9e6a40ee9a03ad"
+        },
+        "symbol_map_sha256": "1b2750d441dcedb1055dcb1d38098245715202ece9a97c1f14a020ca2626c35c",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x14b7e0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.cpp",
+    "digest": "2fc8dbfcb12ae88a675bda1772a37f1cb4f839df1a00e8bfda9e6a40ee9a03ad",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.cpp",
+      "reconstruction/skyrim_shared/magic/EffectSetting_14b4f0.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/1b2750d441dcedb1055dcb1d38098245715202ece9a97c1f14a020ca2626c35c.json",
+    "sha256": "1b2750d441dcedb1055dcb1d38098245715202ece9a97c1f14a020ca2626c35c"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

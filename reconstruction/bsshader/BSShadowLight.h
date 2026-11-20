@@ -8,9 +8,14 @@
 #pragma once
 #include <cstdint>
 // Unk_03: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// shadowLightDefault, shadowLightCurrent: GUESS(low); a read-only default at RVA 0x20d9008 copied into a global at RVA 0x34869c0
+extern const std::uint32_t shadowLightDefault;
+extern std::uint32_t shadowLightCurrent;
+
 class BSShadowLight
 {
 public:
+    static void Function155c650();  // compared: 0x155c650
     virtual std::uint8_t Unk_03() const;
     // Unk_04, Unk_06, Unk_08: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     // return type: GUESS(low); the listing returns a zero byte in AL

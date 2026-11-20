@@ -20,6 +20,8 @@ public:
     BSLightingShaderMaterialHairTint();
     virtual ~BSLightingShaderMaterialHairTint();  // compared: 0x1528fb0 (scalar deleting destructor)
     BSLightingShaderMaterialHairTint* Ctor();  // compared: 0x1527050
+    // CopyMembers: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    virtual void CopyMembers(BSShaderMaterial* a_other);  // compared: 0x1527140
 
     double fieldA0;  // A0
     std::uint32_t fieldA8;  // A8

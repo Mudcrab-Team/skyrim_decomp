@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: bodies written from the local listings; names and declarations follow CommonLibSSE-NG.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x1527560 BSLightingShaderMaterialLandscape::Create
 // 0x15279b0 BSLightingShaderMaterialLandscape::GetTextures
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
@@ -52,4 +53,17 @@ std::uint32_t BSLightingShaderMaterialLandscape::GetTextures(NiSourceTexture** a
         a_textures[count++] = extra100;
     }
     return count;
+}
+
+void* BSLightingShaderMaterialLandscape::operator new(std::size_t a_size) throw()
+{
+    if (g_memoryManagerGuard != 2) {
+        InitMemoryManager(&g_memoryManager, &g_memoryManagerGuard);
+    }
+    return g_memoryManager.Allocate(static_cast<std::uint32_t>(a_size), 0, false);
+}
+
+BSShaderMaterial* BSLightingShaderMaterialLandscape::Create()
+{
+    return new BSLightingShaderMaterialLandscape;
 }

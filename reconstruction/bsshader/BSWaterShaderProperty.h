@@ -1,7 +1,8 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
 // the compared functions from the pinned image).
 // BSWaterShaderProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
-// DoClearRenderPasses, SaveBinary, LinkObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// DoClearRenderPasses, SaveBinary, LinkObject, IsEqual: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // waterFlags, unk8C, unk90, unkC0, unkD0: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG declares waterFlags as a 4-byte enumeration, unk8C as std::uint32_t, unk90 and unkD0 as std::uint64_t, unkC0 as BSRenderPass*; this file keeps unk90 and unkD0 as padding
 // unkC8: GUESS(low); the community header names this slot simpleRenderPassList, but the image reads it as a pointer to an entry with a dword key at +0x18, so that name is not used here
 // WaterMaterialEntry, unk000, key, ReleaseWaterEntry, InitScrapHeapGuard, BaseLinkObject, g_scrapHeapInitState: GUESS(low); invented here, the image gives only the offsets and the calls
@@ -53,6 +54,7 @@ public:
 	virtual void DoClearRenderPasses() override;
 	virtual void SaveBinary(NiStream& a_stream) override;
 	virtual void LinkObject(NiStream& a_stream);
+	virtual bool IsEqual(NiObject* a_object) override;
 
 	// BaseLinkObject: GUESS(low); stands in for the inherited LinkObject, which the shared headers do not declare; the image calls it at RVA 0x14e7430
 	void BaseLinkObject(NiStream& a_stream);

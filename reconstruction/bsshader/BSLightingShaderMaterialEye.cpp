@@ -1,6 +1,7 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
+// 0x1525270 BSLightingShaderMaterialEye::Create
 // 0x1525770 BSLightingShaderMaterialEye::SaveBinary
 // 0x15257f0 BSLightingShaderMaterialEye::LoadBinary
 // 0x1525640 BSLightingShaderMaterialEye::ReceiveValuesFromRootMaterial
@@ -62,6 +63,19 @@ BSLightingShaderMaterialEye::BSLightingShaderMaterialEye() : eyeEnvMask{}, eyeCu
     colorC0.blue = NiPoint3::Zero.z;
 }
 
+
+void* BSLightingShaderMaterialEye::operator new(std::size_t a_size) throw()
+{
+    if (g_memoryManagerGuard != 2) {
+        InitMemoryManager(&g_memoryManager, &g_memoryManagerGuard);
+    }
+    return g_memoryManager.Allocate(static_cast<std::uint32_t>(a_size), 0, false);
+}
+
+BSShaderMaterial* BSLightingShaderMaterialEye::Create()
+{
+    return new BSLightingShaderMaterialEye;
+}
 
 void BSLightingShaderMaterialEye::ClearTextures()
 {

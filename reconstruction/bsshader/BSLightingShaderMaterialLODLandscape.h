@@ -17,8 +17,12 @@ public:
     virtual ~BSLightingShaderMaterialLODLandscape();  // compared: 0x1528ff0 (scalar deleting destructor)
     virtual Feature GetFeature() const;  // compared: 0x1527fb0
 
-    // TODO members: replace part of the padding with the members the bodies read,
-    // keeping every offset and the size check true.
-    std::uint8_t unknownA0[0x28];  // A0
+    // unkA0, unkA8, unkB0, unkB8, unkC0, padC4: GUESS(low); storage names invented for the measured offsets
+    std::uint64_t unkA0;      // A0
+    std::uint64_t unkA8;      // A8
+    std::uint64_t unkB0;      // B0
+    std::uint64_t unkB8;      // B8
+    std::uint32_t unkC0;      // C0
+    std::uint32_t padC4;      // C4
 };
 static_assert(sizeof(BSLightingShaderMaterialLODLandscape) == 0xC8, "BSLightingShaderMaterialLODLandscape size");

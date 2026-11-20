@@ -193,6 +193,8 @@ class RelativeIncludeTests(unittest.TestCase):
             header = root / 'reconstruction/gamebryo/nimain/NiObject.h'
             header.write_text('// header\n')
             printed = str(root / 'reconstruction/skyrim/ai/../../gamebryo/nimain/NiObject.h').lower()
+            if not os.path.exists(printed):
+                self.skipTest('case-sensitive file system: a lower-cased path opens nothing')
             repo_files = []
             rest = contrib.fold_case_includes([printed], root, ['reconstruction/gamebryo/nimain/NiObject.h'],
                                               repo_files)

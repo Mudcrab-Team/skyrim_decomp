@@ -10,6 +10,30 @@
 #include <cstdint>
 #include "../gamebryo/nimain/NiRefObject.h"
 
+// ArrayStorage, ArraySize, ShadowArray, FreeArrayStorage: GUESS(low); a stand-in for a dynamic array modelled as its
+// allocator part (data pointer and capacity) and its size part at offset 0x10, each with an empty out-of-line destructor
+struct ArrayStorage
+{
+    ~ArrayStorage();
+    void* data;  // 00
+    std::uint32_t capacity;  // 08
+    std::uint32_t pad0C;  // 0C
+};
+
+struct ArraySize
+{
+    ~ArraySize();
+    std::uint32_t size;  // 00
+    std::uint32_t pad04;  // 04
+};
+
+struct ShadowArray : public ArrayStorage, public ArraySize
+{
+    ~ShadowArray();
+};
+
+void FreeArrayStorage(ShadowArray* a_array);
+
 class BSLight : public NiRefObject
 {
 public:
