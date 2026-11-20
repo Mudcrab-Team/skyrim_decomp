@@ -94,6 +94,8 @@ GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/pro
 TARGET_HASH_DIR = 'data/target-hashes/'
 REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
 REFILL_EVERY = 3600  # seconds between looks at that count
+RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
 
 def is_generated(name):
@@ -1874,7 +1876,8 @@ class Bot:
             self.run([sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table],
                      cwd=self.tree, timeout=1800)
             self.run([sys.executable, 'tools/target_hashes.py', '--image', image], cwd=self.tree, timeout=1800)
-            names = self.run(['git', 'status', '--porcelain', '--untracked-files=no'],
+            # A new shard is untracked; leaving it out committed a manifest that named a missing file.
+            names = self.run(['git', 'status', '--porcelain', '--untracked-files=all'],
                              cwd=self.tree).stdout.decode().splitlines()
             changed = {line[3:] for line in names}
             if not all(map(is_generated, changed)):
@@ -1889,6 +1892,21 @@ class Bot:
             if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
                 return
         raise Stop('push of the regenerated files kept losing the race; retry next tick')
+
+    def retry_records(self, directory):
+        """Run the record step again for PRs that merged but were not recorded. Returns the PR numbers recorded."""
+        recorded = []
+        for number, head, rvas in merged_unrecorded(directory, time.time()):
+            pr = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
+            pr['headRefOid'] = head
+            with self.land_lock:
+                try:
+                    self.record(pr, State(directory, number, head), rvas)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
+                    print(f'{stamp()} pr {number}: record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+                    continue
+            recorded.append(number)
+        return recorded
 
     def settle_ci_debt(self, host1):
         """`preexisting-fail` is debt only for a function that was matched at base.
@@ -2039,6 +2057,13 @@ class Bot:
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
         self.run(['git', 'checkout', '--quiet', '--force', '-B', 'record', 'origin/main'], cwd=self.tree)
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+        # A retry after a partial record must not offer what is already matched on main.
+        inventory = json.loads((self.tree / 'data/progress.json').read_text())
+        matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
+        rvas = [r for r in rvas if r not in matched]
+        if not rvas:
+            state.set('recorded', True)
+            return
         review = Path(self.work / 'reviews' / f'pr{pr["number"]}-{pr["headRefOid"][:12]}.txt')
         argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--push',
                 '--task-id', f'pr-bot-{pr["number"]}-{pr["headRefOid"][:8]}', '--author', pr['author']['login'],
@@ -2051,6 +2076,29 @@ class Bot:
             tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
             raise Stop(f'record step failed after the merge: {tail[0][:300]}')
         state.set('recorded', True)
+
+
+def merged_unrecorded(directory, now, max_age=RECORD_RETRY_WINDOW):
+    """State files of PRs that merged but whose record step has not completed, newest first.
+
+    Each is (number, head, rvas): the PR is no longer open, so the poll loop never lists it again and a
+    record step that failed after the merge would otherwise be dropped.
+    """
+    found = []
+    for path in Path(directory).glob('pr*-*.json'):
+        try:
+            if now - path.stat().st_mtime > max_age:
+                continue
+            data = json.loads(path.read_text())
+        except (OSError, ValueError):
+            continue
+        summary = data.get('summary') or {}
+        if not data.get('merged') or data.get('recorded') or not summary.get('merge') or not data.get('records'):
+            continue
+        rvas = sorted(int(r, 16) for r, v in (summary.get('verdicts') or {}).items() if v == 'matched')
+        if rvas and summary.get('head') and summary.get('pr'):
+            found.append((path.stat().st_mtime, summary['pr'], summary['head'], rvas))
+    return [row[1:] for row in sorted(found, reverse=True)]
 
 
 def pollable(prs):
@@ -2125,6 +2173,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
     refilled = None
+    retried = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -2145,6 +2194,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     print(f'{stamp()} offered window: {left} claimable left', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if not bot.dry_run and not inflight and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
+                retried = time.time()
+                try:
+                    for number in bot.for_slot(0).retry_records(directory):
+                        print(f'{stamp()} pr {number}: records landed on retry', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
