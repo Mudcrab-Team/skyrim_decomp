@@ -189,7 +189,9 @@ no model effort; none of them shortens the large functions, where only technique
 - **alandtse/CommonLibSSE-NG, the VR address library's names, nif.xml**: not approved (the
   approval names powerof3 only); not a naming source until section 6 is answered.
 - **Leaked source, unofficial PDBs, proprietary SDKs, middleware source**: never acquired, used
-  or named (`LEGAL.md`).
+  or named (`LEGAL.md`). The one exception is the community-generated CrashLogger PDB (Nexus mod 59818): its
+  generated output is committed in `reconstruction/generated/crashlogger_pdb/` and labelled
+  `CRASHLOGGER_PDB(59818@<version>)`; the `.pdb` itself is never committed.
 - **Copying code** from a community header (inline helpers, wrappers, comments). Names,
   declarations, slot numbers and sizes are used; implementations are written from the image.
 - **Decompiler output as source**, and any game-derived listing, hash or address table in a
