@@ -21,8 +21,24 @@ def local_path(root, path, env=None):
     """Resolve repo-relative paths, relocating only paths under the default .local root."""
     path = Path(path)
     if not path.is_absolute() and path.parts[:1] == ('.local',):
-        return local_dir(root, env) / Path(*path.parts[1:])
+        own = local_dir(root, env) / Path(*path.parts[1:])
+        return own if own.exists() else fallback_local_path(root, own, path, env)
     return path if path.is_absolute() else Path(root) / path
+
+
+def fallback_local_path(root, own, path, env=None):
+    """`own` when the main checkout's .local has nothing better, else the main checkout's copy.
+
+    Only without SR_LOCAL_DIR: an override is the intended store. A linked worktree whose own
+    .local holds some files still lacks sources and tasks created once in the main checkout.
+    """
+    if (os.environ if env is None else env).get('SR_LOCAL_DIR'):
+        return own
+    main = main_checkout_local(root)
+    if main is None:
+        return own
+    theirs = main / Path(*Path(path).parts[1:])
+    return theirs if theirs.exists() else own
 
 
 def no_sibling_names(env=None):
@@ -36,9 +52,19 @@ def main_worktree_local(root):
     otherwise look empty. None when `root` is the main worktree, is not a git checkout, or has its
     own .local (then that one is the intended private store).
     """
-    root = Path(root)
-    if (root / '.local').exists():
+    if (Path(root) / '.local').exists():
         return None
+    return main_checkout_local(root)
+
+
+def main_checkout_local(root):
+    """The main checkout's .local when `root` is a linked git worktree, else None.
+
+    Found through `git rev-parse --git-common-dir`. A worktree that already has some private
+    files of its own still lacks toolchains set up once in the main checkout, so tools fall back
+    to this directory per resource.
+    """
+    root = Path(root)
     try:
         proc = subprocess.run(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir', '--git-dir'],
                               cwd=root, capture_output=True, text=True, timeout=20)

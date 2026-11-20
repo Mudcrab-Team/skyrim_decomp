@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?LoadBinary@NiPSysVortexFieldModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16498768,
+      "size": 43
+    },
+    "?SaveBinary@NiPSysVortexFieldModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16498864,
+      "size": 43
+    },
+    "??_GNiPSysVortexFieldModifier@@UEAAPEAXI@Z": {
+      "rva": 16502720,
+      "size": 52
+    },
+    "?LoadBinary@NiPSysFieldModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16518672,
+      "size": null
+    },
+    "?LoadTriple@NiPoint3@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15581104,
+      "size": null
+    },
+    "?SaveBinary@NiPSysFieldModifier@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16519024,
+      "size": null
+    },
+    "?SaveTriple@NiPoint3@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15581296,
+      "size": null
+    },
+    "??1NiPSysModifier@@UEAA@XZ": {
+      "rva": 16388960,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?LoadBinary@NiPSysVortexFieldModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfbc050",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPSysVortexFieldModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfbc0b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GNiPSysVortexFieldModifier@@UEAAPEAXI@Z",
+        "rva": "0xfbcfc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiPSysFieldModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfc0e10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadTriple@NiPoint3@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xedbfb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPSysFieldModifier@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfc0f70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveTriple@NiPoint3@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xedc070",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiPSysModifier@@UEAA@XZ",
+        "rva": "0xfa1360",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

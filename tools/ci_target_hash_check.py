@@ -75,6 +75,11 @@ def prepare(root, base, head, work):
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only = [], set()
+    names = [diff[i + 1].decode('utf-8') for i in range(0, len(diff) - 1, 2)]
+    if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
+        # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
+        # trusted-base sample runs instead, as for a PR that changes only CI inputs.
+        return root, []
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
         if not contrib.UNIT_PATH.fullmatch(name):

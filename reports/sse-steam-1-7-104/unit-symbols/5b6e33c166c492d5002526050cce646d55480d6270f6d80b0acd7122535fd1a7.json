@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?InitializeData@BGSReverbParameters@@UEAAXXZ": {
+      "rva": 3312624,
+      "size": 22
+    },
+    "?DoGetRoomLevel@BGSReverbParameters@@UEBAHXZ": {
+      "rva": 3313248,
+      "size": 8
+    },
+    "?DoGetRoomHFLevel@BGSReverbParameters@@UEBAHXZ": {
+      "rva": 3313264,
+      "size": 8
+    },
+    "?DoGetDecayTime@BGSReverbParameters@@UEBAMXZ": {
+      "rva": 3313280,
+      "size": 20
+    },
+    "?DoGetDecayHFRatio@BGSReverbParameters@@UEBAMXZ": {
+      "rva": 3313312,
+      "size": 20
+    },
+    "?DoGetReflectionLevel@BGSReverbParameters@@UEBAHXZ": {
+      "rva": 3313344,
+      "size": 8
+    },
+    "?DoGetReflectionDelay@BGSReverbParameters@@UEBAMXZ": {
+      "rva": 3313360,
+      "size": 20
+    },
+    "?DoGetReverbLevel@BGSReverbParameters@@UEBAHXZ": {
+      "rva": 3313392,
+      "size": 8
+    },
+    "?DoGetDiffusion@BGSReverbParameters@@UEBAMXZ": {
+      "rva": 3313440,
+      "size": 12
+    },
+    "?DoGetDensity@BGSReverbParameters@@UEBAMXZ": {
+      "rva": 3313472,
+      "size": 12
+    },
+    "?DoGetHFReference@BGSReverbParameters@@UEBAMXZ": {
+      "rva": 3313504,
+      "size": 12
+    },
+    "?decayTimeScale@@3MB": {
+      "rva": 28687812,
+      "size": null
+    },
+    "?decayHFRatioScale@@3MB": {
+      "rva": 28687824,
+      "size": null
+    },
+    "?reflectionDelayScale@@3MB": {
+      "rva": 25381704,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?InitializeData@BGSReverbParameters@@UEAAXXZ",
+        "rva": "0x328bf0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetRoomLevel@BGSReverbParameters@@UEBAHXZ",
+        "rva": "0x328e60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetRoomHFLevel@BGSReverbParameters@@UEBAHXZ",
+        "rva": "0x328e70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetDecayTime@BGSReverbParameters@@UEBAMXZ",
+        "rva": "0x328e80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetDecayHFRatio@BGSReverbParameters@@UEBAMXZ",
+        "rva": "0x328ea0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetReflectionLevel@BGSReverbParameters@@UEBAHXZ",
+        "rva": "0x328ec0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetReflectionDelay@BGSReverbParameters@@UEBAMXZ",
+        "rva": "0x328ed0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetReverbLevel@BGSReverbParameters@@UEBAHXZ",
+        "rva": "0x328ef0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetDiffusion@BGSReverbParameters@@UEBAMXZ",
+        "rva": "0x328f20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetDensity@BGSReverbParameters@@UEBAMXZ",
+        "rva": "0x328f40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoGetHFReference@BGSReverbParameters@@UEBAMXZ",
+        "rva": "0x328f60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?decayTimeScale@@3MB",
+        "rva": "0x1b5bdc4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?decayHFRatioScale@@3MB",
+        "rva": "0x1b5bdd0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?reflectionDelayScale@@3MB",
+        "rva": "0x1834b48",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "2a8465c357ca7f437391d281e269cc993aaa815a55b315ce7266cb9907de2a52",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/gamebryo/nianimation/NiBSplineInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.cpp",
+          "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.h",
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "d3ecab108d6146fb7e96611d42eef84e44c871f2",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "1809003739f109e6c37a47f7b00b419a510ae24b",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "e11354508d0a7b51d26580793b7d90355a170398409c36675da0a93afafe648d",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "4eccb148e6e1418788c69fbd497970870c5d92bc41d4c1be0ebe34691eade20e",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44722309017,
+    "rva": "0xf7b030",
+    "schema": 2,
+    "source_sha256": "b2113cc4a7905ecd218ea60f253b8593d2b61d8963198dbfa86f511e30f4ed44",
+    "status": "pass",
+    "symbols": [
+      "?GetChannelHandle@NiBSplinePoint3Interpolator@@QEBAIG@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "e11354508d0a7b51d26580793b7d90355a170398409c36675da0a93afafe648d",
+      "normalized_sha256": "4eccb148e6e1418788c69fbd497970870c5d92bc41d4c1be0ebe34691eade20e",
+      "rva": 16232496,
+      "size": 14
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xf7b030",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "640212bf87721d982c221f04be2910041ea1bddee92f4f41fff9a8f6adbdbf68",
+          "code_sections": 1,
+          "object_sha256": "2a8465c357ca7f437391d281e269cc993aaa815a55b315ce7266cb9907de2a52"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 14,
+          "code_bytes_total": 14,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16232496,
+          "size": 14,
+          "symbol": "?GetChannelHandle@NiBSplinePoint3Interpolator@@QEBAIG@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.cpp",
+          "source_revision": "b2113cc4a7905ecd218ea60f253b8593d2b61d8963198dbfa86f511e30f4ed44"
+        },
+        "symbol_map_sha256": "4e1a2a01cdb74d837272b64373a731f0287131e93f81c9e16014fb7ed225dd37",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xf7b030"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.cpp",
+    "digest": "b2113cc4a7905ecd218ea60f253b8593d2b61d8963198dbfa86f511e30f4ed44",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/gamebryo/nianimation/NiBSplineInterpolator.h",
+      "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.cpp",
+      "reconstruction/gamebryo/nianimation/NiBSplinePoint3Interpolator_f7ab50.h",
+      "reconstruction/gamebryo/nianimation/NiInterpolator.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/4e1a2a01cdb74d837272b64373a731f0287131e93f81c9e16014fb7ed225dd37.json",
+    "sha256": "4e1a2a01cdb74d837272b64373a731f0287131e93f81c9e16014fb7ed225dd37"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

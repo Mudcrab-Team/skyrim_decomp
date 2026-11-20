@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0D@BSImagespaceShaderRadialBlurHigh@@QEAAPEAPEBXPEAPEBX@Z": {
+      "rva": 22065216,
+      "size": 35
+    },
+    "?g_radialBlurBinding@@3QBDB": {
+      "rva": 28536944,
+      "size": null
+    },
+    "?g_radialBlurHighBinding2@@3QBDB": {
+      "rva": 28537596,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0D@BSImagespaceShaderRadialBlurHigh@@QEAAPEAPEBXPEAPEBX@Z",
+        "rva": "0x150b040",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_radialBlurBinding@@3QBDB",
+        "rva": "0x1b37070",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_radialBlurHighBinding2@@3QBDB",
+        "rva": "0x1b372fc",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

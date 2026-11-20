@@ -18,6 +18,19 @@
 
 class NiBound;
 
+// BatchRendererStandIn, RenderPassGroup: GUESS(low); the object at 0x130 as far as the compared bodies read it
+struct RenderPassGroup
+{
+    std::uint8_t unknown00[0x24];  // 00
+    std::uint16_t passCount;  // 24
+};
+
+struct BatchRendererStandIn
+{
+    std::uint8_t unknown00[0x70];  // 00
+    void* groups[1];  // 70, indexed by group number
+};
+
 // Only the nested type is needed here; the rest of the community BSBatchRenderer is not modelled.
 class BSBatchRenderer
 {
@@ -58,6 +71,13 @@ public:
     virtual void FinishAccumulatingPostResolveDepth(std::uint32_t flags);  // compared: 0x151ef00
 
     void PrepareDepth();
+
+    // Function1520c90, Function15209f0, Function15213e0, Function1521150, Function1521170: GUESS(low); invented names
+    void Function1520c90(std::int32_t a_index);  // compared: 0x1520c90
+    std::uint16_t Function15209f0();  // compared: 0x15209f0
+    void Function15213e0(std::uint32_t a_flag);  // compared: 0x15213e0
+    void Function1521150();  // compared: 0x1521150
+    static bool Function1521170(std::uint32_t a_value);  // compared: 0x1521170
 
     // Members used by the compared bodies, split out of the padding; offsets are checked by the size assert.
     std::uint8_t unknown58[0xD8];  // 58

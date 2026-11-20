@@ -6,7 +6,10 @@ Open a PR that touches only `reconstruction/**`; checks run; the bot reviews and
 
 Aim for about 20-60 functions per PR (60 is the per-PR cap), or fewer if they are large; one
 big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
-per class, since each PR costs a full verification and merge cycle.
+per class, since each PR costs a full verification and merge cycle. `submit <task> <task>...` (or
+`submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
+`next --class REGEX` ranks only classes whose name matches, and `claim ... --skip-conflicts` claims
+the functions nobody holds and names the others with their claim issues.
 
 Read only the private pack named by the helper, after the owner has agreed to model exposure.
 Never post listings, pseudo-C, Ghidra projects, bytes, objects, raw diagnostics or paths. Keep the
@@ -39,7 +42,10 @@ Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
   `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. One label per line.
 - Includes: own header `#include "X.h"`; shared headers by reconstruction-root path such as
-  `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. Parent steps and host paths are refused.
+  `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. A relative path with `..` is fine when it
+  resolves to a regular file inside the repository; host paths and paths that leave it are refused.
+- `compare` builds with the recipe the unit's own `Recipe:` line names (the first `reconstruction/recipes/*.json`
+  path in the source), as CI does, and with the task's recipe when the unit names none.
 - Declare, do not define, a function the target calls; `compare` binds the call.
 - Write assignments in the order the listing stores them; keep a repeated null test as a repeat read.
 - `static_assert` needs a message.

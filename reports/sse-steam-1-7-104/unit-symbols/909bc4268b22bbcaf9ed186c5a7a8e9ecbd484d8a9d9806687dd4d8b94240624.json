@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetBaseTexture@BSDistantTreeShaderProperty@@UEAAPEAVNiSourceTexture@@XZ": {
+      "rva": 22384304,
+      "size": 8
+    },
+    "?SetupGeometry@BSDistantTreeShaderProperty@@UEAA_NPEAVBSGeometry@@@Z": {
+      "rva": 22383792,
+      "size": 3
+    },
+    "?Function1558dc0@BSDistantTreeShaderProperty@@QEAAXXZ": {
+      "rva": 22384064,
+      "size": 10
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetBaseTexture@BSDistantTreeShaderProperty@@UEAAPEAVNiSourceTexture@@XZ",
+        "rva": "0x1558eb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetupGeometry@BSDistantTreeShaderProperty@@UEAA_NPEAVBSGeometry@@@Z",
+        "rva": "0x1558cb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1558dc0@BSDistantTreeShaderProperty@@QEAAXXZ",
+        "rva": "0x1558dc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -10,6 +10,22 @@
 #include <cstdint>
 #include "../gamebryo/nimain/NiRefObject.h"
 
+// NiRefObjectInline: GUESS(low); a stand-in for the reference-counted root whose destructor body is visible to this unit
+class NiRefObjectInline
+{
+public:
+    NiRefObjectInline();
+    virtual ~NiRefObjectInline();
+    std::uint8_t unknown08[0x8];  // 08
+};
+
+// ShadowRefLeaf: GUESS(low); a leaf class deriving directly from the reference-counted root with an empty destructor
+class ShadowRefLeaf : public NiRefObjectInline
+{
+public:
+    ~ShadowRefLeaf();
+};
+
 class BSLight : public NiRefObject
 {
 public:

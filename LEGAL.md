@@ -51,13 +51,14 @@ decompiler output, objects, or leaked or proprietary material. Following FNV's m
 publication is not by itself a licence to reuse FNV's material; reuse rests on the separate
 decision below.
 
+**Project licensing.** See `LICENSE`: CC0 1.0 for project-authored reconstructions, docs and research, with per-file exceptions.
+
 **Sibling decompilation (FNV): maintainer decision.** The maintainer (awarebayes) has decided
 that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `91e1b6e8` may be
 read by Engineers and Drafters and that its names, declarations and code may be reused in
 reconstructions, including published ones, where they fit the Skyrim target
 (`docs/authorizations.md`, Notes). The facts the maintainer weighed are stated plainly here: that
-repository's `LICENSE` says no licence is granted, its contributors grant none for their own
-contributions, and its README tags some names as coming from an Xbox 360 development-build PDB and
+repository is licensed CC0 1.0 (earlier revisions said no licence was granted), and its README tags some names as coming from an Xbox 360 development-build PDB and
 from Havok and Gamebryo source. The decision is the maintainer's policy choice, not a legal
 opinion. Everything taken is labelled with its origin (`SIBLING(...)`, `docs/drafter-card.md`)
 and a reused body is cited in the unit header, so it can be found and removed if a rights holder
@@ -75,7 +76,7 @@ and pin in `docs/authorizations.md`. Its Havok, HavokLib, Scaleform, SDK and Gam
 vendor-derived material elsewhere and mixed generated aggregates are excluded. Everything
 reused is labelled `SIBLING(fo4-private@1b765c70, author-permission)` and each reused body has
 an anonymous unit-header source/path/line citation. This permission is not a general licence
-or a grant of third-party rights, and is not covered by this repository's infrastructure licence.
+or a grant of third-party rights, and is not dedicated under this repository's CC0 licence (`LICENSE`).
 The upstream repository, owner/author identities, URL and product nickname must never appear
 in tracked files, commit messages, CI or any file under `reconstruction/`; use only
 `fo4-private` and keep the real mapping under `.local/`. The local publication guard uses a
@@ -89,9 +90,10 @@ Each function is published only once accepted under the acceptance rule in
 `docs/verification.md`, which includes provenance review by an admitted Reviewer under the
 individual or family procedure, with provenance or legal doubt escalated to the maintainer. The copyright status of reconstructed
 implementations is not settled by matching bytes or withholding binaries.
-Nothing in this repository grants third-party rights. See `LICENSE` for the narrow infrastructure
-license; do not label the entire repository MIT. Material reused from FNV under the decision
-above carries no licence from its authors and is not covered by this repository's licence.
+Nothing in this repository grants third-party rights. See `LICENSE` for the scope (CC0 for project-authored
+reconstructions, docs and research; MIT for infrastructure; per-file exceptions); do not label the
+entire repository MIT or CC0. Material reused from FNV under the decision above comes from a CC0
+project; it is labelled `SIBLING(...)` for provenance.
 Contributor authorship alone does not establish rights to all underlying material.
 
 US law distinguishes ideas/methods from protected expression in [17 USC 102(b)](https://www.law.cornell.edu/uscode/text/17/102).
@@ -117,7 +119,7 @@ route on that profile; do not post the confidential content to this repository. 
 binaries, dumps, proprietary source or credentials. The maintainer will investigate and can
 restrict or remove disputed material. This does not promise a legal outcome or response deadline.
 
-The original infrastructure is provided without warranty under its scoped MIT license. No
+The original infrastructure is provided without warranty under its scoped MIT license (reconstructions and docs: CC0 1.0, also without warranty). No
 warranty is made that research is accurate, complete, safe for saves, or suitable for gameplay.
 
 ## Verified CI toolchain cache: maintainer authorization

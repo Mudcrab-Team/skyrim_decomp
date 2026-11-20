@@ -320,14 +320,28 @@ public:
 static_assert(sizeof(BSLightingShaderMaterialBase) == 0xA0, "layout");
 
 
+// MemoryManager: STANDIN GUESS(low); the allocator object the image reads at 0x369a810, with its once-init guard at 0x369ac98
+class MemoryManager
+{
+public:
+    void* Allocate(std::uint32_t a_size, std::int32_t a_alignment, bool a_alignmentRequired);  // 0xcde250
+};
+// g_memoryManager, g_memoryManagerGuard, InitMemoryManager: GUESS(low)
+extern MemoryManager g_memoryManager;
+extern std::int32_t  g_memoryManagerGuard;
+void InitMemoryManager(MemoryManager* a_manager, std::int32_t* a_guard);  // 0xcde810
+
 class BSLightingShaderMaterialEye : public BSLightingShaderMaterialBase
 {
 public:
+    static void* operator new(std::size_t a_size) throw();
+    BSShaderMaterial* Create() override;  // compared: 0x1525270
     Feature GetFeature() const override;
     virtual void SaveBinary(NiStream& a_stream);  // compared: 0x1525770
     virtual void LoadBinary(NiStream& a_stream);  // compared: 0x15257f0
     virtual void ReceiveValuesFromRootMaterial(bool a_skinned, bool a_rimLighting, bool a_softLighting, bool a_backLighting, bool a_MSN, std::uintptr_t a_extra1, std::uintptr_t a_extra2);  // compared: 0x1525640
-    BSLightingShaderMaterialEye();  // compared: 0x15250e0
+    // the image's Create calls this constructor at its own address, so it stays a separate function
+    __declspec(noinline) BSLightingShaderMaterialEye();  // compared: 0x15250e0
     std::uint32_t ComputeCRC32(std::uint32_t a_crcSeed) override;  // compared: 0x15253e0
     void ClearTextures() override;  // compared: 0x15255c0
 

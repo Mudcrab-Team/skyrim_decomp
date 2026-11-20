@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function14b4f0@EffectSetting@@QEBAPEAVTESForm@@XZ": {
+      "rva": 1357040,
+      "size": 18
+    },
+    "?HasKeyword@EffectSetting@@UEBA_NPEBVBGSKeyword@@@Z": {
+      "rva": 1357072,
+      "size": 84
+    },
+    "?Function14b6a0@EffectSetting@@QEBAPEAVBGSProjectile@@_N@Z": {
+      "rva": 1357472,
+      "size": 35
+    },
+    "?Function14b6d0@EffectSetting@@QEBAPEAUBGSExplosion@@_N@Z": {
+      "rva": 1357520,
+      "size": 35
+    },
+    "?Function14b740@EffectSetting@@QEBAPEAVBGSArtObject@@_N@Z": {
+      "rva": 1357632,
+      "size": 53
+    },
+    "?Function14b780@EffectSetting@@QEBAPEAVBGSImpactDataSet@@_N@Z": {
+      "rva": 1357696,
+      "size": 35
+    },
+    "?Function14b7b0@EffectSetting@@QEBA_NXZ": {
+      "rva": 1357744,
+      "size": 31
+    },
+    "?Function14b7e0@EffectSetting@@QEBA_NXZ": {
+      "rva": 1357792,
+      "size": 31
+    },
+    "?Function14b810@EffectSetting@@QEBA_NXZ": {
+      "rva": 1357840,
+      "size": 34
+    },
+    "?Function14b840@EffectSetting@@QEBA_NXZ": {
+      "rva": 1357888,
+      "size": 35
+    },
+    "?Function14b870@EffectSetting@@QEBA_NXZ": {
+      "rva": 1357936,
+      "size": 26
+    },
+    "?Function14b890@EffectSetting@@QEBA_NPEAVTESObjectREFR@@0@Z": {
+      "rva": 1357968,
+      "size": 12
+    },
+    "?HasKeyword@BGSKeywordForm@@UEBA_NPEBVBGSKeyword@@@Z": {
+      "rva": 1935840,
+      "size": null
+    },
+    "?archetypes@@3QBUArchetypeEntry@@B": {
+      "rva": 34037808,
+      "size": null
+    },
+    "?IsTrue@TESCondition@@QEBA_NPEAVTESObjectREFR@@0@Z": {
+      "rva": 4877856,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function14b4f0@EffectSetting@@QEBAPEAVTESForm@@XZ",
+        "rva": "0x14b4f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?HasKeyword@EffectSetting@@UEBA_NPEBVBGSKeyword@@@Z",
+        "rva": "0x14b510",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b6a0@EffectSetting@@QEBAPEAVBGSProjectile@@_N@Z",
+        "rva": "0x14b6a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b6d0@EffectSetting@@QEBAPEAUBGSExplosion@@_N@Z",
+        "rva": "0x14b6d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b740@EffectSetting@@QEBAPEAVBGSArtObject@@_N@Z",
+        "rva": "0x14b740",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b780@EffectSetting@@QEBAPEAVBGSImpactDataSet@@_N@Z",
+        "rva": "0x14b780",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b7b0@EffectSetting@@QEBA_NXZ",
+        "rva": "0x14b7b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b7e0@EffectSetting@@QEBA_NXZ",
+        "rva": "0x14b7e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b810@EffectSetting@@QEBA_NXZ",
+        "rva": "0x14b810",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b840@EffectSetting@@QEBA_NXZ",
+        "rva": "0x14b840",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b870@EffectSetting@@QEBA_NXZ",
+        "rva": "0x14b870",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14b890@EffectSetting@@QEBA_NPEAVTESObjectREFR@@0@Z",
+        "rva": "0x14b890",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?HasKeyword@BGSKeywordForm@@UEBA_NPEBVBGSKeyword@@@Z",
+        "rva": "0x1d89e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?archetypes@@3QBUArchetypeEntry@@B",
+        "rva": "0x2076030",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsTrue@TESCondition@@QEBA_NPEAVTESObjectREFR@@0@Z",
+        "rva": "0x4a6e20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

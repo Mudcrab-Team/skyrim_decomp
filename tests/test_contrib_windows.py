@@ -116,7 +116,8 @@ class ToolchainCacheTests(unittest.TestCase):
             return subprocess.CompletedProcess(cmd, 0, '', '')
         ctx = contrib.Ctx(repo=ROOT, platform='win32', env={'PATH': ''}, as_json=True, private=self.private,
                           runner=runner)
-        with unittest.mock.patch.object(contrib, 'recipe_constants', return_value=pins):
+        with unittest.mock.patch.object(contrib, 'recipe_constants', return_value=pins), \
+                unittest.mock.patch.object(contrib, 'main_checkout_local', return_value=None):
             try:
                 result = contrib.install_toolchain(ctx, accept=True)
             except contrib.Stop as exc:

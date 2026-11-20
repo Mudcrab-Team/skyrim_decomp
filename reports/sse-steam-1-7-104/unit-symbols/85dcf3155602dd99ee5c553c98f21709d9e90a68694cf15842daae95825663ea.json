@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RegisterStreamables@NiPoint3Interpolator@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 16271936,
+      "size": 70
+    },
+    "?SaveBinary@NiPoint3Interpolator@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16272016,
+      "size": 57
+    },
+    "??0NiPoint3Interpolator@@QEAA@AEBVNiPoint3@@@Z": {
+      "rva": 16272544,
+      "size": 71
+    },
+    "?SetPoseValue@NiPoint3Interpolator@@QEAAXAEBVNiPoint3@@@Z": {
+      "rva": 16272944,
+      "size": 82
+    },
+    "?GetKeyCount@NiPoint3Interpolator@@QEBAIG@Z": {
+      "rva": 16273056,
+      "size": 14
+    },
+    "?GetKeyType@NiPoint3Interpolator@@QEBA?AW4KeyType@@G@Z": {
+      "rva": 16273088,
+      "size": 14
+    },
+    "?GetKeyArray@NiPoint3Interpolator@@QEBAPEAXG@Z": {
+      "rva": 16273136,
+      "size": 15
+    },
+    "?GetKeyStride@NiPoint3Interpolator@@QEBAEG@Z": {
+      "rva": 16273168,
+      "size": 15
+    },
+    "?GetChannelPosed@NiPoint3Interpolator@@QEBA_NG@Z": {
+      "rva": 16273200,
+      "size": 55
+    },
+    "?GuaranteeTimeRange@NiPoint3Interpolator@@QEAAXMM@Z": {
+      "rva": 16273616,
+      "size": 14
+    },
+    "?RegisterKeyBasedStreamables@@YA_NAEAVNiKeyBasedInterpolator@@AEAVNiStream@@@Z": {
+      "rva": 16180688,
+      "size": null
+    },
+    "?SaveKeyBasedBinary@@YAXAEAVNiKeyBasedInterpolator@@AEAVNiStream@@@Z": {
+      "rva": 16180704,
+      "size": null
+    },
+    "?SavePoseBinary@@YAXAEBVNiPoint3@@AEAVNiStream@@@Z": {
+      "rva": 15581296,
+      "size": null
+    },
+    "??0NiKeyBasedInterpolator@@QEAA@XZ": {
+      "rva": 16181696,
+      "size": null
+    },
+    "??_7NiPoint3Interpolator@@6B@": {
+      "rva": 27634312,
+      "size": null
+    },
+    "?invalidPose@@3VNiPoint3@@B": {
+      "rva": 34403008,
+      "size": null
+    },
+    "?GuaranteeNiPosDataTimeRange@@YAXAEAVNiPosData@@MM@Z": {
+      "rva": 16193856,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RegisterStreamables@NiPoint3Interpolator@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xf84a40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPoint3Interpolator@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf84a90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiPoint3Interpolator@@QEAA@AEBVNiPoint3@@@Z",
+        "rva": "0xf84ca0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetPoseValue@NiPoint3Interpolator@@QEAAXAEBVNiPoint3@@@Z",
+        "rva": "0xf84e30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetKeyCount@NiPoint3Interpolator@@QEBAIG@Z",
+        "rva": "0xf84ea0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetKeyType@NiPoint3Interpolator@@QEBA?AW4KeyType@@G@Z",
+        "rva": "0xf84ec0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetKeyArray@NiPoint3Interpolator@@QEBAPEAXG@Z",
+        "rva": "0xf84ef0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetKeyStride@NiPoint3Interpolator@@QEBAEG@Z",
+        "rva": "0xf84f10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetChannelPosed@NiPoint3Interpolator@@QEBA_NG@Z",
+        "rva": "0xf84f30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GuaranteeTimeRange@NiPoint3Interpolator@@QEAAXMM@Z",
+        "rva": "0xf850d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterKeyBasedStreamables@@YA_NAEAVNiKeyBasedInterpolator@@AEAVNiStream@@@Z",
+        "rva": "0xf6e5d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveKeyBasedBinary@@YAXAEAVNiKeyBasedInterpolator@@AEAVNiStream@@@Z",
+        "rva": "0xf6e5e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SavePoseBinary@@YAXAEBVNiPoint3@@AEAVNiStream@@@Z",
+        "rva": "0xedc070",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiKeyBasedInterpolator@@QEAA@XZ",
+        "rva": "0xf6e9c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiPoint3Interpolator@@6B@",
+        "rva": "0x1a5aa88",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?invalidPose@@3VNiPoint3@@B",
+        "rva": "0x20cf2c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GuaranteeNiPosDataTimeRange@@YAXAEAVNiPosData@@MM@Z",
+        "rva": "0xf71940",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

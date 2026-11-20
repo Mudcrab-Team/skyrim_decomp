@@ -1,0 +1,197 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "8beae8287dd238bde89d70d16ba7d0262309cca82b4113710c2f915ef93b4964",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h",
+          "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.cpp",
+          "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.h",
+          "reconstruction/gamebryo/nianimation/NiStream.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "60b1a104c234ad72d54fb06ce48c050145b0fc5e",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "10046a84e454a05d00b647025a144ec42c246721",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "6eb806ccfa55b6c3ae972f1e5d436adf1eeceb7050b8824f8fbf5fb93efc2fb9",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "f887c74b7f5f1307fd3f7971c3e33db6e939433cc2fe8db4158687fb4800ed74",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44719120235,
+    "rva": "0xf85a10",
+    "schema": 2,
+    "source_sha256": "18616cf77c0f8b8aa71124ee0d8d5db94d1d5cb622f3bbf6d11c377c25124bd0",
+    "status": "pass",
+    "symbols": [
+      "?GetKeyArray@NiQuaternionInterpolator@@QEBAPEAXG@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "6eb806ccfa55b6c3ae972f1e5d436adf1eeceb7050b8824f8fbf5fb93efc2fb9",
+      "normalized_sha256": "f887c74b7f5f1307fd3f7971c3e33db6e939433cc2fe8db4158687fb4800ed74",
+      "rva": 16275984,
+      "size": 15
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xf85a10",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "02a09c3b864fc8113a06e2168d7c64ffa36b895700346d5154868c6ec3533a98",
+          "code_sections": 1,
+          "object_sha256": "8beae8287dd238bde89d70d16ba7d0262309cca82b4113710c2f915ef93b4964"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 15,
+          "code_bytes_total": 15,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16275984,
+          "size": 15,
+          "symbol": "?GetKeyArray@NiQuaternionInterpolator@@QEBAPEAXG@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.cpp",
+          "source_revision": "18616cf77c0f8b8aa71124ee0d8d5db94d1d5cb622f3bbf6d11c377c25124bd0"
+        },
+        "symbol_map_sha256": "24a65aa6cd1f181166c799e564ca5a4c31cb1b6bf7e320cf0848b34a52445556",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xf85a10"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.cpp",
+    "digest": "18616cf77c0f8b8aa71124ee0d8d5db94d1d5cb622f3bbf6d11c377c25124bd0",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/gamebryo/nianimation/NiInterpolator.h",
+      "reconstruction/gamebryo/nianimation/NiKeyBasedInterpolator.h",
+      "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.cpp",
+      "reconstruction/gamebryo/nianimation/NiQuaternionInterpolator_f85580.h",
+      "reconstruction/gamebryo/nianimation/NiStream.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/24a65aa6cd1f181166c799e564ca5a4c31cb1b6bf7e320cf0848b34a52445556.json",
+    "sha256": "24a65aa6cd1f181166c799e564ca5a4c31cb1b6bf7e320cf0848b34a52445556"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

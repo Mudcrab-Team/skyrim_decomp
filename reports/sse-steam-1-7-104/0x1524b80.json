@@ -1,0 +1,207 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "af6ff3b6a7553f530fe34812c2bc96a8b693b2aa31586b1bb2d0f7e26abb0b0f",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.cpp",
+          "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "aeb2a7985c5d3b0716dc2214279caeb095f3a6f2",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "7a5d980e637abffadc03104f1e387912427a2553",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "7ee4a355a4b1298998e490087ec8bbfa64d9992cf497a5f5edcbff8168a3858c",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "3fe8f3f054e0b709ded43ab90445e676b253caaf6ac4b22acf9dbc8732062afa",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44710892163,
+    "rva": "0x1524b80",
+    "schema": 2,
+    "source_sha256": "0e7c5b373fe845bfdc88794736e91a56edbee75d8a5a84fb9608da332e9bd08e",
+    "status": "pass",
+    "symbols": [
+      "?Create@BSLightingShaderMaterialEnvmap@@UEAAPEAVBSShaderMaterial@@XZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "7ee4a355a4b1298998e490087ec8bbfa64d9992cf497a5f5edcbff8168a3858c",
+      "normalized_sha256": "3fe8f3f054e0b709ded43ab90445e676b253caaf6ac4b22acf9dbc8732062afa",
+      "rva": 22170496,
+      "size": 146
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x1524b80",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "2b5d3a09400c25da2ee9a0f75449ee8fd9caf6fd332d2c32a795b4765b076367",
+          "code_sections": 2,
+          "object_sha256": "af6ff3b6a7553f530fe34812c2bc96a8b693b2aa31586b1bb2d0f7e26abb0b0f"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 32,
+          "code_bytes_exact": 114,
+          "code_bytes_total": 146,
+          "eh": {
+            "bytes": 96,
+            "handlers": {
+              "__CxxFrameHandler3": 1
+            },
+            "int_fields": 10,
+            "ref_fields": 10,
+            "structures": {
+              "funcinfo": 1,
+              "ip_to_state": 3,
+              "unwind_map_entry": 1
+            },
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 4,
+          "funclet_bytes_exact": 25,
+          "funclet_bytes_total": 29,
+          "funclet_end_evidence": {
+            "pdata-end": 1
+          },
+          "funclet_ranges": [
+            [
+              24317105,
+              29
+            ]
+          ],
+          "funclet_sections": 1,
+          "relocations_by_type": {
+            "REL32": 8,
+            "REL32_1": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 16,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 2
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 22170496,
+          "size": 146,
+          "symbol": "?Create@BSLightingShaderMaterialEnvmap@@UEAAPEAVBSShaderMaterial@@XZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.cpp",
+          "source_revision": "0e7c5b373fe845bfdc88794736e91a56edbee75d8a5a84fb9608da332e9bd08e"
+        },
+        "symbol_map_sha256": "babf60cfb22b15a22930466936eda4279f9c0c1a4812d30714233a8735dd5207",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x1524b80"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.cpp",
+    "digest": "0e7c5b373fe845bfdc88794736e91a56edbee75d8a5a84fb9608da332e9bd08e",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.cpp",
+      "reconstruction/bsshader/BSLightingShaderMaterialEnvmap_1524b80.h"
+    ]
+  },
+  "submitter": "awarebayes",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/babf60cfb22b15a22930466936eda4279f9c0c1a4812d30714233a8735dd5207.json",
+    "sha256": "babf60cfb22b15a22930466936eda4279f9c0c1a4812d30714233a8735dd5207"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

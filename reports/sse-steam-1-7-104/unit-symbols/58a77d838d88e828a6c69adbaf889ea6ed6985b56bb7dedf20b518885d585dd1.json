@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RestoreMaterial@BSUtilityShader@@UEAAXPEBVBSShaderMaterial@@@Z": {
+      "rva": 22442976,
+      "size": 3
+    },
+    "?Function15666e0@BSUtilityShader@@QEAA_NPEAX@Z": {
+      "rva": 22439648,
+      "size": 31
+    },
+    "?g_shaderPartnerManager@@3PEAVShaderPartnerManager@@EA": {
+      "rva": 52627936,
+      "size": null
+    },
+    "?Function1562800@ShaderPartnerManager@@QEAAXPEAX00@Z": {
+      "rva": 22423552,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RestoreMaterial@BSUtilityShader@@UEAAXPEBVBSShaderMaterial@@@Z",
+        "rva": "0x15673e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15666e0@BSUtilityShader@@QEAA_NPEAX@Z",
+        "rva": "0x15666e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_shaderPartnerManager@@3PEAVShaderPartnerManager@@EA",
+        "rva": "0x32309e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1562800@ShaderPartnerManager@@QEAAXPEAX00@Z",
+        "rva": "0x1562800",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

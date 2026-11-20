@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "37cfdc74b6a9640cd7a0c6c02c5bcc957feedab911e8482279c675d8d3124f0d",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/gamebryo/niparticle/NiPSysEmitterFields.h",
+          "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.cpp",
+          "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "8a4666fad193019bc5d4cddfebf14e53a0081355",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "618bf2dbc63bd7a1e11d08f94885afca9c6c6ee8",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "d88488bef45e3fa537a1e71bd587e85bfe4c45975a32004fec2bcd2942b2163d",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "b9e724c9240ca1e7341c9e93b234716ce14b607424e8f087ead51845de03f075",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44736682961,
+    "rva": "0xfaeec0",
+    "schema": 2,
+    "source_sha256": "57b600e21802605c8c37a86c15ec7f49f3a413b00780e471a378225d3ac8cf58",
+    "status": "pass",
+    "symbols": [
+      "?GetTargetValue@NiPSysEmitterPlanarAngleCtlr@@QEBAXAEAM@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "d88488bef45e3fa537a1e71bd587e85bfe4c45975a32004fec2bcd2942b2163d",
+      "normalized_sha256": "b9e724c9240ca1e7341c9e93b234716ce14b607424e8f087ead51845de03f075",
+      "rva": 16445120,
+      "size": 10
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xfaeec0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "b23f92a3c646abcc2001cdf9cd6813e204e2a115f27e303d20f71c285d7ee0ac",
+          "code_sections": 1,
+          "object_sha256": "37cfdc74b6a9640cd7a0c6c02c5bcc957feedab911e8482279c675d8d3124f0d"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 10,
+          "code_bytes_total": 10,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16445120,
+          "size": 10,
+          "symbol": "?GetTargetValue@NiPSysEmitterPlanarAngleCtlr@@QEBAXAEAM@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.cpp",
+          "source_revision": "57b600e21802605c8c37a86c15ec7f49f3a413b00780e471a378225d3ac8cf58"
+        },
+        "symbol_map_sha256": "0d5457855b4d80dd5d6c7fc42ec833b40a624c03862ffc8fc986040f4ba65557",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xfaeec0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.cpp",
+    "digest": "57b600e21802605c8c37a86c15ec7f49f3a413b00780e471a378225d3ac8cf58",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/gamebryo/niparticle/NiPSysEmitterFields.h",
+      "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.cpp",
+      "reconstruction/gamebryo/niparticle/NiPSysEmitterPlanarAngleCtlr.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/0d5457855b4d80dd5d6c7fc42ec833b40a624c03862ffc8fc986040f4ba65557.json",
+    "sha256": "0d5457855b4d80dd5d6c7fc42ec833b40a624c03862ffc8fc986040f4ba65557"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

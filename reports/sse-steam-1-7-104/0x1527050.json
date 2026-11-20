@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "6954b56ffe704c2d6688fb98a0a164da89b411e7684d1f0401004f3570c61ea5",
+        "object_sha256": "696919c8ae6d5dcf17bf69d9511708d212ad1f2d2a35bb8aace08438de35159a",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSLightingShaderMaterial.h",
@@ -38,7 +38,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "23b1ccebe8acf8dd96f0b2908b52545bf678be2f",
+    "base_sha": "6871664d22b4ba01749559f6873a231b8fa8940a",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -49,7 +49,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "faa23a9fc573b93805801bce6b147c25b11c27f9",
+    "head_sha": "c60bf514c6137534831fb2c50bda447e3c6fe70a",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -62,10 +62,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44576538905,
+    "run_id": 44715502992,
     "rva": "0x1527050",
     "schema": 2,
-    "source_sha256": "096fc0fc8fbf46b97da7813d2d3048efaa91d01c92d56aa3c1b9f249df00aecd",
+    "source_sha256": "545ef60891894b8c0bc8b3e83dc58c29b72afbebe7a51a257904d5841acafba8",
     "status": "pass",
     "symbols": [
       "?Ctor@BSLightingShaderMaterialHairTint@@QEAAPEAV1@XZ"
@@ -100,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "6fc0f19a907248ed6d041b5d56a33809c439be3553e1f7246ba6364c5cea73d3",
           "code_sections": 1,
-          "object_sha256": "6954b56ffe704c2d6688fb98a0a164da89b411e7684d1f0401004f3570c61ea5"
+          "object_sha256": "696919c8ae6d5dcf17bf69d9511708d212ad1f2d2a35bb8aace08438de35159a"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -163,9 +163,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSLightingShaderMaterialHairTint.cpp",
-          "source_revision": "096fc0fc8fbf46b97da7813d2d3048efaa91d01c92d56aa3c1b9f249df00aecd"
+          "source_revision": "545ef60891894b8c0bc8b3e83dc58c29b72afbebe7a51a257904d5841acafba8"
         },
-        "symbol_map_sha256": "c517091b36b4112250b9c09d7ab2eaf1656b3e368db3eaba79c582f7e8e9bafa",
+        "symbol_map_sha256": "6aa4ebd75f052f0b3d045d4ae0f2efca8232c3ff08123250a85175c8d6850b15",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -176,7 +176,7 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSLightingShaderMaterialHairTint.cpp",
-    "digest": "096fc0fc8fbf46b97da7813d2d3048efaa91d01c92d56aa3c1b9f249df00aecd",
+    "digest": "545ef60891894b8c0bc8b3e83dc58c29b72afbebe7a51a257904d5841acafba8",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSLightingShaderMaterial.h",
@@ -187,8 +187,8 @@
   },
   "submitter": "awarebayes",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/c517091b36b4112250b9c09d7ab2eaf1656b3e368db3eaba79c582f7e8e9bafa.json",
-    "sha256": "c517091b36b4112250b9c09d7ab2eaf1656b3e368db3eaba79c582f7e8e9bafa"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/6aa4ebd75f052f0b3d045d4ae0f2efca8232c3ff08123250a85175c8d6850b15.json",
+    "sha256": "6aa4ebd75f052f0b3d045d4ae0f2efca8232c3ff08123250a85175c8d6850b15"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

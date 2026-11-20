@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RegisterStreamables@NiLightDimmerController@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 16248224,
+      "size": 19
+    },
+    "?IsEqual@NiLightDimmerController@@UEAA_NPEAVNiObject@@@Z": {
+      "rva": 16248272,
+      "size": 19
+    },
+    "?GetTargetFade@NiLightDimmerController@@QEBAXAEAM@Z": {
+      "rva": 16248976,
+      "size": 18
+    },
+    "?RegisterFloatController@@YAEAEAVNiFloatInterpController@@AEAVNiStream@@@Z": {
+      "rva": 16350976,
+      "size": null
+    },
+    "?EqualFloatController@@YAEAEAVNiFloatInterpController@@PEAVNiObject@@@Z": {
+      "rva": 16351008,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RegisterStreamables@NiLightDimmerController@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xf7eda0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsEqual@NiLightDimmerController@@UEAA_NPEAVNiObject@@@Z",
+        "rva": "0xf7edd0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetTargetFade@NiLightDimmerController@@QEBAXAEAM@Z",
+        "rva": "0xf7f090",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterFloatController@@YAEAEAVNiFloatInterpController@@AEAVNiStream@@@Z",
+        "rva": "0xf97f00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?EqualFloatController@@YAEAEAVNiFloatInterpController@@PEAVNiObject@@@Z",
+        "rva": "0xf97f20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

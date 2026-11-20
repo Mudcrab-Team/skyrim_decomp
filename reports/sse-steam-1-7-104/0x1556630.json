@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "9b01fe68f8b5ab77b7e57c077b142b9604e8ee138a433eea0af1c58724338f87",
+        "object_sha256": "657c5ba29a203520e2b31c847620dcd739f3d6fe09883f98e54d8990016d7a52",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
@@ -37,7 +37,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "466aa251a623c4b93e3a55606365b62b58a8a486",
+    "base_sha": "6871664d22b4ba01749559f6873a231b8fa8940a",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -48,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "dfd5929b0bbff818bf4f9a2d1313af931dd493b4",
+    "head_sha": "c60bf514c6137534831fb2c50bda447e3c6fe70a",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -61,10 +61,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44592756335,
+    "run_id": 44715502992,
     "rva": "0x1556630",
     "schema": 2,
-    "source_sha256": "08b13ede5b185f9686e8e2a2277fe91bbfca0cfb5087062b8bd6f1184aace47b",
+    "source_sha256": "5c38033bcd9bd95aa163972c269ae3393c3070f5111566f235bdd392f8840d6b",
     "status": "pass",
     "symbols": [
       "??_GBSEffectShaderMaterial@@UEAAPEAXI@Z"
@@ -99,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "cfb19d8daee44bb76f70c252deedccf25a4d878e87b0188247cc7e25698c4387",
           "code_sections": 1,
-          "object_sha256": "9b01fe68f8b5ab77b7e57c077b142b9604e8ee138a433eea0af1c58724338f87"
+          "object_sha256": "657c5ba29a203520e2b31c847620dcd739f3d6fe09883f98e54d8990016d7a52"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -162,7 +162,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
-          "source_revision": "08b13ede5b185f9686e8e2a2277fe91bbfca0cfb5087062b8bd6f1184aace47b"
+          "source_revision": "5c38033bcd9bd95aa163972c269ae3393c3070f5111566f235bdd392f8840d6b"
         },
         "symbol_map_sha256": "4a0d6dc9f77c71ebb2b8176ef2e91c4c1203719d7cd425499b05e159037daf0b",
         "target": {
@@ -175,7 +175,7 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
-    "digest": "08b13ede5b185f9686e8e2a2277fe91bbfca0cfb5087062b8bd6f1184aace47b",
+    "digest": "5c38033bcd9bd95aa163972c269ae3393c3070f5111566f235bdd392f8840d6b",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSEffectShaderMaterial.cpp",
@@ -183,7 +183,7 @@
       "reconstruction/bsshader/BSShaderMaterial.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "awarebayes",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/4a0d6dc9f77c71ebb2b8176ef2e91c4c1203719d7cd425499b05e159037daf0b.json",
     "sha256": "4a0d6dc9f77c71ebb2b8176ef2e91c4c1203719d7cd425499b05e159037daf0b"

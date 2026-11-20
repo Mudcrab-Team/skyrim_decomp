@@ -138,6 +138,43 @@ def build_match_record(root, task_dir, ci_run, out):
     return dest
 
 
+def build_carried_record(root, build_id, rva, out, note):
+    """Match record for an accepted function whose unit changed from base only in comments.
+
+    The runs stay as they were: they compared the old text, which the caller has shown to be the same
+    code, and only the record's digest moves to the new text. That is possible only for a record that
+    already keeps its runs' own digest (`run_digest`); the validator then checks the new digest against
+    the integrated source as for any record. Raises ValueError when the record cannot be carried.
+    """
+    root = Path(root)
+    from digest_v2 import tu_digest
+    from source_digest import include_closure
+    fn = next((f for f in _load(root, PROGRESS)['functions'] if f['build_id'] == build_id and f['rva'] == rva), None)
+    if fn is None or fn.get('status') != 'matched' or not fn.get('report'):
+        raise ValueError('only an accepted function has a record to carry')
+    old = _load(root, fn['report'])
+    source = old.get('source') or {}
+    if 'run_digest' not in source or 'ci_confirmation' in old:
+        raise ValueError('the record binds its runs to the current digest, so its runs cannot carry to new text')
+    closure = include_closure(root, source['compiled'])
+    if set(closure) != set(source['translation_unit']):
+        raise ValueError('the translation unit changed')
+    record = copy.deepcopy(old)
+    record['source'] = dict(source, digest=tu_digest(root, closure, DIGEST_METHOD), digest_method=DIGEST_METHOD)
+    record['notes'] = list(old.get('notes') or []) + [note]
+    dest = Path(out) / build_id / f'0x{rva:x}.json'
+    scratch = root / 'reports' / build_id / f'.pr-{rva:x}.json'
+    scratch.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        scratch.write_text(json.dumps(record, indent=2, sort_keys=True) + '\n')
+        validate_match(dict(fn, report=scratch.relative_to(root).as_posix()), _load(root, TARGET), root)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        scratch.replace(dest)
+    finally:
+        scratch.unlink(missing_ok=True)
+    return dest
+
+
 def private_table(root):
     """The private function table by RVA when this host has one; None means the published bounds alone."""
     import claimable

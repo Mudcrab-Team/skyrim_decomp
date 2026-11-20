@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?SetAVObject@NiDefaultAVObjectPalette@@QEAAXPEBDPEAVNiAVObject@@@Z": {
+      "rva": 15733136,
+      "size": 52
+    },
+    "?RemoveEntry@ObjectMapBase@@QEAAXPEBDAEBQEAVNiAVObject@@@Z": {
+      "rva": 15732816,
+      "size": null
+    },
+    "?InsertEntry@ObjectMapTable@@QEAAXPEBDAEBQEAVNiAVObject@@AEA_N@Z": {
+      "rva": 15729872,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?SetAVObject@NiDefaultAVObjectPalette@@QEAAXPEBDPEAVNiAVObject@@@Z",
+        "rva": "0xf01190",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RemoveEntry@ObjectMapBase@@QEAAXPEBDAEBQEAVNiAVObject@@@Z",
+        "rva": "0xf01050",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InsertEntry@ObjectMapTable@@QEAAXPEBDAEBQEAVNiAVObject@@AEA_N@Z",
+        "rva": "0xf004d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

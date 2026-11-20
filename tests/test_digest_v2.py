@@ -21,6 +21,20 @@ def digest(blob):
     return d.strip_comments(blob, 'x.cpp')
 
 
+class SameCodeTests(unittest.TestCase):
+    def test_provenance_labels_are_comments_here_but_code_and_strings_are_not(self):
+        relabelled = BASE.replace(b'GUESS(low)', b'OBSERVED; table entry confirmed') + b'// extra prose\n'
+        self.assertTrue(d.same_code(BASE, relabelled, 'x.cpp'))
+        self.assertNotEqual(digest(BASE), digest(relabelled))
+        self.assertFalse(d.same_code(BASE, BASE.replace(b'return 1', b'return 2'), 'x.cpp'))
+        self.assertFalse(d.same_code(BASE, BASE.replace(b'// not a comment', b'// changed'), 'x.cpp'))
+        self.assertFalse(d.same_code(BASE, BASE.replace(b'"A.h"', b'"B.h"'), 'x.cpp'))
+
+    def test_a_text_the_scan_cannot_classify_is_not_comment_only(self):
+        self.assertFalse(d.same_code(BASE, BASE + b'/* open', 'x.cpp'))
+        self.assertFalse(d.same_code(BASE + b'/* open', BASE + b'/* open', 'x.cpp'))
+
+
 class StripTests(unittest.TestCase):
     def test_prose_comments_do_not_change_the_text(self):
         noisy = (b'// Build: x\n// Evidence: findings/x.md\n' + BASE.replace(b'int f()', b'/* why\nmore */\nint f()')

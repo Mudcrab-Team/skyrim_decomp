@@ -317,7 +317,7 @@ class Clone:
 
 
 def configured_sources(root=ROOT, env=None):
-    config_path = local_dir(root, env) / 'verifier/config.json'
+    config_path = local_path(root, '.local/verifier/config.json', env)
     try:
         config = json.loads(config_path.read_text())
     except (OSError, ValueError):

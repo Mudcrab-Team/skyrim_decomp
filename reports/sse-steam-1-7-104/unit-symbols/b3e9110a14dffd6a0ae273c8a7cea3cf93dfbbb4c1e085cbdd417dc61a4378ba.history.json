@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/b3e9110a14dffd6a0ae273c8a7cea3cf93dfbbb4c1e085cbdd417dc61a4378ba.json",
+  "versions": [
+    {
+      "sha256": "b3e9110a14dffd6a0ae273c8a7cea3cf93dfbbb4c1e085cbdd417dc61a4378ba",
+      "base": null,
+      "added": [
+        "?GetCurrentAccumulator@BSShaderAccumulator@@SAPEAV1@XZ",
+        "?SetCurrentAccumulator@BSShaderAccumulator@@SAXPEAV1@@Z",
+        "?StartGroupingAlphas@BSShaderAccumulator@@UEAAPEAVGeometryGroup@BSBatchRenderer@@PEAVNiBound@@@Z",
+        "?FinishAccumulatingPostResolveDepth@BSShaderAccumulator@@UEAAXI@Z",
+        "?ms_currentAccumulator@@3PEAVBSShaderAccumulator@@EA",
+        "?BuildAlphaGroups@@YAPEAVGeometryGroup@BSBatchRenderer@@_KPEAVNiBound@@0E@Z",
+        "?PrepareDepth@BSShaderAccumulator@@QEAAXXZ",
+        "?Function15209f0@BSShaderAccumulator@@QEAAGXZ",
+        "?Function1520c90@BSShaderAccumulator@@QEAAXH@Z",
+        "?Function1521150@BSShaderAccumulator@@QEAAXXZ",
+        "?Function1521170@BSShaderAccumulator@@SA_NI@Z",
+        "?Function15213e0@BSShaderAccumulator@@QEAAXI@Z",
+        "?ProcessGroup@@YAXPEAX@Z",
+        "?ResetGroups@@YAXPEAUBatchRendererStandIn@@I@Z",
+        "?FlushGroups@@YAXPEAUBatchRendererStandIn@@_KI@Z"
+      ]
+    }
+  ]
+}

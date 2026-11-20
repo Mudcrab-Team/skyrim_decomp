@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@NiBSplineColorInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16219920,
+      "size": 46
+    },
+    "??0NiBSplineColorInterpolator@@QEAA@PEAVNiBSplineData@@IPEAVNiBSplineBasisData@@@Z": {
+      "rva": 16220576,
+      "size": 61
+    },
+    "??0NiBSplineColorInterpolator@@QEAA@AEBVNiColorA@@@Z": {
+      "rva": 16220656,
+      "size": 64
+    },
+    "?GetChannelPosed@NiBSplineColorInterpolator@@QEBA_NG@Z": {
+      "rva": 16221072,
+      "size": 32
+    },
+    "?GetChannelHandle@NiBSplineColorInterpolator@@QEBAIG@Z": {
+      "rva": 16221120,
+      "size": 14
+    },
+    "?SetChannelHandle@NiBSplineColorInterpolator@@QEAAXIG@Z": {
+      "rva": 16221152,
+      "size": 10
+    },
+    "??_GNiBSplineColorInterpolator@@UEAAPEAXI@Z": {
+      "rva": 16221360,
+      "size": 52
+    },
+    "?CopyMembers@NiBSplineInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16348240,
+      "size": null
+    },
+    "??0NiBSplineInterpolator@@QEAA@PEAVNiBSplineData@@PEAVNiBSplineBasisData@@@Z": {
+      "rva": 16349856,
+      "size": null
+    },
+    "??_7NiBSplineColorInterpolator@@6B@": {
+      "rva": 27621504,
+      "size": null
+    },
+    "??1NiBSplineInterpolator@@UEAA@XZ": {
+      "rva": 16349136,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@NiBSplineColorInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xf77f10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiBSplineColorInterpolator@@QEAA@PEAVNiBSplineData@@IPEAVNiBSplineBasisData@@@Z",
+        "rva": "0xf781a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiBSplineColorInterpolator@@QEAA@AEBVNiColorA@@@Z",
+        "rva": "0xf781f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetChannelPosed@NiBSplineColorInterpolator@@QEBA_NG@Z",
+        "rva": "0xf78390",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetChannelHandle@NiBSplineColorInterpolator@@QEBAIG@Z",
+        "rva": "0xf783c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetChannelHandle@NiBSplineColorInterpolator@@QEAAXIG@Z",
+        "rva": "0xf783e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GNiBSplineColorInterpolator@@UEAAPEAXI@Z",
+        "rva": "0xf784b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiBSplineInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xf97450",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiBSplineInterpolator@@QEAA@PEAVNiBSplineData@@PEAVNiBSplineBasisData@@@Z",
+        "rva": "0xf97aa0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiBSplineColorInterpolator@@6B@",
+        "rva": "0x1a57880",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiBSplineInterpolator@@UEAA@XZ",
+        "rva": "0xf977d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

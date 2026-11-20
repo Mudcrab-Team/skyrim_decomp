@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetBaseObject@ActiveEffect@@QEBAPEBUEffectSetting@@XZ": {
+      "rva": 6008976,
+      "size": 9
+    },
+    "?Function5bb910@ActiveEffect@@QEBA_NXZ": {
+      "rva": 6011152,
+      "size": 44
+    },
+    "?Function5bb950@ActiveEffect@@QEAAX_N@Z": {
+      "rva": 6011216,
+      "size": 57
+    },
+    "?Function5bcbc0@ActiveEffect@@QEAAXXZ": {
+      "rva": 6015936,
+      "size": 71
+    },
+    "?CanFinish@ActiveEffect@@QEBA_NXZ": {
+      "rva": 6016416,
+      "size": 45
+    },
+    "?dataHandler@@3PEAVTESDataHandler@@EA": {
+      "rva": 35249880,
+      "size": null
+    },
+    "?Function1c2280@TESDataHandler@@QEBA_NXZ": {
+      "rva": 1843840,
+      "size": null
+    },
+    "?Function5bac30@ActiveEffect@@AEAAXXZ": {
+      "rva": 6007856,
+      "size": null
+    },
+    "?IsValid@MagicItem@@QEBA_NXZ": {
+      "rva": 1377040,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetBaseObject@ActiveEffect@@QEBAPEBUEffectSetting@@XZ",
+        "rva": "0x5bb090",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function5bb910@ActiveEffect@@QEBA_NXZ",
+        "rva": "0x5bb910",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function5bb950@ActiveEffect@@QEAAX_N@Z",
+        "rva": "0x5bb950",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function5bcbc0@ActiveEffect@@QEAAXXZ",
+        "rva": "0x5bcbc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CanFinish@ActiveEffect@@QEBA_NXZ",
+        "rva": "0x5bcda0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?dataHandler@@3PEAVTESDataHandler@@EA",
+        "rva": "0x219ded8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1c2280@TESDataHandler@@QEBA_NXZ",
+        "rva": "0x1c2280",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function5bac30@ActiveEffect@@AEAAXXZ",
+        "rva": "0x5bac30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsValid@MagicItem@@QEBA_NXZ",
+        "rva": "0x150310",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

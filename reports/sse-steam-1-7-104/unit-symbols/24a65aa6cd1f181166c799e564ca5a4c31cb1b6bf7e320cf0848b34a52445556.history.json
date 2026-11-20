@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/24a65aa6cd1f181166c799e564ca5a4c31cb1b6bf7e320cf0848b34a52445556.json",
+  "versions": [
+    {
+      "sha256": "24a65aa6cd1f181166c799e564ca5a4c31cb1b6bf7e320cf0848b34a52445556",
+      "base": null,
+      "added": [
+        "?RegisterStreamables@NiQuaternionInterpolator@@UEAA_NAEAVNiStream@@@Z",
+        "?SaveBinary@NiQuaternionInterpolator@@UEAAXAEAVNiStream@@@Z",
+        "?SetPoseValue@NiQuaternionInterpolator@@QEAAXAEBVNiQuaternion@@@Z",
+        "?GetKeyCount@NiQuaternionInterpolator@@QEBAIG@Z",
+        "?GetKeyType@NiQuaternionInterpolator@@QEBA?AW4KeyType@@G@Z",
+        "?GetKeyArray@NiQuaternionInterpolator@@QEBAPEAXG@Z",
+        "?GetKeyStride@NiQuaternionInterpolator@@QEBAEG@Z",
+        "?GuaranteeTimeRange@NiQuaternionInterpolator@@QEAAXMM@Z",
+        "?RegisterKeyBasedStreamables@@YA_NAEAVNiKeyBasedInterpolator@@AEAVNiStream@@@Z",
+        "?SaveKeyBasedBinary@@YAXAEAVNiKeyBasedInterpolator@@AEAVNiStream@@@Z",
+        "?SavePoseBinary@@YAXAEBVNiQuaternion@@AEAVNiStream@@@Z",
+        "?GuaranteeNiRotDataTimeRange@@YAXAEAVNiRotData@@MM@Z"
+      ]
+    }
+  ]
+}

@@ -68,7 +68,8 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit e0aafee384b7f68e13cd9a29f9459e6911b9d1ff, with uncommitted changes to reconstruction/conditions_getisvoicetype/ConditionFunctions.cpp, reconstruction/conditions_getisvoicetype/ConditionFunctions.h, reconstruction/conditions_getisvoicetype/TESBoundObject.h, reports/sse-steam-1-7-104/unit-symbols/48d905f0d4cea50a239b3656b4c3258d5da0673fd80929a681bedd4bef8f0145.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit e0aafee384b7f68e13cd9a29f9459e6911b9d1ff, with uncommitted changes to reconstruction/conditions_getisvoicetype/ConditionFunctions.cpp, reconstruction/conditions_getisvoicetype/ConditionFunctions.h, reconstruction/conditions_getisvoicetype/TESBoundObject.h, reports/sse-steam-1-7-104/unit-symbols/48d905f0d4cea50a239b3656b4c3258d5da0673fd80929a681bedd4bef8f0145.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in.",
+    "Carried to new source: the unit differs from the text its runs compared only in comments, and the function has no published target hash, so the runs are unchanged."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
@@ -325,7 +326,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_333eb0.cpp",
-    "digest": "88500333710bf70e5e08b7f1a13870a68f242655e21e1979ed69dfae772b4b90",
+    "digest": "6fc125b7c06cbb4dd3b5996f02f8986995064ba4cbbf5122a5c8672f7dff6d39",
     "digest_method": "tu-sha256-v2",
     "run_digest": "7eba23b598146bcc5477beaca068b6671c795b7e4b09de25e2cf3d3ffb537fc9",
     "run_digest_method": "tu-sha256-v1",

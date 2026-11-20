@@ -1,3 +1,5 @@
+// 0x1526e70 BSLightingShaderMaterialFacegenTint::Function1526e70
+// Function1526e70: GUESS(low); the plain destructor, emitted out of line
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
@@ -30,4 +32,8 @@ void BSLightingShaderMaterialFacegenTint::CopyMembers(BSShaderMaterial* a_other)
     const auto* other = static_cast<const BSLightingShaderMaterialFacegenTint*>(a_other);
     fieldA0 = other->fieldA0;
     fieldA8 = other->fieldA8;
+}
+
+BSLightingShaderMaterialFacegenTint::~BSLightingShaderMaterialFacegenTint()
+{
 }

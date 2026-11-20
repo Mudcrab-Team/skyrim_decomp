@@ -96,6 +96,8 @@ class BSRenderPass
 {
 public:
 	void ClearRenderPass();
+	// SetNextPass: GUESS(low); callee unnamed, takes the previous list head
+	void SetNextPass(BSRenderPass* a_next);
 
 	std::uint8_t  unk00[0x28];  // 00
 	BSRenderPass* next;         // 28
@@ -162,6 +164,8 @@ public:
 	{
 	public:
 		virtual ~ForEachVisitor();  // 00
+		// Accept: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares std::uint32_t, the callers test the result as signed
+		virtual std::int32_t Accept(NiSourceTexture* a_texture) = 0;  // 01
 	};
 
 	struct RenderPassArray
@@ -187,8 +191,11 @@ public:
 
 	void SetMaterial(BSShaderMaterial* a_material, bool a_unk1);
 	void SetFlags(EShaderPropertyFlag8 a_flag, bool a_set);
+	// Function14e77f0, Function14e7a80: GUESS(low); purposes unrecovered
+	static void    Function14e77f0(RenderPassArray* a_array);
+	static BSRenderPass* Function14e7a80(RenderPassArray* a_array, BSRenderPass** a_other);
 
-	float           alpha;                // 30
+	float          alpha;                // 30
 	std::int32_t    lastRenderPassState;  // 34
 	std::uint64_t   flags;                // 38
 	RenderPassArray renderPassList;       // 40

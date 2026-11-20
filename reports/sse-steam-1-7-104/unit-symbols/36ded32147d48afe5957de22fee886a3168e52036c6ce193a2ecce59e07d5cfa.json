@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0D@BSImagespaceShaderNoiseNormalmap@@QEAAPEAPEBXPEAPEBX@Z": {
+      "rva": 22064736,
+      "size": 35
+    },
+    "?Unk_0B@BSImagespaceShaderNoiseNormalmap@@QEAAXXZ": {
+      "rva": 22066384,
+      "size": 30
+    },
+    "?Unk_0A@BSImagespaceShaderNoiseNormalmap@@QEAAXXZ": {
+      "rva": 22066544,
+      "size": 30
+    },
+    "?g_noiseNormalmapBinding@@3QBDB": {
+      "rva": 28536608,
+      "size": null
+    },
+    "?kEmptyString@@3QBDB": {
+      "rva": 28672032,
+      "size": null
+    },
+    "?g_imageSpaceRenderMode@@3IA": {
+      "rva": 34405552,
+      "size": null
+    },
+    "?g_imageSpaceDirtyState@@3IA": {
+      "rva": 34405376,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0D@BSImagespaceShaderNoiseNormalmap@@QEAAPEAPEBXPEAPEBX@Z",
+        "rva": "0x150ae60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk_0B@BSImagespaceShaderNoiseNormalmap@@QEAAXXZ",
+        "rva": "0x150b4d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk_0A@BSImagespaceShaderNoiseNormalmap@@QEAAXXZ",
+        "rva": "0x150b570",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_noiseNormalmapBinding@@3QBDB",
+        "rva": "0x1b36f20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?kEmptyString@@3QBDB",
+        "rva": "0x1b58020",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_imageSpaceRenderMode@@3IA",
+        "rva": "0x20cfcb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_imageSpaceDirtyState@@3IA",
+        "rva": "0x20cfc00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

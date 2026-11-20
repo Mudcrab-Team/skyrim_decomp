@@ -24,7 +24,8 @@ public:
     virtual Feature GetFeature() const;  // compared: 0x1526fc0
     BSLightingShaderMaterialFacegenTint* Ctor();  // compared: 0x1526e30
     virtual void CopyMembers(BSShaderMaterial* a_other);  // compared: 0x1526f20
-    virtual ~BSLightingShaderMaterialFacegenTint() {}  // compared: 0x1528ec0 (scalar deleting destructor)
+    // the plain destructor (0x1526e70) is defined out of line; the deleting destructor (0x1528ec0) is emitted beside the vftable
+    virtual ~BSLightingShaderMaterialFacegenTint();
 
     BSShaderPair fieldA0;  // A0
     std::uint32_t fieldA8;  // A8

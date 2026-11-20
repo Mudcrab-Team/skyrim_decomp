@@ -1,0 +1,191 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "39dae0f976af1d466e2fe98a67dc6308b8709b759da85ed3f66318ac23547108",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/bsshader/BSImagespaceShaderDoubleVision.cpp",
+          "reconstruction/bsshader/BSImagespaceShaderDoubleVision.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "f68e84a88f69866a705ffb6071aff0050e3ccb2c",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "0aebaf02ca5eb3bfc08c4db71ba17d91c9c4ddf9",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "2a3f4b9543965f0f0fd40c11e2fc89a7efdcd4b32a2bce8370aad07218648bab",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "bd1ed2eddc0695b428e3a41bc26e60a44caa748be4a54123b7feaac3bcc78c03",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44738610851,
+    "rva": "0x150a1a0",
+    "schema": 2,
+    "source_sha256": "62626fdddbb0a075709d27cd0807b2a272b5494ef19fc0d40a7a54a85104fd6f",
+    "status": "pass",
+    "symbols": [
+      "?Unk_0D@BSImagespaceShaderDoubleVision@@QEAAPEAPEBXPEAPEBX@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "2a3f4b9543965f0f0fd40c11e2fc89a7efdcd4b32a2bce8370aad07218648bab",
+      "normalized_sha256": "bd1ed2eddc0695b428e3a41bc26e60a44caa748be4a54123b7feaac3bcc78c03",
+      "rva": 22061472,
+      "size": 13
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/bsshader/BSImagespaceShaderDoubleVision.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x150a1a0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "4780f8ec4780db23a28edd0ba6b59e9474f0b8736935e505918c93e129efcd7b",
+          "code_sections": 1,
+          "object_sha256": "39dae0f976af1d466e2fe98a67dc6308b8709b759da85ed3f66318ac23547108"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 13,
+          "code_bytes_total": 13,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 22061472,
+          "size": 13,
+          "symbol": "?Unk_0D@BSImagespaceShaderDoubleVision@@QEAAPEAPEBXPEAPEBX@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/bsshader/BSImagespaceShaderDoubleVision.cpp",
+          "source_revision": "62626fdddbb0a075709d27cd0807b2a272b5494ef19fc0d40a7a54a85104fd6f"
+        },
+        "symbol_map_sha256": "275e64cd06444293c67ab4dd95e6cf796a87547ca39e51b43a781a9171638caa",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x150a1a0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/bsshader/BSImagespaceShaderDoubleVision.cpp",
+    "digest": "62626fdddbb0a075709d27cd0807b2a272b5494ef19fc0d40a7a54a85104fd6f",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/bsshader/BSImagespaceShaderDoubleVision.cpp",
+      "reconstruction/bsshader/BSImagespaceShaderDoubleVision.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/275e64cd06444293c67ab4dd95e6cf796a87547ca39e51b43a781a9171638caa.json",
+    "sha256": "275e64cd06444293c67ab4dd95e6cf796a87547ca39e51b43a781a9171638caa"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}
