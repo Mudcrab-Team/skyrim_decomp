@@ -1,7 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
-// Code origin: declarations written for this reconstruction; names from the community headers
-// listed below, layout from analysis of the pinned image.
+// Code origin: declarations written for this reconstruction; names from the community headers below.
 // Adapted bodies: NiPoint3::operator= (CharmedBaryon/CommonLibSSE-NG@b93280e
 // src/RE/N/NiPoint3.cpp, MIT; component-wise copy, notice in the SPDX line below).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
@@ -16,7 +15,7 @@
 #pragma once
 
 #include <cstdint>
-#include "gamebryo/nimain/NiRefObject.h"
+#include "../gamebryo/nimain/NiRefObject.h"
 
 struct NiPoint3
 {

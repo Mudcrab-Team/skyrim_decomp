@@ -3,7 +3,6 @@
 // Code origin: original bodies written from the local listing; declarations from the pinned community headers.
 // Adapted bodies: none
 // Drafted by: eclepso, assisted by claude-sonnet-5-5
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // 0x1581e30 ShadowArray::~ShadowArray
 // 0x157ed10 BSShadowDirectionalLight::GetPassExtraParam
 // 0x1581730 BSShadowDirectionalLight::UpdateSunDirectionBlend
