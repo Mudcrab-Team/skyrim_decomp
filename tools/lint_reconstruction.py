@@ -77,6 +77,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, logical_lines, quoted_includes  # noqa: E402
 from digest_v2 import LABEL_WORD  # noqa: E402
+import pdb_types  # noqa: E402
 import unit_paths  # noqa: E402
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
@@ -571,6 +572,9 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
     path = PurePosixPath(name)
     if name in ('reconstruction/README.md', 'reconstruction/INDEX.md'):
         return problems
+    if pdb_types.is_generated(name):
+        # Output of tools/pdb_types.py, not a unit: it has its own one-line label rule.
+        return pdb_types.file_problems(root, name)
     if len(path.parts) == 3 and path.parts[1] == 'recipes':
         if path.suffix != '.json':
             problems.append(f'{name}: recipes are reconstruction/recipes/<name>.json')

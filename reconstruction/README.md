@@ -67,6 +67,10 @@ Read `LEGAL.md`, `PROVENANCE.md` and `docs/verification.md` before adding source
   reference names are explicitly guessed stand-ins, not recovered ownership. Each unit compares
   one complete externally bound entry with its own extracted reference; this layout makes no
   admission of other internal function kinds and leaves existing class units unchanged.
+- **Generated PDB output.** `generated/crashlogger_pdb/` holds layout headers, a type index and RVA-to-name maps
+  that `tools/pdb_types.py` regenerates from the CrashLogger community PDB. It is not an engine area and no unit
+  lives there; a unit may include one of its headers, and then labels what it takes `CRASHLOGGER_PDB(59818@<version>)`.
+  Do not edit it by hand: regenerate it.
 - **One recipe per source unit.** A match record binds a translation unit to one recipe in
   `recipes/<compiler>-<flags>.json` (compiler binary hash and version, flags, SDK, host). If a
   class's functions need different recipes, split them into separate units, one per recipe,

@@ -1936,6 +1936,16 @@ def write_source(path, text):
     Path(path).write_text(text, encoding='utf-8', newline='\n')
 
 
+def pdb_hints(repo, fns):
+    """Lines naming the CrashLogger-PDB layout header (and names) of the functions, from the committed
+    reconstruction/generated output; nothing, silently, when that is absent or knows none of them."""
+    try:
+        import pdb_types
+        return pdb_types.hint_for_rvas([fn['rva'] for fn in fns], repo)
+    except Exception:  # an optional hint must never stop `start`
+        return []
+
+
 def start(ctx, args, quiet=False):
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
@@ -2072,13 +2082,15 @@ def start(ctx, args, quiet=False):
                     + (' and decomp.c (untrusted hint)' if (Path(p) / 'decomp.c').is_file() else ''))
         if sibling:
             ctx.say(f'sibling source pointers (FNV; shape and names only, never evidence): {tdir / "sibling.md"}')
+        for line in pdb_hints(ctx.repo, fns):
+            ctx.say(line)
         ctx.say(f'unit: {header} and {cpp}' + (' (skeleton created)' if created else ''))
         ctx.say(f'profile {prof["name"]}: read {"; ".join(prof["contrib_docs"])}; '
                 + attempt_progress.guidance(prof['stuck_after'])
                 + f' Hard cap: {prof["contrib_max_tries"]} compare runs. {prof["cost"]}')
     return OK, {'task': tdir.name, 'unit': [header, cpp], 'created': created, 'packs': packs, 'branch': branch,
                 'practice': bool(args.practice), 'declarations': declaration_advice,
-                'sibling': str(tdir / 'sibling.md') if sibling else None,
+                'sibling': str(tdir / 'sibling.md') if sibling else None, 'pdb': pdb_hints(ctx.repo, fns),
                 'profile': prof['name'], 'read': prof['contrib_docs'], 'max_tries': prof['contrib_max_tries'],
                 'cost': prof['cost'], **({'pdb_names': suggestions} if suggestions else {})}, \
         f'edit {cpp}, then {ctx.cli} compare'

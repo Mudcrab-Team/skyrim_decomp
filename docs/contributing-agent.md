@@ -44,7 +44,9 @@ layout). The bot adds the inventory entry (a `Function<rva>` GUESS name) when it
 
 By submitting, a contributor dedicates their contribution under CC0 1.0, or under the file's stated exception licence (`LICENSE`). The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
-references.
+references. So are the committed [CrashLogger PDB layouts and names](../reconstruction/generated/crashlogger_pdb/README.md):
+`start` prints the header of the class a function's PDB name belongs to, and a layout or name taken from it carries the
+`CRASHLOGGER_PDB(59818@2026.10.24)` label. They are community guesses; `compare` still decides.
 
 ## When to ask the person
 

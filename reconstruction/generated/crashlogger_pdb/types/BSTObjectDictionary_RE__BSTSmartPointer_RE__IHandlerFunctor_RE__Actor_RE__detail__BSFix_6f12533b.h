@@ -1,0 +1,20 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: BSTObjectDictionary<RE::BSTSmartPointer<RE::IHandlerFunctor<RE::Actor, RE::detail::BSFixedString<char>>>, RE::detail::BSFixedString<char>, RE::HandlerCreationMissPolicy, RE::NoInitializationPolicy>; size 0x50
+#pragma once
+
+#include "BSSpinLock.h"
+#include "BSTScatterTable_RE__BSCRC32_RE__detail__BSFixedString_char_std__equal_to_RE__detail__BS_6e86b1a5.h"
+#include "BSTSingletonSDM_RE__BSTObjectDictionary_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Act_8ef5c20b.h"
+#include "HandlerCreationMissPolicy_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail_192b1a70.h"
+#include "NoInitializationPolicy_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail__BS_60d3e575.h"
+struct BSTObjectDictionary_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail__BSFix_6f12533b {
+    HandlerCreationMissPolicy_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail_192b1a70 _base;
+    NoInitializationPolicy_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail__BS_60d3e575 _base_NoInitializationPolicy_RE_BSTSmartPointer_RE_IHandlerFunctor_RE_Actor__RE_detail_BSFixedString_char__RE_detail_BSFixedString_char_;
+    BSTSingletonSDM_RE__BSTObjectDictionary_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Act_8ef5c20b _base_BSTSingletonSDM_RE_BSTObjectDictionary_RE_BSTSmartPointer_RE_IHandlerFunctor_RE_Actor__RE_detail_BSFixedString_char__RE_detail_BSFixedString_char__RE_HandlerCreationMissPolicy__RE_NoInitializationPolicy_;
+    unsigned char pad11;
+    unsigned short pad12;
+    unsigned int pad14;
+    BSTScatterTable_RE__BSCRC32_RE__detail__BSFixedString_char_std__equal_to_RE__detail__BS_6e86b1a5 objectDefinitions;
+    BSSpinLock definitionLock;
+};
+static_assert(sizeof(BSTObjectDictionary_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail__BSFix_6f12533b) == 80, "BSTObjectDictionary_RE__BSTSmartPointer_RE__IHandlerFunctor_RE__Actor_RE__detail__BSFix_6f12533b layout differs from the PDB");
