@@ -3,7 +3,8 @@
 // Origin: independently reconstructed from target observations and public declarations.
 // TESForm::formType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); included header.
 // names: GUESS(low); names and signatures are tentative.
-// ConditionFunctions, ConditionFunctions::GetInWorldspace: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions::GetInWorldspace: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x333580 Condition::GetInWorldspace
 #include "ConditionFunctions_333580.h"
 #include "../forms/TESForm_1467c0.h"
