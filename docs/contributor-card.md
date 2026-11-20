@@ -40,6 +40,7 @@ PR check fails a new or changed header that is longer or holds licence text.
 
 Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
+  `CRASHLOGGER_PDB(59818@<version>)` (a name or layout from the generated CrashLogger output, below),
   `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. One label per line.
 - Includes: own header `#include "X.h"`; shared headers by reconstruction-root path such as
   `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. A relative path with `..` is fine when it
@@ -74,6 +75,15 @@ destructors and their adjustor thunks, and overrides named for their base class.
   `// 0x1900a0 NiAVObject::GetCollisionObject() const`, or paste the `// CI hash: 0x<rva> <symbol>`
   line `compare` prints. Both are read by every host; `bind-hints.json` stays on your machine.
 - A thread-local: name the variable `..._tls_0x<offset>` (or a local `tls:` hint).
+
+## Recommended: CrashLogger PDB names
+
+`reconstruction/generated/crashlogger_pdb/` holds names and layouts generated from the community "CrashLogger PDBs"
+(https://www.nexusmods.com/skyrimspecialedition/mods/59818); `next` shows a function's name from it as a suggestion.
+Label each name or layout you take `CRASHLOGGER_PDB(59818@2026.10.24)`, one label per line. It names functions; it
+does not prove them, so `compare` still decides. Downloading the mod (`ae17` variant, 1.7.104) is optional, only
+to refresh the output: keep it under `.local/`, e.g. `.local/pdb/SkyrimSE.pdb` (or `SR_CRASHLOGGER_PDB`), and
+`llvm-pdbutil dump -publics` lists its publics. Never commit the `.pdb`.
 
 ## Mapping-only PRs
 

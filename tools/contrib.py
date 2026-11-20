@@ -59,6 +59,7 @@ import agent_advice
 import agent_identity
 import repo_slug
 import attempt_progress
+import crashlogger_pdb
 from local_paths import local_dir, local_path, main_checkout_local, main_worktree_local, no_sibling_names
 
 REPO = Path(__file__).resolve().parents[1]
@@ -345,6 +346,11 @@ def community_label(name_source):
         if repo in text:
             return f'COMMUNITY({repo}@{rev[:7]}, {licence})', licence
     return None, None
+
+
+def pdb_names(ctx):
+    """The optional CrashLogger PDB name lookup (docs/contributing-agent.md), or None when absent."""
+    return crashlogger_pdb.open_names(ctx.repo, ctx.env, ctx.private / 'crashlogger_publics.json')
 
 
 def area_for(cls, repo=None):
@@ -1703,11 +1709,13 @@ def cmd_next(ctx, args):
               '64_to_255_bytes': sum(c['size_band'] == 1 for c in ready),
               'with_existing_layout': sum(c['has_layout'] for c in ready)}
     rows = ready[:args.count]
+    pdb = pdb_names(ctx)
     ctx.say('claimable now: ' + ', '.join(f'{v} {k.replace("_", " ")}' for k, v in counts.items()))
     for c in rows:
         ctx.say(f'{c["rva"]:>10}  {c["size"]:>5} B  {c["name"]}  -> {c["unit"]}' + ('' if not c['unit_exists']
                                                                                    else '  (existing unit)')
-                + f'  — {c["reason"]}')
+                + f'  — {c["reason"]}'
+                + (f'  [pdb: {hint.name[:80]}]' if (hint := pdb and pdb.suggest(parse_rva(c['rva']))) else ''))
     if not online:
         ctx.say('note: GitHub not reachable; claims by others are not excluded')
     if not rows:
@@ -2049,7 +2057,15 @@ def start(ctx, args, quiet=False):
                          capture_output=True).returncode == 0
         git(ctx, 'switch', *([] if exists else ['-c']), branch)
     packs = [f['pack'] for f in task['functions']]
+    pdb, suggestions = pdb_names(ctx), {}
+    for fn in fns:
+        found = pdb.suggest(fn['rva']) if pdb else None
+        if found:
+            suggestions[f'0x{fn["rva"]:x}'] = {'name': found.name, 'label': found.label, 'source': found.source}
     if not quiet:
+        for rva, found in suggestions.items():
+            ctx.say(f'CrashLogger PDB name for {rva}: {found["name"]} (a suggestion, not evidence; '
+                    f'if you use it, label it {found["label"]})')
         for p in packs:
             ctx.say(f'pack (private, read it locally, never paste it anywhere): {p}/bytes.txt'
                     + (' and listing.txt' if (Path(p) / 'listing.txt').is_file() else '')
@@ -2064,7 +2080,7 @@ def start(ctx, args, quiet=False):
                 'practice': bool(args.practice), 'declarations': declaration_advice,
                 'sibling': str(tdir / 'sibling.md') if sibling else None,
                 'profile': prof['name'], 'read': prof['contrib_docs'], 'max_tries': prof['contrib_max_tries'],
-                'cost': prof['cost']}, \
+                'cost': prof['cost'], **({'pdb_names': suggestions} if suggestions else {})}, \
         f'edit {cpp}, then {ctx.cli} compare'
 
 
