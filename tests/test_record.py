@@ -235,3 +235,38 @@ class CarriedRecordTests(GateFixture, unittest.TestCase):
         self.write('reconstruction/synthetic/Extra.h', '// extra\n')
         with self.assertRaisesRegex(ValueError, 'translation unit changed'):
             self.carry()
+
+    def carry_edited(self):
+        """The accepted review bound the text the runs compared; a comment-only edit then moves the record."""
+        self.save_review()
+        self.write('reconstruction/synthetic/SyntheticSum.h',
+                   '// SyntheticAddOne: OBSERVED; confirmed in the table\nint SyntheticAddOne(int);\n')
+        self.carry()
+
+    def record_carried(self):
+        return record.apply(self.root, 'synthetic-fixture', [self.fn['rva']], BLOB, model='gpt-6.1-terra',
+                            task_id='pr-bot-482-abcd', records=self.out)
+
+    def test_a_carried_function_is_recorded_at_the_new_digest_not_refused_as_already_matched(self):
+        self.carry_edited()
+        out = self.record_carried()
+        self.assertEqual((out['recorded'], out['refused']), ([self.fn['rva']], {}))
+        new = json.loads((self.root / RECORD).read_text())
+        self.assertEqual(new['source']['digest'], tu_digest(self.root, [CPP, HDR], DIGEST_METHOD))
+        self.assertIn(RECORD, out['files'])
+        review = json.loads((self.root / REVIEW).read_text())
+        self.assertEqual(review['source_digest'], new['source']['digest'])
+        validate(json.loads((self.root / 'data/progress.json').read_text()), self.target, self.root)
+
+    def test_a_carried_function_recorded_twice_is_a_no_op_the_second_time(self):
+        self.carry_edited()
+        self.record_carried()
+        again = self.record_carried()
+        self.assertEqual(again['recorded'], [])
+        self.assertEqual(again['refused'][self.fn['rva']], 'already matched')
+
+    def test_a_record_that_did_not_move_is_still_already_matched(self):
+        self.save_review()
+        self.carry()
+        out = self.record_carried()
+        self.assertEqual((out['recorded'], out['refused']), ([], {self.fn['rva']: 'already matched'}))

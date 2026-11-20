@@ -378,7 +378,13 @@ class PoolTests(WorkDir):
     def pool_bot(self, listing, arrived):
         bot = self.PoolBot(self.work)
         bot.arrived = arrived
-        bot.gh_json = listing
+
+        def gh_json(*args):
+            rows = listing(*args)
+            if args[:2] == ('pr', 'view'):  # the refresh a PR gets once it has a free slot
+                return dict(next(r for r in rows if r['number'] == int(args[2])), state='OPEN', labels=[])
+            return rows
+        bot.gh_json = gh_json
         bot.warm = lambda pr: None
         return bot
 

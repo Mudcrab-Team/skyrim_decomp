@@ -947,6 +947,142 @@ class RecordStaleTests(unittest.TestCase):
         self.assertEqual(offered, ['0x20', '0x30', '0x40'])
 
 
+class RecordStepTests(RecordStaleTests):
+    """The Record step commits every function it was given, and says so when record.py refused one."""
+
+    def setUp(self):
+        super().setUp()
+        self.stdout = b''
+        self.pr = {'number': 7, 'headRefOid': 'a' * 40, 'author': {'login': 'x'}}
+
+    def fake_run(self, argv, **kw):
+        argv = [str(a) for a in argv]
+        if argv[1].endswith('record.py'):
+            self.argv = argv
+            return subprocess.CompletedProcess(argv, 0, self.stdout, b'')
+        return subprocess.CompletedProcess(argv, 0, b'', b'')
+
+    def test_every_carried_function_is_offered_together_with_the_ordinary_ones(self):
+        rvas = [0x30, 0x40, 0x50, 0x60, 0x70]
+        self.stdout = json.dumps({'recorded': [hex(r) for r in rvas], 'refused': {}}).encode()
+        self.bot.record(self.pr, self.state, rvas)
+        offered = [self.argv[i + 1] for i, a in enumerate(self.argv) if a == '--rva']
+        self.assertEqual(offered, [hex(r) for r in rvas])
+        self.assertTrue(self.state.get('recorded'))
+
+    def test_a_function_record_py_refused_leaves_the_pr_unrecorded_and_stops(self):
+        self.stdout = json.dumps({'recorded': ['0x40'], 'refused': {'0x30': 'already matched'}}).encode()
+        with self.assertRaisesRegex(pr_bot.Stop, r'refused 1 function.*0x30: already matched'):
+            self.bot.record(self.pr, self.state, [0x30, 0x40])
+        self.assertFalse(self.state.get('recorded'))
+
+    def test_output_that_is_not_json_is_not_a_refusal(self):
+        self.stdout = b'no json here\n'
+        self.bot.record(self.pr, self.state, [0x30])
+        self.assertTrue(self.state.get('recorded'))
+
+
+class CarriedRecordsTests(unittest.TestCase):
+    """carried_records builds one record per carried function, whatever the count."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+        self.bad = set()
+        bot = pr_bot.Bot(root=ROOT, work=self.work)
+        bot.tree, bot.run = self.work / 'tree', self.fake_run
+        self.bot = bot
+        self.asked = []
+
+    def fake_run(self, argv, **kw):
+        argv = [str(a) for a in argv]
+        self.asked.append(int(argv[5]))
+        if int(argv[5]) in self.bad:
+            return subprocess.CompletedProcess(argv, 1, b'', b'')
+        dest = Path(argv[6]) / argv[4] / f'0x{int(argv[5]):x}.json'
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text('{}')
+        return subprocess.CompletedProcess(argv, 0, b'', b'')
+
+    def test_every_carried_function_gets_a_record_in_one_directory(self):
+        rvas = {0x330290, 0x3308c0, 0x330b90, 0x330dd0, 0x3316b0, 0x332260}
+        out, failed = self.bot.carried_records('7-aaaaaaaa/records', rvas, 'b')
+        self.assertEqual((failed, sorted(self.asked)), (set(), sorted(rvas)))
+        self.assertEqual(sorted(p.name for p in (out / 'b').glob('*.json')), sorted(f'0x{r:x}.json' for r in rvas))
+
+    def test_one_function_that_cannot_be_carried_does_not_hold_back_the_others(self):
+        self.bad = {0x3308c0}
+        out, failed = self.bot.carried_records('7-aaaaaaaa/records', {0x330290, 0x3308c0, 0x330b90}, 'b')
+        self.assertEqual(failed, {0x3308c0})
+        self.assertEqual(sorted(p.name for p in (out / 'b').glob('*.json')), ['0x330290.json', '0x330b90.json'])
+
+
+class StaleListingTests(unittest.TestCase):
+    """A PR that waited for a free slot is worked on at the head it has now, not the one it was listed with."""
+
+    LISTED, LIVE = 'a' * 40, 'b' * 40
+
+    class Slot:
+        def __init__(self, live):
+            self.live, self.seen, self.asked = live, [], []
+
+        def gh_json(self, *args):
+            self.asked.append(args)
+            return dict(self.live)
+
+        def attempt(self, pr):
+            self.seen.append(pr)
+            return dict(summary=dict(pr=pr['number'], head=pr['headRefOid'], merge=True))
+
+    class Gh:
+        def succeeded(self):
+            pass
+
+        def failed(self):
+            return 0
+
+    def pr(self, **kw):
+        return dict({'number': 7, 'headRefOid': self.LISTED, 'author': {'login': 'x'}, 'baseRefName': 'main',
+                     'isDraft': False, 'mergeable': 'MERGEABLE', 'labels': []}, **kw)
+
+    def work(self, live):
+        slot = self.Slot(live)
+        slots = pr_bot.queue.Queue()
+        slots.put(slot)
+        pr_bot.work_one(slots, self.Gh(), self.pr())
+        self.assertIs(slots.get_nowait(), slot)  # the slot is always given back
+        return slot
+
+    def live(self, **kw):
+        return dict({'number': 7, 'headRefOid': self.LIVE, 'author': {'login': 'x'}, 'baseRefName': 'main',
+                     'isDraft': False, 'mergeable': 'MERGEABLE', 'labels': [], 'state': 'OPEN'}, **kw)
+
+    def test_the_head_after_the_wait_is_the_one_processed_and_merged(self):
+        slot = self.work(self.live())
+        self.assertEqual([p['headRefOid'] for p in slot.seen], [self.LIVE])
+        self.assertEqual(slot.asked[0][:3], ('pr', 'view', '7'))
+
+    def test_an_unchanged_head_is_processed_as_listed(self):
+        slot = self.work(self.live(headRefOid=self.LISTED))
+        self.assertEqual([p['headRefOid'] for p in slot.seen], [self.LISTED])
+
+    def test_a_pr_closed_while_it_waited_is_not_processed(self):
+        self.assertEqual(self.work(self.live(state='MERGED')).seen, [])
+
+    def test_a_pr_turned_into_a_draft_while_it_waited_is_not_processed(self):
+        self.assertEqual(self.work(self.live(isDraft=True)).seen, [])
+
+    def test_a_github_failure_while_refreshing_backs_off_and_frees_the_slot(self):
+        slot = self.Slot({})
+        slot.gh_json = lambda *a: (_ for _ in ()).throw(pr_bot.GhFailure('boom'))
+        slots = pr_bot.queue.Queue()
+        slots.put(slot)
+        pr_bot.work_one(slots, self.Gh(), self.pr())
+        self.assertEqual(slot.seen, [])
+        self.assertIs(slots.get_nowait(), slot)
+
+
 class LeakgrepContractTests(unittest.TestCase):
     OUTPUT = ('reconstruction/a/B.cpp:3 asm-mnemonic\nreconstruction/a/B.h:10 include-outside-roots\n'
               'reconstruction/a/B.h:11 asm-mnemonic\nleakgrep: 3 hit(s)\n')

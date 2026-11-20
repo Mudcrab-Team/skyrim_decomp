@@ -2486,7 +2486,24 @@ class Bot:
             # record.py prints which function it refused and why; without it the log only says "python3.13 failed".
             tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
             raise Stop(f'record step failed after the merge: {tail[0][:300]}')
+        # record.py exits 0 when any function was recorded; one it refused is reported only in its output and
+        # would otherwise stay stale on main while the PR is marked recorded.
+        left = refused_by_record(done.stdout)
+        if left:
+            raise Stop(f'record step refused {len(left)} function(s) after the merge: '
+                       + ', '.join(f'{r}: {why}' for r, why in sorted(left.items())[:3])[:300])
         state.set('recorded', True)
+
+
+def refused_by_record(stdout):
+    """{rva: reason} that tools/record.py refused, from the JSON line it prints last; {} when there is none."""
+    for line in reversed((stdout or b'').decode(errors='replace').strip().splitlines()):
+        try:
+            refused = json.loads(line).get('refused')
+        except (ValueError, AttributeError):
+            continue
+        return dict(refused) if isinstance(refused, dict) else {}
+    return {}
 
 
 def merged_unrecorded(directory, now, max_age=RECORD_RETRY_WINDOW):
@@ -2542,10 +2559,28 @@ def outcome(result, pr):
     return line
 
 
+def current(slot, pr):
+    """The PR as GitHub has it now, or None when it is no longer one to work on.
+
+    The poll lists every PR once per tick but a PR can wait a whole review for a free slot; its listed head
+    would then be verified, reviewed and finally refused at merge because the branch had moved meanwhile,
+    and the retry queues behind the others and goes stale the same way.
+    """
+    live = slot.gh_json('pr', 'view', str(pr['number']), '-R', REPOSITORY, '--json',
+                        'number,headRefOid,author,baseRefName,isDraft,mergeable,labels,state')
+    if live.pop('state', None) != 'OPEN':
+        return None
+    fresh = {**pr, **live}
+    return fresh if pollable([fresh]) else None
+
+
 def work_one(slots, gh, pr):
     """One PR on a free slot; the printed line is the outcome, a failure goes to its own ledger."""
     slot = slots.get()
     try:
+        pr = current(slot, pr)
+        if pr is None:
+            return
         result = slot.attempt(pr)
         if result is not None:
             gh.succeeded()
