@@ -2064,6 +2064,25 @@ def pollable(prs):
 POOL_SIZE = 2
 
 
+def outcome(result, pr):
+    """The log line for a finished PR: the summary, else the decision's keys.
+
+    A PR that is neither blocked nor merged was refused function by function, so the line carries the
+    count of each verdict (`why`), which would otherwise be visible only in the sticky comment.
+    """
+    summary = result.get('summary')
+    if summary:
+        return summary
+    line = {k: result[k] for k in ('pr', 'head', 'blocked', 'merge') if k in result} or {'pr': pr['number']}
+    verdicts = result.get('verdicts') or {}
+    if not line.get('merge') and not line.get('blocked') and verdicts:
+        why = {}
+        for verdict in verdicts.values():
+            why[verdict] = why.get(verdict, 0) + 1
+        line['why'] = dict(sorted(why.items()))
+    return line
+
+
 def work_one(slots, gh, pr):
     """One PR on a free slot; the printed line is the outcome, a failure goes to its own ledger."""
     slot = slots.get()
@@ -2072,8 +2091,7 @@ def work_one(slots, gh, pr):
         if result is not None:
             gh.succeeded()
             # The state of a finished PR is large and was printed again every tick; the summary says what happened.
-            print(stamp(), json.dumps(result.get('summary') or {k: result[k] for k in ('pr', 'head', 'blocked', 'merge')
-                                                                if k in result} or {'pr': pr['number']}), flush=True)
+            print(stamp(), json.dumps(outcome(result, pr)), flush=True)
     except GhFailure as exc:
         delay = gh.failed()
         print(f'{stamp()} pr {pr["number"]}: gh failed ({exc}); GitHub calls back off for {delay:.0f}s',

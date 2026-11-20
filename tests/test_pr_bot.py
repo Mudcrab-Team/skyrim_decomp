@@ -1773,5 +1773,18 @@ class TargetRvasTest(unittest.TestCase):
         self.assertEqual(pr_bot.Bot(root=ROOT, work=Path(tempfile.mkdtemp())).target_rvas(), set())
 
 
+class OutcomeLineTests(unittest.TestCase):
+    def test_unblocked_refusal_says_why(self):
+        result = dict(pr=350, head='h', blocked=None, merge=False,
+                      verdicts={'0x1': 'fail:review', '0x2': 'fail:review', '0x3': 'debt'})
+        self.assertEqual(pr_bot.outcome(result, dict(number=350))['why'], {'debt': 1, 'fail:review': 2})
+
+    def test_merge_and_blocked_lines_stay_short(self):
+        self.assertNotIn('why', pr_bot.outcome(dict(pr=1, head='h', blocked=None, merge=True, verdicts={'0x1': 'matched'}),
+                                               dict(number=1)))
+        self.assertNotIn('why', pr_bot.outcome(dict(pr=1, head='h', blocked='stale', merge=False, verdicts={'0x1': 'x'}),
+                                               dict(number=1)))
+
+
 if __name__ == '__main__':
     unittest.main()
