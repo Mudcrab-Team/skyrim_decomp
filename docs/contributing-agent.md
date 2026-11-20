@@ -14,7 +14,7 @@ verifier hosts.
 
 A function counts as `matched` only after both host comparisons and one review; a local pass is a
 candidate. A function that fails stays a draft and the bot comment names a reason code. The bot keeps
-one comment per PR and edits it for each new push. Fix it and push to the same branch. Aim for about 20-60 functions per PR (60 is the per-PR cap), or fewer if they are large; one
+one comment per PR and edits it for each new push. Fix it and push to the same branch. Aim for about 20-120 functions per PR (120 is the per-PR cap), or fewer if they are large; one
 big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
 per class, since each PR costs a full verification and merge cycle.
 

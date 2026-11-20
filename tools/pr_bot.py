@@ -95,7 +95,7 @@ STICKY = '<!-- pr-bot -->'
 STICKY_PREFIX = '<!-- pr-bot'
 # Small in both ways: a large single function must never be asked to batch, so an unknown size never asks.
 BATCH_MIN, BATCH_BYTES = 10, 2048
-BATCH_LINE = ('Small request: please batch 20 to 60 functions in one PR next time (mixing classes is fine); each PR '
+BATCH_LINE = ('Small request: please batch 20 to 120 functions in one PR next time (mixing classes is fine); each PR '
               'costs a full verification and merge cycle. This one is still processed.')
 RUNBOOK = 'docs/reviewer-runbook.md'
 # Generated from data/progress.json; a mapping PR omits them and the bot regenerates them on main.
@@ -879,7 +879,7 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
+        self.config = dict(model_timeout=2250, compare_timeout=3600, hash_wait=1800, max_functions=120,
                            **(config or {}))
         self.tree = self.work / 'tree'
         self.clock = time.time

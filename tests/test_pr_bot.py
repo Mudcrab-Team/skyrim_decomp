@@ -1773,6 +1773,27 @@ class StickyCommentTests(unittest.TestCase):
         self.assertIn('2 functions, over the limit of 1', bot.comments[0]['body'])
         self.assertTrue(bot.comments[0]['body'].startswith(pr_bot.STICKY))
 
+    def test_the_default_cap_is_120_and_scales_the_step_timeouts_with_it(self):
+        bot = FakeBot(self.work)
+        self.assertEqual(bot.config['max_functions'], 120)
+        self.assertEqual((bot.config['model_timeout'], bot.config['compare_timeout'], bot.config['hash_wait']),
+                         (2250, 3600, 1800))
+        self.assertIn('20 to 120 functions', pr_bot.BATCH_LINE)
+
+    def test_a_pr_at_the_default_cap_is_not_rejected_and_one_over_is(self):
+        bot = FakeBot(self.work)
+        bot.new_functions = lambda base, units: set(range(121))
+        with self.assertRaises(pr_bot.Rejected):
+            bot.process(PR)
+        self.assertIn('121 functions, over the limit of 120', bot.comments[0]['body'])
+        bot = FakeBot(self.work)
+        bot.new_functions = lambda base, units: set(range(120))
+        try:
+            bot.process(PR)
+        except pr_bot.Rejected as exc:
+            self.assertNotIn('over the limit', str(exc))
+        self.assertTrue(all('over the limit' not in c['body'] for c in bot.comments))
+
     def test_a_rejection_edits_the_existing_comment_in_place(self):
         bot = FakeBot(self.work)
         bot.config['max_functions'] = 1

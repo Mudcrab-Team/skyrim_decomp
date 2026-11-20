@@ -72,6 +72,10 @@ class HeaderClaims(Fixture):
         self.write(HEADER, '// ' + ''.join(f'RVA 0x{0x2000 + i:x}\n// ' for i in range(ci.MAX_CLAIMS_PER_UNIT + 20)))
         self.assertEqual(len(ci.requests(self.root, [HEADER], {})), ci.MAX_CLAIMS_PER_UNIT)
 
+    def test_the_claim_cap_covers_a_whole_pr_in_one_unit(self):
+        import pr_bot
+        self.assertGreaterEqual(ci.MAX_CLAIMS_PER_UNIT, pr_bot.Bot(root=ROOT, work=self.root).config['max_functions'])
+
     def test_a_unit_without_claims_or_bindings_is_still_one_unbound_request(self):
         self.write(HEADER, 'int f();\n')
         self.assertEqual(ci.requests(self.root, [HEADER], {}),

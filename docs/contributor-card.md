@@ -4,7 +4,7 @@ Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, 
 <model>"`, edit the two source files it creates, `compare`, then `submit --dry-run` and `submit`.
 Open a PR that touches only `reconstruction/**`; checks run; the bot reviews and merges.
 
-Aim for about 20-60 functions per PR (60 is the per-PR cap), or fewer if they are large; one
+Aim for about 20-120 functions per PR (120 is the per-PR cap), or fewer if they are large; one
 big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
 per class, since each PR costs a full verification and merge cycle. `submit <task> <task>...` (or
 `submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
