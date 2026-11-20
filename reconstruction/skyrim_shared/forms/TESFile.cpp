@@ -1,3 +1,7 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: brown-room reconstruction from disassembly (ReadFormHeader); original otherwise; no sibling code reused
+// 0x1cf0f0 TESFile::ReadFormHeader
+// Adapted bodies: none
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image, with the class layout from the header beside this file. SeekNextSubrecord, Duplicate and Seek were finished by claude-opus-5-5 from the Drafter's near-misses.
 // GetCurrentThreadId, GetLastError, FormatMessageA, LocalFree: STANDIN OBSERVED; Win32 imports of the image, declared locally
@@ -9,7 +13,9 @@
 // 0x1cd860 TESFile::Seek
 #include "TESFile.h"
 
+#include <cstddef>
 #include <cstring>
+#include <intrin.h>
 
 extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
 extern "C" __declspec(dllimport) unsigned long __stdcall GetLastError();
@@ -20,11 +26,22 @@ extern "C" __declspec(dllimport) void* __stdcall LocalFree(void* a_mem);
 
 extern bool                 g_threadSafeFiles;
 extern std::uint32_t        g_tes4RecordType;
+extern std::uint32_t        g_secondRecordType;
+bool                        IsReservedFormID(std::uint32_t a_formID);
+void                        CopyBytes(void* a_dest, std::size_t a_destSize, const void* a_src, std::size_t a_count);
 extern const std::uint32_t  g_seekOrigin;
 FormType                    ConvertFormType(std::uint32_t a_recordType);
 Main*                       Main::singleton;
 
+// IsReservedFormID, CopyBytes, g_secondRecordType: GUESS(low); callees at RVAs 0x1e6600 and 0x10c240 and a global at 0x2078a30, no community name
+// CopyBytes: GUESS(low); its two sizes are taken as pointer-width counts (the caller widens them)
 namespace {
+    // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value.
+    inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
+    {
+        return ((a_flags >> a_bit) & 1) != 0;
+    }
+
     const std::uint32_t kCompressedFlag = 0x00040000;
 }
 
@@ -64,6 +81,88 @@ FormType TESFile::GetFormType()
         ReadChunkHeader();
     }
     return ConvertFormType(currentform.form);
+}
+
+bool TESFile::ReadFormHeader()
+{
+    if (!IsOpen()) {
+        return false;
+    }
+    FORM*         header = &currentform;
+    std::uint32_t count  = 0;
+    if (g_threadSafeFiles && unk029) {
+        void* handle = unk018;
+        if (handle) {
+            if (unk024 < unk020) {
+                count = (unk024 + 0x18 > unk020) ? unk020 - unk024 : 0x18;
+                CopyBytes(header, count, static_cast<char*>(handle) + unk024, count);
+                unk024 += count;
+            }
+        }
+    } else if (file) {
+        count = file->Read(header, 0x18);
+    }
+    if (count == 0x18) {
+        if (bigEndian) {
+            // byte-swap intrinsics: the image swaps each header field of a big-endian file
+            std::uint32_t* words = reinterpret_cast<std::uint32_t*>(header);
+            for (std::uint32_t i = 0; i < 5; ++i) {
+                // byte-swap intrinsic: swaps one 32-bit header field
+                words[i] = _byteswap_ulong(words[i]);
+            }
+            // byte-swap intrinsics: the two 16-bit fields at the end of the header
+            // byte-swap intrinsic: swaps the 16-bit version field
+            header->formVersion = _byteswap_ushort(header->formVersion);
+            // byte-swap intrinsic: swaps the 16-bit control version field
+            header->vcVersion   = _byteswap_ushort(header->vcVersion);
+        }
+        if (currentform.form == g_tes4RecordType || currentform.form == g_secondRecordType) {
+            return true;
+        }
+        TESFile* owner = FindMaster(reinterpret_cast<std::uint8_t*>(&currentform.formID)[3]);
+        if (!owner) {
+            owner = this;
+        }
+        if (IsReservedFormID(currentform.formID)) {
+            return true;
+        }
+        reinterpret_cast<std::uint8_t*>(&currentform.formID)[3] = 0;
+        if (TestBit(owner->flags, 9)) {
+            const std::uint32_t low = (currentform.formID & 0xFFF) | 0xFE000000;
+            currentform.formID = low;
+            currentform.formID = (static_cast<std::uint32_t>(owner->smallFileCompileIndex) << 12) | low;
+            return true;
+        }
+        currentform.formID |= static_cast<std::uint32_t>(owner->compileIndex) << 24;
+        return true;
+    }
+    std::memset(header, 0, sizeof(FORM));
+    return false;
+}
+
+bool TESFile::IsOpen() const
+{
+    if (!g_threadSafeFiles || !unk029) {
+        if (file) {
+            return true;
+        }
+    } else if (unk018) {
+        return true;
+    }
+    return false;
+}
+
+TESFile* TESFile::FindMaster(std::uint8_t a_index) const
+{
+    TESFile* owner = nullptr;
+    if (TESFile** masters = masterPtrs) {
+        const std::uint32_t index = static_cast<std::uint32_t>(a_index) + 1;
+        if (index > masterCount) {
+            return nullptr;
+        }
+        owner = masters[index - 1];
+    }
+    return owner;
 }
 
 bool TESFile::IsCompressed() const

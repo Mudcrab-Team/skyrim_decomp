@@ -1,4 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Code origin: declarations written for this reconstruction; names from the community headers
+// below, layout from analysis of the pinned image; no implementation bodies reused.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
 // at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
@@ -20,11 +22,14 @@
 // BSFile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the two position members
 // BSFile::auxTrueFilePos, ::trueFilePos: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares auxTrueFilePos as std::int32_t, read here as an unsigned position
 // TESFile::OpenInternal, ::ReadFormHeader, ::ReadChunkHeader, ::SeekRaw, ::DuplicateForThread: GUESS; callees at RVAs 0x1ca490, 0x1cf0f0, 0x1cf2e0, 0x1cfcf0, 0x1cf680 with no community name
-// TESFile::EnsureOpen, ::IsCompressed, ::GetRootFile, ::QueryFilePosition: GUESS; inline helpers with no address of their own, named for what they do
+// TESFile::EnsureOpen, ::IsCompressed, ::IsOpen, ::FindMaster, ::GetRootFile, ::QueryFilePosition: GUESS; inline helpers with no address of their own, named for what they do
 // ConvertFormType: GUESS; the callee at RVA 0x1e5c10 maps a form record type to a FormType
 // FormType: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only None is named
 // g_tes4RecordType, g_seekOrigin, g_threadSafeFiles: GUESS; globals at RVAs 0x2078250, 0x1a41400,
 // 0x2077fe8
+// TESFile::masterCount, ::masterPtrs, ::compileIndex, ::smallFileCompileIndex: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); same offsets 0x460, 0x468, 0x478, 0x47A
+// TESFile::bigEndian, ::flags: GUESS(low); members at 0x2E9 and 0x438 read by ReadFormHeader (not NG's flags at 0x434)
+// BSFile::Read: GUESS; the callee at RVA 0xebea00, a read into a buffer that returns the byte count
 #pragma once
 
 #include <cstdint>
@@ -66,6 +71,8 @@ public:
     std::uint32_t auxTrueFilePos;  // 58
     std::uint8_t  unk05C[0x170 - 0x5C];
     std::uint32_t trueFilePos;  // 170
+
+    std::uint32_t Read(void* a_buffer, std::uint32_t a_size);
 };
 
 class TESFile {
@@ -86,6 +93,10 @@ private:
 
     // Whether the current record's data is stored compressed (the file header record never is).
     bool IsCompressed() const;
+    // Whether a read source (the thread-safe handle or the file) is available.
+    bool IsOpen() const;
+    // The master file the low byte names, or null when it names none.
+    TESFile* FindMaster(std::uint8_t a_index) const;
     // Opens the file on demand, so every reader can assume a live handle.
     void EnsureOpen();
     // The outermost file of the thread-safe parent chain that starts at a_file (null for none).
@@ -117,7 +128,19 @@ private:
     std::uint32_t fileOffset;           // 2A8
     std::uint32_t formoffset;           // 2AC
     std::uint32_t chunkoffset;          // 2B0
-    std::uint8_t  unk2B4[0x4A0 - 0x2B4];  // 2B4
+    std::uint8_t  unk2B4[0x2E9 - 0x2B4];  // 2B4
+    std::uint8_t  bigEndian;            // 2E9
+    std::uint8_t  unk2EA[0x438 - 0x2EA];  // 2EA
+    std::uint32_t flags;                // 438
+    std::uint8_t  unk43C[0x460 - 0x43C];  // 43C
+    std::uint32_t masterCount;          // 460
+    std::uint32_t pad464;               // 464
+    TESFile**     masterPtrs;           // 468
+    std::uint8_t  unk470[0x478 - 0x470];  // 470
+    std::uint8_t  compileIndex;         // 478
+    std::uint8_t  pad479;               // 479
+    std::uint16_t smallFileCompileIndex;  // 47A
+    std::uint8_t  unk47C[0x4A0 - 0x47C];  // 47C
     char*         decompressedFormBuffer;      // 4A0
     std::uint32_t decompressedFormBufferSize;  // 4A8
     std::uint32_t pad4AC;                      // 4AC
