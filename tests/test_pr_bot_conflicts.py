@@ -82,6 +82,9 @@ class MergeMainTests(unittest.TestCase):
         for bare in (self.remote, self.fork):
             git(base, 'init', '--quiet', '--bare', '-b', 'main', str(bare))
         git(base, 'clone', '--quiet', str(self.remote), str(self.root))
+        # The bot's merge commit runs plain `git merge`; a CI runner has no global committer identity.
+        git(self.root, 'config', 'user.name', 't')
+        git(self.root, 'config', 'user.email', 't@example.com')
         git(self.root, 'checkout', '--quiet', '-b', 'main')
         write(self.root, UNIT, HEADER + BODY)
         write(self.root, 'tools/x.py', ['print(1)\n'])
