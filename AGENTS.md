@@ -58,5 +58,8 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
   `docs/verification.md`: byte match on two hosts plus one Reviewer
   approval, integration. Bootstrap CI checks only publication hygiene, metadata and site
   generation; it does NOT compare against the game. The separate CI-hash job (docs/verification.md, "CI hash check as the second host") does compare compiled functions against published target hashes and counts as the second verifier host.
+- A byte match is not yet readable source. [docs/code-rules.md](docs/code-rules.md) holds the code rules and
+  the project profile; `python3 tools/check_code_rules.py --list <files>` reports a unit's findings. It is
+  advisory and changes no gate.
 - Progress comes only from `data/progress.json`; totals are derived, not manually entered into HTML.
   Unknown scope means no completion percentage. No dummy success records or fake history.
