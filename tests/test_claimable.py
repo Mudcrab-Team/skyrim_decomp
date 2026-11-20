@@ -119,7 +119,48 @@ class WindowPolicyTests(Fixture):
         got = self.window(rows, siblings={'Rich': 9, 'Foo': 1})
         # small first; then medium (named before unnamed, more siblings first); large and hard functions last
         self.assertEqual(got, [0x80, 0x20, 0x30, 0x10, 0x60, 0x50, 0x70, 0x40])
-        self.assertEqual(target_hash_offers.rank_key(dict(rows)[0x30], {'Rich': 9}, 'Rich')[:3], (False, 2, True))
+        self.assertEqual(target_hash_offers.rank_key(dict(rows)[0x30], {'Rich': 9}, 'Rich')[:4], (False, False, 2, True))
+
+    def pdb_types(self, *rows):
+        """Write a generated CrashLogger layout directory holding `rows` of (name, kind, size, variant)."""
+        base = self.repo / target_hash_offers.PDB_DIR
+        (base / 'types').mkdir(parents=True)
+        lines = ['# CRASHLOGGER_PDB(59818@test)', '# header']
+        for name, kind, size, variant in rows:
+            lines.append('\t'.join((name, name, kind, str(size), variant)))
+            if name != 'Nofile':
+                (base / 'types' / f'{name}.h').write_text(f'struct {name} {{}};\n')
+        (base / 'types.tsv').write_text('\n'.join(lines) + '\n')
+
+    def test_a_generated_pdb_layout_counts_as_a_layout_unit(self):
+        self.pdb_types(('Actor', 'struct', 40, '-'), ('Zzzq', 'struct', 8, '-'), ('Enumy', 'enum', 4, '-'),
+                       ('Unioned', 'union', 4, '-'), ('Empty', 'struct', 0, '-'), ('Dup', 'struct', 8, 'abc12345'),
+                       ('Nofile', 'struct', 8, '-'))
+        self.assertEqual(target_hash_offers.pdb_layout_classes(self.repo), {'Actor', 'Zzzq'})
+        rows = [meta(0x10, 8, cls='Actor'), meta(0x20, 8, cls='Zzzq'), meta(0x30, 8, cls='Enumy'),
+                meta(0x40, 8, cls='Dup'), meta(0x50, 8, cls='Nolayout'), meta(0x60, 8, cls='Actor', verdict='unsupported')]
+        # Zzzq has a header but no unit area rule, so nothing could be started there; the others have no PDB layout.
+        self.assertEqual(self.window(rows), [0x10])
+
+    def test_no_pdb_directory_changes_nothing(self):
+        self.assertEqual(target_hash_offers.pdb_layout_classes(self.repo), set())
+        self.assertEqual(self.window([meta(0x10, 8, cls='Actor')]), [])
+
+    def test_pdb_only_classes_rank_after_real_units_and_keep_size_order_within_each(self):
+        self.pdb_types(('Actor', 'struct', 40, '-'), ('Foo', 'struct', 8, '-'))
+        rows = [meta(0x10, 8, cls='Actor'), meta(0x20, 300, cls='Foo'), meta(0x30, 4000, cls='Foo'),
+                meta(0x40, 70, cls='Actor'), meta(0x50, 40, cls='Foo', reasons=['jump-table']), meta(0x60, 20, cls='Actor')]
+        got = self.window(rows)
+        # Foo has a real unit (its PDB header is irrelevant): medium, then hard, then large; Actor is PDB-only: small, small-medium.
+        self.assertEqual(got, [0x20, 0x50, 0x30, 0x10, 0x60, 0x40])
+        self.assertTrue(target_hash_offers.rank_key(dict(rows)[0x10], {}, 'Actor', True)
+                        > target_hash_offers.rank_key(dict(rows)[0x30], {}, 'Foo'))
+
+    def test_a_class_with_a_cpp_but_no_header_falls_back_to_its_pdb_layout(self):
+        self.pdb_types(('Actor', 'struct', 40, '-'))
+        (self.repo / 'reconstruction/skyrim_shared/actors').mkdir(parents=True)
+        (self.repo / 'reconstruction/skyrim_shared/actors/Actor.cpp').write_text('')
+        self.assertEqual(self.window([meta(0x10, 8, cls='Actor')]), [0x10])
 
     def test_keep_reserved_and_known_are_never_selected_and_limit_bounds_the_slice(self):
         rows = [meta(r, 8 + r) for r in (0x10, 0x20, 0x30, 0x40, 0x50)]

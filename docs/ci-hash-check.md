@@ -61,11 +61,16 @@ all functions in the current open claim snapshot. Claim addresses outside progre
 against local function/pdata boundaries; unresolved identities stop generation. The checked-in
 offered inventory records public claim URLs/scopes and hashes of its input snapshots. This
 coverage is smaller than the full executable census. `target_hash_offers.py` also offers a bounded window of
-unmapped ordinary functions whose class already has a layout unit; `contrib.py` accepts them and `tools/record.py` creates their inventory entry on acceptance
+unmapped ordinary functions whose class already has a layout unit. A class with a generated CrashLogger layout header
+(`reconstruction/generated/crashlogger_pdb/types/`, label `CRASHLOGGER_PDB(59818@version)`) counts as having one, if its
+fullest PDB type is a struct or class with a size and a unit of it can be placed (`tools/unit_paths.py`); those classes
+are offered after the classes with a real unit, and the PDB layout is a community reconstruction, not evidence. The
+local-support verdict is unaffected: it comes from the analysis of the function itself and is required either way.
+`contrib.py` accepts them and `tools/record.py` creates their inventory entry on acceptance
 (`findings/claim-time-mapping.md`). The window refills itself: offered functions stay offered until they are
 recorded, and when fewer than the low-water mark (2,000 by default, `--low-water`, `SR_WINDOW_LOW_WATER` for the
 bot) are left to claim, the next slice (2,000 by default, `--slice`, `SR_WINDOW_SLICE`) is added, so the published
-list grows by one slice per refill and never by the size of the function table. A slice is ordered small and
+list grows by one slice per refill and never by the size of the function table. A slice is ordered by real-unit classes first, then small and
 medium functions first, known names (community, RTTI, address library) and classes with matched siblings ahead
 of the rest, very large and known-hard shapes last. Functions that internal workers have planned (private plan
 files under `.local/twins` and `.local/stamp-sweep`, passed as `--reserved-dir`) are skipped and, if not claimed,

@@ -27,6 +27,7 @@ UNNAMED_HOW = {'placeholder'}
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')  # private plans of internal workers, relative to the bot root
 ON_DEMAND_MAX = 128  # PR-claimed functions published per run; a PR is capped at far fewer
 MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
+PDB_DIR = 'reconstruction/generated/crashlogger_pdb'  # generated layout headers, label CRASHLOGGER_PDB(59818@version)
 
 
 def size_tier(size):
@@ -46,12 +47,34 @@ def is_named(fn):
     return any(n.get('how') not in UNNAMED_HOW for n in fn.get('names') or ()) or how in {'rtti-adjacent', 'community-id'}
 
 
-def rank_key(fn, siblings, cls):
-    """Lower is offered earlier: ordinary shapes by size tier, named before unnamed, more matched siblings
-    first; very large and known-hard functions last."""
+def pdb_layout_classes(root):
+    """Classes that have a generated CrashLogger layout header: the fullest PDB type of a plain class name, a
+    struct or class (not an enum or union) with a size and its header on disk. These are community
+    reconstructions, so they stand in for a layout unit only when a function is offered, never as evidence."""
+    base = Path(root) / PDB_DIR
+    try:
+        lines = (base / 'types.tsv').read_text().splitlines()
+    except OSError:
+        return set()
+    out = set()
+    for line in lines:
+        parts = line.split('\t')
+        if line.startswith('#') or len(parts) < 5:
+            continue
+        name, ident, kind, size, variant = parts[:5]
+        if (name == ident and variant == '-' and kind in ('struct', 'class') and size.isdigit() and int(size) > 0
+                and contrib.PLAIN_NAME.fullmatch(f'{name}::Function') and (base / 'types' / f'{ident}.h').is_file()):
+            out.add(name)
+    return out
+
+
+def rank_key(fn, siblings, cls, pdb_only=False):
+    """Lower is offered earlier: classes with a real layout unit before classes that only have a generated PDB
+    layout; within each, ordinary shapes by size tier, named before unnamed, more matched siblings first; very
+    large and known-hard functions last."""
     tier = size_tier(fn['size'])
     last = is_hard(fn) or tier == len(SIZE_TIERS)
-    return (last, tier, not is_named(fn), -siblings.get(cls, 0), VERDICT_RANK[fn['v2']['verdict']], fn['size'],
+    return (pdb_only, last, tier, not is_named(fn), -siblings.get(cls, 0), VERDICT_RANK[fn['v2']['verdict']], fn['size'],
             fn['rva'])
 
 
@@ -109,14 +132,17 @@ def reserved_rvas(directories):
 def select_window(root, metadata, known, limit=SLICE, reserved=(), siblings=None, keep=()):
     """{rva: class}: up to `limit` new unmapped ordinary functions to offer for claim-time mapping, best first.
 
-    Only classes that already have a layout unit qualify, so a claim extends reviewed work; locally
-    unsupported functions and `reserved` ones (an internal worker's plan) never do, nor do those already
-    offered (`keep`). Ordering is rank_key: small and medium first, known names and classes with matched
-    siblings ahead of the rest, very large and known-hard functions last. The published hash list grows by
+    Only classes that already have a layout unit qualify, so a claim extends reviewed work. A class with a
+    generated CrashLogger layout header counts as having one, provided a unit of it can be placed
+    (tools/unit_paths.py); those rank after classes with a real unit. Locally unsupported functions and
+    `reserved` ones (an internal worker's plan) never qualify, nor do those already offered (`keep`).
+    Ordering is rank_key: real-unit classes first; then small and medium first, known names and classes
+    with matched siblings ahead of the rest, very large and known-hard functions last. The published hash list grows by
     `limit` per refill, not by the size of the function table.
     """
-    layouts, ranked, siblings = {}, [], siblings or {}
-    units = {path.stem for path in (Path(root) / 'reconstruction').rglob('*.cpp')}
+    layouts, ranked, siblings = {}, [], siblings or {}  # layouts: class -> pdb_only, or None when not eligible
+    units = contrib.unit_index(root)  # one directory walk for every class
+    pdb = pdb_layout_classes(root)
     skip = set(known) | set(keep) | set(reserved)
     for rva, fn in metadata.items():
         owner = fn.get('owner') or {}
@@ -125,13 +151,16 @@ def select_window(root, metadata, known, limit=SLICE, reserved=(), siblings=None
         if (rva in skip or fn.get('kind') != 'ordinary' or not fn.get('size') or not cls
                 or verdict not in VERDICT_RANK or not contrib.PLAIN_NAME.fullmatch(f'{cls}::Function')):
             continue
-        if cls not in units:
-            continue
         if cls not in layouts:
-            _area, header, cpp = contrib.unit_files(root, cls)
-            layouts[cls] = bool(header and cpp and (Path(root) / header).is_file() and (Path(root) / cpp).is_file())
-        if layouts[cls]:
-            ranked.append((rank_key(fn, siblings, cls), rva, cls))
+            layouts[cls] = None  # not eligible
+            if cls in units:
+                _area, header, cpp = contrib.unit_files(root, cls, index=units)
+                if header and cpp and (Path(root) / header).is_file() and (Path(root) / cpp).is_file():
+                    layouts[cls] = False  # real unit
+            if layouts[cls] is None and cls in pdb and contrib.area_for(cls, root):
+                layouts[cls] = True  # generated PDB layout only
+        if layouts[cls] is not None:
+            ranked.append((rank_key(fn, siblings, cls, layouts[cls]), rva, cls))
     return {rva: cls for _key, rva, cls in sorted(ranked)[:limit]}
 
 
