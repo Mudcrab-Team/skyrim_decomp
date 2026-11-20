@@ -402,6 +402,7 @@ LICENCE_TEXT = 'licenses/CommonLibSSE-NG.txt'
 SPDX_LINE = re.compile(r'^//[ \t]*SPDX-License-Identifier:.*$', re.M)
 # Header lines that carry per-unit information and do not count against the header budget.
 HEADER_LIMIT = 6
+HEADER_SHOWN = 15  # counted lines listed in the over-budget message
 FULL_LICENCE = re.compile(r'Permission is hereby granted|THE SOFTWARE IS PROVIDED|^//[ \t]*MIT License[ \t]*$|'
                           r'GNU GENERAL PUBLIC LICENSE|Apache License', re.M)
 
@@ -432,12 +433,23 @@ def licence_text_problems(root):
     return []
 
 
-def counted_header_lines(header):
-    """The header lines that count against HEADER_LIMIT: everything but labels, sibling citations,
-    compared-function lines and the SPDX line."""
-    return [ln for ln in header.split('\n') if ln.strip() and ln.strip() != '//'
+def numbered_header_lines(header):
+    """[(file line number, line)] of the header lines that count against HEADER_LIMIT: everything but
+    labels, sibling citations, compared-function lines and the SPDX line. `header` is a
+    `leading_comment`, which starts at line 1 of the file and keeps blank lines."""
+    return [(n, ln) for n, ln in enumerate(header.split('\n'), 1) if ln.strip() and ln.strip() != '//'
             and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
             and 'SPDX-License-Identifier' not in ln]
+
+
+def counted_header_lines(header):
+    return [ln for _n, ln in numbered_header_lines(header)]
+
+
+def shown_header_line(text, width=100):
+    """A contributor's header line made safe to echo in a log or a bot comment: no backticks or mentions."""
+    text = text.strip().replace('`', "'").replace('@', '@\u200b')
+    return text if len(text) <= width else text[:width - 3] + '...'
 
 
 def header_budget_problems(name, header, old_header=None):
@@ -452,12 +464,21 @@ def header_budget_problems(name, header, old_header=None):
     if 'CharmedBaryon/CommonLibSSE-NG@' in header and 'SPDX-License-Identifier: MIT' not in header \
             and not FULL_LICENCE.search(header):
         problems.append(f'{name}: NG declarations need the line "// {SPDX_MIT}"')
-    counted = counted_header_lines(header)
+    numbered = numbered_header_lines(header)
+    counted = [ln for _n, ln in numbered]
     shrinks = old_header is not None and set(counted) <= set(counted_header_lines(old_header))
     if len(counted) > HEADER_LIMIT and not shrinks:
-        problems.append(f'{name}: header has {len(counted)} lines besides labels, sources and compared functions; '
-                        f'keep at most {HEADER_LIMIT}: drop Task, Labels, Recipe, Evidence, Drafted by, disclaimers '
-                        '(docs/contributor-lessons.md, compact headers)')
+        over = len(counted) - HEADER_LIMIT
+        shown = numbered[:HEADER_SHOWN]
+        lines = [f'{name}: header is {over} line{"s" if over != 1 else ""} over the budget: {len(counted)} lines count, '
+                 f'keep at most {HEADER_LIMIT}. Labels, `Sibling source:`, `// 0x<rva> <Name>` and SPDX lines do not '
+                 f'count. These are the lines that count:']
+        lines += [f'  - line {n}: `{shown_header_line(ln)}`' for n, ln in shown]
+        if len(numbered) > len(shown):
+            lines.append(f'  - and {len(numbered) - len(shown)} more')
+        lines.append(f'Delete or merge at least {over} of them (usually Task, Labels, Recipe, Evidence, Drafted by or a '
+                     'disclaimer); docs/contributor-lessons.md, compact headers.')
+        problems.append('\n'.join(lines))
     return problems
 
 
