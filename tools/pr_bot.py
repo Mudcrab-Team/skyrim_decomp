@@ -24,6 +24,10 @@ The poll works on two PRs at once, each on its own scratch tree; pushes to main,
 the shared checkout take turns. The same infrastructure failure on one head three times in a row backs that
 head off with a growing delay (a verifier failure is said once on the PR), and a `gh` failure backs the whole
 poll off instead of looping.
+A PR that conflicts with main is not reviewed. If the contributor allows maintainer edits and only unit header
+comment blocks in reconstruction/ conflict, the bot merges main into their branch (a pushed merge commit, never a
+rebase) with the union of the header lines, and the new head is processed on the next tick; any other conflict
+aborts that merge and goes to the sticky comment.
 Each PR gets at most one bot comment, marked with STICKY, which is edited in place on every new
 head or verdict and never posted again.
 """
@@ -311,6 +315,71 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
 
 
 CONFLICT_COMMENT = 'This PR conflicts with main; merge main into your branch and push.'
+
+MAIN_MERGE_MESSAGE = 'Merge main into {branch}'
+
+
+def branch_url(owner, name):
+    return f'https://github.com/{owner}/{name}.git'
+
+MAIN_MERGED_COMMENT = ('Main conflicted with your branch only in a unit header comment block, so the bot merged main '
+                       'into your branch (a merge commit, nothing rewritten) and pushed it. Checks are running again '
+                       'on the new head; nothing is needed from you.')
+
+
+def union_header_conflicts(text):
+    """`text` (a diff3-style conflicted file) with every conflict resolved by the union of header comment lines.
+
+    Only a conflict that lies in the file's leading block of `//` lines is touched, and only when everything in it
+    is a `//` line and neither side removed a line of the base. The result is main's lines first, then the PR's
+    lines that main's side does not already have (a repeated line counts once per occurrence). Any other conflict,
+    a function body, a deleted line or a malformed marker returns None: it is not safe to guess.
+    """
+    out, header = [], True
+    lines = text.splitlines(keepends=True)
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if not line.startswith('<<<<<<< '):
+            if not line.startswith('//'):
+                header = False
+            out.append(line)
+            i += 1
+            continue
+        sides, current = {'ours': [], 'base': [], 'theirs': []}, 'ours'
+        i += 1
+        while i < len(lines) and not lines[i].startswith('>>>>>>> '):
+            marker = lines[i]
+            if marker.startswith('||||||| '):
+                current = 'base'
+            elif marker.rstrip('\r\n') == '=======':
+                current = 'theirs'
+            else:
+                sides[current].append(marker)
+            i += 1
+        if i >= len(lines):
+            return None
+        i += 1
+        # Merging main into the PR branch: ours is the PR, theirs is main.
+        pr_lines, base_lines, main_lines = sides['ours'], sides['base'], sides['theirs']
+        everything = pr_lines + base_lines + main_lines
+        if not header or not everything or not all(l.startswith('//') for l in everything):
+            return None
+        if any(l not in pr_lines or l not in main_lines for l in base_lines):
+            return None
+        spare = {}
+        for l in main_lines:
+            spare[l] = spare.get(l, 0) + 1
+        out.extend(main_lines)
+        for l in pr_lines:
+            if spare.get(l):
+                spare[l] -= 1
+            else:
+                out.append(l)
+    result = ''.join(out)
+    if re.search(r'^(<{7} |={7}$|>{7} |\|{7} )', result, re.M):
+        return None
+    return result
 
 # The same infrastructure failure on one head this many times in a row stops the retry-every-tick loop.
 FAILURE_THRESHOLD = 3
@@ -2274,18 +2343,104 @@ class Bot:
         return self.finish(pr, state, decision, started, comment=TOOLING_COMMENT)
 
     def conflicting(self, pr, state):
-        """A PR that cannot merge is not worth a review and two host compares; tell the author once per head.
+        """A PR that cannot merge is not worth a review and two host compares.
 
+        If the only conflicts are unit header comment blocks and the contributor allows maintainer edits, main is
+        merged into their branch for them; otherwise the author is told once per head, in the sticky comment.
         The state is per head, so a push that resolves the conflict gets a fresh look.
         """
         summary = dict(pr=pr['number'], head=pr['headRefOid'], blocked='conflict', merge=False, verdicts={})
         if self.dry_run:
             return summary
-        self.say(pr['number'], sticky_body(pr['headRefOid'], CONFLICT_COMMENT))
+        try:
+            merged = self.merge_main_into_branch(pr)
+        except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
+            print(f'{stamp()} pr {pr["number"]}: merging main into the branch failed ({type(exc).__name__}: {exc}); '
+                  f'asking the author instead', file=sys.stderr, flush=True)
+            merged = None
+        if merged:
+            summary = dict(pr=pr['number'], head=pr['headRefOid'], blocked=None, merge=False, verdicts={},
+                           main_merged=merged)
+            # An older comment would keep telling the author to merge; a PR with none gets no new one.
+            self.say(pr['number'], sticky_body(pr['headRefOid'], MAIN_MERGED_COMMENT), create=False)
+        else:
+            self.say(pr['number'], sticky_body(pr['headRefOid'], CONFLICT_COMMENT))
         state.set('summary', summary)
         state.set('commented', True)
         state.set('done', True)
         return summary
+
+    def merge_main_into_branch(self, pr):
+        """Merge origin/main into the contributor's branch and push the merge commit; the new head SHA, else None.
+
+        Never rebases or force-pushes, so the author's commits stay as they are. Done in a scratch worktree
+        whose merge is aborted unless every conflicting file is under reconstruction/ and every conflict is a
+        header comment block that `union_header_conflicts` resolves.
+        """
+        number, head = pr['number'], pr['headRefOid']
+        info = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json',
+                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,state')
+        repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
+        if (info.get('headRefOid') != head or info.get('state') != 'OPEN' or not info.get('maintainerCanModify')
+                or not repo.get('name') or not owner.get('login') or not info.get('headRefName')):
+            return None
+        url = branch_url(owner['login'], repo['name'])
+        scratch = self.work / 'merge-scratch' / f'pr{number}'
+        git = ['git', '-c', 'core.hooksPath=/dev/null', '-c', 'merge.conflictStyle=diff3']
+        with self.root_lock:
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+            if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', head])
+            self.run(['git', 'worktree', 'prune'], check=False)
+            if scratch.exists():
+                shutil.rmtree(scratch, ignore_errors=True)
+                self.run(['git', 'worktree', 'prune'], check=False)
+            scratch.parent.mkdir(parents=True, exist_ok=True)
+            self.run(['git', 'worktree', 'add', '--quiet', '--detach', scratch, head])
+        try:
+            message = MAIN_MERGE_MESSAGE.format(branch=info['headRefName'])
+            merge = self.run([*git, 'merge', '--no-ff', '--no-edit', '-m', message, 'origin/main'], cwd=scratch,
+                             check=False)
+            if merge.returncode:
+                names = self.run([*git, 'diff', '--name-only', '--diff-filter=U', '-z'], cwd=scratch,
+                                 check=False).stdout.decode(errors='replace').split('\0')
+                names = [n for n in names if n]
+                staged = self.run([*git, 'ls-files', '-u', '-z'], cwd=scratch, check=False).stdout.decode(
+                    errors='replace').split('\0')
+                stages = {}
+                for entry in staged:
+                    if entry:
+                        meta, _, name = entry.partition('\t')
+                        stages.setdefault(name, set()).add(meta.split()[2])
+                if not names or any(not n.startswith(SCOPE_PREFIX) or stages.get(n) != {'1', '2', '3'} for n in names):
+                    self.run([*git, 'merge', '--abort'], cwd=scratch, check=False)
+                    return None
+                for name in names:
+                    path = scratch / name
+                    try:
+                        resolved = None if path.is_symlink() else union_header_conflicts(path.read_bytes().decode('utf-8'))
+                    except (OSError, UnicodeDecodeError):
+                        resolved = None
+                    if resolved is None:
+                        self.run([*git, 'merge', '--abort'], cwd=scratch, check=False)
+                        return None
+                    path.write_bytes(resolved.encode('utf-8'))
+                    self.run([*git, 'add', '--', name], cwd=scratch)
+                self.run([*git, 'commit', '--quiet', '-m', message], cwd=scratch)
+            sha = self.run([*git, 'rev-parse', 'HEAD'], cwd=scratch).stdout.decode().strip()
+            if sha == head:
+                return None
+            # The author's branch is never forced: a push that lost a race to a new commit is simply refused,
+            # and the fresh head is looked at on the next tick. gh's credentials, since a fork needs them.
+            pushed = self.run([*git, '-c', 'credential.helper=', '-c', 'credential.helper=!gh auth git-credential',
+                               'push', '--quiet', url, f'HEAD:refs/heads/{info["headRefName"]}'], cwd=scratch,
+                              check=False)
+            return sha if pushed.returncode == 0 else None
+        finally:
+            with self.root_lock:
+                self.run(['git', 'worktree', 'remove', '--force', scratch], check=False)
+                shutil.rmtree(scratch, ignore_errors=True)
+                self.run(['git', 'worktree', 'prune'], check=False)
 
     def merge_refused(self, pr, state, summary):
         """`gh pr merge --match-head-commit` failed: say why, and keep the paid results unless the head moved."""
