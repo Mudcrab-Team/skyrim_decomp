@@ -70,6 +70,26 @@ Tip: if cloning stalls, run `git -c http.version=HTTP/1.1 clone https://github.c
 Examples of merged outside contributions: [#56](https://github.com/Mudcrab-Team/skyrim_decomp/pull/56) and [#59](https://github.com/Mudcrab-Team/skyrim_decomp/pull/59).
 Intake runs automatically; follow your PR's labels and comments for status.
 
+## FAQ
+
+**Q: Isn't this AI slop? Why should I bother?**
+
+A: Right now it is 100% AI slop, and that's intended. The project comes in two stages. Stage 1 is the AI slop decomp; Stage 2 is a C++ refactor that makes the code readable and maintainable. We would love to output readable, maintainable C++ from day one, but AI isn't there yet. So the plan goes in steps: first decompile with AI, then write unit tests, then refactor with a knowledgeable human in the loop, making sure the unit tests still pass.
+
+**Q: How is this going to be helpful at all? Even at Stage 2, with less AI slop?**
+
+A: Imagine Skyrim with a Vulkan renderer running at 500+ fps on a potato PC. Open cities and homes with no loading screens. No need for DynDOLOD to get pretty LODs, even with mods. Projects like [NV-Forever](https://nv-forever.com/) move so fast precisely because a decomp exists.
+
+Then there are individual modders. Libraries like [CommonLibSSE-NG](https://ng.commonlib.dev/) give you reverse-engineered headers (class layouts, function signatures) and the addresses to call into the game, but not the game's actual code. Imagine what modders could do with real source they can read, modify and patch. Here is a video showing how to add power armor to New Vegas: https://www.youtube.com/watch?v=4UsAkrIUixg
+
+**Q: Are you really letting randos on the internet contribute to your project without any human review? Isn't that stupid?**
+
+A: The answer is [byte-exact verification](https://www.fnvdecomp.com/how). The code you push has to compile to exactly the same bytes as the original, and automated CI confirms it by compiling it on two machines, one of them a Windows CI runner. Then an AI agent reviews the PR for plausibility, and it has to pass before the bot merges it. There is no human in the loop. That's what AI in 2026 should be used for: boring, monotonous tasks that are easy to verify, and decompiling functions is exactly that kind of task. You can [learn more about byte-exact verification here](https://www.fnvdecomp.com/how).
+
+**Q: That will never work!**
+
+A: The [FNV](https://www.fnvdecomp.com) and [FO3](https://f3decomp.com/) decomps proved it's possible. It won't be fast, but it's possible. Hence the call for contributors: the more people we have, the faster it happens.
+
 ## Links
 
 [Progress site](https://mudcrab-team.github.io/skyrim_decomp/) · [Reconstruction index](reconstruction/INDEX.md) · [Issues](https://github.com/Mudcrab-Team/skyrim_decomp/issues) · [Leaderboard](LEADERBOARD.md)
