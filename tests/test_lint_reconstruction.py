@@ -199,6 +199,19 @@ class ReviewerFollowUpTests(LintTests):
                 self.assert_problem('label outside the v2 grammar',
                                     header=V2_HEADER.replace('#pragma once', f'// Widget::value: {bad}\n#pragma once'))
 
+    def test_labels_v2_symbols_label(self):
+        label = '// Widget::value: SYMBOLS(tesv-2013-map)'
+        self.write(header=V2_HEADER.replace('#pragma once', f'{label}\n// Gadget: STANDIN SYMBOLS(fnv-x360-pdb)\n#pragma once'))
+        self.assertEqual(self.problems(), [])
+        for ok in ('fo4-pdb',):
+            self.write(header=V2_HEADER.replace('#pragma once', f'// Widget::value: SYMBOLS({ok})\n#pragma once'))
+            self.assertEqual(self.problems(), [])
+        for bad in ('SYMBOLS', 'SYMBOLS()', 'SYMBOLS(unknown-pdb)', 'SYMBOLS(tesv-2013-07-17-map)',
+                    'SYMBOLS(fo4-pdb) SYMBOLS(fo4-pdb2)', 'SYMBOLS(fo4-pdb)x'):
+            with self.subTest(bad):
+                self.assert_problem('label outside the v2 grammar',
+                                    header=V2_HEADER.replace('#pragma once', f'// Widget::value: {bad}\n#pragma once'))
+
     def test_labels_v2_grammar_refusals(self):
         cases = {
             'Names are COMMUNITY and unverified.': 'label outside the v2 grammar',

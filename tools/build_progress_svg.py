@@ -338,7 +338,7 @@ def remaining_area_rows(scope, progress):
     for fn in progress['functions']:
         name = fn.get('name', '')
         areas = owners.get(name.rsplit('::', 1)[0], set()) if '::' in name else set()
-        known = fn.get('name_origin') in ('COMMUNITY', 'CRASHLOGGER_PDB', 'EXE_RTTI', 'OBSERVED')
+        known = fn.get('name_origin') in ('COMMUNITY', 'CRASHLOGGER_PDB', 'SYMBOLS', 'EXE_RTTI', 'OBSERVED')
         label = next(iter(areas)) if known and len(areas) == 1 else 'Unattributed'
         counts.setdefault(label, Counter())['accepted' if fn['status'] == 'matched' else 'remaining'] += 1
     rows = sorted(((label, values['remaining'], values['accepted']) for label, values in counts.items() if values['remaining']),

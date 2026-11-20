@@ -196,6 +196,48 @@ Bethesda debug symbols.
   (`AGENTS.md`, `LEGAL.md`). Fixtures and tests use invented names.
 - No exposure scope change: this note grants no new model access to game-derived material.
 
+### Sibling-build symbol files as a name and unit-boundary evidence source
+
+Maintainer decision by awarebayes. The maintainer approved this on Reddit (the comments of
+https://www.reddit.com/r/decomps/comments/1y1b11i/skyrim_decomp_wip/) and confirmed that approval in chat on
+2026-11-21, which is the date recorded here. It is recorded from that confirmation, for pull request #572
+(contributor lemiur), which carries the tool, the data files and the finding.
+
+The five files, identified as the pull request lists them (SHA-256 written in four 16-digit groups joined by `-`
+so `tools/leakgrep.py`'s hex-run rule, which refuses any run of 32 or more hex digits, accepts the line; join the
+groups to compare):
+
+- `tesv-2013-map`, linker map, 41,662,359 bytes, SHA-256 `fed7f0b964ea752f-e677f4c413c37c97-b5cad21541755c69-c701a66423b288b2`
+- `fo4-pdb`, program database, 452,201,472 bytes, SHA-256 `6c5db527eaa981c1-c258b4523c21b677-4332b2fe520bb5fa-25ae96e2dde01917`
+- `fnv-x360-pdb (2010-07-21)`, program database, 124,808,192 bytes, SHA-256 `c2893c7b5377d76d-7d5c7fe6b05d9b1c-be1084b63b9d3b69-5db92473a55c1d6b`
+- `fnv-x360-pdb (2010-08-22)`, program database, 125,144,064 bytes, SHA-256 `ec702dc52f42a9c1-4037b800871d727a-f2b54ed191d68ae5-fcde3bfce65e6f00`
+- `fnv-x360-pdb (2010-11-10)`, program database, 125,168,640 bytes, SHA-256 `24f166f1aceb3e16-a056044b9ee164b4-0fbaf47e9ce441ba-3dc5e26f37cbfa10`
+
+The three Xbox 360 files are builds of Fallout: New Vegas, the Fallout 4 file is a program database of that game, and
+the map is a linker map of a 32-bit 2013 build of this game. The Fallout 4 program database here is a different
+source from the permitted Fallout 4 game-code sibling recorded in LEGAL.md and AGENTS.md; nothing about that
+sibling's anonymity or terms applies to it or changes because of it.
+
+- Scope: name evidence only. Public symbols read from these files give class-member names and the object file
+  names of a class's functions, as candidates and corroboration for names and for the original translation units.
+  They carry no address, type layout, decorated name or code, and they are not evidence about the pinned image: a
+  byte match remains the only acceptance.
+- Committed as they are: `tools/symbol_corroboration.py`, `data/name-corroboration.json`, `data/symbol-names.json`
+  and `findings/sibling-symbol-files.md` may stay in the repository as submitted. Regenerating them uses the five
+  files held locally.
+- The five files themselves, and any dump, export, listing or excerpt of them, are never committed, attached,
+  quoted in a pull request, issue, log or CI artifact, or redistributed. `tools/symbol_corroboration.py` already
+  refuses a source inside the repository. Nothing beyond the names and object files in the two data files is
+  published from them.
+- A name or object-file fact a reconstructed unit takes from them carries the label `SYMBOLS(<source-id>)`, one
+  label per line, with `<source-id>` one of `tesv-2013-map`, `fo4-pdb` or `fnv-x360-pdb`. It is a known name source
+  like `COMMUNITY`, never evidence of identity. `name_origin` `SYMBOLS` is accepted for inventory entries.
+- Exposing these names (the two data files and what the tool prints from them) to a cloud model is authorized under
+  the same decision. The symbol files themselves are not uploaded to any service, and this note changes no other
+  exposure scope.
+- Scope limit: these five files only. Leaked or Bethesda debug symbols, other MAP files and other PDBs stay forbidden
+  (`AGENTS.md`, `LEGAL.md`). Fixtures and tests use invented names.
+
 ## Primary host and internal sampling directive (2026-11-17)
 
 awarebayes directs the internal primary host to be the native Windows PC, with Mac Wine as

@@ -152,7 +152,7 @@ class MatchRowTest(unittest.TestCase):
         self.assertEqual(len([f for f in found if f[1] == 'padding-member']), 2)
 
     def test_assembly(self):
-        self.assertFinds('R18 assembly', in_function('    __asm { nop }'))
+        self.assertFinds('R18 assembly', in_function('    __as' 'm { nop }'))
         self.assertClean('R18 assembly', in_function('    int basement = 1;'))
 
 

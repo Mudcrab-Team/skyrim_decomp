@@ -39,7 +39,7 @@ DIGEST_METHOD = 'tu-sha256-v2'
 # The tokens tools/lint_reconstruction.py and tools/check_labels.py read out of comments. A comment
 # holding one is provenance and stays in the v2 digest; the label lint imports LABEL_WORD from here
 # so the two cannot drift.
-LABEL_WORD = re.compile(r'(?<![A-Za-z0-9_])(?:COMMUNITY|SIBLING|CRASHLOGGER_PDB|GUESS|EXE_RTTI|STANDIN|OBSERVED)[A-Za-z0-9_]*'
+LABEL_WORD = re.compile(r'(?<![A-Za-z0-9_])(?:COMMUNITY|SIBLING|CRASHLOGGER_PDB|SYMBOLS|GUESS|EXE_RTTI|STANDIN|OBSERVED)[A-Za-z0-9_]*'
                         r'|(?<![A-Za-z0-9_])(?:EXE[- ]RTTI|STAND[- _]IN)(?![A-Za-z0-9_])')
 PROVENANCE_FIELD = re.compile(r'Source exposure|Code origin|Adapted bod|Sibling source|Declaration source|'
                               r'Community source|Body origin|Inferred names|Licence:|License:')

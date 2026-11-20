@@ -1,4 +1,5 @@
 import json
+import re
 import struct
 import subprocess
 import sys
@@ -77,6 +78,14 @@ def program_database(names, block_size=0x400):
     superblock = symbols.MSF_MAGIC + struct.pack('<6I', block_size, 1, len(blocks), len(directory), 0, block_map)
     blocks[0] = superblock
     return b''.join(block.ljust(block_size, b'\x00') for block in blocks)
+
+
+class DigestTest(unittest.TestCase):
+    def test_grouped_digest_has_no_long_hex_run(self):
+        grouped = symbols.grouped_digest('0123456789abcdef' * 4)
+        self.assertEqual(grouped, '-'.join(['0123456789abcdef'] * 4))
+        self.assertIsNone(re.search(r'[0-9a-f]{32,}', grouped))
+        self.assertEqual(grouped.replace('-', ''), '0123456789abcdef' * 4)
 
 
 class ReaderTest(unittest.TestCase):

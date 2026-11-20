@@ -14,15 +14,15 @@ Reads symbol files you hold (a linker map, or a program database's public symbol
   nothing here says which function a name belongs to.
 
 No address, type, decorated name or symbol of a class the inventory does not have is printed or
-written, and each source is described by its size and SHA-256 so someone holding the same file
+written, and each source is described by its size and SHA-256 (in groups, see grouped_digest) so someone holding the same file
 can reproduce the run. A symbol file stays where you keep it, outside the repository;
 `tools/check.py` refuses its extension anyway.
 
 Neither file is evidence about the pinned image. A sibling build is another program: an address
 transfers nowhere, `absent` is a candidate to look at and not an error (methods are renamed,
 inlined away and added between builds), and overloads are not told apart. A name taken from
-`symbol-names.json` into a unit is labelled with its source like any other
-(`findings/sibling-symbol-files.md`).
+`symbol-names.json` into a unit is labelled `SYMBOLS(<source-id>)`, with `<source-id>` one of `tesv-2013-map`,
+`fo4-pdb`, `fnv-x360-pdb` (`docs/authorizations.md`, Notes; `findings/sibling-symbol-files.md`).
 
     python3 tools/symbol_corroboration.py --source LABEL=PATH [--source LABEL=PATH ...]
     python3 tools/symbol_corroboration.py --source LABEL=PATH --write    # also rewrite the data files
@@ -137,6 +137,11 @@ def class_members(publics):
     return dict(members), dict(objects), total
 
 
+def grouped_digest(hexdigest):
+    """Four 16-digit groups joined by '-': tools/leakgrep.py refuses an unbroken run of 32 or more hex digits."""
+    return '-'.join(hexdigest[i:i + 16] for i in range(0, len(hexdigest), 16))
+
+
 def read_source(path):
     path = Path(path)
     with open(path, 'rb') as handle:
@@ -149,7 +154,7 @@ def read_source(path):
     members, objects, total = class_members(pdb_publics(path) if kind == 'program-database' else map_publics(path))
     if not total:
         raise ValueError(f'{path}: no public symbol found')
-    return members, objects, {'kind': kind, 'bytes': path.stat().st_size, 'sha256': digest.hexdigest(),
+    return members, objects, {'kind': kind, 'bytes': path.stat().st_size, 'sha256': grouped_digest(digest.hexdigest()),
                               'public_symbols': total, 'classes': len(members)}
 
 

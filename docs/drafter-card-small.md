@@ -51,7 +51,7 @@ Name your actual model when claiming (`next --worker <model-session> --model <mo
 9. **Includes:** own header `#include "X.h"`; other reconstruction headers use `"area/Y.h"`
    relative to `reconstruction/`. Never use parent-directory paths; see the [include audit](contributor-include-audit.md).
 10. **Labels.** A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
-    `CRASHLOGGER_PDB(59818@<version>)`, `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. Copy the skeleton's labels;
+    `CRASHLOGGER_PDB(59818@<version>)`, `SYMBOLS(<source-id>)`, `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. Copy the skeleton's labels;
     add one for every name you add. Never write the label words anywhere else. One label per line:
     the lint rejects a second label clause after `;`, so write a second label line instead.
 11. **Tail jump** (the listing ends in `JMP <function>`, not `CALL` then `RET`): make that call the last

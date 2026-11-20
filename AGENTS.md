@@ -53,6 +53,15 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
   committed or redistributed (a contributor may keep their own download under `.local/` to refresh the
   output); leaked or real Bethesda PDBs, MAP files and similar stay forbidden. A name from it is not
   evidence of identity; only a byte match is acceptance (`docs/authorizations.md`, Notes).
+- A second narrow exception to the PDB rule: five symbol files of sibling builds (a 2013 linker map of this
+  game, one Fallout 4 program database, three Xbox 360 Fallout: New Vegas program databases, identified by
+  SHA-256 and size in `docs/authorizations.md`, Notes) are allowed as name evidence only. Their class-member and
+  object-file names may stay in `data/name-corroboration.json`, `data/symbol-names.json` and
+  `findings/sibling-symbol-files.md`; a name a unit takes from them carries `SYMBOLS(<source-id>)` with
+  `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`. The files themselves and any dump of them are
+  never committed, and no address, type or decorated name from them is published. This is separate from the
+  `fo4-private` game-code sibling above and does not touch its anonymity. A name from them is not evidence of
+  identity; only a byte match is acceptance.
 - Stop the affected publication if provenance is uncertain. Record the question without reproducing
   suspect content. Unrelated original tooling work may continue.
 

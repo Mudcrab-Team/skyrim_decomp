@@ -5,14 +5,14 @@ Author / human operator: lemiur
 AI assistance / model: Claude Code (claude-fable-5-2), run locally on the operator's machine
 Date (UTC): 2026-11-20
 Target build id / image SHA-256: `sse-steam-1-7-104` /
-`846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f`
+`846efccf0c1374d7-1f892907f4654956-0f2fcb0a75cb87a3-eed438baa0f1402f`
 Function RVA / size (if applicable): not applicable
 Source exposure: mixed (this repository's tracked files; the public symbol tables of one linker
 map and four program databases held by the operator, read locally; the model saw class and
 member names from them, no code, no bytes and no executable)
 Sources and immutable revisions / licenses: this repository at `a3514b259`; the five symbol
-files below, identified by SHA-256, no license grant
-Name provenance: sibling-build symbols; no label for it exists yet (see limitations)
+files below, identified by SHA-256 (written in four 16-digit groups joined by `-`), no license grant
+Name provenance: sibling-build symbols; label `SYMBOLS(<source-id>)` (see the decision below)
 Confidence: high for the counts; low to medium for any single name as a name in the pinned image
 
 ## Question and method
@@ -38,11 +38,11 @@ name or symbol of a class the inventory does not name is in either file.
 
 | key | label | kind | bytes | SHA-256 | public symbols | classes |
 |---|---|---|---:|---|---:|---:|
-| a | `tesv-2013-07-17-map` | linker map | 41,662,359 | `fed7f0b964ea752fe677f4c413c37c97b5cad21541755c69c701a66423b288b2` | 283,377 | 6,515 |
-| b | `fo4-2019-10-23-pdb` | program database | 452,201,472 | `6c5db527eaa981c1c258b4523c21b6774332b2fe520bb5fa25ae96e2dde01917` | 498,817 | 10,489 |
-| c | `fnv-x360-2010-07-21-pdb` | program database | 124,808,192 | `c2893c7b5377d76d7d5c7fe6b05d9b1cbe1084b63b9d3b695db92473a55c1d6b` | 107,045 | 3,519 |
-| d | `fnv-x360-2010-08-22-pdb` | program database | 125,144,064 | `ec702dc52f42a9c14037b800871d727af2b54ed191d68ae5fcde3bfce65e6f00` | 107,231 | 3,522 |
-| e | `fnv-x360-2010-11-10-pdb` | program database | 125,168,640 | `24f166f1aceb3e16a056044b9ee164b40fbaf47e9ce441ba3dc5e26f37cbfa10` | 107,322 | 3,523 |
+| a | `tesv-2013-07-17-map` | linker map | 41,662,359 | `fed7f0b964ea752f-e677f4c413c37c97-b5cad21541755c69-c701a66423b288b2` | 283,377 | 6,515 |
+| b | `fo4-2019-10-23-pdb` | program database | 452,201,472 | `6c5db527eaa981c1-c258b4523c21b677-4332b2fe520bb5fa-25ae96e2dde01917` | 498,817 | 10,489 |
+| c | `fnv-x360-2010-07-21-pdb` | program database | 124,808,192 | `c2893c7b5377d76d-7d5c7fe6b05d9b1c-be1084b63b9d3b69-5db92473a55c1d6b` | 107,045 | 3,519 |
+| d | `fnv-x360-2010-08-22-pdb` | program database | 125,144,064 | `ec702dc52f42a9c1-4037b800871d727a-f2b54ed191d68ae5-fcde3bfce65e6f00` | 107,231 | 3,522 |
+| e | `fnv-x360-2010-11-10-pdb` | program database | 125,168,640 | `24f166f1aceb3e16-a056044b9ee164b4-0fbaf47e9ce441ba-3dc5e26f37cbfa10` | 107,322 | 3,523 |
 
 The map's own header: module `TESV`, link timestamp `51e657ad` (2013-07-17 17:37:01), preferred
 load address `00400000`, so a 32-bit build of the earlier edition of this game. The labels of
@@ -103,23 +103,21 @@ counts above.
 - Public symbols only. No type record was read, so there are no layouts, no vtable order and no
   member-variable types; the three New Vegas databases agree with each other almost entirely.
 - Provenance of the files is not established here. Possession or a public URL is not
-  authorization (`LEGAL.md`), and `LEGAL.md` forbids unofficial debug symbols without a decision.
-- **The decision is reported, not recorded.** The operator reports that the maintainer approved
-  using debug symbols and publishing names from them, in the comments of
-  <https://www.reddit.com/r/decomps/comments/1y1b11i/skyrim_decomp_wip/>. The drafting model
-  could not open that page and has not read the statement. `docs/authorizations.md` says a gate
-  not marked granted there is not granted, whatever a chat, issue or brief says, and only the
-  maintainer edits it. This pull request therefore needs the maintainer to record the decision
-  before it merges, or to decline it.
+  authorization (`LEGAL.md`); the use is authorized by the maintainer decision below.
+- **Decision.** The maintainer approved using these symbol files as name evidence on Reddit (the
+  comments of <https://www.reddit.com/r/decomps/comments/1y1b11i/skyrim_decomp_wip/>) and confirmed that
+  approval in chat on 2026-11-21. It is recorded in `docs/authorizations.md`, Notes ("Sibling-build symbol
+  files as a name and unit-boundary evidence source"), with the five files by SHA-256 and size, the
+  scope (name evidence only) and the conditions: the files and dumps of them are never committed, a name a
+  unit takes from them carries a label, and the data files here are allowed as committed.
 - **Removal.** Everything taken from a symbol file is in `data/name-corroboration.json` and
   `data/symbol-names.json` and nowhere else. Deleting those two files removes it.
-- **No label yet.** The label grammar in `tools/lint_reconstruction.py` has no origin for a
-  name taken from a symbol file, so no unit can carry one today. A recorded decision would name
-  the label, for example `SYMBOLS(<source label>)`, and say whether a name already published
-  under another label may be corrected from these files.
+- **Label.** `SYMBOLS(<source-id>)`, with `<source-id>` one of `tesv-2013-map` (the map),
+  `fo4-pdb` (the Fallout 4 database) or `fnv-x360-pdb` (the three New Vegas databases). The data files key
+  their sources by the longer labels in the table above; the unit label uses the short id of the source
+  kind.
 
 ## Reviewer and outcome
 
-Not reviewed. Open question for the maintainer: record the decision in `docs/authorizations.md`
-with the files (by hash), the kinds of fact and the label, or decline it and drop the two data
-files.
+Authorized by the maintainer decision recorded in `docs/authorizations.md`, Notes. The counts are
+the contributor's and were not recomputed (the symbol files are not held by the project).

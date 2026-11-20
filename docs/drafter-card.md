@@ -86,7 +86,9 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   Fallout: New Vegas decompilation, below),
   `SIBLING(fo4-private@1b765c70, author-permission)` (anonymous permitted game-code sibling),
   `CRASHLOGGER_PDB(59818@<version>)` (a name or layout from the community CrashLogger PDB output; a known name
-  source, not evidence of identity), `GUESS` or `GUESS(low|medium|high)`, `EXE_RTTI`,
+  source, not evidence of identity),
+  `SYMBOLS(tesv-2013-map|fo4-pdb|fnv-x360-pdb)` (a member name from the sibling symbol evidence in
+  `data/symbol-names.json`; a candidate name, never evidence of identity), `GUESS` or `GUESS(low|medium|high)`, `EXE_RTTI`,
   `OBSERVED`, and `STANDIN` together with the name's origin (`// TESObjectARMO: STANDIN COMMUNITY(...)`).
   A community name is `COMMUNITY` and a sibling name `SIBLING`, never `GUESS`; `GUESS` is only for
   names you made up. Do not write the label words anywhere else.

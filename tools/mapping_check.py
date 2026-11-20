@@ -20,7 +20,7 @@ PROGRESS = 'data/progress.json'
 FINDING = re.compile(r'findings/[^/]+\.md')
 ENTRY_KEYS = frozenset(('build_id', 'evidence', 'id', 'name', 'name_origin', 'name_source', 'owner', 'rva',
                         'size', 'status'))
-NAME_ORIGINS = frozenset(('EXE_RTTI', 'COMMUNITY', 'CRASHLOGGER_PDB', 'OBSERVED', 'GUESS'))
+NAME_ORIGINS = frozenset(('EXE_RTTI', 'COMMUNITY', 'CRASHLOGGER_PDB', 'SYMBOLS', 'OBSERVED', 'GUESS'))
 CODES = {
     'shape': 'the PR must change data/progress.json and may only add new findings/*.md besides',
     'json': 'data/progress.json is not valid JSON in the canonical layout',

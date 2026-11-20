@@ -88,6 +88,10 @@ class MappingCheckTests(unittest.TestCase):
         added = [entry(0x3000, evidence='findings/new.md'), entry(0x4000, name_origin='GUESS', name_source='GUESS(low): shape.')]
         self.assertEqual(self.codes(self.doc(*added), {'findings/new.md': 'notes\n'}), [])
 
+    def test_symbols_name_origin_is_accepted(self):
+        added = entry(0x3000, name_origin='SYMBOLS', name_source='SYMBOLS(tesv-2013-map): member of the class.')
+        self.assertEqual(self.codes(self.doc(added)), [])
+
     def test_the_scan_runs_and_a_dirty_diff_is_refused(self):
         self.assertEqual(self.codes(self.doc(entry(0x3000)), scan=True), [])
         dirty = entry(0x3000, name_source='Community name: FUN_00401000 from /Users/someone/x')

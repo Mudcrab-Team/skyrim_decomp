@@ -9,7 +9,7 @@ Every finding, specification, recovered name/layout or reconstructed function re
 - Method, observations, inference, confidence (`low`, `medium`, `high`) and unresolved alternatives.
 - Reproduction instructions with local placeholders, sanitized evidence paths and reviewer.
 
-Record a name's origin as `EXE_RTTI`, `COMMUNITY`, `SIBLING`, `CRASHLOGGER_PDB`, `OBSERVED`, or `GUESS`, with build
+Record a name's origin as `EXE_RTTI`, `COMMUNITY`, `SIBLING`, `CRASHLOGGER_PDB`, `SYMBOLS`, `OBSERVED`, or `GUESS`, with build
 id and RVA. `CRASHLOGGER_PDB(59818@<version>)` marks a name read from the community-generated CrashLogger PDB
 (Nexus mod 59818, credited to CrashLogger Contributors, `docs/authorizations.md`, Notes): a known name source like
 `COMMUNITY`, never evidence of identity. Its generated output sits in `reconstruction/generated/crashlogger_pdb/`,

@@ -47,6 +47,7 @@ is named in the bot comment instead of being skipped.
 Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
   `CRASHLOGGER_PDB(59818@<version>)` (a name or layout from the generated CrashLogger output, below),
+  `SYMBOLS(<source-id>)` (a member name from the sibling symbol evidence, below),
   `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. One label per line.
 - Includes: own header `#include "X.h"`; shared headers by reconstruction-root path such as
   `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. A relative path with `..` is fine when it
@@ -95,6 +96,16 @@ Label each name or layout you take `CRASHLOGGER_PDB(59818@2026.10.24)`, one labe
 does not prove them, so `compare` still decides. Downloading the mod (`ae17` variant, 1.7.104) is optional, only
 to refresh the output: keep it under `.local/`, e.g. `.local/pdb/SkyrimSE.pdb` (or `SR_CRASHLOGGER_PDB`), and
 `llvm-pdbutil dump -publics` lists its publics. Never commit the `.pdb`.
+
+## Optional: sibling symbol names
+
+`data/symbol-names.json` and `data/name-corroboration.json` hold class-member names and object-file names read
+from five sibling-build symbol files (a 2013 linker map of this game, a Fallout 4 program database, three Xbox 360
+Fallout: New Vegas program databases; `findings/sibling-symbol-files.md`). They are candidates for what a class's
+members are called, never which function is which. A name a unit takes from them carries `SYMBOLS(<source-id>)`
+with `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`, one label per line, naming the source that
+has the member. The files themselves are never committed, and no address, type or decorated name from them goes
+into a unit; `compare` still decides.
 
 ## Mapping-only PRs
 
