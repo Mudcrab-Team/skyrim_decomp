@@ -15,6 +15,8 @@ and adding a dated note.
 
 ## Notes
 
+Past outside contributors consented on the project Discord to CC0 for their merged contributions.
+
 ### G4: GitHub-hosted MSVC compile-and-hash prototype
 
 Maintainer statement by awarebayes, 2026-11-14, supplied in the p124 brief and recorded verbatim
