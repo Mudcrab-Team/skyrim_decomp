@@ -6,6 +6,7 @@
 // 0x1524030 BSLightingShaderMaterialBase::SaveBinary
 // 0x15241d0 BSLightingShaderMaterialBase::LoadBinary
 // 0x15237e0 BSLightingShaderMaterialBase::CopyMembers
+// 0x1523e50 BSLightingShaderMaterialBase::ClearTextures
 // Code origin: bodies written from local listings of the pinned image; names and declarations follow CommonLibSSE-NG; the reference-count release spelling follows cookbook rule 29.
 #include "BSLightingShaderMaterialBase.h"
 
@@ -96,4 +97,29 @@ void BSLightingShaderMaterialBase::CopyMembers(BSShaderMaterial* a_other)
 	refractionPower = other->refractionPower;
 	subSurfaceLightRolloff = other->subSurfaceLightRolloff;
 	rimLightPower = other->rimLightPower;
+}
+
+// AssignRaw: GUESS(low); NiPointer assignment from a raw pointer (NG's reset(Y*) contract), taking
+// the new reference before releasing the old one like the header's copy assignment
+template <class T>
+inline void AssignRaw(NiPointer<T>& a_ptr, T* a_rhs)
+{
+	if (a_ptr._ptr != a_rhs) {
+		if (a_rhs) {
+			a_rhs->IncRefCount();
+		}
+		T* old = a_ptr._ptr;
+		a_ptr._ptr = a_rhs;
+		if (old) {
+			old->DecRefCount();
+		}
+	}
+}
+
+void BSLightingShaderMaterialBase::ClearTextures()
+{
+	AssignRaw<NiSourceTexture>(diffuseTexture, nullptr);
+	AssignRaw<NiSourceTexture>(normalTexture, nullptr);
+	AssignRaw<NiSourceTexture>(rimSoftLightingTexture, nullptr);
+	AssignRaw<NiSourceTexture>(specularBackLightingTexture, nullptr);
 }
