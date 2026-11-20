@@ -99,6 +99,44 @@ class PrecheckTests(WorkDir):
         found = self.run_precheck(self.evidence(), origin=[hit])
         self.assertIn('does not name it with that file', found[0x10][0])
 
+    def test_an_origin_finding_the_base_unit_already_had_does_not_refuse_the_prs_functions(self):
+        hit = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'path': 'src/B.cpp',
+               'trivial': False, 'declared': False, 'fork_of': None, 'similarity': 0.91}
+        self.bot.base_origin_flags = lambda units, base, tag: {pr_bot.origin_key(hit)}
+        self.assertEqual(self.run_precheck(self.evidence(), origin=[hit]), {})
+
+    def test_a_rewritten_body_or_a_new_finding_still_refuses(self):
+        hit = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'path': 'src/B.cpp',
+               'trivial': False, 'declared': False, 'fork_of': None, 'similarity': 0.91}
+        self.bot.base_origin_flags = lambda units, base, tag: {pr_bot.origin_key(dict(hit, similarity=0.85)),
+                                                               pr_bot.origin_key(dict(hit, function='B::g'))}
+        found = self.run_precheck(self.evidence(), origin=[hit])
+        self.assertIn('does not name it with that file', found[0x10][0])
+
+    def test_base_flags_come_from_the_units_text_at_base_and_skip_declared_and_trivial_hits(self):
+        import check_origin
+        shown = {'base:reconstruction/a/B.cpp': b'int B::f() { return 1; }\n'}
+
+        def run(argv, **kw):
+            body = shown.get(argv[-1])
+            return subprocess.CompletedProcess(argv, 0 if body is not None else 128, body or b'')
+        self.bot.run = run
+        base = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'path': 'src/B.cpp',
+                'trivial': False, 'declared': None, 'fork_of': None, 'similarity': 0.91}
+        hits = [base, dict(base, function='B::g', declared='yes'), dict(base, function='B::h', trivial=True)]
+        seen = []
+
+        def check_unit(files, clones, root):
+            seen.append(sorted(Path(f).name for f in files))
+            return hits
+        with mock.patch.object(check_origin, 'open_clones', return_value=([], [])), \
+                mock.patch.object(check_origin, 'check_unit', check_unit):
+            flags = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, 'base', '7-aaaaaaaa')
+            none = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, None, '7-aaaaaaaa')
+        self.assertEqual(flags, {pr_bot.origin_key(base)})
+        self.assertEqual(seen, [['B.cpp']])
+        self.assertEqual(none, set())
+
     def test_a_report_for_other_source_is_the_contributors_to_fix(self):
         bad = self.evidence(source={'source_revision': '0' * 64, 'path': 'reconstruction/a/B.cpp'})
         found = self.run_precheck(bad)

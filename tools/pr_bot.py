@@ -616,6 +616,11 @@ def sticky_body(sha, text, batch=False):
     return '\n'.join(lines)
 
 
+def origin_key(hit):
+    """What identifies an origin finding across two versions of a unit: the body, the upstream body and how close."""
+    return (hit['file'], hit['function'], hit['repo'], hit['path'], hit.get('similarity'))
+
+
 def dropped_claims_text(rvas):
     """The sticky-comment lines for header claims that were not compared because no target row exists."""
     listed = ', '.join(f'0x{r:x}' for r in rvas[:20]) + (f' and {len(rvas) - 20} more' if len(rvas) > 20 else '')
@@ -1882,6 +1887,7 @@ class Bot:
                 self.run(['git', 'fetch', '--quiet', 'origin', head])
         pinned = base  # an explicit base (a replay) is also the reference for what has already landed
         base = base or self.run(['git', 'merge-base', 'origin/main', head]).stdout.decode().strip()
+        state.once('base_sha', lambda: base)
         files = state.once('delta', lambda: self.drop_landed(head, files, pinned or 'origin/main'))
         if not files:
             decision = dict(blocked=None, merge=False, verdicts={})
@@ -2029,6 +2035,8 @@ class Bot:
         build = json.loads((tree / 'builds/target.json').read_text())['build_id']
         findings = prereview.unit_findings(tree, changed, build)
         hits, headers, _unverified = self.origin_hits(units)
+        old_flags = self.base_origin_flags(units, state.get('base_sha'), tag)
+        hits = [h for h in hits if origin_key(h) not in old_flags]
         findings += [(file, f'{file}: {text}') for file, text in prereview.origin_problems(hits, headers)]
         evidence = self.review_evidence(tag, sorted(passed), host1, host2, state)
         out, bot_side = {}, []
@@ -2055,6 +2063,43 @@ class Bot:
             safe[rva] = shown + ([f'{hidden} more finding(s) not shown; run `python3 tools/prereview.py` locally']
                                  if hidden else [])
         return safe
+
+    def base_origin_flags(self, units, base, tag):
+        """Origin findings the units already had at `base`: keys of undeclared, non-trivial similarities there.
+
+        A body the PR did not touch keeps the same similarity to the same upstream body; the PR neither
+        introduced the finding nor can be asked to fix a unit's earlier provenance, which is project debt. A
+        body the PR rewrites, or a label it drops, has a different key or no base counterpart and still counts.
+        Best effort: a base the clone cannot show, or a missing clone, yields no flags.
+        """
+        if not base:
+            return set()
+        import check_origin
+        try:
+            clones, _missing = check_origin.open_clones(self.root)
+        except (OSError, ValueError):
+            return set()
+        scratch = self.work / 'origin-base' / tag
+        shutil.rmtree(scratch, ignore_errors=True)
+        flags = set()
+        try:
+            for cpp in sorted(units):
+                stem = cpp.rsplit('.', 1)[0]
+                files = []
+                for name in (stem + '.h', cpp):
+                    shown = self.run(['git', 'show', f'{base}:{name}'], check=False)
+                    if shown.returncode:
+                        continue
+                    path = scratch / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(shown.stdout)
+                    files.append(path)
+                for hit in check_origin.check_unit(files, clones, root=scratch) if files else ():
+                    if not (hit.get('trivial') or hit.get('fork_of') or hit.get('declared')):
+                        flags.add(origin_key(hit))
+        finally:
+            shutil.rmtree(scratch, ignore_errors=True)
+        return flags
 
     def origin_hits(self, units):
         """(hits, {unit file: leading comment of its header and source}, unverified) from tools/check_origin.py.
