@@ -564,6 +564,20 @@ def other_failure_lines(decision, shown):
     return lines
 
 
+def precheck_finding_lines(decision):
+    """The mechanical findings behind every `fail:precheck` function, so a comment that says "see the findings"
+    shows them; [] when there are none."""
+    found = list(dict.fromkeys(l for r, v in sorted(decision['verdicts'].items()) if v == 'fail:precheck'
+                               for l in (decision.get('pre') or {}).get(r, [])))
+    if not found:
+        return []
+    lines = ['Findings from the mechanical checks (no review was spent on these):']
+    lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
+    if len(found) > PRECHECK_SHOWN:
+        lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
+    return lines
+
+
 def reason_text(decision, rva, code):
     """The comment's reason for a failed function; a review rejection also names the unit file and a category."""
     text = REASONS.get(code, 'it was not re-confirmed')
@@ -686,6 +700,7 @@ def outcome_body(sha, decision, leak_codes=()):
         more = other_failure_lines(decision, listed)
         if more:
             lines += ['Also failing in this PR:'] + more
+        lines += precheck_finding_lines(decision)
         lines.append('Please keep those functions compiling to the same code on both hosts, or leave the unit '
                      'alone, and push again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -702,6 +717,7 @@ def outcome_body(sha, decision, leak_codes=()):
         more = other_failure_lines(decision, listed)
         if more:
             lines += ['Also failing in this PR:'] + more
+        lines += precheck_finding_lines(decision)
         lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
                      'again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -720,13 +736,7 @@ def outcome_body(sha, decision, leak_codes=()):
             lines.append(f'- 0x{r:x}: {reason_text(decision, r, c)}')
             if c == 'review':
                 lines += [f'  - {n}' for n in notes.get(r, [])]
-        found = list(dict.fromkeys(l for r, c in sorted(failed.items()) if c == 'precheck'
-                                   for l in (decision.get('pre') or {}).get(r, [])))
-        if found:
-            lines.append('Findings from the mechanical checks (no review was spent on these):')
-            lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
-            if len(found) > PRECHECK_SHOWN:
-                lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
+        lines += precheck_finding_lines(decision)
     return '\n'.join(lines) or 'Nothing to report.'
 
 
