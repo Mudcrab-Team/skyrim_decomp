@@ -551,11 +551,37 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual((bot.seen('review'), bot.seen('gh', 'pr', 'merge')), ([], []))
 
     def test_scope_rejection_never_compiles_reviews_or_merges(self):
-        bot = FakeBot(self.work, files=[{'filename': '.github/workflows/pr-check.yml', 'status': 'modified'}])
+        bot = FakeBot(self.work, files=[{'filename': 'reconstruction/a/B.cpp', 'status': 'added'},
+                                        {'filename': '.github/workflows/pr-check.yml', 'status': 'modified'}])
         out = bot.process(PR)
         self.assertEqual(out['blocked'], 'scope')
         self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
         self.assertEqual(len(bot.seen('gh', 'pr', 'comment')), 1)
+
+    def test_a_pr_with_no_reconstruction_file_is_tooling_labelled_and_never_merged(self):
+        files = [{'filename': 'tools/ghidra/x.py', 'status': 'added'},
+                 {'filename': 'tests/test_x.py', 'status': 'added'}]
+        self.assertTrue(pr_bot.tooling_lane(files))
+        self.assertFalse(pr_bot.tooling_lane([]))
+        self.assertFalse(pr_bot.tooling_lane(files + [{'filename': 'reconstruction/a/B.cpp'}]))
+        bot = FakeBot(self.work, files=files)
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'tooling')
+        self.assertEqual((bot.seen('review'), bot.seen('mac'), bot.seen('gh', 'pr', 'merge')), ([], [], []))
+        self.assertEqual(len(bot.seen('gh', 'pr', 'edit')), 1)
+        self.assertIn('--add-label', bot.seen('gh', 'pr', 'edit')[0])
+        comment = bot.seen('gh', 'pr', 'comment')
+        self.assertEqual(len(comment), 1)
+        self.assertIn('tooling PR', comment[0][-1])
+        self.assertNotIn('outside reconstruction', comment[0][-1])
+
+    def test_a_mixed_pr_keeps_the_scope_block_with_a_clear_message(self):
+        bot = FakeBot(self.work, files=[{'filename': 'reconstruction/a/B.cpp', 'status': 'added'},
+                                        {'filename': 'tools/x.py', 'status': 'added'}])
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'scope')
+        self.assertEqual(bot.seen('gh', 'pr', 'edit'), [])
+        self.assertIn('separate PR', bot.seen('gh', 'pr', 'comment')[0][-1])
 
     def test_a_pr_with_no_changed_files_is_marked_landed_not_called_out_of_scope(self):
         bot = FakeBot(self.work, files=[])

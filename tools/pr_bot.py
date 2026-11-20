@@ -227,6 +227,32 @@ def scope_problem(files):
     return None
 
 
+def tooling_lane(files):
+    """True if the PR (GitHub API rows) changes files and none of them is under reconstruction/.
+
+    Such a PR is tooling, docs or data work, not a function PR. The bot never merges it; the
+    maintainer agent reviews it. A mixed PR is not tooling: it stays a scope problem.
+    """
+    if not files:
+        return False
+    for item in files:
+        for name in (item.get('filename'), item.get('previous_filename')):
+            if name is not None and (name.startswith(SCOPE_PREFIX) or '..' in Path(name).parts):
+                return False
+    return True
+
+
+TOOLING_LABEL = 'tooling'
+TOOLING_COMMENT = ('This is a tooling PR: it changes no file under reconstruction/, so it is not a function PR and '
+                   'the function pipeline does not apply to it. Nothing is wrong with it. The bot does not merge it; '
+                   'the maintainer agent reviews it and merges it if it is safe. Checks that only apply to '
+                   'function PRs (scope, hash) do not count against it. A PR that mixes tooling with '
+                   'reconstruction/ files has to be split in two.')
+SCOPE_COMMENT = ('This PR changes files outside reconstruction/ as well as inside it. A function PR may change only '
+                 'reconstruction/**, so please move the other files (tools, tests, docs, data) into a separate PR; '
+                 'a PR with no reconstruction/ files at all is reviewed as tooling.')
+
+
 def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=(), leak_evidence=(), stale=(),
            refused=()):
     """Per-function verdicts. Each host maps rva to pass|fail|regressed|preexisting-fail.
@@ -1538,11 +1564,12 @@ class Bot:
             return self.process_mapping(pr, state, files, started)
         # No changed files means the PR's tree equals main's (all of it landed elsewhere): the landed path below
         # marks it merged with credit instead of calling it out of scope.
+        if tooling_lane(files):
+            return self.process_tooling(pr, state, started)
         if scope_problem(files) not in (None, 'empty'):
             decision = dict(blocked='scope', merge=False, verdicts={})
             state.set('decision', decision)
-            return self.finish(pr, state, decision, started, comment='This PR changes files outside reconstruction/, '
-                               'which the bot never merges. Please limit it to unit sources.')
+            return self.finish(pr, state, decision, started, comment=SCOPE_COMMENT)
         with self.root_lock:
             self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
             if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
@@ -2058,6 +2085,16 @@ class Bot:
         self.drop_probe(number)
         state.set('done', True)
         return summary
+
+    def process_tooling(self, pr, state, started):
+        """A PR with no reconstruction/ file: label it for the maintainer agent and say so; never merge it."""
+        decision = dict(blocked='tooling', merge=False, verdicts={})
+        state.set('decision', decision)
+        if not self.dry_run:
+            state.once('labelled', lambda: self.run(
+                ['gh', 'pr', 'edit', str(pr['number']), '-R', REPOSITORY, '--add-label', TOOLING_LABEL],
+                check=False).returncode == 0)
+        return self.finish(pr, state, decision, started, comment=TOOLING_COMMENT)
 
     def conflicting(self, pr, state):
         """A PR that cannot merge is not worth a review and two host compares; tell the author once per head.
