@@ -25,8 +25,15 @@ stays in each worktree. Run `setup` once before dispatching agents. Avoid simult
 shared config/claims or the same task; coordinate claims and allocate work before the agents start.
 `SR_CONTRIB_OFFLINE=1` with `claim --offline-ok` records unpublished local claims; it does not
 reserve anything on GitHub. Unset it and run `claim` online before submitting. `start --no-branch`
-keeps the worktree's existing branch. When several tasks exist, name the task explicitly in
-`compare <task-id>` and `submit <task-id>`; `start` prints its id.
+keeps the worktree's existing branch. `start` prints the task id. With several tasks, `compare`
+without a name uses the task whose unit has uncommitted changes, else the most recently modified
+task, and prints which one it chose; `submit` still needs `submit <task-id>`.
+
+Without `SR_LOCAL_DIR`, a worktree whose own `.local` lacks a toolchain (MSVC under
+`contrib/msvc` or `toolchains/msvc*`, Wine under `contrib/wine` or `toolchains/wine*`) falls back
+to the main checkout's `.local`, found through `git rev-parse --git-common-dir`. `SR_MSVC` and
+`SR_WINE_BIN` still override. `start` on a unit that already exists leaves its header alone and
+keeps the task pointing at that unit; only functions the unit does not mention get a new header.
 
 For an agent assigned community headers only, allow searches in the assigned unit, its private
 pack, the profile's documents, and these explicit source roots (relative to `SR_LOCAL_DIR`, or to

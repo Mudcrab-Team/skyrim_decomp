@@ -58,7 +58,7 @@ import agent_advice
 import agent_identity
 import repo_slug
 import attempt_progress
-from local_paths import local_dir, local_path, main_worktree_local, no_sibling_names
+from local_paths import local_dir, local_path, main_checkout_local, main_worktree_local, no_sibling_names
 
 REPO = Path(__file__).resolve().parents[1]
 TOOLS = REPO / 'tools'
@@ -337,11 +337,23 @@ def area_for(cls, repo=None):
     return unit_paths.unit_dir(cls, repo or Path(__file__).resolve().parent.parent)
 
 
-def unit_files(repo, cls, area=None):
-    """(area, .h, .cpp) repository paths of the class's unit, existing or proposed."""
+def unit_index(repo):
+    """{class: area} for every existing reconstruction/<area>/<class>.cpp, one directory walk.
+    The first path in sorted order wins, as a per-class search would pick it."""
     base = Path(repo) / 'reconstruction'
-    for path in sorted(base.rglob(f'{cls}.cpp')):
-        a = path.parent.relative_to(base).as_posix()
+    found = {}
+    for path in sorted(base.rglob('*.cpp')):
+        found.setdefault(path.stem, path.parent.relative_to(base).as_posix())
+    return found
+
+
+def unit_files(repo, cls, area=None, index=None):
+    """(area, .h, .cpp) repository paths of the class's unit, existing or proposed.
+
+    `index` is a unit_index(repo) for callers resolving many classes."""
+    found = unit_index(repo) if index is None else index
+    if cls in found:
+        a = found[cls]
         return a, f'reconstruction/{a}/{cls}.h', f'reconstruction/{a}/{cls}.cpp'
     area = area or area_for(cls, repo)
     if area is None:
@@ -359,6 +371,7 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
     import claimable
     from contrib_readiness import readiness
     out, headers, layouts = [], {}, {}
+    units = unit_index(repo)
     pool = list(data['functions'])
     if published:
         held = {f['rva'] for f in pool}
@@ -373,7 +386,7 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
         m = PLAIN_NAME.fullmatch(fn.get('name') or '')
         cls, method = m.groups() if m else ('', '')
         if cls not in layouts:
-            layouts[cls] = unit_files(repo, cls) if cls else (None, None, None)
+            layouts[cls] = unit_files(repo, cls, index=units) if cls else (None, None, None)
         area, header, cpp = layouts[cls]
         has_unit = bool(cpp and (Path(repo) / cpp).is_file())
         if header not in headers:
@@ -537,9 +550,35 @@ def pinned_hashes(repo):
     return out
 
 
+def toolchain_dirs(ctx, kind):
+    """Places a toolchain may live, in order: this checkout's private store (`contrib/<kind>`, then
+    `toolchains/<kind>*`), then the same two under the main checkout's .local when this is a linked
+    worktree, whose own ignored .local lacks what was set up once in the main one."""
+    bases = []
+    try:
+        bases.append(ctx.local)
+    except Stop:
+        pass
+    main = main_checkout_local(ctx.repo)
+    if main is not None and main not in bases:
+        bases.append(main)
+    out = [ctx.private / kind]
+    for base in bases:
+        for cand in [base / 'contrib' / kind, *sorted((base / 'toolchains').glob(kind + '*'))]:
+            if cand not in out:
+                out.append(cand)
+    return out
+
+
 def toolchain_root(ctx):
     cfg = load_config(ctx)
-    return Path(ctx.env.get('SR_MSVC') or cfg.get('msvc') or ctx.private / 'msvc')
+    explicit = ctx.env.get('SR_MSVC') or cfg.get('msvc')
+    if explicit:
+        return Path(explicit)
+    for cand in toolchain_dirs(ctx, 'msvc'):
+        if toolchain_bins(cand):
+            return cand
+    return ctx.private / 'msvc'
 
 
 def toolchain_bins(root):
@@ -1029,8 +1068,34 @@ def task_dir(ctx, tid):
     return ctx.private / 'tasks' / tid
 
 
-def load_task(ctx, ident=None):
-    """The contributor task named by id, RVA or unit; the only one when none is named."""
+def changed_paths(ctx):
+    """Repository paths with uncommitted changes (tracked or new), POSIX form; empty outside git."""
+    proc = ctx.run(['git', 'status', '--porcelain', '--untracked-files=all'], cwd=ctx.repo,
+                   capture_output=True, text=True)
+    if proc.returncode != 0:
+        return set()
+    return {line[3:].split(' -> ')[-1].strip().strip('"') for line in proc.stdout.splitlines() if len(line) > 3}
+
+
+def pick_current_task(ctx, pick):
+    """Of several tasks, the one whose unit the working tree changes, else the most recently touched."""
+    changed = changed_paths(ctx)
+    hits = [(d, t) for d, t in pick if t.get('compiled') in changed or set(t.get('contrib', {}).get('unit', [])) & changed]
+    if len(hits) == 1:
+        chosen, why = hits[0], 'its unit has uncommitted changes'
+    else:
+        def touched(item):
+            d = item[0]
+            times = [p.stat().st_mtime for p in (d / 'task.json', d / 'runs') if p.exists()]
+            return max(times, default=0)
+        chosen, why = max(hits or pick, key=touched), 'most recently modified task'
+    ctx.say(f'several tasks; using {chosen[0].name} ({why}); name one to choose another')
+    return chosen
+
+
+def load_task(ctx, ident=None, pick_current=False):
+    """The contributor task named by id, RVA or unit; the only one when none is named (with
+    `pick_current`, the current one when several exist)."""
     base = ctx.private / 'tasks'
     tasks = sorted(p for p in base.glob('*/task.json')) if base.is_dir() else []
     loaded = [(p.parent, json.loads(p.read_text())) for p in tasks]
@@ -1047,6 +1112,8 @@ def load_task(ctx, ident=None):
     if not pick:
         raise Stop(USAGE, 'no contributor task' + (f' for {ident}' if ident else ''), f'{ctx.cli} start 0x<rva>')
     if len(pick) > 1:
+        if pick_current and not ident:
+            return pick_current_task(ctx, pick)
         raise Stop(USAGE, 'several tasks: name one (' + ', '.join(d.name for d, _ in pick) + ')')
     return pick[0]
 
@@ -1198,7 +1265,11 @@ def install_command(ctx, pm, names, accept_sources=False):
 
 
 def private_wine_bin(ctx):
-    return ctx.private / 'wine' / MAC_WINE['app'] / 'Contents' / 'Resources' / 'wine' / 'bin'
+    tail = Path(MAC_WINE['app']) / 'Contents' / 'Resources' / 'wine' / 'bin'
+    for cand in toolchain_dirs(ctx, 'wine'):
+        if (cand / tail / 'wine').is_file():
+            return cand / tail
+    return ctx.private / 'wine' / tail
 
 
 def apply_wine_env(ctx):
@@ -1800,20 +1871,26 @@ def start(ctx, args, quiet=False):
     if args.area is not None and not unit_paths.area_accepted(args.area):
         raise Stop(USAGE, f'--area must be one of the areas in tools/unit_paths.py (for example skyrim/ai), '
                    f'not {args.area!r}')
-    area, header, cpp = unit_files(ctx.repo, cls, args.area)
-    if area is None:
-        raise Stop(USAGE, f'no area rule for class {cls} (reconstruction/README.md, "Layout")',
-                   f'{ctx.cli} start {" ".join(args.rva)} --area <area>  (ask in your claim issue which area)')
-    exe = require_exe(ctx, target)['path']
     tdir = task_dir(ctx, task_id_for(cls, args.practice))
-    tdir.mkdir(parents=True, exist_ok=True)
-    names = public_names(ctx.repo, data)
-    smap = json.loads(symbol_map_path(ctx.repo, target['build_id']).read_text())['symbols']
-    by_rva = {e['rva']: n for n, e in smap.items() if isinstance(e, dict) and isinstance(e.get('rva'), int)}
     try:
         old = json.loads((tdir / 'task.json').read_text())
     except (OSError, ValueError):
         old = {}
+    area, header, cpp = unit_files(ctx.repo, cls, args.area)
+    # A task already pointing at an existing unit keeps that unit, wherever it lives.
+    kept = (old.get('contrib') or {}).get('unit') or []
+    if len(kept) == 2 and old.get('compiled') == kept[1] and (ctx.repo / kept[1]).is_file():
+        header, cpp = kept
+        area = Path(cpp).parent.relative_to('reconstruction').as_posix()
+    if area is None:
+        raise Stop(USAGE, f'no area rule for class {cls} (reconstruction/README.md, "Layout")',
+                   f'{ctx.cli} start {" ".join(args.rva)} --area <area>  (ask in your claim issue which area)')
+    exe = require_exe(ctx, target)['path']
+    unit_existed = (ctx.repo / cpp).is_file()
+    tdir.mkdir(parents=True, exist_ok=True)
+    names = public_names(ctx.repo, data)
+    smap = json.loads(symbol_map_path(ctx.repo, target['build_id']).read_text())['symbols']
+    by_rva = {e['rva']: n for n, e in smap.items() if isinstance(e, dict) and isinstance(e.get('rva'), int)}
     functions = {parse_rva(f['rva']): f for f in old.get('functions', [])}
     for fn, mm in zip(fns, m):
         dest, _pack = write_pack(ctx, exe, fn, names)
@@ -1863,6 +1940,9 @@ def start(ctx, args, quiet=False):
         text = (ctx.repo / cpp).read_text()
         additions = []
         for fn, mm in zip(fns, m):
+            # A function the unit already names (in any spelling or position) keeps its own header.
+            if unit_existed and re.search(rf'0x0*{fn["rva"]:x}\b', text, re.I):
+                continue
             if fn['rva'] not in rva_headers.claimed_rvas([text]):
                 _h, metadata = skeleton(fn, cls, mm.group(2), area, drafted, recipe,
                                         getattr(args, 'code_origin', None))
@@ -1970,7 +2050,7 @@ def run_compare(ctx, ident=None, root=None):
     import bind
     import verify_function
     root = Path(root or ctx.repo)
-    tdir, task = load_task(ctx, ident)
+    tdir, task = load_task(ctx, ident, pick_current=True)
     target = target_manifest(root)
     config = load_config(ctx)
     model = task.get('drafter_model') or config.get('model') or config.get('drafted_by')

@@ -36,9 +36,19 @@ def main_worktree_local(root):
     otherwise look empty. None when `root` is the main worktree, is not a git checkout, or has its
     own .local (then that one is the intended private store).
     """
-    root = Path(root)
-    if (root / '.local').exists():
+    if (Path(root) / '.local').exists():
         return None
+    return main_checkout_local(root)
+
+
+def main_checkout_local(root):
+    """The main checkout's .local when `root` is a linked git worktree, else None.
+
+    Found through `git rev-parse --git-common-dir`. A worktree that already has some private
+    files of its own still lacks toolchains set up once in the main checkout, so tools fall back
+    to this directory per resource.
+    """
+    root = Path(root)
     try:
         proc = subprocess.run(['git', 'rev-parse', '--path-format=absolute', '--git-common-dir', '--git-dir'],
                               cwd=root, capture_output=True, text=True, timeout=20)
