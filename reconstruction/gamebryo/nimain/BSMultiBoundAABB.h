@@ -143,6 +143,7 @@ std::uint8_t RegisterStreamablesBase(NiObject* a_self, NiStream& a_stream);
 class BSMultiBoundShape : public NiObject
 {
 public:
+    BSMultiBoundShape();
     std::uint8_t unknown10[0x8];  // 10
 };
 static_assert(sizeof(BSMultiBoundShape) == 0x18, "BSMultiBoundShape size");
