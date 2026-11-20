@@ -470403,6 +470403,54 @@
       "owner": "claim-time",
       "evidence": "reports/sse-steam-1-7-104/0x679990.json",
       "report": "reports/sse-steam-1-7-104/0x679990.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x209020",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 2134048,
+      "size": 2912,
+      "status": "mapped",
+      "name": "TESGrassManager::GenerateLayerInstances",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): descriptive name; generates one grass type's instances for one landscape quadrant layer (grid, acceptance, jitter, water and slope tests, colour scale). RVA 0x209020; size from the image function table.",
+      "owner": "eclepso",
+      "evidence": "findings/grass-retail-constants.md"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x2afb20",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 2816800,
+      "size": 2131,
+      "status": "mapped",
+      "name": "TESGrassManager::BuildLayerRecords",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): descriptive name; fills the per-quadrant grass records from the land texture's grass types and the nine-sample coverage test. RVA 0x2afb20; size from the image function table.",
+      "owner": "eclepso",
+      "evidence": "findings/grass-retail-constants.md"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x208f60",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 2133856,
+      "size": 82,
+      "status": "mapped",
+      "name": "TESGrassManager::SetShaderFadeStart",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): descriptive name; pushes the effective fade start into every grass shader of a cell. RVA 0x208f60; size from the image function table.",
+      "owner": "eclepso",
+      "evidence": "findings/grass-retail-constants.md"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1523440",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22164544,
+      "size": 322,
+      "status": "mapped",
+      "name": "BSGrassShader::UploadInstanceFade",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): descriptive name; uploads a grass geometry's per-instance fade values with the 960-instance cap. RVA 0x1523440; size from the image function table.",
+      "owner": "eclepso",
+      "evidence": "findings/grass-retail-constants.md"
     }
   ],
   "milestones": [
