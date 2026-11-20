@@ -214597,12 +214597,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 19700016,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf12c9930::~DeletingLeaf12c9930",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x12c9930.json",
+      "report": "reports/sse-steam-1-7-104/0x12c9930.json"
     },
     {
       "id": "sse-steam-1-7-104-0x12c9960",
@@ -215067,12 +215068,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 19735216,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf12d22b0::~DeletingLeaf12d22b0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x12d22b0.json",
+      "report": "reports/sse-steam-1-7-104/0x12d22b0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x12d5fc0",
@@ -218635,12 +218637,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 20155504,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1338c70::~DeletingLeaf1338c70",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1338c70.json",
+      "report": "reports/sse-steam-1-7-104/0x1338c70.json"
     },
     {
       "id": "sse-steam-1-7-104-0x133c530",
@@ -220719,24 +220722,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 21011952,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1409df0::~DeletingLeaf1409df0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1409df0.json",
+      "report": "reports/sse-steam-1-7-104/0x1409df0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1409e20",
       "build_id": "sse-steam-1-7-104",
       "rva": 21012000,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1409e20::~DeletingLeaf1409e20",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1409e20.json",
+      "report": "reports/sse-steam-1-7-104/0x1409e20.json"
     },
     {
       "id": "sse-steam-1-7-104-0x140bd70",
@@ -221681,36 +221686,39 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 21376944,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1462fb0::~DeletingLeaf1462fb0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1462fb0.json",
+      "report": "reports/sse-steam-1-7-104/0x1462fb0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1462fe0",
       "build_id": "sse-steam-1-7-104",
       "rva": 21376992,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1462fe0::~DeletingLeaf1462fe0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1462fe0.json",
+      "report": "reports/sse-steam-1-7-104/0x1462fe0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1463010",
       "build_id": "sse-steam-1-7-104",
       "rva": 21377040,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1463010::~DeletingLeaf1463010",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1463010.json",
+      "report": "reports/sse-steam-1-7-104/0x1463010.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1463370",
@@ -222345,12 +222353,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 21505872,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1482750::~DeletingLeaf1482750",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1482750.json",
+      "report": "reports/sse-steam-1-7-104/0x1482750.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1488230",
@@ -223965,12 +223974,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 21874848,
       "size": 43,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf14dc8a0::~DeletingLeaf14dc8a0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): scalar deleting destructor ABI stand-in; original owner and layout unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md"
+      "evidence": "reports/sse-steam-1-7-104/0x14dc8a0.json",
+      "report": "reports/sse-steam-1-7-104/0x14dc8a0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x14dc8d0",
@@ -224268,7 +224278,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 24. RVA 0x14e7390; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fourth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14e7390.json",
       "report": "reports/sse-steam-1-7-104/0x14e7390.json"
     },
     {
@@ -224310,7 +224320,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 27. RVA 0x14e7450; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fourth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14e7450.json",
       "report": "reports/sse-steam-1-7-104/0x14e7450.json"
     },
     {
@@ -224364,7 +224374,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), joined through Address Library id 105540. RVA 0x14e7ef0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fourth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14e7ef0.json",
       "report": "reports/sse-steam-1-7-104/0x14e7ef0.json"
     },
     {
@@ -224378,7 +224388,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 52. RVA 0x14e7fb0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fourth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14e7fb0.json",
       "report": "reports/sse-steam-1-7-104/0x14e7fb0.json"
     },
     {
@@ -224432,7 +224442,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 51. RVA 0x14e85f0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fourth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14e85f0.json",
       "report": "reports/sse-steam-1-7-104/0x14e85f0.json"
     },
     {
@@ -224488,7 +224498,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 50. RVA 0x14e8680; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fourth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14e8680.json",
       "report": "reports/sse-steam-1-7-104/0x14e8680.json"
     },
     {
@@ -224670,7 +224680,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), joined through Address Library id 105651. RVA 0x14ecb90; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fifth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14ecb90.json",
       "report": "reports/sse-steam-1-7-104/0x14ecb90.json"
     },
     {
@@ -224684,7 +224694,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), joined through Address Library id 105652. RVA 0x14ecba0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fifth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x14ecba0.json",
       "report": "reports/sse-steam-1-7-104/0x14ecba0.json"
     },
     {
@@ -225089,7 +225099,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 28. RVA 0x151d6d0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-upstream-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x151d6d0.json",
       "report": "reports/sse-steam-1-7-104/0x151d6d0.json"
     },
     {
@@ -225117,7 +225127,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, unverified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a, ng-slot association in the pinned local function inventory; a code pass does not verify the name.",
       "owner": "awarebayes",
-      "evidence": "findings/generator-leaves-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x151d9a0.json",
       "report": "reports/sse-steam-1-7-104/0x151d9a0.json"
     },
     {
@@ -225199,7 +225209,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 40. RVA 0x1520d50; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fifth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1520d50.json",
       "report": "reports/sse-steam-1-7-104/0x1520d50.json"
     },
     {
@@ -226326,7 +226336,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, unverified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a, ng-slot association in the pinned local function inventory; a code pass does not verify the name.",
       "owner": "awarebayes",
-      "evidence": "findings/generator-leaves-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1529b30.json",
       "report": "reports/sse-steam-1-7-104/0x1529b30.json"
     },
     {
@@ -226368,7 +226378,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 60. RVA 0x152add0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152add0.json",
       "report": "reports/sse-steam-1-7-104/0x152add0.json"
     },
     {
@@ -226410,7 +226420,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 25. RVA 0x152c370; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-normal-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152c370.json",
       "report": "reports/sse-steam-1-7-104/0x152c370.json"
     },
     {
@@ -226438,7 +226448,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 27. RVA 0x152c410; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-normal-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152c410.json",
       "report": "reports/sse-steam-1-7-104/0x152c410.json"
     },
     {
@@ -226446,12 +226456,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22201456,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSWaterShaderProperty::IsEqual",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 28. RVA 0x152c470; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x152c470.json",
+      "report": "reports/sse-steam-1-7-104/0x152c470.json"
     },
     {
       "id": "sse-steam-1-7-104-0x152c520",
@@ -226478,7 +226489,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, unverified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a, ng-slot association in the pinned local function inventory; a code pass does not verify the name.",
       "owner": "awarebayes",
-      "evidence": "findings/generator-leaves-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152c6f0.json",
       "report": "reports/sse-steam-1-7-104/0x152c6f0.json"
     },
     {
@@ -226516,7 +226527,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 52. RVA 0x152d190; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-normal-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152d190.json",
       "report": "reports/sse-steam-1-7-104/0x152d190.json"
     },
     {
@@ -226558,7 +226569,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 53. RVA 0x152d8a0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152d8a0.json",
       "report": "reports/sse-steam-1-7-104/0x152d8a0.json"
     },
     {
@@ -226572,7 +226583,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 55. RVA 0x152db70; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x152db70.json",
       "report": "reports/sse-steam-1-7-104/0x152db70.json"
     },
     {
@@ -226642,7 +226653,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, unverified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a, ng-slot association in the pinned local function inventory; a code pass does not verify the name.",
       "owner": "awarebayes",
-      "evidence": "findings/generator-leaves-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1532c90.json",
       "report": "reports/sse-steam-1-7-104/0x1532c90.json"
     },
     {
@@ -226656,7 +226667,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 39. RVA 0x1532ca0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-upstream-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1532ca0.json",
       "report": "reports/sse-steam-1-7-104/0x1532ca0.json"
     },
     {
@@ -226684,7 +226695,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 55. RVA 0x1533bd0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-upstream-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1533bd0.json",
       "report": "reports/sse-steam-1-7-104/0x1533bd0.json"
     },
     {
@@ -226972,12 +226983,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22262480,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSShaderTextureSet::IsEqual",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 28. RVA 0x153b2d0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x153b2d0.json",
+      "report": "reports/sse-steam-1-7-104/0x153b2d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x153b3c0",
@@ -226990,7 +227002,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 37. RVA 0x153b3c0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fifth-batch-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x153b3c0.json",
       "report": "reports/sse-steam-1-7-104/0x153b3c0.json"
     },
     {
@@ -227102,7 +227114,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 53. RVA 0x1553540; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1553540.json",
       "report": "reports/sse-steam-1-7-104/0x1553540.json"
     },
     {
@@ -227116,7 +227128,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 55. RVA 0x1553930; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1553930.json",
       "report": "reports/sse-steam-1-7-104/0x1553930.json"
     },
     {
@@ -227185,7 +227197,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 6. RVA 0x1556680; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1556680.json",
       "report": "reports/sse-steam-1-7-104/0x1556680.json"
     },
     {
@@ -227221,12 +227233,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22383792,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSDistantTreeShaderProperty::SetupGeometry",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 39. RVA 0x1558cb0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1558cb0.json",
+      "report": "reports/sse-steam-1-7-104/0x1558cb0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1558eb0",
@@ -227239,7 +227252,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 55. RVA 0x1558eb0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1558eb0.json",
       "report": "reports/sse-steam-1-7-104/0x1558eb0.json"
     },
     {
@@ -227420,7 +227433,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 4. RVA 0x155d960; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x155d960.json",
       "report": "reports/sse-steam-1-7-104/0x155d960.json"
     },
     {
@@ -227434,7 +227447,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 6. RVA 0x155db90; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x155db90.json",
       "report": "reports/sse-steam-1-7-104/0x155db90.json"
     },
     {
@@ -227448,7 +227461,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 8. RVA 0x155dba0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x155dba0.json",
       "report": "reports/sse-steam-1-7-104/0x155dba0.json"
     },
     {
@@ -227462,7 +227475,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, unverified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a, ng-slot association in the pinned local function inventory; a code pass does not verify the name.",
       "owner": "awarebayes",
-      "evidence": "findings/generator-leaves-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x155dbd0.json",
       "report": "reports/sse-steam-1-7-104/0x155dbd0.json"
     },
     {
@@ -227643,7 +227656,7 @@
       "name_origin": "GUESS",
       "name_source": "GUESS(low): primitive interval stand-in; original signature and owning system unknown.",
       "owner": "awarebayes",
-      "evidence": "findings/ghidra-import.md",
+      "evidence": "reports/sse-steam-1-7-104/0x15673e0.json",
       "report": "reports/sse-steam-1-7-104/0x15673e0.json"
     },
     {
@@ -228213,7 +228226,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 5. RVA 0x1575820; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1575820.json",
       "report": "reports/sse-steam-1-7-104/0x1575820.json"
     },
     {
@@ -228227,7 +228240,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 0. RVA 0x15758f0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x15758f0.json",
       "report": "reports/sse-steam-1-7-104/0x15758f0.json"
     },
     {
@@ -228241,7 +228254,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 7. RVA 0x1575920; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1575920.json",
       "report": "reports/sse-steam-1-7-104/0x1575920.json"
     },
     {
@@ -228255,7 +228268,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 0. RVA 0x1578840; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1578840.json",
       "report": "reports/sse-steam-1-7-104/0x1578840.json"
     },
     {
@@ -228269,7 +228282,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 3. RVA 0x1578880; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1578880.json",
       "report": "reports/sse-steam-1-7-104/0x1578880.json"
     },
     {
@@ -228829,7 +228842,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 13. RVA 0x157ed10; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x157ed10.json",
       "report": "reports/sse-steam-1-7-104/0x157ed10.json"
     },
     {
@@ -228843,7 +228856,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 4. RVA 0x1582010; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1582010.json",
       "report": "reports/sse-steam-1-7-104/0x1582010.json"
     },
     {
@@ -228857,7 +228870,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 6. RVA 0x1582020; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1582020.json",
       "report": "reports/sse-steam-1-7-104/0x1582020.json"
     },
     {
@@ -228871,7 +228884,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 14. RVA 0x1582030; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1582030.json",
       "report": "reports/sse-steam-1-7-104/0x1582030.json"
     },
     {
@@ -228997,7 +229010,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 12. RVA 0x1588d50; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1588d50.json",
       "report": "reports/sse-steam-1-7-104/0x1588d50.json"
     },
     {
@@ -229011,7 +229024,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 8. RVA 0x1588e20; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1588e20.json",
       "report": "reports/sse-steam-1-7-104/0x1588e20.json"
     },
     {
@@ -229025,7 +229038,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 7. RVA 0x1588e30; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1588e30.json",
       "report": "reports/sse-steam-1-7-104/0x1588e30.json"
     },
     {
@@ -229039,7 +229052,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 14. RVA 0x1588e40; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1588e40.json",
       "report": "reports/sse-steam-1-7-104/0x1588e40.json"
     },
     {
@@ -229053,7 +229066,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 13. RVA 0x1588e50; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x1588e50.json",
       "report": "reports/sse-steam-1-7-104/0x1588e50.json"
     },
     {
@@ -439762,12 +439775,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 21922640,
       "size": 39,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSLightingShaderProperty::Function14e8350",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class attribution only from a class-only placeholder of a community name list, unverified. No usable method name in the pinned sources. RVA 0x14e8350; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x14e8350.json",
+      "report": "reports/sse-steam-1-7-104/0x14e8350.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1507cc0",
@@ -440553,492 +440567,533 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22056016,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISParallaxMaskBlurVCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106112 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508c50; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508c50.json",
+      "report": "reports/sse-steam-1-7-104/0x1508c50.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508c90",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056080,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISPerlinNoise2DCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106113 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508c90; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508c90.json",
+      "report": "reports/sse-steam-1-7-104/0x1508c90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508cd0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056144,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISPerlinNoiseCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106114 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508cd0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508cd0.json",
+      "report": "reports/sse-steam-1-7-104/0x1508cd0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508d10",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056208,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurH::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106115 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508d10; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508d10.json",
+      "report": "reports/sse-steam-1-7-104/0x1508d10.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508d50",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056272,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurHCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106116 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508d50; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508d50.json",
+      "report": "reports/sse-steam-1-7-104/0x1508d50.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508d90",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056336,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurV::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106117 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508d90; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508d90.json",
+      "report": "reports/sse-steam-1-7-104/0x1508d90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508dd0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056400,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurVCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106118 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508dd0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508dd0.json",
+      "report": "reports/sse-steam-1-7-104/0x1508dd0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508e10",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056464,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCameraZ::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106119 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508e10; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508e10.json",
+      "report": "reports/sse-steam-1-7-104/0x1508e10.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508e50",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056528,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCameraZAndMipsCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106120 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508e50; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508e50.json",
+      "report": "reports/sse-steam-1-7-104/0x1508e50.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508e90",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056592,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCompositeFog::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106121 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508e90; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508e90.json",
+      "report": "reports/sse-steam-1-7-104/0x1508e90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508ed0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056656,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCompositeSAO::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106122 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508ed0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508ed0.json",
+      "report": "reports/sse-steam-1-7-104/0x1508ed0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508f10",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056720,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCompositeSAOFog::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106123 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508f10; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508f10.json",
+      "report": "reports/sse-steam-1-7-104/0x1508f10.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508f50",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056784,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAORawAO::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106124 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508f50; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508f50.json",
+      "report": "reports/sse-steam-1-7-104/0x1508f50.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508f90",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056848,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAORawAOCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106125 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508f90; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508f90.json",
+      "report": "reports/sse-steam-1-7-104/0x1508f90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1508fd0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056912,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAORawAONoTemporal::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106126 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1508fd0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1508fd0.json",
+      "report": "reports/sse-steam-1-7-104/0x1508fd0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509010",
       "build_id": "sse-steam-1-7-104",
       "rva": 22056976,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSILComposite::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106127 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509010; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509010.json",
+      "report": "reports/sse-steam-1-7-104/0x1509010.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509050",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057040,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSILRawInd::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106128 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509050; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509050.json",
+      "report": "reports/sse-steam-1-7-104/0x1509050.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509090",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057104,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSimpleColor::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106129 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509090; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509090.json",
+      "report": "reports/sse-steam-1-7-104/0x1509090.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15090d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057168,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSnowSSS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106130 (the list writes the name with a trailing _* marker, omitted here). RVA 0x15090d0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15090d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15090d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509110",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057232,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISTemporalAA::~BSImagespaceShaderISTemporalAA",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 0. RVA 0x1509110; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509110.json",
+      "report": "reports/sse-steam-1-7-104/0x1509110.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509150",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057296,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISTemporalAA_UI::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106132 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509150; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509150.json",
+      "report": "reports/sse-steam-1-7-104/0x1509150.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509190",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057360,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISTemporalAA_Water::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106133 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509190; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509190.json",
+      "report": "reports/sse-steam-1-7-104/0x1509190.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15091d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057424,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISUnderwaterMask::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106134 (the list writes the name with a trailing _* marker, omitted here). RVA 0x15091d0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15091d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15091d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509210",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057488,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISUpsampleDynamicResolution::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106135 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509210; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509210.json",
+      "report": "reports/sse-steam-1-7-104/0x1509210.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509250",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057552,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISVolumetricLightingBlurHCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106136 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509250; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509250.json",
+      "report": "reports/sse-steam-1-7-104/0x1509250.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509290",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057616,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISVolumetricLightingBlurVCS::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106137 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509290; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509290.json",
+      "report": "reports/sse-steam-1-7-104/0x1509290.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15092d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057680,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISWaterBlend::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106138 (the list writes the name with a trailing _* marker, omitted here). RVA 0x15092d0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15092d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15092d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509310",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057744,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderLocalMap::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106139 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509310; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509310.json",
+      "report": "reports/sse-steam-1-7-104/0x1509310.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509350",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057808,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderMap::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106140 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509350; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509350.json",
+      "report": "reports/sse-steam-1-7-104/0x1509350.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509390",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057872,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNoiseNormalmap::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106141 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509390; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509390.json",
+      "report": "reports/sse-steam-1-7-104/0x1509390.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15093d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22057936,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNoiseScrollAndBlend::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106142 (the list writes the name with a trailing _* marker, omitted here). RVA 0x15093d0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15093d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15093d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509410",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058000,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur11::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106143 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509410; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509410.json",
+      "report": "reports/sse-steam-1-7-104/0x1509410.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509450",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058064,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur13::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106144 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509450; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509450.json",
+      "report": "reports/sse-steam-1-7-104/0x1509450.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509490",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058128,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur15::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106145 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509490; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509490.json",
+      "report": "reports/sse-steam-1-7-104/0x1509490.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15094d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058192,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur3::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106146 (the list writes the name with a trailing _* marker, omitted here). RVA 0x15094d0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15094d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15094d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509510",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058256,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur5::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106147 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509510; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509510.json",
+      "report": "reports/sse-steam-1-7-104/0x1509510.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509550",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058320,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur7::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106148 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509550; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509550.json",
+      "report": "reports/sse-steam-1-7-104/0x1509550.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509590",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058384,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur9::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106149 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509590; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509590.json",
+      "report": "reports/sse-steam-1-7-104/0x1509590.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15095d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058448,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderRadialBlur::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106150 (the list writes the name with a trailing _* marker, omitted here). RVA 0x15095d0; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15095d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15095d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509610",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058512,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderRadialBlurHigh::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106151 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509610; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509610.json",
+      "report": "reports/sse-steam-1-7-104/0x1509610.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509650",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058576,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderRadialBlurMedium::dtor",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 106152 (the list writes the name with a trailing _* marker, omitted here). RVA 0x1509650; size from the image's single .pdata entry.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509650.json",
+      "report": "reports/sse-steam-1-7-104/0x1509650.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509bd0",
@@ -442294,24 +442349,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22142576,
       "size": 7,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSGrassShaderProperty::Function151de70",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from an image RTTI vftable of BSGrassShaderProperty that is not its primary vftable. No usable method name in the pinned sources. RVA 0x151de70; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x151de70.json",
+      "report": "reports/sse-steam-1-7-104/0x151de70.json"
     },
     {
       "id": "sse-steam-1-7-104-0x151de80",
       "build_id": "sse-steam-1-7-104",
       "rva": 22142592,
       "size": 7,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSGrassShaderProperty::Function151de80",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from an image RTTI vftable of BSGrassShaderProperty that is not its primary vftable. No usable method name in the pinned sources. RVA 0x151de80; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x151de80.json",
+      "report": "reports/sse-steam-1-7-104/0x151de80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x151e3f0",
@@ -442342,12 +442399,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22154384,
       "size": 20,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSShaderAccumulator::Function1520c90",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class attribution only from a class-only placeholder of a community name list, unverified. No usable method name in the pinned sources. RVA 0x1520c90; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1520c90.json",
+      "report": "reports/sse-steam-1-7-104/0x1520c90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1520d70",
@@ -442366,48 +442424,52 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22155600,
       "size": 14,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSShaderAccumulator::Function1521150",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class attribution only from a class-only placeholder of a community name list, unverified. No usable method name in the pinned sources. RVA 0x1521150; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1521150.json",
+      "report": "reports/sse-steam-1-7-104/0x1521150.json"
     },
     {
       "id": "sse-steam-1-7-104-0x152ada0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22195616,
       "size": 9,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSEffectShaderProperty::GetBaseTexture",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 55. RVA 0x152ada0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x152ada0.json",
+      "report": "reports/sse-steam-1-7-104/0x152ada0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x152ade0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22195680,
       "size": 10,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSEffectShaderProperty::QMaterialAlpha",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 50. RVA 0x152ade0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x152ade0.json",
+      "report": "reports/sse-steam-1-7-104/0x152ade0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x152adf0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22195696,
       "size": 17,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSEffectShaderProperty::SetMaterialAlpha",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 49. RVA 0x152adf0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x152adf0.json",
+      "report": "reports/sse-steam-1-7-104/0x152adf0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1530870",
@@ -442474,12 +442536,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22327152,
       "size": 7,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSLightingShader::Function154af70",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class attribution only from a class-only placeholder of a community name list, unverified. No usable method name in the pinned sources. RVA 0x154af70; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x154af70.json",
+      "report": "reports/sse-steam-1-7-104/0x154af70.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1565300",
@@ -442510,24 +442573,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22524016,
       "size": 15,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSLightingShaderPropertyFloatController::GetCtlrID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 108370 (the list writes the name with a trailing _* marker, omitted here). RVA 0x157b070; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x157b070.json",
+      "report": "reports/sse-steam-1-7-104/0x157b070.json"
     },
     {
       "id": "sse-steam-1-7-104-0x157b590",
       "build_id": "sse-steam-1-7-104",
       "rva": 22525328,
       "size": 15,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSLightingShaderPropertyUShortController::GetCtlrID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 108387 (the list writes the name with a trailing _* marker, omitted here). RVA 0x157b590; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x157b590.json",
+      "report": "reports/sse-steam-1-7-104/0x157b590.json"
     },
     {
       "id": "sse-steam-1-7-104-0x157ba30",
@@ -442546,12 +442611,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22526848,
       "size": 15,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSLightingShaderPropertyColorController::GetCtlrID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 108404 (the list writes the name with a trailing _* marker, omitted here). RVA 0x157bb80; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x157bb80.json",
+      "report": "reports/sse-steam-1-7-104/0x157bb80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x157c0f0",
@@ -442570,12 +442636,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22528576,
       "size": 15,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSEffectShaderPropertyFloatController::GetCtlrID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 108421 (the list writes the name with a trailing _* marker, omitted here). RVA 0x157c240; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x157c240.json",
+      "report": "reports/sse-steam-1-7-104/0x157c240.json"
     },
     {
       "id": "sse-steam-1-7-104-0x157c700",
@@ -442594,12 +442661,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22530128,
       "size": 15,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSEffectShaderPropertyColorController::GetCtlrID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: meh321/AddressLibraryDatabase commit 0379cb6 (meh321 Address Library name list, used with the author's permission as reported by the maintainer), skyrimae.rename entry for Address Library id 108438 (the list writes the name with a trailing _* marker, omitted here). RVA 0x157c850; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x157c850.json",
+      "report": "reports/sse-steam-1-7-104/0x157c850.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1582070",
@@ -442918,12 +442986,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22582944,
       "size": 38,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSLightingShader::GetVertexTechnique",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f (GPL-3.0), include/RE/B/BSLightingShader.h (the function that holds the id's relocation), joined through Address Library 1.7.104.0 id 108699. RVA 0x15896a0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15896a0.json",
+      "report": "reports/sse-steam-1-7-104/0x15896a0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x123e040",
@@ -446663,108 +446732,117 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22058640,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509690::~DeletingLeaf1509690",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509690; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509690.json",
+      "report": "reports/sse-steam-1-7-104/0x1509690.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15096d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058704,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf15096d0::~DeletingLeaf15096d0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x15096d0; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15096d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15096d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509710",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058768,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509710::~DeletingLeaf1509710",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509710; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509710.json",
+      "report": "reports/sse-steam-1-7-104/0x1509710.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509750",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058832,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509750::~DeletingLeaf1509750",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509750; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509750.json",
+      "report": "reports/sse-steam-1-7-104/0x1509750.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509790",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058896,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509790::~DeletingLeaf1509790",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509790; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509790.json",
+      "report": "reports/sse-steam-1-7-104/0x1509790.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15097d0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22058960,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf15097d0::~DeletingLeaf15097d0",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x15097d0; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x15097d0.json",
+      "report": "reports/sse-steam-1-7-104/0x15097d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509810",
       "build_id": "sse-steam-1-7-104",
       "rva": 22059024,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509810::~DeletingLeaf1509810",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509810; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509810.json",
+      "report": "reports/sse-steam-1-7-104/0x1509810.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509850",
       "build_id": "sse-steam-1-7-104",
       "rva": 22059088,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509850::~DeletingLeaf1509850",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509850; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509850.json",
+      "report": "reports/sse-steam-1-7-104/0x1509850.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1509890",
       "build_id": "sse-steam-1-7-104",
       "rva": 22059152,
       "size": 52,
-      "status": "mapped",
+      "status": "matched",
       "name": "DeletingLeaf1509890::~DeletingLeaf1509890",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder class name from the RVA; no owner or signature claimed. RVA 0x1509890; size from the image function table; selected as a member of the stamp cluster of matched exemplar 0x1507e00.",
       "owner": "awarebayes",
-      "evidence": "findings/stamp-sweep-leaves.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1509890.json",
+      "report": "reports/sse-steam-1-7-104/0x1509890.json"
     },
     {
       "id": "sse-steam-1-7-104-0x15098d0",
@@ -459593,6 +459671,487 @@
       "owner": "claim-time",
       "evidence": "reports/sse-steam-1-7-104/0x5d07f0.json",
       "report": "reports/sse-steam-1-7-104/0x5d07f0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x14e77f0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 21919728,
+      "size": 57,
+      "status": "matched",
+      "name": "BSShaderProperty::Function14e77f0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x14e77f0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x14e77f0.json",
+      "report": "reports/sse-steam-1-7-104/0x14e77f0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x14e7a80",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 21920384,
+      "size": 51,
+      "status": "matched",
+      "name": "BSShaderProperty::Function14e7a80",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x14e7a80; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x14e7a80.json",
+      "report": "reports/sse-steam-1-7-104/0x14e7a80.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1521170",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22155632,
+      "size": 13,
+      "status": "matched",
+      "name": "BSShaderAccumulator::Function1521170",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1521170; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1521170.json",
+      "report": "reports/sse-steam-1-7-104/0x1521170.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x15213e0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22156256,
+      "size": 19,
+      "status": "matched",
+      "name": "BSShaderAccumulator::Function15213e0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x15213e0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x15213e0.json",
+      "report": "reports/sse-steam-1-7-104/0x15213e0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1527140",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22180160,
+      "size": 60,
+      "status": "matched",
+      "name": "BSLightingShaderMaterialHairTint::Function1527140",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1527140; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1527140.json",
+      "report": "reports/sse-steam-1-7-104/0x1527140.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1527a90",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22182544,
+      "size": 69,
+      "status": "matched",
+      "name": "BSLightingShaderMaterialLODLandscape::Function1527a90",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1527a90; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1527a90.json",
+      "report": "reports/sse-steam-1-7-104/0x1527a90.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x152aa00",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22194688,
+      "size": 55,
+      "status": "matched",
+      "name": "BSEffectShaderProperty::Function152aa00",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x152aa00; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x152aa00.json",
+      "report": "reports/sse-steam-1-7-104/0x152aa00.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x152aa40",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22194752,
+      "size": 55,
+      "status": "matched",
+      "name": "BSEffectShaderProperty::Function152aa40",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x152aa40; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x152aa40.json",
+      "report": "reports/sse-steam-1-7-104/0x152aa40.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x152d950",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22206800,
+      "size": 75,
+      "status": "matched",
+      "name": "BSBloodSplatterShaderProperty::Function152d950",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x152d950; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x152d950.json",
+      "report": "reports/sse-steam-1-7-104/0x152d950.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1553750",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22361936,
+      "size": 77,
+      "status": "matched",
+      "name": "BSSkyShaderProperty::Function1553750",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1553750; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1553750.json",
+      "report": "reports/sse-steam-1-7-104/0x1553750.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1558dc0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22384064,
+      "size": 10,
+      "status": "matched",
+      "name": "BSDistantTreeShaderProperty::Function1558dc0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1558dc0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1558dc0.json",
+      "report": "reports/sse-steam-1-7-104/0x1558dc0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x155c650",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22398544,
+      "size": 13,
+      "status": "matched",
+      "name": "BSShadowLight::Function155c650",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x155c650; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x155c650.json",
+      "report": "reports/sse-steam-1-7-104/0x155c650.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x15666e0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22439648,
+      "size": 31,
+      "status": "matched",
+      "name": "BSUtilityShader::Function15666e0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x15666e0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x15666e0.json",
+      "report": "reports/sse-steam-1-7-104/0x15666e0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1576a90",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22506128,
+      "size": 46,
+      "status": "matched",
+      "name": "BSLight::Function1576a90",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1576a90; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1576a90.json",
+      "report": "reports/sse-steam-1-7-104/0x1576a90.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x1588da0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 22580640,
+      "size": 18,
+      "status": "matched",
+      "name": "BSShadowParabolicLight::Function1588da0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x1588da0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x1588da0.json",
+      "report": "reports/sse-steam-1-7-104/0x1588da0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf62ed0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16133840,
+      "size": 70,
+      "status": "matched",
+      "name": "NiSingleInterpController::Functionf62ed0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf62ed0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf62ed0.json",
+      "report": "reports/sse-steam-1-7-104/0xf62ed0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf62f20",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16133920,
+      "size": 45,
+      "status": "matched",
+      "name": "NiSingleInterpController::Functionf62f20",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf62f20; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf62f20.json",
+      "report": "reports/sse-steam-1-7-104/0xf62f20.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf63020",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16134176,
+      "size": 53,
+      "status": "matched",
+      "name": "NiSingleInterpController::Functionf63020",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf63020; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf63020.json",
+      "report": "reports/sse-steam-1-7-104/0xf63020.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf630d0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16134352,
+      "size": 53,
+      "status": "matched",
+      "name": "NiSingleInterpController::Functionf630d0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf630d0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf630d0.json",
+      "report": "reports/sse-steam-1-7-104/0xf630d0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf657d0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16144336,
+      "size": 40,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf657d0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf657d0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf657d0.json",
+      "report": "reports/sse-steam-1-7-104/0xf657d0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf65800",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16144384,
+      "size": 40,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf65800",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf65800; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf65800.json",
+      "report": "reports/sse-steam-1-7-104/0xf65800.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf65830",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16144432,
+      "size": 26,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf65830",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf65830; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf65830.json",
+      "report": "reports/sse-steam-1-7-104/0xf65830.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf65850",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16144464,
+      "size": 42,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf65850",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf65850; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf65850.json",
+      "report": "reports/sse-steam-1-7-104/0xf65850.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf65880",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16144512,
+      "size": 42,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf65880",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf65880; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf65880.json",
+      "report": "reports/sse-steam-1-7-104/0xf65880.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf659a0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16144800,
+      "size": 14,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf659a0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf659a0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf659a0.json",
+      "report": "reports/sse-steam-1-7-104/0xf659a0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf65a90",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16145040,
+      "size": 74,
+      "status": "matched",
+      "name": "NiPathInterpolator::Functionf65a90",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf65a90; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf65a90.json",
+      "report": "reports/sse-steam-1-7-104/0xf65a90.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf7a420",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16229408,
+      "size": 44,
+      "status": "matched",
+      "name": "NiBSplineFloatInterpolator::Functionf7a420",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf7a420; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf7a420.json",
+      "report": "reports/sse-steam-1-7-104/0xf7a420.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf7a6c0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16230080,
+      "size": 58,
+      "status": "matched",
+      "name": "NiBSplineFloatInterpolator::Functionf7a6c0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf7a6c0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf7a6c0.json",
+      "report": "reports/sse-steam-1-7-104/0xf7a6c0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf7a700",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16230144,
+      "size": 63,
+      "status": "matched",
+      "name": "NiBSplineFloatInterpolator::Functionf7a700",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf7a700; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf7a700.json",
+      "report": "reports/sse-steam-1-7-104/0xf7a700.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf7a890",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16230544,
+      "size": 32,
+      "status": "matched",
+      "name": "NiBSplineFloatInterpolator::Functionf7a890",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf7a890; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf7a890.json",
+      "report": "reports/sse-steam-1-7-104/0xf7a890.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf7a8e0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16230624,
+      "size": 10,
+      "status": "matched",
+      "name": "NiBSplineFloatInterpolator::Functionf7a8e0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf7a8e0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf7a8e0.json",
+      "report": "reports/sse-steam-1-7-104/0xf7a8e0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf8cef0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16305904,
+      "size": 51,
+      "status": "matched",
+      "name": "BSTreadTransfInterpolator::Functionf8cef0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf8cef0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf8cef0.json",
+      "report": "reports/sse-steam-1-7-104/0xf8cef0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf8d050",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16306256,
+      "size": 21,
+      "status": "matched",
+      "name": "BSTreadTransfInterpolator::Functionf8d050",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf8d050; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf8d050.json",
+      "report": "reports/sse-steam-1-7-104/0xf8d050.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf8d070",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16306288,
+      "size": 21,
+      "status": "matched",
+      "name": "BSTreadTransfInterpolator::Functionf8d070",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf8d070; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf8d070.json",
+      "report": "reports/sse-steam-1-7-104/0xf8d070.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf8d090",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16306320,
+      "size": 9,
+      "status": "matched",
+      "name": "BSTreadTransfInterpolator::Functionf8d090",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf8d090; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf8d090.json",
+      "report": "reports/sse-steam-1-7-104/0xf8d090.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf8d0a0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16306336,
+      "size": 22,
+      "status": "matched",
+      "name": "BSTreadTransfInterpolator::Functionf8d0a0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf8d0a0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf8d0a0.json",
+      "report": "reports/sse-steam-1-7-104/0xf8d0a0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf8d0c0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16306368,
+      "size": 22,
+      "status": "matched",
+      "name": "BSTreadTransfInterpolator::Functionf8d0c0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf8d0c0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf8d0c0.json",
+      "report": "reports/sse-steam-1-7-104/0xf8d0c0.json"
     }
   ],
   "milestones": [
@@ -459635,7 +460194,7 @@
     "notes": "Inventory and exclusions have not been established. No completion percentage is meaningful yet."
   },
   "target_build_id": "sse-steam-1-7-104",
-  "updated_at": "2026-11-20T10:03:21Z",
+  "updated_at": "2026-11-20T10:23:38Z",
   "work_items": [
     {
       "id": "pin-target",

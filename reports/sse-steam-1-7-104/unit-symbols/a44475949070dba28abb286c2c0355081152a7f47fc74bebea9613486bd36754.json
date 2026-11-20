@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RegisterStreamables@NiSingleInterpController@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 16133840,
+      "size": 70
+    },
+    "?SaveBinary@NiSingleInterpController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16133920,
+      "size": 45
+    },
+    "?SetInterpolator@NiSingleInterpController@@QEAAXPEAVNiInterpolator@@G@Z": {
+      "rva": 16134176,
+      "size": 53
+    },
+    "?ProcessClone@NiSingleInterpController@@UEAAXAEAVNiCloningProcess@@@Z": {
+      "rva": 16134352,
+      "size": 53
+    },
+    "?RegisterStreamables@NiInterpController@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 16119824,
+      "size": null
+    },
+    "?SaveBinary@NiInterpController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16119840,
+      "size": null
+    },
+    "?ProcessClone@NiTimeController@@UEAAXAEAVNiCloningProcess@@@Z": {
+      "rva": 15698176,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RegisterStreamables@NiSingleInterpController@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xf62ed0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiSingleInterpController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf62f20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetInterpolator@NiSingleInterpController@@QEAAXPEAVNiInterpolator@@G@Z",
+        "rva": "0xf63020",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ProcessClone@NiSingleInterpController@@UEAAXAEAVNiCloningProcess@@@Z",
+        "rva": "0xf630d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterStreamables@NiInterpController@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xf5f810",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiInterpController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf5f820",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ProcessClone@NiTimeController@@UEAAXAEAVNiCloningProcess@@@Z",
+        "rva": "0xef8900",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

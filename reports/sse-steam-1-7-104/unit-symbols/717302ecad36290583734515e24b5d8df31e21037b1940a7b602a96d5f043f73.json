@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__real@3f800000": {
+      "rva": 28687912,
+      "size": null
+    },
+    "?LoadBinary@NiPoint2@@QEAAXAEAVNiStream@@@Z": {
+      "rva": 15650128,
+      "size": null
+    },
+    "?SaveBinary@NiPoint2@@QEAAXPEAVNiStream@@@Z": {
+      "rva": 15650272,
+      "size": null
+    },
+    "?LoadBinary@NiShadeProperty@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15789552,
+      "size": null
+    },
+    "?SaveBinary@NiShadeProperty@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15789600,
+      "size": null
+    },
+    "?LoadBinary@BSShaderProperty@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 21918608,
+      "size": 147
+    },
+    "?SaveBinary@BSShaderProperty@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 21918800,
+      "size": 120
+    },
+    "?SetFlags@BSShaderProperty@@QEAAXW4EShaderPropertyFlag8@@_N@Z": {
+      "rva": 21921520,
+      "size": 73
+    },
+    "?DoClearRenderPasses@BSShaderProperty@@UEAAXXZ": {
+      "rva": 21921712,
+      "size": 66
+    },
+    "?ForEachTexture@BSShaderProperty@@UEAAHAEAVForEachVisitor@1@@Z": {
+      "rva": 21923312,
+      "size": 6
+    },
+    "?QMaterialAlpha@BSShaderProperty@@UEAAMXZ": {
+      "rva": 21923456,
+      "size": 9
+    },
+    "?ClearRenderPass@BSRenderPass@@QEAAXXZ": {
+      "rva": 22370592,
+      "size": null
+    },
+    "?Function14e77f0@BSShaderProperty@@SAXPEAURenderPassArray@1@@Z": {
+      "rva": 21919728,
+      "size": 57
+    },
+    "?Function14e7a80@BSShaderProperty@@SAPEAVBSRenderPass@@PEAURenderPassArray@1@PEAPEAV2@@Z": {
+      "rva": 21920384,
+      "size": 51
+    },
+    "?SetNextPass@BSRenderPass@@QEAAXPEAV1@@Z": {
+      "rva": 22369312,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__real@3f800000",
+        "rva": "0x1b5be28",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiPoint2@@QEAAXAEAVNiStream@@@Z",
+        "rva": "0xeecd50",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPoint2@@QEAAXPEAVNiStream@@@Z",
+        "rva": "0xeecde0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiShadeProperty@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf0edf0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiShadeProperty@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf0ee20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@BSShaderProperty@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x14e7390",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@BSShaderProperty@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x14e7450",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetFlags@BSShaderProperty@@QEAAXW4EShaderPropertyFlag8@@_N@Z",
+        "rva": "0x14e7ef0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?DoClearRenderPasses@BSShaderProperty@@UEAAXXZ",
+        "rva": "0x14e7fb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ForEachTexture@BSShaderProperty@@UEAAHAEAVForEachVisitor@1@@Z",
+        "rva": "0x14e85f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?QMaterialAlpha@BSShaderProperty@@UEAAMXZ",
+        "rva": "0x14e8680",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ClearRenderPass@BSRenderPass@@QEAAXXZ",
+        "rva": "0x1555920",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14e77f0@BSShaderProperty@@SAXPEAURenderPassArray@1@@Z",
+        "rva": "0x14e77f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function14e7a80@BSShaderProperty@@SAPEAVBSRenderPass@@PEAURenderPassArray@1@PEAPEAV2@@Z",
+        "rva": "0x14e7a80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetNextPass@BSRenderPass@@QEAAXPEAV1@@Z",
+        "rva": "0x1555420",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}
