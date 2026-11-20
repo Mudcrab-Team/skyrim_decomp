@@ -60,9 +60,17 @@ unmatched functions, plus `contributor-targets.json`: the offered `contrib.py ne
 all functions in the current open claim snapshot. Claim addresses outside progress are resolved
 against local function/pdata boundaries; unresolved identities stop generation. The checked-in
 offered inventory records public claim URLs/scopes and hashes of its input snapshots. This
-coverage is smaller than the full executable census. `target_hash_offers.py` also offers a bounded window (3,000 by
-default) of unmapped ordinary functions, small ones first, whose class already has a layout unit; `contrib.py` accepts
-them and `tools/record.py` creates their inventory entry on acceptance (`findings/claim-time-mapping.md`). Install the
+coverage is smaller than the full executable census. `target_hash_offers.py` also offers a bounded window of
+unmapped ordinary functions whose class already has a layout unit; `contrib.py` accepts them and `tools/record.py` creates their inventory entry on acceptance
+(`findings/claim-time-mapping.md`). The window refills itself: offered functions stay offered until they are
+recorded, and when fewer than the low-water mark (2,000 by default, `--low-water`, `SR_WINDOW_LOW_WATER` for the
+bot) are left to claim, the next slice (2,000 by default, `--slice`, `SR_WINDOW_SLICE`) is added, so the published
+list grows by one slice per refill and never by the size of the function table. A slice is ordered small and
+medium functions first, known names (community, RTTI, address library) and classes with matched siblings ahead
+of the rest, very large and known-hard shapes last. Functions that internal workers have planned (private plan
+files under `.local/twins` and `.local/stamp-sweep`, passed as `--reserved-dir`) are skipped and, if not claimed,
+withdrawn from the window; the plans themselves are never published. The bot logs the slice and a line with
+claimable left, claimed and the daily burn rate. Install the
 local extraction dependency `iced-x86==1.21.0` in an ignored environment. For example:
 
 ```sh

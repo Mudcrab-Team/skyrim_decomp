@@ -98,3 +98,71 @@ class ClaimableTests(Fixture):
         got = target_hash_offers.select_window(self.repo, table, known={0x80})
         self.assertEqual(list(got), [0x20, 0x70, 0x10])
         self.assertEqual(list(target_hash_offers.select_window(self.repo, table, set(), limit=1)), [0x20])
+
+
+def meta(rva, size, cls='Foo', verdict='supported', reasons=(), cautions=(), names=(), how=None):
+    return rva, {'rva': rva, 'size': size, 'kind': 'ordinary', 'owner': {'class': cls, 'how': how},
+                 'names': [{'how': n} for n in names],
+                 'v2': {'verdict': verdict, 'reasons': list(reasons), 'cautions': list(cautions)}}
+
+
+class WindowPolicyTests(Fixture):
+    def window(self, rows, **kw):
+        return list(target_hash_offers.select_window(self.repo, dict(rows), kw.pop('known', set()), **kw))
+
+    def test_ranking_prefers_named_and_sibling_classes_and_puts_large_and_hard_last(self):
+        (self.repo / 'reconstruction/forms/Rich.cpp').write_text('')
+        (self.repo / 'reconstruction/forms/Rich.h').write_text('struct Rich {};\n')
+        rows = [meta(0x10, 300), meta(0x20, 300, names=['community-id']), meta(0x30, 300, cls='Rich'),
+                meta(0x40, 4000), meta(0x50, 40, reasons=['jump-table']), meta(0x60, 700),
+                meta(0x70, 40, cautions=['indirect jump without recovered targets']), meta(0x80, 30, names=['placeholder'])]
+        got = self.window(rows, siblings={'Rich': 9, 'Foo': 1})
+        # small first; then medium (named before unnamed, more siblings first); large and hard functions last
+        self.assertEqual(got, [0x80, 0x20, 0x30, 0x10, 0x60, 0x50, 0x70, 0x40])
+        self.assertEqual(target_hash_offers.rank_key(dict(rows)[0x30], {'Rich': 9}, 'Rich')[:3], (False, 2, True))
+
+    def test_keep_reserved_and_known_are_never_selected_and_limit_bounds_the_slice(self):
+        rows = [meta(r, 8 + r) for r in (0x10, 0x20, 0x30, 0x40, 0x50)]
+        self.assertEqual(self.window(rows, known={0x10}, reserved={0x20}, keep={0x30}), [0x40, 0x50])
+        self.assertEqual(self.window(rows, limit=2), [0x10, 0x20])
+
+    def test_reserved_rvas_read_the_plan_formats_and_skip_what_is_unreadable(self):
+        plans = self.tmp / 'plans'
+        plans.mkdir()
+        (plans / 'recon.json').write_text(json.dumps([0x2000, 0x2010]))
+        (plans / 'pairs.json').write_text(json.dumps([[0x3000, 'ClassTypeLeaf3000'], [0x3010, 'ClassTypeLeaf3010']]))
+        (plans / 'ranked.json').write_text(json.dumps([[310, 'm:abc', [0x4000], [0x4010, 0x4020]]]))
+        (plans / 'results.json').write_text(json.dumps({'20480': {'rva': 20480, 'sizes': [33, 33]}}))
+        (plans / 'broken.json').write_text('{')
+        (plans / 'notes.txt').write_text('0x9000')
+        got = target_hash_offers.reserved_rvas([plans, self.tmp / 'missing'])
+        self.assertEqual(got, {0x2000, 0x2010, 0x3000, 0x3010, 0x4000, 0x4010, 0x4020, 20480})
+
+    def table(self, count):
+        return dict(meta(0x1000 + 0x10 * i, 20 + i) for i in range(count))
+
+    def test_a_slice_is_added_only_below_the_low_water_mark_and_offered_rows_stay(self):
+        table = self.table(6)
+        # Fixture: 0x100 is inventory-mapped, 0x200/0x300/0x500 are already offered: 4 claimable.
+        for low, expected_added in ((4, 0), (5, 3)):
+            classes, added, left = target_hash_offers.plan_window(
+                self.repo, table | {0x200: meta(0x200, 20)[1], 0x300: meta(0x300, 150)[1], 0x500: meta(0x500, 300)[1]},
+                self.data, {0x100: {}}, set(), set(), low, 3)
+            self.assertEqual((left, len(added)), (4, expected_added))
+            self.assertTrue({0x200, 0x300, 0x500} <= set(classes))
+        self.assertEqual(sorted(added), [0x1000, 0x1010, 0x1020])
+
+    def test_an_unclaimed_reserved_row_is_withdrawn_but_a_claimed_one_stays(self):
+        table = {0x200: meta(0x200, 20)[1], 0x300: meta(0x300, 150)[1], 0x500: meta(0x500, 300)[1]}
+        classes, _added, _left = target_hash_offers.plan_window(
+            self.repo, table, self.data, {0x100: {}}, {0x300}, {0x200, 0x300}, 0, 5)
+        self.assertEqual(sorted(classes), [0x300, 0x500])
+
+    def test_matched_siblings_count_matched_functions_per_class(self):
+        data = {'functions': [{'name': 'A::B::f', 'status': 'matched'}, {'name': 'A::B::g', 'status': 'matched'},
+                              {'name': 'A::B::h', 'status': 'mapped'}, {'name': 'plain', 'status': 'matched'}]}
+        self.assertEqual(target_hash_offers.matched_siblings(data), {'A::B': 2})
+
+
+if __name__ == '__main__':
+    unittest.main()

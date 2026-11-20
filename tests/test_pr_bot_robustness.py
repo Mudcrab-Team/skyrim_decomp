@@ -524,12 +524,55 @@ class PoolTests(WorkDir):
         bot = FakeBot(self.work)
         regenerated = []
         bot.regenerate = lambda number: regenerated.append((number, bot.land_lock.locked()))
-        for left, expected in ((1500, []), (1499, [(None, True)])):
+        self.assertEqual(pr_bot.WINDOW_LOW_WATER, 2000)
+        for left, expected in ((2000, []), (1999, [(None, True)])):
             regenerated.clear()
             bot.offered_open = lambda left=left: left
             self.assertEqual(bot.refill_offers(), left)
             self.assertEqual(regenerated, expected)
         self.assertFalse(bot.land_lock.locked())
+        regenerated.clear()
+        bot.offered_open = lambda: 50
+        bot.refill_offers(threshold=10)
+        self.assertEqual(regenerated, [])
+
+    def test_burn_counts_only_claim_time_reports_added_in_the_window(self):
+        now = 1_000_000_000
+        log = [str(now - 3600), 'reports/b/0x10.json', 'reports/b/0x99.json', '',
+               str(now - 3 * 86400), 'reports/b/0x20.json', 'reports/b/0x21.json', '',
+               str(now - 9 * 86400), 'reports/b/0x30.json']
+        day, week = pr_bot.burn_per_day(log, {'reports/b/0x10.json', 'reports/b/0x20.json', 'reports/b/0x30.json'}, now)
+        # the 9-day-old record is outside both windows
+        self.assertEqual((day, week), (1, round(2 / 7, 1)))
+        self.assertEqual(pr_bot.burn_per_day([], set(), now), (0, 0))
+
+    def test_window_line_reports_left_claimed_burn_and_runway(self):
+        self.assertEqual(pr_bot.window_line(3000, 90, (100, 300.0)),
+                         '3000 claimable left, 90 claimed, burn 100/day (24h), 300/day (7d avg), '
+                         'about 10.0 days of runway at the 7-day rate')
+        self.assertNotIn('runway', pr_bot.window_line(3000, 0, (0, 0)))
+
+    def test_offer_summary_reads_the_tool_line_and_ignores_anything_else(self):
+        line = json.dumps({'extra_targets': 5, 'window': {'left_before': 1500, 'added': 2000, 'low_water': 2000,
+                                                         'slice': 2000, 'reserved': 12}}).encode()
+        self.assertIn('2000 added (1500 claimable before', pr_bot.offer_summary(b'noise\n' + line + b'\n'))
+        for bad in (b'', b'not json', b'{"x": 1}', None):
+            self.assertEqual(pr_bot.offer_summary(bad), '')
+
+    def test_window_metrics_come_from_the_published_inventory_and_git_history(self):
+        tree = self.work / 'metrics-tree'
+        (tree / 'data/target-hashes').mkdir(parents=True)
+        (tree / 'data/target-hashes/contributor-targets.json').write_text(json.dumps({'claim_function_count': 42}))
+        (tree / 'data/progress.json').write_text(json.dumps({'functions': [
+            {'owner': 'claim-time', 'report': 'reports/b/0x10.json'}, {'owner': 'x', 'report': 'reports/b/0x11.json'}]}))
+        bot = FakeBot(self.work)
+        bot.tree = tree
+        now = 1_000_000_000
+        bot.run = lambda argv, **kw: subprocess.CompletedProcess(
+            argv, 0, f'{now - 60}\nreports/b/0x10.json\nreports/b/0x11.json\n'.encode(), b'')
+        self.assertEqual(bot.window_metrics(2500, now), pr_bot.window_line(2500, 42, (1, round(1 / 7, 1))))
+        bot.run = lambda argv, **kw: (_ for _ in ()).throw(subprocess.SubprocessError('git'))
+        self.assertEqual(bot.window_metrics(2500, now), '')
 
     def test_idle_poll_checks_the_window_at_start_and_then_once_per_period(self):
         calls = []
