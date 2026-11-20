@@ -2,7 +2,8 @@
 """Refresh public contributor-target boundaries locally; never publishes function bytes/names.
 
 Only claim URLs/scopes and boundary metadata leave this command. The image stays local and is
-hash checked. Private function-table input is resolved only for the pinned build's open claims.
+hash checked. Private function-table input is resolved only for the pinned build's open claims, and
+for the RVAs an open pull request's headers claim (`--extra-rva`, see select_on_demand).
 """
 import argparse
 import datetime as dt
@@ -24,6 +25,7 @@ VERDICT_RANK = {'supported': 0, 'caution': 1}
 SIZE_TIERS = (64, 256, 1024)  # small, small-medium, medium; above is large
 UNNAMED_HOW = {'placeholder'}
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')  # private plans of internal workers, relative to the bot root
+ON_DEMAND_MAX = 128  # PR-claimed functions published per run; a PR is capped at far fewer
 MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
 
 
@@ -151,7 +153,45 @@ def plan_window(root, metadata, progress, known, wanted, reserved, low_water, sl
     return classes, added, left
 
 
-def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slice_size=SLICE, reserved=()):
+def select_on_demand(metadata, known, extra, retained=()):
+    """(accepted [rva], refused {rva: reason}) for RVAs an open PR claims that have no published row.
+
+    The window's rules, minus its class filter (the PR brings its own unit): the RVA must be a function
+    start of the private table, an ordinary function with a size that the local analysis supports, and not
+    recorded yet. `retained` are earlier on-demand rows still wanted; one that has since been recorded or no
+    longer qualifies is dropped without a refusal. Only these RVAs, sizes and hashes are ever published.
+    """
+    accepted, refused = set(), {}
+    for rva in sorted(set(extra)):
+        fn = metadata.get(rva)
+        if rva in known:
+            refused[rva] = 'already-recorded'
+        elif not fn or rva < MIN_RVA:
+            refused[rva] = 'not-a-function-start'
+        elif fn.get('kind') != 'ordinary' or not fn.get('size'):
+            refused[rva] = 'not-an-ordinary-function'
+        elif (fn.get('v2') or {}).get('verdict') not in VERDICT_RANK:
+            refused[rva] = 'locally-unsupported'
+        else:
+            accepted.add(rva)
+    for rva in retained:
+        fn = metadata.get(rva)
+        if rva not in known and fn and fn.get('kind') == 'ordinary' and fn.get('size') \
+                and (fn.get('v2') or {}).get('verdict') in VERDICT_RANK:
+            accepted.add(rva)
+    return sorted(accepted)[:ON_DEMAND_MAX], refused
+
+
+def retained_on_demand(root):
+    """RVAs of earlier on-demand rows in the published offered list, kept until they are recorded."""
+    try:
+        rows = json.loads((Path(root) / hashes.OFFERED).read_text())['functions']
+    except (OSError, ValueError, KeyError):
+        return set()
+    return {row['rva'] for row in rows if row.get('on_demand')}
+
+
+def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slice_size=SLICE, reserved=(), extra=()):
     target=contrib.target_manifest(root)
     if hashes.digest(image_bytes)!=target['image_sha256']:
         raise ValueError('image differs from pinned build')
@@ -167,6 +207,10 @@ def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slic
     next_={contrib.parse_rva(c['rva']) for c in contrib.candidates(root,progress) if c['startable']}
     classes,added,left=plan_window(root,metadata,progress,known,wanted,reserved,low_water,slice_size)
     next_|=set(classes)
+    claimed=len(wanted)
+    on_demand,refused=select_on_demand(metadata,known,extra,retained_on_demand(root))
+    on_demand=set(on_demand)-wanted-set(classes)
+    wanted|=on_demand
     rows=[];unresolved=[]
     for rva in sorted((wanted|next_)-known.keys()):
         fn=metadata.get(rva)
@@ -174,15 +218,17 @@ def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slic
         elif rva in pdata:size,source=pdata[rva],'single-pdata-entry'
         else:unresolved.append(rva);continue
         image.read(rva,size,'offered target boundary')
-        rows.append(dict(rva=rva,size=size,extent_source=source,**({'class':classes[rva]} if rva in classes else {})))
+        rows.append(dict(rva=rva,size=size,extent_source=source,**({'class':classes[rva]} if rva in classes else {}),
+                         **({'on_demand':True} if rva in on_demand else {})))
     if unresolved:
         raise ValueError('claim boundaries unresolved; nothing published')
     return dict(schema=1,build_id=target['build_id'],snapshot_utc=dt.datetime.now(dt.timezone.utc).isoformat(),
         function_metadata_sha256=hashes.digest(function_table.read_bytes()),
         claims_snapshot_sha256=hashes.digest(json.dumps(claims,sort_keys=True).encode()),
         claims=[dict(number=c['number'],url=c['url'],entries=c['entries']) for c in selected],
-        next_candidate_count=len(next_),claim_function_count=len(wanted),functions=rows,unresolved_rvas=[]),dict(
-        left_before=left,added=len(added),low_water=low_water,slice=slice_size,reserved=len(reserved))
+        next_candidate_count=len(next_),claim_function_count=claimed,functions=rows,unresolved_rvas=[]),dict(
+        left_before=left,added=len(added),low_water=low_water,slice=slice_size,reserved=len(reserved),
+        on_demand=sorted(on_demand),refused={hex(r):why for r,why in refused.items()})
 
 
 def main(argv=None):
@@ -193,11 +239,13 @@ def main(argv=None):
     p.add_argument('--slice',type=int,default=SLICE,dest='slice_size',help='unmapped functions added per refill')
     p.add_argument('--reserved-dir',type=Path,action='append',default=[],
                    help='directory of private plan files whose functions are not offered (repeatable)')
+    p.add_argument('--extra-rva',action='append',default=[],type=lambda v:int(v,0),
+                   help='RVA an open PR claims that has no row yet; published when it is a real function start (repeatable)')
     a=p.parse_args(argv)
     ctx=contrib.Ctx(repo=ROOT,interactive=False)
     index=ctx.github().open_items(refresh=True)
     reserved=reserved_rvas(a.reserved_dir)
-    output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved)
+    output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved,a.extra_rva)
     (ROOT/hashes.OFFERED).write_text(json.dumps(output,indent=2)+'\n')
     print(json.dumps(dict(extra_targets=len(output['functions']),next_candidates=output['next_candidate_count'],
                           claims=len(output['claims']),window=window,acceptance='not-evaluated')))
