@@ -109,6 +109,35 @@ class TargetHashTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'regular|scope'):
                 ci.prepare(root, base, evil, Path(tmp) / 'evil')
 
+    def test_generated_pdb_output_is_not_read_as_a_unit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'repo'
+            root.mkdir()
+
+            def git(*args):
+                return subprocess.check_output(['git', *args], cwd=root).decode().strip()
+            git('init', '-q'); git('config', 'user.email', 'synthetic@example.invalid')
+            git('config', 'user.name', 'Synthetic')
+            for name in ('reconstruction/forms', 'builds', 'findings', 'reports'):
+                (root / name).mkdir(parents=True)
+            (root / 'builds/target.json').write_text(json.dumps(dict(build_id='synthetic')))
+            (root / 'reconstruction/forms/X.cpp').write_text('old')
+            for name in ('findings/a.md', 'reports/a.json'):
+                (root / name).write_text('synthetic')
+            git('add', '.'); git('commit', '-qm', 'base'); base = git('rev-parse', 'HEAD')
+            gen = root / 'reconstruction/generated/crashlogger_pdb/types'
+            gen.mkdir(parents=True)
+            (gen / 'Thing.h').write_text('// CRASHLOGGER_PDB(59818@2000.01.01)\n')
+            (gen.parent / 'README.md').write_text('<!-- CRASHLOGGER_PDB(59818@2000.01.01) -->\n')
+            git('add', '.'); git('commit', '-qm', 'generated only'); only = git('rev-parse', 'HEAD')
+            (root / 'reconstruction/forms/X.cpp').write_text('new source only')
+            git('add', '.'); git('commit', '-qm', 'both'); both = git('rev-parse', 'HEAD')
+            git('checkout', '-q', base)
+            self.assertEqual(ci.prepare(root, base, only, Path(tmp) / 'a'), (root, []))
+            with patch.object(ci.lint, 'lint_file', return_value=[]):
+                _tree, changed = ci.prepare(root, base, both, Path(tmp) / 'b')
+            self.assertEqual(changed, ['reconstruction/forms/X.cpp'])
+
     def test_published_manifest_is_complete_hash_metadata_without_masks_or_bytes(self):
         manifest = h.load_manifest(ROOT)
         disk = json.loads((ROOT / h.MANIFEST).read_text())

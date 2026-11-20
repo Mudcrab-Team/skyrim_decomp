@@ -1,0 +1,191 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "11c3078c8c8b2e48ff9d5ba17ba876ed1f8f4839df9ca49022eb6781d04af3e5",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.cpp",
+          "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "d95ca4475850cd3378456baa96fca03fef693eab",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "d02b485dd0df9d9a25ef94a5eb227870032c3f06",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "1357db38f41a49a158ea3ba22d0c6b8acc5474b7e79411eb87262af47b1b3491",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "79fff72e0873d862f7908d4c68dadd0f08da44fb6372112cb92830ef25f269c0",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44816961793,
+    "rva": "0xfda6c0",
+    "schema": 2,
+    "source_sha256": "c30bc6f27d84bcd198785f37c96b4829881d889086430916fd482e443e38de3d",
+    "status": "pass",
+    "symbols": [
+      "?GetAlwaysRenderChild@BSPortalGraph@@QEBAPEAVNiAVObject@@I@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "1357db38f41a49a158ea3ba22d0c6b8acc5474b7e79411eb87262af47b1b3491",
+      "normalized_sha256": "79fff72e0873d862f7908d4c68dadd0f08da44fb6372112cb92830ef25f269c0",
+      "rva": 16623296,
+      "size": 11
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xfda6c0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "e31e344d3dcd43b0ad9fff1cbc380d70f8f6af51cb269c5f1c4e7ea92f44a0c4",
+          "code_sections": 1,
+          "object_sha256": "11c3078c8c8b2e48ff9d5ba17ba876ed1f8f4839df9ca49022eb6781d04af3e5"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 11,
+          "code_bytes_total": 11,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16623296,
+          "size": 11,
+          "symbol": "?GetAlwaysRenderChild@BSPortalGraph@@QEBAPEAVNiAVObject@@I@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.cpp",
+          "source_revision": "c30bc6f27d84bcd198785f37c96b4829881d889086430916fd482e443e38de3d"
+        },
+        "symbol_map_sha256": "048ab21ca849a9d80875ba67739a3d2ad5adf5064b71dbf7b0aff43b30a022f3",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xfda6c0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.cpp",
+    "digest": "c30bc6f27d84bcd198785f37c96b4829881d889086430916fd482e443e38de3d",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.cpp",
+      "reconstruction/gamebryo/nimain/BSPortalGraph_fda6c0.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/048ab21ca849a9d80875ba67739a3d2ad5adf5064b71dbf7b0aff43b30a022f3.json",
+    "sha256": "048ab21ca849a9d80875ba67739a3d2ad5adf5064b71dbf7b0aff43b30a022f3"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

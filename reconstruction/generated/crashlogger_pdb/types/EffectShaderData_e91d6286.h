@@ -1,0 +1,117 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: EffectShaderData; size 0x1a0
+// one of 2 different PDB types sharing this name
+#pragma once
+
+#include "Color.h"
+#include "D3DBLEND.h"
+#include "D3DBLENDOP.h"
+#include "D3DCMPFUNC.h"
+#include "EnumSet_RE__EffectShaderData__Flags_unsigned_int_ec45d147.h"
+struct BGSDebris_f2fddb01;
+struct BGSSoundDescriptorForm_de361764;
+struct EffectShaderData_e91d6286 {
+    unsigned int unk00;
+    D3DBLEND membraneShaderSourceBlendMode;
+    D3DBLENDOP membraneShaderBlendOperation;
+    D3DCMPFUNC membraneShaderZTestFunction;
+    Color fillTextureEffectColorKey1;
+    float fillTextureEffectAlphaFadeInTime;
+    float fillTextureEffectFullAlphaTime;
+    float fillTextureEffectAlphaFadeOutTime;
+    float fillTextureEffectPersistentAlphaRatio;
+    float fillTextureEffectAlphaPulseAmplitude;
+    float fillTextureEffectAlphaPulseFrequency;
+    float fillTextureEffectTextureAnimationSpeedU;
+    float fillTextureEffectTextureAnimationSpeedV;
+    float edgeEffectFallOff;
+    Color edgeEffectColor;
+    float edgeEffectAlphaFadeInTime;
+    float edgeEffectFullAlphaTime;
+    float edgeEffectAlphaFadeOutTime;
+    float edgeEffectPersistentAlphaRatio;
+    float edgeEffectAlphaPulseAmplitude;
+    float edgeEffectAlphaPulseFrequency;
+    float fillTextureEffectFullAlphaRatio;
+    float edgeEffectFullAlphaRatio;
+    D3DBLEND membraneShaderDestBlendMode;
+    D3DBLEND particleShaderSourceBlendMode;
+    D3DBLENDOP particleShaderBlendOperation;
+    D3DCMPFUNC particleShaderZTestOperation;
+    D3DBLEND particleShaderDestBlendMode;
+    float particleShaderParticleBirthRampUpTime;
+    float particleShaderFullParticleBirthTime;
+    float particleShaderParticleBirthRampDownTime;
+    float particleShaderFullParticleBirthRatio;
+    float particleShaderPersistantParticleCount;
+    float particleShaderParticleLifetime;
+    float particleShaderParticleLifetimeVariance;
+    float particleShaderInitialSpeedAlongNormal;
+    float particleShaderAccelerationAlongNormal;
+    float particleShaderInitialVelocity1;
+    float particleShaderInitialVelocity2;
+    float particleShaderInitialVelocity3;
+    float particleShaderAcceleration1;
+    float particleShaderAcceleration2;
+    float particleShaderAcceleration3;
+    float particleShaderScaleKey1;
+    float particleShaderScaleKey2;
+    float particleShaderScaleKey1Time;
+    float particleShaderScaleKey2Time;
+    Color colorKey1;
+    Color colorKey2;
+    Color colorKey3;
+    float colorKey1ColorAlpha;
+    float colorKey2ColorAlpha;
+    float colorKey3ColorAlpha;
+    float colorKey1ColorKeyTime;
+    float colorKey2ColorKeyTime;
+    float colorKey3ColorKeyTime;
+    float particleShaderInitialSpeedAlongNormalVariance;
+    float particleShaderInitialRotation;
+    float particleShaderInitialRotationVariance;
+    float particleShaderRotationSpeed;
+    float particleShaderRotationSpeedVariance;
+    unsigned int pad0D4;
+    BGSDebris_f2fddb01* addonModels;
+    float holesStartTime;
+    float holesEndTime;
+    float holesStartVal;
+    float holesEndVal;
+    float edgeWidthAlphaUnits;
+    Color edgeColor;
+    float explosionWindSpeed;
+    float textureCountU;
+    float textureCountV;
+    float addonModelsFadeInTime;
+    float addonModelsFadeOutTime;
+    float addonModelsScaleStart;
+    float addonModelsScaleEnd;
+    float addonModelsScaleInTime;
+    float addonModelsScaleOutTime;
+    unsigned int pad13C;
+    BGSSoundDescriptorForm_de361764* ambientSound;
+    Color fillTextureEffectColorKey2;
+    Color fillTextureEffectColorKey3;
+    float fillTextureEffectColorKeyScaleTimeColorKey1Scale;
+    float fillTextureEffectColorKeyScaleTimeColorKey2Scale;
+    float fillTextureEffectColorKeyScaleTimeColorKey3Scale;
+    float fillTextureEffectColorKeyScaleTimeColorKey1Time;
+    float fillTextureEffectColorKeyScaleTimeColorKey2Time;
+    float fillTextureEffectColorKeyScaleTimeColorKey3Time;
+    float colorScale;
+    float birthPositionOffset;
+    float birthPositionOffsetVariance;
+    float particleShaderAnimatedStartFrame;
+    float particleShaderAnimatedStartFrameVariance;
+    float particleShaderAnimatedEndFrame;
+    float particleShaderAnimatedLoopStartFrame;
+    float particleShaderAnimatedLoopStartVariance;
+    float particleShaderAnimatedFrameCount;
+    float particleShaderAnimatedFrameCountVariance;
+    EnumSet_RE__EffectShaderData__Flags_unsigned_int_ec45d147 flags;
+    float fillTextureEffectTextureScaleU;
+    float fillTextureEffectTextureScaleV;
+    unsigned int sceneGraphEmitDepthLimit;
+};
+static_assert(sizeof(EffectShaderData_e91d6286) == 416, "EffectShaderData_e91d6286 layout differs from the PDB");

@@ -84,7 +84,9 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   `COMMUNITY(<owner>/<repo>@<rev>, <licence>)` (e.g. `COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)`),
   `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` (a name or declaration taken from the
   Fallout: New Vegas decompilation, below),
-  `SIBLING(fo4-private@1b765c70, author-permission)` (anonymous permitted game-code sibling), `GUESS` or `GUESS(low|medium|high)`, `EXE_RTTI`,
+  `SIBLING(fo4-private@1b765c70, author-permission)` (anonymous permitted game-code sibling),
+  `CRASHLOGGER_PDB(59818@<version>)` (a name or layout from the community CrashLogger PDB output; a known name
+  source, not evidence of identity), `GUESS` or `GUESS(low|medium|high)`, `EXE_RTTI`,
   `OBSERVED`, and `STANDIN` together with the name's origin (`// TESObjectARMO: STANDIN COMMUNITY(...)`).
   A community name is `COMMUNITY` and a sibling name `SIBLING`, never `GUESS`; `GUESS` is only for
   names you made up. Do not write the label words anywhere else.

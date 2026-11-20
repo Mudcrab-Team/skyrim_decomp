@@ -1,0 +1,17 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: BSTEventSource<RE::TESPackageEvent>; size 0x58
+#pragma once
+
+#include "BSSpinLock.h"
+#include "BSTArray_RE__BSTEventSink_RE__TESPackageEvent_43dc3250.h"
+struct BSTEventSource_RE__TESPackageEvent_8bff8829 {
+    BSTArray_RE__BSTEventSink_RE__TESPackageEvent_43dc3250 sinks;
+    BSTArray_RE__BSTEventSink_RE__TESPackageEvent_43dc3250 pendingRegisters;
+    BSTArray_RE__BSTEventSink_RE__TESPackageEvent_43dc3250 pendingUnregisters;
+    BSSpinLock lock;
+    bool notifying;
+    unsigned char pad51;
+    unsigned short pad52;
+    unsigned int pad54;
+};
+static_assert(sizeof(BSTEventSource_RE__TESPackageEvent_8bff8829) == 88, "BSTEventSource_RE__TESPackageEvent_8bff8829 layout differs from the PDB");

@@ -33,7 +33,8 @@ rule item 2), so a Reviewer pass is not spent on them and a Drafter learns them 
   naming that repository must carry its LICENSE in full, copyright line included;
 - name-origin labels: in a file whose leading comment says `Labels: v2`, every label is on a
   `// <names>: <LABEL> [<LABEL>...][; note]` line, LABEL being `COMMUNITY(<owner>/<repo>@<rev>,
-  <licence>)`, `SIBLING(<owner>/<repo>@<rev>, <licence>)` (only a sibling decompilation listed in
+  <licence>)`, `CRASHLOGGER_PDB(59818@<version>)` (a name read from the community-generated
+  CrashLogger PDB, docs/authorizations.md, Notes), `SIBLING(<owner>/<repo>@<rev>, <licence>)` (only a sibling decompilation listed in
   `SIBLING_SOURCES`, at its pin, with its licence word; this citation rule applies in every
   file), `GUESS`, `GUESS(low|medium|high)`, `EXE_RTTI`, `STANDIN` or `OBSERVED`;
 - sibling bodies: a `Sibling source: <owner>/<repo>@<rev> <path>[:<line>]` line, required by the
@@ -43,7 +44,7 @@ rule item 2), so a Reviewer pass is not spent on them and a Drafter learns them 
 - header comment fields: the leading comment block names the pinned build id and a `Source
   exposure:` category from PROVENANCE.md; a .cpp also gives `RVA 0x...`, `<n> bytes`,
   `Evidence:` with an existing findings/ or reports/ path, `Drafted by` and `Recipe:` with an
-  existing recipe; a .h labels name origin (COMMUNITY, SIBLING, GUESS, EXE_RTTI or OBSERVED);
+  existing recipe; a .h labels name origin (COMMUNITY, SIBLING, CRASHLOGGER_PDB, GUESS, EXE_RTTI or OBSERVED);
 - skeleton not filled: a `SKELETON_TODO...` word (the stub body and paperwork placeholders that
   tools/skeleton.py writes) is refused in every file, except in a working-tree file git does not
   track yet when the whole tree is checked (`tools/check.py` without `--staged`, which lints a
@@ -76,12 +77,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, logical_lines, quoted_includes  # noqa: E402
 from digest_v2 import LABEL_WORD  # noqa: E402
+import pdb_types  # noqa: E402
 import unit_paths  # noqa: E402
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 COMPARED_LINE = re.compile(r'^//[ \t]*0x[0-9a-fA-F]+(?:[ \t]|$)', re.M)
 EXPOSURE = ('black-box', 'community-headers', 'binary-analysis', 'mixed')
-NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'GUESS', 'EXE_RTTI', 'OBSERVED')
+NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'CRASHLOGGER_PDB', 'GUESS', 'EXE_RTTI', 'OBSERVED')
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
 # The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
 # single-level layout is accepted too while units written against it are still landing.
@@ -142,6 +144,7 @@ def label_grammar_applies(name, text):
     return name not in FREEFORM_LABEL_FILES or bool(LABELS_VERSION.search(text[:4000]))
 LABEL = (r'(?:COMMUNITY\([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{7,40}, [A-Za-z0-9.+-]+\)'
          r'|SIBLING\((?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|fo4-private)@[0-9a-f]{7,40}, [A-Za-z0-9.+-]+\)'
+         r'|CRASHLOGGER_PDB\(59818@[0-9A-Za-z][0-9A-Za-z.+-]*\)'
          r'|GUESS(?:\((?:low|medium|high)\))?|EXE_RTTI|STANDIN|OBSERVED)')
 # Decompilations of other games of the engine family that the maintainer allowed as a source of
 # names, declarations and code (docs/authorizations.md, Notes): repository -> (pinned revision
@@ -157,7 +160,7 @@ SIBLING_HEADER = re.compile(rf'Sibling source:\s*({SIBLING_ID})@([0-9a-f]{{7,40}
                             r'((?:src|include)/[^\s:]+)(?::(\d+))?')
 LABEL_LINE = re.compile(rf'^\s*//\s*(?P<names>\S(?:.*?\S)?)\s*:\s*(?P<labels>{LABEL}(?:\s+{LABEL})*)'
                         r'\s*(?:;\s*(?P<note>.*))?$')
-ORIGIN_LABEL = re.compile(r'COMMUNITY\(|SIBLING\(|GUESS|EXE_RTTI|OBSERVED')
+ORIGIN_LABEL = re.compile(r'COMMUNITY\(|SIBLING\(|CRASHLOGGER_PDB\(|GUESS|EXE_RTTI|OBSERVED')
 DEFINE = re.compile(r'^[ \t]*#[ \t]*define\b(.*)$', re.M)
 DEFINE_BANNED = re.compile(rf'(?<![A-Za-z0-9_])(?:__declspec|__pragma|_Pragma|{ASM}|__emit|{CODEGEN_DECLSPEC})'
                            r'(?![A-Za-z0-9_])')
@@ -306,12 +309,12 @@ def label_problems(name, text, header, ext):
         if not m or LABEL_WORD.search(rest):
             problems.append(f'{name}:{number}: label outside the v2 grammar; write "// <names>: <LABEL> ...[; note]" '
                             'with LABEL one of COMMUNITY(<owner>/<repo>@<rev>, <licence>), '
-                            'SIBLING(<owner>/<repo>@<rev>, <licence>), GUESS, '
+                            'SIBLING(<owner>/<repo>@<rev>, <licence>), CRASHLOGGER_PDB(59818@<version>), GUESS, '
                             'GUESS(low|medium|high), EXE_RTTI, STANDIN, OBSERVED')
             continue
         if not ORIGIN_LABEL.search(m.group('labels')):
             problems.append(f'{name}:{number}: STANDIN also needs the origin of the name (COMMUNITY(...), SIBLING(...), '
-                            'GUESS, EXE_RTTI or OBSERVED)')
+                            'CRASHLOGGER_PDB(...), GUESS, EXE_RTTI or OBSERVED)')
         labelled += 1
     if ext == 'h' and not labelled:
         problems.append(f'{name}: a header needs at least one "// <names>: <LABEL>" line')
@@ -400,6 +403,7 @@ LICENCE_TEXT = 'licenses/CommonLibSSE-NG.txt'
 SPDX_LINE = re.compile(r'^//[ \t]*SPDX-License-Identifier:.*$', re.M)
 # Header lines that carry per-unit information and do not count against the header budget.
 HEADER_LIMIT = 6
+HEADER_SHOWN = 15  # counted lines listed in the over-budget message
 FULL_LICENCE = re.compile(r'Permission is hereby granted|THE SOFTWARE IS PROVIDED|^//[ \t]*MIT License[ \t]*$|'
                           r'GNU GENERAL PUBLIC LICENSE|Apache License', re.M)
 
@@ -430,12 +434,23 @@ def licence_text_problems(root):
     return []
 
 
-def counted_header_lines(header):
-    """The header lines that count against HEADER_LIMIT: everything but labels, sibling citations,
-    compared-function lines and the SPDX line."""
-    return [ln for ln in header.split('\n') if ln.strip() and ln.strip() != '//'
+def numbered_header_lines(header):
+    """[(file line number, line)] of the header lines that count against HEADER_LIMIT: everything but
+    labels, sibling citations, compared-function lines and the SPDX line. `header` is a
+    `leading_comment`, which starts at line 1 of the file and keeps blank lines."""
+    return [(n, ln) for n, ln in enumerate(header.split('\n'), 1) if ln.strip() and ln.strip() != '//'
             and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
             and 'SPDX-License-Identifier' not in ln]
+
+
+def counted_header_lines(header):
+    return [ln for _n, ln in numbered_header_lines(header)]
+
+
+def shown_header_line(text, width=100):
+    """A contributor's header line made safe to echo in a log or a bot comment: no backticks or mentions."""
+    text = text.strip().replace('`', "'").replace('@', '@\u200b')
+    return text if len(text) <= width else text[:width - 3] + '...'
 
 
 def header_budget_problems(name, header, old_header=None):
@@ -450,12 +465,21 @@ def header_budget_problems(name, header, old_header=None):
     if 'CharmedBaryon/CommonLibSSE-NG@' in header and 'SPDX-License-Identifier: MIT' not in header \
             and not FULL_LICENCE.search(header):
         problems.append(f'{name}: NG declarations need the line "// {SPDX_MIT}"')
-    counted = counted_header_lines(header)
+    numbered = numbered_header_lines(header)
+    counted = [ln for _n, ln in numbered]
     shrinks = old_header is not None and set(counted) <= set(counted_header_lines(old_header))
     if len(counted) > HEADER_LIMIT and not shrinks:
-        problems.append(f'{name}: header has {len(counted)} lines besides labels, sources and compared functions; '
-                        f'keep at most {HEADER_LIMIT}: drop Task, Labels, Recipe, Evidence, Drafted by, disclaimers '
-                        '(docs/contributor-lessons.md, compact headers)')
+        over = len(counted) - HEADER_LIMIT
+        shown = numbered[:HEADER_SHOWN]
+        lines = [f'{name}: header is {over} line{"s" if over != 1 else ""} over the budget: {len(counted)} lines count, '
+                 f'keep at most {HEADER_LIMIT}. Labels, `Sibling source:`, `// 0x<rva> <Name>` and SPDX lines do not '
+                 f'count. These are the lines that count:']
+        lines += [f'  - line {n}: `{shown_header_line(ln)}`' for n, ln in shown]
+        if len(numbered) > len(shown):
+            lines.append(f'  - and {len(numbered) - len(shown)} more')
+        lines.append(f'Delete or merge at least {over} of them (usually Task, Labels, Recipe, Evidence, Drafted by or a '
+                     'disclaimer); docs/contributor-lessons.md, compact headers.')
+        problems.append('\n'.join(lines))
     return problems
 
 
@@ -569,6 +593,9 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
     path = PurePosixPath(name)
     if name in ('reconstruction/README.md', 'reconstruction/INDEX.md'):
         return problems
+    if pdb_types.is_generated(name):
+        # Output of tools/pdb_types.py, not a unit: it has its own one-line label rule.
+        return pdb_types.file_problems(root, name)
     if len(path.parts) == 3 and path.parts[1] == 'recipes':
         if path.suffix != '.json':
             problems.append(f'{name}: recipes are reconstruction/recipes/<name>.json')

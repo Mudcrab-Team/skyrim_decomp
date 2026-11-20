@@ -1,0 +1,35 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: UI_MENU_FLAGS
+// one of 2 different PDB types sharing this name
+#pragma once
+enum class UI_MENU_FLAGS_a60ab300 : int {
+    UI_MENU_FLAGS__None = 0,
+    UI_MENU_FLAGS__PausesGame = 1,
+    UI_MENU_FLAGS__AlwaysOpen = 2,
+    UI_MENU_FLAGS__UsesCursor = 4,
+    UI_MENU_FLAGS__UsesMenuContext = 8,
+    UI_MENU_FLAGS__Modal = 16,
+    UI_MENU_FLAGS__FreezeFrameBackground = 32,
+    UI_MENU_FLAGS__OnStack = 64,
+    UI_MENU_FLAGS__DisablePauseMenu = 128,
+    UI_MENU_FLAGS__RequiresUpdate = 256,
+    UI_MENU_FLAGS__TopmostRenderedMenu = 512,
+    UI_MENU_FLAGS__UpdateUsesCursor = 1024,
+    UI_MENU_FLAGS__AllowSaving = 2048,
+    UI_MENU_FLAGS__RendersOffscreenTargets = 4096,
+    UI_MENU_FLAGS__InventoryItemMenu = 8192,
+    UI_MENU_FLAGS__DontHideCursorWhenTopmost = 16384,
+    UI_MENU_FLAGS__CustomRendering = 32768,
+    UI_MENU_FLAGS__AssignCursorToRenderer = 65536,
+    UI_MENU_FLAGS__ApplicationMenu = 131072,
+    UI_MENU_FLAGS__HasButtonBar = 262144,
+    UI_MENU_FLAGS__IsTopButtonBar = 524288,
+    UI_MENU_FLAGS__AdvancesUnderPauseMenu = 1048576,
+    UI_MENU_FLAGS__RendersUnderPauseMenu = 2097152,
+    UI_MENU_FLAGS__UsesBlurredBackground = 4194304,
+    UI_MENU_FLAGS__CompanionAppAllowed = 8388608,
+    UI_MENU_FLAGS__FreezeFramePause = 16777216,
+    UI_MENU_FLAGS__SkipRenderDuringFreezeFrameScreenshot = 33554432,
+    UI_MENU_FLAGS__LargeScaleformRenderCacheMode = 67108864,
+    UI_MENU_FLAGS__UsesMovementToDirection = 134217728,
+};

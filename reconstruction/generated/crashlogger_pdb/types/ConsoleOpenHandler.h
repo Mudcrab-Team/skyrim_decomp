@@ -1,0 +1,9 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: ConsoleOpenHandler; size 0x10
+#pragma once
+
+#include "MenuEventHandler.h"
+struct ConsoleOpenHandler {
+    MenuEventHandler _base;
+};
+static_assert(sizeof(ConsoleOpenHandler) == 16, "ConsoleOpenHandler layout differs from the PDB");

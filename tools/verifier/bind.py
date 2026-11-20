@@ -94,6 +94,11 @@ the Drafter wrote them (`BSTimer::QGlobalTimeMultiplier`, `GetArmorKind`), value
     {"?GetArmorKind@@YAHPEAVTESObjectARMO@@@Z": "0x27edf0",
      "BSTimer::QGlobalTimeMultiplier": "0x20ccac8"}
 
+Keys may start with `_` (the CRT's `_Init_thread_epoch`); only a `_` key whose value is neither an
+RVA nor a `tls:` value is skipped, as a note. `data/crt-bind-defaults.json` ({build id: {name: value}})
+supplies the CRT thread-safe-static symbols of a build as hints of lowest priority, used only when the
+object references them; a unit's `// CI hash:` line and a private hint override it.
+
 A hint whose RVA is a compared function's RVA names that function's decorated or qualified name.
 Use hints for targets without a community name, template members and renamed stand-ins; give
 only RVAs listed in the function's pack (never guessed ones).
@@ -115,6 +120,7 @@ import symbol_map as symbol_maps  # noqa: E402
 
 UNBOUND = 'unbound:'
 HINTS = 'bind-hints.json'
+CRT_DEFAULTS = 'data/crt-bind-defaults.json'
 # Comparator reasons that mean "nothing was compared because a name is not bound", not a code difference.
 BINDING_REASONS = {'function-symbol-missing', 'unresolved-symbol'}
 REL32_TAIL = {0x04: 0, 0x05: 1, 0x06: 2, 0x07: 3, 0x08: 4, 0x09: 5}
@@ -806,25 +812,62 @@ def _raw_hints(task_dir):
     raw = json.loads(path.read_text())
     if not isinstance(raw, dict):
         raise ValueError(f'{path}: must be a JSON object of name -> RVA')
-    return {str(k): v for k, v in raw.items() if not str(k).startswith('_')}
+    return {str(k): v for k, v in raw.items() if not _is_note(k, v)}
 
 
-def load_hints(task_dir):
-    """name -> RVA hints; `tls:` values are thread-local offsets and are read by load_tls_hints."""
-    return {k: parse_rva(v) for k, v in _raw_hints(task_dir).items()
-            if not (isinstance(v, str) and v.startswith('tls:'))}
+def _is_note(key, value):
+    """A `_`-prefixed key whose value is no RVA and no `tls:` value is a free-text note, not a hint.
+
+    CRT symbols (`_Init_thread_epoch`, `_Init_thread_abort`) start with `_` too, so the prefix alone
+    cannot tell the two apart; the value can.
+    """
+    if not str(key).startswith('_'):
+        return False
+    if isinstance(value, str) and value.startswith('tls:'):
+        return False
+    try:
+        parse_rva(value)
+    except ValueError:
+        return True
+    return False
 
 
-def load_tls_hints(task_dir):
-    """name -> TLS-template offset from hints of the form "tls:0x<offset>"."""
-    out = {}
-    for k, v in _raw_hints(task_dir).items():
+def split_hints(raw):
+    """(name -> RVA, name -> TLS-template offset) from hint pairs; `tls:0x<offset>` values are offsets."""
+    rvas, tls = {}, {}
+    for k, v in raw.items():
         if isinstance(v, str) and v.startswith('tls:'):
             m = TLS_HINT.fullmatch(v)
             if not m:
                 raise ValueError(f'not a thread-local offset: {v!r}')
-            out[k] = int(m.group(1), 0)
-    return out
+            tls[k] = int(m.group(1), 0)
+        else:
+            rvas[k] = parse_rva(v)
+    return rvas, tls
+
+
+def load_hints(task_dir):
+    """name -> RVA hints; `tls:` values are thread-local offsets and are read by load_tls_hints."""
+    return split_hints(_raw_hints(task_dir))[0]
+
+
+def load_tls_hints(task_dir):
+    """name -> TLS-template offset from hints of the form "tls:0x<offset>"."""
+    return split_hints(_raw_hints(task_dir))[1]
+
+
+def crt_defaults(repo, build_id):
+    """Hints for the CRT's thread-safe-static support symbols in this build, from data/crt-bind-defaults.json.
+
+    Their addresses are properties of the image (the CRT is linked in), not of any unit, and none has
+    a community name, so without defaults every unit with a function-local static would need the
+    same private hints on every host. Same value forms as bind-hints.json.
+    """
+    path = Path(repo) / CRT_DEFAULTS
+    if not build_id or not path.is_file():
+        return {}
+    table = json.loads(path.read_text()).get(build_id) or {}
+    return {str(k): v for k, v in table.items() if not _is_note(k, v)}
 
 
 CI_HASH_LINE = re.compile(r'^// CI hash: (0x[0-9a-fA-F]+)[ \t]+(\S+)[ \t]*$', re.M)
@@ -1060,8 +1103,12 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     obj_bytes = Path(obj_path).read_bytes()
     obj = CoffObject(obj_bytes)
     image = PeImage(Path(image_path).read_bytes()) if image_path and Path(image_path).is_file() else None
-    hints = {**unit_hints(repo, task), **load_hints(task_dir)}
-    tls_hints = load_tls_hints(task_dir)
+    # Defaults only for names this object references, so a unit without a static local lists no ignored hint.
+    referenced = {s.name for s in obj.symbols.values()}
+    default_rvas, default_tls = split_hints({n: v for n, v in crt_defaults(repo, task.get('build_id')).items()
+                                             if n in referenced})
+    hints = {**default_rvas, **unit_hints(repo, task), **load_hints(task_dir)}
+    tls_hints = {**default_tls, **load_tls_hints(task_dir)}
     tls_used = set()
     names = Names(find_undname(objdump))
     defined = defined_functions(obj)

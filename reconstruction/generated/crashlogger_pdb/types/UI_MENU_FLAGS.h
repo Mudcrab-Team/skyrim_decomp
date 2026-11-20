@@ -1,0 +1,35 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: UI_MENU_FLAGS
+// one of 2 different PDB types sharing this name; the fullest
+#pragma once
+enum class UI_MENU_FLAGS : int {
+    kNone = 0,
+    kPausesGame = 1,
+    kAlwaysOpen = 2,
+    kUsesCursor = 4,
+    kUsesMenuContext = 8,
+    kModal = 16,
+    kFreezeFrameBackground = 32,
+    kOnStack = 64,
+    kDisablePauseMenu = 128,
+    kRequiresUpdate = 256,
+    kTopmostRenderedMenu = 512,
+    kUpdateUsesCursor = 1024,
+    kAllowSaving = 2048,
+    kRendersOffscreenTargets = 4096,
+    kInventoryItemMenu = 8192,
+    kDontHideCursorWhenTopmost = 16384,
+    kCustomRendering = 32768,
+    kAssignCursorToRenderer = 65536,
+    kApplicationMenu = 131072,
+    kHasButtonBar = 262144,
+    kIsTopButtonBar = 524288,
+    kAdvancesUnderPauseMenu = 1048576,
+    kRendersUnderPauseMenu = 2097152,
+    kUsesBlurredBackground = 4194304,
+    kCompanionAppAllowed = 8388608,
+    kFreezeFramePause = 16777216,
+    kSkipRenderDuringFreezeFrameScreenshot = 33554432,
+    kLargeScaleformRenderCacheMode = 67108864,
+    kUsesMovementToDirection = 134217728,
+};

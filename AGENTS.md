@@ -43,6 +43,16 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
   unofficial PDBs, acquire cracks, or add copy-protection removal instructions/tools. An owner
   fetching their own purchased copy with their own account through Valve's Steam client or SteamCMD
   is fine; the project itself never distributes a game file.
+- One narrow exception to the PDB rule: the CrashLogger PDBs (Nexus mod 59818, "CrashLogger PDBs",
+  author "CrashLogger Contributors", alandtse/CrashLoggerSSE; the `ae17` variant for the pinned 1.7.104
+  build) are community-generated from the CrashLogger authors' Ghidra project, not Bethesda debug
+  symbols. Content generated from them (layout headers, an RVA-to-name map, a README crediting the source)
+  may be committed in the one directory `reconstruction/generated/crashlogger_pdb/`, every file there
+  carrying `CRASHLOGGER_PDB(59818@<version>)`; it is regenerated, never edited by hand, and can be stripped
+  in bulk. A name or layout a unit takes from it carries the same label. The `.pdb` itself is never
+  committed or redistributed (a contributor may keep their own download under `.local/` to refresh the
+  output); leaked or real Bethesda PDBs, MAP files and similar stay forbidden. A name from it is not
+  evidence of identity; only a byte match is acceptance (`docs/authorizations.md`, Notes).
 - Stop the affected publication if provenance is uncertain. Record the question without reproducing
   suspect content. Unrelated original tooling work may continue.
 

@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetIndexList@PathingRequest@@QEAAAEAUPathRequestIndexList@@XZ": {
+      "rva": 18661024,
+      "size": 8
+    },
+    "?ClearIndexList@PathingRequest@@QEAAXXZ": {
+      "rva": 18661040,
+      "size": 14
+    },
+    "?SetIndex@PathingRequest@@QEAAXI@Z": {
+      "rva": 18661104,
+      "size": 52
+    },
+    "?ReadSettings@PathingRequest@@QEBAXAEAUPathRequestSettings@@@Z": {
+      "rva": 18661328,
+      "size": 58
+    },
+    "?Resize@PathRequestIndexList@@QEAAXI@Z": {
+      "rva": 19156752,
+      "size": null
+    },
+    "?SetOrAppend@PathRequestIndexList@@QEAAXI@Z": {
+      "rva": 19156832,
+      "size": null
+    },
+    "?requestDistanceThreshold@@3MA": {
+      "rva": 34422976,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetIndexList@PathingRequest@@QEAAAEAUPathRequestIndexList@@XZ",
+        "rva": "0x11cbea0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ClearIndexList@PathingRequest@@QEAAXXZ",
+        "rva": "0x11cbeb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetIndex@PathingRequest@@QEAAXI@Z",
+        "rva": "0x11cbef0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadSettings@PathingRequest@@QEBAXAEAUPathRequestSettings@@@Z",
+        "rva": "0x11cbfd0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Resize@PathRequestIndexList@@QEAAXI@Z",
+        "rva": "0x1244f10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetOrAppend@PathRequestIndexList@@QEAAXI@Z",
+        "rva": "0x1244f60",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?requestDistanceThreshold@@3MA",
+        "rva": "0x20d40c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}
