@@ -81787,12 +81787,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 2593072,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESBoundAnimObject::ReplaceModel",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 75. RVA 0x279130; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x279130.json",
+      "report": "reports/sse-steam-1-7-104/0x279130.json"
     },
     {
       "id": "sse-steam-1-7-104-0x279140",
@@ -81855,12 +81856,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 2596064,
       "size": 45,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESObjectACTI::InitItemImpl",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 19. RVA 0x279ce0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/fifth-batch-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x279ce0.json",
+      "report": "reports/sse-steam-1-7-104/0x279ce0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x27a690",
@@ -82873,24 +82875,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 2676592,
       "size": 46,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESObjectWEAP::SaveGame",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 14. RVA 0x28d770; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x28d770.json",
+      "report": "reports/sse-steam-1-7-104/0x28d770.json"
     },
     {
       "id": "sse-steam-1-7-104-0x28d7b0",
       "build_id": "sse-steam-1-7-104",
       "rva": 2676656,
       "size": 46,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESObjectWEAP::LoadGame",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 15. RVA 0x28d7b0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x28d7b0.json",
+      "report": "reports/sse-steam-1-7-104/0x28d7b0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x28e500",
@@ -83714,24 +83718,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 2747776,
       "size": 62,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSReferenceEffect::~BGSReferenceEffect",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 0. RVA 0x29ed80; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x29ed80.json",
+      "report": "reports/sse-steam-1-7-104/0x29ed80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x29edc0",
       "build_id": "sse-steam-1-7-104",
       "rva": 2747840,
       "size": 14,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSReferenceEffect::ClearData",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 5. RVA 0x29edc0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x29edc0.json",
+      "report": "reports/sse-steam-1-7-104/0x29edc0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x29ee40",
@@ -86962,12 +86968,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 3235056,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSAcousticSpace::Clone3D",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 74. RVA 0x315cf0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x315cf0.json",
+      "report": "reports/sse-steam-1-7-104/0x315cf0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x315d00",
@@ -86988,12 +86995,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 3235152,
       "size": 62,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSAcousticSpace::~BGSAcousticSpace",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 0. RVA 0x315d50; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x315d50.json",
+      "report": "reports/sse-steam-1-7-104/0x315d50.json"
     },
     {
       "id": "sse-steam-1-7-104-0x315e40",
@@ -88404,12 +88412,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 3300240,
       "size": 47,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSMusicSilenceTrack::GetType",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 6. RVA 0x325b90; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x325b90.json",
+      "report": "reports/sse-steam-1-7-104/0x325b90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x325bc0",
@@ -92499,36 +92508,39 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 3846000,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSSceneAction::Loops",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 5. RVA 0x3aaf70; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x3aaf70.json",
+      "report": "reports/sse-steam-1-7-104/0x3aaf70.json"
     },
     {
       "id": "sse-steam-1-7-104-0x3aaf80",
       "build_id": "sse-steam-1-7-104",
       "rva": 3846016,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSSceneAction::FacesTarget",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 6. RVA 0x3aaf80; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x3aaf80.json",
+      "report": "reports/sse-steam-1-7-104/0x3aaf80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x3aaf90",
       "build_id": "sse-steam-1-7-104",
       "rva": 3846032,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSSceneAction::Unk_08",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 8. RVA 0x3aaf90; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x3aaf90.json",
+      "report": "reports/sse-steam-1-7-104/0x3aaf90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x3ab090",
@@ -92966,12 +92978,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 3862032,
       "size": 19,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSVoiceType::GetFormEditorID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 50. RVA 0x3aee10; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x3aee10.json",
+      "report": "reports/sse-steam-1-7-104/0x3aee10.json"
     },
     {
       "id": "sse-steam-1-7-104-0x3aee30",
@@ -94715,12 +94728,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 4124288,
       "size": 3,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESTopic::IsParentForm",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 52. RVA 0x3eee80; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x3eee80.json",
+      "report": "reports/sse-steam-1-7-104/0x3eee80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x3eee90",
@@ -94741,12 +94755,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 4128000,
       "size": 19,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESTopic::GetFormEditorID",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 50. RVA 0x3efd00; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x3efd00.json",
+      "report": "reports/sse-steam-1-7-104/0x3efd00.json"
     },
     {
       "id": "sse-steam-1-7-104-0x3f0a30",
@@ -111899,24 +111914,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 5472016,
       "size": 4,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSStoryManagerQuestNode::QChildCount",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 59. RVA 0x537f10; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x537f10.json",
+      "report": "reports/sse-steam-1-7-104/0x537f10.json"
     },
     {
       "id": "sse-steam-1-7-104-0x538390",
       "build_id": "sse-steam-1-7-104",
       "rva": 5473168,
       "size": 11,
-      "status": "mapped",
+      "status": "matched",
       "name": "BGSStoryManagerQuestNode::GetChild",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 60. RVA 0x538390; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/p92-unit-supply-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x538390.json",
+      "report": "reports/sse-steam-1-7-104/0x538390.json"
     },
     {
       "id": "sse-steam-1-7-104-0x539020",
@@ -124779,12 +124796,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 7920416,
       "size": 36,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESActionData::GetSourceActorState",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 1. RVA 0x78db20; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-refill-held-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x78db20.json",
+      "report": "reports/sse-steam-1-7-104/0x78db20.json"
     },
     {
       "id": "sse-steam-1-7-104-0x78db50",
@@ -124805,12 +124823,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 7920512,
       "size": 15,
-      "status": "mapped",
+      "status": "matched",
       "name": "TESActionData::Process",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: CharmedBaryon/CommonLibSSE-NG commit b93280e832f263dbef44e44cbe2936622a02f91a (MIT), virtual slot comment of the class header, joined through the image RTTI vftable slot 5. RVA 0x78db80; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-refill-held-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x78db80.json",
+      "report": "reports/sse-steam-1-7-104/0x78db80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x78f930",
@@ -441582,12 +441601,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22063024,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISLightingComposite::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISLightingComposite, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150a7b0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150a7b0.json",
+      "report": "reports/sse-steam-1-7-104/0x150a7b0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150a7e0",
@@ -441632,24 +441652,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22063168,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISMinifyContrast::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISMinifyContrast, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150a840; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150a840.json",
+      "report": "reports/sse-steam-1-7-104/0x150a840.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150a990",
       "build_id": "sse-steam-1-7-104",
       "rva": 22063504,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISPerlinNoise2DCS::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISPerlinNoise2DCS, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150a990; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150a990.json",
+      "report": "reports/sse-steam-1-7-104/0x150a990.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150a9c0",
@@ -441669,36 +441691,39 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22063568,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurH::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISSAOBlurH, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150a9d0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150a9d0.json",
+      "report": "reports/sse-steam-1-7-104/0x150a9d0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150aa00",
       "build_id": "sse-steam-1-7-104",
       "rva": 22063616,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurHCS::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISSAOBlurHCS, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150aa00; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150aa00.json",
+      "report": "reports/sse-steam-1-7-104/0x150aa00.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150aa30",
       "build_id": "sse-steam-1-7-104",
       "rva": 22063664,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOBlurV::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISSAOBlurV, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150aa30; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150aa30.json",
+      "report": "reports/sse-steam-1-7-104/0x150aa30.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150aaa0",
@@ -441731,24 +441756,26 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22063808,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCompositeFog::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISSAOCompositeFog, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150aac0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150aac0.json",
+      "report": "reports/sse-steam-1-7-104/0x150aac0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150aaf0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22063856,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAOCompositeSAO::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISSAOCompositeSAO, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150aaf0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150aaf0.json",
+      "report": "reports/sse-steam-1-7-104/0x150aaf0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150ab20",
@@ -441767,12 +441794,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22063968,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISSAORawAO::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISSAORawAO, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150ab60; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150ab60.json",
+      "report": "reports/sse-steam-1-7-104/0x150ab60.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150ab90",
@@ -441868,36 +441896,39 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22064176,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISTemporalAA_UI::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISTemporalAA_UI, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150ac30; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150ac30.json",
+      "report": "reports/sse-steam-1-7-104/0x150ac30.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150ac60",
       "build_id": "sse-steam-1-7-104",
       "rva": 22064224,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISTemporalAA_Water::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISTemporalAA_Water, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150ac60; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150ac60.json",
+      "report": "reports/sse-steam-1-7-104/0x150ac60.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150ac90",
       "build_id": "sse-steam-1-7-104",
       "rva": 22064272,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderISUnderwaterMask::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderISUnderwaterMask, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150ac90; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150ac90.json",
+      "report": "reports/sse-steam-1-7-104/0x150ac90.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150acc0",
@@ -441982,132 +442013,143 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22064832,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur11::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur11, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150aec0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150aec0.json",
+      "report": "reports/sse-steam-1-7-104/0x150aec0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150aef0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22064880,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur13::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur13, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150aef0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150aef0.json",
+      "report": "reports/sse-steam-1-7-104/0x150aef0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150af20",
       "build_id": "sse-steam-1-7-104",
       "rva": 22064928,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur15::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur15, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150af20; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150af20.json",
+      "report": "reports/sse-steam-1-7-104/0x150af20.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150af50",
       "build_id": "sse-steam-1-7-104",
       "rva": 22064976,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur3::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur3, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150af50; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150af50.json",
+      "report": "reports/sse-steam-1-7-104/0x150af50.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150af80",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065024,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur5::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur5, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150af80; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150af80.json",
+      "report": "reports/sse-steam-1-7-104/0x150af80.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150afb0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065072,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur7::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur7, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150afb0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150afb0.json",
+      "report": "reports/sse-steam-1-7-104/0x150afb0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150afe0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065120,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderNonHDRBlur9::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderNonHDRBlur9, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150afe0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150afe0.json",
+      "report": "reports/sse-steam-1-7-104/0x150afe0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b010",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065168,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderRadialBlur::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderRadialBlur, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b010; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b010.json",
+      "report": "reports/sse-steam-1-7-104/0x150b010.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b040",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065216,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderRadialBlurHigh::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderRadialBlurHigh, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b040; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b040.json",
+      "report": "reports/sse-steam-1-7-104/0x150b040.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b070",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065264,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderRadialBlurMedium::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderRadialBlurMedium, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b070; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b070.json",
+      "report": "reports/sse-steam-1-7-104/0x150b070.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b1a0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065568,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderReflectionsDebugSpecMask::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderReflectionsDebugSpecMask, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b1a0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b1a0.json",
+      "report": "reports/sse-steam-1-7-104/0x150b1a0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b1d0",
@@ -442140,12 +442182,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22065648,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderTextureMask::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderTextureMask, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b1f0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b1f0.json",
+      "report": "reports/sse-steam-1-7-104/0x150b1f0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b220",
@@ -442165,132 +442208,143 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22065712,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterBlendHeightmaps::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterBlendHeightmaps, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b230; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b230.json",
+      "report": "reports/sse-steam-1-7-104/0x150b230.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b260",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065760,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterDisplacementClearSimulation::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterDisplacementClearSimulation, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b260; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b260.json",
+      "report": "reports/sse-steam-1-7-104/0x150b260.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b290",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065808,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterDisplacementNormals::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterDisplacementNormals, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b290; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b290.json",
+      "report": "reports/sse-steam-1-7-104/0x150b290.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b2c0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065856,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterDisplacementRainRipple::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterDisplacementRainRipple, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b2c0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b2c0.json",
+      "report": "reports/sse-steam-1-7-104/0x150b2c0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b2f0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065904,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterDisplacementTexOffset::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterDisplacementTexOffset, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b2f0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b2f0.json",
+      "report": "reports/sse-steam-1-7-104/0x150b2f0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b320",
       "build_id": "sse-steam-1-7-104",
       "rva": 22065952,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterDisplacementWadingRipple::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterDisplacementWadingRipple, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b320; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b320.json",
+      "report": "reports/sse-steam-1-7-104/0x150b320.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b350",
       "build_id": "sse-steam-1-7-104",
       "rva": 22066000,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterFlow::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterFlow, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b350; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b350.json",
+      "report": "reports/sse-steam-1-7-104/0x150b350.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b380",
       "build_id": "sse-steam-1-7-104",
       "rva": 22066048,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterRainHeightmap::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterRainHeightmap, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b380; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b380.json",
+      "report": "reports/sse-steam-1-7-104/0x150b380.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b3b0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22066096,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterSmoothHeightmap::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterSmoothHeightmap, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b3b0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b3b0.json",
+      "report": "reports/sse-steam-1-7-104/0x150b3b0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b3e0",
       "build_id": "sse-steam-1-7-104",
       "rva": 22066144,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWaterWadingHeightmap::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWaterWadingHeightmap, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b3e0; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b3e0.json",
+      "report": "reports/sse-steam-1-7-104/0x150b3e0.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b410",
       "build_id": "sse-steam-1-7-104",
       "rva": 22066192,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderWorldMap::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderWorldMap, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x150b410; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x150b410.json",
+      "report": "reports/sse-steam-1-7-104/0x150b410.json"
     },
     {
       "id": "sse-steam-1-7-104-0x150b440",
@@ -442612,12 +442666,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 22218864,
       "size": 35,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSImagespaceShaderLensFlareVisibility::Unk_0D",
       "name_origin": "GUESS",
       "name_source": "GUESS(low): placeholder method name; class from the image RTTI vftable slot 13 of BSImagespaceShaderLensFlareVisibility, spelled as an unnamed header slot. No usable method name for this slot in the pinned sources. RVA 0x1530870; leaf without .pdata: size from the Ghidra analysis body, followed by int3 padding or the next function.",
       "owner": "awarebayes",
-      "evidence": "findings/e7-mapping-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0x1530870.json",
+      "report": "reports/sse-steam-1-7-104/0x1530870.json"
     },
     {
       "id": "sse-steam-1-7-104-0x1535980",
@@ -466731,6 +466786,71 @@
       "owner": "claim-time",
       "evidence": "reports/sse-steam-1-7-104/0x156aaf0.json",
       "report": "reports/sse-steam-1-7-104/0x156aaf0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf788a0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16222368,
+      "size": 47,
+      "status": "matched",
+      "name": "NiBSplineCompColorInterpolator::Functionf788a0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf788a0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf788a0.json",
+      "report": "reports/sse-steam-1-7-104/0xf788a0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf788e0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16222432,
+      "size": 47,
+      "status": "matched",
+      "name": "NiBSplineCompColorInterpolator::Functionf788e0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf788e0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf788e0.json",
+      "report": "reports/sse-steam-1-7-104/0xf788e0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf78f20",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16224032,
+      "size": 47,
+      "status": "matched",
+      "name": "NiBSplineCompFloatInterpolator::Functionf78f20",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf78f20; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf78f20.json",
+      "report": "reports/sse-steam-1-7-104/0xf78f20.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf79590",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16225680,
+      "size": 47,
+      "status": "matched",
+      "name": "NiBSplineCompPoint3Interpolator::Functionf79590",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf79590; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf79590.json",
+      "report": "reports/sse-steam-1-7-104/0xf79590.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xf795d0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 16225744,
+      "size": 47,
+      "status": "matched",
+      "name": "NiBSplineCompPoint3Interpolator::Functionf795d0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xf795d0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xf795d0.json",
+      "report": "reports/sse-steam-1-7-104/0xf795d0.json"
     }
   ],
   "milestones": [
@@ -466773,7 +466893,7 @@
     "notes": "Inventory and exclusions have not been established. No completion percentage is meaningful yet."
   },
   "target_build_id": "sse-steam-1-7-104",
-  "updated_at": "2026-11-20T14:01:05Z",
+  "updated_at": "2026-11-20T14:19:09Z",
   "work_items": [
     {
       "id": "pin-target",

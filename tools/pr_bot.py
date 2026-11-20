@@ -444,6 +444,11 @@ def review_grounds(text, functions):
     return out
 
 
+# Host 1 cannot judge a function with no published target hash; for a unit that changed from base only in
+# comments the Mac compare of the new text stands in for it (docs/verification.md, comment-only changes).
+CARRY_REASON = 'host1: carried (comment-only, no-target at base)'
+CARRY_NOTE = ('Carried to new source: the unit differs from the text its runs compared only in comments, and the '
+              'function has no published target hash, so the runs are unchanged.')
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -732,6 +737,21 @@ def results_from_report(path):
     return {int(k, 16): v for k, v in value.items() if re.fullmatch(r'0[xX][0-9a-fA-F]+', str(k))}
 
 
+def row_facts(report):
+    """What every row of the hash artifact says about each function, whatever unit the row names.
+
+    `seen` lists the RVAs with any row; `no_target_base` those whose every row is a `no-target` at head
+    and was a `no-target` when the job compiled the same unit from the base tree too.
+    """
+    by_rva = {}
+    for row in report.get('functions') or []:
+        if isinstance(row, dict) and re.fullmatch(r'0[xX][0-9a-fA-F]+', str(row.get('rva'))):
+            by_rva.setdefault(int(row['rva'], 16), []).append(row)
+    return dict(seen=sorted(by_rva), no_target_base=sorted(
+        r for r, rows in by_rva.items()
+        if all(x.get('result') == 'no-target' and x.get('base') == 'no-target' for x in rows)))
+
+
 def ci_rows(report, unit_of):
     """{rva: row} from the artifact's own rows, keeping only the row for the unit that function is in."""
     rows = {}
@@ -795,6 +815,7 @@ class Bot:
         self.clock = time.time
         self.used = threading.local()  # the reviewer of this thread's latest review
         self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
+        self.carry_targets = {}  # revision -> RVAs with a published target hash there, for the comment-only carry
         self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
@@ -1059,11 +1080,14 @@ class Bot:
     def review_evidence(self, tag, functions, host1, host2, state):
         """What each host said about each function, with the Mac comparator report's path in the tree."""
         ci = state.get('ci') or {}
+        carried_map = {**(state.get('carried') or {}), **(state.get('carried-c') or {})}
         out = {}
         for rva in functions:
             reports = sorted(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{rva:x}/report.json'))
+            carried = str(rva) in carried_map
             out[rva] = dict(report=reports[-1] if reports else None, host1=host1.get(rva), host2=host2.get(rva),
-                            row=(ci.get('rows') or {}).get(str(rva)), run=ci.get('run'))
+                            row=None if carried else (ci.get('rows') or {}).get(str(rva)), run=ci.get('run'),
+                            carried=carried)
         return out
 
     def binding_facts(self, rva, cpp, digest, evidence):
@@ -1105,7 +1129,10 @@ class Bot:
             lines.append(f'  first-host (Mac, Wine) comparator report {rel}: ' +
                          '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in first.items()))
         row, run = evidence.get('row'), evidence.get('run')
-        if row:
+        if evidence.get('carried'):
+            lines.append(f'  second host (CI hash job): {CARRY_REASON}; the function has no published target hash, '
+                         'so the first host\'s compare of the new text is the only byte check of it')
+        elif row:
             word = {True: 'agrees', False: 'DIFFERS'}
             lines.append(f'  second-host run {run.get("run_id")} (CI hash job, which compares the published target hashes) on head {str(run.get("head_sha"))[:12]}: {row.get("status")}; '
                          f'its source digest {word[facts["second-host source digest equals the tu digest"]]}, '
@@ -1298,6 +1325,87 @@ class Bot:
         """RVAs of every accepted function of a changed unit whose record the change outdates, named or not."""
         return sorted({r for rs in self.companions(units, files, []).values() for r in rs})
 
+    def targets_at(self, ref=None):
+        """RVAs with a usable published target hash at `ref` (a revision of the bot's clone), or in the tree when None."""
+        cached = self.carry_targets.get(ref) if ref else None
+        if cached is not None:
+            return cached
+
+        def read(name):
+            if ref is None:
+                return (self.tree / name).read_text()
+            shown = self.run(['git', 'show', f'{ref}:{name}'], check=False)
+            if shown.returncode:
+                raise Stop('the published target hashes could not be read')
+            return shown.stdout.decode()
+        manifest = json.loads(read('data/target-hashes/sse-steam-1-7-104.json'))
+        found = set()
+        for shard in manifest['shards']:
+            for row in json.loads(read(shard['path']))['functions']:
+                if row.get('extraction') != 'unmasked-unsupported':
+                    found.add(row['rva'])
+        if ref:
+            self.carry_targets[ref] = found  # a revision never changes; the tree's manifest can
+        return found
+
+    def carry_host1(self, base, files, functions, units, host1, host2, state):
+        """{str(rva): reason} for functions whose host 1 is carried from the Mac compare of the new text.
+
+        The narrow exception to the two-host rule for comment-only changes. Host 1 counts as a pass only if
+        (a) the function was `no-target` at the PR's base too: the hash job's own compile of the base tree
+        gave `no-target` for it, or the job made no row for it and no published target existed at base or
+        exists now; (b) every file of its unit that the PR changes equals its base version once all comments
+        are removed, so the code is unchanged; (c) host 2 passes on the new text. A function with no accepted
+        record has nothing to carry and never qualifies.
+        """
+        from source_digest import include_closure
+        from digest_v2 import same_code
+        ci = state.get('ci') or {}
+        if not ci or (ci.get('report') or {}).get('error'):
+            return {}
+        no_target, seen = set(ci.get('no_target_base') or ()), set(ci.get('seen') or ())
+        status = ci.get('map') or {}
+        candidates = [r for r in functions if host1.get(r) != 'pass' and host2.get(r) == 'pass'
+                      and (r in no_target or (r not in seen and status.get(str(r)) is None))]
+        if not candidates:
+            return {}
+        published = None
+        inventory = json.loads((self.tree / 'data/progress.json').read_text())
+        accepted = {fn['rva'] for fn in inventory['functions'] if fn['status'] == 'matched' and fn.get('report')}
+        changed = {f['filename'] for f in files}
+        unit_of = {r: u for u, rs in units.items() for r in rs}
+        out = {}
+        for rva in candidates:
+            unit = unit_of.get(rva)
+            if unit is None or rva not in accepted:
+                continue
+            if rva not in no_target:
+                published = self.targets_at(base) | self.targets_at() if published is None else published
+                if rva in published:
+                    continue
+            same = True
+            for name in sorted(set(include_closure(self.tree, unit)) & changed):
+                old = self.run(['git', 'show', f'{base}:{name}'], check=False)
+                same = same and old.returncode == 0 and same_code(old.stdout, (self.tree / name).read_bytes(), name)
+            if same:
+                out[str(rva)] = CARRY_REASON
+                print(f'{stamp()} 0x{rva:x}: {CARRY_REASON}', file=sys.stderr, flush=True)
+        return out
+
+    def carried_records(self, tag, rvas, build_id):
+        """Records for carried functions, from the accepted record of each; {rva} that could not be carried."""
+        out, failed = self.work / 'records' / tag, set()
+        for rva in sorted(rvas):
+            made = out / build_id / f'0x{rva:x}.json'
+            made.unlink(missing_ok=True)
+            call = ("import sys\nsys.path.insert(0, sys.argv[1] + '/tools')\nimport record\n"
+                    "record.build_carried_record(sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])\n")
+            done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, CARRY_NOTE], cwd=self.tree,
+                            check=False, timeout=self.config['compare_timeout'])
+            if done.returncode or not made.is_file():
+                failed.add(rva)
+        return out, failed
+
     def mac_compare(self, units, tag):
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
@@ -1406,7 +1514,8 @@ class Bot:
                 report={k: report.get(k) for k in ('head_sha', 'base_sha', 'toolset', 'compiler_pins_sha256', 'error')
                         if report.get(k) is not None},
                 rows={str(r): row for r, row in ci_rows(report, unit_of).items()},
-                map={str(r): v for r, v in table.items()}))
+                map={str(r): v for r, v in table.items()},
+                **row_facts(report)))
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
@@ -1516,9 +1625,11 @@ class Bot:
         if not ci:
             raise Stop('no hash run evidence to build records from')
         out, failed, built = self.work / 'records' / tag, set(), set()
+        # A carried function has no hash row to build a record from; its own accepted record moves to the new text.
+        carried = {int(r) for r in {**(state.get('carried') or {}), **(state.get('carried-c') or {})}} & set(rvas)
         for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{tag.split("/")[0]}-*')):
             info = json.loads((task / 'task.json').read_text())
-            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
+            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas) - carried
             if not wanted:
                 continue
             info = self.bind_unit_map(task, info, wanted)
@@ -1551,6 +1662,11 @@ class Bot:
                     failed.add(rva)  # the validator refused it: the function stays drafted
         # A function with no task directory in the tree was never confirmed at all; leaving it out of `failed`
         # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
+        if carried:
+            target = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+            _, unmade = self.carried_records(tag, carried, target)
+            built |= carried - unmade
+            failed |= unmade
         failed |= set(rvas) - built - failed
         return out, failed
 
@@ -1692,6 +1808,9 @@ class Bot:
             host2 = {int(k): v for k, v in f_mac.result().items()}
             host1 = {int(k): v for k, v in f_ci.result().items()}
         host1 = self.settle_ci_debt(host1)
+        carried = state.once('carried' + sfx, lambda: self.carry_host1(base, files, everything, check_units, host1,
+                                                                        host2, state))
+        host1 = {r: ('pass' if str(r) in carried else v) for r, v in host1.items()}
         host2 = self.classify_debt(host2, host1, base, check_units, state)
         self.overlay(head, files)
         # Only what both hosts passed can be accepted, so only that is worth a review call; a
@@ -1725,6 +1844,7 @@ class Bot:
         removed = state.once('removed', lambda: self.removed_accepted(units, files, everything))
         decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra, stale=stale,
                           leak_evidence=evidence_kinds, refused=set(refused))
+        decision['carried'] = sorted(int(r) for r in carried)
         state.set('decision', decision)
         decision['pre'] = refused  # in memory only, like the notes: rebuilt from the cached precheck on a rerun
         decision['origin_problems'] = origin_problems

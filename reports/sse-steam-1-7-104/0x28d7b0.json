@@ -1,0 +1,196 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "562166134cca40a69716dcf67c9bcbdb88ed56bdf9318988eaa90ef5eb13f224",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.cpp",
+          "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "7c327d3cb30182566d697f477200a368935e7405",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "f6d6e4e138e06feae590db551e25c1b8aeac5aa2",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "8521fb2114f40ca3e66582e7ca7be05b94d6d1b33ddc3d9854aac14fe67846bc",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "66da74610cadd5b335f4b40dbe48b509ffb649feb5088209990f08a754e54b4f",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44749253481,
+    "rva": "0x28d7b0",
+    "schema": 2,
+    "source_sha256": "57201f2c8747b7431717f9a7de33a120bf09d020a298a50ce151469575beae27",
+    "status": "pass",
+    "symbols": [
+      "?LoadGame@TESObjectWEAP@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+      "?SaveGame@TESObjectWEAP@@UEAAXPEAVBGSSaveFormBuffer@@@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "8521fb2114f40ca3e66582e7ca7be05b94d6d1b33ddc3d9854aac14fe67846bc",
+      "normalized_sha256": "66da74610cadd5b335f4b40dbe48b509ffb649feb5088209990f08a754e54b4f",
+      "rva": 2676656,
+      "size": 46
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x28d7b0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "55e38ac34f1ca137772d8444f7b70692bd6a68de36c7340c065f76a3c3d736cb",
+          "code_sections": 1,
+          "object_sha256": "562166134cca40a69716dcf67c9bcbdb88ed56bdf9318988eaa90ef5eb13f224"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 8,
+          "code_bytes_exact": 38,
+          "code_bytes_total": 46,
+          "eh": {
+            "bytes": 12,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 2
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 12,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 2676656,
+          "size": 46,
+          "symbol": "?LoadGame@TESObjectWEAP@@UEAAXPEAVBGSLoadFormBuffer@@@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.cpp",
+          "source_revision": "57201f2c8747b7431717f9a7de33a120bf09d020a298a50ce151469575beae27"
+        },
+        "symbol_map_sha256": "cf0ce1c62d48e629d4630a35227e27ed120d19dafc8487624360f2b6c845902d",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x28d7b0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.cpp",
+    "digest": "57201f2c8747b7431717f9a7de33a120bf09d020a298a50ce151469575beae27",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.cpp",
+      "reconstruction/skyrim_shared/forms/TESObjectWEAP_28d770.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/cf0ce1c62d48e629d4630a35227e27ed120d19dafc8487624360f2b6c845902d.json",
+    "sha256": "cf0ce1c62d48e629d4630a35227e27ed120d19dafc8487624360f2b6c845902d"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}
