@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import sys
 
+import claimable
 import contrib
 from pecoff import PeImage
 import target_hashes as hashes
@@ -17,25 +18,109 @@ import target_hashes as hashes
 ROOT=Path(__file__).resolve().parents[1]
 
 
-WINDOW = 3000
+LOW_WATER = 2000  # claimable functions left below which the next slice is published
+SLICE = 2000  # unmapped functions added per refill
 VERDICT_RANK = {'supported': 0, 'caution': 1}
+SIZE_TIERS = (64, 256, 1024)  # small, small-medium, medium; above is large
+UNNAMED_HOW = {'placeholder'}
+RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')  # private plans of internal workers, relative to the bot root
+MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
 
 
-def select_window(root, metadata, known, limit=WINDOW):
-    """{rva: class}: unmapped ordinary functions to offer for claim-time mapping.
+def size_tier(size):
+    return next((tier for tier, limit in enumerate(SIZE_TIERS) if size < limit), len(SIZE_TIERS))
 
-    Only classes that already have a layout unit qualify, so a claim extends reviewed work. Small
-    functions come first (under 64 bytes, then 64-255), locally unsupported ones never. The window is
-    bounded so the published hash list grows by a fixed amount, not by the size of the function table.
+
+def is_hard(fn):
+    """A shape contributors rarely get to match: unresolved EH, jump tables, split bodies, unrecovered jumps."""
+    v2 = fn.get('v2') or {}
+    return bool(v2.get('reasons')) or any('indirect jump' in str(c) for c in v2.get('cautions') or ())
+
+
+def is_named(fn):
+    """The table holds a name from a source better than the RVA placeholder (community, RTTI, address library)."""
+    owner = fn.get('owner')
+    how = owner.get('how') if isinstance(owner, dict) else None
+    return any(n.get('how') not in UNNAMED_HOW for n in fn.get('names') or ()) or how in {'rtti-adjacent', 'community-id'}
+
+
+def rank_key(fn, siblings, cls):
+    """Lower is offered earlier: ordinary shapes by size tier, named before unnamed, more matched siblings
+    first; very large and known-hard functions last."""
+    tier = size_tier(fn['size'])
+    last = is_hard(fn) or tier == len(SIZE_TIERS)
+    return (last, tier, not is_named(fn), -siblings.get(cls, 0), VERDICT_RANK[fn['v2']['verdict']], fn['size'],
+            fn['rva'])
+
+
+def matched_siblings(progress):
+    """{class: matched functions} from the inventory; the class is the part of the name before the last `::`."""
+    out = {}
+    for fn in progress['functions']:
+        name = fn.get('name') or ''
+        if fn['status'] == 'matched' and '::' in name:
+            cls = name.rsplit('::', 1)[0]
+            out[cls] = out.get(cls, 0) + 1
+    return out
+
+
+def _rvas(node, out):
+    if isinstance(node, bool):
+        return
+    if isinstance(node, int):
+        if node >= MIN_RVA:
+            out.add(node)
+    elif isinstance(node, list):
+        for item in node:
+            _rvas(item, out)
+    elif isinstance(node, dict):
+        for key, value in node.items():
+            if key in ('rvas', 'members', 'exemplars'):
+                _rvas(value, out)
+            elif str(key).isdigit():
+                _rvas(int(key), out)
+
+
+def reserved_rvas(directories):
+    """RVAs that internal workers are stamping or twin-propagating, from their private plan files.
+
+    Each `*.json` directly in a directory is read: a list of RVAs, a list of nested lists holding them
+    (cluster plans, `[rva, name]` pairs), or a dict keyed by RVA. Unreadable files are skipped. The result
+    only filters what is offered; it is never published.
     """
-    import claimable
-    layouts, ranked = {}, []
+    out = set()
+    for directory in directories:
+        for path in sorted(Path(directory).glob('*.json')):
+            try:
+                node = json.loads(path.read_text())
+            except (OSError, ValueError):
+                continue
+            if isinstance(node, list) and node and all(isinstance(i, list) for i in node):
+                for item in node:
+                    # `[size, id, [exemplars], [members]]` cluster rows carry a size first; keep only list members.
+                    _rvas([i for i in item if isinstance(i, list)] if len(item) > 2 else item, out)
+            else:
+                _rvas(node, out)
+    return out
+
+
+def select_window(root, metadata, known, limit=SLICE, reserved=(), siblings=None, keep=()):
+    """{rva: class}: up to `limit` new unmapped ordinary functions to offer for claim-time mapping, best first.
+
+    Only classes that already have a layout unit qualify, so a claim extends reviewed work; locally
+    unsupported functions and `reserved` ones (an internal worker's plan) never do, nor do those already
+    offered (`keep`). Ordering is rank_key: small and medium first, known names and classes with matched
+    siblings ahead of the rest, very large and known-hard functions last. The published hash list grows by
+    `limit` per refill, not by the size of the function table.
+    """
+    layouts, ranked, siblings = {}, [], siblings or {}
     units = {path.stem for path in (Path(root) / 'reconstruction').rglob('*.cpp')}
+    skip = set(known) | set(keep) | set(reserved)
     for rva, fn in metadata.items():
         owner = fn.get('owner') or {}
         cls = owner.get('class') if isinstance(owner, dict) else None
         verdict = (fn.get('v2') or {}).get('verdict')
-        if (rva in known or fn.get('kind') != 'ordinary' or not fn.get('size') or not cls
+        if (rva in skip or fn.get('kind') != 'ordinary' or not fn.get('size') or not cls
                 or verdict not in VERDICT_RANK or not contrib.PLAIN_NAME.fullmatch(f'{cls}::Function')):
             continue
         if cls not in units:
@@ -44,11 +129,29 @@ def select_window(root, metadata, known, limit=WINDOW):
             _area, header, cpp = contrib.unit_files(root, cls)
             layouts[cls] = bool(header and cpp and (Path(root) / header).is_file() and (Path(root) / cpp).is_file())
         if layouts[cls]:
-            ranked.append((claimable.band(fn['size']), VERDICT_RANK[verdict], fn['size'], rva, cls))
-    return {rva: cls for _band, _verdict, _size, rva, cls in sorted(ranked)[:limit]}
+            ranked.append((rank_key(fn, siblings, cls), rva, cls))
+    return {rva: cls for _key, rva, cls in sorted(ranked)[:limit]}
 
 
-def collect(root, image_bytes, function_table, claims, window=WINDOW):
+def plan_window(root, metadata, progress, known, wanted, reserved, low_water, slice_size):
+    """(offered {rva: class}, newly added {rva: class}, claimable left before the refill).
+
+    Offered rows stay offered until recorded, so a claimed function never leaves the list; only an unclaimed
+    one an internal worker has since reserved is withdrawn. A slice is added only when fewer than
+    `low_water` functions are left to claim.
+    """
+    withdrawn = set(reserved) - set(wanted)
+    classes = {rva: cls for rva, cls in claimable.offered_classes(root).items()
+               if rva in metadata and rva not in known and rva not in withdrawn}
+    left = sum(1 for c in contrib.candidates(root, progress, published=True) if c['startable'])
+    added = {}
+    if left < low_water:
+        added = select_window(root, metadata, known, slice_size, reserved, matched_siblings(progress), classes)
+        classes.update(added)
+    return classes, added, left
+
+
+def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slice_size=SLICE, reserved=()):
     target=contrib.target_manifest(root)
     if hashes.digest(image_bytes)!=target['image_sha256']:
         raise ValueError('image differs from pinned build')
@@ -62,7 +165,7 @@ def collect(root, image_bytes, function_table, claims, window=WINDOW):
         for a,b in claim.get('entries',[]):
             wanted.update([a] if b==a+1 else [r for r in metadata if a<=r<b])
     next_={contrib.parse_rva(c['rva']) for c in contrib.candidates(root,progress) if c['startable']}
-    classes=select_window(root,metadata,known,window)
+    classes,added,left=plan_window(root,metadata,progress,known,wanted,reserved,low_water,slice_size)
     next_|=set(classes)
     rows=[];unresolved=[]
     for rva in sorted((wanted|next_)-known.keys()):
@@ -78,21 +181,26 @@ def collect(root, image_bytes, function_table, claims, window=WINDOW):
         function_metadata_sha256=hashes.digest(function_table.read_bytes()),
         claims_snapshot_sha256=hashes.digest(json.dumps(claims,sort_keys=True).encode()),
         claims=[dict(number=c['number'],url=c['url'],entries=c['entries']) for c in selected],
-        next_candidate_count=len(next_),claim_function_count=len(wanted),functions=rows,unresolved_rvas=[])
+        next_candidate_count=len(next_),claim_function_count=len(wanted),functions=rows,unresolved_rvas=[]),dict(
+        left_before=left,added=len(added),low_water=low_water,slice=slice_size,reserved=len(reserved))
 
 
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--image',type=Path,required=True)
     p.add_argument('--function-table',type=Path,required=True)
-    p.add_argument('--window',type=int,default=WINDOW,help='unmapped functions offered for claim-time mapping')
+    p.add_argument('--low-water',type=int,default=LOW_WATER,help='claimable functions left below which a slice is added')
+    p.add_argument('--slice',type=int,default=SLICE,dest='slice_size',help='unmapped functions added per refill')
+    p.add_argument('--reserved-dir',type=Path,action='append',default=[],
+                   help='directory of private plan files whose functions are not offered (repeatable)')
     a=p.parse_args(argv)
     ctx=contrib.Ctx(repo=ROOT,interactive=False)
     index=ctx.github().open_items(refresh=True)
-    output=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.window)
+    reserved=reserved_rvas(a.reserved_dir)
+    output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved)
     (ROOT/hashes.OFFERED).write_text(json.dumps(output,indent=2)+'\n')
     print(json.dumps(dict(extra_targets=len(output['functions']),next_candidates=output['next_candidate_count'],
-                          claims=len(output['claims']),acceptance='not-evaluated')))
+                          claims=len(output['claims']),window=window,acceptance='not-evaluated')))
     return 0
 
 

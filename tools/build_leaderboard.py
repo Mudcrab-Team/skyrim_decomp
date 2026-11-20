@@ -86,14 +86,30 @@ def markdown(rows):
     return '\n'.join(lines) + '\n'
 
 
-def html(rows):
+def window_counts(root):
+    """(functions open to claim, functions under open claims) from the published offered inventory, else None."""
+    try:
+        offered = json.loads((Path(root) / 'data/target-hashes/contributor-targets.json').read_text())
+        return offered['next_candidate_count'], offered['claim_function_count']
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+def window_note(window):
+    if not window:
+        return ''
+    return (f'<p>Open to claim: <strong>{window[0]:,}</strong> functions; under open claims: '
+            f'<strong>{window[1]:,}</strong>. Counts as of the last refresh of the offered inventory.</p>')
+
+
+def html(rows, window=None):
     body = ''.join(f'<tr><td>{escape(r["contributor"])}</td><td>{r["functions"]:,}</td>'
                    f'<td>{r["bytes"]:,}</td><td>{r["tier"]}</td></tr>' for r in rows)
     return ('<!doctype html><html lang="en"><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<title>Contributor leaderboard · Skyrim Research</title><link rel="stylesheet" href="style.css">'
             '<main><p><a href="index.html">Skyrim Research</a> / Contributors</p>'
-            '<h1>Contributor leaderboard</h1><p>' + escape(NOTE) + '</p>'
+            '<h1>Contributor leaderboard</h1><p>' + escape(NOTE) + '</p>' + window_note(window) +
             '<div style="overflow-x:auto"><table><thead><tr><th>Contributor</th><th>Functions</th>'
             '<th>Bytes</th><th>Tier</th></tr></thead><tbody>' + body + '</tbody></table></div></main></html>')
 

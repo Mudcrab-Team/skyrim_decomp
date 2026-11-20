@@ -103,7 +103,11 @@ GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/pro
 # Per-function hashes of the newly mapped functions: test_target_hashes fails on main until they exist, and only
 # this machine holds the image they are computed from.
 TARGET_HASH_DIR = 'data/target-hashes/'
-REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
+# Claimable functions left below which the next slice of the offered window is published, and its size.
+WINDOW_LOW_WATER = int(os.environ.get('SR_WINDOW_LOW_WATER') or 2000)
+WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
+# Private plan files of internal workers (twin propagation, stamp sweeps); their functions are not offered.
+RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
@@ -2120,18 +2124,37 @@ class Bot:
         data = contrib.inventory(self.tree)
         return sum(1 for c in contrib.candidates(self.tree, data, published=True) if c['startable'])
 
-    def refill_offers(self, threshold=REFILL_BELOW):
-        """Top the offered window back up when fewer than `threshold` functions are left to claim.
+    def refill_offers(self, threshold=None):
+        """Publish the next slice of the offered window when fewer than `threshold` functions are left to claim.
 
-        Regenerating recomputes the window from the private function table, smallest first and classes with
-        layouts first, so recorded functions leave it and new ones enter. Returns the count that was seen.
+        The threshold defaults to the low-water mark. Regenerating keeps every offered function that is not
+        yet recorded and adds a slice of new ones, so claimed functions never leave the list. Returns the
+        count that was seen.
         """
+        threshold = WINDOW_LOW_WATER if threshold is None else threshold
         with self.land_lock:  # the push to main takes its turn with merges and records
             left = self.offered_open()
             if left < threshold:
                 self.regenerate(None)
         return left
 
+    def window_metrics(self, left, now=None):
+        """Claimable left, claimed, and the contributors' burn per day, as one log suffix; '' when unknown.
+
+        `claimed` is the function count under open claims at the last publication. Burn counts reports of
+        claim-time entries (functions a contributor took from the window) added to main in the last 24 hours,
+        and the 7-day average, from the tree's git history.
+        """
+        now = time.time() if now is None else now
+        try:
+            claimed = json.loads((self.tree / 'data/target-hashes/contributor-targets.json').read_text())['claim_function_count']
+            inventory = json.loads((self.tree / 'data/progress.json').read_text())
+            reports = {fn['report'] for fn in inventory['functions'] if fn.get('owner') == 'claim-time' and fn.get('report')}
+            added = self.run(['git', 'log', 'origin/main', '--since=7 days ago', '--diff-filter=A', '--name-only',
+                              '--format=%ct', '--', 'reports'], cwd=self.tree).stdout.decode().split('\n')
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, AttributeError):
+            return ''
+        return window_line(left, claimed, burn_per_day(added, reports, now))
     def regenerate(self, number):
         """Rebuild the generated index and pictures on main after a mapping merge; push only those files.
 
@@ -2150,8 +2173,14 @@ class Bot:
             for script in ('build_index.py', 'build_progress_svg.py'):
                 self.run([sys.executable, f'tools/{script}'], cwd=self.tree, timeout=1800)
             # Offers first: the manifest binds the offered inventory's digest.
-            self.run([sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table],
-                     cwd=self.tree, timeout=1800)
+            offers = [sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table,
+                      '--low-water', str(WINDOW_LOW_WATER), '--slice', str(WINDOW_SLICE)]
+            for directory in RESERVED_DIRS:
+                offers += ['--reserved-dir', str(self.root / directory)]
+            summary = self.run(offers, cwd=self.tree, timeout=1800).stdout
+            note = offer_summary(summary)
+            if note:
+                print(f'{stamp()} {note}', flush=True)
             self.run([sys.executable, 'tools/target_hashes.py', '--image', image], cwd=self.tree, timeout=1800)
             # A new shard is untracked; leaving it out committed a manifest that named a missing file.
             names = self.run(['git', 'status', '--porcelain', '--untracked-files=all'],
@@ -2598,6 +2627,33 @@ def work_one(slots, gh, pr):
         slots.put(slot)
 
 
+def offer_summary(output):
+    """One log line from target_hash_offers' JSON summary, or '' when it is not readable."""
+    try:
+        window = json.loads(output.decode().strip().splitlines()[-1])['window']
+        return (f"offer slice: {window['added']} added ({window['left_before']} claimable before, low-water "
+                f"{window['low_water']}, slice {window['slice']}, {window['reserved']} reserved by internal workers)")
+    except (ValueError, KeyError, IndexError, AttributeError, UnicodeDecodeError):
+        return ''
+
+
+def burn_per_day(log_lines, reports, now):
+    """(last 24 h, 7-day average per day) of claim-time report files in `git log --format=%ct --name-only` lines."""
+    stamps, when = [], None
+    for line in log_lines:
+        if line.isdigit():
+            when = int(line)
+        elif line in reports and when is not None:
+            stamps.append(when)
+    return sum(now - t <= 86400 for t in stamps), round(sum(now - t <= 7 * 86400 for t in stamps) / 7, 1)
+
+
+def window_line(left, claimed, burn):
+    day, week = burn
+    runway = f', about {left / week:.1f} days of runway at the 7-day rate' if week else ''
+    return f'{left} claimable left, {claimed} claimed, burn {day}/day (24h), {week:g}/day (7d avg){runway}'
+
+
 def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
          refill_every=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
@@ -2637,8 +2693,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
                 refilled = time.time()  # a failure waits for the next window, not the next tick
                 try:
-                    left = bot.for_slot(0).refill_offers()
-                    print(f'{stamp()} offered window: {left} claimable left', flush=True)
+                    slot = bot.for_slot(0)
+                    left = slot.refill_offers()
+                    metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
+                    print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             if not bot.dry_run and not inflight and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
