@@ -59,6 +59,13 @@ SCOPE_PREFIX = 'reconstruction/'
 HASH_CHECKS = ('hash', 'pr-check / hash')
 MAPPING_CHECKS = ('mapping', 'pr-check / mapping')
 REVIEW_MODEL = 'gpt-6.1-terra'
+# Fallback reviewer when codex fails for an account or capacity reason; read-only tools only.
+CLAUDE_BIN = shutil.which('claude') or str(Path.home() / '.local/bin/claude')
+CLAUDE_REVIEW_MODEL = 'sonnet'
+CODEX_PAUSE = 1800  # seconds codex is skipped after an out-of-credits style failure
+ACCOUNT_FAILURE = re.compile(r'credit|quota|rate.?limit|usage limit|insufficient|billing|capacity|overloaded|'
+                             r'too many requests|\b429\b|unauthorized|\b401\b|log ?in|sign ?in|auth|token expired|'
+                             r'not authenticated', re.I)
 GROUNDS = ('plausibility', 'provenance', 'binding', 'claim', 'hygiene')
 # Fixed reason codes: a comment never carries compiler output, which can echo host paths.
 REASONS = {
@@ -785,6 +792,9 @@ class Bot:
         self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
                            **(config or {}))
         self.tree = self.work / 'tree'
+        self.clock = time.time
+        self.used = threading.local()  # the reviewer of this thread's latest review
+        self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
         self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
@@ -835,6 +845,54 @@ class Bot:
                 suffix = f' ({errors[-1][:200]})' if errors else ''
             raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
+
+    def run_model(self, prompt, out):
+        """One review: codex first, the Claude Code CLI on Sonnet when codex fails for an account or capacity reason.
+
+        A review verdict or malformed output is never a failure here; only the invocation is judged."""
+        text, reviewer = None, 'codex'
+        if self.clock() >= self.codex_paused_until[0]:
+            try:
+                result = self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model',
+                                   REVIEW_MODEL, '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only',
+                                   '-c', 'approval_policy="never"', '--cd', self.tree, '--output-last-message', out,
+                                   '-'], cwd=self.tree, input=prompt.encode(), timeout=self.config['model_timeout'],
+                                  check=False)
+            except FileNotFoundError:
+                result, why = None, 'codex binary missing'
+            else:
+                errors = [l for l in result.stderr.decode(errors='replace').splitlines() if l.startswith('ERROR')]
+                why = errors[-1][:200] if errors else ''
+                if result.returncode == 0:
+                    text = Path(out).read_text()
+                elif not ACCOUNT_FAILURE.search(' '.join(errors)):
+                    raise Stop(f'codex failed ({why})' if why else 'codex failed')
+            if text is None:
+                self.codex_paused_until[0] = self.clock() + CODEX_PAUSE
+                print(f'{stamp()} codex unavailable ({why}); reviewing with claude-sonnet, '
+                      f'codex skipped for {CODEX_PAUSE // 60} min', file=sys.stderr, flush=True)
+        if text is None:
+            reviewer = 'claude-sonnet'
+            result = self.run([CLAUDE_BIN, '-p', '--model', CLAUDE_REVIEW_MODEL, '--tools', 'Read,Grep,Glob',
+                               '--permission-mode', 'dontAsk', '--no-session-persistence'], cwd=self.tree,
+                              input=prompt.encode(), timeout=self.config['model_timeout'], check=False)
+            if result.returncode:
+                tail = (result.stderr or result.stdout).decode(errors='replace').strip().splitlines()
+                raise Stop(f'claude failed ({tail[-1][:200] if tail else result.returncode})')
+            text = result.stdout.decode(errors='replace')
+            Path(out).write_text(text)
+        print(f'{stamp()} reviewer: {reviewer}', file=sys.stderr, flush=True)
+        self.used.reviewer = reviewer
+        return text
+
+    def reviewed(self, state, key, fn):
+        """state.once for a review text, also recording which reviewer produced it."""
+        if key not in state.data:
+            self.used.reviewer = None
+        text = state.once(key, fn)
+        if self.used.reviewer:
+            state.set('reviewer', self.used.reviewer)
+        return text
 
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
@@ -1149,11 +1207,7 @@ class Bot:
                   f'UNTRUSTED DIFF DATA:\n{diff}')
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
         out.parent.mkdir(parents=True, exist_ok=True)
-        self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model', REVIEW_MODEL,
-                  '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only', '-c', 'approval_policy="never"',
-                  '--cd', self.tree, '--output-last-message', out, '-'], cwd=self.tree,
-                 input=prompt.encode(), timeout=self.config['model_timeout'])
-        return out.read_text()
+        return self.run_model(prompt, out)
 
     @staticmethod
     def companion_note(companions):
@@ -1653,7 +1707,7 @@ class Bot:
         leak, verdict, notes, evidence_kinds, grounds = 'no', {}, {}, [], {}
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
-            text = state.once('review_text' + sfx, lambda: self.review(
+            text = self.reviewed(state, 'review_text' + sfx, lambda: self.review(
                 number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra))
             leak, verdict = parse_review(text, passed)
             notes = review_notes(text, passed)
@@ -1787,11 +1841,7 @@ class Bot:
                   + '\n'.join(mapping_entry_line(fn) for fn in added) + '\n')
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
         out.parent.mkdir(parents=True, exist_ok=True)
-        self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model', REVIEW_MODEL,
-                  '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only', '-c', 'approval_policy="never"',
-                  '--cd', self.tree, '--output-last-message', out, '-'], cwd=self.tree,
-                 input=prompt.encode(), timeout=self.config['model_timeout'])
-        return out.read_text()
+        return self.run_model(prompt, out)
 
     def mapping_ci(self, head):
         """The head's `mapping` check conclusion; a missing or running check is a retry, never a verdict."""
@@ -1858,7 +1908,7 @@ class Bot:
         tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
         self.prepare_tree(tip or base)
         self.overlay(head, [f for f in files if f['filename'].startswith('findings/')])
-        text = state.once('review_text', lambda: self.mapping_review(number, head, added))
+        text = self.reviewed(state, 'review_text', lambda: self.mapping_review(number, head, added))
         leak, verdict, notes = parse_mapping_review(text)
         if leak != 'no':
             return dict(blocked, blocked='leak', count=len(added), notes=notes,

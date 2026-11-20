@@ -24,6 +24,8 @@ first Reviewer. Strong duties (sampling, non-Opus escalation confirmation, and r
 reviews) are done by Sol or Opus, never Terra, and by a different model from the first review; an
 independent Opus does the second pass for a Sol first review.
 
+The pr-bot's reviewer is codex; when codex fails for an account or capacity reason (out of credits, quota, rate limit, expired login, missing binary) it reruns the same review with the Claude CLI on Sonnet (read-only tools), skips codex for 30 minutes after an out-of-credits failure, and records `reviewer: codex|claude-sonnet` in the PR state and log. A reject verdict or malformed output never triggers the fallback.
+
 ## Limits
 
 - Independence is per run: use fresh context, never the run that drafted, engineered, triaged
