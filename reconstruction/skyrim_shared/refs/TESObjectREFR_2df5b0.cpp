@@ -1,5 +1,6 @@
 // Source exposure: mixed (pinned image, project slot layout, and CommonLibSSE-NG).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// SPDX-License-Identifier: GPL-3.0-or-later (powerof3/CommonLibSSE declarations; full text: licenses/CommonLibSSE-GPL-3.0.txt)
 // Code origin: original bodies from the pinned listings except the attributed virtual forwarders.
 // Adapted bodies: Get3D and GetBiped follow CommonLibSSE-NG@b93280e src/RE/T/TESObjectREFR.cpp:102 and :163 (MIT).
 // Adapted bodies: GetFaceNode and GetMustUpdate follow CommonLibSSE-NG@b93280e include/RE/T/TESObjectREFR.h:294 and :231 (MIT).
@@ -10,11 +11,9 @@
 // 0x2e4a20 TESObjectREFR::Function2e4a20
 // 0x2e4b10 TESObjectREFR::Function2e4b10
 // 0x2e6600 TESObjectREFR::Function2e6600
-// 0x2e6a70 TESObjectREFR::Function2e6a70
-// 0x2e7b40 TESObjectREFR::Function2e7b40
-// 0x2ebcb0 TESObjectREFR::Function2ebcb0
+// 0x2e7b40 TESObjectREFR::SetActionReference
+// 0x2ebcb0 TESObjectREFR::ShouldBackgroundClone
 // 0x2f39c0 TESObjectREFR::Function2f39c0
-// 0x2f6280 TESObjectREFR::Function2f6280
 // 0x2f9f50 TESObjectREFR::GetBiped
 // 0x2f9f60 TESObjectREFR::Get3D
 // 0x2f9fb0 TESObjectREFR::GetFaceNode
@@ -27,14 +26,14 @@
 // 0x300ee0 TESObjectREFR::Function300ee0
 // 0x301940 TESObjectREFR::Function301940
 // 0x301bc0 TESObjectREFR::Function301bc0
-// 0x302060 TESObjectREFR::Function302060
+// 0x302060 TESObjectREFR::SetLinkedRef
 #include "TESObjectREFR_2df5b0.h"
 
 // WorldLookup, worldLookup, Function1a2200: STANDIN GUESS(low)
 class WorldLookup
 {
 public:
-    TESWorldSpace* Function1a2200(TESObjectCELL* cell, const void* context);
+    bool Function1a2200(TESObjectCELL* cell, bool option);
 };
 
 extern WorldLookup* worldLookup;
@@ -80,22 +79,14 @@ bool TESObjectREFR::Function2e6600() const
     return actor == nullptr;
 }
 
-void TESObjectREFR::Function2e6a70()
+void TESObjectREFR::SetActionReference(TESObjectREFR* reference)
 {
-    auto* list = &extraList;
-    if (list) {
-        return list->Function172b80();
-    }
+    return extraList.SetActionReference(reference);
 }
 
-TESObjectREFR* TESObjectREFR::Function2e7b40() const
+bool TESObjectREFR::ShouldBackgroundClone() const
 {
-    return extraList.Function170b50();
-}
-
-TESWorldSpace* TESObjectREFR::Function2ebcb0() const
-{
-    return worldLookup->Function1a2200(parentCell, nullptr);
+    return worldLookup->Function1a2200(parentCell, false);
 }
 
 TESObjectREFR* TESObjectREFR::Function2f39c0()
@@ -105,15 +96,6 @@ TESObjectREFR* TESObjectREFR::Function2f39c0()
         reference = base->formType == FormType::Hazard ? this : nullptr;
     }
     return reference;
-}
-
-BGSDecalGroup* TESObjectREFR::Function2f6280()
-{
-    auto* list = &extraList;
-    if (list) {
-        return list->Function166af0();
-    }
-    return nullptr;
 }
 
 const BSTSmartPointer<BipedAnim>& TESObjectREFR::GetBiped() const
@@ -149,10 +131,10 @@ float TESObjectREFR::Function300250() const
     return 0.0f;
 }
 
-void TESObjectREFR::Function3002f0()
+void TESObjectREFR::Function3002f0(bool value)
 {
     if (data.objectReference->formType == FormType::Light) {
-        return extraList.Function16c9f0();
+        return extraList.Function16c9f0(value);
     }
 }
 
@@ -185,7 +167,7 @@ void TESObjectREFR::Function301bc0()
     return extraList.Function16a8a0(false);
 }
 
-TESObjectREFR* TESObjectREFR::Function302060() const
+void TESObjectREFR::SetLinkedRef(TESObjectREFR* reference, BGSKeyword* keyword)
 {
-    return extraList.Function1675c0();
+    return extraList.SetLinkedRef(reference, keyword);
 }
