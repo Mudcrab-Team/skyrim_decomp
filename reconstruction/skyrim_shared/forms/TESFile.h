@@ -1,7 +1,8 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
-// at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
+// Adapted bodies: TESFile::OpenTES from fo4-private@1b765c70 (author-permission), declared in TESFile.cpp;
+// tools/check_origin.py reports no other above its threshold (0.75) at CommonLibSSE-NG b93280e,
+// powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
 // TESFile, TESFile::OpenTES, ::Seek, ::SeekNextSubrecord, ::GetFormType, ::GetCurrentSubRecordType,
 // ::Duplicate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESFile::threadSafeParent, ::file, ::fileName, ::path, ::currentform, ::currentchunkID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

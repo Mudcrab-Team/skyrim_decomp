@@ -1,5 +1,7 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image, with the class layout from the header beside this file. SeekNextSubrecord, Duplicate and Seek were finished by claude-opus-5-5 from the Drafter's near-misses.
+// TESFile::OpenTES: SIBLING(fo4-private@1b765c70, author-permission); adapted to target observations.
+// Sibling source: fo4-private@1b765c70 src/Shared/FileIO/TESFile.cpp:252
 // GetCurrentThreadId, GetLastError, FormatMessageA, LocalFree: STANDIN OBSERVED; Win32 imports of the image, declared locally
 // 0x1ca460 TESFile::OpenTES
 // 0x1cdc10 TESFile::GetCurrentSubRecordType
