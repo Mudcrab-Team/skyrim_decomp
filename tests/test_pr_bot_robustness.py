@@ -477,6 +477,32 @@ class PoolTests(WorkDir):
         self.assertEqual(bot.retry_records(state), [])
         self.assertFalse(pr_bot.State(state, 11, 'f' * 40).get('recorded'))
 
+    def test_a_retry_binds_a_dropped_unit_map_again_in_the_tree_that_holds_the_tasks(self):
+        bot = FakeBot(self.work)
+        task = self.work / 'tree-1/.local/tasks/prbot-7-cccccccc-0'
+        task.mkdir(parents=True)
+        info = dict(task_id='t', symbols='reports/b/unit-symbols/gone.json',
+                    functions=[dict(rva='0x10'), dict(rva='0x20')])
+        (task / 'task.json').write_text(json.dumps(info))
+        ran = []
+
+        def run(argv, **kw):
+            ran.append((argv[1:2], kw.get('cwd')))
+            written = json.loads((task / 'task.json').read_text())
+            self.assertEqual([f['rva'] for f in written['functions']], ['0x10'])  # only what is recorded is bound
+            (task / 'task.json').write_text(json.dumps(dict(written, symbols='reports/b/unit-symbols/new.json')))
+            return subprocess.CompletedProcess(argv, 0, b'', b'')
+        bot.run = run
+        bot.config = dict(compare_timeout=5)
+        slot = bot.task_slot(7, 'c' * 40)
+        self.assertEqual(slot.tree, self.work / 'tree-1')
+        self.assertIs(bot.task_slot(8, 'd' * 40), bot)
+        slot.rebind_unit_maps(7, 'c' * 40, [0x10])
+        self.assertEqual(ran, [(['tools/verifier/bind.py'], self.work / 'tree-1')])
+        restored = json.loads((task / 'task.json').read_text())
+        self.assertEqual(([f['rva'] for f in restored['functions']], restored['symbols']),
+                         (['0x10', '0x20'], 'reports/b/unit-symbols/new.json'))
+
     def test_slots_share_the_locks_but_not_the_tree(self):
         bot = FakeBot(self.work)
         first, second = bot.for_slot(0), bot.for_slot(1)

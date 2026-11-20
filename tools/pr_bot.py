@@ -860,7 +860,8 @@ class Bot:
             # Only a tree that was checked out before has anything to undo; a fresh clone would
             # materialise the whole repository here for nothing.
             self.run(['git', 'reset', '--quiet', '--hard'], cwd=self.tree, check=False)
-            self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports'], cwd=self.tree, check=False)
+            # data/target-hashes: an untracked shard left by a failed regenerate commit blocks the detach checkout.
+            self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes'], cwd=self.tree, check=False)
         self.run(['git', 'checkout', '--quiet', '--detach', base], cwd=self.tree)
         shared, local = self.root / '.local', self.tree / '.local'
         local.mkdir(exist_ok=True)
@@ -1401,6 +1402,26 @@ class Bot:
         for r in runs.get('workflow_runs', []):
             self.run(['gh', 'api', '-X', 'POST', f'repos/{REPOSITORY}/actions/runs/{r["id"]}/approve'], check=False)
 
+    def bind_unit_map(self, task, info, wanted):
+        """The task's info with its unit symbol map on disk, binding it again when the map is gone; None if bind fails."""
+        symbols = str(info.get('symbols', ''))
+        # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
+        if symbols.startswith('reports/') and (self.tree / symbols).is_file():
+            return info
+        # The record must point at a public symbol map; bind freezes this unit's names into an
+        # immutable one without touching the shared map.
+        (task / 'bind-list.txt').write_text(f'{task}\n')
+        # bind fails the whole task for any unbound function, and a debt function of the unit that the
+        # PR does not accept is often one; bind only what is being recorded, then restore the full list.
+        full = info['functions']
+        narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
+        (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
+        bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
+                          '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+        info = json.loads((task / 'task.json').read_text())
+        (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
+        return None if bound.returncode else dict(info, functions=full)
+
     def build_records(self, tag, units, rvas, state):
         """Match records for the accepted functions: the Mac's fresh comparator output plus the CI map.
 
@@ -1416,25 +1437,10 @@ class Bot:
             wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
             if not wanted:
                 continue
-            symbols = str(info.get('symbols', ''))
-            # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
-            if not symbols.startswith('reports/') or not (self.tree / symbols).is_file():
-                # The record must point at a public symbol map; bind freezes this unit's names into an
-                # immutable one without touching the shared map.
-                (task / 'bind-list.txt').write_text(f'{task}\n')
-                # bind fails the whole task for any unbound function, and a debt function of the unit that the
-                # PR does not accept is often one; bind only what is being recorded, then restore the full list.
-                full = info['functions']
-                narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
-                (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
-                bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
-                                  '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
-                info = json.loads((task / 'task.json').read_text())
-                (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
-                if bound.returncode:
-                    failed |= wanted
-                    continue
-                info = dict(info, functions=full)
+            info = self.bind_unit_map(task, info, wanted)
+            if info is None:
+                failed |= wanted
+                continue
             for fn in info['functions']:
                 rva = int(str(fn['rva']), 0)
                 if rva not in wanted:
@@ -1899,14 +1905,36 @@ class Bot:
         for number, head, rvas in merged_unrecorded(directory, time.time()):
             pr = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
             pr['headRefOid'] = head
+            slot = self.task_slot(number, head)
             with self.land_lock:
                 try:
-                    self.record(pr, State(directory, number, head), rvas)
+                    slot.rebind_unit_maps(number, head, rvas)
+                    slot.record(pr, State(directory, number, head), rvas)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
                     print(f'{stamp()} pr {number}: record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                     continue
             recorded.append(number)
         return recorded
+
+    def task_slot(self, number, head):
+        """The slot whose tree still holds the PR's confirm tasks, else this one."""
+        for index in range(POOL_SIZE):
+            slot = self.for_slot(index)
+            if next((slot.tree / '.local/tasks').glob(f'prbot-{number}-{head[:8]}-*'), None):
+                return slot
+        return self
+
+    def rebind_unit_maps(self, number, head, rvas):
+        """Recreate the unit symbol maps of a merged PR's tasks that a later PR's tree clean removed.
+
+        A map is content-addressed, so binding the same task again gives the file the record names; the
+        record step still checks its hash.
+        """
+        for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{number}-{head[:8]}-*')):
+            info = json.loads((task / 'task.json').read_text())
+            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
+            if wanted and self.bind_unit_map(task, info, wanted) is None:
+                raise Stop(f'could not bind the unit symbol map of {task.name} again')
 
     def settle_ci_debt(self, host1):
         """`preexisting-fail` is debt only for a function that was matched at base.
