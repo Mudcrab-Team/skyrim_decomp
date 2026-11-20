@@ -13,8 +13,6 @@
 class TESLeveledList
 {
 public:
-    void SaveGame(BGSSaveFormBuffer* buffer);
-    void Revert(BGSLoadFormBuffer* buffer);
     void Init(TESForm* owner);
 };
 
@@ -22,8 +20,6 @@ class TESLevItem : public TESForm
 {
 public:
     void InitItemImpl() override;
-    void SaveGame(BGSSaveFormBuffer* buffer) override;
-    void Revert(BGSLoadFormBuffer* buffer) override;
 
 private:
     std::uint8_t padding20[0x10];

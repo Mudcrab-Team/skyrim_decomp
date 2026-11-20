@@ -7,12 +7,13 @@
 
 InventoryChanges* TESObjectREFR::GetInventoryChanges(FormType) const
 {
-    const auto reference = reinterpret_cast<std::uintptr_t>(this);
-    if (reference) {
-        const auto extraAddress = reference + 0x70;
-        if (extraAddress) {
-            return reinterpret_cast<ExtraDataList*>(extraAddress)->GetInventoryChanges();
-        }
+    // The target checks both the reference and the resulting list address.
+    if (!this) {
+        return nullptr;
+    }
+    auto* data = const_cast<ExtraDataList*>(&extraList);
+    if (reinterpret_cast<std::uintptr_t>(data) != 0) {
+        return data->GetInventoryChanges();
     }
     return nullptr;
 }
