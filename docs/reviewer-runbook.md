@@ -100,6 +100,11 @@ blocks; list what you find as `naming_findings` and still approve.
      regions the reviewed function does not access. Reject only when a field the function reads or
      writes is hidden in opaque storage, a byte array or filler, or when one big array stands in for
      the whole class (maintainer decision, 2026-11-14, narrowed in `docs/authorizations.md`, Notes);
+   - exception: an opaque, correctly sized stand-in type (a byte array of the class size) may be
+     approved when the function uses only the class size and the destructor call, as deleting and
+     scalar-deleting destructors typically do. It never covers a function that touches a field,
+     and an opaque stand-in must not be used to fake field access; plausibility still applies to
+     everything else (`docs/authorizations.md`, Notes);
    - nothing that cannot be what it claims: an unreachable branch or impossible type use that
      signals a wrong binding or a wrong class.
 2. **Provenance.** No code from unlicensed projects other than the FNV decompilation

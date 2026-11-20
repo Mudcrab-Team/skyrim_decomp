@@ -1418,6 +1418,12 @@ class ReviewContextTests(unittest.TestCase):
         self.assertIn('Plausible source', text)
         self.assertIn('do not reject because the full licence text was removed', text)
 
+    def test_the_checklist_lets_an_opaque_sized_standin_pass_only_for_size_and_destructor_use(self):
+        text = pr_bot.runbook_checklist(ROOT)
+        self.assertIn('opaque, correctly sized stand-in', text)
+        self.assertIn('only the class size and the destructor call', text)
+        self.assertIn('must not be used to fake field access', text)
+
     def test_a_reply_with_reasons_still_parses_and_only_approve_approves(self):
         leak, got = pr_bot.parse_review(json.dumps({'leak': 'no', 'functions': {
             '0x10': {'verdict': 'approve', 'ground': 'none', 'why': 'fine'},
