@@ -195,6 +195,29 @@ class DropLandedTests(unittest.TestCase):
             self.assertEqual([f['filename'] for f in bot.drop_landed(head, files)], ['reconstruction/high.cpp'])
 
 
+class RemovedAcceptedTests(unittest.TestCase):
+    def test_only_accepted_functions_a_changed_unit_no_longer_names_are_removed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tree = Path(tmp)
+            (tree / 'builds').mkdir()
+            (tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+            (tree / 'data').mkdir()
+            (tree / 'reconstruction/a').mkdir(parents=True)
+            (tree / 'reconstruction/a/Kept.cpp').write_text('// RVA 0x10, 4 bytes\n')
+            (tree / 'reconstruction/a/Edited.cpp').write_text('// RVA 0x20, 4 bytes\n')
+            fns = []
+            for rva, unit in ((0x10, 'Kept'), (0x20, 'Edited'), (0x30, 'Edited'), (0x40, 'Gone')):
+                report = tree / f'r{rva}.json'
+                report.write_text(json.dumps({'source': {'compiled': f'reconstruction/a/{unit}.cpp'}}))
+                fns.append({'build_id': 'b', 'status': 'matched', 'rva': rva, 'report': report.name})
+            (tree / 'data/progress.json').write_text(json.dumps({'functions': fns}))
+            bot = pr_bot.Bot(root=tree, work=tree / 'w')
+            bot.tree = tree
+            files = [{'filename': 'reconstruction/a/Edited.cpp'}, {'filename': 'reconstruction/a/Gone.cpp'}]
+            units = {'reconstruction/a/Edited.cpp': [0x20]}
+            self.assertEqual(bot.removed_accepted(units, files, [0x20]), [0x30, 0x40])
+
+
 class FakeBot(pr_bot.Bot):
     def __init__(self, work, files=None, h1=None, h2=None, review=GOOD, grep=(False, []), **kw):
         super().__init__(root=ROOT, work=work, **kw)
@@ -208,6 +231,7 @@ class FakeBot(pr_bot.Bot):
         self.history = None
         self.extra = {}
         self.stale = []
+        self.removed = []
         self.comments = []  # the PR's issue comments as {id, login, body}
         self.sizes = {}
         self.pre = {}  # rva -> mechanical findings the pre-review gate returns
@@ -262,6 +286,9 @@ class FakeBot(pr_bot.Bot):
 
     def stale_accepted(self, units, files):
         return self.stale
+
+    def removed_accepted(self, units, files, named):
+        return list(self.removed)
 
     def review(self, number, head, base, functions, *a):
         self.calls.append(['review', sorted(functions)])
@@ -704,6 +731,38 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertIn('0x20', body)
         self.assertNotIn('0x10', body)
         self.assertIn('go stale', body)
+
+    def test_a_stale_block_also_lists_host_failures_and_removed_accepted_functions(self):
+        bot = FakeBot(self.work, h1={0x10: 'pass', 0x20: 'pass'}, h2={0x10: 'fail', 0x20: 'pass'})
+        bot.stale = [0x20]
+        bot.removed = [0x2e6a70, 0x2f6280]
+        bot.review_text = json.dumps({'leak': 'no', 'functions': {'0x20': {'verdict': 'reject', 'ground': 'provenance'}}})
+        out = bot.process(PR)
+        self.assertEqual(out['blocked'], 'stale')
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x20: the review did not approve it', body)
+        self.assertIn('Also failing in this PR:', body)
+        self.assertIn('- 0x10: host 2 (compiled and compared locally): bytes differ', body)
+        self.assertIn('0x2e6a70, 0x2f6280', body)
+        self.assertEqual(body.count('<!-- pr-bot'), 1)
+
+    def test_comment_categories_are_fixed_words_never_comparator_text(self):
+        self.assertEqual(pr_bot.host_category(None), 'missing')
+        self.assertEqual(pr_bot.host_category('no-target'), 'unbound')
+        self.assertEqual(pr_bot.host_category('symbol-unbound at /Users/x/y'), 'unbound')
+        self.assertEqual(pr_bot.host_category('mismatch'), 'bytes differ')
+        d = dict(pr_bot.decide([0x10], {0x10: 'fail'}, {0x10: 'fail'}, {0x10: 'approve'}),
+                 host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})
+        self.assertIn('0x10: did not byte-match on the CI hash check (missing)', pr_bot.comment_body(HEAD, d))
+        d['verdicts'] = {0x10: 'fail:host1'}
+        self.assertIn('host 1 (CI hash check): missing; host 2 (compiled and compared locally): unbound',
+                      '\n'.join(pr_bot.other_failure_lines(d, set())))
+
+    def test_removed_accepted_functions_are_named_when_nothing_else_blocks(self):
+        d = dict(pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'}), removed=[0x2e6a70])
+        body = pr_bot.comment_body(HEAD, d)
+        self.assertIn('Merged and recorded: 0x10.', body)
+        self.assertIn('0x2e6a70', body)
 
     def test_companions_are_confirmed_on_both_hosts_reviewed_recorded_and_credited_apart(self):
         bot = self.bot()

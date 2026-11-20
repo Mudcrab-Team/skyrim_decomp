@@ -409,9 +409,49 @@ def review_grounds(text, functions):
     return out
 
 
+HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
+
+
+def host_category(detail):
+    """A fixed category for a host's failure; the comparator's own text can echo host paths, so it is never quoted."""
+    if not detail:
+        return 'missing'
+    detail = str(detail).lower()
+    if 'no-target' in detail or 'unbound' in detail or 'bind' in detail:
+        return 'unbound'
+    return 'bytes differ'
+
+
+def removed_lines(decision):
+    """Lines naming accepted functions the PR drops from their unit, whose acceptance can then no longer bind."""
+    removed = sorted(int(r) for r in decision.get('removed') or ())
+    if not removed:
+        return []
+    return ['Accepted functions this PR removes or renames (a record binds the unit text, RVA header and '
+            'signature, so the function stays accepted only while it keeps them): '
+            + ', '.join(f'0x{r:x}' for r in removed) + '.']
+
+
+def other_failure_lines(decision, shown):
+    """Every failed function the blocking list did not already name, with the host that failed and why."""
+    why = decision.get('host_why') or {}
+    lines = []
+    for r, v in sorted(decision['verdicts'].items()):
+        if r in shown or not v.startswith('fail:'):
+            continue
+        row = why.get(r) or why.get(str(r)) or {}
+        hosts = [f'{HOST_NAMES[h]}: {row[h]}' for h in ('host1', 'host2') if h in row]
+        lines.append(f'- 0x{r:x}: ' + ('; '.join(hosts) if hosts else reason_text(decision, r, v.split(':', 1)[1])))
+    return lines
+
+
 def reason_text(decision, rva, code):
     """The comment's reason for a failed function; a review rejection also names the unit file and a category."""
     text = REASONS.get(code, 'it was not re-confirmed')
+    if code in ('host1', 'host2'):
+        why = decision.get('host_why') or {}
+        category = (why.get(rva) or why.get(str(rva)) or {}).get(code)
+        return f'{text} ({category})' if category else text
     if code != 'review':
         return text
     unit = (decision.get('unit_files') or {}).get(rva)
@@ -458,6 +498,15 @@ def sticky_body(sha, text, batch=False):
 
 
 def comment_body(sha, decision, leak_codes=()):
+    """The outcome text, with the accepted functions the PR removes added to any outcome that is not a hold."""
+    text = outcome_body(sha, decision, leak_codes)
+    extra = removed_lines(decision) if decision.get('blocked') in (None, 'stale', 'companion') else []
+    if not extra:
+        return text
+    return '\n'.join(extra if text == 'Nothing to report.' else [text, *extra])
+
+
+def outcome_body(sha, decision, leak_codes=()):
     if decision['blocked'] == 'leak':
         source = decision.get('leak_source', 'leakgrep')
         if source == 'unreadable-review':
@@ -489,6 +538,10 @@ def comment_body(sha, decision, leak_codes=()):
             if verdicts.get(r) != 'matched':
                 code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
                 lines.append(f'- 0x{r:x}: {reason_text(decision, r, code)}')
+        listed = {r for r in decision.get('stale', []) if verdicts.get(r) != 'matched'}
+        more = other_failure_lines(decision, listed)
+        if more:
+            lines += ['Also failing in this PR:'] + more
         lines.append('Please keep those functions compiling to the same code on both hosts, or leave the unit '
                      'alone, and push again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -501,6 +554,10 @@ def comment_body(sha, decision, leak_codes=()):
             if verdicts.get(r) != 'matched':
                 code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
                 lines.append(f'- 0x{r:x}: {reason_text(decision, r, code)}')
+        listed = {r for r in decision.get('companions', []) if verdicts.get(r) != 'matched'}
+        more = other_failure_lines(decision, listed)
+        if more:
+            lines += ['Also failing in this PR:'] + more
         lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
                      'again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -700,6 +757,7 @@ class Bot:
         self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
                            **(config or {}))
         self.tree = self.work / 'tree'
+        self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
         # Shared by every slot of a pool (see for_slot): git in the shared checkout races on ref locks,
@@ -1103,6 +1161,52 @@ class Bot:
                 out.setdefault(unit, []).append(fn['rva'])
         return {u: sorted(rs) for u, rs in out.items()}
 
+    def removed_accepted(self, units, files, named):
+        """RVAs of accepted functions whose unit the PR changes but whose RVA no unit of the PR names any more.
+
+        A function that moved to another unit still counts as named. The check reads the PR's own text, so a
+        deleted or renamed unit file takes its accepted functions with it.
+        """
+        tree = self.tree
+        changed = {f['filename'] for f in files}
+        target = json.loads((tree / 'builds/target.json').read_text())['build_id']
+        inventory = json.loads((tree / 'data/progress.json').read_text())
+        present = set(named) | {r for rs in units.values() for r in rs}
+        out = []
+        for fn in inventory['functions']:
+            if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in present or not fn.get('report'):
+                continue
+            try:
+                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+            except (OSError, ValueError):
+                continue
+            unit = source.get('compiled')
+            if not unit or not (unit in changed or unit[:-4] + '.h' in changed or unit in units):
+                continue
+            # An untouched unit still names its function; only a unit the PR edits or deletes can drop it.
+            texts = [(tree / (unit[:-4] + ext)).read_text() for ext in ('.h', '.cpp')
+                     if (tree / (unit[:-4] + ext)).is_file()]
+            if fn['rva'] not in functions_of(texts):
+                out.append(fn['rva'])
+        return sorted(out)
+
+    @staticmethod
+    def host_failures(state, sfx, functions, host1, host2):
+        """{rva: {host: category}} for each function that failed a host; unseen rows count as missing."""
+        rows = (state.get('ci') or {}).get('rows') or {}
+        mac = state.get('host2_why' + sfx) or {}
+        out = {}
+        for r in functions:
+            row = {}
+            if host1.get(r) not in (None, 'pass', 'preexisting-fail'):
+                detail = (rows.get(str(r)) or {}).get('result')
+                row['host1'] = host_category(detail)
+            if host2.get(r) not in (None, 'pass', 'preexisting-fail'):
+                row['host2'] = mac.get(str(r)) or 'bytes differ'
+            if row:
+                out[r] = row
+        return out
+
     def stale_accepted(self, units, files):
         """RVAs of every accepted function of a changed unit whose record the change outdates, named or not."""
         return sorted({r for rs in self.companions(units, files, []).values() for r in rs})
@@ -1130,7 +1234,7 @@ class Bot:
                          timeout=900)
         except (Stop, subprocess.TimeoutExpired) as exc:
             raise HostFailure(f'pack export did not complete ({type(exc).__name__})')
-        out = {}
+        out, why = {}, {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
             # A task the export did not write has no records to hint from.
@@ -1157,8 +1261,12 @@ class Bot:
                 try:
                     report = json.loads((attempts[-1] / f'0x{rva:x}' / 'report.json').read_text())
                     out[rva] = 'pass' if report.get('result') == 'pass' else 'fail'
+                    if out[rva] == 'fail':
+                        why[rva] = host_category(report.get('reason') or 'differs')
                 except (IndexError, OSError, ValueError):
                     out[rva] = 'fail'
+                    why[rva] = host_category(None)
+        self.host2_why[tag] = why
         return out
 
     def host1(self, number, head, functions, state=None, units=None):
@@ -1475,8 +1583,11 @@ class Bot:
             cached = state.get('host2' + sfx)
             if cached is not None and not self.reports_present(tag, cached):
                 state.drop('host2' + sfx)
-            return state.once('host2' + sfx, lambda: {str(k): v for k, v in
-                                                      self.mac_compare(check_units, tag).items()})
+            got = state.once('host2' + sfx, lambda: {str(k): v for k, v in
+                                                     self.mac_compare(check_units, tag).items()})
+            if tag in self.host2_why:
+                state.set('host2_why' + sfx, {str(k): v for k, v in self.host2_why[tag].items()})
+            return got
 
         def ci():
             return state.once('host1' + sfx, lambda: {str(k): v for k, v in
@@ -1518,6 +1629,7 @@ class Bot:
             if not origin_problems and set(evidence_kinds) == {'origin-similarity'}:
                 leak = 'no'
         verdict = {r: verdict.get(r, 'reject') for r in everything}
+        removed = state.once('removed', lambda: self.removed_accepted(units, files, everything))
         decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra, stale=stale,
                           leak_evidence=evidence_kinds, refused=set(refused))
         state.set('decision', decision)
@@ -1526,6 +1638,8 @@ class Bot:
         decision['origin_permitted'] = origin_permitted
         decision['grounds'] = grounds
         decision['unit_files'] = {r: u for u, rs in check_units.items() for r in rs}
+        decision['host_why'] = self.host_failures(state, sfx, everything, host1, host2)
+        decision['removed'] = removed
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
