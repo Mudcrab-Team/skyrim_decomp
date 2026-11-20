@@ -102,6 +102,7 @@ TARGET_HASH_DIR = 'data/target-hashes/'
 REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
 RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
 
@@ -1997,6 +1998,12 @@ class Bot:
             recorded.append(number)
         return recorded
 
+    def close_done_claims(self):
+        """Close claim issues whose functions are all matched on origin/main. Returns the issue numbers."""
+        import claims
+        self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+        return claims.close_completed(claims.GitHub(self.tree), claims.git_json(self.tree, 'origin/main'))
+
     def task_slot(self, number, head):
         """The slot whose tree still holds the PR's confirm tasks, else this one."""
         for index in range(POOL_SIZE):
@@ -2303,6 +2310,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     inflight = {}  # PR number -> future
     refilled = None
     retried = None
+    swept = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -2330,6 +2338,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                         print(f'{stamp()} pr {number}: records landed on retry', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if not bot.dry_run and not inflight and (swept is None or time.time() - swept >= CLAIM_SWEEP_EVERY):
+                swept = time.time()
+                try:
+                    for number in bot.for_slot(0).close_done_claims():
+                        print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
+                    print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')

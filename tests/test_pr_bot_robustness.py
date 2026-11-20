@@ -364,6 +364,9 @@ class VerifierHostTests(WorkDir):
 
 class PoolTests(WorkDir):
     class PoolBot(FakeBot):
+        def close_done_claims(self):
+            return []
+
         def attempt(self, pr, now=None):
             self.arrived(pr, self.tree)
             return {'pr': pr['number'], 'head': pr['headRefOid'], 'blocked': None, 'merge': False}
@@ -546,6 +549,40 @@ class PoolTests(WorkDir):
         bot.gh_json = lambda *a: listed.append(1) or []
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600)
         self.assertEqual(len(listed), 2)
+
+    def test_idle_poll_sweeps_finished_claims_once_per_period_and_survives_a_failure(self):
+        calls = []
+
+        class Sweeping(PoolTests.PoolBot):
+            def close_done_claims(self):
+                calls.append(1)
+                if len(calls) == 1:
+                    raise RuntimeError('gh failed')
+                return [5]
+        bot = Sweeping(self.work)
+        listed = []
+        bot.gh_json = lambda *a: listed.append(1) or []
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(listed), 3)
+        calls.clear()
+        with mock.patch.object(pr_bot, 'CLAIM_SWEEP_EVERY', 0):
+            pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(len(calls), 3)
+
+    def test_close_done_claims_reads_origin_main_and_closes_through_the_claims_tool(self):
+        bot = FakeBot(self.work)
+        seen = {}
+
+        def fake_close(gh, public):
+            seen['public'] = public
+            return [9]
+        with mock.patch('claims.git_json', return_value={'functions': []}) as read, \
+                mock.patch('claims.close_completed', side_effect=fake_close):
+            self.assertEqual(bot.close_done_claims(), [9])
+        read.assert_called_once_with(bot.tree, 'origin/main')
+        self.assertEqual(seen['public'], {'functions': []})
+        self.assertEqual(bot.calls[-1][:4], ['git', 'fetch', '--quiet', 'origin'])
 
 
 if __name__ == '__main__':

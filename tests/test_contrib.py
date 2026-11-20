@@ -341,6 +341,45 @@ class ClaimTests(Base):
         self.assertEqual(code, 0)
         self.assertIn('issues/new', out['link'])
 
+    def claim_with(self, gh, functions, entries):
+        data = contrib.inventory(ROOT)
+        build = data['target_build_id']
+        rows = [{'rva': r, 'build_id': build, 'status': 'mapped'} for r in functions]
+        out = io.StringIO()
+        with unittest.mock.patch.object(contrib, 'claim_selection', return_value=(rows, entries)), \
+                contextlib.redirect_stdout(out):
+            code = contrib.main(['--json', 'claim', '--model', 'synthetic-agent', f'0x{MAPPED:x}'],
+                                ctx=self.ctx(github=gh))
+        return code, json.loads(out.getvalue())
+
+    def test_offered_function_outside_the_inventory_is_counted(self):
+        held = {f['rva'] for f in contrib.inventory(ROOT)['functions']}
+        offered = next(r for r in range(0x7f000000, 0x7f001000, 0x10) if r not in held)
+        gh = FakeGitHub()
+        code, _ = self.claim_with(gh, [offered], [(offered, offered + 1)])
+        self.assertEqual(code, 0)
+        self.assertEqual(len(gh.created), 1)
+        self.assertIn('(1 functions)', gh.created[0])
+        self.assertNotIn('(0 functions)', gh.created[0])
+
+    def test_a_claim_that_resolves_to_no_function_opens_no_issue(self):
+        gh = FakeGitHub()
+        nothing = 0x7f800000
+        code, out = self.claim_with(gh, [MAPPED], [(nothing, nothing + 0x10)])
+        self.assertEqual(code, contrib.USAGE)
+        self.assertIn('0 functions', out['error'])
+        self.assertEqual(gh.created, [])
+
+    def test_a_range_without_unmatched_functions_is_refused(self):
+        gh = FakeGitHub()
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = contrib.main(['--json', 'claim', '--model', 'synthetic-agent', '--range', '0x1-0x2'],
+                                ctx=self.ctx(github=gh))
+        self.assertEqual(code, contrib.USAGE)
+        self.assertIn('nothing to claim', json.loads(out.getvalue())['error'])
+        self.assertEqual(gh.created, [])
+
     def test_matched_function_cannot_be_claimed(self):
         ctx = self.ctx(github=FakeGitHub())
         with contextlib.redirect_stdout(io.StringIO()):
