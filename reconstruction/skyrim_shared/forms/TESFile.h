@@ -1,6 +1,4 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// Code origin: declarations written for this reconstruction; names from the community headers
-// below, layout from analysis of the pinned image; no implementation bodies reused.
+// Source exposure: mixed (binary-analysis of the pinned image, community-headers); declarations written here, no implementation bodies reused.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
 // at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
@@ -21,7 +19,7 @@
 // TESFile::unk024: GUESS(low); the word at 0x24 is used as the file position while unk018 is set
 // BSFile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the two position members
 // BSFile::auxTrueFilePos, ::trueFilePos: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares auxTrueFilePos as std::int32_t, read here as an unsigned position
-// TESFile::OpenInternal, ::ReadFormHeader, ::ReadChunkHeader, ::SeekRaw, ::DuplicateForThread: GUESS; callees at RVAs 0x1ca490, 0x1cf0f0, 0x1cf2e0, 0x1cfcf0, 0x1cf680 with no community name
+// TESFile::OpenInternal, ::ReadFormHeader, ::ReadChunkHeader, ::SeekRaw, ::DuplicateForThread: GUESS; callees at 0x1ca490, 0x1cf0f0, 0x1cf2e0, 0x1cfcf0, 0x1cf680 (image RVAs) with no community name
 // TESFile::EnsureOpen, ::IsCompressed, ::IsOpen, ::FindMaster, ::GetRootFile, ::QueryFilePosition: GUESS; inline helpers with no address of their own, named for what they do
 // ConvertFormType: GUESS; the callee at RVA 0x1e5c10 maps a form record type to a FormType
 // FormType: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only None is named
