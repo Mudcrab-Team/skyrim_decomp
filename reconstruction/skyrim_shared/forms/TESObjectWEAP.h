@@ -1,4 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// member offsets from the listing of the pinned image).
+// Code origin: community declarations; stand-in bases and guessed members written from the listing.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESObjectWEAP: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject, TESBoundObject: STANDIN EXE_RTTI
