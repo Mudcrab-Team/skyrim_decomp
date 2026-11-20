@@ -113,7 +113,7 @@ def label_line(qual, source, labels, note=None):
 
 def clean_comment(text, limit=140):
     text = re.sub(r'[^\x20-\x7e]', '', text or '').replace('##', '#').replace('\\', '/')
-    text = re.sub(r'(?<![A-Za-z0-9_])(COMMUNITY|GUESS|EXE_RTTI|STANDIN|OBSERVED)', lambda m: m.group(1).lower(), text)
+    text = re.sub(r'(?<![A-Za-z0-9_])(COMMUNITY|CRASHLOGGER_PDB|GUESS|EXE_RTTI|STANDIN|OBSERVED)', lambda m: m.group(1).lower(), text)
     return text[:limit]
 
 

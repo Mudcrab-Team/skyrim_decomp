@@ -147,7 +147,7 @@ def name_source_valid(label):
     from check import naming_finding_problem
     require(naming_finding_problem(label) is None, 'unsafe name_source label')
     require(re.fullmatch(r'GUESS\((low|medium|high)\)', label) or
-            re.fullmatch(r'(COMMUNITY|EXE_RTTI|SIBLING)\([^\n()]+\)', label),
+            re.fullmatch(r'(COMMUNITY|EXE_RTTI|SIBLING|CRASHLOGGER_PDB)\([^\n()]+\)', label),
             'name_source must be a public symbol source or labelled guess')
 
 

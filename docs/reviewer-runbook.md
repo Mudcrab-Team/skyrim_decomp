@@ -130,7 +130,9 @@ blocks; list what you find as `naming_findings` and still approve.
 5. **Publication hygiene.** Nothing staged for publication contains game bytes, disassembly,
    dumps, proprietary symbols, secrets or private paths, per `PROVENANCE.md` and `LEGAL.md`.
 6. **Names and labels (not blocking).** Each name and type is labelled by origin (`COMMUNITY`,
-   `SIBLING`, `EXE_RTTI`, `OBSERVED`, `GUESS`, `STANDIN`) and each label is true. Unlabelled
+   `SIBLING`, `CRASHLOGGER_PDB`, `EXE_RTTI`, `OBSERVED`, `GUESS`, `STANDIN`) and each label is true. A
+   `CRASHLOGGER_PDB(59818@<version>)` name is a known source like `COMMUNITY`, not evidence of identity; copying
+   names in bulk from the PDB or its output into a unit outside the generated directory is a hygiene ground. Unlabelled
    community names, a missing or imperfect `SIBLING` label on a name, `GUESS` where a community
    or sibling name exists, placeholder naming, dead declarations that compile to nothing, header
    or comment wording and missing notes go in `naming_findings`, one short line each, at most 20
@@ -226,7 +228,7 @@ match record (alongside, never instead of, its normal source and two-host report
   string values. Numeric rules are inclusive `min`/`max`; enumerations use `values`. Missing or
   extra parameters and wrong value types are outside the reviewed ranges.
 - `name_source`: the existing per-function label string, such as `GUESS(low)` or a pinned
-  `COMMUNITY(...)`, `EXE_RTTI(...)` or `SIBLING(...)` citation. Preserve its source meaning;
+  `COMMUNITY(...)`, `EXE_RTTI(...)`, `SIBLING(...)` or `CRASHLOGGER_PDB(...)` citation. Preserve its source meaning;
   another game's symbol is never evidence of this target's name.
 
 Only structured, publication-safe metadata belongs in public records. Raw extraction tables and

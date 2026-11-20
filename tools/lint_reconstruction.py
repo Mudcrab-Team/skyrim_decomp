@@ -33,7 +33,8 @@ rule item 2), so a Reviewer pass is not spent on them and a Drafter learns them 
   naming that repository must carry its LICENSE in full, copyright line included;
 - name-origin labels: in a file whose leading comment says `Labels: v2`, every label is on a
   `// <names>: <LABEL> [<LABEL>...][; note]` line, LABEL being `COMMUNITY(<owner>/<repo>@<rev>,
-  <licence>)`, `SIBLING(<owner>/<repo>@<rev>, <licence>)` (only a sibling decompilation listed in
+  <licence>)`, `CRASHLOGGER_PDB(59818@<version>)` (a name read from the community-generated
+  CrashLogger PDB, docs/authorizations.md, Notes), `SIBLING(<owner>/<repo>@<rev>, <licence>)` (only a sibling decompilation listed in
   `SIBLING_SOURCES`, at its pin, with its licence word; this citation rule applies in every
   file), `GUESS`, `GUESS(low|medium|high)`, `EXE_RTTI`, `STANDIN` or `OBSERVED`;
 - sibling bodies: a `Sibling source: <owner>/<repo>@<rev> <path>[:<line>]` line, required by the
@@ -43,7 +44,7 @@ rule item 2), so a Reviewer pass is not spent on them and a Drafter learns them 
 - header comment fields: the leading comment block names the pinned build id and a `Source
   exposure:` category from PROVENANCE.md; a .cpp also gives `RVA 0x...`, `<n> bytes`,
   `Evidence:` with an existing findings/ or reports/ path, `Drafted by` and `Recipe:` with an
-  existing recipe; a .h labels name origin (COMMUNITY, SIBLING, GUESS, EXE_RTTI or OBSERVED);
+  existing recipe; a .h labels name origin (COMMUNITY, SIBLING, CRASHLOGGER_PDB, GUESS, EXE_RTTI or OBSERVED);
 - skeleton not filled: a `SKELETON_TODO...` word (the stub body and paperwork placeholders that
   tools/skeleton.py writes) is refused in every file, except in a working-tree file git does not
   track yet when the whole tree is checked (`tools/check.py` without `--staged`, which lints a
@@ -81,7 +82,7 @@ import unit_paths  # noqa: E402
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 COMPARED_LINE = re.compile(r'^//[ \t]*0x[0-9a-fA-F]+(?:[ \t]|$)', re.M)
 EXPOSURE = ('black-box', 'community-headers', 'binary-analysis', 'mixed')
-NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'GUESS', 'EXE_RTTI', 'OBSERVED')
+NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'CRASHLOGGER_PDB', 'GUESS', 'EXE_RTTI', 'OBSERVED')
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
 # The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
 # single-level layout is accepted too while units written against it are still landing.
@@ -142,6 +143,7 @@ def label_grammar_applies(name, text):
     return name not in FREEFORM_LABEL_FILES or bool(LABELS_VERSION.search(text[:4000]))
 LABEL = (r'(?:COMMUNITY\([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{7,40}, [A-Za-z0-9.+-]+\)'
          r'|SIBLING\((?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|fo4-private)@[0-9a-f]{7,40}, [A-Za-z0-9.+-]+\)'
+         r'|CRASHLOGGER_PDB\(59818@[0-9A-Za-z][0-9A-Za-z.+-]*\)'
          r'|GUESS(?:\((?:low|medium|high)\))?|EXE_RTTI|STANDIN|OBSERVED)')
 # Decompilations of other games of the engine family that the maintainer allowed as a source of
 # names, declarations and code (docs/authorizations.md, Notes): repository -> (pinned revision
@@ -157,7 +159,7 @@ SIBLING_HEADER = re.compile(rf'Sibling source:\s*({SIBLING_ID})@([0-9a-f]{{7,40}
                             r'((?:src|include)/[^\s:]+)(?::(\d+))?')
 LABEL_LINE = re.compile(rf'^\s*//\s*(?P<names>\S(?:.*?\S)?)\s*:\s*(?P<labels>{LABEL}(?:\s+{LABEL})*)'
                         r'\s*(?:;\s*(?P<note>.*))?$')
-ORIGIN_LABEL = re.compile(r'COMMUNITY\(|SIBLING\(|GUESS|EXE_RTTI|OBSERVED')
+ORIGIN_LABEL = re.compile(r'COMMUNITY\(|SIBLING\(|CRASHLOGGER_PDB\(|GUESS|EXE_RTTI|OBSERVED')
 DEFINE = re.compile(r'^[ \t]*#[ \t]*define\b(.*)$', re.M)
 DEFINE_BANNED = re.compile(rf'(?<![A-Za-z0-9_])(?:__declspec|__pragma|_Pragma|{ASM}|__emit|{CODEGEN_DECLSPEC})'
                            r'(?![A-Za-z0-9_])')
@@ -306,12 +308,12 @@ def label_problems(name, text, header, ext):
         if not m or LABEL_WORD.search(rest):
             problems.append(f'{name}:{number}: label outside the v2 grammar; write "// <names>: <LABEL> ...[; note]" '
                             'with LABEL one of COMMUNITY(<owner>/<repo>@<rev>, <licence>), '
-                            'SIBLING(<owner>/<repo>@<rev>, <licence>), GUESS, '
+                            'SIBLING(<owner>/<repo>@<rev>, <licence>), CRASHLOGGER_PDB(59818@<version>), GUESS, '
                             'GUESS(low|medium|high), EXE_RTTI, STANDIN, OBSERVED')
             continue
         if not ORIGIN_LABEL.search(m.group('labels')):
             problems.append(f'{name}:{number}: STANDIN also needs the origin of the name (COMMUNITY(...), SIBLING(...), '
-                            'GUESS, EXE_RTTI or OBSERVED)')
+                            'CRASHLOGGER_PDB(...), GUESS, EXE_RTTI or OBSERVED)')
         labelled += 1
     if ext == 'h' and not labelled:
         problems.append(f'{name}: a header needs at least one "// <names>: <LABEL>" line')

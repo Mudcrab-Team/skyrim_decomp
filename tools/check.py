@@ -800,7 +800,7 @@ def validate(data, target, root=None, stale_ok=False):
         start, end = fn['rva'], fn['rva'] + fn['size']
         ranges.append((start, end))
         require(text(fn['name']) and text(fn['owner']), 'Function needs name and owner')
-        require(fn['name_origin'] in {'EXE_RTTI', 'COMMUNITY', 'OBSERVED', 'GUESS'}, 'Missing name provenance')
+        require(fn['name_origin'] in {'EXE_RTTI', 'COMMUNITY', 'CRASHLOGGER_PDB', 'OBSERVED', 'GUESS'}, 'Missing name provenance')
         require(text(fn['evidence']), 'Missing evidence')
         path = Path(fn['evidence'])
         require(not path.is_absolute() and '..' not in path.parts and path.parts[0] in {'findings', 'reports'},
