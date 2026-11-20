@@ -36,7 +36,13 @@ Header: keep it short. The skeleton writes all of it; a `.cpp` looks like
 Never paste licence text, and leave out Task, Labels, Evidence, Drafted by, Recipe (unless it is
 not the default) and any "a byte match shows..." disclaimer: the records and git hold them. Labels,
 `Sibling source:` and `0x<rva> <Name>` lines do not count; keep the rest to 6 lines or fewer. The
-PR check fails a new or changed header that is longer or holds licence text.
+PR check fails a new or changed header that is longer or holds licence text. The failure names the file, how many lines it is over and the lines that count.
+
+A function is claimed only by its `// 0x<rva> <Name>` line (older units also use `RVA 0x<rva>, <n> bytes`
+or `compared at RVA 0x<rva>`). An address in prose, such as a callee or a global in a provenance line, is not
+a claim. If a claimed RVA has no published target row yet and is a function start of the pinned build, the
+bot publishes its row (hash only) and re-runs the check on your head; an address that cannot be compared
+is named in the bot comment instead of being skipped.
 
 Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
