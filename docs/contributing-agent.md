@@ -93,6 +93,23 @@ Steam credentials.
 adds a private `decomp.c`. Treat it as an untrusted hint for control flow and types; write your own
 source, because `compare` decides the match.
 
+## Recommended: CrashLogger PDB names
+
+The repository carries names and layouts generated from the community "CrashLogger PDBs"
+(https://www.nexusmods.com/skyrimspecialedition/mods/59818, CrashLogger Contributors) in
+`reconstruction/generated/crashlogger_pdb/`; read its README. `next` shows a function's name from
+`names/<NN>.tsv` as a suggestion, so you need download nothing.
+
+- A name or layout you take is labelled `CRASHLOGGER_PDB(59818@<version>)` on its label line, for example
+  `// Foo::Bar: CRASHLOGGER_PDB(59818@2026.10.24)`. It is a name source like `COMMUNITY`, not evidence of what the
+  function does; only a byte match accepts a function.
+- Downloading the mod is optional, needed only to refresh the generated output or for a lookup beyond it: take the
+  `ae17` variant (`ae17/SKSE/Plugins/SkyrimSE.pdb`, 1.7.104) and keep it under `.local/`, for example
+  `.local/pdb/SkyrimSE.pdb` (or point `SR_CRASHLOGGER_PDB` at it). `next` and `start` fall back to it for an RVA the
+  committed map lacks; put the archive's version in `.local/pdb/version.txt` or `SR_CRASHLOGGER_PDB_VERSION`.
+  `llvm-pdbutil dump -publics SkyrimSE.pdb` lists its publics; keep that output under `.local/`.
+- Never commit the `.pdb`, or a name list from it outside the generated directory.
+
 ## Mapping-only PRs
 
 A PR that only names functions touches `data/progress.json` and, optionally, new `findings/*.md`:

@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__real@3f333333": {
+      "rva": 28687900,
+      "size": null
+    },
+    "?CalculateFallDamage@TESObjectREFR@@QEAAMMM@Z": {
+      "rva": 7066928,
+      "size": 199
+    },
+    "?GetSubmergeLevel@TESObjectREFR@@AEBAMMPEAVTESObjectCELL@@@Z": {
+      "rva": 6839344,
+      "size": null
+    },
+    "?playerReference@@3PEAVTESObjectREFR@@EA": {
+      "rva": 52294400,
+      "size": null
+    },
+    "?fJumpFallHeightMin@@3MA": {
+      "rva": 34244720,
+      "size": null
+    },
+    "?fJumpFallHeightMult@@3MA": {
+      "rva": 34244768,
+      "size": null
+    },
+    "?fJumpFallHeightExponent@@3MA": {
+      "rva": 34244744,
+      "size": null
+    },
+    "?fJumpFallHeightMinNPC@@3MA": {
+      "rva": 34244792,
+      "size": null
+    },
+    "?fJumpFallHeightMultNPC@@3MA": {
+      "rva": 34244840,
+      "size": null
+    },
+    "?fJumpFallHeightExponentNPC@@3MA": {
+      "rva": 34244816,
+      "size": null
+    },
+    "powf": {
+      "rva": 22714570,
+      "size": null
+    },
+    "?HandleEntryPoint@BGSEntryPoint@@SAXW4ENTRY_POINT@1@PEAVTESObjectREFR@@PEAM@Z": {
+      "rva": 3723248,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__real@3f333333",
+        "rva": "0x1b5be1c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CalculateFallDamage@TESObjectREFR@@QEAAMMM@Z",
+        "rva": "0x6bd530",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetSubmergeLevel@TESObjectREFR@@AEBAMMPEAVTESObjectCELL@@@Z",
+        "rva": "0x685c30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?playerReference@@3PEAVTESObjectREFR@@EA",
+        "rva": "0x31df300",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?fJumpFallHeightMin@@3MA",
+        "rva": "0x20a8870",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?fJumpFallHeightMult@@3MA",
+        "rva": "0x20a88a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?fJumpFallHeightExponent@@3MA",
+        "rva": "0x20a8888",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?fJumpFallHeightMinNPC@@3MA",
+        "rva": "0x20a88b8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?fJumpFallHeightMultNPC@@3MA",
+        "rva": "0x20a88e8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?fJumpFallHeightExponentNPC@@3MA",
+        "rva": "0x20a88d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "powf",
+        "rva": "0x15a98ca",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?HandleEntryPoint@BGSEntryPoint@@SAXW4ENTRY_POINT@1@PEAVTESObjectREFR@@PEAM@Z",
+        "rva": "0x38cff0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

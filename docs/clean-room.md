@@ -11,7 +11,9 @@ exposure to another game's reconstructed implementation and to names its README 
 development-build PDB and middleware source. Record it like any other exposure; units carrying
 `SIBLING` labels or a `Sibling source:` line show it. An agent that has read recovered
 implementation code must not claim to be an unexposed implementer. A fresh chat does not erase
-prior access, shared files or retrieved context.
+prior access, shared files or retrieved context. Reading the CrashLogger PDB or its committed output (a community name and layout source the
+maintainer allowed, `docs/authorizations.md`, Notes) is exposure to community-generated names and type layouts;
+units carrying `CRASHLOGGER_PDB` labels show it, and the generated directory can be stripped in bulk.
 
 For each proposed transfer, record intended recipients, all relevant source exposure, what
 information is being transferred, the evidence supporting it and the maintainer's decision.

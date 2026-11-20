@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@BSOcclusionBox@@QEBAXAEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16669872,
+      "size": 54
+    },
+    "?CopyPlaneSets@BSOcclusionBox@@QEAA_NAEBVNiAVObject@@AEAVNiFrustumPlanes@@1@Z": {
+      "rva": 16674096,
+      "size": 88
+    },
+    "?CopyMembers@BSOcclusionShape@@QEBAXAEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16627216,
+      "size": null
+    },
+    "?RebuildPlaneSets@BSOcclusionBox@@AEAA_NAEBVNiAVObject@@@Z": {
+      "rva": 16672464,
+      "size": null
+    },
+    "?CopyFrom@NiFrustumPlanes@@QEAAXAEBV1@@Z": {
+      "rva": 16679424,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@BSOcclusionBox@@QEBAXAEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xfe5cb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyPlaneSets@BSOcclusionBox@@QEAA_NAEBVNiAVObject@@AEAVNiFrustumPlanes@@1@Z",
+        "rva": "0xfe6d30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@BSOcclusionShape@@QEBAXAEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xfdb610",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RebuildPlaneSets@BSOcclusionBox@@AEAA_NAEBVNiAVObject@@@Z",
+        "rva": "0xfe66d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyFrom@NiFrustumPlanes@@QEAAXAEBV1@@Z",
+        "rva": "0xfe8200",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

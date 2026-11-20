@@ -190,6 +190,15 @@ class ReviewerFollowUpTests(LintTests):
         self.write(header=V2_HEADER)
         self.assertEqual(self.problems(), [])
 
+    def test_labels_v2_crashlogger_pdb_label(self):
+        label = '// Widget::value: CRASHLOGGER_PDB(59818@2026.10.24)'
+        self.write(header=V2_HEADER.replace('#pragma once', f'{label}\n// Gadget: STANDIN CRASHLOGGER_PDB(59818@1.2)\n#pragma once'))
+        self.assertEqual(self.problems(), [])
+        for bad in ('CRASHLOGGER_PDB', 'CRASHLOGGER_PDB(12345@1.2)', 'CRASHLOGGER_PDB(59818)', 'CRASHLOGGER_PDB(59818@)'):
+            with self.subTest(bad):
+                self.assert_problem('label outside the v2 grammar',
+                                    header=V2_HEADER.replace('#pragma once', f'// Widget::value: {bad}\n#pragma once'))
+
     def test_labels_v2_grammar_refusals(self):
         cases = {
             'Names are COMMUNITY and unverified.': 'label outside the v2 grammar',

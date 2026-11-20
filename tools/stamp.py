@@ -104,7 +104,7 @@ def emit_leaf(owner, method, *, family, width, value, virtual, name_label):
     parts = owner.split('::')
     if not all(IDENT.fullmatch(p) for p in parts) or not IDENT.fullmatch(method):
         raise UnsafeCandidate('unsupported-name')
-    if name_label != 'GUESS(low)' and not re.fullmatch(r'COMMUNITY\([^()\r\n]+\)', name_label):
+    if name_label != 'GUESS(low)' and not re.fullmatch(r'(?:COMMUNITY|CRASHLOGGER_PDB)\([^()\r\n]+\)', name_label):
         raise UnsafeCandidate('name-origin')
     if family != 'constant' and value < (8 if virtual else 0):
         raise UnsafeCandidate('invalid-offset')

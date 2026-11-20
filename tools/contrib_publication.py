@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import subprocess
 
+from rva_headers import claimed_rvas
 from contrib_screen import (EMAIL, MAX_BYTES, MAX_HISTORY_BYTES, MAX_IDENTITY_BYTES, MAX_MESSAGE_BYTES,
                             STANDARD_HEADERS, screen, screen_text)
 
@@ -71,8 +72,25 @@ def history_report(base, head, git):
     return screen_history(commits, git)
 
 
+def new_claimed_functions(git, base, head, files):
+    """Count of RVAs the changed files claim at `head` that the same files did not claim at `base`.
+
+    The bot counts functions the same way (RVA headers of the changed units, not files): a unit is a
+    .h and a .cpp, and a PR that edits a unit keeps the functions it already had out of the count.
+    """
+    def claims(revision, name):
+        if not git('ls-tree', revision, '--', name).strip():
+            return set()
+        return claimed_rvas([git('show', f'{revision}:{name}').decode('utf-8', 'replace')])
+    now, before = set(), set()
+    for item in files:
+        now |= claims(head, item['path'])
+        before |= claims(base, item['path'])
+    return len(now - before)
+
+
 def screen_publication(root, base, head, *, merge_method='squash', headers=STANDARD_HEADERS,
-                       max_files=120, git=None):
+                       max_functions=120, max_files=None, git=None):
     """Return files, diff, merge_method and resolved base/head; raise on refused content.
 
     Optional git(*args) returns bytes and lets intake keep command diagnostics in its private
@@ -98,8 +116,12 @@ def screen_publication(root, base, head, *, merge_method='squash', headers=STAND
         files.append(dict(path=name, status=status))
     if not files:
         raise PublicationRejected('PR scope includes unsupported paths, deletions or renames')
-    if len(files) > max_files:
+    # The per-PR cap is on functions (as in the bot and CI); the file cap is only a resource guard,
+    # two files (.h and .cpp) per function.
+    if len(files) > (max_files or 2 * max_functions):
         raise PublicationRejected('PR file-count resource cap exceeded')
+    if new_claimed_functions(git, base, head, files) > max_functions:
+        raise PublicationRejected('PR function-count resource cap exceeded')
     commits = [head]
     if merge_method == 'merge':
         commits = git('rev-list', '--reverse', f'{base}..{head}').decode().splitlines()

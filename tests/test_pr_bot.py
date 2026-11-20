@@ -1809,6 +1809,11 @@ class MappingLaneTests(unittest.TestCase):
         scripts = [Path(c[1]).name for c in calls if len(c) > 1 and c[1].startswith('tools/')]
         self.assertEqual(scripts[-2:], ['target_hash_offers.py', 'target_hashes.py'])
         self.assertIn('/img/game.exe', [c for c in calls if c[1:2] == ['tools/target_hashes.py']][0])
+        offers = [c for c in calls if c[1:2] == ['tools/target_hash_offers.py']][0]
+        self.assertEqual(offers[offers.index('--low-water') + 1], str(pr_bot.WINDOW_LOW_WATER))
+        self.assertEqual(offers[offers.index('--slice') + 1], str(pr_bot.WINDOW_SLICE))
+        self.assertEqual([offers[i + 1] for i, a in enumerate(offers) if a == '--reserved-dir'],
+                         [str(ROOT / d) for d in pr_bot.RESERVED_DIRS])
         self.assertLess(calls.index([c for c in calls if c[1:2] == ['tools/target_hashes.py']][0]),
                         calls.index(add))
         calls.clear()

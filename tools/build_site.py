@@ -165,7 +165,7 @@ def build(data, trends_file=None):
     (output / 'index.html').write_text(render(data, revision, costs, trends))
     (output / 'join.html').write_text(render_join(data, revision))
     leaderboard = build_leaderboard.standings(ROOT, data)
-    (output / 'leaderboard.html').write_text(build_leaderboard.html(leaderboard))
+    (output / 'leaderboard.html').write_text(build_leaderboard.html(leaderboard, build_leaderboard.window_counts(ROOT)))
     (output / 'style.css').write_text((ROOT / 'site/style.css').read_text())
     (output / 'model-trend.svg').write_text(build_model_trend.render(trends))
     (output / 'progress-trend.svg').write_text(build_model_trend.render_cumulative(trends))

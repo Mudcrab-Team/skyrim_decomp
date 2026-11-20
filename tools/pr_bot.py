@@ -28,6 +28,10 @@ A PR that conflicts with main is not reviewed. If the contributor allows maintai
 comment blocks in reconstruction/ conflict, the bot merges main into their branch (a pushed merge commit, never a
 rebase) with the union of the header lines, and the new head is processed on the next tick; any other conflict
 aborts that merge and goes to the sticky comment.
+Before compiling, the bot holds a PR whose changed unit headers break the compact-header budget and says which file, how
+many lines over and which lines count. A claimed RVA with no published target row gets its row published on demand
+(hashes only, `target_hash_offers.py --extra-rva`) and the head a fresh hash run; one that cannot be published is named
+in the sticky comment.
 Each PR gets at most one bot comment, marked with STICKY, which is edited in place on every new
 head or verdict and never posted again.
 """
@@ -49,6 +53,7 @@ import threading
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import header_check  # noqa: E402
 import mapping_check  # noqa: E402
 import rva_headers  # noqa: E402
 import repo_slug  # noqa: E402
@@ -103,7 +108,11 @@ GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/pro
 # Per-function hashes of the newly mapped functions: test_target_hashes fails on main until they exist, and only
 # this machine holds the image they are computed from.
 TARGET_HASH_DIR = 'data/target-hashes/'
-REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
+# Claimable functions left below which the next slice of the offered window is published, and its size.
+WINDOW_LOW_WATER = int(os.environ.get('SR_WINDOW_LOW_WATER') or 2000)
+WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
+# Private plan files of internal workers (twin propagation, stamp sweeps); their functions are not offered.
+RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
@@ -607,6 +616,26 @@ def sticky_body(sha, text, batch=False):
     return '\n'.join(lines)
 
 
+def dropped_claims_text(rvas):
+    """The sticky-comment lines for header claims that were not compared because no target row exists."""
+    listed = ', '.join(f'0x{r:x}' for r in rvas[:20]) + (f' and {len(rvas) - 20} more' if len(rvas) > 20 else '')
+    return ('Not compared: no target row is published for ' + listed + ', and none could be published (not a function '
+            'start of the pinned build, or not a function the project can compare). If one of these is a function you '
+            'reconstruct, check its address in the `// 0x<rva> <Name>` line; if it is a data address or another '
+            'function that a header comment mentions, no action is needed.')
+
+
+def header_rejection(problems, shown=10):
+    """The sticky comment for a PR that breaks the compact-header rule: each problem as header_check words it."""
+    lines = ['This PR was held before any compile because a unit header it adds or changes breaks the compact-header '
+             'rule (the CI `scope` check fails on the same rule). Please fix it and push; the bot re-checks the new '
+             'head.']
+    lines += [f'- {p}' for p in problems[:shown]]
+    if len(problems) > shown:
+        lines.append(f'- and {len(problems) - shown} more; run `python3 tools/header_check.py` locally')
+    return '\n'.join(lines)
+
+
 def comment_body(sha, decision, leak_codes=()):
     """The outcome text, with the accepted functions the PR removes added to any outcome that is not a hold."""
     text = outcome_body(sha, decision, leak_codes)
@@ -1098,6 +1127,16 @@ class Bot:
             raise Stop('leakgrep did not complete')
         return result.returncode == 1
 
+    def header_problems(self, base, head):
+        """The compact-header problems of the units the PR adds or changes (tools/header_check.py).
+
+        Best effort: a range git cannot read here yields none, and the CI `scope` job still holds the rule.
+        """
+        try:
+            return header_check.check(self.root, base, head)
+        except subprocess.CalledProcessError:
+            return []
+
     def history_problem(self, base, head):
         """Why the PR's own commits may not enter main, or None. A merge publishes every one of them."""
         out = self.run(['git', 'rev-list', '--reverse', '--parents', f'{base}..{head}'], cwd=self.root).stdout.decode()
@@ -1539,11 +1578,15 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         deadline = time.time() + self.config['hash_wait']
+        since = state.get('rows_at') if state is not None else None  # rows published after the head's earlier runs began
         probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
         unusable = set()  # runs that finished without a result, e.g. on a stale base lacking the tools
         target = self.work / 'hash' / f'{number}-{head[:12]}'
         while True:
             run = self.latest_hash_run(head, unusable)
+            while run and since and (run.get('started_at') or '') < since:
+                unusable.add(run.get('id', run.get('details_url')))
+                run = self.latest_hash_run(head, unusable)
             if run and run['status'] == 'completed':
                 run_id = re.search(r'/runs/(\d+)', run.get('details_url', ''))
                 if not run_id:
@@ -1567,6 +1610,8 @@ class Bot:
                 self.approve_pending(head)
                 if probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    if since:
+                        self.drop_probe(number)  # a probe branch left at this commit would not run again
                     self.probe_hash_run(number, head)
             if time.time() > deadline:
                 raise Stop('hash check has not finished')
@@ -1828,7 +1873,9 @@ class Bot:
         tip = pinned or self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
         self.prepare_tree(tip or base)
         self.overlay(head, files)
+        self.ensure_rows(number, head, files, state)
         units = state.once('units', lambda: self.units(files))
+        state.once('dropped_claims', lambda: self.dropped_claims(files))
         functions = sorted({r for rs in units.values() for r in rs})
         if not functions:
             raise Rejected('functions', 'No function headers were found in the changed units, so there is nothing '
@@ -1838,6 +1885,11 @@ class Bot:
             raise Rejected('functions', f'This PR adds {new} functions, over the limit of '
                            f'{self.config["max_functions"]} per PR. Please split it into smaller PRs '
                            f'and push (or open new PRs); the bot checks again on the next push.')
+        # The CI `scope` job holds the same rule; saying it here puts the file, the overage and the counted
+        # lines in the sticky comment before a compile is spent.
+        header_problems = state.once('header', lambda: self.header_problems(base, head))
+        if header_problems:
+            raise Rejected('header', header_rejection(header_problems))
         state.once('batch', lambda: wants_batching(functions, self.header_sizes(units)))
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
         # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
@@ -2120,24 +2172,45 @@ class Bot:
         data = contrib.inventory(self.tree)
         return sum(1 for c in contrib.candidates(self.tree, data, published=True) if c['startable'])
 
-    def refill_offers(self, threshold=REFILL_BELOW):
-        """Top the offered window back up when fewer than `threshold` functions are left to claim.
+    def refill_offers(self, threshold=None):
+        """Publish the next slice of the offered window when fewer than `threshold` functions are left to claim.
 
-        Regenerating recomputes the window from the private function table, smallest first and classes with
-        layouts first, so recorded functions leave it and new ones enter. Returns the count that was seen.
+        The threshold defaults to the low-water mark. Regenerating keeps every offered function that is not
+        yet recorded and adds a slice of new ones, so claimed functions never leave the list. Returns the
+        count that was seen.
         """
+        threshold = WINDOW_LOW_WATER if threshold is None else threshold
         with self.land_lock:  # the push to main takes its turn with merges and records
             left = self.offered_open()
             if left < threshold:
                 self.regenerate(None)
         return left
 
-    def regenerate(self, number):
+    def window_metrics(self, left, now=None):
+        """Claimable left, claimed, and the contributors' burn per day, as one log suffix; '' when unknown.
+
+        `claimed` is the function count under open claims at the last publication. Burn counts reports of
+        claim-time entries (functions a contributor took from the window) added to main in the last 24 hours,
+        and the 7-day average, from the tree's git history.
+        """
+        now = time.time() if now is None else now
+        try:
+            claimed = json.loads((self.tree / 'data/target-hashes/contributor-targets.json').read_text())['claim_function_count']
+            inventory = json.loads((self.tree / 'data/progress.json').read_text())
+            reports = {fn['report'] for fn in inventory['functions'] if fn.get('owner') == 'claim-time' and fn.get('report')}
+            added = self.run(['git', 'log', 'origin/main', '--since=7 days ago', '--diff-filter=A', '--name-only',
+                              '--format=%ct', '--', 'reports'], cwd=self.tree).stdout.decode().split('\n')
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, AttributeError):
+            return ''
+        return window_line(left, claimed, burn_per_day(added, reports, now))
+    def regenerate(self, number, extra=()):
         """Rebuild the generated index and pictures on main after a mapping merge; push only those files.
 
         A mapping PR omits them (the check refuses a stale copy, and the PR's author cannot run the
         generators against the merged tree), so the bot commits them right after the squash. The target-hash
         manifest is refreshed from the local image in the same commit, so a mapping merge never leaves main red.
+        `extra` are RVAs an open PR claims that have no row: target_hash_offers publishes the ones that are real
+        function starts of the private table, hashes only, in the same commit.
         """
         image = os.environ.get('SR_TARGET_IMAGE')
         table = os.environ.get('SR_FUNCTION_TABLE') or str(self.root / '.local/analysis/functions.jsonl')
@@ -2150,8 +2223,16 @@ class Bot:
             for script in ('build_index.py', 'build_progress_svg.py'):
                 self.run([sys.executable, f'tools/{script}'], cwd=self.tree, timeout=1800)
             # Offers first: the manifest binds the offered inventory's digest.
-            self.run([sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table],
-                     cwd=self.tree, timeout=1800)
+            offers = [sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table,
+                      '--low-water', str(WINDOW_LOW_WATER), '--slice', str(WINDOW_SLICE)]
+            for directory in RESERVED_DIRS:
+                offers += ['--reserved-dir', str(self.root / directory)]
+            for rva in extra:
+                offers += ['--extra-rva', hex(rva)]
+            summary = self.run(offers, cwd=self.tree, timeout=1800).stdout
+            note = offer_summary(summary)
+            if note:
+                print(f'{stamp()} {note}', flush=True)
             self.run([sys.executable, 'tools/target_hashes.py', '--image', image], cwd=self.tree, timeout=1800)
             # A new shard is untracked; leaving it out committed a manifest that named a missing file.
             names = self.run(['git', 'status', '--porcelain', '--untracked-files=all'],
@@ -2164,7 +2245,7 @@ class Bot:
                 return
             self.run(['git', 'add', '--', *sorted(changed)], cwd=self.tree)
             why = (f'Regenerate the index and pictures after mapping PR #{number}' if number else
-                   'Refill the offered target window')
+                   'Publish target rows for the claims of open PRs' if extra else 'Refill the offered target window')
             self.run(['git', 'commit', '--quiet', '-m', why], cwd=self.tree)
             if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
                 return
@@ -2261,7 +2342,8 @@ class Bot:
             found.update(row['rva'] for row in json.loads(shard.read_text())['functions'])
         return found
 
-    def units(self, files):
+    def unit_claims(self, files):
+        """{unit .cpp: {rva}} the changed units' headers claim, before any is checked against the target rows."""
         units = {}
         for item in files:
             if item.get('status') == 'removed':
@@ -2271,16 +2353,77 @@ class Bot:
                 continue
             texts = [(self.tree / (cpp[:-4] + s)).read_text() for s in ('.h', '.cpp') if (self.tree / (cpp[:-4] + s)).is_file()]
             units.setdefault(cpp, set()).update(functions_of(texts))
+        return units
+
+    def units(self, files):
+        units = self.unit_claims(files)
         targets = self.target_rvas()
+        dropped = []
         if targets:
-            # A header may name a data address (`RVA 0x...` in a provenance line); the hash job reports
-            # those as no-target and the verifier cannot build a task row for them.
+            # A header may name a data address or a typo; the hash job reports those as no-target and the
+            # verifier cannot build a task row for them. They are said in the sticky comment, never silently dropped.
+            dropped = sorted({r for rs in units.values() for r in rs} - targets)
             units = {u: {r for r in rs if r in targets} for u, rs in units.items()}
         if not units or any(not rs for rs in units.values()):
-            raise Rejected('rva-headers', 'A changed unit has a function whose `// RVA 0x...` header names no '
+            raise Rejected('rva-headers', 'A changed unit has a function whose `// 0x<rva> <Name>` header names no '
                            'function in the pinned target (a data address, a typo, or no header at all). '
-                           'Fix or remove that header and push; the bot checks again on the next push.')
+                           'Fix or remove that header and push; the bot checks again on the next push.'
+                           + (('\n' + dropped_claims_text(dropped)) if dropped else ''))
         return {u: sorted(rs) for u, rs in units.items()}
+
+    def dropped_claims(self, files):
+        """Claimed RVAs that have no target row and so are not compared; [] when the shards are absent."""
+        targets = self.target_rvas()
+        if not targets:
+            return []
+        return sorted({r for rs in self.unit_claims(files).values() for r in rs} - targets)
+
+    def ensure_rows(self, number, head, files, state):
+        """Publish the target rows this PR's claims lack, then give the head a hash run that sees them.
+
+        A claim names a function the PR defines; without a published row nothing can be compared, and the
+        contributor would wait for the next window refill. An RVA that is a real function start of the private
+        table gets its row now (hashes only, as in the window). The hash job reads the rows from the base it
+        runs against, so the head's earlier run is set aside (`rows_at`) and host1 asks for a new one. Whatever
+        cannot be published stays out and is named in the sticky comment.
+        """
+        if self.dry_run:
+            return
+        targets = self.target_rvas()
+        missing = sorted({r for rs in self.unit_claims(files).values() for r in rs} - targets) if targets else []
+        if not missing:
+            return
+
+        def publish():
+            import claimable
+            import target_hash_offers
+            before = len(missing)
+            table = claimable.load_table(os.environ.get('SR_FUNCTION_TABLE') or self.root / '.local/analysis/functions.jsonl')
+            if table is None:
+                print(f'{stamp()} pr {number}: no function table here, so no rows are published', file=sys.stderr, flush=True)
+                return dict(published=[], asked=before)
+            known = {f['rva'] for f in json.loads((self.tree / 'data/progress.json').read_text())['functions']}
+            wanted, _refused = target_hash_offers.select_on_demand(table, known, missing)
+            if not wanted:
+                return dict(published=[], asked=before)
+            with self.land_lock:
+                self.regenerate(None, extra=wanted)
+                got = sorted(set(missing) & self.target_rvas())
+            if not got:
+                return dict(published=[], asked=before)
+            with self.root_lock:
+                self.run(['git', 'fetch', '--quiet', 'origin', 'main'])
+                tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
+            self.prepare_tree(tip)
+            self.overlay(head, files)
+            return dict(published=got, asked=before, rows_at=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()))
+
+        result = state.once('rows', publish)
+        if result.get('published'):
+            state.set('rows_at', result['rows_at'])
+            print(f'{stamp()} pr {number}: published target rows for '
+                  f'{", ".join(hex(r) for r in result["published"])}', flush=True)
+
 
     def finish(self, pr, state, decision, started, comment=None, leak_codes=(), land=None):
         number, head = pr['number'], pr['headRefOid']
@@ -2326,6 +2469,10 @@ class Bot:
                           or any(v.startswith('fail:') for v in verdicts.values()))
             text = comment or comment_body(head, dict(decision, verdicts={int(r): v for r, v in verdicts.items()}),
                                            leak_codes)
+            dropped = state.get('dropped_claims')
+            if dropped:
+                text = dropped_claims_text(dropped) if text == 'Nothing to report.' else f'{text}\n{dropped_claims_text(dropped)}'
+                create = True
             self.say(number, sticky_body(head, text, state.get('batch')), create=create)
             state.set('commented', True)
         self.drop_probe(number)
@@ -2598,6 +2745,33 @@ def work_one(slots, gh, pr):
         slots.put(slot)
 
 
+def offer_summary(output):
+    """One log line from target_hash_offers' JSON summary, or '' when it is not readable."""
+    try:
+        window = json.loads(output.decode().strip().splitlines()[-1])['window']
+        return (f"offer slice: {window['added']} added ({window['left_before']} claimable before, low-water "
+                f"{window['low_water']}, slice {window['slice']}, {window['reserved']} reserved by internal workers)")
+    except (ValueError, KeyError, IndexError, AttributeError, UnicodeDecodeError):
+        return ''
+
+
+def burn_per_day(log_lines, reports, now):
+    """(last 24 h, 7-day average per day) of claim-time report files in `git log --format=%ct --name-only` lines."""
+    stamps, when = [], None
+    for line in log_lines:
+        if line.isdigit():
+            when = int(line)
+        elif line in reports and when is not None:
+            stamps.append(when)
+    return sum(now - t <= 86400 for t in stamps), round(sum(now - t <= 7 * 86400 for t in stamps) / 7, 1)
+
+
+def window_line(left, claimed, burn):
+    day, week = burn
+    runway = f', about {left / week:.1f} days of runway at the 7-day rate' if week else ''
+    return f'{left} claimable left, {claimed} claimed, burn {day}/day (24h), {week:g}/day (7d avg){runway}'
+
+
 def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
          refill_every=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
@@ -2637,8 +2811,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
                 refilled = time.time()  # a failure waits for the next window, not the next tick
                 try:
-                    left = bot.for_slot(0).refill_offers()
-                    print(f'{stamp()} offered window: {left} claimable left', flush=True)
+                    slot = bot.for_slot(0)
+                    left = slot.refill_offers()
+                    metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
+                    print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             if not bot.dry_run and not inflight and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
