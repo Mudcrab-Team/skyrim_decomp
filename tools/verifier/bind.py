@@ -538,9 +538,54 @@ def decoration_traits(name, text=None):
     return traits
 
 
+FIXED_WIDTH = {'int8_t': 'signedchar', 'uint8_t': 'unsignedchar', 'int16_t': 'short', 'uint16_t': 'unsignedshort',
+               'int32_t': 'int', 'uint32_t': 'unsignedint', 'int64_t': '__int64', 'uint64_t': 'unsigned__int64'}
+
+
+def split_params(text):
+    """Top-level comma-separated parts of a parameter list (commas inside <> or () stay)."""
+    parts, depth, start = [], 0, 0
+    for i, ch in enumerate(text):
+        if ch in '<(':
+            depth += 1
+        elif ch in '>)':
+            depth -= 1
+        elif ch == ',' and depth == 0:
+            parts.append(text[start:i])
+            start = i + 1
+    parts.append(text[start:])
+    return parts
+
+
+def east_const(param):
+    """One parameter with leading cv-qualifiers moved behind the base type, as the demangler prints them.
+
+    A source line says `const T&`; the demangled symbol says `T const &`. Both must compare equal.
+    """
+    m = re.match(r'((?:(?:const|volatile)\s+)+)(.*)$', param.strip(), re.S)
+    if not m:
+        return param
+    quals, rest = ' '.join(sorted(m.group(1).split())), m.group(2)
+    depth = 0
+    for i, ch in enumerate(rest):
+        if ch == '<':
+            depth += 1
+        elif ch == '>':
+            depth -= 1
+        elif ch in '*&' and depth == 0:
+            return f'{rest[:i].strip()} {quals} {rest[i:]}'
+    return f'{rest.strip()} {quals}'
+
+
 def normalize_params(text):
-    """Comparable parameter list: elaborated-type keywords, `__ptr64`, spaces and `void` removed."""
+    """Comparable parameter list: elaborated-type keywords, `__ptr64`, spaces and `void` removed.
+
+    Fixed-width integer names read as the builtin the demangler prints, and a leading `const` reads
+    as the trailing form, so a source-style line equals the decorated symbol's own parameters.
+    """
     text = re.sub(r'\b(class|struct|union|enum|__ptr64|RE::)\b|\bRE::', '', text or '')
+    text = re.sub(r'\b(?:std::)?(u?int(?:8|16|32|64)_t)\b', lambda m: ' ' + FIXED_WIDTH[m.group(1)] + ' ', text)
+    text = ','.join(east_const(p) for p in split_params(text))
     text = re.sub(r'\s+', '', text)
     return '' if text == 'void' else text
 

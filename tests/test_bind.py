@@ -359,6 +359,26 @@ COLL = '?GetCollisionObject@NiAVObject@@QEAAPEAVbhkCollisionObject@@XZ'
 COLL_CONST = '?GetCollisionObject@NiAVObject@@QEBAPEAVbhkCollisionObject@@XZ'
 
 
+class NormalizeParamsTests(unittest.TestCase):
+    def test_source_style_equals_demangled_style(self):
+        pairs = [
+            ('NiBSplineData*, std::uint32_t, NiBSplineBasisData*',
+             'class NiBSplineData *, unsigned int, class NiBSplineBasisData *'),
+            ('const NiColorA&', 'class NiColorA const &'),
+            ('const char*, std::int64_t', 'char const *, __int64'),
+            ('volatile const T*, uint8_t', 'T const volatile *, unsigned char'),
+            ('const std::pair<int, char const*>&', 'std::pair<int, char const *> const &'),
+            ('void', ''),
+        ]
+        for source, demangled in pairs:
+            with self.subTest(source=source):
+                self.assertEqual(bind.normalize_params(source), bind.normalize_params(demangled))
+
+    def test_distinct_signatures_stay_distinct(self):
+        self.assertNotEqual(bind.normalize_params('const NiColorA&'), bind.normalize_params('NiColorA&'))
+        self.assertNotEqual(bind.normalize_params('std::uint32_t'), bind.normalize_params('std::uint64_t'))
+
+
 class OverloadAndOrderTests(unittest.TestCase):
     """Name-to-definition rules for C++ forms that share or rename a community name (no demangler)."""
 

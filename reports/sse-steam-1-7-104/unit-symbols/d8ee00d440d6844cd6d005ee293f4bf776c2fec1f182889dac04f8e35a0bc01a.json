@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__imp_strcpy_s": {
+      "rva": 24941040,
+      "size": null
+    },
+    "?SaveLinkID@NiStream@@UEAAXPEBVNiObject@@@Z": {
+      "rva": 1698096,
+      "size": 73
+    },
+    "?Load3@NiStream@@UEAA_NPEBD@Z": {
+      "rva": 15615008,
+      "size": 54
+    },
+    "?ClearLoadContext@NiStream@@QEAAXXZ": {
+      "rva": 15615696,
+      "size": 52
+    },
+    "?GetLinkIDFromObject@NiStream@@UEAAIPEBVNiObject@@@Z": {
+      "rva": 15618144,
+      "size": 136
+    },
+    "?RegisterObjects@NiStream@@UEAAXXZ": {
+      "rva": 15624640,
+      "size": 76
+    },
+    "?SaveTopLevelObjects@NiStream@@UEAAXXZ": {
+      "rva": 15625152,
+      "size": 120
+    },
+    "?PreSaveObjectSizeTable@NiStream@@UEAAIXZ": {
+      "rva": 15625792,
+      "size": 121
+    },
+    "?ReadIntegers@NiStream@@QEAAXPEAII@Z": {
+      "rva": 15805040,
+      "size": 57
+    },
+    "?WriteIntegers@NiStream@@QEAAXPEBII@Z": {
+      "rva": 15805104,
+      "size": 57
+    },
+    "?LoadFromInputPath@NiStream@@QEAA_NXZ": {
+      "rva": 15631136,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__imp_strcpy_s",
+        "rva": "0x17c91f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveLinkID@NiStream@@UEAAXPEBVNiObject@@@Z",
+        "rva": "0x19e930",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Load3@NiStream@@UEAA_NPEBD@Z",
+        "rva": "0xee4420",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ClearLoadContext@NiStream@@QEAAXXZ",
+        "rva": "0xee46d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetLinkIDFromObject@NiStream@@UEAAIPEBVNiObject@@@Z",
+        "rva": "0xee5060",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterObjects@NiStream@@UEAAXXZ",
+        "rva": "0xee69c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveTopLevelObjects@NiStream@@UEAAXXZ",
+        "rva": "0xee6bc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?PreSaveObjectSizeTable@NiStream@@UEAAIXZ",
+        "rva": "0xee6e40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadIntegers@NiStream@@QEAAXPEAII@Z",
+        "rva": "0xf12a70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?WriteIntegers@NiStream@@QEAAXPEBII@Z",
+        "rva": "0xf12ab0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadFromInputPath@NiStream@@QEAA_NXZ",
+        "rva": "0xee8320",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

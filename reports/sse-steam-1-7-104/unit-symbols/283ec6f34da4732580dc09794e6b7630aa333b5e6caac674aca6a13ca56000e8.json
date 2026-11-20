@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RegisterStreamables@NiTimeController@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 15695856,
+      "size": 70
+    },
+    "?Start@NiTimeController@@UEAAXM@Z": {
+      "rva": 15696672,
+      "size": 24
+    },
+    "?Stop@NiTimeController@@UEAAXXZ": {
+      "rva": 15696704,
+      "size": 30
+    },
+    "?CountChain@NiTimeController@@SAIPEBV1@@Z": {
+      "rva": 15697568,
+      "size": 28
+    },
+    "?RegisterStreamables@NiObject@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 15583152,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RegisterStreamables@NiTimeController@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xef7ff0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Start@NiTimeController@@UEAAXM@Z",
+        "rva": "0xef8320",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Stop@NiTimeController@@UEAAXXZ",
+        "rva": "0xef8340",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CountChain@NiTimeController@@SAIPEBV1@@Z",
+        "rva": "0xef86a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterStreamables@NiObject@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xedc7b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

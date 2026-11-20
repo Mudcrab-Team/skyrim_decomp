@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@NiBSplineTransformInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16233248,
+      "size": 82
+    },
+    "?GetChannelComponentCount@NiBSplineTransformInterpolator@@QEBAIG@Z": {
+      "rva": 16235552,
+      "size": 38
+    },
+    "?GetChannelDegree@NiBSplineTransformInterpolator@@QEBAIG@Z": {
+      "rva": 16235600,
+      "size": 26
+    },
+    "?GetChannelHandle@NiBSplineTransformInterpolator@@QEBAIG@Z": {
+      "rva": 16235776,
+      "size": 39
+    },
+    "?SetChannelHandle@NiBSplineTransformInterpolator@@QEAAXIG@Z": {
+      "rva": 16235824,
+      "size": 33
+    },
+    "??_GNiBSplineTransformInterpolator@@UEAAPEAXI@Z": {
+      "rva": 16236128,
+      "size": 52
+    },
+    "?CopyMembers@NiBSplineInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z": {
+      "rva": 16348240,
+      "size": null
+    },
+    "??1NiBSplineInterpolator@@UEAA@XZ": {
+      "rva": 16349136,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@NiBSplineTransformInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xf7b320",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetChannelComponentCount@NiBSplineTransformInterpolator@@QEBAIG@Z",
+        "rva": "0xf7bc20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetChannelDegree@NiBSplineTransformInterpolator@@QEBAIG@Z",
+        "rva": "0xf7bc50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetChannelHandle@NiBSplineTransformInterpolator@@QEBAIG@Z",
+        "rva": "0xf7bd00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetChannelHandle@NiBSplineTransformInterpolator@@QEAAXIG@Z",
+        "rva": "0xf7bd30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GNiBSplineTransformInterpolator@@UEAAPEAXI@Z",
+        "rva": "0xf7be60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiBSplineInterpolator@@QEAAXPEAV1@AEAVNiCloningProcess@@@Z",
+        "rva": "0xf97450",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiBSplineInterpolator@@UEAA@XZ",
+        "rva": "0xf977d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -3,7 +3,8 @@
 // Origin: independently reconstructed from target observations and public declarations.
 // TESObjectREFR::data and TESForm fields: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); included header.
 // names: GUESS(low); names and signatures are tentative.
-// ConditionFunctions, ConditionFunctions::GetRelationshipRank: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions::GetRelationshipRank: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x33b740 Condition::GetRelationshipRank
 #include "ConditionFunctions_33b740.h"
 #include "../actors/Actor_686600.h"

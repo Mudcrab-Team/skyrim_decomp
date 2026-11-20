@@ -42,7 +42,7 @@ the repository on GitHub). When you show output publicly, add `--redact`.
 entry in `data/progress.json` (`next` prints the counts and prefers small functions of classes that already have a
 layout). The bot adds the inventory entry (a `Function<rva>` GUESS name) when it records the match; you never edit `data/progress.json`.
 
-The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
+By submitting, a contributor dedicates their contribution under CC0 1.0, or under the file's stated exception licence (`LICENSE`). The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
 

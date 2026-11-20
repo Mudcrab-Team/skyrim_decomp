@@ -7,7 +7,8 @@
 // ConditionFunctions::GetIsID: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); body structure (clear result, bound-object test, one-entry reference cache with extra-data fallback, comparison, logging); another game's reconstruction, no evidence about this build
 // cachedReference, cachedBase, GetExtraBase, LogCondition, conditionLogger, conditionLoggingEnabled: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); roles only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// ConditionFunctions, ConditionFunctions::GetIsID: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions: GUESS(low); the static source container and original signature are unverified.
+// ConditionFunctions::GetIsID: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x333dd0 Condition::GetIsID
 #include "ConditionFunctions_333dd0.h"
 #include "../forms/TESForm_333dd0.h"

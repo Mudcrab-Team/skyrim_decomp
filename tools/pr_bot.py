@@ -59,6 +59,13 @@ SCOPE_PREFIX = 'reconstruction/'
 HASH_CHECKS = ('hash', 'pr-check / hash')
 MAPPING_CHECKS = ('mapping', 'pr-check / mapping')
 REVIEW_MODEL = 'gpt-6.1-terra'
+# Fallback reviewer when codex fails for an account or capacity reason; read-only tools only.
+CLAUDE_BIN = shutil.which('claude') or str(Path.home() / '.local/bin/claude')
+CLAUDE_REVIEW_MODEL = 'sonnet'
+CODEX_PAUSE = 1800  # seconds codex is skipped after an out-of-credits style failure
+ACCOUNT_FAILURE = re.compile(r'credit|quota|rate.?limit|usage limit|insufficient|billing|capacity|overloaded|'
+                             r'too many requests|\b429\b|unauthorized|\b401\b|log ?in|sign ?in|auth|token expired|'
+                             r'not authenticated', re.I)
 GROUNDS = ('plausibility', 'provenance', 'binding', 'claim', 'hygiene')
 # Fixed reason codes: a comment never carries compiler output, which can echo host paths.
 REASONS = {
@@ -95,6 +102,7 @@ TARGET_HASH_DIR = 'data/target-hashes/'
 REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
 RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
 
@@ -225,6 +233,32 @@ def scope_problem(files):
             if not name.startswith(SCOPE_PREFIX) or '..' in Path(name).parts:
                 return 'scope'
     return None
+
+
+def tooling_lane(files):
+    """True if the PR (GitHub API rows) changes files and none of them is under reconstruction/.
+
+    Such a PR is tooling, docs or data work, not a function PR. The bot never merges it; the
+    maintainer agent reviews it. A mixed PR is not tooling: it stays a scope problem.
+    """
+    if not files:
+        return False
+    for item in files:
+        for name in (item.get('filename'), item.get('previous_filename')):
+            if name is not None and (name.startswith(SCOPE_PREFIX) or '..' in Path(name).parts):
+                return False
+    return True
+
+
+TOOLING_LABEL = 'tooling'
+TOOLING_COMMENT = ('This is a tooling PR: it changes no file under reconstruction/, so it is not a function PR and '
+                   'the function pipeline does not apply to it. Nothing is wrong with it. The bot does not merge it; '
+                   'the maintainer agent reviews it and merges it if it is safe. Checks that only apply to '
+                   'function PRs (scope, hash) do not count against it. A PR that mixes tooling with '
+                   'reconstruction/ files has to be split in two.')
+SCOPE_COMMENT = ('This PR changes files outside reconstruction/ as well as inside it. A function PR may change only '
+                 'reconstruction/**, so please move the other files (tools, tests, docs, data) into a separate PR; '
+                 'a PR with no reconstruction/ files at all is reviewed as tooling.')
 
 
 def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=(), leak_evidence=(), stale=(),
@@ -411,6 +445,11 @@ def review_grounds(text, functions):
     return out
 
 
+# Host 1 cannot judge a function with no published target hash; for a unit that changed from base only in
+# comments the Mac compare of the new text stands in for it (docs/verification.md, comment-only changes).
+CARRY_REASON = 'host1: carried (comment-only, no-target at base)'
+CARRY_NOTE = ('Carried to new source: the unit differs from the text its runs compared only in comments, and the '
+              'function has no published target hash, so the runs are unchanged.')
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -699,6 +738,21 @@ def results_from_report(path):
     return {int(k, 16): v for k, v in value.items() if re.fullmatch(r'0[xX][0-9a-fA-F]+', str(k))}
 
 
+def row_facts(report):
+    """What every row of the hash artifact says about each function, whatever unit the row names.
+
+    `seen` lists the RVAs with any row; `no_target_base` those whose every row is a `no-target` at head
+    and was a `no-target` when the job compiled the same unit from the base tree too.
+    """
+    by_rva = {}
+    for row in report.get('functions') or []:
+        if isinstance(row, dict) and re.fullmatch(r'0[xX][0-9a-fA-F]+', str(row.get('rva'))):
+            by_rva.setdefault(int(row['rva'], 16), []).append(row)
+    return dict(seen=sorted(by_rva), no_target_base=sorted(
+        r for r, rows in by_rva.items()
+        if all(x.get('result') == 'no-target' and x.get('base') == 'no-target' for x in rows)))
+
+
 def ci_rows(report, unit_of):
     """{rva: row} from the artifact's own rows, keeping only the row for the unit that function is in."""
     rows = {}
@@ -759,6 +813,10 @@ class Bot:
         self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
                            **(config or {}))
         self.tree = self.work / 'tree'
+        self.clock = time.time
+        self.used = threading.local()  # the reviewer of this thread's latest review
+        self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
+        self.carry_targets = {}  # revision -> RVAs with a published target hash there, for the comment-only carry
         self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
@@ -803,8 +861,60 @@ class Bot:
             # A bare "git failed" hid which command broke; keep the last stderr line and the subcommand.
             lines = result.stderr.decode(errors='replace').strip().splitlines() if name == 'git' else []
             suffix = f' ({" ".join(str(a) for a in argv[1:3])}: {lines[-1][:200]})' if lines else ''
+            if name == 'codex':
+                # codex reports account problems (credits, login) as its last ERROR line; "codex failed" alone hid them.
+                errors = [l for l in result.stderr.decode(errors='replace').splitlines() if l.startswith('ERROR')]
+                suffix = f' ({errors[-1][:200]})' if errors else ''
             raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
+
+    def run_model(self, prompt, out):
+        """One review: codex first, the Claude Code CLI on Sonnet when codex fails for an account or capacity reason.
+
+        A review verdict or malformed output is never a failure here; only the invocation is judged."""
+        text, reviewer = None, 'codex'
+        if self.clock() >= self.codex_paused_until[0]:
+            try:
+                result = self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model',
+                                   REVIEW_MODEL, '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only',
+                                   '-c', 'approval_policy="never"', '--cd', self.tree, '--output-last-message', out,
+                                   '-'], cwd=self.tree, input=prompt.encode(), timeout=self.config['model_timeout'],
+                                  check=False)
+            except FileNotFoundError:
+                result, why = None, 'codex binary missing'
+            else:
+                errors = [l for l in result.stderr.decode(errors='replace').splitlines() if l.startswith('ERROR')]
+                why = errors[-1][:200] if errors else ''
+                if result.returncode == 0:
+                    text = Path(out).read_text()
+                elif not ACCOUNT_FAILURE.search(' '.join(errors)):
+                    raise Stop(f'codex failed ({why})' if why else 'codex failed')
+            if text is None:
+                self.codex_paused_until[0] = self.clock() + CODEX_PAUSE
+                print(f'{stamp()} codex unavailable ({why}); reviewing with claude-sonnet, '
+                      f'codex skipped for {CODEX_PAUSE // 60} min', file=sys.stderr, flush=True)
+        if text is None:
+            reviewer = 'claude-sonnet'
+            result = self.run([CLAUDE_BIN, '-p', '--model', CLAUDE_REVIEW_MODEL, '--tools', 'Read,Grep,Glob',
+                               '--permission-mode', 'dontAsk', '--no-session-persistence'], cwd=self.tree,
+                              input=prompt.encode(), timeout=self.config['model_timeout'], check=False)
+            if result.returncode:
+                tail = (result.stderr or result.stdout).decode(errors='replace').strip().splitlines()
+                raise Stop(f'claude failed ({tail[-1][:200] if tail else result.returncode})')
+            text = result.stdout.decode(errors='replace')
+            Path(out).write_text(text)
+        print(f'{stamp()} reviewer: {reviewer}', file=sys.stderr, flush=True)
+        self.used.reviewer = reviewer
+        return text
+
+    def reviewed(self, state, key, fn):
+        """state.once for a review text, also recording which reviewer produced it."""
+        if key not in state.data:
+            self.used.reviewer = None
+        text = state.once(key, fn)
+        if self.used.reviewer:
+            state.set('reviewer', self.used.reviewer)
+        return text
 
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
@@ -860,7 +970,8 @@ class Bot:
             # Only a tree that was checked out before has anything to undo; a fresh clone would
             # materialise the whole repository here for nothing.
             self.run(['git', 'reset', '--quiet', '--hard'], cwd=self.tree, check=False)
-            self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports'], cwd=self.tree, check=False)
+            # data/target-hashes: an untracked shard left by a failed regenerate commit blocks the detach checkout.
+            self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes'], cwd=self.tree, check=False)
         self.run(['git', 'checkout', '--quiet', '--detach', base], cwd=self.tree)
         shared, local = self.root / '.local', self.tree / '.local'
         local.mkdir(exist_ok=True)
@@ -970,11 +1081,14 @@ class Bot:
     def review_evidence(self, tag, functions, host1, host2, state):
         """What each host said about each function, with the Mac comparator report's path in the tree."""
         ci = state.get('ci') or {}
+        carried_map = {**(state.get('carried') or {}), **(state.get('carried-c') or {})}
         out = {}
         for rva in functions:
             reports = sorted(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{rva:x}/report.json'))
+            carried = str(rva) in carried_map
             out[rva] = dict(report=reports[-1] if reports else None, host1=host1.get(rva), host2=host2.get(rva),
-                            row=(ci.get('rows') or {}).get(str(rva)), run=ci.get('run'))
+                            row=None if carried else (ci.get('rows') or {}).get(str(rva)), run=ci.get('run'),
+                            carried=carried)
         return out
 
     def binding_facts(self, rva, cpp, digest, evidence):
@@ -1016,7 +1130,10 @@ class Bot:
             lines.append(f'  first-host (Mac, Wine) comparator report {rel}: ' +
                          '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in first.items()))
         row, run = evidence.get('row'), evidence.get('run')
-        if row:
+        if evidence.get('carried'):
+            lines.append(f'  second host (CI hash job): {CARRY_REASON}; the function has no published target hash, '
+                         'so the first host\'s compare of the new text is the only byte check of it')
+        elif row:
             word = {True: 'agrees', False: 'DIFFERS'}
             lines.append(f'  second-host run {run.get("run_id")} (CI hash job, which compares the published target hashes) on head {str(run.get("head_sha"))[:12]}: {row.get("status")}; '
                          f'its source digest {word[facts["second-host source digest equals the tu digest"]]}, '
@@ -1118,11 +1235,7 @@ class Bot:
                   f'UNTRUSTED DIFF DATA:\n{diff}')
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
         out.parent.mkdir(parents=True, exist_ok=True)
-        self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model', REVIEW_MODEL,
-                  '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only', '-c', 'approval_policy="never"',
-                  '--cd', self.tree, '--output-last-message', out, '-'], cwd=self.tree,
-                 input=prompt.encode(), timeout=self.config['model_timeout'])
-        return out.read_text()
+        return self.run_model(prompt, out)
 
     @staticmethod
     def companion_note(companions):
@@ -1212,6 +1325,87 @@ class Bot:
     def stale_accepted(self, units, files):
         """RVAs of every accepted function of a changed unit whose record the change outdates, named or not."""
         return sorted({r for rs in self.companions(units, files, []).values() for r in rs})
+
+    def targets_at(self, ref=None):
+        """RVAs with a usable published target hash at `ref` (a revision of the bot's clone), or in the tree when None."""
+        cached = self.carry_targets.get(ref) if ref else None
+        if cached is not None:
+            return cached
+
+        def read(name):
+            if ref is None:
+                return (self.tree / name).read_text()
+            shown = self.run(['git', 'show', f'{ref}:{name}'], check=False)
+            if shown.returncode:
+                raise Stop('the published target hashes could not be read')
+            return shown.stdout.decode()
+        manifest = json.loads(read('data/target-hashes/sse-steam-1-7-104.json'))
+        found = set()
+        for shard in manifest['shards']:
+            for row in json.loads(read(shard['path']))['functions']:
+                if row.get('extraction') != 'unmasked-unsupported':
+                    found.add(row['rva'])
+        if ref:
+            self.carry_targets[ref] = found  # a revision never changes; the tree's manifest can
+        return found
+
+    def carry_host1(self, base, files, functions, units, host1, host2, state):
+        """{str(rva): reason} for functions whose host 1 is carried from the Mac compare of the new text.
+
+        The narrow exception to the two-host rule for comment-only changes. Host 1 counts as a pass only if
+        (a) the function was `no-target` at the PR's base too: the hash job's own compile of the base tree
+        gave `no-target` for it, or the job made no row for it and no published target existed at base or
+        exists now; (b) every file of its unit that the PR changes equals its base version once all comments
+        are removed, so the code is unchanged; (c) host 2 passes on the new text. A function with no accepted
+        record has nothing to carry and never qualifies.
+        """
+        from source_digest import include_closure
+        from digest_v2 import same_code
+        ci = state.get('ci') or {}
+        if not ci or (ci.get('report') or {}).get('error'):
+            return {}
+        no_target, seen = set(ci.get('no_target_base') or ()), set(ci.get('seen') or ())
+        status = ci.get('map') or {}
+        candidates = [r for r in functions if host1.get(r) != 'pass' and host2.get(r) == 'pass'
+                      and (r in no_target or (r not in seen and status.get(str(r)) is None))]
+        if not candidates:
+            return {}
+        published = None
+        inventory = json.loads((self.tree / 'data/progress.json').read_text())
+        accepted = {fn['rva'] for fn in inventory['functions'] if fn['status'] == 'matched' and fn.get('report')}
+        changed = {f['filename'] for f in files}
+        unit_of = {r: u for u, rs in units.items() for r in rs}
+        out = {}
+        for rva in candidates:
+            unit = unit_of.get(rva)
+            if unit is None or rva not in accepted:
+                continue
+            if rva not in no_target:
+                published = self.targets_at(base) | self.targets_at() if published is None else published
+                if rva in published:
+                    continue
+            same = True
+            for name in sorted(set(include_closure(self.tree, unit)) & changed):
+                old = self.run(['git', 'show', f'{base}:{name}'], check=False)
+                same = same and old.returncode == 0 and same_code(old.stdout, (self.tree / name).read_bytes(), name)
+            if same:
+                out[str(rva)] = CARRY_REASON
+                print(f'{stamp()} 0x{rva:x}: {CARRY_REASON}', file=sys.stderr, flush=True)
+        return out
+
+    def carried_records(self, tag, rvas, build_id):
+        """Records for carried functions, from the accepted record of each; {rva} that could not be carried."""
+        out, failed = self.work / 'records' / tag, set()
+        for rva in sorted(rvas):
+            made = out / build_id / f'0x{rva:x}.json'
+            made.unlink(missing_ok=True)
+            call = ("import sys\nsys.path.insert(0, sys.argv[1] + '/tools')\nimport record\n"
+                    "record.build_carried_record(sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])\n")
+            done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, CARRY_NOTE], cwd=self.tree,
+                            check=False, timeout=self.config['compare_timeout'])
+            if done.returncode or not made.is_file():
+                failed.add(rva)
+        return out, failed
 
     def mac_compare(self, units, tag):
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
@@ -1321,7 +1515,8 @@ class Bot:
                 report={k: report.get(k) for k in ('head_sha', 'base_sha', 'toolset', 'compiler_pins_sha256', 'error')
                         if report.get(k) is not None},
                 rows={str(r): row for r, row in ci_rows(report, unit_of).items()},
-                map={str(r): v for r, v in table.items()}))
+                map={str(r): v for r, v in table.items()},
+                **row_facts(report)))
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
@@ -1401,6 +1596,26 @@ class Bot:
         for r in runs.get('workflow_runs', []):
             self.run(['gh', 'api', '-X', 'POST', f'repos/{REPOSITORY}/actions/runs/{r["id"]}/approve'], check=False)
 
+    def bind_unit_map(self, task, info, wanted):
+        """The task's info with its unit symbol map on disk, binding it again when the map is gone; None if bind fails."""
+        symbols = str(info.get('symbols', ''))
+        # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
+        if symbols.startswith('reports/') and (self.tree / symbols).is_file():
+            return info
+        # The record must point at a public symbol map; bind freezes this unit's names into an
+        # immutable one without touching the shared map.
+        (task / 'bind-list.txt').write_text(f'{task}\n')
+        # bind fails the whole task for any unbound function, and a debt function of the unit that the
+        # PR does not accept is often one; bind only what is being recorded, then restore the full list.
+        full = info['functions']
+        narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
+        (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
+        bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
+                          '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+        info = json.loads((task / 'task.json').read_text())
+        (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
+        return None if bound.returncode else dict(info, functions=full)
+
     def build_records(self, tag, units, rvas, state):
         """Match records for the accepted functions: the Mac's fresh comparator output plus the CI map.
 
@@ -1411,30 +1626,17 @@ class Bot:
         if not ci:
             raise Stop('no hash run evidence to build records from')
         out, failed, built = self.work / 'records' / tag, set(), set()
+        # A carried function has no hash row to build a record from; its own accepted record moves to the new text.
+        carried = {int(r) for r in {**(state.get('carried') or {}), **(state.get('carried-c') or {})}} & set(rvas)
         for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{tag.split("/")[0]}-*')):
             info = json.loads((task / 'task.json').read_text())
-            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
+            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas) - carried
             if not wanted:
                 continue
-            symbols = str(info.get('symbols', ''))
-            # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
-            if not symbols.startswith('reports/') or not (self.tree / symbols).is_file():
-                # The record must point at a public symbol map; bind freezes this unit's names into an
-                # immutable one without touching the shared map.
-                (task / 'bind-list.txt').write_text(f'{task}\n')
-                # bind fails the whole task for any unbound function, and a debt function of the unit that the
-                # PR does not accept is often one; bind only what is being recorded, then restore the full list.
-                full = info['functions']
-                narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
-                (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
-                bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
-                                  '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
-                info = json.loads((task / 'task.json').read_text())
-                (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
-                if bound.returncode:
-                    failed |= wanted
-                    continue
-                info = dict(info, functions=full)
+            info = self.bind_unit_map(task, info, wanted)
+            if info is None:
+                failed |= wanted
+                continue
             for fn in info['functions']:
                 rva = int(str(fn['rva']), 0)
                 if rva not in wanted:
@@ -1461,6 +1663,11 @@ class Bot:
                     failed.add(rva)  # the validator refused it: the function stays drafted
         # A function with no task directory in the tree was never confirmed at all; leaving it out of `failed`
         # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
+        if carried:
+            target = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+            _, unmade = self.carried_records(tag, carried, target)
+            built |= carried - unmade
+            failed |= unmade
         failed |= set(rvas) - built - failed
         return out, failed
 
@@ -1528,11 +1735,12 @@ class Bot:
             return self.process_mapping(pr, state, files, started)
         # No changed files means the PR's tree equals main's (all of it landed elsewhere): the landed path below
         # marks it merged with credit instead of calling it out of scope.
+        if tooling_lane(files):
+            return self.process_tooling(pr, state, started)
         if scope_problem(files) not in (None, 'empty'):
             decision = dict(blocked='scope', merge=False, verdicts={})
             state.set('decision', decision)
-            return self.finish(pr, state, decision, started, comment='This PR changes files outside reconstruction/, '
-                               'which the bot never merges. Please limit it to unit sources.')
+            return self.finish(pr, state, decision, started, comment=SCOPE_COMMENT)
         with self.root_lock:
             self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
             if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
@@ -1601,6 +1809,9 @@ class Bot:
             host2 = {int(k): v for k, v in f_mac.result().items()}
             host1 = {int(k): v for k, v in f_ci.result().items()}
         host1 = self.settle_ci_debt(host1)
+        carried = state.once('carried' + sfx, lambda: self.carry_host1(base, files, everything, check_units, host1,
+                                                                        host2, state))
+        host1 = {r: ('pass' if str(r) in carried else v) for r, v in host1.items()}
         host2 = self.classify_debt(host2, host1, base, check_units, state)
         self.overlay(head, files)
         # Only what both hosts passed can be accepted, so only that is worth a review call; a
@@ -1616,7 +1827,7 @@ class Bot:
         leak, verdict, notes, evidence_kinds, grounds = 'no', {}, {}, [], {}
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
-            text = state.once('review_text' + sfx, lambda: self.review(
+            text = self.reviewed(state, 'review_text' + sfx, lambda: self.review(
                 number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra))
             leak, verdict = parse_review(text, passed)
             notes = review_notes(text, passed)
@@ -1634,6 +1845,7 @@ class Bot:
         removed = state.once('removed', lambda: self.removed_accepted(units, files, everything))
         decision = decide(everything, host1, host2, verdict, leak=leak, companions=extra, stale=stale,
                           leak_evidence=evidence_kinds, refused=set(refused))
+        decision['carried'] = sorted(int(r) for r in carried)
         state.set('decision', decision)
         decision['pre'] = refused  # in memory only, like the notes: rebuilt from the cached precheck on a rerun
         decision['origin_problems'] = origin_problems
@@ -1750,11 +1962,7 @@ class Bot:
                   + '\n'.join(mapping_entry_line(fn) for fn in added) + '\n')
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
         out.parent.mkdir(parents=True, exist_ok=True)
-        self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model', REVIEW_MODEL,
-                  '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only', '-c', 'approval_policy="never"',
-                  '--cd', self.tree, '--output-last-message', out, '-'], cwd=self.tree,
-                 input=prompt.encode(), timeout=self.config['model_timeout'])
-        return out.read_text()
+        return self.run_model(prompt, out)
 
     def mapping_ci(self, head):
         """The head's `mapping` check conclusion; a missing or running check is a retry, never a verdict."""
@@ -1821,7 +2029,7 @@ class Bot:
         tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
         self.prepare_tree(tip or base)
         self.overlay(head, [f for f in files if f['filename'].startswith('findings/')])
-        text = state.once('review_text', lambda: self.mapping_review(number, head, added))
+        text = self.reviewed(state, 'review_text', lambda: self.mapping_review(number, head, added))
         leak, verdict, notes = parse_mapping_review(text)
         if leak != 'no':
             return dict(blocked, blocked='leak', count=len(added), notes=notes,
@@ -1899,14 +2107,42 @@ class Bot:
         for number, head, rvas in merged_unrecorded(directory, time.time()):
             pr = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
             pr['headRefOid'] = head
+            slot = self.task_slot(number, head)
             with self.land_lock:
                 try:
-                    self.record(pr, State(directory, number, head), rvas)
+                    slot.rebind_unit_maps(number, head, rvas)
+                    slot.record(pr, State(directory, number, head), rvas)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
                     print(f'{stamp()} pr {number}: record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                     continue
             recorded.append(number)
         return recorded
+
+    def close_done_claims(self):
+        """Close claim issues whose functions are all matched on origin/main. Returns the issue numbers."""
+        import claims
+        self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+        return claims.close_completed(claims.GitHub(self.tree), claims.git_json(self.tree, 'origin/main'))
+
+    def task_slot(self, number, head):
+        """The slot whose tree still holds the PR's confirm tasks, else this one."""
+        for index in range(POOL_SIZE):
+            slot = self.for_slot(index)
+            if next((slot.tree / '.local/tasks').glob(f'prbot-{number}-{head[:8]}-*'), None):
+                return slot
+        return self
+
+    def rebind_unit_maps(self, number, head, rvas):
+        """Recreate the unit symbol maps of a merged PR's tasks that a later PR's tree clean removed.
+
+        A map is content-addressed, so binding the same task again gives the file the record names; the
+        record step still checks its hash.
+        """
+        for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{number}-{head[:8]}-*')):
+            info = json.loads((task / 'task.json').read_text())
+            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas)
+            if wanted and self.bind_unit_map(task, info, wanted) is None:
+                raise Stop(f'could not bind the unit symbol map of {task.name} again')
 
     def settle_ci_debt(self, host1):
         """`preexisting-fail` is debt only for a function that was matched at base.
@@ -2027,6 +2263,16 @@ class Bot:
         state.set('done', True)
         return summary
 
+    def process_tooling(self, pr, state, started):
+        """A PR with no reconstruction/ file: label it for the maintainer agent and say so; never merge it."""
+        decision = dict(blocked='tooling', merge=False, verdicts={})
+        state.set('decision', decision)
+        if not self.dry_run:
+            state.once('labelled', lambda: self.run(
+                ['gh', 'pr', 'edit', str(pr['number']), '-R', REPOSITORY, '--add-label', TOOLING_LABEL],
+                check=False).returncode == 0)
+        return self.finish(pr, state, decision, started, comment=TOOLING_COMMENT)
+
     def conflicting(self, pr, state):
         """A PR that cannot merge is not worth a review and two host compares; tell the author once per head.
 
@@ -2053,20 +2299,30 @@ class Bot:
         raise Stop(f'merge refused with the head unchanged (mergeable={now.get("mergeable")}, '
                    f'state={now.get("state")}); results kept, retrying next tick')
 
+    def recorded_by(self, build, rva, task_id):
+        """Whether the function's review record on the checked-out main came from this task."""
+        path = self.tree / 'reports' / build / f'0x{rva:x}.review.json'
+        try:
+            return json.loads(path.read_text()).get('review_task_id') == task_id
+        except (OSError, ValueError):
+            return False
+
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
         self.run(['git', 'checkout', '--quiet', '--force', '-B', 'record', 'origin/main'], cwd=self.tree)
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
-        # A retry after a partial record must not offer what is already matched on main.
+        # A retry after a partial record must not offer what this PR already recorded on main. A function
+        # matched by an earlier PR whose record this PR's unit text outdated is recorded again.
+        task_id = f'pr-bot-{pr["number"]}-{pr["headRefOid"][:8]}'
         inventory = json.loads((self.tree / 'data/progress.json').read_text())
         matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
-        rvas = [r for r in rvas if r not in matched]
+        rvas = [r for r in rvas if r not in matched or not self.recorded_by(build, r, task_id)]
         if not rvas:
             state.set('recorded', True)
             return
         review = Path(self.work / 'reviews' / f'pr{pr["number"]}-{pr["headRefOid"][:12]}.txt')
         argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--push',
-                '--task-id', f'pr-bot-{pr["number"]}-{pr["headRefOid"][:8]}', '--author', pr['author']['login'],
+                '--task-id', task_id, '--author', pr['author']['login'],
                 '--records', state.get('records')]
         for r in rvas:
             argv += ['--rva', hex(r)]
@@ -2174,6 +2430,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     inflight = {}  # PR number -> future
     refilled = None
     retried = None
+    swept = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -2201,6 +2458,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                         print(f'{stamp()} pr {number}: records landed on retry', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if not bot.dry_run and not inflight and (swept is None or time.time() - swept >= CLAIM_SWEEP_EVERY):
+                swept = time.time()
+                try:
+                    for number in bot.for_slot(0).close_done_claims():
+                        print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
+                    print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')

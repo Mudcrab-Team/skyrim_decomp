@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?LinkObject@NiLookAtController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16249824,
+      "size": 44
+    },
+    "?RegisterStreamables@NiLookAtController@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 16249888,
+      "size": 70
+    },
+    "??_GNiLookAtController@@UEAAPEAXI@Z": {
+      "rva": 16251936,
+      "size": 52
+    },
+    "?TargetIsRequiredType@NiLookAtController@@UEBA_NXZ": {
+      "rva": 16252032,
+      "size": 60
+    },
+    "?LinkObject@NiTimeController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 15695744,
+      "size": null
+    },
+    "?ReadStreamObjectLink@@YAPEAVNiObject@@AEAVNiStream@@@Z": {
+      "rva": 15618960,
+      "size": null
+    },
+    "?RegisterStreamables@NiTimeController@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 15695856,
+      "size": null
+    },
+    "??1NiTimeController@@UEAA@XZ": {
+      "rva": 15696576,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    },
+    "?NiRTTI_NiAVObject@@3VNiRTTI@@A": {
+      "rva": 53593256,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?LinkObject@NiLookAtController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf7f3e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterStreamables@NiLookAtController@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xf7f420",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_GNiLookAtController@@UEAAPEAXI@Z",
+        "rva": "0xf7fc20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TargetIsRequiredType@NiLookAtController@@UEBA_NXZ",
+        "rva": "0xf7fc80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LinkObject@NiTimeController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xef7f80",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadStreamObjectLink@@YAPEAVNiObject@@AEAVNiStream@@@Z",
+        "rva": "0xee5390",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterStreamables@NiTimeController@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xef7ff0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiTimeController@@UEAA@XZ",
+        "rva": "0xef82c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiRTTI_NiAVObject@@3VNiRTTI@@A",
+        "rva": "0x331c4a8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -751,3 +751,13 @@ that row. The evidence lists the matching names and the validator requires the f
 symbol to be among them, so both hosts are bound to the same function. The bot builds the evidence only from a run whose head is the revision it reviewed and merged. Only
 `pass` counts: `regressed`, `fail`, `preexisting-fail` and `unverified` give no confirmation, and a
 record without both hosts is refused as before.
+
+### Comment-only changes to a function with no target hash
+
+If a function was already `no-target` in the hash job at the PR's base (its own base compile gave no
+target result, or no target hash was ever published), its unit differs from base only in comments
+(provenance labels included, so the code is unchanged once every comment is removed) and the Mac compare
+of the new text passes, the bot counts host 1 as a pass and logs `host1: carried (comment-only, no-target
+at base)`; the function's accepted record then moves to the new digest with its original runs unchanged.
+Any code, string or include change, a function that had a target result at base, a failed Mac compare or
+a function with no accepted record gets no carry, and the review and every other rule still apply.

@@ -6,14 +6,17 @@
 // 0xf79370 NiBSplineCompPoint3Interpolator::LoadBinary
 // 0xf79400 NiBSplineCompPoint3Interpolator::SaveBinary
 // 0xf79460 NiBSplineCompPoint3Interpolator::IsEqual
-// 0xf79590 NiBSplineCompPoint3Interpolator::ctor
-// CI hash: 0xf79590 ??0NiBSplineCompPoint3Interpolator@@QEAA@PEAVNiBSplineData@@IPEAVNiBSplineBasisData@@@Z
-// 0xf795d0 NiBSplineCompPoint3Interpolator::ctor
-// CI hash: 0xf795d0 ??0NiBSplineCompPoint3Interpolator@@QEAA@AEBVNiPoint3@@@Z
+// 0xf79590 NiBSplineCompPoint3Interpolator::ctor(NiBSplineData*, std::uint32_t, NiBSplineBasisData*)
+// 0xf795d0 NiBSplineCompPoint3Interpolator::ctor(const NiPoint3&)
 // 0xf79850 NiBSplineCompPoint3Interpolator::dtor
 #include "NiBSplineCompPoint3Interpolator_f79330.h"
 
 #include <limits>
+
+namespace
+{
+constexpr float invalidCompressionParameter = std::numeric_limits<float>::max();
+}
 
 void NiBSplineCompPoint3Interpolator::CopyMembers(NiBSplineCompPoint3Interpolator* dest, NiCloningProcess& cloning)
 {
@@ -57,13 +60,13 @@ bool NiBSplineCompPoint3Interpolator::IsEqual(NiObject* other)
 NiBSplineCompPoint3Interpolator::NiBSplineCompPoint3Interpolator(NiBSplineData* data, std::uint32_t handle, NiBSplineBasisData* basis) :
     NiBSplinePoint3Interpolator(data, handle, basis)
 {
-    compressionParameters[0] = std::numeric_limits<float>::max();
-    compressionParameters[1] = std::numeric_limits<float>::max();
+    compressionParameters[0] = invalidCompressionParameter;
+    compressionParameters[1] = invalidCompressionParameter;
 }
 
 NiBSplineCompPoint3Interpolator::NiBSplineCompPoint3Interpolator(const NiPoint3& value) :
     NiBSplinePoint3Interpolator(value)
 {
-    compressionParameters[0] = std::numeric_limits<float>::max();
-    compressionParameters[1] = std::numeric_limits<float>::max();
+    compressionParameters[0] = invalidCompressionParameter;
+    compressionParameters[1] = invalidCompressionParameter;
 }

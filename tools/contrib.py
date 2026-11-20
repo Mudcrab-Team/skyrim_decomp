@@ -1740,6 +1740,8 @@ def claim_selection(ctx, args, data):
         ranges.append((start, end))
         addresses.update(f['rva'] for f in data['functions'] if start <= f['rva'] < end and f['status'] != 'matched')
     if not addresses:
+        if ranges:
+            raise Stop(USAGE, 'the range has no unmatched functions, so there is nothing to claim', f'{ctx.cli} next')
         raise Stop(USAGE, 'select RVAs, --class, --list or --range')
     merged = []
     for a, b in sorted(ranges):
@@ -1853,7 +1855,11 @@ def cmd_claim(ctx, args):
         ctx.say(f'already yours: {mine[0]["url"]}')
         return OK, {'rva': f'0x{first:x}', 'claim': mine[0]['url']}, f'{ctx.cli} start 0x{first:x}'
     public = batch_claims.git_json(ctx.repo)
-    counts = {e: sum(e[0] <= f['rva'] < e[1] and f['build_id'] == build for f in data['functions']) for e in entries}
+    # Offered functions are not in the inventory yet, so the claimed addresses count as well.
+    known = {f['rva'] for f in data['functions'] if f['build_id'] == build} | set(addresses)
+    counts = {e: sum(e[0] <= r < e[1] for r in known) for e in entries}
+    if not any(counts.values()):
+        raise Stop(USAGE, 'the claim resolves to 0 functions; no issue was opened', f'{ctx.cli} next')
     plans = batch_claims.parts(build, entries, public, me, counts=counts)
     urls, links = [], []
     for title, text, chunk in plans:

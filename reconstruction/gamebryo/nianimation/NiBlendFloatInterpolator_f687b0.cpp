@@ -8,7 +8,6 @@
 // 0xf688c0 NiBlendFloatInterpolator::IsEqual
 // 0xf68c20 NiBlendFloatInterpolator::SupportsBlendValue
 // 0xf68ef0 NiBlendFloatInterpolator::dtor
-// CI hash: 0xf68ef0 ??_GNiBlendFloatInterpolator@@UEAAPEAXI@Z
 #include "NiBlendFloatInterpolator_f687b0.h"
 
 // An out-of-line constructor emits the compiler-generated deleting destructor.
@@ -24,8 +23,9 @@ void NiBlendFloatInterpolator::LoadBinary(NiStream& stream)
 {
     NiBlendInterpolator::LoadBinary(stream);
     auto* binary = stream.iStr;
-    std::uint32_t width = sizeof(value);
-    const auto transferred = binary->_readFn(binary, &value, sizeof(value), &width, 1);
+    constexpr std::uint32_t valueSize = sizeof(value);
+    std::uint32_t width = valueSize;
+    const auto transferred = binary->_readFn(binary, &value, valueSize, &width, 1);
     binary->_absoluteCurrentPos += transferred;
 }
 
@@ -33,8 +33,9 @@ void NiBlendFloatInterpolator::SaveBinary(NiStream& stream)
 {
     NiBlendInterpolator::SaveBinary(stream);
     auto* binary = stream.oStr;
-    std::uint32_t width = sizeof(value);
-    const auto transferred = binary->_writeFn(binary, &value, sizeof(value), &width, 1);
+    constexpr std::uint32_t valueSize = sizeof(value);
+    std::uint32_t width = valueSize;
+    const auto transferred = binary->_writeFn(binary, &value, valueSize, &width, 1);
     binary->_absoluteCurrentPos += transferred;
 }
 
