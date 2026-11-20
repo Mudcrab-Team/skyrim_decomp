@@ -1,4 +1,4 @@
-// Source exposure: mixed (community headers; the pinned image listing).
+// Source exposure: mixed (community headers; the pinned image listing and decompiler output).
 // Code origin: brown-room reconstruction from disassembly
 // Drafted by: eclepso, assisted by claude-sonnet-5-5
 // 0xce36b0 BSTimer::Update
