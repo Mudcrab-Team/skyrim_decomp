@@ -1,6 +1,8 @@
 // Source exposure: mixed (pinned image and cited community names).
 // Code origin: original deleting destructor emitted from the measured allocation size.
-// BSParticleShaderGeometry, BSParticleShaderGeometry::~BSParticleShaderGeometry: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
+// BSParticleShaderGeometry: GUESS(low)
+// Class spelling follows the qualified Address Library names.
+// BSParticleShaderGeometry::~BSParticleShaderGeometry: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 #pragma once
 
 #include <cstdint>
