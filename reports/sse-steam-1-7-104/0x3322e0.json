@@ -64,7 +64,8 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit 2d9549cb28b5493c7c44bd22a1fbc0f2e10f204d, with uncommitted changes to reports/sse-steam-1-7-104/unit-symbols/a612ffd36471a0ce0f48f2645e3cf4841c4909eb3d9e39bc523fc288e0c7db59.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit 2d9549cb28b5493c7c44bd22a1fbc0f2e10f204d, with uncommitted changes to reports/sse-steam-1-7-104/unit-symbols/a612ffd36471a0ce0f48f2645e3cf4841c4909eb3d9e39bc523fc288e0c7db59.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in.",
+    "Carried to new source: the unit differs from the text its runs compared only in comments, and the function has no published target hash, so the runs are unchanged."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
@@ -321,7 +322,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/conditions/ConditionFunctions_3322e0.cpp",
-    "digest": "5059fd9eecbe85b89b910a3406912ea377aacb4e6e0cf749050b14752cab23e2",
+    "digest": "d330386b077395d4fb568be68d3e3b24a1eb301cca274798890c54e1931bc979",
     "digest_method": "tu-sha256-v2",
     "run_digest": "2eddff96ed181b2c6078cf5d0cdeab38de053ad6c9ad4e8349de5177bcbcbaf3",
     "run_digest_method": "tu-sha256-v1",
