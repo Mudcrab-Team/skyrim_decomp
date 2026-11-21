@@ -7,7 +7,7 @@
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Movement/MovementTweenerAgentNodeFollower.cpp:64
 // MovementTweenerAgentNodeFollower, QClassAgentType: SIBLING(fo4-private@1b765c70, author-permission)
 // 0x7ab640 MovementTweenerAgentNodeFollower::QClassAgentType
-// Code origin: original; the pinned listing, target RTTI contract and stand-ins only
+// Code origin: mixed; QClassAgentType adapted from the cited sibling body, the destructor and stand-ins original (pinned listing, target RTTI contract)
 // SPDX-License-Identifier: CC0-1.0
 // 0x7ab9a0 MovementTweenerAgentNodeFollower::dtor
 // Adapted bodies: QClassAgentType follows fo4-private@1b765c70 src/Game/AI/Movement/MovementTweenerAgentNodeFollower.cpp:64 (author permission).
@@ -16,6 +16,5 @@ const BSFixedString &MovementTweenerAgentNodeFollower::QClassAgentType()
 {
     static BSFixedString typeString("Node Follower");
     return typeString;
-
 }
 MovementTweenerAgentNodeFollower::~MovementTweenerAgentNodeFollower() {}
