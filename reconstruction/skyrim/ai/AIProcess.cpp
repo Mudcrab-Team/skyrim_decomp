@@ -78,11 +78,7 @@ void AIProcess::SetHeadtrackTarget(ActorPrefix* a_owner, NiPoint3& a_targetPosit
 
 NiPoint3* AIProcess::GetLastSeenLocation()
 {
-    if (high) {
-        return &middleHigh->lastSeenPosition;
-    }
-
-    return nullptr;
+    return high ? &middleHigh->lastSeenPosition : nullptr;
 }
 
 void AIProcess::Function6f1bd0(bool a_value)
