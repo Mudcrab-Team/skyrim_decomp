@@ -1,6 +1,9 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// SPDX-License-Identifier: GPL-3.0-or-later (powerof3/CommonLibSSE declarations; full text: licenses/CommonLibSSE-GPL-3.0.txt)
+// Code origin: mixed; the listed bodies are adapted from community sources, the rest is original
 // NiDefaultAVObjectPalette: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiAVObjectPalette: STANDIN EXE_RTTI
 // NiDefaultAVObjectPalette::SetScene, NiDefaultAVObjectPalette::SetAVObject, NiDefaultAVObjectPalette::~NiDefaultAVObjectPalette, NiDefaultAVObjectPalette::GetAVObject, NiDefaultAVObjectPalette::ResetAndFillFromScenegraph: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
@@ -43,9 +46,13 @@ class NiAVObject;
 
 // BSFixedString: STANDIN COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // _data: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
+// ~BSFixedString: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; out of line in the
+// image, declared without a body so the palette entry cleanup calls it
 class BSFixedString
 {
 public:
+    ~BSFixedString();
+
     const char* _data;  // 00
 };
 static_assert(sizeof(BSFixedString) == 0x8, "BSFixedString size");
@@ -123,6 +130,9 @@ public:
 };
 static_assert(sizeof(NiAVObjectPalette) == 0x10, "NiAVObjectPalette size");
 
+// ReleasePaletteEntry, FillFromScenegraph: GUESS(low); both live in the image, are not in this pack,
+// and are declared (never defined) so the compared body calls them
+
 // PaletteEntry, PaletteTable, PaletteMap, key, value, next, unknown30, _entries, _sentinel: GUESS(low)
 // _pad08, _capacity, _free, _good: GUESS(low); powerof3 uses these counter names in
 // BSTScatterTableStandardParent, which starts at the map (palette+0x10), not in this table
@@ -177,3 +187,8 @@ public:
     NiAVObject* scene;      // 40
 };
 static_assert(sizeof(NiDefaultAVObjectPalette) == 0x48, "NiDefaultAVObjectPalette size");
+
+// ReleasePaletteEntry, FillFromScenegraph: GUESS(low); both live in the image, are not in this pack,
+// and are declared (never defined) so the compared body calls them
+void ReleasePaletteEntry(PaletteEntry* a_entry, NiAVObject** a_object);
+void FillFromScenegraph(NiAVObject* a_scene, NiDefaultAVObjectPalette* a_palette);

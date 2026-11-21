@@ -1,8 +1,12 @@
-// Source exposure: mixed. Existing bodies were drafted by claude-sonnet-5-5 from the pinned image.
+// Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image and community declarations.
-// Consulted (private, not in repo): decompiler control-flow hints.
+// SPDX-License-Identifier: CC0-1.0
 // Adapted bodies: none in this change.
-// FindOutfitExtra: GUESS(low); callee of HasOutfitItems.
+// 0x6d5e30 Actor::Function6d5e30
+// 0x7cf670 Actor::Function7cf670
+// 0x6d6690 Actor::Function6d6690
+// 0x6b5820 Actor::Function6b5820
+// 0x6b5bf0 Actor::Function6b5bf0
 // 0x6b21b0 Actor::ProcessEvent
 // 0x2e7fc0 Actor::HasOutfitItems
 // 0x6797a0 Actor::GetLevel
@@ -13,6 +17,64 @@
 // 0x687c20 Actor::IsInRagdollState
 // 0x6c5440 Actor::GetActorValueModifier
 #include "Actor.h"
+
+// Actor::Function6d5e30: GUESS(low); the compared form type is Armor, whose enchantment is applied through the instant magic caster.
+void Actor::Function6d5e30(TESForm* a_item, TESObjectREFR* a_target)
+{
+    if (a_item->GetFormType() != FormType::Armor) {
+        return;
+    }
+    EnchantmentItem* enchantment = GetFormEnchantment(a_item, a_target);
+    if (!enchantment) {
+        return;
+    }
+    GetMagicCaster(MagicSystem::CastingSource::kInstant)->CastEnchantment(enchantment, a_item, false);
+}
+
+// Actor::Function7cf670: GUESS(low); dispatch of one actor update through the task queue or directly.
+void Actor::Function7cf670(bool a_flag)
+{
+    if (Function6e49e0(a_flag)) {
+        taskQueue->Function668780(this, a_flag);
+        return;
+    }
+    Function6a4a10(a_flag);
+}
+
+// Actor::Function6d6690: GUESS(low); interrupts every non-null magic caster slot with the argument.
+void Actor::Function6d6690(bool a_refund)
+{
+    MagicCaster** slot = magicCasters;
+    for (std::size_t remaining = 4; remaining != 0; --remaining) {
+        if (*slot) {
+            (*slot)->InterruptCast(a_refund);
+        }
+        ++slot;
+    }
+}
+
+// Actor::Function6b5820: GUESS(low); the process rotation, or the origin point when the process is absent.
+void Actor::Function6b5820(NiPoint3& a_out) const
+{
+    const NiPoint3& rotation = unknown38 ? unknown38->Function7233b0() : niPointZero;
+    a_out.x = rotation.x;
+    a_out.y = rotation.y;
+    a_out.z = rotation.z;
+}
+
+// Actor::Function6b5bf0: GUESS(low); the character controller's context state, 0 when either link is absent.
+hkpCharacterStateType Actor::Function6b5bf0()
+{
+    AIProcess* process = unknown38;
+    if (!process) {
+        return static_cast<hkpCharacterStateType>(0);
+    }
+    bhkCharacterController* controller = process->Function722110();
+    if (!controller) {
+        return static_cast<hkpCharacterStateType>(0);
+    }
+    return controller->context.Functionb97880();
+}
 
 std::uint16_t Actor::GetLevel() const
 {
@@ -92,6 +154,7 @@ float Actor::GetActorValueModifier(ACTOR_VALUE_MODIFIER a_modifier, ActorValue a
     return mods ? mods->modifiers[static_cast<int>(a_modifier)] : 0.0f;
 }
 
+// FindOutfitExtra: GUESS(low); callee of HasOutfitItems.
 bool Actor::HasOutfitItems(BGSOutfit* a_outfit)
 {
     if (a_outfit) {
@@ -174,14 +237,7 @@ public:
     void BuildSoundDataFromEditorID(BSSoundHandle& a_sound, const char* a_name, std::uint32_t a_flags);
 };
 
-// playerActor, defaultFallScale, landingSoundThreshold, heavyLandingSound, lightLandingSound: GUESS(low); fall-damage and audio inputs.
 // HasLandingFlag: GUESS(low); common bit extraction for two flag types.
-extern Actor* playerActor;
-extern const float defaultFallScale;
-extern float landingSoundThreshold;
-extern const char heavyLandingSound[];
-extern const char lightLandingSound[];
-
 static bool HasLandingFlag(std::uint32_t a_flags)
 {
     return ((a_flags >> 7) & 1) != 0;

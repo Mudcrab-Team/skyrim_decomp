@@ -1,8 +1,9 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image and community declarations.
-// Adapted bodies: ActorState::IsUnconscious, from CharmedBaryon/CommonLibSSE-NG at b93280e (MIT), include/RE/A/ActorState.h.
+// Adapted bodies: ActorState::IsUnconscious, from CharmedBaryon/CommonLibSSE-NG at b93280e (MIT), include/RE/A/ActorState.h; TESForm::GetFormType, from the same revision, include/RE/T/TESForm.h:289 (a one-line getter, the stand-in TESForm repeats it).
 // Consulted (private, not in repo): decompiler control-flow hints.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// SPDX-License-Identifier: GPL-3.0-or-later (powerof3/CommonLibSSE declarations; full text: licenses/CommonLibSSE-GPL-3.0.txt)
 // Actor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the bases, members and virtual slots the functions use
 // TESObjectREFR MagicTarget ActorValueOwner: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); base subobjects at 0x00, 0xa0, 0xb8, sized only
 // ActorState: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); base subobject at 0xc0; its own vftable pointer is modelled as a word
@@ -42,15 +43,22 @@
 // FindOutfitExtra OutfitExtra OutfitExtra::outfitID: GUESS; callee at RVA 0x1648b0 takes an ExtraDataList* and returns a record whose word at 0x10 is compared with the outfit form id
 // TESSpellList::HasShout: GUESS; callee at RVA 0x1f20e0 reached through the TESSpellList base at 0xa0
 // AIProcess::GetMoveDirectionRelativeToFacing: GUESS; callee at RVA 0x7233d0
+// NiPoint3, NiPoint3::x, NiPoint3::y, NiPoint3::z: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// Actor::Function6b5820: GUESS(low); writes the rotation of the process at 0x38 into its out point, or the origin point when that pointer is null
+// AIProcess::Function7233b0: GUESS(low); callee at RVA 0x7233b0 yields a pointer to the process rotation
+// niPointZero: GUESS(low); the origin point constant the null-process fallback reads
 // AIProcess::GetVoiceRecoveryTime: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) GUESS(medium); NG declares it with an inline body and no address; that the callee at RVA 0x700100 is it is the guess
 // ActorValueStorage::GetModifiers: GUESS; callee at RVA 0x6e3500 that looks up the modifier block of one actor value
-// Licence: three member names come from powerof3/CommonLibSSE (GPL-3.0), so this file is GPL-3.0.
 #pragma once
 
 #include <cstddef>
 #include <cstdint>
 
+class AIProcess;
 class BGSPerk;
+// EnchantmentItem: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the pointer type of the callee result
+class EnchantmentItem;
+class MagicCaster;
 class TESForm;
 // bhkCharacterController, bhkCharacterMoveFinishEvent, TESObjectCELL, TESRace, NiAVObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // bhkCharacterController, hkpCharacterContext, hkpCharacterStateType, kSwimming, CHARACTER_FLAGS, kHitDamage, hkVector4, BSBound, hkpSurfaceInfo, hkStepInfo, collisionBound, bumperCollisionBound, forwardVec, stepInfo, outVelocity, initialVelocity, velocityMod, direction, rotCenter, pushDelta, fakeSupportStart, up, supportNorm, orientationCtrl, surfaceInfo, context, flags, GetPositionImpl, SetPositionImpl, GetTransformImpl, SetTransformImpl, GetLinearVelocityImpl, SetLinearVelocityImpl, GetCollisionFilterInfo, CheckSupportImpl, Unk_09, Unk_0A, Unk_0B, Unk_0C, Unk_0E, Unk_0F: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); a prefix of NG's layout up to flags at 0x218; the members after flags are not declared
@@ -62,6 +70,27 @@ class TESObjectCELL;
 class TESRace;
 class NiAVObject;
 
+// TESForm::sourceFiles, TESForm::formFlags, TESForm::formID, TESForm::inGameFormFlags, TESForm::formType, TESForm::GetFormType, FormType, FormType::Armor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+enum class FormType : std::uint8_t { Armor = 26 };
+
+class TESForm {
+public:
+    virtual ~TESForm();
+    void*         sourceFiles;      // 0x08, TESFileContainer in NG
+    std::uint32_t formFlags;        // 0x10
+    std::uint32_t formID;           // 0x14
+    std::uint16_t inGameFormFlags;  // 0x18
+    FormType      formType;         // 0x1A
+
+    FormType GetFormType() const noexcept { return formType; }
+};
+static_assert(offsetof(TESForm, formType) == 0x1a, "TESForm::formType offset");
+
+// MagicSystem: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the casting-source enum the compared code passes
+struct MagicSystem {
+    enum class CastingSource : std::uint32_t { kInstant = 3 };
+};
+
 enum class hkpCharacterStateType : std::uint32_t { kSwimming = 5 };
 
 enum class CHARACTER_FLAGS : std::uint32_t { kHitDamage = 1u << 7 };
@@ -72,6 +101,13 @@ struct hkVector4 {
     float z;
     float w;
 };
+
+struct NiPoint3 {
+    float x;
+    float y;
+    float z;
+};
+static_assert(sizeof(NiPoint3) == 0xc, "NiPoint3 size");
 
 struct hkTransform;
 
@@ -106,6 +142,8 @@ class hkpCharacterContext {
 public:
     virtual ~hkpCharacterContext();
     hkpCharacterStateType GetState() const;
+    // hkpCharacterContext::Functionb97880: GUESS(low); callee at RVA 0xb97880 returns the state word at 0x08.
+    hkpCharacterStateType Functionb97880() const;
 
     std::uint64_t unknown08;  // 08
     std::uint64_t unknown10;  // 10
@@ -198,17 +236,23 @@ public:
 
 class BGSOutfit {
 public:
-    std::uint8_t  unk00[0x14];
+    // unknown00 to unknown10: GUESS(low); unresolved words before formID, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
+    std::uint32_t unknown10;  // 0x10
     std::uint32_t formID;  // 0x14
 };
 
 struct OutfitExtra {
-    std::uint8_t  unk00[0x10];
+    // unknown00 unknown08: GUESS(low); unresolved words before outfitID, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
     std::uint32_t outfitID;  // 0x10
 };
 
 // FindOutfitExtra: GUESS; bound to RVA 0x1648b0.
 OutfitExtra* FindOutfitExtra(ExtraDataList* a_list);
+
 
 enum class ActorValue : std::int32_t {
     kHealth      = 24,
@@ -228,33 +272,59 @@ struct Modifiers {
 };
 
 struct ActorValueStorage {
-    std::uint8_t unk00[0x20];
+    // unknown00 to unknown18: GUESS(low); unresolved words before the modifier table, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
+    std::uint64_t unknown18;  // 0x18
 
     const Modifiers* GetModifiers(ActorValue a_value) const;
 };
 
 class TESBoundObject {
 public:
-    std::uint8_t unk00[0x30];
+    // unknown00 to unknown28: GUESS(low); unresolved words of the bound-object base, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
+    std::uint64_t unknown18;  // 0x18
+    std::uint64_t unknown20;  // 0x20
+    std::uint64_t unknown28;  // 0x28
 };
 
 class TESActorBaseData {
 public:
-    std::uint8_t unk00[0x58];
+    // unknown00 to unknown50: GUESS(low); unresolved words before the level accessor's own data.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
+    std::uint64_t unknown18;  // 0x18
+    std::uint64_t unknown20;  // 0x20
+    std::uint64_t unknown28;  // 0x28
+    std::uint64_t unknown30;  // 0x30
+    std::uint64_t unknown38;  // 0x38
+    std::uint64_t unknown40;  // 0x40
+    std::uint64_t unknown48;  // 0x48
+    std::uint64_t unknown50;  // 0x50
 
     std::uint16_t GetLevel() const;
 };
 
 class TESContainer {
 public:
-    std::uint8_t unk00[0x18];
+    // unknown00 to unknown10: GUESS(low); unresolved words of the container base, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
 };
 
 class TESShout;
 
 class TESSpellList {
 public:
-    std::uint8_t unk00[0x10];
+    // unknown00 unknown08: GUESS(low); unresolved words before the shout table, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
 
     bool HasShout(TESShout* a_shout) const;
 };
@@ -268,11 +338,18 @@ public:
     float GetVoiceRecoveryTime() const;
     // AIProcess::GetCharController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     bhkCharacterController* GetCharController();
+    // AIProcess::Function722110: GUESS(low); callee at RVA 0x722110 returns the character controller.
+    bhkCharacterController* Function722110();
+    // AIProcess::Function7233b0: GUESS(low); callee at RVA 0x7233b0 returns a pointer to the process rotation.
+    const NiPoint3& Function7233b0() const;
 };
 
 struct OBJ_REFR {
     TESBoundObject* objectReference;  // 0x00
-    std::uint8_t    unk08[0x18];
+    // unknown08 to unknown18: GUESS(low); unresolved words after the object pointer, no compared body reads them.
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
+    std::uint64_t unknown18;  // 0x18
 };
 
 class TESObjectREFR {
@@ -369,7 +446,8 @@ public:
     virtual void Unk_59();
     virtual void Unk_5A();
     virtual void Unk_5B();
-    virtual void Unk_5C();
+    // MagicSystem::CastingSource, MagicSystem::CastingSource::kInstant, TESObjectREFR::GetMagicCaster: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 0x5c
+    virtual MagicCaster* GetMagicCaster(MagicSystem::CastingSource a_source);  // 0x5C
     virtual void Unk_5D();
     virtual void Unk_5E();
     virtual void Unk_5F();
@@ -435,12 +513,26 @@ public:
 
     InventoryChanges* MakeInventoryChanges();
 
-    std::uint8_t unk08[0x38];
+    // unknown08 to unknown30: GUESS(low); unresolved words before data, no compared body reads them.
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
+    std::uint64_t unknown18;  // 0x18
+    std::uint64_t unknown20;  // 0x20
+    std::uint64_t unknown28;  // 0x28
+    std::uint64_t unknown30;  // 0x30
+    // unknown38: GUESS(low); AIProcess pointer at 0x38, its callee yields the character controller.
+    AIProcess*    unknown38;  // 0x38
     OBJ_REFR     data;  // 0x40
     // parentCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-    // unk68: GUESS(low); unresolved fields after the cell pointer.
     TESObjectCELL* parentCell;
-    std::uint8_t unk68[0x38];
+    // unknown68 to unknown98: GUESS(low); unresolved words between the cell pointer and the magic-target base.
+    std::uint64_t unknown68;  // 0x68
+    std::uint64_t unknown70;  // 0x70
+    std::uint64_t unknown78;  // 0x78
+    std::uint64_t unknown80;  // 0x80
+    std::uint64_t unknown88;  // 0x88
+    std::uint64_t unknown90;  // 0x90
+    std::uint64_t unknown98;  // 0x98
 
     // GetScale: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     float GetScale() const;
@@ -452,12 +544,26 @@ public:
 
 class MagicTarget {
 public:
-    std::uint8_t unk00[0x18];
+    // unknown00 to unknown10: GUESS(low); unresolved words of the magic-target base, no compared body reads them.
+    std::uint64_t unknown00;  // 0x00
+    std::uint64_t unknown08;  // 0x08
+    std::uint64_t unknown10;  // 0x10
+};
+
+// MagicCaster, MagicCaster::InterruptCast: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); InterruptCast is a non-virtual member in NG.
+class MagicCaster {
+public:
+    // unknown00: GUESS(low); the leading word of the caster subobject, kept so InterruptCast's offsets are unchanged.
+    std::uint64_t unknown00;  // 0x00
+    void InterruptCast(bool a_refund);
+    // MagicCaster::CastEnchantment: GUESS(low); callee at RVA 0x5ca5e0 takes the enchantment, the form and a flag.
+    void CastEnchantment(EnchantmentItem* a_enchantment, TESForm* a_form, bool a_flag);
 };
 
 class ActorValueOwner {
 public:
-    std::uint8_t unk00[0x8];
+    // unknown00: GUESS(low); unresolved word of the value-owner base, no compared body reads it.
+    std::uint64_t unknown00;  // 0x00
 };
 
 enum class ACTOR_LIFE_STATE : std::uint32_t {
@@ -499,6 +605,10 @@ public:
     ActorState2   actorState2;  // 0x0c
 };
 
+
+// GetFormEnchantment: GUESS(low); callee at RVA 0x1e1fd0 takes the form and the reference and returns the enchantment pointer.
+EnchantmentItem* GetFormEnchantment(TESForm* a_form, TESObjectREFR* a_target);
+
 class Actor : public TESObjectREFR, public MagicTarget, public ActorValueOwner, public ActorState {
 public:
     enum class BOOL_BITS : std::uint32_t {
@@ -522,9 +632,41 @@ public:
     MoveFinishSink    moveFinishSink;  // 0xd8
     std::uint64_t     unkE0;
     std::uint32_t     boolBits;  // 0xe8
-    std::uint8_t      unkEC[0xc];
+    // unknownEC to unknownF4: GUESS(low); unresolved words between the flag word and the process pointer.
+    std::uint32_t     unknownEC;  // 0xec
+    std::uint32_t     unknownF0;  // 0xf0
+    std::uint32_t     unknownF4;  // 0xf4
     AIProcess*        currentProcess;  // 0xf8
-    std::uint8_t      unk100[0xf8];
+    // unknown100 to unknown1a0 and unknown1c8 to unknown1f0: GUESS(low); unresolved words around the caster pointers at their offsets.
+    std::uint64_t     unknown100;  // 0x100
+    std::uint64_t     unknown108;  // 0x108
+    std::uint64_t     unknown110;  // 0x110
+    std::uint64_t     unknown118;  // 0x118
+    std::uint64_t     unknown120;  // 0x120
+    std::uint64_t     unknown128;  // 0x128
+    std::uint64_t     unknown130;  // 0x130
+    std::uint64_t     unknown138;  // 0x138
+    std::uint64_t     unknown140;  // 0x140
+    std::uint64_t     unknown148;  // 0x148
+    std::uint64_t     unknown150;  // 0x150
+    std::uint64_t     unknown158;  // 0x158
+    std::uint64_t     unknown160;  // 0x160
+    std::uint64_t     unknown168;  // 0x168
+    std::uint64_t     unknown170;  // 0x170
+    std::uint64_t     unknown178;  // 0x178
+    std::uint64_t     unknown180;  // 0x180
+    std::uint64_t     unknown188;  // 0x188
+    std::uint64_t     unknown190;  // 0x190
+    std::uint64_t     unknown198;  // 0x198
+    std::uint64_t     unknown1a0;  // 0x1a0
+    // magicCasters: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); four caster pointers, at 0x1a8 in this build.
+    MagicCaster*      magicCasters[4];  // 0x1a8
+    std::uint64_t     unknown1c8;  // 0x1c8
+    std::uint64_t     unknown1d0;  // 0x1d0
+    std::uint64_t     unknown1d8;  // 0x1d8
+    std::uint64_t     unknown1e0;  // 0x1e0
+    std::uint64_t     unknown1e8;  // 0x1e8
+    std::uint64_t     unknown1f0;  // 0x1f0
     // race: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     TESRace*          race;
     std::uint32_t     unk200;
@@ -547,6 +689,21 @@ public:
     bhkCharacterController* GetCharController() const;
     bool IsOnMount() const;
 
+    // Function6b5bf0: GUESS(low); the character controller's context state, 0 when either link is absent.
+    hkpCharacterStateType Function6b5bf0();
+    // Function6b5820: GUESS(low); writes the rotation of the process at 0x38, or the origin point when it is absent.
+    void Function6b5820(NiPoint3& a_out) const;
+    // Function6d6690: GUESS(low); interrupts every non-null magic caster slot with the argument.
+    void Function6d6690(bool a_refund);
+    // Function6d5e30: GUESS(low); an ingredient's enchantment is applied through the instant magic caster.
+    void Function6d5e30(TESForm* a_item, TESObjectREFR* a_target);
+    // Function6e49e0: GUESS(low); precondition tested before either update path of Function7cf670, taking the flag.
+    bool Function6e49e0(bool a_flag);
+    // Function6a4a10: GUESS(low); update path Function7cf670 takes when the precondition fails.
+    void Function6a4a10(bool a_flag);
+    // Function7cf670: GUESS(low); dispatch of one actor update through the task queue or directly.
+    void Function7cf670(bool a_flag);
+
     bool          HasOutfitItems(BGSOutfit* a_outfit);
     std::uint16_t GetLevel() const;
     bool          IsAttacking() const;
@@ -568,3 +725,23 @@ static_assert(offsetof(Actor, currentProcess) == 0xf8, "Actor::currentProcess of
 static_assert(offsetof(Actor, boolFlags) == 0x204, "Actor::boolFlags offset");
 static_assert(offsetof(Actor, avStorage) == 0x208, "Actor::avStorage offset");
 static_assert(offsetof(Actor, voicePointsModifiers) == 0x254, "Actor::voicePointsModifiers offset");
+static_assert(offsetof(Actor, magicCasters) == 0x1a8, "Actor::magicCasters offset");
+
+// TaskQueueInterface: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the one slot Function7cf670 reaches.
+class TaskQueueInterface {
+public:
+    // Function668780: GUESS(low); queued form of the actor update, taking the actor and the flag.
+    void Function668780(Actor* a_actor, bool a_flag);
+};
+
+// taskQueue: GUESS(low); the singleton pointer Function7cf670 loads before it queues the update.
+extern TaskQueueInterface* taskQueue;
+
+// playerActor, defaultFallScale, landingSoundThreshold, heavyLandingSound, lightLandingSound: GUESS(low); fall-damage and audio inputs.
+// niPointZero: GUESS(low); origin point constant read when the process pointer is null.
+extern NiPoint3 niPointZero;
+extern Actor* playerActor;
+extern const float defaultFallScale;
+extern float landingSoundThreshold;
+extern const char heavyLandingSound[];
+extern const char lightLandingSound[];
