@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 import static_data_generate as generator
+import leaf_family_batch as batch
 import contrib_screen
 import lint_reconstruction
 from pecoff import PeImage
@@ -76,12 +77,12 @@ class GeneratorTests(unittest.TestCase):
     def test_conflicting_extents_are_dropped(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            bounds = root / generator.pdb_types.GENERATED / 'boundaries'
+            bounds = root / batch.pdb_types.GENERATED / 'boundaries'
             bounds.mkdir(parents=True)
             (bounds / '00.tsv').write_text('# synthetic\n1010\t7\n1020\t8\n1030\tc\n')
             public = {'functions': [dict(rva=0x1010, size=7), dict(rva=0x1020, size=7)]}
-            with patch.object(generator.target_hashes, 'load_manifest', return_value=public):
-                self.assertEqual(generator.boundaries(root), {0x1010: 7, 0x1030: 12})
+            with patch.object(batch.target_hashes, 'load_manifest', return_value=public):
+                self.assertEqual(batch.boundaries(root), {0x1010: 7, 0x1030: 12})
 
     def test_units_and_reference_bindings(self):
         members = [generator.Member(0x1010, 7, 0x2000, 4, 'unsigned int', 'unsigned int'),
