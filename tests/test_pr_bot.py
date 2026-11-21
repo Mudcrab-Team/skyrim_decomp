@@ -238,6 +238,7 @@ class FakeBot(pr_bot.Bot):
         self.comments = []  # the PR's issue comments as {id, login, body}
         self.sizes = {}
         self.pre = {}  # rva -> mechanical findings the pre-review gate returns
+        self.lint = []  # source-lint findings the intake stage returns
 
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -283,6 +284,9 @@ class FakeBot(pr_bot.Bot):
 
     def header_sizes(self, units):
         return dict(self.sizes)
+
+    def lint_problems(self, files):
+        return list(self.lint)
 
     def companions(self, units, files, functions):
         return self.extra
@@ -2057,6 +2061,19 @@ class StickyCommentTests(unittest.TestCase):
         with self.assertRaises(pr_bot.Stop):
             other.process(PR)
         self.assertEqual(other.comments, [])
+
+    def test_a_lint_failure_is_named_in_the_comment_before_any_compare(self):
+        bot = FakeBot(self.work)
+        bot.lint = ['reconstruction/a/B.cpp:9: label outside the v2 grammar; write "// <names>: <LABEL>"']
+
+        def never(units, tag):
+            raise AssertionError('compared a unit that fails the lint')
+        bot.mac_compare = never
+        with self.assertRaises(pr_bot.Rejected):
+            bot.process(PR)
+        body = bot.comments[0]['body']
+        self.assertIn('reconstruction/a/B.cpp:9: label outside the v2 grammar', body)
+        self.assertIn('source lint', body)
 
     def test_the_batching_request_is_a_line_in_the_sticky_comment(self):
         bot = FakeBot(self.work)

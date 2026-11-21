@@ -710,6 +710,17 @@ def header_rejection(problems, shown=10):
     return '\n'.join(lines)
 
 
+def lint_rejection(problems, shown=10):
+    """The sticky comment for a PR whose units fail the source lint: file, line and the lint's own message."""
+    lines = ['This PR was held before any compile because a unit it adds or changes fails the source lint, which '
+             'the CI `hash` job runs first and stops on. Please fix the lines below and push; the bot re-checks '
+             'the new head.']
+    lines += [f'- {p}' for p in problems[:shown]]
+    if len(problems) > shown:
+        lines.append(f'- and {len(problems) - shown} more; run `python3 tools/lint_reconstruction.py` locally')
+    return '\n'.join(lines)
+
+
 def comment_body(sha, decision, leak_codes=()):
     """The outcome text, with the accepted functions the PR removes added to any outcome that is not a hold."""
     text = outcome_body(sha, decision, leak_codes)
@@ -1212,6 +1223,18 @@ class Bot:
             return header_check.check(self.root, base, head)
         except subprocess.CalledProcessError:
             return []
+
+    def lint_problems(self, files):
+        """The lint findings of the changed units, as the CI `hash` job's intake reads them.
+
+        That job fails with no result when any finding exists, so the bot must say what it was instead of
+        waiting for a run that cannot produce one.
+        """
+        import lint_reconstruction
+        build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+        names = sorted(f['filename'] for f in files if f.get('status') != 'removed'
+                       and f['filename'].endswith(('.h', '.cpp')))
+        return [line for name in names for line in lint_reconstruction.lint_file(self.tree, name, build)]
 
     def history_problem(self, base, head):
         """Why the PR's own commits may not enter main, or None. A merge publishes every one of them."""
@@ -2060,6 +2083,9 @@ class Bot:
         header_problems = state.once('header', lambda: self.header_problems(base, head))
         if header_problems:
             raise Rejected('header', header_rejection(header_problems))
+        lint_found = state.once('lint', lambda: self.lint_problems(files))
+        if lint_found:
+            raise Rejected('lint', lint_rejection(lint_found))
         state.once('batch', lambda: wants_batching(functions, self.header_sizes(units)))
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
         # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
