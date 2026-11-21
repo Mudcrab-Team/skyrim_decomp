@@ -1224,11 +1224,13 @@ class Bot:
         recipe = re.search(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', text)
         recipe = recipe.group(0) if recipe else 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe_sha = hashlib.sha256((tree / recipe).read_bytes()).hexdigest() if (tree / recipe).is_file() else None
-        # The CI job compiles an RVA requested by a `// CI hash:` line with its default recipe, whatever
-        # recipe the unit names, so the second host's hash is compared with the recipe that job selects.
+        # The CI job compiles a function that already has an accepted record with that record's recipe, an RVA
+        # requested by a `// CI hash:` line with its default recipe, and anything else with the recipe the unit
+        # names, so the second host's hash is compared with the recipe that job selects.
         import ci_target_hash_check as ci_job
         requested = {int(r, 16) for r, _ in ci_job.REQUEST.findall(text[:8192])}
-        ci_file = tree / ci_job.DEFAULT_RECIPE if rva in requested else tree / recipe
+        recorded = self.accepted_recipe(rva, cpp)
+        ci_file = tree / (recorded or (ci_job.DEFAULT_RECIPE if rva in requested else recipe))
         ci_recipe_sha = hashlib.sha256(ci_file.read_bytes()).hexdigest() if ci_file.is_file() else None
         report = None
         if evidence.get('report'):
@@ -1239,6 +1241,22 @@ class Bot:
         facts = prereview.binding_facts(report, evidence.get('row'), digest, cpp, recipe_sha, ci_recipe_sha,
                                         check.pinned_compiler_sha256(tree), target.get('image_sha256'))
         return facts, report
+
+    def accepted_recipe(self, rva, cpp):
+        """The recipe path of the accepted record the CI hash job binds `rva` to, read as its `bindings` does, or None."""
+        tree = self.tree
+        for fn in json.loads((tree / 'data/progress.json').read_text())['functions']:
+            if fn['rva'] != rva or not fn.get('report'):
+                continue
+            try:
+                record = json.loads((tree / fn['report']).read_text())
+                report = record['runs'][0]['report']
+            except (OSError, ValueError, KeyError, IndexError, TypeError):
+                return None
+            if record.get('source', {}).get('compiled') != cpp or report.get('contract_version') != 2:
+                return None
+            return (record.get('recipe') or {}).get('path')
+        return None
 
     def binding_lines(self, rva, cpp, digest, evidence):
         """Agreement of one function's comparator report and CI row with the files and pins, as computed here."""
@@ -1265,7 +1283,7 @@ class Bot:
             lines.append(f'  second-host run (CI hash job, which compares the published target hashes): {evidence.get("host1")}')
         return lines
 
-    def review_context(self, units, functions, evidence=None, changed=None):
+    def review_context(self, units, functions, evidence=None, changed=None, old_flags=()):
         """What the Reviewer needs beyond the diff: the inputs the old review brief and packet gave it.
 
         Both hosts' results are in before the review starts, because checklist item 3 asks whether
@@ -1314,7 +1332,7 @@ class Bot:
         out += ['', '## Mechanical readiness lint (tools/lint_review_readiness.py on the unit files)',
                 lint.stdout.decode(errors='replace').strip() or 'clean',
                 '', '## Body origin (tools/check_origin.py)',
-                *self.body_origin([f for f in sorted(files) if changed is None or f in changed]),
+                *self.body_origin([f for f in sorted(files) if changed is None or f in changed], old_flags),
                 '', '## Private reading', f'Function packs: {", ".join(packs) or "none found"}.',
                 'For the provenance comparison read .local/analysis/fnv_index.jsonl and the pinned FNV source '
                 'files it identifies. ' + EXPOSURE,
@@ -1328,8 +1346,12 @@ class Bot:
                 'adaptation; "unverified" alone is not a ground to reject.']
         return '\n'.join(out)
 
-    def body_origin(self, files):
-        """Lines for the runbook's provenance item, which starts from the list of bodies like a community one."""
+    def body_origin(self, files, old_flags=()):
+        """Lines for the runbook's provenance item, which starts from the list of bodies like a community one.
+
+        A finding the unit already had at the PR's base (`old_flags`, as the precheck reads them) is project
+        debt: it is counted and left out, so the Reviewer is not handed it as a ground against the PR.
+        """
         files = [f for f in files if f.startswith(SCOPE_PREFIX) and f.endswith(('.h', '.cpp'))]
         if not files:
             return ['no changed unit files to compare']
@@ -1344,13 +1366,18 @@ class Bot:
                 hits.append(json.loads(line))
             elif line.startswith('check_origin: threshold') and ' compared with ' in line:
                 pins = line.split(' compared with ', 1)[1]
+        total = len(hits)
+        hits = [h for h in hits if not old_flags or origin_key(h) not in old_flags]
+        skipped = (f'; {total - len(hits)} finding(s) identical to ones the unit already had on main are left out '
+                   f'(earlier provenance, not introduced by this PR)') if total != len(hits) else ''
         if not hits:
-            return [f'no same-named community/sibling body found (clone revisions: {pins})']
-        return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins})']
+            return [f'no same-named community/sibling body found (clone revisions: {pins}){skipped}']
+        return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins}){skipped}']
 
     def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=()):
         diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction'], cwd=self.root).stdout.decode(errors='replace')
-        context = self.review_context(units, set(functions), evidence, changed) if units else ''
+        old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
+        context = self.review_context(units, set(functions), evidence, changed, old_flags) if units else ''
         prompt = (PREAMBLE + '\n' + runbook_checklist(self.tree) + f'\n\nFunctions under review: '
                   f'{", ".join(f"0x{r:x}" for r in sorted(functions))}\n'
                   f'{self.companion_note(companions)}'

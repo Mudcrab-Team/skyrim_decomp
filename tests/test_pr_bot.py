@@ -1601,6 +1601,37 @@ class ReviewContextTests(unittest.TestCase):
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
         self.assertIn('its recipe hash DIFFERS', self.prompts[0])
 
+    def test_an_accepted_function_is_compared_with_the_recipe_of_its_record_not_the_one_the_unit_names(self):
+        evidence = self.declare_other_recipe('')
+        default = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
+        record = {'source': {'compiled': 'reconstruction/a/B.cpp'}, 'recipe': {'path': default},
+                  'runs': [{'report': {'contract_version': 2}}]}
+        (self.tree / 'reports').mkdir()
+        (self.tree / 'reports/0x10.json').write_text(json.dumps(record))
+        (self.tree / 'data/progress.json').write_text(json.dumps({'functions': [
+            {'id': 'b-0x10', 'build_id': 'b', 'rva': 0x10, 'size': 8, 'status': 'matched', 'name': 'N',
+             'name_origin': 'GUESS', 'report': 'reports/0x10.json'}]}))
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash agrees', self.prompts[0])
+        record['runs'][0]['report']['contract_version'] = 3  # the job binds only contract v2 records
+        (self.tree / 'reports/0x10.json').write_text(json.dumps(record))
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[1])
+
+    def test_origin_findings_the_unit_already_had_on_main_are_left_out_of_the_prompt(self):
+        hit = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'revision': 'abc',
+               'path': 'src/B.cpp', 'upstream_line': 3, 'similarity': 0.75, 'trivial': False, 'declared': False,
+               'fork_of': None}
+        new = dict(hit, function='B::g', similarity=0.8)
+        self.origin_out = (b'check_origin: threshold 0.75; compared with x/ng@abc\n' + json.dumps(hit).encode() + b'\n'
+                           + json.dumps(new).encode() + b'\n')
+        self.bot.base_origin_flags = lambda units, base, tag: {pr_bot.origin_key(hit)}
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, self.evidence())
+        prompt = self.prompts[0]
+        self.assertNotIn('B::f ~', prompt)
+        self.assertIn('B::g ~ x/ng@abc src/B.cpp:3 similarity 0.80', prompt)
+        self.assertIn('1 finding(s) identical to ones the unit already had on main are left out', prompt)
+
     def test_a_report_for_other_source_or_compiler_is_shown_as_differing(self):
         bad = self.evidence(source={'source_revision': '0' * 64, 'path': 'reconstruction/a/B.cpp'})
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, bad)
