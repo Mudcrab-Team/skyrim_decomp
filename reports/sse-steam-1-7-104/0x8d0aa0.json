@@ -1,0 +1,193 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "7d9b5e3eda7e7a47b21b03e894c5c7f467fb547b07403d524046505902c2e897",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.cpp",
+          "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "e2fdb3eeca15cd05f1076bc6cba84ffbb2b3a945",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "82081ed9fac788182b63657869c794a4903fbc36",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "91f0e03b589ddcb1ee35ae3ee66b5d5b0746da489b242e2d1ccdc50531b8d9fb",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "4ecec19b462499d4129f7824bd432ceb50fee0e45f9650560a5d19658acb445d",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44796997421,
+    "rva": "0x8d0aa0",
+    "schema": 2,
+    "source_sha256": "ddede4593ea854c5ee9289ed02eda1c1568c10d29a040be5ca0f50e3f51a45fd",
+    "status": "pass",
+    "symbols": [
+      "?Forward@ForwardLeaf8d0aa0@@QEAAXPEAX@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "91f0e03b589ddcb1ee35ae3ee66b5d5b0746da489b242e2d1ccdc50531b8d9fb",
+      "normalized_sha256": "4ecec19b462499d4129f7824bd432ceb50fee0e45f9650560a5d19658acb445d",
+      "rva": 9243296,
+      "size": 8
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x8d0aa0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "3f11881d14ae9d75ea9c856c1b160cbc8854ff0b59083986b9b93f53050828a9",
+          "code_sections": 1,
+          "object_sha256": "7d9b5e3eda7e7a47b21b03e894c5c7f467fb547b07403d524046505902c2e897"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 4,
+          "code_bytes_total": 8,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 9243296,
+          "size": 8,
+          "symbol": "?Forward@ForwardLeaf8d0aa0@@QEAAXPEAX@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.cpp",
+          "source_revision": "ddede4593ea854c5ee9289ed02eda1c1568c10d29a040be5ca0f50e3f51a45fd"
+        },
+        "symbol_map_sha256": "561ab271c9509ee2cccdfea0ebe57a01bcfcbfe281612d79322cc6bb4936c166",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x8d0aa0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.cpp",
+    "digest": "ddede4593ea854c5ee9289ed02eda1c1568c10d29a040be5ca0f50e3f51a45fd",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.cpp",
+      "reconstruction/unmapped/leaves/ForwardLeaf8d0aa0.h"
+    ]
+  },
+  "submitter": "awarebayes",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/561ab271c9509ee2cccdfea0ebe57a01bcfcbfe281612d79322cc6bb4936c166.json",
+    "sha256": "561ab271c9509ee2cccdfea0ebe57a01bcfcbfe281612d79322cc6bb4936c166"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

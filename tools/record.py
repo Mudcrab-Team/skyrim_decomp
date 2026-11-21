@@ -241,7 +241,13 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
             # A stacked PR re-confirms functions of a unit that grew; only the identical source is a repeat.
             previous = _json_or_none(review_path) if fn['status'] == 'matched' else None
             if previous and review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source']):
-                raise ValueError('already matched')
+                # A carried record keeps its runs' own digest, which the standing review still binds, so the
+                # binding alone cannot tell a repeat from a record moved to edited text; only the digest the
+                # record on main already carries can.
+                held = (_json_or_none(root / report) or {}).get('source') or {}
+                if (held.get('digest_method'), held.get('digest')) == (record['source'].get('digest_method'),
+                                                                       record['source'].get('digest')):
+                    raise ValueError('already matched')
             if records is not None or author:
                 prior[root / report] = (root / report).read_bytes() if (root / report).is_file() else None
                 _write_json(root / report, record)

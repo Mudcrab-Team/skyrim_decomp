@@ -25,11 +25,14 @@ responsibility, not a right granted by this project, and nothing game-derived ma
 repository, pull requests, issues or CI.
 Do not distribute executables (original, modified or rebuilt), binary sections, machine-code
 listings, raw disassembly/decompiler exports, object files, libraries, memory dumps, save files,
-assets, extracted data tables, PDBs, proprietary SDKs or compiler packages through this project.
+assets, extracted data tables, PDBs, proprietary SDKs or compiler packages through this project (the generated,
+labelled CrashLogger output below is not a PDB and is an exception to the data-table rule, as are the
+sibling symbol names below, which are class-member and object-file names, not tables of addresses or types).
 This includes Git history, LFS, issues, comments, screenshots, releases, logs and CI artifacts.
 
 Do not acquire or use leaked/confidential source, unofficial proprietary debug symbols or
-unlawfully obtained development material. Do not assume a public URL establishes authorization.
+unlawfully obtained development material (the community-generated CrashLogger PDBs and their generated output, and the five sibling-build
+symbol files used as name evidence only, both recorded below, are the two exceptions). Do not assume a public URL establishes authorization.
 No copy-protection removal tools or instructions belong here. A reference link is not adoption
 of the linked project's practices or a license to reproduce its contents. The sibling-source
 exceptions below record the maintainer's decisions; they do not authorize this project to obtain
@@ -66,6 +69,30 @@ objects. The decision does not cover any other repository or revision, does not 
 material evidence about the Skyrim binary, and changes no other rule here: game files, binary
 bytes and decompiler output stay private, and this project still never acquires leaked code,
 PDBs or middleware source itself.
+
+**CrashLogger PDBs (Nexus mod 59818): maintainer decision by awarebayes, 2026-11-20.** These
+community-generated PDBs (one `fake.obj` module each, exported from the CrashLogger author's Ghidra project
+with wandel/pdbgen; not Bethesda debug symbols) may be used as a naming source, and content generated from them
+(layout headers, an RVA-to-name map and a README crediting Nexus 59818, CrashLogger Contributors,
+alandtse/CrashLoggerSSE, 2026.10.24) may be committed in `reconstruction/generated/crashlogger_pdb/`, every
+file labelled `CRASHLOGGER_PDB(59818@2026.10.24)`. The output is generated, regenerable and easy to strip in
+bulk, so it can be found and removed if the author or a rights holder objects; names a unit takes carry the
+same label. The `.pdb` file itself is never committed or redistributed, and downloading it is optional. It is
+a name source, not evidence about the binary (`docs/authorizations.md`, Notes). It is a maintainer policy
+decision, not a legal opinion, and it widens nothing else: leaked or Bethesda PDBs, MAP files and similar
+remain excluded.
+
+**Sibling-build symbol files (name evidence only): maintainer decision by awarebayes, approved on Reddit and
+confirmed in chat on 2026-11-21.** Five symbol files may be used as a source of class-member and object-file
+names: a 2013 linker map of this game, one Fallout 4 program database and three Xbox 360 Fallout: New Vegas
+program databases, identified by SHA-256 and size in `docs/authorizations.md`, Notes. The names and object files
+that `tools/symbol_corroboration.py` read from them may stay in `data/name-corroboration.json`,
+`data/symbol-names.json` and `findings/sibling-symbol-files.md`, and a name a unit takes from them carries
+`SYMBOLS(<source-id>)`. The files themselves, dumps of them, and any address, type layout, decorated name or code
+from them are never committed or redistributed. They are not evidence about the pinned binary. It is a maintainer
+policy decision, not a legal opinion, limited to these files: other debug symbols, leaked or Bethesda PDBs and
+MAP files stay excluded. This Fallout 4 file is a different source from the `fo4-private` sibling decompilation
+below.
 
 **Sibling decompilation (`fo4-private`): maintainer decision by awarebayes, 2026-11-14.**
 Source: a private Fallout 4 decompilation, revision `1b765c70`, used with its author's permission

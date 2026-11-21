@@ -14,7 +14,7 @@ verifier hosts.
 
 A function counts as `matched` only after both host comparisons and one review; a local pass is a
 candidate. A function that fails stays a draft and the bot comment names a reason code. The bot keeps
-one comment per PR and edits it for each new push. Fix it and push to the same branch. Aim for about 20-60 functions per PR (60 is the per-PR cap), or fewer if they are large; one
+one comment per PR and edits it for each new push. Fix it and push to the same branch. Aim for about 20-120 functions per PR (120 is the per-PR cap), or fewer if they are large; one
 big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
 per class, since each PR costs a full verification and merge cycle.
 
@@ -92,6 +92,31 @@ Steam credentials.
 1.8 GiB on disk; skipped below about 18 GiB of free RAM; `--no-decompiler` skips it). `start` then
 adds a private `decomp.c`. Treat it as an untrusted hint for control flow and types; write your own
 source, because `compare` decides the match.
+
+## Recommended: CrashLogger PDB names
+
+The repository carries names and layouts generated from the community "CrashLogger PDBs"
+(https://www.nexusmods.com/skyrimspecialedition/mods/59818, CrashLogger Contributors) in
+`reconstruction/generated/crashlogger_pdb/`; read its README. `next` shows a function's name from
+`names/<NN>.tsv` as a suggestion, so you need download nothing.
+
+- A name or layout you take is labelled `CRASHLOGGER_PDB(59818@<version>)` on its label line, for example
+  `// Foo::Bar: CRASHLOGGER_PDB(59818@2026.10.24)`. It is a name source like `COMMUNITY`, not evidence of what the
+  function does; only a byte match accepts a function.
+- Downloading the mod is optional, needed only to refresh the generated output or for a lookup beyond it: take the
+  `ae17` variant (`ae17/SKSE/Plugins/SkyrimSE.pdb`, 1.7.104) and keep it under `.local/`, for example
+  `.local/pdb/SkyrimSE.pdb` (or point `SR_CRASHLOGGER_PDB` at it). `next` and `start` fall back to it for an RVA the
+  committed map lacks; put the archive's version in `.local/pdb/version.txt` or `SR_CRASHLOGGER_PDB_VERSION`.
+  `llvm-pdbutil dump -publics SkyrimSE.pdb` lists its publics; keep that output under `.local/`.
+- `start` also prints `PDB layout ...` with the header of the class a function belongs to
+  (`reconstruction/generated/crashlogger_pdb/types/<Class>.h`: fields, offsets, padding and `_base` members). A unit
+  that already declares the class copies only the members it needs; a unit that does not may include the header.
+  Layouts are community guesses; `compare` decides.
+- `start` prints `PDB prototype ...` (return type, parameter types, calling convention, from `prototypes/<NN>.tsv`) for a
+  function whose PDB type is more than a bare `void()` stub; a method's first parameter is its `this`, often typed as
+  another class. It also prints `PDB boundary warning` when a claimed RVA is inside a function that
+  `boundaries/<NN>.tsv` records but is not its start; `intake` and `submit` give the same warning. It never blocks.
+- Never commit the `.pdb`, or a name list from it outside the generated directory.
 
 ## Mapping-only PRs
 

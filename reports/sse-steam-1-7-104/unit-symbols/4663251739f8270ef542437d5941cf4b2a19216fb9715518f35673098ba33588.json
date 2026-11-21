@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Relay@RelayLeaf974c50@@QEAAPEAXXZ": {
+      "rva": 9915472,
+      "size": 30
+    },
+    "?GetRelated@RelayLeaf974c50@@QEAAPEAVRelated@@XZ": {
+      "rva": 9919296,
+      "size": null
+    },
+    "?Step@Related@@QEAAPEAXPEAVRelayLeaf974c50@@@Z": {
+      "rva": 9920016,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Relay@RelayLeaf974c50@@QEAAPEAXXZ",
+        "rva": "0x974c50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetRelated@RelayLeaf974c50@@QEAAPEAVRelated@@XZ",
+        "rva": "0x975b40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Step@Related@@QEAAPEAXPEAVRelayLeaf974c50@@@Z",
+        "rva": "0x975e10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

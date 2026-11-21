@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import ci_hash_check as public
 import contrib
+import pdb_types
 import lint_reconstruction as lint
 import compare
 from pecoff import CoffObject, Reject
@@ -29,11 +30,13 @@ import target_hashes as hashes
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # Optional source-header request for a new unit with no accepted symbol binding yet. It is a
 # claim about which public target to try, never evidence of identity or acceptance.
-REQUEST = re.compile(r'^// CI hash: (0x[0-9a-fA-F]+) (\S+)\s*$', re.M)
+# Horizontal whitespace after the colon is optional: a hint typed without it must still bind
+# rather than fail the whole unit.
+REQUEST = re.compile(r'^// CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S+)\s*$', re.M)
 SHA = re.compile(r'[0-9a-f]{40}')
 UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.
-MAX_CLAIMS_PER_UNIT = 64
+MAX_CLAIMS_PER_UNIT = 128
 CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
              'tools/target_hashes.py', 'tools/contrib.py', 'tools/contributor_standing.py',
              'tools/build_leaderboard.py', 'tools/build_model_trend.py', '.gitattributes',
@@ -75,13 +78,16 @@ def prepare(root, base, head, work):
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only = [], set()
-    names = [diff[i + 1].decode('utf-8') for i in range(0, len(diff) - 1, 2)]
+    # Generated CrashLogger PDB output is neither a unit nor read by this job: it is never compiled.
+    names = [n for i in range(0, len(diff) - 1, 2) if not pdb_types.is_generated(n := diff[i + 1].decode('utf-8'))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
         return root, []
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
+        if pdb_types.is_generated(name):
+            continue
         if not contrib.UNIT_PATH.fullmatch(name):
             if name.startswith(CI_INPUTS):
                 continue  # Never read or execute PR tooling; test trusted base references instead.

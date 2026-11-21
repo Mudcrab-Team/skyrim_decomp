@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "??1NiKeyBasedInterpolator@@UEAA@XZ": {
+      "rva": 16180736,
+      "size": 15
+    },
+    "?GetKeyAt@NiKeyBasedInterpolator@@QEBAPEAEIG@Z": {
+      "rva": 16180944,
+      "size": 90
+    },
+    "??_7NiKeyBasedInterpolator@@6B@": {
+      "rva": 27614744,
+      "size": null
+    },
+    "??1NiInterpolator@@UEAA@XZ": {
+      "rva": 16174080,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "??1NiKeyBasedInterpolator@@UEAA@XZ",
+        "rva": "0xf6e600",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetKeyAt@NiKeyBasedInterpolator@@QEBAPEAEIG@Z",
+        "rva": "0xf6e6d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiKeyBasedInterpolator@@6B@",
+        "rva": "0x1a55e18",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1NiInterpolator@@UEAA@XZ",
+        "rva": "0xf6cc00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

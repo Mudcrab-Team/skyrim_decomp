@@ -58,6 +58,16 @@ class Credits(unittest.TestCase):
         self.assertEqual([board.tier(n) for n in (0, 9, 10, 99, 100, 999, 1000)],
                          ['Contributor', 'Contributor', '10+', '10+', '100+', '100+', '1,000+'])
         self.assertIn('Contributor leaderboard', board.html([]))
+        page = board.html([], (3211, 92))
+        self.assertIn('<strong>3,211</strong> functions', page)
+        self.assertIn('<strong>92</strong>', page)
+        self.assertNotIn('Open to claim', board.html([]))
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(board.window_counts(tmp))
+            (Path(tmp) / 'data/target-hashes').mkdir(parents=True)
+            (Path(tmp) / 'data/target-hashes/contributor-targets.json').write_text(
+                json.dumps({'next_candidate_count': 7, 'claim_function_count': 3}))
+            self.assertEqual(board.window_counts(tmp), (7, 3))
 
     def events(self):
         return dict(schema=1, contributors=dict(alice=dict(false_claims=[

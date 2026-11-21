@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__imp__errno": {
+      "rva": 24940448,
+      "size": null
+    },
+    "__imp__invalid_parameter_noinfo": {
+      "rva": 24940464,
+      "size": null
+    },
+    "?AreVerticesInsideActivePlanes@BSOcclusionPlane@@QEAA_NPEBUNiFrustumPlanes@@@Z": {
+      "rva": 16683968,
+      "size": 272
+    },
+    "?Refresh@BSOcclusionPlane@@AEAAXXZ": {
+      "rva": 16680816,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__imp__errno",
+        "rva": "0x17c8fa0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__imp__invalid_parameter_noinfo",
+        "rva": "0x17c8fb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AreVerticesInsideActivePlanes@BSOcclusionPlane@@QEAA_NPEBUNiFrustumPlanes@@@Z",
+        "rva": "0xfe93c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Refresh@BSOcclusionPlane@@AEAAXXZ",
+        "rva": "0xfe8770",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "d2eac8260e86a25c6ec4038abf1daab03a129affba34a1ea92bccfd1bf6ff351",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/bsmain/TES_1a9280.h",
+          "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.cpp",
+          "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.h",
+          "reconstruction/skyrim_shared/world/TESWorldSpace_30db20.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "eb3013736f90ef17ae768a79389db21e68a11b4d",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "c0ef64025f1d44f2b4fa3f88e37807ca04e2182d",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "ceeee1260804a828af8f1a48f0c7466b085a18ea19517c3ca8358d1b1472ffe5",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "984c1fee03518aa30d3d1084f3c51cc6d1b0abb9764b6ae29f966f1859413dca",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44837481933,
+    "rva": "0x516c40",
+    "schema": 2,
+    "source_sha256": "70318e8978e76baaea2be3a41b9b2552156041e4b12bf0252b718941d8e39fb7",
+    "status": "pass",
+    "symbols": [
+      "?QueryCurrentTerrainFlag@BGSTerrainManager@@SA_NXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "ceeee1260804a828af8f1a48f0c7466b085a18ea19517c3ca8358d1b1472ffe5",
+      "normalized_sha256": "984c1fee03518aa30d3d1084f3c51cc6d1b0abb9764b6ae29f966f1859413dca",
+      "rva": 5336128,
+      "size": 69
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x516c40",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "05bd0bc914619a682723ab3847ee8a0d8370ab0ff74d5b9c1c650e3715687774",
+          "code_sections": 1,
+          "object_sha256": "d2eac8260e86a25c6ec4038abf1daab03a129affba34a1ea92bccfd1bf6ff351"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 16,
+          "code_bytes_exact": 53,
+          "code_bytes_total": 69,
+          "eh": {
+            "bytes": 8,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 4
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 8,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 5336128,
+          "size": 69,
+          "symbol": "?QueryCurrentTerrainFlag@BGSTerrainManager@@SA_NXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.cpp",
+          "source_revision": "70318e8978e76baaea2be3a41b9b2552156041e4b12bf0252b718941d8e39fb7"
+        },
+        "symbol_map_sha256": "23a66a75c9ab0b4ac1f934303725f562d6968cdb33570182374c81098072287f",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x516c40"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.cpp",
+    "digest": "70318e8978e76baaea2be3a41b9b2552156041e4b12bf0252b718941d8e39fb7",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/bsmain/TES_1a9280.h",
+      "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.cpp",
+      "reconstruction/skyrim_shared/world/BGSTerrainManager_516c40.h",
+      "reconstruction/skyrim_shared/world/TESWorldSpace_30db20.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/23a66a75c9ab0b4ac1f934303725f562d6968cdb33570182374c81098072287f.json",
+    "sha256": "23a66a75c9ab0b4ac1f934303725f562d6968cdb33570182374c81098072287f"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

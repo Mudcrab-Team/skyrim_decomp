@@ -157,6 +157,12 @@ def provenance_findings(ctx, unit, root=None):
     labels = check_labels.check([root / n for n in unit], root=root, env=ctx.env,
                                 checkouts=checkouts, siblings=siblings)
     warnings = ['label: ' + finding for finding in labels]
+    # A claimed RVA inside a function the CrashLogger PDB records, rather than at its start, is probably wrong.
+    import pdb_types
+    import rva_headers
+    claimed = rva_headers.claimed_rvas(
+        [(root / n).read_text(errors='replace') for n in unit if (root / n).is_file()])
+    warnings += ['pdb boundary: ' + w for w in pdb_types.boundary_warnings(sorted(claimed), ctx.repo)]
     clones, missing = check_origin.open_clones(ctx.repo, env=ctx.env)
     hits = check_origin.check_unit([root / n for n in unit], clones, root=root)
     origin = [check_origin.describe(h, no_sibling_names=no_sibling_names(ctx.env)) for h in hits]

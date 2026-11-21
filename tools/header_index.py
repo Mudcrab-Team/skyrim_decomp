@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 
 from declaration_kit import class_body
+import pdb_types
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -80,6 +81,8 @@ def header_entry(root, path):
 
 def index(root=ROOT, cls=None):
     paths = sorted((Path(root) / 'reconstruction').rglob(f'{cls or "*"}.h'))
+    # The generated PDB layouts declare no methods; `start` points at them in its own hint.
+    paths = [p for p in paths if not pdb_types.is_generated(p.relative_to(Path(root)).as_posix())]
     return [entry for path in paths if (entry := header_entry(root, path))]
 
 

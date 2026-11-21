@@ -47,6 +47,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lint_reconstruction import LABEL_LINE, label_grammar_applies, SIBLING_HEADER, SIBLING_SOURCES, SIBLING_ID  # noqa: E402
 from build_fnv_index import split_symbol  # noqa: E402
+import pdb_types  # noqa: E402
 
 DEFAULT_CHECKOUTS = {
     'CharmedBaryon/CommonLibSSE-NG': '.local/sources/CommonLibSSE-NG',
@@ -655,7 +656,8 @@ def configured_checkouts(root=ROOT, env=None):
 
 
 def default_files(root=ROOT):
-    return sorted(p for p in (root / 'reconstruction').rglob('*') if p.suffix in ('.h', '.cpp'))
+    return sorted(p for p in (root / 'reconstruction').rglob('*')
+                  if p.suffix in ('.h', '.cpp') and not pdb_types.is_generated(p.relative_to(root).as_posix()))
 
 
 def configured_siblings(root=ROOT, env=None):
@@ -672,7 +674,10 @@ def check(files, checkouts=None, root=ROOT, siblings=None, no_sibling_names=None
                       configured_siblings(root, env) if siblings is None else siblings, no_sibling_names, env)
     findings = []
     for path in files:
-        findings += checker.check_file(Path(path) if Path(path).is_absolute() else root / path)
+        full = Path(path) if Path(path).is_absolute() else root / path
+        if full.is_relative_to(root) and pdb_types.is_generated(full.relative_to(root).as_posix()):
+            continue  # generated names carry the CRASHLOGGER_PDB label by construction (lint checks it)
+        findings += checker.check_file(full)
     return findings
 
 

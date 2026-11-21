@@ -48,7 +48,8 @@ class StripTests(unittest.TestCase):
         self.assertEqual(digest(a), digest(b))
 
     def test_provenance_is_hashed(self):
-        for marker in (b'GUESS(high)', b'STANDIN', b'COMMUNITY(a/b@abcdef1, MIT)', b'SIBLING(x/y@abcdef1, no-licence)'):
+        for marker in (b'GUESS(high)', b'STANDIN', b'COMMUNITY(a/b@abcdef1, MIT)', b'SIBLING(x/y@abcdef1, no-licence)',
+                       b'SYMBOLS(fo4-pdb)'):
             self.assertNotEqual(digest(BASE), digest(BASE.replace(b'GUESS(low)', marker)), marker)
         for field in (b'Source exposure: mixed', b'Code origin: adapted', b'Adapted bodies: Foo::Bar'):
             self.assertNotEqual(digest(BASE), digest(BASE + b'// ' + field + b'\n'), field)

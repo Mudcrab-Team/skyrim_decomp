@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__CxxFrameHandler3": {
+      "rva": 22714324,
+      "size": null
+    },
+    "__std_terminate": {
+      "rva": 22714318,
+      "size": 6
+    },
+    "?ClearVisibility@BSPortalGraphEntry@@QEAAXXZ": {
+      "rva": 16619168,
+      "size": 185
+    },
+    "?SetPortalGraph@BSPortalGraphEntry@@QEAAXPEAVBSPortalGraph@@@Z": {
+      "rva": 16619360,
+      "size": 47
+    },
+    "?AddVisibilityToMap@BSPortalGraphEntry@@QEAAXPEAXPEAVBSCompoundFrustum@@@Z": {
+      "rva": 16619680,
+      "size": 90
+    },
+    "?portalVisibilityLock@@3VBSReadWriteLock@@A": {
+      "rva": 53665352,
+      "size": null
+    },
+    "?LockForWrite@BSReadWriteLock@@QEAAXXZ": {
+      "rva": 13513424,
+      "size": null
+    },
+    "?ReleaseVisibilityFrustum@@YAXPEAVBSCompoundFrustum@@@Z": {
+      "rva": 16741424,
+      "size": null
+    },
+    "?UnlockForWrite@BSReadWriteLock@@QEAAXXZ": {
+      "rva": 13514016,
+      "size": null
+    },
+    "??1BSWriteLockGuard@@QEAA@XZ": {
+      "rva": 1553840,
+      "size": null
+    },
+    "?Insert@PortalVisibilityTable@@QEAAXAEBQEAXAEBQEAVBSCompoundFrustum@@PEA_N@Z": {
+      "rva": 16625104,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__CxxFrameHandler3",
+        "rva": "0x15a97d4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__std_terminate",
+        "rva": "0x15a97ce",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ClearVisibility@BSPortalGraphEntry@@QEAAXXZ",
+        "rva": "0xfd96a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetPortalGraph@BSPortalGraphEntry@@QEAAXPEAVBSPortalGraph@@@Z",
+        "rva": "0xfd9760",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AddVisibilityToMap@BSPortalGraphEntry@@QEAAXPEAXPEAVBSCompoundFrustum@@@Z",
+        "rva": "0xfd98a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?portalVisibilityLock@@3VBSReadWriteLock@@A",
+        "rva": "0x332de48",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LockForWrite@BSReadWriteLock@@QEAAXXZ",
+        "rva": "0xce32d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReleaseVisibilityFrustum@@YAXPEAVBSCompoundFrustum@@@Z",
+        "rva": "0xff7430",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UnlockForWrite@BSReadWriteLock@@QEAAXXZ",
+        "rva": "0xce3520",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1BSWriteLockGuard@@QEAA@XZ",
+        "rva": "0x17b5b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Insert@PortalVisibilityTable@@QEAAXAEBQEAXAEBQEAVBSCompoundFrustum@@PEA_N@Z",
+        "rva": "0xfdadd0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

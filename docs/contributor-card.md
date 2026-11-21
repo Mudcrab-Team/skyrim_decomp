@@ -4,7 +4,7 @@ Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, 
 <model>"`, edit the two source files it creates, `compare`, then `submit --dry-run` and `submit`.
 Open a PR that touches only `reconstruction/**`; checks run; the bot reviews and merges.
 
-Aim for about 20-60 functions per PR (60 is the per-PR cap), or fewer if they are large; one
+Aim for about 20-120 functions per PR (120 is the per-PR cap), or fewer if they are large; one
 big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
 per class, since each PR costs a full verification and merge cycle. `submit <task> <task>...` (or
 `submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
@@ -36,16 +36,31 @@ Header: keep it short. The skeleton writes all of it; a `.cpp` looks like
 Never paste licence text, and leave out Task, Labels, Evidence, Drafted by, Recipe (unless it is
 not the default) and any "a byte match shows..." disclaimer: the records and git hold them. Labels,
 `Sibling source:` and `0x<rva> <Name>` lines do not count; keep the rest to 6 lines or fewer. The
-PR check fails a new or changed header that is longer or holds licence text.
+PR check fails a new or changed header that is longer or holds licence text. The failure names the file, how many lines it is over and the lines that count.
+
+A function is claimed only by its `// 0x<rva> <Name>` line (older units also use `RVA 0x<rva>, <n> bytes`
+or `compared at RVA 0x<rva>`). An address in prose, such as a callee or a global in a provenance line, is not
+a claim. If a claimed RVA has no published target row yet and is a function start of the pinned build, the
+bot publishes its row (hash only) and re-runs the check on your head; an address that cannot be compared
+is named in the bot comment instead of being skipped.
 
 Source rules:
 - A label line is `// <names>: <LABEL>`; LABEL is `COMMUNITY(<owner>/<repo>@<rev>, <licence>)`,
+  `CRASHLOGGER_PDB(59818@<version>)` (a name or layout from the generated CrashLogger output, below),
+  `SYMBOLS(<source-id>)` (a member name from the sibling symbol evidence, below),
   `GUESS(low)`, `EXE_RTTI`, `OBSERVED`, or `STANDIN` plus one of those. One label per line.
 - Includes: own header `#include "X.h"`; shared headers by reconstruction-root path such as
   `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. A relative path with `..` is fine when it
   resolves to a regular file inside the repository; host paths and paths that leave it are refused.
 - `compare` builds with the recipe the unit's own `Recipe:` line names (the first `reconstruction/recipes/*.json`
   path in the source), as CI does, and with the task's recipe when the unit names none.
+- PDB layouts: when `start` prints `PDB layout`, read that class header for field names, offsets and bases. A unit that
+  already declares the class takes just the members it needs into its own header (a second definition of the class
+  in one include closure fails); a unit that does not may include it as `"generated/crashlogger_pdb/types/X.h"` with
+  `Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json`. Label a name or layout taken from it
+  `CRASHLOGGER_PDB(59818@2026.10.24)`; it is a guess until `compare` matches. `PDB prototype` gives the signature
+  the PDB records (the first parameter of a method is its `this`, often another class), and `PDB boundary warning`
+  means a claimed RVA is inside a PDB function, not at its start.
 - Declare, do not define, a function the target calls; `compare` binds the call.
 - Write assignments in the order the listing stores them; keep a repeated null test as a repeat read.
 - `static_assert` needs a message.
@@ -74,6 +89,25 @@ destructors and their adjustor thunks, and overrides named for their base class.
   `// 0x1900a0 NiAVObject::GetCollisionObject() const`, or paste the `// CI hash: 0x<rva> <symbol>`
   line `compare` prints. Both are read by every host; `bind-hints.json` stays on your machine.
 - A thread-local: name the variable `..._tls_0x<offset>` (or a local `tls:` hint).
+
+## Recommended: CrashLogger PDB names
+
+`reconstruction/generated/crashlogger_pdb/` holds names and layouts generated from the community "CrashLogger PDBs"
+(https://www.nexusmods.com/skyrimspecialedition/mods/59818); `next` shows a function's name from it as a suggestion.
+Label each name or layout you take `CRASHLOGGER_PDB(59818@2026.10.24)`, one label per line. It names functions; it
+does not prove them, so `compare` still decides. Downloading the mod (`ae17` variant, 1.7.104) is optional, only
+to refresh the output: keep it under `.local/`, e.g. `.local/pdb/SkyrimSE.pdb` (or `SR_CRASHLOGGER_PDB`), and
+`llvm-pdbutil dump -publics` lists its publics. Never commit the `.pdb`.
+
+## Optional: sibling symbol names
+
+`data/symbol-names.json` and `data/name-corroboration.json` hold class-member names and object-file names read
+from five sibling-build symbol files (a 2013 linker map of this game, a Fallout 4 program database, three Xbox 360
+Fallout: New Vegas program databases; `findings/sibling-symbol-files.md`). They are candidates for what a class's
+members are called, never which function is which. A name a unit takes from them carries `SYMBOLS(<source-id>)`
+with `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`, one label per line, naming the source that
+has the member. The files themselves are never committed, and no address, type or decorated name from them goes
+into a unit; `compare` still decides.
 
 ## Mapping-only PRs
 

@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "??0NiBlendBoolInterpolator@@QEAA@_NEM@Z": {
+      "rva": 16198592,
+      "size": 43
+    },
+    "??0NiBlendBoolInterpolator@@QEAA@XZ": {
+      "rva": 16199152,
+      "size": 43
+    },
+    "?UpdateBool@NiBlendBoolInterpolator@@QEAA_NMPEAVNiObjectNET@@AEA_N@Z": {
+      "rva": 16199248,
+      "size": 98
+    },
+    "??0NiBlendInterpolator@@QEAA@_NEM@Z": {
+      "rva": 16108448,
+      "size": null
+    },
+    "??_7NiBlendBoolInterpolator@@6B@": {
+      "rva": 27616208,
+      "size": null
+    },
+    "?gDefaultValue@@3_NB": {
+      "rva": 27613448,
+      "size": null
+    },
+    "??0NiBlendInterpolator@@QEAA@XZ": {
+      "rva": 16108784,
+      "size": null
+    },
+    "?gInvalidTime@@3MB": {
+      "rva": 27601252,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "??0NiBlendBoolInterpolator@@QEAA@_NEM@Z",
+        "rva": "0xf72bc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiBlendBoolInterpolator@@QEAA@XZ",
+        "rva": "0xf72df0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?UpdateBool@NiBlendBoolInterpolator@@QEAA_NMPEAVNiObjectNET@@AEA_N@Z",
+        "rva": "0xf72e50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiBlendInterpolator@@QEAA@_NEM@Z",
+        "rva": "0xf5cba0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiBlendBoolInterpolator@@6B@",
+        "rva": "0x1a563d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gDefaultValue@@3_NB",
+        "rva": "0x1a55908",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiBlendInterpolator@@QEAA@XZ",
+        "rva": "0xf5ccf0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gInvalidTime@@3MB",
+        "rva": "0x1a52964",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

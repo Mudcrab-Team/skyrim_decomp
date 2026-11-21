@@ -4,7 +4,7 @@
 // BSMultiBoundShape, BSMultiBoundAABB: STANDIN EXE_RTTI
 // BSMultiBoundOBB::GetType, BSMultiBoundOBB::SaveBinary, BSMultiBoundOBB::~BSMultiBoundOBB, BSMultiBoundOBB::LoadBinary: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSMultiBoundOBBData::SaveBinary, BSMultiBoundOBBData::LoadBinary: GUESS(low)
-// BSMultiBoundOBB::ComputeFlag: GUESS(low)
+// BSMultiBoundOBB::ComputeFlag, BSMultiBoundOBB::CopyMembers, BSMultiBoundAABB::CopyMembers: GUESS(low)
 // unknown10, unknown18, unknown40, unknown64: GUESS(low)
 // BSMultiBoundOBBData: GUESS(low); serialized member storage in this stand-in.
 // unknown65: GUESS(low); padding after the compared flag field.
@@ -120,6 +120,8 @@ static_assert(sizeof(BSMultiBoundShape) == 0x18, "BSMultiBoundShape size");
 class BSMultiBoundAABB : public BSMultiBoundShape
 {
 public:
+    BSMultiBoundAABB();
+    void CopyMembers(BSMultiBoundAABB* destination) const;
     void SaveBinary(NiStream& a_stream) override;
     void LoadBinary(NiStream& a_stream) override;
     bool RegisterStreamables(NiStream& a_stream) override;  // not compared here: slot 1A, 0xfce8c0
@@ -140,6 +142,7 @@ class BSMultiBoundOBB : public BSMultiBoundAABB
 {
 public:
     BSMultiBoundOBB();
+    void CopyMembers(BSMultiBoundOBB* destination) const;
     bool ComputeFlag();
     virtual std::uint32_t GetType();  // compared: 0xfcf830
     virtual void SaveBinary(NiStream& a_stream);  // compared: 0xfcf6a0

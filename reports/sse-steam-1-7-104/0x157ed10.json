@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "15aff16c3f0bd540f51c248a385f41a31898230187a697a4152c9e5c9ed1127e",
+        "object_sha256": "820cdad4441408b6153440fcfcf93313659c297a51b48036ec5e5a83738308e7",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSShadowDirectionalLight.cpp",
@@ -37,7 +37,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "6871664d22b4ba01749559f6873a231b8fa8940a",
+    "base_sha": "89345c5de3db57fd52c3e68ce3e27f0bf16ce7e4",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -48,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "c60bf514c6137534831fb2c50bda447e3c6fe70a",
+    "head_sha": "76206ffb30a3f612895eb6ea2b49694bd4cff0ca",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -61,10 +61,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44715502992,
+    "run_id": 44769425009,
     "rva": "0x157ed10",
     "schema": 2,
-    "source_sha256": "eef497cba624d3e4625ccf17a087e0ce3ec3099c981f48c77f939b5bbd48d71f",
+    "source_sha256": "2dba34c260b924cf820fe96fa9c68368fb03c68745b7ac94b0e8e9855537b13f",
     "status": "pass",
     "symbols": [
       "?GetPassExtraParam@BSShadowDirectionalLight@@UEAAII@Z"
@@ -99,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "6cbd36b043b8b25618ebf68ebaeaaa628b31375c17c29773cfe5998ac045a4fe",
           "code_sections": 1,
-          "object_sha256": "15aff16c3f0bd540f51c248a385f41a31898230187a697a4152c9e5c9ed1127e"
+          "object_sha256": "820cdad4441408b6153440fcfcf93313659c297a51b48036ec5e5a83738308e7"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -160,9 +160,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSShadowDirectionalLight.cpp",
-          "source_revision": "eef497cba624d3e4625ccf17a087e0ce3ec3099c981f48c77f939b5bbd48d71f"
+          "source_revision": "2dba34c260b924cf820fe96fa9c68368fb03c68745b7ac94b0e8e9855537b13f"
         },
-        "symbol_map_sha256": "e3906af8ffc3a492bf44d5e6550919356e2503a754183610544bb9152da305f4",
+        "symbol_map_sha256": "26dd044d1e3a171c2aab3a1da55bce24440efe5c9b3df990049c69f1c65873aa",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -173,7 +173,7 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSShadowDirectionalLight.cpp",
-    "digest": "eef497cba624d3e4625ccf17a087e0ce3ec3099c981f48c77f939b5bbd48d71f",
+    "digest": "2dba34c260b924cf820fe96fa9c68368fb03c68745b7ac94b0e8e9855537b13f",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSShadowDirectionalLight.cpp",
@@ -181,10 +181,10 @@
       "reconstruction/gamebryo/nimain/NiRefObject.h"
     ]
   },
-  "submitter": "awarebayes",
+  "submitter": "eclepso",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/e3906af8ffc3a492bf44d5e6550919356e2503a754183610544bb9152da305f4.json",
-    "sha256": "e3906af8ffc3a492bf44d5e6550919356e2503a754183610544bb9152da305f4"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/26dd044d1e3a171c2aab3a1da55bce24440efe5c9b3df990049c69f1c65873aa.json",
+    "sha256": "26dd044d1e3a171c2aab3a1da55bce24440efe5c9b3df990049c69f1c65873aa"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

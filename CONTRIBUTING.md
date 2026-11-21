@@ -101,6 +101,9 @@ different, `setup` says so.
   pinned community headers (`python3 tools/check_labels.py <files>` after `contrib.py setup`) is
   re-accepted by the project without a new review when the compiled code is unchanged. Change
   comments and labels only, not code or declared names.
+- **Code rules.** `python3 tools/check_code_rules.py` counts the matched functions whose source still
+  holds an offset cast, a private copy of a type or a padding member ([docs/code-rules.md](docs/code-rules.md)).
+  Clearing a finding is an ordinary source change to that unit: it is recompiled and compared like any other.
 - **Platform reports.** Run `./sr --redact doctor` and `setup` on your machine
   and open an issue with the output (it contains no game data) if something fails.
 - **Documentation.** Unclear steps in this file or `docs/contributing-agent.md` are bugs.

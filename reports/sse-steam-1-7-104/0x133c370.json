@@ -1,0 +1,193 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "efec02bb41c6fb3789331e053c9c0d4df5fc1c6081d312502f74f1d7fc170b8f",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/unmapped/fields/FieldLeaf133c370.cpp",
+          "reconstruction/unmapped/fields/FieldLeaf133c370.h",
+          "reconstruction/unmapped/fields/FunctionPointerCallableLayout.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "b0cd64a5ee20e3b8cdcb6563ba61e06767288d20",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "48e9e69695d0304a0fcc77830d44829f2ec3127b",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "ce48747805fa6095b09c856f63fbe54b1e093993cd3782b8ba4d2bff17e43fe1",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "7a64c0e82e9028aed95f03ef90dcbac4a71b6d42a9f131badca5034ec0d026ec",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44818361917,
+    "rva": "0x133c370",
+    "schema": 2,
+    "source_sha256": "af584b34d6eeef087085aee29c64e21c90161d812c30e3ce426aacf4f0718d5d",
+    "status": "pass",
+    "symbols": [
+      "?Read@FieldLeaf133c370@@QEAAPEBXXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "ce48747805fa6095b09c856f63fbe54b1e093993cd3782b8ba4d2bff17e43fe1",
+      "normalized_sha256": "7a64c0e82e9028aed95f03ef90dcbac4a71b6d42a9f131badca5034ec0d026ec",
+      "rva": 20169584,
+      "size": 5
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/unmapped/fields/FieldLeaf133c370.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x133c370",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "0085d9b370f784de18048bf5f80c4ac029ff8019c178a7d45c5f2d65129699a7",
+          "code_sections": 1,
+          "object_sha256": "efec02bb41c6fb3789331e053c9c0d4df5fc1c6081d312502f74f1d7fc170b8f"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 5,
+          "code_bytes_total": 5,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 20169584,
+          "size": 5,
+          "symbol": "?Read@FieldLeaf133c370@@QEAAPEBXXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/unmapped/fields/FieldLeaf133c370.cpp",
+          "source_revision": "af584b34d6eeef087085aee29c64e21c90161d812c30e3ce426aacf4f0718d5d"
+        },
+        "symbol_map_sha256": "028e108bba1707971ceb68b8fea5332bd1a65d2852ac3983d2c9fe5c8b53e742",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x133c370"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/unmapped/fields/FieldLeaf133c370.cpp",
+    "digest": "af584b34d6eeef087085aee29c64e21c90161d812c30e3ce426aacf4f0718d5d",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/unmapped/fields/FieldLeaf133c370.cpp",
+      "reconstruction/unmapped/fields/FieldLeaf133c370.h",
+      "reconstruction/unmapped/fields/FunctionPointerCallableLayout.h"
+    ]
+  },
+  "submitter": "awarebayes",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/028e108bba1707971ceb68b8fea5332bd1a65d2852ac3983d2c9fe5c8b53e742.json",
+    "sha256": "028e108bba1707971ceb68b8fea5332bd1a65d2852ac3983d2c9fe5c8b53e742"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

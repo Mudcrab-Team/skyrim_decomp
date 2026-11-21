@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/19dbfbfc034c9b6504ada1fc5c91b222ec14fabb1bf6e30168867a29020696ca.json",
+  "versions": [
+    {
+      "sha256": "19dbfbfc034c9b6504ada1fc5c91b222ec14fabb1bf6e30168867a29020696ca",
+      "base": null,
+      "added": [
+        "__CxxFrameHandler3",
+        "__std_terminate",
+        "?ClearVisibility@BSPortalGraphEntry@@QEAAXXZ",
+        "?SetPortalGraph@BSPortalGraphEntry@@QEAAXPEAVBSPortalGraph@@@Z",
+        "?AddVisibilityToMap@BSPortalGraphEntry@@QEAAXPEAXPEAVBSCompoundFrustum@@@Z",
+        "?portalVisibilityLock@@3VBSReadWriteLock@@A",
+        "?LockForWrite@BSReadWriteLock@@QEAAXXZ",
+        "?ReleaseVisibilityFrustum@@YAXPEAVBSCompoundFrustum@@@Z",
+        "?UnlockForWrite@BSReadWriteLock@@QEAAXXZ",
+        "??1BSWriteLockGuard@@QEAA@XZ",
+        "?Insert@PortalVisibilityTable@@QEAAXAEBQEAXAEBQEAVBSCompoundFrustum@@PEA_N@Z"
+      ]
+    }
+  ]
+}

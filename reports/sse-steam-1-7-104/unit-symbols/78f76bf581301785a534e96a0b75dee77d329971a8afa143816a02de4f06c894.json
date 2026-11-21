@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?ComputeCRC32@BSLightingShaderMaterialHairTint@@QEAAII@Z": {
+      "rva": 22180240,
+      "size": 67
+    },
+    "?ComputeMaterialFlagHash@@YAIPEAVBSLightingShaderMaterialBase@@I@Z": {
+      "rva": 22166064,
+      "size": null
+    },
+    "?SizeOfSize@CRC32Calculator@@SAXPEAIPEBXI@Z": {
+      "rva": 13509904,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?ComputeCRC32@BSLightingShaderMaterialHairTint@@QEAAII@Z",
+        "rva": "0x1527190",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ComputeMaterialFlagHash@@YAIPEAVBSLightingShaderMaterialBase@@I@Z",
+        "rva": "0x1523a30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SizeOfSize@CRC32Calculator@@SAXPEAIPEBXI@Z",
+        "rva": "0xce2510",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

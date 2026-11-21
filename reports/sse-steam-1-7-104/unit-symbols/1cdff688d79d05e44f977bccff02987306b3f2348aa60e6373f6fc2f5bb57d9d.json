@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "??_GBSPathing@@UEAAPEAXI@Z": {
+      "rva": 18633440,
+      "size": 65
+    },
+    "??_7BSPathing@@6B@": {
+      "rva": 28035488,
+      "size": null
+    },
+    "??_7FindTriangleForLocationFilter@@6B@": {
+      "rva": 25592840,
+      "size": null
+    },
+    "?g_pathingSingleton@@3PEAVBSPathing@@EA": {
+      "rva": 52349144,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "??_GBSPathing@@UEAAPEAXI@Z",
+        "rva": "0x11c52e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BSPathing@@6B@",
+        "rva": "0x1abc9a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7FindTriangleForLocationFilter@@6B@",
+        "rva": "0x1868408",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_pathingSingleton@@3PEAVBSPathing@@EA",
+        "rva": "0x31ec8d8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?HasStateName@BGSProcedureFollow@@QEBA_NAEBVProcedureExecutionState@@@Z": {
+      "rva": 4647504,
+      "size": 31
+    },
+    "?GetStateStatus@BGSProcedureFollow@@QEBAEAEBUFollowStateRequest@@@Z": {
+      "rva": 4649008,
+      "size": 9
+    },
+    "?gFollowStateName@@3UProcedureStateName@@B": {
+      "rva": 52348928,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?HasStateName@BGSProcedureFollow@@QEBA_NAEBVProcedureExecutionState@@@Z",
+        "rva": "0x46ea50",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetStateStatus@BGSProcedureFollow@@QEBAEAEBUFollowStateRequest@@@Z",
+        "rva": "0x46f030",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gFollowStateName@@3UProcedureStateName@@B",
+        "rva": "0x31ec800",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

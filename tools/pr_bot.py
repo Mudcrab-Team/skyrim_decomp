@@ -24,6 +24,14 @@ The poll works on two PRs at once, each on its own scratch tree; pushes to main,
 the shared checkout take turns. The same infrastructure failure on one head three times in a row backs that
 head off with a growing delay (a verifier failure is said once on the PR), and a `gh` failure backs the whole
 poll off instead of looping.
+A PR that conflicts with main is not reviewed. If the contributor allows maintainer edits and only unit header
+comment blocks in reconstruction/ conflict, the bot merges main into their branch (a pushed merge commit, never a
+rebase) with the union of the header lines, and the new head is processed on the next tick; any other conflict
+aborts that merge and goes to the sticky comment.
+Before compiling, the bot holds a PR whose changed unit headers break the compact-header budget and says which file, how
+many lines over and which lines count. A claimed RVA with no published target row gets its row published on demand
+(hashes only, `target_hash_offers.py --extra-rva`) and the head a fresh hash run; one that cannot be published is named
+in the sticky comment.
 Each PR gets at most one bot comment, marked with STICKY, which is edited in place on every new
 head or verdict and never posted again.
 """
@@ -45,6 +53,7 @@ import threading
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import header_check  # noqa: E402
 import mapping_check  # noqa: E402
 import rva_headers  # noqa: E402
 import repo_slug  # noqa: E402
@@ -91,7 +100,7 @@ STICKY = '<!-- pr-bot -->'
 STICKY_PREFIX = '<!-- pr-bot'
 # Small in both ways: a large single function must never be asked to batch, so an unknown size never asks.
 BATCH_MIN, BATCH_BYTES = 10, 2048
-BATCH_LINE = ('Small request: please batch 20 to 60 functions in one PR next time (mixing classes is fine); each PR '
+BATCH_LINE = ('Small request: please batch 20 to 120 functions in one PR next time (mixing classes is fine); each PR '
               'costs a full verification and merge cycle. This one is still processed.')
 RUNBOOK = 'docs/reviewer-runbook.md'
 # Generated from data/progress.json; a mapping PR omits them and the bot regenerates them on main.
@@ -99,7 +108,11 @@ GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/pro
 # Per-function hashes of the newly mapped functions: test_target_hashes fails on main until they exist, and only
 # this machine holds the image they are computed from.
 TARGET_HASH_DIR = 'data/target-hashes/'
-REFILL_BELOW = 1500  # claimable offered functions left before the window is regenerated
+# Claimable functions left below which the next slice of the offered window is published, and its size.
+WINDOW_LOW_WATER = int(os.environ.get('SR_WINDOW_LOW_WATER') or 2000)
+WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
+# Private plan files of internal workers (twin propagation, stamp sweeps); their functions are not offered.
+RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
@@ -312,6 +325,71 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
 
 CONFLICT_COMMENT = 'This PR conflicts with main; merge main into your branch and push.'
 
+MAIN_MERGE_MESSAGE = 'Merge main into {branch}'
+
+
+def branch_url(owner, name):
+    return f'https://github.com/{owner}/{name}.git'
+
+MAIN_MERGED_COMMENT = ('Main conflicted with your branch only in a unit header comment block, so the bot merged main '
+                       'into your branch (a merge commit, nothing rewritten) and pushed it. Checks are running again '
+                       'on the new head; nothing is needed from you.')
+
+
+def union_header_conflicts(text):
+    """`text` (a diff3-style conflicted file) with every conflict resolved by the union of header comment lines.
+
+    Only a conflict that lies in the file's leading block of `//` lines is touched, and only when everything in it
+    is a `//` line and neither side removed a line of the base. The result is main's lines first, then the PR's
+    lines that main's side does not already have (a repeated line counts once per occurrence). Any other conflict,
+    a function body, a deleted line or a malformed marker returns None: it is not safe to guess.
+    """
+    out, header = [], True
+    lines = text.splitlines(keepends=True)
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if not line.startswith('<<<<<<< '):
+            if not line.startswith('//'):
+                header = False
+            out.append(line)
+            i += 1
+            continue
+        sides, current = {'ours': [], 'base': [], 'theirs': []}, 'ours'
+        i += 1
+        while i < len(lines) and not lines[i].startswith('>>>>>>> '):
+            marker = lines[i]
+            if marker.startswith('||||||| '):
+                current = 'base'
+            elif marker.rstrip('\r\n') == '=======':
+                current = 'theirs'
+            else:
+                sides[current].append(marker)
+            i += 1
+        if i >= len(lines):
+            return None
+        i += 1
+        # Merging main into the PR branch: ours is the PR, theirs is main.
+        pr_lines, base_lines, main_lines = sides['ours'], sides['base'], sides['theirs']
+        everything = pr_lines + base_lines + main_lines
+        if not header or not everything or not all(l.startswith('//') for l in everything):
+            return None
+        if any(l not in pr_lines or l not in main_lines for l in base_lines):
+            return None
+        spare = {}
+        for l in main_lines:
+            spare[l] = spare.get(l, 0) + 1
+        out.extend(main_lines)
+        for l in pr_lines:
+            if spare.get(l):
+                spare[l] -= 1
+            else:
+                out.append(l)
+    result = ''.join(out)
+    if re.search(r'^(<{7} |={7}$|>{7} |\|{7} )', result, re.M):
+        return None
+    return result
+
 # The same infrastructure failure on one head this many times in a row stops the retry-every-tick loop.
 FAILURE_THRESHOLD = 3
 FAILURE_BACKOFF_FIRST, FAILURE_BACKOFF_CAP = 300, 7200
@@ -486,6 +564,20 @@ def other_failure_lines(decision, shown):
     return lines
 
 
+def precheck_finding_lines(decision):
+    """The mechanical findings behind every `fail:precheck` function, so a comment that says "see the findings"
+    shows them; [] when there are none."""
+    found = list(dict.fromkeys(l for r, v in sorted(decision['verdicts'].items()) if v == 'fail:precheck'
+                               for l in (decision.get('pre') or {}).get(r, [])))
+    if not found:
+        return []
+    lines = ['Findings from the mechanical checks (no review was spent on these):']
+    lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
+    if len(found) > PRECHECK_SHOWN:
+        lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
+    return lines
+
+
 def reason_text(decision, rva, code):
     """The comment's reason for a failed function; a review rejection also names the unit file and a category."""
     text = REASONS.get(code, 'it was not re-confirmed')
@@ -538,6 +630,31 @@ def sticky_body(sha, text, batch=False):
     return '\n'.join(lines)
 
 
+def origin_key(hit):
+    """What identifies an origin finding across two versions of a unit: the body, the upstream body and how close."""
+    return (hit['file'], hit['function'], hit['repo'], hit['path'], hit.get('similarity'))
+
+
+def dropped_claims_text(rvas):
+    """The sticky-comment lines for header claims that were not compared because no target row exists."""
+    listed = ', '.join(f'0x{r:x}' for r in rvas[:20]) + (f' and {len(rvas) - 20} more' if len(rvas) > 20 else '')
+    return ('Not compared: no target row is published for ' + listed + ', and none could be published (not a function '
+            'start of the pinned build, or not a function the project can compare). If one of these is a function you '
+            'reconstruct, check its address in the `// 0x<rva> <Name>` line; if it is a data address or another '
+            'function that a header comment mentions, no action is needed.')
+
+
+def header_rejection(problems, shown=10):
+    """The sticky comment for a PR that breaks the compact-header rule: each problem as header_check words it."""
+    lines = ['This PR was held before any compile because a unit header it adds or changes breaks the compact-header '
+             'rule (the CI `scope` check fails on the same rule). Please fix it and push; the bot re-checks the new '
+             'head.']
+    lines += [f'- {p}' for p in problems[:shown]]
+    if len(problems) > shown:
+        lines.append(f'- and {len(problems) - shown} more; run `python3 tools/header_check.py` locally')
+    return '\n'.join(lines)
+
+
 def comment_body(sha, decision, leak_codes=()):
     """The outcome text, with the accepted functions the PR removes added to any outcome that is not a hold."""
     text = outcome_body(sha, decision, leak_codes)
@@ -583,6 +700,7 @@ def outcome_body(sha, decision, leak_codes=()):
         more = other_failure_lines(decision, listed)
         if more:
             lines += ['Also failing in this PR:'] + more
+        lines += precheck_finding_lines(decision)
         lines.append('Please keep those functions compiling to the same code on both hosts, or leave the unit '
                      'alone, and push again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -599,6 +717,7 @@ def outcome_body(sha, decision, leak_codes=()):
         more = other_failure_lines(decision, listed)
         if more:
             lines += ['Also failing in this PR:'] + more
+        lines += precheck_finding_lines(decision)
         lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
                      'again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -617,13 +736,7 @@ def outcome_body(sha, decision, leak_codes=()):
             lines.append(f'- 0x{r:x}: {reason_text(decision, r, c)}')
             if c == 'review':
                 lines += [f'  - {n}' for n in notes.get(r, [])]
-        found = list(dict.fromkeys(l for r, c in sorted(failed.items()) if c == 'precheck'
-                                   for l in (decision.get('pre') or {}).get(r, [])))
-        if found:
-            lines.append('Findings from the mechanical checks (no review was spent on these):')
-            lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
-            if len(found) > PRECHECK_SHOWN:
-                lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
+        lines += precheck_finding_lines(decision)
     return '\n'.join(lines) or 'Nothing to report.'
 
 
@@ -810,7 +923,7 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = dict(model_timeout=1500, compare_timeout=2400, hash_wait=1200, max_functions=60,
+        self.config = dict(model_timeout=2250, compare_timeout=3600, hash_wait=1800, max_functions=120,
                            **(config or {}))
         self.tree = self.work / 'tree'
         self.clock = time.time
@@ -1028,6 +1141,16 @@ class Bot:
         if result.returncode not in (0, 1):
             raise Stop('leakgrep did not complete')
         return result.returncode == 1
+
+    def header_problems(self, base, head):
+        """The compact-header problems of the units the PR adds or changes (tools/header_check.py).
+
+        Best effort: a range git cannot read here yields none, and the CI `scope` job still holds the rule.
+        """
+        try:
+            return header_check.check(self.root, base, head)
+        except subprocess.CalledProcessError:
+            return []
 
     def history_problem(self, base, head):
         """Why the PR's own commits may not enter main, or None. A merge publishes every one of them."""
@@ -1470,11 +1593,15 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         deadline = time.time() + self.config['hash_wait']
+        since = state.get('rows_at') if state is not None else None  # rows published after the head's earlier runs began
         probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
         unusable = set()  # runs that finished without a result, e.g. on a stale base lacking the tools
         target = self.work / 'hash' / f'{number}-{head[:12]}'
         while True:
             run = self.latest_hash_run(head, unusable)
+            while run and since and (run.get('started_at') or '') < since:
+                unusable.add(run.get('id', run.get('details_url')))
+                run = self.latest_hash_run(head, unusable)
             if run and run['status'] == 'completed':
                 run_id = re.search(r'/runs/(\d+)', run.get('details_url', ''))
                 if not run_id:
@@ -1483,21 +1610,31 @@ class Bot:
                 if meta.get('head_sha') != head or str(meta.get('id')) != run_id.group(1):
                     raise Stop('hash run belongs to another revision')
                 found = self.download_hash_result(run_id.group(1), target)
-                if found:
+                late = [] if not found or state is None or state.get('rows_rerun') else self.late_rows(target, functions)
+                if found and not late:
                     break
-                # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 unusable.add(run.get('id', run.get('details_url')))
+                if late:
+                    # The run's base predates rows that main has since published for these functions; ask for a
+                    # run against today's base, once.
+                    since = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    state.set('rows_at', since)
+                    state.set('rows_rerun', late)
+                    probed_at = None
+                # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 # A stale run that finished before the probe was requested says nothing about the probe's run,
                 # which has yet to start or finish; waiting for it is the point of the probe.
-                if probed_at is not None and (run.get('started_at') or '') >= probed_at:
+                elif probed_at is not None and (run.get('started_at') or '') >= probed_at:
                     raise Stop('hash check left no result')
-                if probed_at is None:
+                elif probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                     self.probe_hash_run(number, head)
             elif run is None:
                 self.approve_pending(head)
                 if probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                    if since:
+                        self.drop_probe(number)  # a probe branch left at this commit would not run again
                     self.probe_hash_run(number, head)
             if time.time() > deadline:
                 raise Stop('hash check has not finished')
@@ -1520,6 +1657,19 @@ class Bot:
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
+
+    def late_rows(self, directory, functions):
+        """RVAs the run's own rows call `no-target` although main now publishes a target row for them."""
+        reports = sorted(Path(directory).rglob('target-result.json'))
+        try:
+            rows = json.loads(reports[0].read_text()).get('functions') or [] if reports else []
+        except (OSError, ValueError):
+            return []
+        published = self.target_rvas()
+        wanted = {int(r) for r in functions}
+        late = {int(row['rva'], 16) for row in rows if isinstance(row, dict) and row.get('result') == 'no-target'
+                and re.fullmatch(r'0[xX][0-9a-fA-F]+', str(row.get('rva')))}
+        return sorted(late & wanted & published)
 
     def latest_hash_run(self, head, unusable=()):
         return self.latest_check_run(head, HASH_CHECKS, unusable)
@@ -1747,6 +1897,7 @@ class Bot:
                 self.run(['git', 'fetch', '--quiet', 'origin', head])
         pinned = base  # an explicit base (a replay) is also the reference for what has already landed
         base = base or self.run(['git', 'merge-base', 'origin/main', head]).stdout.decode().strip()
+        state.once('base_sha', lambda: base)
         files = state.once('delta', lambda: self.drop_landed(head, files, pinned or 'origin/main'))
         if not files:
             decision = dict(blocked=None, merge=False, verdicts={})
@@ -1759,7 +1910,9 @@ class Bot:
         tip = pinned or self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
         self.prepare_tree(tip or base)
         self.overlay(head, files)
+        self.ensure_rows(number, head, files, state)
         units = state.once('units', lambda: self.units(files))
+        state.once('dropped_claims', lambda: self.dropped_claims(files))
         functions = sorted({r for rs in units.values() for r in rs})
         if not functions:
             raise Rejected('functions', 'No function headers were found in the changed units, so there is nothing '
@@ -1769,6 +1922,11 @@ class Bot:
             raise Rejected('functions', f'This PR adds {new} functions, over the limit of '
                            f'{self.config["max_functions"]} per PR. Please split it into smaller PRs '
                            f'and push (or open new PRs); the bot checks again on the next push.')
+        # The CI `scope` job holds the same rule; saying it here puts the file, the overage and the counted
+        # lines in the sticky comment before a compile is spent.
+        header_problems = state.once('header', lambda: self.header_problems(base, head))
+        if header_problems:
+            raise Rejected('header', header_rejection(header_problems))
         state.once('batch', lambda: wants_batching(functions, self.header_sizes(units)))
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
         # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
@@ -1887,6 +2045,8 @@ class Bot:
         build = json.loads((tree / 'builds/target.json').read_text())['build_id']
         findings = prereview.unit_findings(tree, changed, build)
         hits, headers, _unverified = self.origin_hits(units)
+        old_flags = self.base_origin_flags(units, state.get('base_sha'), tag)
+        hits = [h for h in hits if origin_key(h) not in old_flags]
         findings += [(file, f'{file}: {text}') for file, text in prereview.origin_problems(hits, headers)]
         evidence = self.review_evidence(tag, sorted(passed), host1, host2, state)
         out, bot_side = {}, []
@@ -1913,6 +2073,43 @@ class Bot:
             safe[rva] = shown + ([f'{hidden} more finding(s) not shown; run `python3 tools/prereview.py` locally']
                                  if hidden else [])
         return safe
+
+    def base_origin_flags(self, units, base, tag):
+        """Origin findings the units already had at `base`: keys of undeclared, non-trivial similarities there.
+
+        A body the PR did not touch keeps the same similarity to the same upstream body; the PR neither
+        introduced the finding nor can be asked to fix a unit's earlier provenance, which is project debt. A
+        body the PR rewrites, or a label it drops, has a different key or no base counterpart and still counts.
+        Best effort: a base the clone cannot show, or a missing clone, yields no flags.
+        """
+        if not base:
+            return set()
+        import check_origin
+        try:
+            clones, _missing = check_origin.open_clones(self.root)
+        except (OSError, ValueError):
+            return set()
+        scratch = self.work / 'origin-base' / tag
+        shutil.rmtree(scratch, ignore_errors=True)
+        flags = set()
+        try:
+            for cpp in sorted(units):
+                stem = cpp.rsplit('.', 1)[0]
+                files = []
+                for name in (stem + '.h', cpp):
+                    shown = self.run(['git', 'show', f'{base}:{name}'], check=False)
+                    if shown.returncode:
+                        continue
+                    path = scratch / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(shown.stdout)
+                    files.append(path)
+                for hit in check_origin.check_unit(files, clones, root=scratch) if files else ():
+                    if not (hit.get('trivial') or hit.get('fork_of') or hit.get('declared')):
+                        flags.add(origin_key(hit))
+        finally:
+            shutil.rmtree(scratch, ignore_errors=True)
+        return flags
 
     def origin_hits(self, units):
         """(hits, {unit file: leading comment of its header and source}, unverified) from tools/check_origin.py.
@@ -2051,24 +2248,45 @@ class Bot:
         data = contrib.inventory(self.tree)
         return sum(1 for c in contrib.candidates(self.tree, data, published=True) if c['startable'])
 
-    def refill_offers(self, threshold=REFILL_BELOW):
-        """Top the offered window back up when fewer than `threshold` functions are left to claim.
+    def refill_offers(self, threshold=None):
+        """Publish the next slice of the offered window when fewer than `threshold` functions are left to claim.
 
-        Regenerating recomputes the window from the private function table, smallest first and classes with
-        layouts first, so recorded functions leave it and new ones enter. Returns the count that was seen.
+        The threshold defaults to the low-water mark. Regenerating keeps every offered function that is not
+        yet recorded and adds a slice of new ones, so claimed functions never leave the list. Returns the
+        count that was seen.
         """
+        threshold = WINDOW_LOW_WATER if threshold is None else threshold
         with self.land_lock:  # the push to main takes its turn with merges and records
             left = self.offered_open()
             if left < threshold:
                 self.regenerate(None)
         return left
 
-    def regenerate(self, number):
+    def window_metrics(self, left, now=None):
+        """Claimable left, claimed, and the contributors' burn per day, as one log suffix; '' when unknown.
+
+        `claimed` is the function count under open claims at the last publication. Burn counts reports of
+        claim-time entries (functions a contributor took from the window) added to main in the last 24 hours,
+        and the 7-day average, from the tree's git history.
+        """
+        now = time.time() if now is None else now
+        try:
+            claimed = json.loads((self.tree / 'data/target-hashes/contributor-targets.json').read_text())['claim_function_count']
+            inventory = json.loads((self.tree / 'data/progress.json').read_text())
+            reports = {fn['report'] for fn in inventory['functions'] if fn.get('owner') == 'claim-time' and fn.get('report')}
+            added = self.run(['git', 'log', 'origin/main', '--since=7 days ago', '--diff-filter=A', '--name-only',
+                              '--format=%ct', '--', 'reports'], cwd=self.tree).stdout.decode().split('\n')
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, AttributeError):
+            return ''
+        return window_line(left, claimed, burn_per_day(added, reports, now))
+    def regenerate(self, number, extra=()):
         """Rebuild the generated index and pictures on main after a mapping merge; push only those files.
 
         A mapping PR omits them (the check refuses a stale copy, and the PR's author cannot run the
         generators against the merged tree), so the bot commits them right after the squash. The target-hash
         manifest is refreshed from the local image in the same commit, so a mapping merge never leaves main red.
+        `extra` are RVAs an open PR claims that have no row: target_hash_offers publishes the ones that are real
+        function starts of the private table, hashes only, in the same commit.
         """
         image = os.environ.get('SR_TARGET_IMAGE')
         table = os.environ.get('SR_FUNCTION_TABLE') or str(self.root / '.local/analysis/functions.jsonl')
@@ -2081,8 +2299,16 @@ class Bot:
             for script in ('build_index.py', 'build_progress_svg.py'):
                 self.run([sys.executable, f'tools/{script}'], cwd=self.tree, timeout=1800)
             # Offers first: the manifest binds the offered inventory's digest.
-            self.run([sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table],
-                     cwd=self.tree, timeout=1800)
+            offers = [sys.executable, 'tools/target_hash_offers.py', '--image', image, '--function-table', table,
+                      '--low-water', str(WINDOW_LOW_WATER), '--slice', str(WINDOW_SLICE)]
+            for directory in RESERVED_DIRS:
+                offers += ['--reserved-dir', str(self.root / directory)]
+            for rva in extra:
+                offers += ['--extra-rva', hex(rva)]
+            summary = self.run(offers, cwd=self.tree, timeout=1800).stdout
+            note = offer_summary(summary)
+            if note:
+                print(f'{stamp()} {note}', flush=True)
             self.run([sys.executable, 'tools/target_hashes.py', '--image', image], cwd=self.tree, timeout=1800)
             # A new shard is untracked; leaving it out committed a manifest that named a missing file.
             names = self.run(['git', 'status', '--porcelain', '--untracked-files=all'],
@@ -2095,7 +2321,7 @@ class Bot:
                 return
             self.run(['git', 'add', '--', *sorted(changed)], cwd=self.tree)
             why = (f'Regenerate the index and pictures after mapping PR #{number}' if number else
-                   'Refill the offered target window')
+                   'Publish target rows for the claims of open PRs' if extra else 'Refill the offered target window')
             self.run(['git', 'commit', '--quiet', '-m', why], cwd=self.tree)
             if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
                 return
@@ -2192,7 +2418,8 @@ class Bot:
             found.update(row['rva'] for row in json.loads(shard.read_text())['functions'])
         return found
 
-    def units(self, files):
+    def unit_claims(self, files):
+        """{unit .cpp: {rva}} the changed units' headers claim, before any is checked against the target rows."""
         units = {}
         for item in files:
             if item.get('status') == 'removed':
@@ -2202,16 +2429,77 @@ class Bot:
                 continue
             texts = [(self.tree / (cpp[:-4] + s)).read_text() for s in ('.h', '.cpp') if (self.tree / (cpp[:-4] + s)).is_file()]
             units.setdefault(cpp, set()).update(functions_of(texts))
+        return units
+
+    def units(self, files):
+        units = self.unit_claims(files)
         targets = self.target_rvas()
+        dropped = []
         if targets:
-            # A header may name a data address (`RVA 0x...` in a provenance line); the hash job reports
-            # those as no-target and the verifier cannot build a task row for them.
+            # A header may name a data address or a typo; the hash job reports those as no-target and the
+            # verifier cannot build a task row for them. They are said in the sticky comment, never silently dropped.
+            dropped = sorted({r for rs in units.values() for r in rs} - targets)
             units = {u: {r for r in rs if r in targets} for u, rs in units.items()}
         if not units or any(not rs for rs in units.values()):
-            raise Rejected('rva-headers', 'A changed unit has a function whose `// RVA 0x...` header names no '
+            raise Rejected('rva-headers', 'A changed unit has a function whose `// 0x<rva> <Name>` header names no '
                            'function in the pinned target (a data address, a typo, or no header at all). '
-                           'Fix or remove that header and push; the bot checks again on the next push.')
+                           'Fix or remove that header and push; the bot checks again on the next push.'
+                           + (('\n' + dropped_claims_text(dropped)) if dropped else ''))
         return {u: sorted(rs) for u, rs in units.items()}
+
+    def dropped_claims(self, files):
+        """Claimed RVAs that have no target row and so are not compared; [] when the shards are absent."""
+        targets = self.target_rvas()
+        if not targets:
+            return []
+        return sorted({r for rs in self.unit_claims(files).values() for r in rs} - targets)
+
+    def ensure_rows(self, number, head, files, state):
+        """Publish the target rows this PR's claims lack, then give the head a hash run that sees them.
+
+        A claim names a function the PR defines; without a published row nothing can be compared, and the
+        contributor would wait for the next window refill. An RVA that is a real function start of the private
+        table gets its row now (hashes only, as in the window). The hash job reads the rows from the base it
+        runs against, so the head's earlier run is set aside (`rows_at`) and host1 asks for a new one. Whatever
+        cannot be published stays out and is named in the sticky comment.
+        """
+        if self.dry_run:
+            return
+        targets = self.target_rvas()
+        missing = sorted({r for rs in self.unit_claims(files).values() for r in rs} - targets) if targets else []
+        if not missing:
+            return
+
+        def publish():
+            import claimable
+            import target_hash_offers
+            before = len(missing)
+            table = claimable.load_table(os.environ.get('SR_FUNCTION_TABLE') or self.root / '.local/analysis/functions.jsonl')
+            if table is None:
+                print(f'{stamp()} pr {number}: no function table here, so no rows are published', file=sys.stderr, flush=True)
+                return dict(published=[], asked=before)
+            known = {f['rva'] for f in json.loads((self.tree / 'data/progress.json').read_text())['functions']}
+            wanted, _refused = target_hash_offers.select_on_demand(table, known, missing)
+            if not wanted:
+                return dict(published=[], asked=before)
+            with self.land_lock:
+                self.regenerate(None, extra=wanted)
+                got = sorted(set(missing) & self.target_rvas())
+            if not got:
+                return dict(published=[], asked=before)
+            with self.root_lock:
+                self.run(['git', 'fetch', '--quiet', 'origin', 'main'])
+                tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
+            self.prepare_tree(tip)
+            self.overlay(head, files)
+            return dict(published=got, asked=before, rows_at=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()))
+
+        result = state.once('rows', publish)
+        if result.get('published'):
+            state.set('rows_at', result['rows_at'])
+            print(f'{stamp()} pr {number}: published target rows for '
+                  f'{", ".join(hex(r) for r in result["published"])}', flush=True)
+
 
     def finish(self, pr, state, decision, started, comment=None, leak_codes=(), land=None):
         number, head = pr['number'], pr['headRefOid']
@@ -2257,6 +2545,10 @@ class Bot:
                           or any(v.startswith('fail:') for v in verdicts.values()))
             text = comment or comment_body(head, dict(decision, verdicts={int(r): v for r, v in verdicts.items()}),
                                            leak_codes)
+            dropped = state.get('dropped_claims')
+            if dropped:
+                text = dropped_claims_text(dropped) if text == 'Nothing to report.' else f'{text}\n{dropped_claims_text(dropped)}'
+                create = True
             self.say(number, sticky_body(head, text, state.get('batch')), create=create)
             state.set('commented', True)
         self.drop_probe(number)
@@ -2274,18 +2566,104 @@ class Bot:
         return self.finish(pr, state, decision, started, comment=TOOLING_COMMENT)
 
     def conflicting(self, pr, state):
-        """A PR that cannot merge is not worth a review and two host compares; tell the author once per head.
+        """A PR that cannot merge is not worth a review and two host compares.
 
+        If the only conflicts are unit header comment blocks and the contributor allows maintainer edits, main is
+        merged into their branch for them; otherwise the author is told once per head, in the sticky comment.
         The state is per head, so a push that resolves the conflict gets a fresh look.
         """
         summary = dict(pr=pr['number'], head=pr['headRefOid'], blocked='conflict', merge=False, verdicts={})
         if self.dry_run:
             return summary
-        self.say(pr['number'], sticky_body(pr['headRefOid'], CONFLICT_COMMENT))
+        try:
+            merged = self.merge_main_into_branch(pr)
+        except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
+            print(f'{stamp()} pr {pr["number"]}: merging main into the branch failed ({type(exc).__name__}: {exc}); '
+                  f'asking the author instead', file=sys.stderr, flush=True)
+            merged = None
+        if merged:
+            summary = dict(pr=pr['number'], head=pr['headRefOid'], blocked=None, merge=False, verdicts={},
+                           main_merged=merged)
+            # An older comment would keep telling the author to merge; a PR with none gets no new one.
+            self.say(pr['number'], sticky_body(pr['headRefOid'], MAIN_MERGED_COMMENT), create=False)
+        else:
+            self.say(pr['number'], sticky_body(pr['headRefOid'], CONFLICT_COMMENT))
         state.set('summary', summary)
         state.set('commented', True)
         state.set('done', True)
         return summary
+
+    def merge_main_into_branch(self, pr):
+        """Merge origin/main into the contributor's branch and push the merge commit; the new head SHA, else None.
+
+        Never rebases or force-pushes, so the author's commits stay as they are. Done in a scratch worktree
+        whose merge is aborted unless every conflicting file is under reconstruction/ and every conflict is a
+        header comment block that `union_header_conflicts` resolves.
+        """
+        number, head = pr['number'], pr['headRefOid']
+        info = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json',
+                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,state')
+        repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
+        if (info.get('headRefOid') != head or info.get('state') != 'OPEN' or not info.get('maintainerCanModify')
+                or not repo.get('name') or not owner.get('login') or not info.get('headRefName')):
+            return None
+        url = branch_url(owner['login'], repo['name'])
+        scratch = self.work / 'merge-scratch' / f'pr{number}'
+        git = ['git', '-c', 'core.hooksPath=/dev/null', '-c', 'merge.conflictStyle=diff3']
+        with self.root_lock:
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+            if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', head])
+            self.run(['git', 'worktree', 'prune'], check=False)
+            if scratch.exists():
+                shutil.rmtree(scratch, ignore_errors=True)
+                self.run(['git', 'worktree', 'prune'], check=False)
+            scratch.parent.mkdir(parents=True, exist_ok=True)
+            self.run(['git', 'worktree', 'add', '--quiet', '--detach', scratch, head])
+        try:
+            message = MAIN_MERGE_MESSAGE.format(branch=info['headRefName'])
+            merge = self.run([*git, 'merge', '--no-ff', '--no-edit', '-m', message, 'origin/main'], cwd=scratch,
+                             check=False)
+            if merge.returncode:
+                names = self.run([*git, 'diff', '--name-only', '--diff-filter=U', '-z'], cwd=scratch,
+                                 check=False).stdout.decode(errors='replace').split('\0')
+                names = [n for n in names if n]
+                staged = self.run([*git, 'ls-files', '-u', '-z'], cwd=scratch, check=False).stdout.decode(
+                    errors='replace').split('\0')
+                stages = {}
+                for entry in staged:
+                    if entry:
+                        meta, _, name = entry.partition('\t')
+                        stages.setdefault(name, set()).add(meta.split()[2])
+                if not names or any(not n.startswith(SCOPE_PREFIX) or stages.get(n) != {'1', '2', '3'} for n in names):
+                    self.run([*git, 'merge', '--abort'], cwd=scratch, check=False)
+                    return None
+                for name in names:
+                    path = scratch / name
+                    try:
+                        resolved = None if path.is_symlink() else union_header_conflicts(path.read_bytes().decode('utf-8'))
+                    except (OSError, UnicodeDecodeError):
+                        resolved = None
+                    if resolved is None:
+                        self.run([*git, 'merge', '--abort'], cwd=scratch, check=False)
+                        return None
+                    path.write_bytes(resolved.encode('utf-8'))
+                    self.run([*git, 'add', '--', name], cwd=scratch)
+                self.run([*git, 'commit', '--quiet', '-m', message], cwd=scratch)
+            sha = self.run([*git, 'rev-parse', 'HEAD'], cwd=scratch).stdout.decode().strip()
+            if sha == head:
+                return None
+            # The author's branch is never forced: a push that lost a race to a new commit is simply refused,
+            # and the fresh head is looked at on the next tick. gh's credentials, since a fork needs them.
+            pushed = self.run([*git, '-c', 'credential.helper=', '-c', 'credential.helper=!gh auth git-credential',
+                               'push', '--quiet', url, f'HEAD:refs/heads/{info["headRefName"]}'], cwd=scratch,
+                              check=False)
+            return sha if pushed.returncode == 0 else None
+        finally:
+            with self.root_lock:
+                self.run(['git', 'worktree', 'remove', '--force', scratch], check=False)
+                shutil.rmtree(scratch, ignore_errors=True)
+                self.run(['git', 'worktree', 'prune'], check=False)
 
     def merge_refused(self, pr, state, summary):
         """`gh pr merge --match-head-commit` failed: say why, and keep the paid results unless the head moved."""
@@ -2331,7 +2709,24 @@ class Bot:
             # record.py prints which function it refused and why; without it the log only says "python3.13 failed".
             tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
             raise Stop(f'record step failed after the merge: {tail[0][:300]}')
+        # record.py exits 0 when any function was recorded; one it refused is reported only in its output and
+        # would otherwise stay stale on main while the PR is marked recorded.
+        left = refused_by_record(done.stdout)
+        if left:
+            raise Stop(f'record step refused {len(left)} function(s) after the merge: '
+                       + ', '.join(f'{r}: {why}' for r, why in sorted(left.items())[:3])[:300])
         state.set('recorded', True)
+
+
+def refused_by_record(stdout):
+    """{rva: reason} that tools/record.py refused, from the JSON line it prints last; {} when there is none."""
+    for line in reversed((stdout or b'').decode(errors='replace').strip().splitlines()):
+        try:
+            refused = json.loads(line).get('refused')
+        except (ValueError, AttributeError):
+            continue
+        return dict(refused) if isinstance(refused, dict) else {}
+    return {}
 
 
 def merged_unrecorded(directory, now, max_age=RECORD_RETRY_WINDOW):
@@ -2368,6 +2763,15 @@ def pollable(prs):
 POOL_SIZE = 2
 
 
+def outside_first(prs):
+    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+
+    The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
+    long-running ones.
+    """
+    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+
+
 def outcome(result, pr):
     """The log line for a finished PR: the summary, else the decision's keys.
 
@@ -2387,10 +2791,28 @@ def outcome(result, pr):
     return line
 
 
+def current(slot, pr):
+    """The PR as GitHub has it now, or None when it is no longer one to work on.
+
+    The poll lists every PR once per tick but a PR can wait a whole review for a free slot; its listed head
+    would then be verified, reviewed and finally refused at merge because the branch had moved meanwhile,
+    and the retry queues behind the others and goes stale the same way.
+    """
+    live = slot.gh_json('pr', 'view', str(pr['number']), '-R', REPOSITORY, '--json',
+                        'number,headRefOid,author,baseRefName,isDraft,mergeable,labels,state')
+    if live.pop('state', None) != 'OPEN':
+        return None
+    fresh = {**pr, **live}
+    return fresh if pollable([fresh]) else None
+
+
 def work_one(slots, gh, pr):
     """One PR on a free slot; the printed line is the outcome, a failure goes to its own ledger."""
     slot = slots.get()
     try:
+        pr = current(slot, pr)
+        if pr is None:
+            return
         result = slot.attempt(pr)
         if result is not None:
             gh.succeeded()
@@ -2406,6 +2828,33 @@ def work_one(slots, gh, pr):
         print(f'{stamp()} pr {pr["number"]}: unexpected {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
     finally:
         slots.put(slot)
+
+
+def offer_summary(output):
+    """One log line from target_hash_offers' JSON summary, or '' when it is not readable."""
+    try:
+        window = json.loads(output.decode().strip().splitlines()[-1])['window']
+        return (f"offer slice: {window['added']} added ({window['left_before']} claimable before, low-water "
+                f"{window['low_water']}, slice {window['slice']}, {window['reserved']} reserved by internal workers)")
+    except (ValueError, KeyError, IndexError, AttributeError, UnicodeDecodeError):
+        return ''
+
+
+def burn_per_day(log_lines, reports, now):
+    """(last 24 h, 7-day average per day) of claim-time report files in `git log --format=%ct --name-only` lines."""
+    stamps, when = [], None
+    for line in log_lines:
+        if line.isdigit():
+            when = int(line)
+        elif line in reports and when is not None:
+            stamps.append(when)
+    return sum(now - t <= 86400 for t in stamps), round(sum(now - t <= 7 * 86400 for t in stamps) / 7, 1)
+
+
+def window_line(left, claimed, burn):
+    day, week = burn
+    runway = f', about {left / week:.1f} days of runway at the 7-day rate' if week else ''
+    return f'{left} claimable left, {claimed} claimed, burn {day}/day (24h), {week:g}/day (7d avg){runway}'
 
 
 def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
@@ -2447,8 +2896,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
                 refilled = time.time()  # a failure waits for the next window, not the next tick
                 try:
-                    left = bot.for_slot(0).refill_offers()
-                    print(f'{stamp()} offered window: {left} claimable left', flush=True)
+                    slot = bot.for_slot(0)
+                    left = slot.refill_offers()
+                    metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
+                    print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             if not bot.dry_run and not inflight and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
@@ -2475,7 +2926,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                       flush=True)
                 continue
             now = time.time()
-            for pr in pollable(prs):
+            for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
                 if pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now:

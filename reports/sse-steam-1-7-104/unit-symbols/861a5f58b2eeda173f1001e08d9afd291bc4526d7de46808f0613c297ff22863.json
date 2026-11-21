@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CopyMembers@BSEffectShaderPropertyColorController@@QEAAXPEAV1@@Z": {
+      "rva": 22528832,
+      "size": 38
+    },
+    "?LoadBinary@BSEffectShaderPropertyColorController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 22528880,
+      "size": 79
+    },
+    "?SaveBinary@BSEffectShaderPropertyColorController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 22529008,
+      "size": 79
+    },
+    "?InitializeValueLookup@BSEffectShaderPropertyColorController@@SAXXZ": {
+      "rva": 22529680,
+      "size": 11
+    },
+    "?IsValidTarget@BSEffectShaderPropertyColorController@@QEBA_NPEBVNiObjectNET@@@Z": {
+      "rva": 22529712,
+      "size": 60
+    },
+    "?GetControlledValue@BSEffectShaderPropertyColorController@@QEBAXAEAUShaderControllerColor@@@Z": {
+      "rva": 22529792,
+      "size": 38
+    },
+    "?CopyMembers@NiPoint3InterpController@@IEAAXPEAV1@@Z": {
+      "rva": 16350144,
+      "size": null
+    },
+    "?LoadBinary@NiPoint3InterpController@@MEAAXAEAVNiStream@@@Z": {
+      "rva": 16350160,
+      "size": null
+    },
+    "?SaveBinary@NiPoint3InterpController@@MEAAXAEAVNiStream@@@Z": {
+      "rva": 16350208,
+      "size": null
+    },
+    "?gEffectColorOffsets@@3PAIA": {
+      "rva": 57249016,
+      "size": null
+    },
+    "?NiRTTI_BSEffectShaderProperty@@3VNiRTTI@@B": {
+      "rva": 54349248,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CopyMembers@BSEffectShaderPropertyColorController@@QEAAXPEAV1@@Z",
+        "rva": "0x157c340",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@BSEffectShaderPropertyColorController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x157c370",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@BSEffectShaderPropertyColorController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0x157c3f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitializeValueLookup@BSEffectShaderPropertyColorController@@SAXXZ",
+        "rva": "0x157c690",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsValidTarget@BSEffectShaderPropertyColorController@@QEBA_NPEBVNiObjectNET@@@Z",
+        "rva": "0x157c6b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetControlledValue@BSEffectShaderPropertyColorController@@QEBAXAEAUShaderControllerColor@@@Z",
+        "rva": "0x157c700",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CopyMembers@NiPoint3InterpController@@IEAAXPEAV1@@Z",
+        "rva": "0xf97bc0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadBinary@NiPoint3InterpController@@MEAAXAEAVNiStream@@@Z",
+        "rva": "0xf97bd0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPoint3InterpController@@MEAAXAEAVNiStream@@@Z",
+        "rva": "0xf97c00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gEffectColorOffsets@@3PAIA",
+        "rva": "0x3698cf8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiRTTI_BSEffectShaderProperty@@3VNiRTTI@@B",
+        "rva": "0x33d4dc0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

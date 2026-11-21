@@ -1,0 +1,7 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: CombatPathBuilderT_CombatPathBuilderOpen_CombatPathingGoalPolicyFindAttackLocation_CombatPathingSearchPolicyStandard_; size 0x1
+#pragma once
+struct CombatPathBuilderT_CombatPathBuilderOpen_CombatPathingGoalPolicyFindAttackLocation_Comb_15d8c22d {
+    unsigned char _pad_0[1];
+};
+static_assert(sizeof(CombatPathBuilderT_CombatPathBuilderOpen_CombatPathingGoalPolicyFindAttackLocation_Comb_15d8c22d) == 1, "CombatPathBuilderT_CombatPathBuilderOpen_CombatPathingGoalPolicyFindAttackLocation_Comb_15d8c22d layout differs from the PDB");

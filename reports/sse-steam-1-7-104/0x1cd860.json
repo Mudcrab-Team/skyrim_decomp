@@ -64,7 +64,8 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: committed tree at base commit 3c8b4cd00e07ac735a3c41e18a8c5c2e186b8360. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 a9bc14136d2f69195e5062cf3a2652b8caf1b948b2cf9ae57d94502978828b55 (each report's comparator.source_sha256), not a commit; that commit holds all of them."
+    "Source state: committed tree at base commit 3c8b4cd00e07ac735a3c41e18a8c5c2e186b8360. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 a9bc14136d2f69195e5062cf3a2652b8caf1b948b2cf9ae57d94502978828b55 (each report's comparator.source_sha256), not a commit; that commit holds all of them.",
+    "Carried to new source: the unit differs from the text its runs compared only in comments (provenance labels), so the runs are unchanged."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
@@ -321,7 +322,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/forms/TESFile.cpp",
-    "digest": "68b902ce718185132e641f794c476dbcf9a1fa5c986ffe6a658988f4b342827e",
+    "digest": "ff2b086e5627660d15395de3aac98d8bcbacee7bf844ceba2ca82dc616a3557b",
     "digest_method": "tu-sha256-v2",
     "run_digest": "e5f27a42ac978265d794e2bddf0931e06808ac604e7c9785f16debae560b09ce",
     "run_digest_method": "tu-sha256-v1",

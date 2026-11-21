@@ -1,0 +1,63 @@
+// CRASHLOGGER_PDB(59818@2026.10.24)
+// PDB name: BSCullingProcess_vtbl; size 0xe8
+#pragma once
+
+struct BSDynamicTriShape;
+struct BSFadeNode;
+struct BSGeometry;
+struct BSLines;
+struct BSMultiBound;
+struct BSMultiBoundNode;
+struct BSOcclusionPlane;
+struct BSSegmentedTriShape;
+struct BSSubIndexTriShape;
+struct BSTriShape;
+struct NiAVObject;
+struct NiBound_6900288c;
+struct NiCamera;
+struct NiGeometry;
+struct NiNode;
+struct NiParticles;
+struct NiRTTI;
+struct NiSwitchNode;
+struct NiTriBasedGeom;
+struct NiTriShape;
+struct NiTriStrips;
+struct NiVisibleArray;
+struct bhkAttachmentCollisionObject;
+struct bhkBlendCollisionObject;
+struct bhkLimitedHingeConstraint;
+struct bhkNiCollisionObject;
+struct bhkRigidBody;
+struct BSCullingProcess_vtbl {
+    NiRTTI*(*GetRTTI)(void);
+    NiNode*(*GetAsNiNode)(void);
+    NiSwitchNode*(*GetAsNiSwitchNode)(void);
+    BSFadeNode*(*GetAsBSFadeNode)(void);
+    BSMultiBoundNode*(*GetAsBSMultiBoundNode)(void);
+    BSGeometry*(*GetAsBSGeometry)(void);
+    NiTriStrips*(*GetAsNiTriStrips)(void);
+    BSTriShape*(*GetAsBSTriShape)(void);
+    BSSegmentedTriShape*(*GetAsBSSegmentedTriShape)(void);
+    BSSubIndexTriShape*(*GetAsBSSubIndexTriShape)(void);
+    BSDynamicTriShape*(*GetAsBSDynamicTriShape)(void);
+    NiGeometry*(*GetAsNiGeometry)(void);
+    NiTriBasedGeom*(*GetAsNiTriBasedGeom)(void);
+    NiTriShape*(*GetAsNiTriShape)(void);
+    NiParticles*(*GetAsNiParticles)(void);
+    BSLines*(*GetAsBSLines)(void);
+    bhkNiCollisionObject*(*GetAsBhkNiCollisionObject)(void);
+    bhkBlendCollisionObject*(*GetAsBhkBlendCollisionObject)(void);
+    bhkAttachmentCollisionObject*(*GetAsBhkAttachmentCollisionObject)(void);
+    bhkRigidBody*(*GetAsBhkRigidBody)(void);
+    bhkLimitedHingeConstraint*(*GetAsBhkLimitedHingeConstraint)(void);
+    void (*_dtor_NiCullingProcess)(void);
+    void (*Process1)(NiAVObject* , int);
+    void (*Process2)(NiCamera* , NiAVObject* , NiVisibleArray* );
+    void (*AppendVirtual)(BSGeometry* , int);
+    void (*AppendNonAccum)(NiAVObject* , int);
+    bool (*TestBaseVisibility1)(BSMultiBound* );
+    bool (*TestBaseVisibility2)(BSOcclusionPlane* );
+    bool (*TestBaseVisibility3)(NiBound_6900288c* );
+};
+static_assert(sizeof(BSCullingProcess_vtbl) == 232, "BSCullingProcess_vtbl layout differs from the PDB");
