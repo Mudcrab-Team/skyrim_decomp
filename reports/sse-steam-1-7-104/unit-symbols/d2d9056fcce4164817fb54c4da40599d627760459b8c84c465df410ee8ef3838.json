@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0D@BSImagespaceShaderISSAORawAONoTemporal@@QEAAPEAUUnk0DInfo@@PEAU2@@Z": {
+      "rva": 22064032,
+      "size": 50
+    },
+    "?gUnk0D_0@@3QBDB": {
+      "rva": 28557904,
+      "size": null
+    },
+    "?gUnk0D_1@@3QBDB": {
+      "rva": 28672032,
+      "size": null
+    },
+    "?gUnk0D_2@@3QBDB": {
+      "rva": 27400628,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0D@BSImagespaceShaderISSAORawAONoTemporal@@QEAAPEAUUnk0DInfo@@PEAU2@@Z",
+        "rva": "0x150aba0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gUnk0D_0@@3QBDB",
+        "rva": "0x1b3c250",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gUnk0D_1@@3QBDB",
+        "rva": "0x1b58020",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gUnk0D_2@@3QBDB",
+        "rva": "0x1a219b4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

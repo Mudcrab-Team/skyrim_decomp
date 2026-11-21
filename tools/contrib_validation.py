@@ -7,6 +7,7 @@ from pathlib import Path, PurePosixPath
 import re
 import tempfile
 
+import check_code_rules
 import contrib_screen
 import lint_reconstruction
 import lint_review_readiness
@@ -142,6 +143,12 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
             problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]
         except (UnicodeError, ValueError) as exc:
             problems.append(diagnostic(f'{name}: source lint failed ({type(exc).__name__})'))
+    # R38-R40 of docs/code-rules.md apply to the files this change touches, not to the include closure:
+    # headers a unit merely includes may carry older debt that is not this contributor's to fix.
+    for name in sorted(set(names)):
+        path = root / name
+        if name.startswith('reconstruction/') and path.suffix in ('.h', '.cpp') and path.is_file():
+            problems += check_code_rules.refusals(name, path.read_text(encoding='utf-8', errors='replace'))
     return sorted(set(problems))
 
 

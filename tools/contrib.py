@@ -2008,6 +2008,39 @@ def pdb_hints(repo, fns):
         return []
 
 
+SYMBOL_SOURCE_IDS = {'a': 'tesv-2013-map', 'b': 'fo4-pdb', 'c': 'fnv-x360-pdb', 'd': 'fnv-x360-pdb',
+                     'e': 'fnv-x360-pdb'}
+SYMBOL_NAME_CAP = 12
+
+
+def symbol_name_hints(repo, cls, fns=(), cap=SYMBOL_NAME_CAP):
+    """Lines listing member names that sibling-build symbol files give for the class, each with the
+    source-id to label it with; nothing, silently, when the data is absent or the class has none."""
+    try:
+        entry = json.loads((repo / 'data/symbol-names.json').read_text())['classes'].get(cls) or {}
+        cands = entry.get('candidates') or {}
+        corr = json.loads((repo / 'data/name-corroboration.json').read_text()).get('functions') or {}
+        build = target_manifest(repo)['build_id']
+
+        def ids(keys):
+            return sorted({SYMBOL_SOURCE_IDS[k] for k in keys if k in SYMBOL_SOURCE_IDS})
+        lines = []
+        for fn in fns:
+            seen = ids((corr.get(f'{build}-0x{fn["rva"]:x}') or {}).get('confirmed') or '')
+            if seen:
+                lines.append(f'Symbol sources with the member name of 0x{fn["rva"]:x}: {", ".join(seen)}')
+        shown = sorted(cands)[:cap]
+        if shown:
+            more = len(cands) - len(shown)
+            lines.append(f'Symbol-name candidates for {cls} (sibling builds; candidates only, never evidence of which '
+                         f'function is which; label a name you take SYMBOLS(<source-id>)): '
+                         + ', '.join(f'{n} [{"/".join(ids(cands[n]))}]' for n in shown)
+                         + (f' and {more} more in data/symbol-names.json' if more > 0 else ''))
+        return lines if shown else []
+    except Exception:  # an optional hint must never stop `start`
+        return []
+
+
 def start(ctx, args, quiet=False):
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
@@ -2145,6 +2178,8 @@ def start(ctx, args, quiet=False):
         if sibling:
             ctx.say(f'sibling source pointers (FNV; shape and names only, never evidence): {tdir / "sibling.md"}')
         for line in pdb_hints(ctx.repo, fns):
+            ctx.say(line)
+        for line in symbol_name_hints(ctx.repo, cls, fns):
             ctx.say(line)
         ctx.say(f'unit: {header} and {cpp}' + (' (skeleton created)' if created else ''))
         ctx.say(f'profile {prof["name"]}: read {"; ".join(prof["contrib_docs"])}; '
