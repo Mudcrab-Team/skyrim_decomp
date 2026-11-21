@@ -3,6 +3,7 @@
 // ICallableBase, ICopyableCallable: EXE_RTTI
 // ErasedSignature141dba0CallableLayout: GUESS(medium) STANDIN
 // 0x141dba0 ErasedSignature141dba0CallableLayout scalar deleting destructor
+// CI hash: 0x141dba0 ??_GErasedSignature141dba0CallableLayout@ResearchLayouts@@UEAAPEAXI@Z
 void operator delete(void*, unsigned __int64) noexcept;
 #include "ErasedSignature141dba0CallableLayout.h"
 namespace ResearchLayouts {
