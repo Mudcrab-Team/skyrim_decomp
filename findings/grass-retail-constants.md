@@ -279,6 +279,8 @@ For finite settings, `T` is floored at zero. A value above 1 becomes 0.9. The we
 
 Base residual coverage is one minus the sum of the first five weighted coverage bytes multiplied by the stored `1/255` factor.
 
+Superseded or clarified by findings/grass-retail-leftovers.md (independently reviewed 2026-11-21).
+
 ### G10 — Density per sample
 
 A weighted sample gets `density × 0.01` when its coverage byte exceeds `trunc(T × 255)`. A base sample gets the same weight when its floating residual coverage exceeds `T`. A sample that fails its threshold gets zero.
@@ -318,11 +320,15 @@ The unsigned mode guard bypasses the water test for other values, including nega
 
 Each inspected upload writes one prefix of at most 960 per-instance fade factors. The vertex shader reads 240 vectors of four factors. The traced geometry draw loop uses the full geometry count and submits eligible slots. It has no second batch for the fade-factor upload. The scene conditions and visual result for slots beyond the uploaded prefix are unverified.
 
+Superseded or clarified by findings/grass-retail-leftovers.md (independently reviewed 2026-11-21).
+
 ### G17 — Lit grass shading and output scale
 
 The lit grass pixel shaders add the ambient term to the direct term, then scale the combined RGB. The ambient term is `C × ambient × T`. The direct term is `NdotL × C × sunColour × T × shadow`, with `shadow = mask + fShadowClampValue × (1 − mask)`. The `RunGrass` group has no explicit `1/π` multiplier in its shader bodies.
 
 The output scale is the fourth lane of pixel constant register `cb2[16]`. The setup sources it from a mutable global or a fallback vector with scale `1.0`. The global starts at float32 `0.8333333134651184` and can change at runtime. The evidence is zero-based group 2 of `shaders011.fxp`, with lit pixel records 0–6 and 9–15, plus the native constant setup.
+
+Superseded or clarified by findings/grass-retail-leftovers.md (independently reviewed 2026-11-21).
 
 ### G18 — Distance fade and output alpha
 
