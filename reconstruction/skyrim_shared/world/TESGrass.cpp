@@ -8,6 +8,11 @@
 // 0x270960 TESGrass::GetMaxSlopeDegrees
 // 0x270990 TESGrass::GetMinSlopeDegrees
 // 0x270890 TESGrass::~TESGrass
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x270940 TESGrass::GetMaxSlope
+// 0x270970 TESGrass::GetMinSlope
+// Adapted bodies: none
 #include "TESGrass.h"
 
 // The constructor is not compared: it is defined so that this unit emits the vftables and with
@@ -64,4 +69,17 @@ TESGrass::GRASS_WATER_STATE TESGrass::GetUnderwaterState() const
 void TESGrass::SetUnderwaterState(GRASS_WATER_STATE a_waterState)
 {
     data.underwater = a_waterState;
+}
+
+// kDegreesToRadians: GUESS(low); the image multiplies the slope byte by the float pi / 180
+static const float kDegreesToRadians = 0.017453292f;
+
+float TESGrass::GetMinSlope() const
+{
+    return data.minSlopeDegrees * kDegreesToRadians;
+}
+
+float TESGrass::GetMaxSlope() const
+{
+    return data.maxSlopeDegrees * kDegreesToRadians;
 }
