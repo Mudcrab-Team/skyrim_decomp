@@ -10,26 +10,9 @@
 class TESModelTextureSwap;
 
 // TESModel::GetAsModelTextureSwap: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); compared at RVA 0x1dfd80
-// PrimaryBase, SecondaryBase: GUESS(low) STANDIN; base set that puts the secondary base at offset 0x20.
-class PrimaryBase
+class TESModel
 {
 public:
-    virtual ~PrimaryBase();
-    std::uint8_t pad[0x18];  // 08
-};
-static_assert(sizeof(PrimaryBase) == 0x20, "primary base size");
-
-class SecondaryBase
-{
-public:
-    virtual ~SecondaryBase();
-};
-
-class TESModel : public PrimaryBase, public SecondaryBase
-{
-public:
-    TESModel();
-    ~TESModel() override;  // 00, compared: 0x321c28 (secondary-base deleting destructor thunk)
     virtual void* GetModel() const;
     virtual TESModelTextureSwap* GetAsModelTextureSwap();  // compared: 0x1dfd80
     void* member;
