@@ -4,9 +4,6 @@
 // 0x32dde4 BSTextureSet::~BSTextureSet
 // CI hash: 0x32dde4 ??_EThunkHost@@WDA@EAAPEAXI@Z
 // Adapted bodies: none
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
-// Adapted bodies: none
 // 0x32dfe0 BSTextureSet::GetRTTI
 // 0x32df90 BSTextureSet::~BSTextureSet
 #include "BSTextureSet.h"
