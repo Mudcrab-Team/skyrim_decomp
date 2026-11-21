@@ -1,7 +1,7 @@
 // Source exposure: mixed. Drafted from the local instruction listing of the pinned image.
 // Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled otherwise.
 // Code origin: original; the listing, community declarations and CrashLogger PDB names only
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none
 // 0x146720 TESFullName::GetFullName
 // 0x190b10 MapMarkerData::SetVisible
