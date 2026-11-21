@@ -36,6 +36,9 @@ PDB and from Havok/Gamebryo source. Label what is taken `SIBLING(...)`, cite a r
 unit header, and do not vendor its tree or website assets wholesale. Apart from that decision, do
 not import leaked/proprietary symbols or middleware source, and never obtain them yourself. The
 presence of a type in an external archive is not proof of its provenance.
+`momusdigital/f3_decomp` at `f5bac1b5` (Fallout 3, CC0-1.0) is allowed the same way, labelled
+`SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`; a reused body is declared as an adapted body
+with its upstream file, revision and licence (`docs/authorizations.md`, Notes).
 The anonymous `fo4-private@1b765c70` game-code sibling is separately permitted with author
 permission conditional on anonymity (`docs/authorizations.md`, `LEGAL.md`); use its anonymous
 label and per-body citation only. Excluded folders and mixed generated aggregates stay excluded,

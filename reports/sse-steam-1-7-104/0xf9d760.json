@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "03d809582195031e843789c1c7ecdc4aea20db6abccbce4587d606e1a62327d7",
+        "object_sha256": "9863a98dfbe02c11269f0a5e0e5ca2bb54ffb66ae443defc2f450592118899b1",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
@@ -37,7 +37,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "466aa251a623c4b93e3a55606365b62b58a8a486",
+    "base_sha": "a6f281d62f3a404c685ced80ccba0350df6109b3",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -48,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "dfd5929b0bbff818bf4f9a2d1313af931dd493b4",
+    "head_sha": "2660c31bd68ee6242d6c35431a1702bd436997e5",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -61,10 +61,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44592756335,
+    "run_id": 44851558759,
     "rva": "0xf9d760",
     "schema": 2,
-    "source_sha256": "5de4639bea59493adfdd8351721258dd1b6948e17c24ee5f3b33c3f0977083c6",
+    "source_sha256": "5769aa993080d5585ecf98889406252b2fb8d8c28814a3926ecbfe53ea6aadeb",
     "status": "pass",
     "symbols": [
       "??_GNiPSysGravityModifier@@UEAAPEAXI@Z"
@@ -99,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "e78d457490fd0155994cecec9475c09aeee7e76475181b1b19caa377447a9441",
           "code_sections": 1,
-          "object_sha256": "03d809582195031e843789c1c7ecdc4aea20db6abccbce4587d606e1a62327d7"
+          "object_sha256": "9863a98dfbe02c11269f0a5e0e5ca2bb54ffb66ae443defc2f450592118899b1"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -162,9 +162,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
-          "source_revision": "5de4639bea59493adfdd8351721258dd1b6948e17c24ee5f3b33c3f0977083c6"
+          "source_revision": "5769aa993080d5585ecf98889406252b2fb8d8c28814a3926ecbfe53ea6aadeb"
         },
-        "symbol_map_sha256": "4faf66fd17b513e8bd68f46c2e6b34773f9b750aa8c9453853f8898afc13688d",
+        "symbol_map_sha256": "0b5bfd3150cab38ec476ec3f7a660e965fb0f65fd5732b01b9c98f6107a554fe",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -175,7 +175,7 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
-    "digest": "5de4639bea59493adfdd8351721258dd1b6948e17c24ee5f3b33c3f0977083c6",
+    "digest": "5769aa993080d5585ecf98889406252b2fb8d8c28814a3926ecbfe53ea6aadeb",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/gamebryo/niparticle/NiPSysGravityModifier.cpp",
@@ -183,10 +183,10 @@
       "reconstruction/gamebryo/niparticle/NiPSysModifier.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "redwatchwanderer",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/4faf66fd17b513e8bd68f46c2e6b34773f9b750aa8c9453853f8898afc13688d.json",
-    "sha256": "4faf66fd17b513e8bd68f46c2e6b34773f9b750aa8c9453853f8898afc13688d"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/0b5bfd3150cab38ec476ec3f7a660e965fb0f65fd5732b01b9c98f6107a554fe.json",
+    "sha256": "0b5bfd3150cab38ec476ec3f7a660e965fb0f65fd5732b01b9c98f6107a554fe"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

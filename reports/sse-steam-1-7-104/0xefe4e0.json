@@ -27,7 +27,7 @@
           "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "48bcad5546286d5acd92d5d741a3390c0083cf06ceb770ce1fc4e564ad153a30",
+        "object_sha256": "eff00f6158ad9bd9e3a03c0b8fa1c2abf5d0309029faf6202a0b9c5442167fd3",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nimain/NiAVObject.h",
@@ -39,43 +39,38 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "59479c2f38538f9cf1016004f95ddee110312fab",
+    "base_sha": "521df5ee2e9e1e9d674ddafa702e4bf5bdb74068",
     "build_id": "sse-steam-1-7-104",
-    "cache_verified": true,
-    "candidate_sha": "12a3eff1bcd2bcd16c22309bc181707676a8f7aa",
-    "compiler_sha256": {
-      "c1xx.dll": "4d5f2f8c1ed3384ae15be5b31e2918e4a200913cb58374543b7a05762de234be",
-      "c2.dll": "03627abf4cde10390bc086ba1a85625ed61c2708838db9fff0dc9830040bbf2b",
-      "cl.exe": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
-      "link.exe": "70e987473cc4c67f65cdcabb82b3dc4827cb9d224d6016843051363b4cacb099"
-    },
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
-    "content_sha256": "65de3e897fa87128971f51fb5b10393597599e0bf27cf220bd73636ef2e55499",
-    "deterministic": true,
-    "first_content_sha256": "65de3e897fa87128971f51fb5b10393597599e0bf27cf220bd73636ef2e55499",
+    "event": "pull_request",
     "first_host": {
       "host_id": "mac-wine",
       "loader": "wine",
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "first_object_sha256": "48bcad5546286d5acd92d5d741a3390c0083cf06ceb770ce1fc4e564ad153a30",
+    "head_sha": "9ad3e2adf9533b457f6d7591cbcbaa9acb2c1dde",
     "host_id": "github-windows-native",
-    "kind": "ci-hash",
+    "job": "hash",
+    "kind": "pr-check-hash",
     "layout_sha256": "db810b8f85ab1c98ea194ddd8925a2e2b4a0bc30f4904f38d3214f3c2a92ac17",
     "loader": "native",
     "machine": "github-hosted-windows",
+    "map_status": "pass",
     "normalized_sha256": "2774cf9a64ad91c61e30e2bbae13c194ecd0fea89f01c1894d8082e47f6f0455",
-    "object_sha256": "79540f345bcb97d7b90c1724b298015a157a75b4224b7c8ad2de7aff435b3514",
     "os": "windows",
     "recipe_sha256": "a6df3f3f1af44ec7ba9c6e181357718ee3fa4577d33abb58c3176ae33fd52d2c",
-    "request_sha256": "8e66ca9ab3864a187ab117242ae4144a49320e388547ca210bd2601e3cab969d",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44130781798,
-    "rva": 15721696,
-    "schema": 1,
-    "source_sha256": "66ae67440fa3c7c64600dc9adad85f3ccd3804775fd7acdbd3360846a6fa18db",
+    "run_id": 44931470616,
+    "rva": "0xefe4e0",
+    "schema": 2,
+    "source_sha256": "ed0d676c0ced15754f49a270f000bcb23cb2003cb1f5ec27db46efabc0eb5155",
+    "status": "pass",
+    "symbols": [
+      "?Ctor@NiPointLight@@QEAAPEAV1@XZ"
+    ],
     "target": {
       "extraction": "linked-reference-inference",
       "layout_sha256": "db810b8f85ab1c98ea194ddd8925a2e2b4a0bc30f4904f38d3214f3c2a92ac17",
@@ -83,23 +78,20 @@
       "rva": 15721696,
       "size": 52
     },
-    "task_id": "contrib-pr102-4eb3058f-0-squash-efe4e0",
-    "toolchain_manifest_sha256": "3d358035ccde903aeed022b7dc6ea2b7e91a33922b0f9eda2bc7655749690337",
-    "tools_sha256": "e287e1ae34e16b19a23292b974e98ccc19c441e2804835520d974d2d18748101",
     "toolset": "MATCH",
-    "unit": "reconstruction/netimmerse/NiPointLight.cpp",
-    "workflow": ".github/workflows/ci-confirm.yml"
+    "unit": "reconstruction/gamebryo/nimain/NiPointLight.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0xefe4e0",
   "match_record_schema": 2,
   "notes": [
-    "CI second-host exception authorized by awarebayes 2026-11-15. Full local comparator report is verbatim; CI independently verifies published target hashes and whole non-debug object content. No game bytes enter CI."
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
     "path": "reconstruction/recipes/o2-fpfast-root-includes.json",
     "sha256": "a6df3f3f1af44ec7ba9c6e181357718ee3fa4577d33abb58c3176ae33fd52d2c"
   },
-  "reproduction": "Run tools/verifier/confirm with a registered primary runner and the ci-hash confirmation runner; tools/ci_confirm_batch.py compiles twice with the pinned recipe and checks published hashes.",
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -109,7 +101,7 @@
         "candidate": {
           "code_section_sha256": "4b86f88ee1db65b4b2fee1335569c2dd6932edd3d83c278621de19ea9f46b0d9",
           "code_sections": 1,
-          "object_sha256": "48bcad5546286d5acd92d5d741a3390c0083cf06ceb770ce1fc4e564ad153a30"
+          "object_sha256": "eff00f6158ad9bd9e3a03c0b8fa1c2abf5d0309029faf6202a0b9c5442167fd3"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -172,8 +164,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/netimmerse/NiPointLight.cpp",
-          "source_revision": "66ae67440fa3c7c64600dc9adad85f3ccd3804775fd7acdbd3360846a6fa18db"
+          "path": "reconstruction/gamebryo/nimain/NiPointLight.cpp",
+          "source_revision": "ed0d676c0ced15754f49a270f000bcb23cb2003cb1f5ec27db46efabc0eb5155"
         },
         "symbol_map_sha256": "882d0d6b21d8d58b738674a8468030ab3e295fad2c557aeb24c3712ecc2d582b",
         "target": {
@@ -186,10 +178,8 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/NiPointLight.cpp",
-    "digest": "d534683da807f5154d27d41d2bcc695f8af10e9c33c0032eb9864434adba2a78",
+    "digest": "ed0d676c0ced15754f49a270f000bcb23cb2003cb1f5ec27db46efabc0eb5155",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "66ae67440fa3c7c64600dc9adad85f3ccd3804775fd7acdbd3360846a6fa18db",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/gamebryo/nimain/NiAVObject.h",
       "reconstruction/gamebryo/nimain/NiObject.h",
@@ -197,7 +187,7 @@
       "reconstruction/gamebryo/nimain/NiPointLight.h"
     ]
   },
-  "submitter": "v-macrev",
+  "submitter": "eclepso",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/882d0d6b21d8d58b738674a8468030ab3e295fad2c557aeb24c3712ecc2d582b.json",
     "sha256": "882d0d6b21d8d58b738674a8468030ab3e295fad2c557aeb24c3712ecc2d582b"

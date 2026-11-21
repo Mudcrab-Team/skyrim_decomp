@@ -65,7 +65,8 @@
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
     "Historical source snapshot verified by its recorded file hashes; fresh individual two-host comparison is required. Anonymous sibling source is a hint, not Skyrim evidence.",
-    "Source state: working tree on base commit 8292d7bf3b0e006a010a23cee3ce467cd7600bf7, with uncommitted changes to reconstruction/fo4hints/MovementTweenerAgentNodeFollower.cpp, reconstruction/fo4hints/MovementTweenerAgentNodeFollower.h, reports/sse-steam-1-7-104/unit-symbols/bd1a61dab8424368394e22e0fea2048f2849996503b1af556e297473c2b5d411.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit 8292d7bf3b0e006a010a23cee3ce467cd7600bf7, with uncommitted changes to reconstruction/fo4hints/MovementTweenerAgentNodeFollower.cpp, reconstruction/fo4hints/MovementTweenerAgentNodeFollower.h, reports/sse-steam-1-7-104/unit-symbols/bd1a61dab8424368394e22e0fea2048f2849996503b1af556e297473c2b5d411.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in.",
+    "Carried to new source: the function's own definition is unchanged from the text its runs compared, the function has no published target hash, and the standing host's compare of the new text passes, so the earlier second-host result is kept."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
@@ -364,7 +365,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/ai/movement/MovementTweenerAgentNodeFollower.cpp",
-    "digest": "b04530b031128cec1384cb7366f08a5b542e2cb7f85e7520d6ff29a7601be08b",
+    "digest": "ed73de035f4eace4ac707f3b6f5e12ebcd27ba1687de4615a0972f5a9a1bc17e",
     "digest_method": "tu-sha256-v2",
     "run_digest": "f4afcbe1fcd02a4e1ff916137288b578c777212dc1966da87d39a4e650da8ca3",
     "run_digest_method": "tu-sha256-v1",
@@ -373,6 +374,7 @@
       "reconstruction/skyrim/ai/movement/MovementTweenerAgentNodeFollower.h"
     ]
   },
+  "submitter": "awarebayes",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/bd1a61dab8424368394e22e0fea2048f2849996503b1af556e297473c2b5d411.json",
     "sha256": "bd1a61dab8424368394e22e0fea2048f2849996503b1af556e297473c2b5d411"

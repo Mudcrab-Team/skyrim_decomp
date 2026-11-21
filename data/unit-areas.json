@@ -2,7 +2,15 @@
   "classes": {
     "CommunityLeaf": "unmapped/leaves",
     "ComplexPass": "skyrim_shared/forms",
-    "SkyObjectRoot": "skyrim_shared/sky"
+    "Effect": "skyrim_shared/magic",
+    "LoadTaskData": "thirdparty/scaleform",
+    "Object": "bsscript",
+    "PlayerRegionState": "skyrim_shared/world",
+    "Results": "gamebryo/nimain",
+    "SkyObjectRoot": "skyrim_shared/sky",
+    "Stack": "bsscript",
+    "Transition": "skyrim/camera",
+    "TypeData": "skyrim/ai/movement"
   },
   "note": "Class-by-class placement that the prefix rules in tools/unit_paths.py do not give; a class listed here is placed in the named area.",
   "schema": 1

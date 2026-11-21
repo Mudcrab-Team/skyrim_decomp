@@ -51,6 +51,23 @@
 // 0x728540 ActorProcess::Function728540
 // 0x728560 ActorProcess::Function728560
 // 0x728580 ActorProcess::Function728580
+// 0x6f5220 ActorProcess::Function6f5220
+// 0x6f64b0 ActorProcess::Function6f64b0
+// 0x6f6de0 ActorProcess::Function6f6de0
+// 0x6f6e10 ActorProcess::Function6f6e10
+// 0x6f6f30 ActorProcess::Function6f6f30
+// 0x6fe020 ActorProcess::Function6fe020
+// 0x6fe5d0 ActorProcess::Function6fe5d0
+// 0x6ff4b0 ActorProcess::Function6ff4b0
+// 0x6ff500 ActorProcess::Function6ff500
+// 0x6ffe80 ActorProcess::Function6ffe80
+// 0x6ffef0 ActorProcess::Function6ffef0
+// 0x720f60 ActorProcess::Function720f60
+// 0x7216e0 ActorProcess::Function7216e0
+// 0x7231e0 ActorProcess::HasRunOncePackage
+// 0x726eb0 ActorProcess::Function726eb0
+// 0x7270a0 ActorProcess::Function7270a0
+// 0x727eb0 ActorProcess::Function727eb0
 #include "ActorProcess.h"
 
 // MiddleHighProcessData::unk328, MiddleHighProcessData::unk248, MiddleHighProcessData::unk31E, MiddleHighProcessData::unk31F, MiddleHighProcessData::alphaMult: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -60,12 +77,21 @@
 // MiddleHighProcessData::unk2B0, MiddleHighProcessData::unk2B8, MiddleHighProcessData::bleedoutAttacker, MiddleHighProcessData::unk32A, MiddleHighProcessData::killQueued: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MiddleHighProcessData::wardState, MiddleHighProcessData::soulTrapped: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // pad000, pad0F4, pad148, pad168, pad178: STANDIN GUESS(low)
+// pad068, pad190, pad21C, pad319, unknown000, unknown0DC, unknown134, unknown13C: STANDIN GUESS(low)
+// ProcessData::unk60, ProcessData::unk188, ProcessData::commandedActor: GUESS(low); the pointer members read by the compared bodies
+// HighProcessData::lastExtDoorActivated, HighProcessData::fadeState, HighProcessData::fadeAlpha, HighProcessData::headTrackTarget, HighProcessData::headTracked: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// HighProcessData::pathLookAtTarget, HighProcessData::unk2D0, HighProcessData::animAction, HighProcessData::breathTimer, HighProcessData::detectionModifier: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// HighProcessData::detectionModifierTimer, HighProcessData::doorActivated, HighProcessData::unk3F8, MiddleHighProcessData::unk317, MiddleHighProcessData::unk318, ObjectRefHandle: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// ActorProcess::HasRunOncePackage: CRASHLOGGER_PDB(59818@2026.10.24)
+// HighProcessData::unk3FA, kNullHandle, defaultBreathTimer, defaultDetectionModifierTimer: GUESS(low); kNullHandle is named after the symbol map, the two floats are unnamed constants the bodies read
 // pad188, pad240, pad250, pad2BC, pad2D0: STANDIN GUESS(low)
 // pad31B, pad320, pad322, pad326, pad32B: STANDIN GUESS(low)
 // Function733f00, Function736230, Function736a30, Function736c00: GUESS(low)
 struct ActorProcess::ProcessData
 {
-    std::uint8_t pad000[0xec];
+    std::uint8_t pad000[0x60];
+    void* unk60;
+    std::uint8_t pad068[0x84];
     std::uint32_t bleedoutAttacker;
     MagicSystem::WardState wardState;
     std::uint8_t pad0F4[0x24];
@@ -77,7 +103,10 @@ struct ActorProcess::ProcessData
     BSFaceGenNiNode* faceNodeSkinned;
     std::uint8_t pad178[0x8];
     std::uint64_t unk180;
-    std::uint8_t pad188[0xb0];
+    void* unk188;
+    std::uint8_t pad190[0x88];
+    ObjectRefHandle commandedActor;
+    std::uint8_t pad21C[0x1c];
     BSFaceGenAnimationData* faceAnimationData;
     std::uint8_t pad240[0x8];
     std::uint64_t unk248;
@@ -88,7 +117,10 @@ struct ActorProcess::ProcessData
     std::uint8_t pad2BC[0xc];
     float alphaMult;
     float scriptRefractPower;
-    std::uint8_t pad2D0[0x4a];
+    std::uint8_t pad2D0[0x47];
+    bool unk317;
+    bool unk318;
+    std::uint8_t pad319[0x1];
     bool unk31A;
     std::uint8_t pad31B[0x1];
     bool summonedCreature;
@@ -112,6 +144,34 @@ struct ActorProcess::ProcessData
     void Function736230();
     void Function736a30();
     void Function736c00();
+};
+
+struct ActorProcess::HighProcessData
+{
+    std::uint8_t unknown000[0xd8];
+    ObjectRefHandle lastExtDoorActivated;
+    std::uint8_t unknown0DC[0x54];
+    std::uint32_t fadeState;
+    float fadeAlpha;
+    std::uint8_t unknown138[0x8];
+    ObjectRefHandle headTrackTarget[6];
+    bool headTracked[6];
+    std::uint8_t unknown15E[0x1e];
+    ObjectRefHandle pathLookAtTarget;
+    std::uint8_t unknown180[0x150];
+    std::uint64_t unk2D0;
+    std::uint16_t animAction;
+    std::uint8_t unknown2DA[0x4a];
+    float breathTimer;
+    std::uint8_t unknown328[0x78];
+    float detectionModifier;
+    float detectionModifierTimer;
+    std::uint8_t unknown3A8[0x50];
+    std::int16_t unk3F8;
+    std::int16_t unk3FA;
+    std::uint8_t unknown3FC[0x74];
+    bool doorActivated;
+
 };
 
 void* ActorProcess::GetEquippedLeftHand() const
@@ -403,4 +463,132 @@ void ActorProcess::Function728560()
 bool ActorProcess::Function728580() const
 {
     return middleHigh && middleHigh->soulTrapped;
+}
+
+float ActorProcess::Function6f5220() const
+{
+    return high ? high->breathTimer : defaultBreathTimer;
+}
+
+void ActorProcess::Function6f64b0(std::uint16_t a_action, std::uint64_t a_value)
+{
+    if (high) {
+        high->animAction = a_action;
+        high->unk2D0 = a_value;
+    }
+}
+
+ObjectRefHandle& ActorProcess::Function6f6de0(ObjectRefHandle& a_handle) const
+{
+    a_handle = high ? high->lastExtDoorActivated : kNullHandle;
+    return a_handle;
+}
+
+void ActorProcess::Function6f6e10(const ObjectRefHandle& a_handle, bool a_activated)
+{
+    if (high) {
+        high->lastExtDoorActivated = a_handle;
+        high->doorActivated = a_activated;
+    }
+}
+
+void ActorProcess::Function6f6f30(float a_value)
+{
+    if (high) {
+        high->detectionModifierTimer = defaultDetectionModifierTimer;
+        high->detectionModifier = a_value;
+    }
+}
+
+bool ActorProcess::Function6fe020() const
+{
+    bool result = false;
+    if (high) {
+        switch (high->fadeState) {
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            result = true;
+            break;
+        default:
+            break;
+        }
+    }
+
+    return result;
+}
+
+float ActorProcess::Function6fe5d0() const
+{
+    return high ? high->fadeAlpha : 1.0f;
+}
+
+ObjectRefHandle& ActorProcess::Function6ff4b0(ObjectRefHandle& a_handle) const
+{
+    a_handle = high ? high->pathLookAtTarget : kNullHandle;
+    return a_handle;
+}
+
+void ActorProcess::Function6ff500(const ObjectRefHandle& a_handle)
+{
+    if (high && high->pathLookAtTarget == a_handle) {
+        high->pathLookAtTarget = kNullHandle;
+    }
+}
+
+std::int32_t ActorProcess::Function6ffe80(std::int32_t a_index) const
+{
+    if (high) {
+        if (a_index == 0) {
+            return high->unk3F8;
+        }
+
+        if (a_index == 1) {
+            return high->unk3FA;
+        }
+    }
+
+    return -1;
+}
+
+void ActorProcess::Function6ffef0()
+{
+    if (high) {
+        high->unk3F8 = -1;
+        high->unk3FA = -1;
+    }
+}
+
+bool ActorProcess::Function720f60() const
+{
+    return middleHigh && middleHigh->unk188;
+}
+
+bool ActorProcess::Function7216e0() const
+{
+    return middleHigh && (middleHigh->unk318 | middleHigh->unk317);
+}
+
+bool ActorProcess::HasRunOncePackage() const
+{
+    return (middleHigh ? middleHigh->unk60 : nullptr) != nullptr;
+}
+
+ObjectRefHandle& ActorProcess::Function726eb0(ObjectRefHandle& a_handle) const
+{
+    a_handle = middleHigh ? middleHigh->commandedActor : kNullHandle;
+    return a_handle;
+}
+
+float ActorProcess::Function7270a0() const
+{
+    return middleHigh ? middleHigh->alphaMult : 1.0f;
+}
+
+ObjectRefHandle& ActorProcess::Function727eb0(ObjectRefHandle& a_handle) const
+{
+    const std::uint32_t& source = middleHigh ? middleHigh->bleedoutAttacker : kNullHandle.native_handle;
+    a_handle.native_handle = source;
+    return a_handle;
 }

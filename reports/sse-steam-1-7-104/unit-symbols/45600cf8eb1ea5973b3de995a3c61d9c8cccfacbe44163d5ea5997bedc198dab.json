@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "__xmm@7fffffff7fffffff7fffffff7fffffff": {
+      "rva": 25089728,
+      "size": null
+    },
+    "??0BSMultiBoundAABB@@QEAA@XZ": {
+      "rva": 16575008,
+      "size": 111
+    },
+    "?Unk_28@BSMultiBoundAABB@@UEAAIPEBM@Z": {
+      "rva": 16575392,
+      "size": 276
+    },
+    "??0BSMultiBoundShape@@QEAA@XZ": {
+      "rva": 16666544,
+      "size": null
+    },
+    "??_7BSMultiBoundAABB@@6B@": {
+      "rva": 25166048,
+      "size": null
+    },
+    "?g_initialBoundPoint@@3VNiPoint3@@A": {
+      "rva": 53593176,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "__xmm@7fffffff7fffffff7fffffff7fffffff",
+        "rva": "0x17ed6c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0BSMultiBoundAABB@@QEAA@XZ",
+        "rva": "0xfcea20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Unk_28@BSMultiBoundAABB@@UEAAIPEBM@Z",
+        "rva": "0xfceba0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0BSMultiBoundShape@@QEAA@XZ",
+        "rva": "0xfe4fb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BSMultiBoundAABB@@6B@",
+        "rva": "0x18000e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_initialBoundPoint@@3VNiPoint3@@A",
+        "rva": "0x331c458",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

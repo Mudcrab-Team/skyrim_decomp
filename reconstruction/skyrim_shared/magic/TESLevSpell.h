@@ -63,7 +63,8 @@ class TESLeveledList : public BaseFormComponent
 {
 public:
     ~TESLeveledList() override;  // 00
-    virtual bool GetCanContainFormsOfType(FormType a_type) const = 0;  // 07
+    // a_type: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); a byte here, the image compares one byte and the shared declarations/TESForm.h declares FormType as an int enum
+    virtual bool GetCanContainFormsOfType(std::uint8_t a_type) const = 0;  // 07
 
     void SaveGame(BGSSaveFormBuffer* a_buf);  // address 0x1ea3a0
     void LoadGame(BGSLoadFormBuffer* a_buf);  // address 0x1ea490
@@ -87,7 +88,7 @@ public:
     void SaveGame(BGSSaveFormBuffer* a_buf) override;  // 0E, compared: RVA 0x272ee0
     void LoadGame(BGSLoadFormBuffer* a_buf) override;  // 0F, compared: RVA 0x272f20
     void Revert(BGSLoadFormBuffer* a_buf) override;  // 12, compared: RVA 0x272f60
-    bool GetCanContainFormsOfType(FormType a_type) const override;  // 07
+    bool GetCanContainFormsOfType(std::uint8_t a_type) const override;  // 07
 };
 static_assert(sizeof(TESLevSpell) == 0x58, "TESLevSpell size");
 static_assert(offsetof(TESLevSpell, entries) == 0x38, "TESLevSpell leveled list members");

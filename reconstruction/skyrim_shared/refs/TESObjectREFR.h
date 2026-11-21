@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT) and powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), and callee names from meh321/AddressLibraryDatabase 0379cb6 (used with the author's permission as reported by the maintainer).
@@ -14,9 +15,10 @@ class TESObjectREFR;
 // DoorTeleportData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque here, only a pointer to it is returned.
 struct DoorTeleportData;
 
-// FormType FormType::Container FormType::Static FormType::StaticCollection FormType::Tree FormType::Flora FormType::Furniture FormType::NPC FormType::ActorCharacter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the values used here.
+// FormType FormType::Light FormType::Container FormType::Static FormType::StaticCollection FormType::Tree FormType::Flora FormType::Furniture FormType::NPC FormType::ActorCharacter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the values used here.
 enum class FormType : std::uint8_t {
     Container        = 0x1C,
+    Light            = 0x1F,
     Static           = 0x22,
     StaticCollection = 0x23,
     Tree             = 0x26,
@@ -210,7 +212,9 @@ class NiAVObject;
 
 // LoadedRefData: STANDIN GUESS; stands in for NG's REFR_LOADED_DATA-style block that loadedData points at, with the 3D root at 0x68.
 struct LoadedRefData {
-    std::uint8_t unk00[0x68];
+    std::uint8_t unk00[0x2A];
+    std::int16_t unk2A;        // 2A
+    std::uint8_t unk2C[0x3C];  // 2C
     NiAVObject*  data3D;  // 68
 };
 
@@ -226,6 +230,13 @@ public:
     // ExtraDataList::GetInventoryChanges: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the callee at RVA 0x164c20 (id 11717), taking the same argument as TESObjectREFR::GetInventoryChanges.
     InventoryChanges* GetInventoryChanges(FormType a_type) const;
 
+    // Unk15eb00, Unk166af0: GUESS(low); the callees at RVA 0x15eb00 and 0x166af0, declared, not defined here.
+    void Unk15eb00(TESObjectREFR* a_ref);
+    void* Unk166af0() const;
+
+    // Function16c9f0, Function16cb90: GUESS(low); per-light extra data, the callees at RVA 0x16c9f0 and 0x16cb90.
+    void Function16c9f0();
+    bool Function16cb90() const;
 
     std::uint8_t unk00[0x28];
 };
@@ -444,6 +455,17 @@ public:
 
     // GetEncounterZone: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); RVA 0x300ab0.
     BGSEncounterZone* GetEncounterZone() const;
+
+    // ForwardExtraList, QueryExtraList: GUESS(low); call into extraList (RVA 0x2df5b0, 0x2f6280).
+    void ForwardExtraList();
+    void* QueryExtraList() const;
+
+    // Function2ebcb0, Function2f5930, Function3002f0, Function300310: GUESS(low); the four small
+    // members below, defined in the .cpp beside this file.
+    TESWorldSpace* Function2ebcb0() const;
+    bool           Function2f5930() const;
+    void           Function3002f0();
+    bool           Function300310() const;
 
     OBJ_REFR       data;         // 40
     TESObjectCELL* parentCell;   // 60

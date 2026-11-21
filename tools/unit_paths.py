@@ -169,6 +169,48 @@ RULES = (
     (r'(?:TES|BGS|BaseFormComponent|FormComponent|IFormFactory|ConcreteFormFactory|ConcreteObjectFormFactory|Gold$|StateRelated|'
      r'FieldRecovery|FindEqualsFunctor|FindNonExcludedDeliveryFunctor|BSIntrusive|HandleQuery|ScrollItem|BoundingVolumeDelete|'
      r'MovementSchemeDelete|Shield$|ImageEffect|LayoutValue|ResourcesPreload|MovementUpdate)', 'skyrim_shared/forms'),
+    # Classes known from the generated CrashLogger PDB layouts (reconstruction/generated/crashlogger_pdb/). They
+    # come last so that no class placed by a rule above moves; a specific family stays before its general prefix.
+    (r'(?:GMatrix2D|GMemoryHeap|GString|FxDelegate|ObjectInterface)', 'thirdparty/scaleform'),
+    (r'(?:SkyrimVM$|VirtualMachine|ObjectBindPolicy|ObjectTypeInfo|IVMSaveLoadInterface|LinkerProcessor)', 'bsscript'),
+    (r'BSScaleform', 'bsscaleform'),
+    (r'(?:Amiibo|Kinect|Sixaxis|MotionGesture|Thumbstick|MouseMove|Button|ID)Event|Kinect(?:StateChange|UserEvent)Data', 'bsinput'),
+    (r'(?:AudioLoad|BSGameSound|BSMusicManager)', 'bsaudio'),
+    (r'(?:ImpactSoundData)', 'skyrim_shared/audio'),
+    (r'(?:AbstractHeap|ScrapHeap|ThreadScrapHeap|IMemoryHeap|HeapLimit|MemoryContextImpl|MemoryManagerFile|BSSpinLock|'
+     r'BSTArray|BSTasklet|IOManager)', 'bscore'),
+    (r'(?:BSI?Stream|BSResourceStreamParser|BSSystemFileStorage|BSQueuedResourceCollectionBase|Archive$|Win32FileType|Queued)', 'bssystem'),
+    (r'(?:GameSetting|INISetting|INIPrefSetting|RegSetting)Collection', 'bsmain'),
+    (r'(?:CellMopp|ExtendedListeners)', 'bshavok'),
+    (r'(?:BSBatchRenderer|Renderer$|RenderTargetManager|BSLensFlareSpriteRenderData|ShadowSceneNode|ImageSpace(?:Effect|ShaderParam))', 'bsshader'),
+    (r'(?:Atmosphere$|Clouds$|Moon$|Stars$|Sun$|Precipitation$|SkyObject$|OcclusionMapData)', 'skyrim_shared/sky'),
+    (r'BSTempNode', 'skyrim_shared/tempeffects'),
+    (r'BaseExtraList', 'skyrim_shared/extradata'),
+    (r'(?:Pathing|NavMesh|BSPathBuilder|BSPrecomputedNavmeshInfoSearch|PathFollowerState|IPathSmoother|PathSmoother|'
+     r'NullPathBuilderTracker|TrianglePath|Check(?:GoalReached|ParameterReached|StoppedMoving)Functor)', 'skyrim_shared/pathfinding'),
+    (r'(?:HitData$|TreeBuilder$)', 'skyrim/ai/combat'),
+    (r'(?:Trespass|Dialogue)Package|UseWeaponActorPackageData|IPackageData|PackageLocation|Detection(?:Listener|State)|HighActorCuller', 'skyrim/ai'),
+    (r'NonActorMagicCaster', 'skyrim/magic'),
+    (r'MagicFavorites', 'skyrim_shared/magic'),
+    (r'(?:FirstPersonState|RaceSexCamera|MapCamera|TransitionInfoArray)', 'skyrim/camera'),
+    (r'PlayerControls', 'skyrim/controls'),
+    (r'(?:HUD[A-Z]|SendHUDMessage|ShoutMeter|StorageSpaceBar|ItemCard|ItemList$|DescriptionBox|Journal(?:Tab|_QuestsTab)|'
+     r'Console(?:Log)?$|UI_|UI3DSceneManager|UISaveLoadManager|LoadWaitSpinner|ScreenSplatter|MessageBoxData|'
+     r'MessageDataFactoryManager)', 'skyrim/interface'),
+    (r'InventoryEntryData|SpecificItemCollector', 'skyrim_shared/inventory'),
+    (r'DialogueItem', 'skyrim_shared/dialogue'),
+    (r'LoadGameMissingContentCallBack', 'skyrim_shared/saveload'),
+    (r'(?:CellLoaderTask|Loaded(?:AreaBound|LandData))', 'skyrim_shared/world'),
+    (r'(?:BipedAnim|RelationshipActor)', 'skyrim_shared/actors'),
+    (r'(?:Mount|Refr)Interaction|InstantInteractionCallback', 'skyrim_shared/refs'),
+    # scene graph and animation classes named with the engine's BS prefix
+    (r'BS(?:Arrow|Box|Capsule|Circle|Cylinder|Disk|FlatQuad|OrientedBox|Ring|Sphere)Constructor', 'gamebryo/nimain'),
+    (r'BS[A-Za-z0-9]*(?:TriShape|ExtraData$)|BSNiNode|BSLines|BSNodeReferences|BS(?:Blast|Debris|Range|Tree|Value|FurnitureMarker)Node|'
+     r'BSPortal|BS(?:Parabolic)?CullingProcess|BSSceneGraph|SceneGraph$', 'gamebryo/nimain'),
+    (r'BSStrip(?:PSysData|ParticleSystem)|BSParticleSystemManager', 'gamebryo/niparticle'),
+    (r'(?:BS[A-Za-z0-9]*Controller$|DiveBombSpeedController|BS[A-Za-z0-9]*Modifier|BS(?:Anim|GrabIK|LookIK)Note|BSAnimInteractionMarker|'
+     r'BShkbAnimationGraph|WeaponAnimationGraphManagerHolder|Animation(?:ClipData|FileManager)Singleton|AnimationStream(?:Load|Save)Game|'
+     r'ITweenerNode)', 'gamebryo/nianimation'),
 )
 COMPILED = tuple((re.compile(pattern), area) for pattern, area in RULES)
 
