@@ -10,12 +10,12 @@ void Functionfa11c0(NiPSysBoundUpdateModifier* a_this, std::uint8_t* a_target);
 
 void NiPSysBoundUpdateModifier::Functionfa8520(std::uint8_t* a_target)
 {
-    std::uint8_t* previous = *reinterpret_cast<std::uint8_t**>(reinterpret_cast<std::uint8_t*>(this) + 0x20);
+    BoundTargetLayout* previous = m_boundTarget;
     if (previous) {
-        previous[0x191] = 0;
+        previous->flag = 0;
     }
     if (a_target) {
-        a_target[0x191] = 1;
+        reinterpret_cast<BoundTargetLayout*>(a_target)->flag = 1;
     }
     Functionfa11c0(this, a_target);
 }

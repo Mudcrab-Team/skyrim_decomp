@@ -8,7 +8,7 @@
 // MovementTweenerAgentNodeFollower, QClassAgentType: SIBLING(fo4-private@1b765c70, author-permission)
 // MovementTweenerAgentNodeFollower: EXE_RTTI
 // ~MovementTweenerAgentNodeFollower: GUESS(medium)
-// Code origin: original; the pinned listing, target RTTI contract and stand-ins only
+// Code origin: mixed; QClassAgentType adapted from the cited sibling body, the destructor and stand-ins original (pinned listing, target RTTI contract)
 #pragma once
 struct BSFixedString { const char* data; BSFixedString(const char*); ~BSFixedString(); };
 class TweenerBaseStandIn { public: virtual ~TweenerBaseStandIn(); };

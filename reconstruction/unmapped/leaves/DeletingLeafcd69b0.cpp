@@ -1,5 +1,6 @@
 // Code origin: original; reconstructed from the pinned image listing
 // 0xcd69b0 DeletingLeafcd69b0::~DeletingLeafcd69b0
+// CI hash: 0xcd69b0 ??_GDeletingLeafcd69b0@@UEAAPEAXI@Z
 // Adapted bodies: none
 // Source exposure: mixed (community headers; the pinned image listing).
 // SPDX-License-Identifier: CC0-1.0

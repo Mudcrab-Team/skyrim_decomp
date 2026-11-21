@@ -2,6 +2,7 @@
 // Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
 // 0x9971e0 DeletingLeaf9971e0::~DeletingLeaf9971e0
+// CI hash: 0x9971e0 ??_GDeletingLeaf9971e0@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeaf9971e0.h"
 

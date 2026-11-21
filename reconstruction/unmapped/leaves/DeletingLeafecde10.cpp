@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: CC0-1.0
 // BSResource::IEntryDB__PostFlushNotify__dtor: CRASHLOGGER_PDB(59818@2026.10.24)
 // 0xecde10 DeletingLeafecde10::~DeletingLeafecde10
+// CI hash: 0xecde10 ??_GDeletingLeafecde10@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeafecde10.h"
 

@@ -115,6 +115,8 @@ WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
+PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
 RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
@@ -708,6 +710,17 @@ def header_rejection(problems, shown=10):
     return '\n'.join(lines)
 
 
+def lint_rejection(problems, shown=10):
+    """The sticky comment for a PR whose units fail the source lint: file, line and the lint's own message."""
+    lines = ['This PR was held before any compile because a unit it adds or changes fails the source lint, which '
+             'the CI `hash` job runs first and stops on. Please fix the lines below and push; the bot re-checks '
+             'the new head.']
+    lines += [f'- {p}' for p in problems[:shown]]
+    if len(problems) > shown:
+        lines.append(f'- and {len(problems) - shown} more; run `python3 tools/lint_reconstruction.py` locally')
+    return '\n'.join(lines)
+
+
 def comment_body(sha, decision, leak_codes=()):
     """The outcome text, with the accepted functions the PR removes added to any outcome that is not a hold."""
     text = outcome_body(sha, decision, leak_codes)
@@ -1210,6 +1223,18 @@ class Bot:
             return header_check.check(self.root, base, head)
         except subprocess.CalledProcessError:
             return []
+
+    def lint_problems(self, files):
+        """The lint findings of the changed units, as the CI `hash` job's intake reads them.
+
+        That job fails with no result when any finding exists, so the bot must say what it was instead of
+        waiting for a run that cannot produce one.
+        """
+        import lint_reconstruction
+        build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+        names = sorted(f['filename'] for f in files if f.get('status') != 'removed'
+                       and f['filename'].endswith(('.h', '.cpp')))
+        return [line for name in names for line in lint_reconstruction.lint_file(self.tree, name, build)]
 
     def history_problem(self, base, head):
         """Why the PR's own commits may not enter main, or None. A merge publishes every one of them."""
@@ -1839,6 +1864,37 @@ class Bot:
         # Deleting the head branch ends the probe PR; the bot has no code path that closes a PR itself.
         self.run(['gh', 'api', '-X', 'DELETE', f'repos/{REPOSITORY}/git/refs/heads/probe/pr-{number}'], check=False)
 
+    def sweep_probes(self):
+        """Close the bot's own probe PRs that have done their job, deleting their branches; returns the numbers.
+
+        A probe exists only to get a hash run onto a commit. It is finished once that run has completed,
+        the bot has the CI result, or the target PR is closed or has moved to another head. Only a PR by
+        the owner, with the exact title and the matching `probe/pr-N` branch, is ever touched.
+        """
+        listed = self.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--limit', '200', '--json',
+                              'number,title,headRefName,headRefOid,author')
+        directory = self.work / ('dry' if self.dry_run else 'state')
+        closed = []
+        for probe in listed:
+            named = PROBE_TITLE.fullmatch(probe['title'])
+            if (not named or probe['author']['login'].casefold() != OWNER.casefold()
+                    or probe['headRefName'] != f'probe/pr-{named.group(1)}'):
+                continue
+            number = int(named.group(1))
+            target = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
+            head = probe['headRefOid']
+            state = State(directory, number, target['headRefOid'])
+            if target['state'] == 'OPEN' and target['headRefOid'] == head and not (
+                    state.get('done') or state.get('ci') or self.hash_run_completed(head)):
+                continue
+            self.run(['gh', 'pr', 'close', str(probe['number']), '-R', REPOSITORY, '--delete-branch'], check=False)
+            closed.append(probe['number'])
+        return closed
+
+    def hash_run_completed(self, head):
+        run = self.latest_hash_run(head)
+        return bool(run) and run['status'] == 'completed'
+
     def approve_pending(self, head):
         """A fork's first workflow run waits for approval; the workflows hold no secrets."""
         runs = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs?head_sha={head}&status=action_required')
@@ -2027,6 +2083,9 @@ class Bot:
         header_problems = state.once('header', lambda: self.header_problems(base, head))
         if header_problems:
             raise Rejected('header', header_rejection(header_problems))
+        lint_found = state.once('lint', lambda: self.lint_problems(files))
+        if lint_found:
+            raise Rejected('lint', lint_rejection(lint_found))
         state.once('batch', lambda: wants_batching(functions, self.header_sizes(units)))
         grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
         # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
@@ -2980,6 +3039,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     refilled = None
     retried = None
     swept = None
+    probes = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -3016,6 +3076,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                         print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
                     print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if not bot.dry_run and not inflight and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
+                probes = time.time()
+                try:
+                    for number in bot.for_slot(0).sweep_probes():
+                        print(f'{stamp()} probe #{number}: done, closed', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')

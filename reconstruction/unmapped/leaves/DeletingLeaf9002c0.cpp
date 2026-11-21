@@ -2,6 +2,7 @@
 // Code origin: names from the inventory and the pinned image listing; the destructor body is written from the listing
 // SPDX-License-Identifier: CC0-1.0
 // 0x9002c0 DeletingLeaf9002c0::~DeletingLeaf9002c0
+// CI hash: 0x9002c0 ??_GDeletingLeaf9002c0@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeaf9002c0.h"
 

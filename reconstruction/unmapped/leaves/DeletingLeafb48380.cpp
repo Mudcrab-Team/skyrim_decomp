@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: CC0-1.0
 // Code origin: original stand-in from the pinned image listing; no external body reused.
 // 0xb48380 DeletingLeafb48380::~DeletingLeafb48380
+// CI hash: 0xb48380 ??_GDeletingLeafb48380@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeafb48380.h"
 

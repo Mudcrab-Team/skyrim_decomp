@@ -2,6 +2,7 @@
 // Code origin: original; the pinned image listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
 // 0x91d890 DeletingLeaf91d890::~DeletingLeaf91d890
+// CI hash: 0x91d890 ??_GDeletingLeaf91d890@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeaf91d890.h"
 

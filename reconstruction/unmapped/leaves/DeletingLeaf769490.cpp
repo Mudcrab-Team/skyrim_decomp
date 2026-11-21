@@ -2,6 +2,7 @@
 // Code origin: original stand-in; shape and size read from the pinned image listing.
 // SPDX-License-Identifier: CC0-1.0
 // 0x769490 DeletingLeaf769490::~DeletingLeaf769490
+// CI hash: 0x769490 ??_GDeletingLeaf769490@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeaf769490.h"
 

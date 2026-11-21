@@ -2,6 +2,7 @@
 // Code origin: original stand-in; no external declaration or body reused
 // SPDX-License-Identifier: CC0-1.0
 // 0xf04c80 DeletingLeaff04c80::~DeletingLeaff04c80
+// CI hash: 0xf04c80 ??_GDeletingLeaff04c80@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "DeletingLeaff04c80.h"
 
