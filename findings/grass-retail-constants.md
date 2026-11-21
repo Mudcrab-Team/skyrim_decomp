@@ -9,7 +9,7 @@ Function RVA / size (if applicable): 0x209020 (2912), 0x2afb20 (2131), 0x208f60 
 Source exposure: mixed (binary-analysis of the pinned image; the shipped shader bytecode, INIs and Skyrim.esm; for comparison only, Mudcrab's grass code and its published audit of the MIT-licensed spud engine. No FNV or Fallout 4 sibling source was used.)
 Sources and immutable revisions / licenses: the pinned image and the operator's own retail install; no third-party code reproduced
 Name provenance: GUESS
-Confidence: high where marked verified; medium where agent-reported; inferred items are stated as such
+Confidence: reviewed 2026-11-20 (see "Independent review"); high where marked verified; medium where agent-reported; inferred items are stated as such
 
 Addresses are VAs in the pinned image (base `0x140000000`). Values and rules only: no recovered
 implementation or line-by-line translation is included. Intended reader: Mudcrab's grass labels
@@ -186,12 +186,165 @@ shader package; PS 37–47.
 ### <a id="g19"></a>G19. Layout constants (mixed)
 
 - 17×17 blend grid per layer, 289 samples (verified, stride above); 4096-unit cells (verified,
-  constant used by the instancer `0x1417ff7dc`); 2048-unit quadrants of 8×8 tiles (agent-reported).
+  constant used by the instancer `0x1417ff7dc`); 2048-unit quadrants, each 8 by 8 tiles (agent-reported; confirmed in the review below).
 - Layers per quadrant: five weighted layers plus the base (agent-reported).
 - iMaxGrassTypesPerTexure is applied after adding a type (agent-reported).
 - Per-instance encoding: retail stores the rotation basis (from `s = r * 2^-31 - 1`,
   `c = +sqrt(1 - s^2)`) and a half-float scale offset `rand(-1, 1) * heightRange` used as
   `1 + v * expansion` in the vertex shader (agent-reported).
+
+## Independent review (2026-11-20)
+
+Reviewer: GPT 6.2 Sol (`gpt-6.2-sol`) through Codex, high effort, fresh context. The reviewer did not
+author or draft this finding. The review was started and recorded by the skyrim-research department
+lead (Claude Sonnet 5.5), which also did not draft the finding. Date: 2026-11-20 (CST).
+Source reviewed: this file at `bbd2e62634` (#558), against the pinned image `sse-steam-1-7-104`
+(measured SHA-256 equals the pin in `builds/target.json`), the shipped shader package and the five
+shipped INIs, all from the operator's own install. Method: the agent-reported claims were traced first,
+then each group was re-checked against native listings, PE fields, the INIs and decoded Direct3D shader
+bytecode. This is a static finding review. It is not match evidence for any function and it does not
+decide transfer eligibility (`docs/clean-room.md`).
+
+Where the corrected text below differs from an observation above, the corrected text applies. The
+evidence addresses in the observations above are kept.
+
+| Group | Verdict | One-line status |
+|---|---|---|
+| g01 | Confirmed | Compiled defaults and the five shipped INIs agree. |
+| g02 | Corrected | The enable refresh adds a caller flag; a fade-setting write bypasses the gate. |
+| g03 | Corrected | The fade writer scales both endpoints before deriving the shader range. |
+| g04 | Confirmed | The divisor is unclamped and the division is floating point. |
+| g05 | Corrected | Tiles are 256 units at shipped granularity; some negative ranges give a zero grid. |
+| g06 | Corrected | Multiplier, first draw and cell seed hold; twist and full-width draw need clarification. |
+| g07 | Corrected | The 16-record cap applies per tile collector call. |
+| g08 | Corrected | The nine-sample floor applies to weighted layers; the base layer uses residual coverage. |
+| g09 | Corrected | The mean test uses density weights and clears them on failure. |
+| g10 | Corrected | Weighted layers use a byte threshold; the base layer uses residual coverage. |
+| g11 | Confirmed | A signed threshold gates the 15-bit draw before jitter. |
+| g12 | Confirmed | X is drawn before Y; the surface query uses half-float-rounded coordinates. |
+| g13 | Confirmed | A runtime initializer supplies a 512-entry cosine table. |
+| g14 | Corrected | The formula applies before half-float packing. |
+| g15 | Corrected | All six water tests recovered and inclusive; the unsigned guard also skips negative modes. |
+| g16 | Corrected | The 960 cap limits the fade-factor upload; the traced draw uses the full geometry count. |
+| g17 | Corrected | The output-scale global starts near 0.8333 and is mutable; the fallback is 1.0. |
+| g18 | Corrected | Distance fade is combined with a per-instance factor; depth variants write the resulting alpha. |
+| g19 | Corrected | Quadrant size and encoding hold; layer capacity and type-limit wording corrected. |
+
+Summary: 5 groups confirmed (g01, g04, g11, g12, g13) and 14 corrected (g02, g03, g05 to g10, g14 to
+g19). No group was rejected. The agent-reported items in g06, g13, g15, g16, g17 and g19 were re-derived;
+the corrections for g15 (all six water tests, inclusive), g16 (cap scope), g17 (output scale source) and
+g19 (layer capacity, type limit) change the earlier claims.
+
+## Corrected statements
+
+### G01 — Effective values
+
+Label the last column **Effective with shipped INI inputs**. The start-fade value in that column applies to the High and Ultra presets. Low and Medium supply the values shown in the preset column.
+
+### G02 — Grass on/off gate
+
+Initialization enables shader grass only when `bDrawShaderGrass` is set and `fGrassStartFadeDistance >= fGrassMinStartFadeDistance + 0.5`. The enable refresh also requires a caller flag. The traced fade-start setting write recalculates the fade endpoints without re-running the enable gate.
+
+### G03 — Fade endpoints and shader range
+
+The CPU caps the sum of `fGrassStartFadeDistance` and `fGrassFadeRange` at `uGridsToLoad × 4096`. The cap is 20480 at `uGridsToLoad = 5`, above the default sum of 8000. The effective start is the lesser of the capped end and the configured start. The fade writer scales both endpoints by a separate float whose compiled value is `1.0`. The shader receives the scaled start and the scaled end minus the scaled start.
+
+### G04 — Grass size divisor
+
+`iMinGrassSize` is an unclamped floating-point divisor. The result is converted to an integer.
+
+### G05 — Candidate grid
+
+Tiles are 256 units wide at the shipped granularity. Divide the tile width by the form’s position range and by `iMinGrassSize`. The code truncates both quotients to signed 64-bit integers, then selects the lesser of their low 32 bits using an unsigned comparison. A GRAS record initializes position range to `32` and can load a different value. With range `32` and `iMinGrassSize = 20`, the grid has 8 candidates per axis.
+
+With invalid floating-point exceptions masked, a zero position range produces an invalid conversion whose low word is zero. A zero grid skips candidate generation. A negative quotient selects the grass-size cap when its converted low word exceeds the cap. A negative quotient between −1 and 0 truncates to zero.
+
+### G06 — Random source and cell seed
+
+Grass uses a shared Mersenne-Twister variant with initialization multiplier `1812433253`. The first nonzero-bound draw after an explicit reseed takes state word 623. Before generating an exterior cell, the generator reseeds with the low 32 bits of cell X times cell Y.
+
+The twist reduces the next state word’s value modulo 624 and separately wraps the state index offset by 397. It uses twist constant `0x9908B0DF` and the standard effective tempering masks. The draw cursor also wraps modulo 624. Full-width grass calls use remainder modulo `4294967295`, which maps the maximum raw word to zero. The signed-unit conversion is `r × 2^-31 − 1`, and the colour factor uses `r × 2^-33`. Acceptance uses a masked 15-bit draw from 0 through 32767.
+
+### G07 — Sixteen records per tile collector call
+
+The per-cell generator passes a capacity of 16 records to the collector for each tile. The generator reuses the same array across tiles and quadrants.
+
+### G08 — Weighted-layer coverage floor
+
+Each weighted layer tests nine coverage bytes from its 17 by 17 per-quadrant blend grid. The offsets from the centre are −18, −17, −16, −1, 0, +1, +16, +17, and +18. The layer proceeds only when at least one byte exceeds 25. The base layer uses residual coverage.
+
+### G09 — Texture threshold and mean
+
+For finite settings, `T` is floored at zero. A value above 1 becomes 0.9. The weighted and base paths gate each sample as described in G10. Each path then compares the mean of nine resulting density weights with `T`. A mean below `T` clears all nine weights and preserves the record. At the shipped `T = 0`, a mean of zero passes. The weighted-layer coverage floor also applies.
+
+Base residual coverage is one minus the sum of the first five weighted coverage bytes multiplied by the stored `1/255` factor.
+
+### G10 — Density per sample
+
+A weighted sample gets `density × 0.01` when its coverage byte exceeds `trunc(T × 255)`. A base sample gets the same weight when its floating residual coverage exceeds `T`. A sample that fails its threshold gets zero.
+
+### G11 — Acceptance threshold
+
+The caller sets the multiplier to `1.0`. The instancer scales the bilinear weight by 32768 and this multiplier, then truncates it. It rejects a zero low word without drawing. Otherwise it accepts when the 15-bit draw is less than the signed low word. The comparison precedes position jitter.
+
+### G12 — Position jitter
+
+Each accepted candidate draws its X offset and then its Y offset. The signed-unit draw scales by half the candidate spacing. At shipped granularity the spacing is `256 / n`. The coordinates pass through half-float conversion before the surface query.
+
+### G13 — Slope limits
+
+The slope bounds use a runtime table of 512 cosine values. The initializer accumulates a float32 step of about `2π / 512` radians. The slope lookup multiplies degrees by the stored float32 value `1.4222221374511719`, truncates the result, and masks the index with 511. For finite operands, the normal’s Z component must be at least the value indexed by the maximum slope and at most the value indexed by the minimum slope.
+
+### G14 — Instance colour scale
+
+The weighted landscape luminance is `0.31 R + 0.37 G + 0.32 B`. The colour multiplier is `(r × 2^-33 − 0.25) × colorRange + (1 − colorRange)`, using the full-width result described in G06. If the product is at least `1.0`, the pre-packing value is `0.99`. Otherwise it is the greater of the product and zero. Products in `[0.99, 1.0)` retain their value before half-float packing. Packing can round the value.
+
+### G15 — Water placement modes
+
+The water test uses terrain height `h`, the cell’s water reference `w`, and the grass type’s unsigned 16-bit distance `d`. For finite operands the conditions are inclusive.
+
+| Mode | Water test passes when |
+|---|---|
+| 0 | `h ≥ w − d` |
+| 1 | `w ≤ h ≤ w + d` |
+| 2 | `h ≤ w − d` |
+| 3 | `w − d ≤ h ≤ w` |
+| 4 | `h ≤ w − d` or `h ≥ w + d` |
+| 5 | `w − d ≤ h ≤ w + d` |
+
+The unsigned mode guard bypasses the water test for other values, including negative signed values. The candidate still faces the slope test and other placement rules.
+
+### G16 — Fade-factor upload capacity
+
+Each inspected upload writes one prefix of at most 960 per-instance fade factors. The vertex shader reads 240 vectors of four factors. The traced geometry draw loop uses the full geometry count and submits eligible slots. It has no second batch for the fade-factor upload. The scene conditions and visual result for slots beyond the uploaded prefix are unverified.
+
+### G17 — Lit grass shading and output scale
+
+The lit grass pixel shaders add the ambient term to the direct term, then scale the combined RGB. The ambient term is `C × ambient × T`. The direct term is `NdotL × C × sunColour × T × shadow`, with `shadow = mask + fShadowClampValue × (1 − mask)`. The `RunGrass` group has no explicit `1/π` multiplier in its shader bodies.
+
+The output scale is the fourth lane of pixel constant register `cb2[16]`. The setup sources it from a mutable global or a fallback vector with scale `1.0`. The global starts at float32 `0.8333333134651184` and can change at runtime. The evidence is zero-based group 2 of `shaders011.fxp`, with lit pixel records 0–6 and 9–15, plus the native constant setup.
+
+### G18 — Distance fade and output alpha
+
+The `RunGrass` vertex shader takes the length of clip-space XYZ before division by W. The distance factor is `1 − saturate((d − fadeStart) / fadeRange)`. The shader multiplies that factor by a separate per-instance factor. The range is the scaled endpoint difference from G03.
+
+In zero-based group 2 of `shaders011.fxp`, lit alpha-tested pixel records 9–15 compare texture alpha times the combined fade with the cutoff and write output alpha `1` for surviving pixels. The four depth-style pixel records 7, 8, 16, and 17 use that product for cutoff and write it as output alpha. Opaque lit pixel records 0–6 ignore the combined fade.
+
+### G19 — Layout constants
+
+- A cell is 4096 units wide. It contains four 2048-unit quadrants, each 8 by 8 tiles at the shipped step. Tiles are 256 units wide. Each quadrant uses a 17 by 17 blend grid with 128-unit sample spacing and 289 samples per weighted slot.
+- The collector and storage allow six weighted slots plus a separate base. The loaders allow weighted index 5. The base residual uses weighted slots 0 through 4, and compaction clears slot 5. These counts describe capacity and the inspected paths.
+- The collector checks the number already added before insertion and stops when it exceeds `iMaxGrassTypesPerTexure`. A setting of 2 permits up to three records per eligible texture list, subject to the shared cap of 16 per tile.
+- The initial rotation basis uses the signed draw `s` and `c = +sqrt(1 − s²)`. The CPU can align the basis to the terrain normal before packing it as half-floats. It also packs a signed draw times `heightRange` as a half-float offset. The vertex shader applies `1 + offset × expansion` componentwise.
+
+### Interpretation and examples
+
+The open questions listed in "Interpretation and alternatives" above (cosine table, water modes, base residual, initial output scale) are answered by the corrected G09, G13, G15 and G17 statements. The active output scale depends on the runtime path. Instance counts and fade output in a retail scene remain unverified.
+
+- G05 — With `iMinGrassSize = 20`, a position range of `32` gives 8 candidates per axis. A range of `−1` gives 12, and a range of `−512` gives zero. A zero position range gives a zero grid with invalid floating-point exceptions masked.
+- G09 — A finite threshold of `1.5` becomes `0.9`, and `−0.2` becomes `0`.
+- G14 — Luminance `1.0` with `colorRange = 0` gives a pre-packing result of `0.99` for any draw. A product of `0.995` remains `0.995` before half-float packing.
+- G15 — Mode `6` bypasses the water test. Other placement tests still apply.
 
 ## Interpretation and alternatives
 
@@ -223,4 +376,4 @@ shaders from your own install. Keep listings in `.local/`.
 
 ## Reviewer and outcome
 
-Not yet reviewed.
+Reviewed independently on 2026-11-20 by GPT 6.2 Sol (Codex, high effort, fresh context). Outcome: 5 confirmed, 14 corrected, 0 rejected; see the review section above. Unverified: the active output scale at runtime, instance counts and the visual result in a retail scene (no captures were made).
