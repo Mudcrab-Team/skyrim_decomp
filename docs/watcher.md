@@ -55,6 +55,9 @@ three times backs that head off; read the bot's log before re-triggering.
   with `Co-authored-by`. Do not ask them to redo trivia.
 - Fix the bot, not the PR: if a verdict is wrong, land a tooling PR; do not patch around it.
 - Post no PR comments beyond the bot's one sticky comment.
+- Never `--admin` merge a PR that touches `reconstruction/**`; only the bot merges those, because the
+  merge path is what enforces the stale and companion-record gates (the `check` job is skipped for
+  mapping-only PRs by design). If the bot is down, wait or restore it.
 - A function is `matched` only by a two-host byte match plus one Reviewer approval. Never hand-mark
   one, never edit `data/progress.json` to skip it, never lower the match floor, comparator or
   validator.
