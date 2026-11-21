@@ -6,7 +6,24 @@
 // 0x6b70f0 TESBoundObject::SendActorItemEquippedEvent
 // 0x278f90 TESBoundObject::CalculateDoFavor
 // 0x1468a0 TESBoundObject::IsBoundObject
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x1e71b0 IsSpellOrScrollForm
 #include "TESBoundObject.h"
+
+bool IsSpellOrScrollForm(const TESForm* a_form)
+{
+    bool result = false;
+    if (a_form) {
+        switch (static_cast<std::uint8_t>(a_form->formType)) {
+        case 0x16:
+        case 0x17:
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
 
 // RVA 0x6b70f0, 51 bytes
 void TESBoundObject::SendActorItemEquippedEvent(TESObjectREFR* a_actor)

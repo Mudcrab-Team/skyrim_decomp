@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -490,6 +491,9 @@ public:
     // ActivateTarget: GUESS(low); target call through virtual slot 204
     virtual void ActivateTarget(TESObjectREFR*, std::int32_t, std::uint8_t, bool);
 };
+// IsSpellOrScrollForm: GUESS(low); true for a non-null form whose type is 0x16 or 0x17 (NG's kSpell and kScroll)
+bool IsSpellOrScrollForm(const TESForm* a_form);
+
 // RuntimeTypeDescriptor, g_actorType, g_referenceType, CastReferenceToActor: GUESS(low); external RTTI addresses and observed runtime cast
 struct RuntimeTypeDescriptor;
 extern RuntimeTypeDescriptor g_actorType;

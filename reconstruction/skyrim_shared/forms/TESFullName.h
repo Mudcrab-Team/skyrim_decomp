@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // TESFullName: EXE_RTTI; class name and base from the image RTTI
 #pragma once
@@ -57,3 +58,24 @@ public:
 	BSFixedString fullName;  // 08
 };
 static_assert(sizeof(TESFullName) == 0x10, "layout");
+
+// MapMarkerData, locationName, flags, type, Flag, kVisible, kCanTravelTo: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+class MapMarkerData
+{
+public:
+	enum Flag : std::uint8_t
+	{
+		kVisible = 1 << 0,
+		kCanTravelTo = 1 << 1
+	};
+
+	void SetVisible(bool a_value);
+	void SetCanTravelTo(bool a_value);
+
+	TESFullName   locationName;  // 00
+	std::uint8_t  flags;         // 10
+	std::uint8_t  pad11;         // 11
+	std::uint16_t type;          // 12
+	std::uint32_t pad14;         // 14
+};
+static_assert(sizeof(MapMarkerData) == 0x18, "layout");

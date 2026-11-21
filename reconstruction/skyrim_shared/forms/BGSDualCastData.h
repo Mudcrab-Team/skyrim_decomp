@@ -81,3 +81,12 @@ public:
     std::uint64_t unknown58;  // 58
 };
 static_assert(sizeof(BGSDualCastData) == 0x60, "BGSDualCastData size");
+
+extern __declspec(thread) std::uint32_t memoryContext_tls_0x768;
+
+struct AutoMemContext
+{
+    ~AutoMemContext();
+
+    std::uint32_t saved;  // 00
+};

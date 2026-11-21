@@ -4,12 +4,22 @@
 // IngredientItem: EXE_RTTI
 // GetAssociatedSkill: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // member, padding: GUESS(low); storage names invented for the measured member offset
+// IngredientItem::knownEffectFlags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
+#include "declarations/TESForm.h"
 // GetAssociatedSkill: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-class IngredientItem
+class IngredientItem : public TESForm
 {
 public:
     virtual std::uint32_t GetAssociatedSkill() const;
+
+    bool Function14ef00(std::uint32_t a_index);
+
+    std::uint8_t  padding[0x138 - 0x20];  // 020
+    std::uint16_t knownEffectFlags;       // 138
+    std::uint16_t pad13A;                 // 13A
+    std::uint32_t pad13C;                 // 13C
 };
+static_assert(sizeof(IngredientItem) == 0x140, "IngredientItem size");

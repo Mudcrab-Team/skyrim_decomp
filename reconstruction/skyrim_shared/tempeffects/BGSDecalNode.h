@@ -33,6 +33,9 @@ public:
     std::uint32_t _pad0C;  // 0C
     std::uint32_t _size;  // 10
     std::uint32_t _pad14;  // 14
+
+    // Function203750: GUESS(low); callee of BGSDecalNode::Function2033b0 at 0x203750
+    void Function203750(const T& a_item, bool a_arg2);
 };
 
 // Only the slots up to Get3D are declared; the decal reads the node through it.
@@ -56,6 +59,9 @@ public:
     void OnVisible(NiCullingProcess& a_process) override;  // 34
     virtual std::uint8_t Unk_3E();  // 3E
     virtual void AttachDecal(BSTempEffect* a_decal, bool a_firstAvail);  // 3F, compared: 0x203360
+
+    // Function2033b0: GUESS(low); forwards to the decal array with a true flag
+    void Function2033b0(BSTempEffect* a_decal);
 
     BSTArray<NiPointer<BSTempEffect>> decals;  // 128
     bool isSkinned;  // 140

@@ -5,7 +5,7 @@
 // TESObjectWEAP: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject, TESBoundObject: STANDIN EXE_RTTI
 // TESObjectWEAP::GetPlayable, TESObjectWEAP::GetObjectTypeName, TESObjectWEAP::GetDescriptionOwnerFile, TESObjectWEAP::~TESObjectWEAP: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// unk19D, unk19E, unknown20, unknown19F, unknown208, unknown210: GUESS(low)
+// unk19D, unk19E, unknown20, unknown170, unknown19F, unknown208, unknown210: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -30,8 +30,21 @@ public:
     virtual TESFile* GetDescriptionOwnerFile() const;  // compared: 0x28e7b0
     virtual ~TESObjectWEAP();  // compared: 0x28e500 (scalar deleting destructor)
 
+    // RangedData, RangedData::numProjectiles, rangedData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    struct RangedData
+    {
+        std::uint8_t unk00[0x18];     // 00
+        std::int8_t  numProjectiles;  // 18
+        std::uint8_t pad19[3];        // 19
+    };
+
+    // GetNumProjectiles: GUESS(low)
+    std::uint8_t GetNumProjectiles() const;
+
     // Members read by the compared bodies, split out of the padding; the size assert keeps the layout.
-    std::uint8_t unknown20[0x17D];  // 20
+    std::uint8_t unknown20[0x148];  // 20
+    RangedData* rangedData;         // 168
+    std::uint8_t unknown170[0x2D];  // 170
     std::int8_t unk19D;             // 19D, signed index into the name table
     std::uint8_t unk19E;            // 19E, flags; bit 7 is tested
     std::uint8_t unknown19F[0x69];  // 19F

@@ -2,12 +2,24 @@
 // image).
 // Code origin: written for this project from the listing; declarations from CommonLibSSE-NG.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Adapted bodies: none.
+// Adapted bodies: none
 // 0x28e810 TESObjectWEAP::GetPlayable
 // 0x28e7f0 TESObjectWEAP::GetObjectTypeName
 // 0x28e7b0 TESObjectWEAP::GetDescriptionOwnerFile
 // 0x28e500 TESObjectWEAP::~TESObjectWEAP
+// 0x28e7d0 TESObjectWEAP::GetNumProjectiles
+// g_defaultNumProjectiles: GUESS(low); the byte returned when the weapon has no ranged data
 #include "TESObjectWEAP.h"
+
+extern std::uint8_t g_defaultNumProjectiles;
+
+std::uint8_t TESObjectWEAP::GetNumProjectiles() const
+{
+    if (rangedData) {
+        return rangedData->numProjectiles;
+    }
+    return g_defaultNumProjectiles;
+}
 
 // kObjectTypeNames: GUESS(low); the table of type name strings indexed by unk19D
 extern const char* kObjectTypeNames[];

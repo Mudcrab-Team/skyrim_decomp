@@ -6,5 +6,16 @@
 // names: GUESS(low); names and original signatures are tentative.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x249f90 LocalMapCamera::~LocalMapCamera
+// Code origin: original; the listing, community declarations and the CrashLogger PDB name only
+// LocalMapCamera::SetMinFrustum: CRASHLOGGER_PDB(59818@2026.10.24)
+// 0x248270 LocalMapCamera::SetMinFrustum
+// Adapted bodies: none
 #include "LocalMapCamera.h"
 static LocalMapCamera object;
+
+void LocalMapCamera::SetMinFrustum(float a_width, float a_height)
+{
+    DefaultState* state = defaultState;
+    state->minFrustumHalfWidth = a_width * 0.5f;
+    state->minFrustumHalfHeight = a_height * 0.5f;
+}

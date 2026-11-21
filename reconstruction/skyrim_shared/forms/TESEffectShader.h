@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // The members of EffectShaderData and the layout after it are not claimed. Adapted bodies: none declared.
@@ -13,17 +14,32 @@
 
 #include "TESForm.h"
 
+// fillTextureEffectAlphaFadeInTime, fillTextureEffectFullAlphaTime, fillTextureEffectAlphaFadeOutTime, edgeEffectAlphaFadeInTime,
+// edgeEffectFullAlphaTime, edgeEffectAlphaFadeOutTime: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// unk00, unk20, unk48: GUESS(low); the members around the fill and edge timings are not recovered here
 class EffectShaderData {
 public:
     void Initialize();
 
-    std::uint8_t unk00[0x1A0];  // 00
+    std::uint8_t unk00[0x14];                    // 00
+    float fillTextureEffectAlphaFadeInTime;      // 14
+    float fillTextureEffectFullAlphaTime;        // 18
+    float fillTextureEffectAlphaFadeOutTime;     // 1C
+    std::uint8_t unk20[0x1C];                    // 20
+    float edgeEffectAlphaFadeInTime;             // 3C
+    float edgeEffectFullAlphaTime;               // 40
+    float edgeEffectAlphaFadeOutTime;            // 44
+    std::uint8_t unk48[0x1A0 - 0x48];            // 48
 };
+static_assert(sizeof(EffectShaderData) == 0x1A0, "layout");
 
 class TESEffectShader : public TESForm {
 public:
     void InitializeData() override;  // 04
     void InitItemImpl() override;    // 13
+    // GetTotalDuration, GetFadeInAndFullDuration: GUESS(low); the longer of the edge and fill effect timings
+    float GetTotalDuration() const;
+    float GetFadeInAndFullDuration() const;
 
     EffectShaderData data;           // 20
     std::uint8_t     unk1C0[0x60];   // 1C0

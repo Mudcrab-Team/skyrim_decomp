@@ -15,11 +15,14 @@ class TESObjectREFR;
 // DoorTeleportData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque here, only a pointer to it is returned.
 struct DoorTeleportData;
 
+// FormType::Door FormType::MovableStatic: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // FormType FormType::Container FormType::Static FormType::StaticCollection FormType::Tree FormType::Flora FormType::Furniture FormType::NPC FormType::ActorCharacter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the values used here.
 enum class FormType : std::uint8_t {
     Container        = 0x1C,
+    Door             = 0x1D,
     Static           = 0x22,
     StaticCollection = 0x23,
+    MovableStatic    = 0x24,
     Tree             = 0x26,
     Flora            = 0x27,
     Furniture        = 0x28,
@@ -290,6 +293,10 @@ inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
     return ((a_flags >> a_bit) & 1) != 0;
 }
 
+// UnkScaleBlock, UnkNamedBlock: STANDIN GUESS(low); opaque here, defined in the unit source.
+struct UnkScaleBlock;
+struct UnkNamedBlock;
+
 // TESObjectREFR: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); members at the offsets
 // the compared functions read.
 class TESObjectREFR :
@@ -452,6 +459,30 @@ public:
     // ForwardExtraList, QueryExtraList: GUESS(low); call into extraList (RVA 0x2df5b0, 0x2f6280).
     void ForwardExtraList();
     void* QueryExtraList() const;
+
+    // Unk2e7560, Unk2eebe0: GUESS(low); callees at RVA 0x2e7560 and 0x2eebe0 that return a block of the reference.
+    UnkScaleBlock* Unk2e7560();
+    UnkNamedBlock* Unk2eebe0();
+
+    // SetRecordFlag13..19, Unk*, IsDoorInaccessible: GUESS(low); helpers over the record flags and the base object.
+    void SetRecordFlag13(bool a_set);
+    void SetRecordFlag15(bool a_set);
+    void SetRecordFlag18(bool a_set);
+    void SetRecordFlag19(bool a_set);
+    void ResetUnkScale();
+    bool UnkIsMovableStaticFlag9() const;
+    bool IsDoorInaccessible() const;
+    bool UnkBaseFlag15() const;
+    bool UnkFlag15OrBaseFlag15() const;
+    bool UnkCellQuery0() const;
+    bool UnkCellQuery1() const;
+    // GetTemporarilyPersistent: CRASHLOGGER_PDB(59818@2026.10.24)
+    bool GetTemporarilyPersistent() const;
+    // IsDragonLandZoneMarker, IsDragonCrashZoneMarker: GUESS(low); named for the NG default objects kDragonLandZoneMarker and kDragonCrashZoneMarker
+    bool IsDragonLandZoneMarker() const;
+    bool IsDragonCrashZoneMarker() const;
+    bool UnkNamedBlockHasName();
+    void* UnkNamedBlockQuery();
 
     OBJ_REFR       data;         // 40
     TESObjectCELL* parentCell;   // 60
