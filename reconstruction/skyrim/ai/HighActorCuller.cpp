@@ -6,7 +6,7 @@
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 #include "HighActorCuller.h"
 
-// GUESS(low): the three unnamed callees and the global of the compared listing.
+// CullerFallback, CullerSubObject, CullerTail: GUESS(low); the three unnamed callees and the global of the compared listing.
 void CullerFallback(HighActorCuller* a_self);
 void CullerSubObject(void* a_self, void* a_data);
 void CullerTail(void* a_global, HighActorCuller* a_self);
