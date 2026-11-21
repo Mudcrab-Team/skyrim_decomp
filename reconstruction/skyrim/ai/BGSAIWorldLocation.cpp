@@ -1,9 +1,6 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// SPDX-License-Identifier: CC0-1.0
-// Code origin: original; reconstructed from the pinned image listing and community declarations.
-// 0x447ad0 BGSAIWorldLocation::Function447ad0
-// Adapted bodies: none
-// Function447ad0: GUESS(low); name generated from the function's RVA
+// Source exposure: mixed (local binary analysis and public names).
+// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSAIWorldLocation","rationale":"vtable owner and slot; method spelling invented","slot":16},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
+// Adapted bodies: none. Body synthesized from the bounded leaf template.
 // BGSAIWorldLocation: EXE_RTTI
 // Slot16: GUESS(low)
 // member, padding: GUESS(low); storage names invented for the measured member offset
@@ -13,13 +10,4 @@
 std::uint8_t BGSAIWorldLocation::Slot16() const
 {
     return 0x1;
-}
-
-extern std::uint32_t kNullHandle;
-
-// Function447ad0: GUESS(low)
-std::uint32_t* BGSAIWorldLocation::Function447ad0(std::uint32_t* a_out) const
-{
-    *a_out = kNullHandle;
-    return a_out;
 }

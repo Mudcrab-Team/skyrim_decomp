@@ -1,20 +1,12 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original reconstruction from the pinned image listing; declarations from the cited sibling.
-// SPDX-License-Identifier: CC0-1.0
-// 0x862b50 CombatTargetSelectorFixed::Function862b50
-// Adapted bodies: none
-// Function862b50: GUESS(low)
-// data: GUESS(low)
+// Source exposure: mixed (authorized target analysis and anonymous permitted sibling source).
+// Origin: adapted from the cited game-code body under anonymous author permission.
+// Licence: fo4-private reused with author permission conditional on anonymity.
 // BSFixedString: STANDIN GUESS(low)
-// CombatTargetSelectorFixed, GetClassType: SIBLING(fo4-private@1b765c70, author-permission)
+// data: GUESS(low)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatTargetSelector.cpp:134
+// CombatTargetSelectorFixed, GetClassType: SIBLING(fo4-private@1b765c70, author-permission)
 // 0x8632b0 CombatTargetSelectorFixed::GetClassType
 #include "CombatTargetSelectorFixed.h"
-unsigned int* CombatTargetSelectorFixed::Function862b50(unsigned int* out) const
-{
-    *out = data;
-    return out;
-}
 unsigned int CombatTargetSelectorFixed::GetClassType()
 {
     static unsigned int uiclassType = CombatObjectBase::GenerateClassType("CombatTargetSelectorFixed");

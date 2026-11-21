@@ -4,7 +4,6 @@
 // BGSEntryPointFunctionDataText: EXE_RTTI
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
-// MemoryContextScope, g_memoryContext_tls_0x768, BSFixedString::Load: STANDIN GUESS(low)
 #pragma once
 #include <cstdint>
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
@@ -27,20 +26,7 @@ public:
 };
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // value: GUESS(low); pooled string pointer.
-class BSFixedString { public: ~BSFixedString(); void Load(TESFile* a_file); const char* value; };
-
-extern __declspec(thread) std::uint32_t g_memoryContext_tls_0x768;
-
-class MemoryContextScope
-{
-public:
-    explicit MemoryContextScope(std::uint32_t a_value) : saved(g_memoryContext_tls_0x768) { g_memoryContext_tls_0x768 = a_value; }
-    // Preserve the scope cleanup inline at the compared call site.
-    __forceinline ~MemoryContextScope() { g_memoryContext_tls_0x768 = saved; }
-
-private:
-    std::uint32_t saved;
-};
+class BSFixedString { public: ~BSFixedString(); const char* value; };
 class BGSEntryPointFunctionDataText : public BGSEntryPointFunctionData {
 public:
     // BGSEntryPointFunctionDataText::BGSEntryPointFunctionDataText: GUESS(low); retained for vftable emission.

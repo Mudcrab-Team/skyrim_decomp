@@ -11,5 +11,4 @@ class BGSAIWorldLocation
 {
 public:
     virtual std::uint8_t Slot16() const;
-    std::uint32_t* Function447ad0(std::uint32_t* a_out) const;
 };

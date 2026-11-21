@@ -1,8 +1,5 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original; the listing and community declarations only
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// 0x32dde4 BSTextureSet::~BSTextureSet
-// CI hash: 0x32dde4 ??_EThunkHost@@WDA@EAAPEAXI@Z
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
+// image).
 // Adapted bodies: none
 // 0x32dfe0 BSTextureSet::GetRTTI
 // 0x32df90 BSTextureSet::~BSTextureSet
@@ -26,8 +23,3 @@ const NiRTTI* BSTextureSet::GetRTTI() const
 BSTextureSet::~BSTextureSet()
 {
 }
-
-// Stand-ins for the second host base and the complete object whose vftable carries the thunk.
-ThunkHostPrimary::~ThunkHostPrimary() {}
-ThunkHost::ThunkHost() {}
-ThunkHost::~ThunkHost() {}
