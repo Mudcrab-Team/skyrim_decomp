@@ -4,6 +4,7 @@
 // ExtraInteraction: EXE_RTTI
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
+// Function18c300, interaction_target: GUESS(low) STANDIN; tail-forward to an unnamed callee
 #pragma once
 #include <cstdint>
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
@@ -11,4 +12,10 @@ class ExtraInteraction
 {
 public:
     virtual std::uint32_t GetType() const;
+    void* Function18c300();
+
+    // interaction is the pointer stored at the measured offset 0x10
+    std::uint8_t padding08[0x8];
+    void* interaction;
 };
+static_assert(sizeof(ExtraInteraction) == 0x18, "ExtraInteraction measured size");
