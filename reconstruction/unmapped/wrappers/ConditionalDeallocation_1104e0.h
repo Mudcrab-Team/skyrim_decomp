@@ -1,0 +1,117 @@
+// Source exposure: mixed (pinned image and community function boundaries).
+// Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
+// Code origin: original conditional sized-deallocator template.
+// ConditionalDeallocation_1104e0, wrapper methods and cleanup declarations: GUESS(low) STANDIN; original owners unknown.
+// Adapted bodies: none
+#pragma once
+
+extern "C" void CleanupTarget134020(void* object);
+extern "C" void CleanupTarget13ab60(void* object);
+extern "C" void CleanupTarget156960(void* object);
+extern "C" void CleanupTarget181a90(void* object);
+extern "C" void CleanupTarget184f80(void* object);
+extern "C" void CleanupTarget185080(void* object);
+extern "C" void CleanupTarget1930e0(void* object);
+extern "C" void CleanupTarget19afb0(void* object);
+extern "C" void CleanupTarget19b3a0(void* object);
+extern "C" void CleanupTarget19b5e0(void* object);
+extern "C" void CleanupTarget1edcb0(void* object);
+extern "C" void CleanupTarget1f4500(void* object);
+extern "C" void CleanupTarget1f7a00(void* object);
+extern "C" void CleanupTarget2040c0(void* object);
+extern "C" void CleanupTarget2b7f10(void* object);
+extern "C" void CleanupTarget2d1b00(void* object);
+extern "C" void CleanupTarget2fe850(void* object);
+extern "C" void CleanupTarget304050(void* object);
+extern "C" void CleanupTarget304110(void* object);
+extern "C" void CleanupTarget383c90(void* object);
+extern "C" void CleanupTarget3cb660(void* object);
+extern "C" void CleanupTarget524ee0(void* object);
+extern "C" void CleanupTarget637850(void* object);
+extern "C" void CleanupTarget7d92c0(void* object);
+extern "C" void CleanupTarget7d95c0(void* object);
+extern "C" void CleanupTarget7f71a0(void* object);
+extern "C" void CleanupTargetbdc810(void* object);
+extern "C" void CleanupTargetef9b00(void* object);
+extern "C" void CleanupTargetfc79a0(void* object);
+extern "C" void CleanupTargetfc9870(void* object);
+extern "C" void CleanupTargetfd8fa0(void* object);
+extern "C" void CleanupTarget1083b90(void* object);
+extern "C" void CleanupTarget1083bd0(void* object);
+extern "C" void CleanupTarget10891e0(void* object);
+extern "C" void CleanupTarget1089970(void* object);
+extern "C" void CleanupTarget1091830(void* object);
+extern "C" void CleanupTarget1092c20(void* object);
+extern "C" void CleanupTarget148fc10(void* object);
+extern "C" void CleanupTarget15bdb80(void* object);
+extern "C" void CleanupTarget15bfad0(void* object);
+extern "C" void CleanupTarget15e7980(void* object);
+extern "C" void CleanupTarget15f3690(void* object);
+extern "C" void CleanupTarget15f4d50(void* object);
+extern "C" void CleanupTarget1600d50(void* object);
+extern "C" void CleanupTarget16088d0(void* object);
+void operator delete(void* object, unsigned long long size) noexcept;
+
+struct ConditionalDeallocation_1104e0
+{
+    static void* Delete1104e0(void* object, unsigned int flags);
+    static void* Delete119470(void* object, unsigned int flags);
+    static void* Delete119a30(void* object, unsigned int flags);
+    static void* Delete1202c0(void* object, unsigned int flags);
+    static void* Delete12dd70(void* object, unsigned int flags);
+    static void* Delete132650(void* object, unsigned int flags);
+    static void* Delete1326a0(void* object, unsigned int flags);
+    static void* Delete1326e0(void* object, unsigned int flags);
+    static void* Delete132e00(void* object, unsigned int flags);
+    static void* Delete133fe0(void* object, unsigned int flags);
+    static void* Delete134ba0(void* object, unsigned int flags);
+    static void* Delete137020(void* object, unsigned int flags);
+    static void* Delete138e80(void* object, unsigned int flags);
+    static void* Delete13acf0(void* object, unsigned int flags);
+    static void* Delete145270(void* object, unsigned int flags);
+    static void* Delete1527f0(void* object, unsigned int flags);
+    static void* Delete17c090(void* object, unsigned int flags);
+    static void* Delete17da30(void* object, unsigned int flags);
+    static void* Delete17da70(void* object, unsigned int flags);
+    static void* Delete17dd70(void* object, unsigned int flags);
+    static void* Delete192560(void* object, unsigned int flags);
+    static void* Delete19be10(void* object, unsigned int flags);
+    static void* Delete19bf90(void* object, unsigned int flags);
+    static void* Delete19c020(void* object, unsigned int flags);
+    static void* Delete19c270(void* object, unsigned int flags);
+    static void* Delete19c2b0(void* object, unsigned int flags);
+    static void* Delete19c360(void* object, unsigned int flags);
+    static void* Delete1b4530(void* object, unsigned int flags);
+    static void* Delete1b4570(void* object, unsigned int flags);
+    static void* Delete1c7160(void* object, unsigned int flags);
+    static void* Delete1c7300(void* object, unsigned int flags);
+    static void* Delete1e7800(void* object, unsigned int flags);
+    static void* Delete1edeb0(void* object, unsigned int flags);
+    static void* Delete1f5770(void* object, unsigned int flags);
+    static void* Delete1f7e90(void* object, unsigned int flags);
+    static void* Delete24dac0(void* object, unsigned int flags);
+    static void* Delete293f10(void* object, unsigned int flags);
+    static void* Delete29cd40(void* object, unsigned int flags);
+    static void* Delete2d39c0(void* object, unsigned int flags);
+    static void* Delete2d3a00(void* object, unsigned int flags);
+    static void* Delete2f8e60(void* object, unsigned int flags);
+    static void* Delete2f92c0(void* object, unsigned int flags);
+    static void* Delete2f9340(void* object, unsigned int flags);
+    static void* Delete2f9620(void* object, unsigned int flags);
+    static void* Delete2f9660(void* object, unsigned int flags);
+    static void* Delete2fe270(void* object, unsigned int flags);
+    static void* Delete2fe2b0(void* object, unsigned int flags);
+    static void* Delete304350(void* object, unsigned int flags);
+    static void* Delete304390(void* object, unsigned int flags);
+    static void* Delete36d7a0(void* object, unsigned int flags);
+    static void* Delete36d7e0(void* object, unsigned int flags);
+    static void* Delete384b70(void* object, unsigned int flags);
+    static void* Delete3a5e00(void* object, unsigned int flags);
+    static void* Delete3acc60(void* object, unsigned int flags);
+    static void* Delete3ad960(void* object, unsigned int flags);
+    static void* Delete3cbbf0(void* object, unsigned int flags);
+    static void* Delete3e1370(void* object, unsigned int flags);
+    static void* Delete3f4650(void* object, unsigned int flags);
+    static void* Delete3f9350(void* object, unsigned int flags);
+    static void* Delete3f9390(void* object, unsigned int flags);
+};
