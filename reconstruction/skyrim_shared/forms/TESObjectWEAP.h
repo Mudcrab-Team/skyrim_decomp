@@ -5,11 +5,14 @@
 // TESObjectWEAP: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject, TESBoundObject: STANDIN EXE_RTTI
 // TESObjectWEAP::GetPlayable, TESObjectWEAP::GetObjectTypeName, TESObjectWEAP::GetDescriptionOwnerFile, TESObjectWEAP::~TESObjectWEAP: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// unk19D, unk19E, unknown20, unknown19F, unknown208, unknown210: GUESS(low)
+// BGSImpactDataSet, impactDataSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the pointer at 0x1F8
+// unk19D, unk19E, unknown20, unknown19F, unknown200, unknown208, unknown210, Function28c020, Function28c260: GUESS(low)
 #pragma once
 
 #include <cstdint>
 #include "TESForm.h"
+
+class BGSImpactDataSet;
 
 class TESObject : public TESForm
 {
@@ -29,12 +32,16 @@ public:
     virtual const char* GetObjectTypeName() const;  // compared: 0x28e7f0
     virtual TESFile* GetDescriptionOwnerFile() const;  // compared: 0x28e7b0
     virtual ~TESObjectWEAP();  // compared: 0x28e500 (scalar deleting destructor)
+    void* Function28c020();  // compared: 0x28c020
+    std::uint32_t Function28c260();  // compared: 0x28c260
 
     // Members read by the compared bodies, split out of the padding; the size assert keeps the layout.
     std::uint8_t unknown20[0x17D];  // 20
     std::int8_t unk19D;             // 19D, signed index into the name table
     std::uint8_t unk19E;            // 19E, flags; bit 7 is tested
-    std::uint8_t unknown19F[0x69];  // 19F
+    std::uint8_t unknown19F[0x59];  // 19F
+    BGSImpactDataSet* impactDataSet;  // 1F8
+    std::uint8_t unknown200[0x8];   // 200
     TESForm* unknown208;            // 208
     std::uint8_t unknown210[0x10];  // 210
 };

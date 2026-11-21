@@ -1,9 +1,11 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, offsets and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original; the listing and community declarations only
+// TESObjectBOOK::GetSpell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the name only, identity rests on the byte match: the spell when flag bit 2 of data is set
 // TESObjectBOOK: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // InitializeData, LoadGame, SaveGame: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares OBJ_BOOK data, a 0x10-byte struct, and this file declares its first eight bytes
-// teaches: GUESS(low); the community header puts this union at +8 of OBJ_BOOK data, declared here as eight bytes
+// OBJ_BOOK::Teaches, OBJ_BOOK::Teaches::actorValueToAdvance, OBJ_BOOK::Teaches::spell, OBJ_BOOK::teaches: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); hoisted here out of OBJ_BOOK data, a skill or a spell
 // inventoryModel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESObjectSTAT: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); forward declaration only
 // TESObject, TESBoundObject: STANDIN EXE_RTTI; empty stand-ins over TESForm, the NG bases are not declared
@@ -20,6 +22,7 @@
 #include "TESForm.h"
 
 class BSString;
+class SpellItem;
 class TESObjectREFR;
 class TESObjectSTAT;
 
@@ -63,6 +66,7 @@ public:
     virtual void LoadGame(BGSLoadFormBuffer* a_buf);  // compared: 0x280540
     virtual void SaveGame(BGSSaveFormBuffer* a_buf);  // compared: 0x2804e0
     virtual bool GetActivateText(TESObjectREFR* a_activator, BSString& a_dst);  // compared: 0x280210
+    SpellItem* GetSpell();  // compared: 0x27ff40
 
     // unk20: GUESS(low); bytes up to the sub-object at 0x88
     std::uint8_t unk20[0x68];  // 20
@@ -70,8 +74,13 @@ public:
     std::uint8_t unk88[0x88];  // 88
     // data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; flags and type are its first bytes, read by GetActivateText and the save and load pair
     std::uint64_t data;  // 110
-    // teaches: GUESS(low); the community header puts this union at +8 of OBJ_BOOK data
-    std::uint64_t teaches;  // 118
+    // OBJ_BOOK::teaches: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the union at +8 of OBJ_BOOK data
+    union Teaches
+    {
+        std::uint32_t actorValueToAdvance;  // 0
+        SpellItem* spell;  // 0
+    };
+    Teaches teaches;  // 118
     // inventoryModel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     TESObjectSTAT* inventoryModel;  // 120
 };
