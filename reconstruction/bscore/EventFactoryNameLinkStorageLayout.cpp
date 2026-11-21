@@ -18,7 +18,6 @@
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3acd70, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -32,7 +31,6 @@ const void* FieldLeaf3acd70::Read() { return &name; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3acd80, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -46,7 +44,6 @@ const void* FieldLeaf3acd80::Read() { return next; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3f0f50, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -60,7 +57,6 @@ const void* FieldLeaf3f0f50::Read() { return &name; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3f0f60, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -74,7 +70,6 @@ const void* FieldLeaf3f0f60::Read() { return next; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3e1480, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -88,7 +83,6 @@ const void* FieldLeaf3e1480::Read() { return &name; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3e1490, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -102,7 +96,6 @@ const void* FieldLeaf3e1490::Read() { return next; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3ada70, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -116,7 +109,6 @@ const void* FieldLeaf3ada70::Read() { return &name; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3ada80, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -130,7 +122,6 @@ const void* FieldLeaf3ada80::Read() { return next; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3a5f10, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
@@ -144,7 +135,6 @@ const void* FieldLeaf3a5f10::Read() { return &name; }
 // Evidence: findings/ghidra-import.md
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
 // Source exposure: mixed (represented declarations and local binary analysis).
-// Drafted by tools/represented_field_template_v3.py (GPT-6.1 Sol).
 // Labels: v2
 // FieldLeaf3a5f20, Read: GUESS(low) STANDIN
 // Code origin: original trivial field operation using an included represented layout.
