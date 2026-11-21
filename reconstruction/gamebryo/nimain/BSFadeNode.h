@@ -8,6 +8,7 @@
 // BSTreeNode, BSLeafAnimNode, NiAVObject, NiPointer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); forward declarations
 // BSFadeNode::UpdateCollisionObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); name only, NG declares no such function and its parameter and body are low-confidence guesses
 // BSFadeNode::SetCollisionState (address 0x106b870): STANDIN GUESS(low); a non-virtual helper taking the value by reference
+// BSFadeNode::Function14e6a10: GUESS(low); placeholder name for the compared setter of the low nibble of unk153
 // BSFadeNode::InitRuntimeData (address 0x14e5eb0): STANDIN GUESS(low); a non-virtual helper called at the end of the constructor
 #pragma once
 
@@ -96,6 +97,7 @@ public:
     virtual BSTreeNode* AsTreeNode();  // 3E
     virtual BSLeafAnimNode* AsLeafAnimNode();  // 3F
     void UpdateCollisionObject(bool a_arg);  // compared: 0x106b550
+    void Function14e6a10(std::uint8_t a_value);  // compared: 0x14e6a10
 
     void SetCollisionState(const std::uint32_t& a_state);  // address 0x106b870
     void InitRuntimeData() noexcept;                       // address 0x14e5eb0; declared noexcept because the compared constructor emits no exception-unwind state around this call (evidence from the compare, name is a guess)
