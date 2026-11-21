@@ -1,16 +1,9 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
-// 0x1dee90 TESAIForm::Function1dee90
-// Adapted bodies: none
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original; the listing and community declarations only
-// SPDX-License-Identifier: CC0-1.0
-// 0x1dee20 TESAIForm::Function1dee20
-// Adapted bodies: none
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listings of the
 // pinned image, with the class layout from the header beside this file. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
 // Code origin: original; the listing and community declarations only
+// 0x1dee90 TESAIForm::Function1dee90
+// 0x1dee20 TESAIForm::Function1dee20
 // 0x1de820 TESAIForm::ClearDataComponent
 // 0x1de800 TESAIForm::InitializeDataComponent
 // 0x1de830 TESAIForm::CopyComponent
