@@ -7,10 +7,20 @@
 #pragma once
 #include <cstdint>
 // Slot5: GUESS(low); method name inferred from vtable owner and slot
+// Function1535980, slots, EmitterSlot: GUESS(low); names invented, offsets and stride measured.
+struct EmitterSlot
+{
+    std::uint64_t value;         // 00
+    std::uint8_t unknown08[0x18];  // 08
+};
+static_assert(sizeof(EmitterSlot) == 0x20, "EmitterSlot size");
+
 class BSParticleShaderGeometryEmitter
 {
 public:
     virtual std::uint32_t Slot5() const;
-    std::uint8_t padding[0xee8];
-    std::uint32_t member;
+    std::uint64_t Function1535980(std::uint32_t a_index) const;
+    std::uint8_t padding[0xed8];  // 08
+    EmitterSlot* slots;           // 0EE0
+    std::uint32_t member;         // 0EE8
 };

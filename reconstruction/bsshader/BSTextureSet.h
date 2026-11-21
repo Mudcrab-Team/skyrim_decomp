@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// Code origin: original reconstruction from binary analysis; no external implementation code copied.
 // the compared functions from the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSTextureSet: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -117,3 +118,19 @@ public:
     virtual ~BSTextureSet();  // compared: 0x32df90 (scalar deleting destructor)
 };
 static_assert(sizeof(BSTextureSet) == 0x10, "BSTextureSet size");
+
+// ThunkHostPrimary, ThunkHost: GUESS(low) STANDIN; base set that puts BSTextureSet at offset 0x30.
+class ThunkHostPrimary
+{
+public:
+    virtual ~ThunkHostPrimary();
+    std::uint8_t pad[0x28];  // 08
+};
+static_assert(sizeof(ThunkHostPrimary) == 0x30, "primary host size");
+
+class ThunkHost : public ThunkHostPrimary, public BSTextureSet
+{
+public:
+    ThunkHost();
+    ~ThunkHost() override;
+};
