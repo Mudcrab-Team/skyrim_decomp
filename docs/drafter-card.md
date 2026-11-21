@@ -160,7 +160,7 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   reconstruction/<area>/<Class>.cpp` (also printed by `attempt` as `origin:` lines, with an
   `origin advice:` line while one is undeclared) lists every body close to a same-named community
   or sibling body; each `adapted` line it marks as not declared needs a header statement. `trivial`
-  lines (an empty body or one `return` of a constant, a member or `this`) need nothing per body. It cannot see a body renamed or moved to another class,
+  lines (an empty body or one `return` of a constant, a member, `this` or a comparison of those) need nothing per body. It cannot see a body renamed or moved to another class,
   so declare those yourself.
 - Before you draft, read `docs/matching-cookbook.md` once. A flag bit the target tests as a load,
   `shr`, `test al,1` goes through a by-value bit-index helper (rule 16) from the first draft.

@@ -116,7 +116,7 @@ blocks; list what you find as `naming_findings` and still approve.
    `community/sibling body similarity` line: every `adapted` body must be named in the unit
    header with its upstream file, revision and licence (NG: MIT, with NG's notice kept in the file as the one-line `SPDX-License-Identifier: MIT (... Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)`, which is the whole notice the header policy asks for; do not reject because the full licence text was removed;
    powerof3: GPL-3.0; FNV: a `Sibling source:` line), and a header claim about what is not copied
-   must be true. `trivial` bodies need no statement.
+   must be true. `trivial` bodies need no statement; a body that is one `return` of comparisons and `&&`/`||`/`!` over parameters, members and literals counts as trivial.
    Admitted Reviewers are authorized to read the FNV source and local index for this comparison (see `docs/authorizations.md`, Notes).
    Open the FNV function the pack or `.local/analysis/fnv_index.jsonl` lists for each reviewed
    function and compare; reuse without a `Sibling source:` line, or a false origin or licence
