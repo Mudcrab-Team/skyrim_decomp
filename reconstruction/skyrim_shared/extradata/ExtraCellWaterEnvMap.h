@@ -11,6 +11,4 @@ class ExtraCellWaterEnvMap
 {
 public:
     virtual std::uint32_t GetType() const;
-    // Function18c1d0: GUESS(low); forwards to an external helper with both pointers advanced 0x10.
-    void Function18c1d0(ExtraCellWaterEnvMap* a_other);
 };

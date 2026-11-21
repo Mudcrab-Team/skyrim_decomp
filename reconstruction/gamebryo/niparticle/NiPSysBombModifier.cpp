@@ -3,9 +3,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0xfa6e10 NiPSysBombModifier::LinkObject
 // 0xfa7c30 NiPSysBombModifier::dtor
-// Adapted bodies: the FNV body named by the Sibling source line above.
-// Sibling source: momusdigital/fnv_decomp@91e1b6e src/gamebryo2.2/corelibs/niparticle/nipsysgravitymodifier.cpp
-// LinkObject: SIBLING(momusdigital/fnv_decomp@91e1b6e, no-licence)
+// Adapted bodies: none
 #include "NiPSysBombModifier.h"
 
 // Emit the virtual deleting destructor with the class constructor.
