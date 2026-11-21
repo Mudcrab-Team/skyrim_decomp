@@ -672,7 +672,10 @@ class ProcessTests(unittest.TestCase):
 
     def test_the_bot_never_closes_a_contributor_pr(self):
         source = (ROOT / 'tools/pr_bot.py').read_text()
-        self.assertNotRegex(source, r"""['"]close['"]|pr close""")
+        # The one close is the owner-only probe sweep, which is tested on its own.
+        sweep = source[source.index('    def sweep_probes'):source.index('    def hash_run_completed')]
+        self.assertEqual(sweep.count("'pr', 'close'"), 1)
+        self.assertNotRegex(source.replace(sweep, ''), r"""['"]close['"]|pr close""")
         scenarios = [dict(), dict(h2={0x10: 'fail', 0x20: 'fail'}), dict(grep=(True, ['asm-mnemonic'])),
                      dict(files=[{'filename': 'tools/x.py', 'status': 'modified'}]),
                      dict(review=json.dumps({'leak': 'yes', 'functions': {}})), dict(landed=[]), dict(history='leak')]
@@ -1230,6 +1233,53 @@ class Host1Tests(unittest.TestCase):
         self.assertIn('ref=refs/heads/probe/pr-7', branch[0])
         self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
         self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
+
+    def sweep(self, probes, targets, run_status='in_progress', done=False):
+        calls = []
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+
+        def gh(*a):
+            if a[0] == 'pr' and a[1] == 'list':
+                return probes
+            if a[0] == 'pr' and a[1] == 'view':
+                return targets[int(a[2])]
+            return {'check_runs': [dict(self.job, status=run_status)]}
+        self.bot.gh_json = gh
+        if done:
+            pr_bot.State(self.work / 'state', 7, HEAD).set('done', True)
+        return self.bot.sweep_probes(), calls
+
+    def probe(self, number=50, target=7, **over):
+        return dict({'number': number, 'title': f'pr-check run for the head of #{target}',
+                     'headRefName': f'probe/pr-{target}', 'headRefOid': HEAD,
+                     'author': {'login': pr_bot.OWNER}}, **over)
+
+    def test_a_probe_with_a_running_hash_for_an_open_target_is_left_alone(self):
+        got, calls = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}})
+        self.assertEqual((got, calls), ([], []))
+
+    def test_a_probe_is_closed_with_its_branch_once_the_hash_run_completed(self):
+        got, calls = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}}, run_status='completed')
+        self.assertEqual(got, [50])
+        self.assertEqual(calls[0][:4], ['gh', 'pr', 'close', '50'])
+        self.assertIn('--delete-branch', calls[0])
+
+    def test_a_probe_is_closed_when_the_bot_holds_the_result(self):
+        got, _ = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}}, done=True)
+        self.assertEqual(got, [50])
+
+    def test_a_probe_is_closed_when_its_target_is_gone_or_moved(self):
+        for target in ({'headRefOid': HEAD, 'state': 'MERGED'}, {'headRefOid': HEAD, 'state': 'CLOSED'},
+                       {'headRefOid': 'f' * 40, 'state': 'OPEN'}):
+            got, _ = self.sweep([self.probe()], {7: target})
+            self.assertEqual(got, [50], target)
+
+    def test_only_the_bots_own_probes_are_ever_closed(self):
+        done = {7: {'headRefOid': HEAD, 'state': 'MERGED'}}
+        others = [self.probe(author={'login': 'someone'}), self.probe(title='pr-check run for the head of #7 (copy)'),
+                  self.probe(headRefName='feature/x')]
+        got, calls = self.sweep(others, done)
+        self.assertEqual((got, calls), ([], []))
 
     def test_warm_probes_only_a_head_with_no_run_and_in_scope(self):
         probed = []

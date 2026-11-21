@@ -115,6 +115,8 @@ WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
+PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
 RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
@@ -1839,6 +1841,37 @@ class Bot:
         # Deleting the head branch ends the probe PR; the bot has no code path that closes a PR itself.
         self.run(['gh', 'api', '-X', 'DELETE', f'repos/{REPOSITORY}/git/refs/heads/probe/pr-{number}'], check=False)
 
+    def sweep_probes(self):
+        """Close the bot's own probe PRs that have done their job, deleting their branches; returns the numbers.
+
+        A probe exists only to get a hash run onto a commit. It is finished once that run has completed,
+        the bot has the CI result, or the target PR is closed or has moved to another head. Only a PR by
+        the owner, with the exact title and the matching `probe/pr-N` branch, is ever touched.
+        """
+        listed = self.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--limit', '200', '--json',
+                              'number,title,headRefName,headRefOid,author')
+        directory = self.work / ('dry' if self.dry_run else 'state')
+        closed = []
+        for probe in listed:
+            named = PROBE_TITLE.fullmatch(probe['title'])
+            if (not named or probe['author']['login'].casefold() != OWNER.casefold()
+                    or probe['headRefName'] != f'probe/pr-{named.group(1)}'):
+                continue
+            number = int(named.group(1))
+            target = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
+            head = probe['headRefOid']
+            state = State(directory, number, target['headRefOid'])
+            if target['state'] == 'OPEN' and target['headRefOid'] == head and not (
+                    state.get('done') or state.get('ci') or self.hash_run_completed(head)):
+                continue
+            self.run(['gh', 'pr', 'close', str(probe['number']), '-R', REPOSITORY, '--delete-branch'], check=False)
+            closed.append(probe['number'])
+        return closed
+
+    def hash_run_completed(self, head):
+        run = self.latest_hash_run(head)
+        return bool(run) and run['status'] == 'completed'
+
     def approve_pending(self, head):
         """A fork's first workflow run waits for approval; the workflows hold no secrets."""
         runs = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs?head_sha={head}&status=action_required')
@@ -2980,6 +3013,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     refilled = None
     retried = None
     swept = None
+    probes = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -3016,6 +3050,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                         print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
                     print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if not bot.dry_run and not inflight and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
+                probes = time.time()
+                try:
+                    for number in bot.for_slot(0).sweep_probes():
+                        print(f'{stamp()} probe #{number}: done, closed', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')

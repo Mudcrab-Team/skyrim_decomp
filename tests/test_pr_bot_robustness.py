@@ -412,6 +412,9 @@ class PoolTests(WorkDir):
         def close_done_claims(self):
             return []
 
+        def sweep_probes(self):
+            return []
+
         def attempt(self, pr, now=None):
             self.arrived(pr, self.tree)
             return {'pr': pr['number'], 'head': pr['headRefOid'], 'blocked': None, 'merge': False}
@@ -661,6 +664,21 @@ class PoolTests(WorkDir):
         self.assertEqual(len(listed), 3)
         calls.clear()
         with mock.patch.object(pr_bot, 'CLAIM_SWEEP_EVERY', 0):
+            pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(len(calls), 3)
+
+    def test_idle_poll_sweeps_probe_prs_and_survives_a_failure(self):
+        calls = []
+
+        class Sweeping(PoolTests.PoolBot):
+            def sweep_probes(self):
+                calls.append(1)
+                if len(calls) == 1:
+                    raise pr_bot.Stop('gh failed')
+                return [9]
+        bot = Sweeping(self.work)
+        bot.gh_json = lambda *a: []
+        with mock.patch.object(pr_bot, 'PROBE_SWEEP_EVERY', 0):
             pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
         self.assertEqual(len(calls), 3)
 
