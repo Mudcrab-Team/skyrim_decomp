@@ -20,6 +20,7 @@ struct NiQuaternion { float w, x, y, z; };
 class NiAVObject;
 class NiNode;
 class TESCamera;
+class BGSSaveFormBuffer;
 class BSIntrusiveRefCounted { public: virtual ~BSIntrusiveRefCounted(); unsigned refCount; };
 class TESCameraState : public BSIntrusiveRefCounted { public: TESCamera* camera; unsigned id; };
 class PlayerInputHandler { public: virtual ~PlayerInputHandler(); bool inputEventHandlingEnabled; };
@@ -29,6 +30,7 @@ public:
     void GetRotation(NiQuaternion& value) const;
     void GetTranslation(NiPoint3& value) const;
     bool GetFreeRotationMode() const;
+    void SaveGame(BGSSaveFormBuffer* a_buf);
     NiAVObject* thirdPersonCameraObj;
     NiNode* thirdPersonFOVControl;
     NiPoint3 translation;
@@ -85,3 +87,24 @@ public:
 };
 static_assert(offsetof(PlayerControls, data) == 0x24, "controls data offset");
 extern PlayerControls* playerControls;
+
+// BGSSaveGameBuffer, BGSSaveGameBuffer::SaveDataEndian, BGSSaveGameBuffer::buffer, BGSSaveGameBuffer::size, BGSSaveGameBuffer::bufferPosition, BGSSaveFormBuffer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares SaveDataEndian with two parameters, the compared image passes four
+class BGSSaveGameBuffer
+{
+public:
+    virtual ~BGSSaveGameBuffer();
+    // a_data, a_size: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    // a_count, a_flags: GUESS(low); the compared image passes two further arguments that NG does not declare.
+    void SaveDataEndian(const void* a_data, std::uint32_t a_size, std::uint32_t a_count, std::uint32_t a_flags);
+    // SaveString: GUESS(low); the unnamed target 0x639b90 saves the animated bone name and takes a second numeric argument.
+    // a_string, a_arg: GUESS(low); parameter names for the two arguments the compared image passes.
+    void SaveString(const char* a_string, std::uint32_t a_arg);
+
+    void* buffer;                  // 08
+    std::uint32_t size;            // 10
+    std::uint32_t bufferPosition;  // 14
+};
+static_assert(sizeof(BGSSaveGameBuffer) == 0x18, "BGSSaveGameBuffer size");
+class BGSSaveFormBuffer : public BGSSaveGameBuffer
+{
+};
