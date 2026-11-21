@@ -1948,7 +1948,9 @@ def merge_header_additions(text, blocks):
     line and its label lines are added to the unit's existing header (inside the unbroken run of
     `//` lines at the top, which is where the compared-function parser reads); its one-per-unit
     lines (source exposure, code origin, SPDX, adapted bodies, with their continuation lines) are
-    kept only when the header has none yet, and a line the header already has is not repeated.
+    kept only when the header has none yet, and a line the header already has is not repeated. A
+    placeholder (`SKELETON_TODO_*`) of a skipped line is appended to the existing line, so the added
+    functions still have to be answered for before the unit is publishable.
     """
     from digest_v2 import LABEL_WORD
     lines = text.split('\n')
@@ -1972,7 +1974,13 @@ def merge_header_additions(text, blocks):
             first = group[0]
             if once:
                 key = HEADER_ONCE.match(first).group(0).strip()
-                if any(ln.strip().startswith(key) for ln in head):
+                at = next((i for i, ln in enumerate(head) if ln.strip().startswith(key)), None)
+                if at is not None:
+                    # An unfilled placeholder in the new block still has to be answered for the added
+                    # functions, so it rides on the existing line instead of repeating the line.
+                    todo = re.search(r'SKELETON_TODO\w*', first)
+                    if todo and todo.group(0) not in head[at]:
+                        head[at] += f'; {todo.group(0)} (state it for the added functions)'
                     continue
             elif first in head:
                 continue

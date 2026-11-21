@@ -417,7 +417,9 @@ class MergeHeaderTests(unittest.TestCase):
         out = self.merge(self.EXISTING, self.NEW)
         for key in ('Source exposure:', 'Code origin:', 'SPDX-License-Identifier:', 'Adapted bodies:'):
             self.assertEqual(out.count(key), 1, key)
-        self.assertNotIn('SKELETON_TODO', out)
+        self.assertEqual(out.count('SKELETON_TODO_CODE_ORIGIN'), 1)  # still to be stated for the new function
+        self.assertEqual(out.count('SKELETON_TODO_ORIGIN'), 1)
+        self.assertIn('// Code origin: original; the listing only; SKELETON_TODO_CODE_ORIGIN', out)
         self.assertIn('// 0x2000 Widget::B\n', out)
         self.assertIn('// Widget::B: GUESS(low)\n', out)
         self.assertIn('// CI hash: 0x1000 ?A@Widget@@QEAAXXZ\n', out)
