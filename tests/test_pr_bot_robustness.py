@@ -180,6 +180,13 @@ class PrereviewUnitTests(unittest.TestCase):
                 dict(base, trivial=False, declared=False, fork_of=None)]
         self.assertEqual(len(prereview.origin_problems(hits, {})), 1)
 
+    def test_origin_problems_hide_the_private_sibling_path(self):
+        hit = {'function': 'A::f', 'file': 'reconstruction/a/A.cpp', 'repo': 'fo4-private@1b765c70',
+               'path': 'src/Secret/Path.cpp', 'trivial': False, 'declared': False, 'fork_of': None}
+        [(_, line)] = prereview.origin_problems([hit], {})
+        self.assertNotIn('src/Secret', line)
+        self.assertNotIn('fo4-private', line)
+
     def test_binding_split_separates_the_authors_facts_from_the_hosts(self):
         facts = {'result pass': True, 'source revision equals the tu digest and unit path': False,
                  'compiler hash equals the pinned cl.exe': False}
