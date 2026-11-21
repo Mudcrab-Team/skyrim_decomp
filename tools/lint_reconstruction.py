@@ -84,6 +84,9 @@ import unit_paths  # noqa: E402
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 COMPARED_LINE = re.compile(r'^//[ \t]*0x[0-9a-fA-F]+(?:[ \t]|$)', re.M)
+# `// CI hash: 0x<rva> <symbol>` binds a compared function to its decorated symbol, the same
+# mechanical content as a compared line; the form is exactly the one the CI hash job reads.
+CI_HASH_BINDING = re.compile(r'//[ \t]*CI hash:[ \t]*0x[0-9a-fA-F]+[ \t]+\S+')
 EXPOSURE = ('black-box', 'community-headers', 'binary-analysis', 'mixed')
 NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'CRASHLOGGER_PDB', 'SYMBOLS', 'GUESS', 'EXE_RTTI', 'OBSERVED')
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
@@ -439,10 +442,11 @@ def licence_text_problems(root):
 
 def numbered_header_lines(header):
     """[(file line number, line)] of the header lines that count against HEADER_LIMIT: everything but
-    labels, sibling citations, compared-function lines and the SPDX line. `header` is a
+    labels, sibling citations, compared-function and CI hash binding lines and the SPDX line. `header` is a
     `leading_comment`, which starts at line 1 of the file and keeps blank lines."""
     return [(n, ln) for n, ln in enumerate(header.split('\n'), 1) if ln.strip() and ln.strip() != '//'
             and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
+            and not CI_HASH_BINDING.fullmatch(ln.strip())
             and 'SPDX-License-Identifier' not in ln]
 
 
@@ -459,7 +463,7 @@ def shown_header_line(text, width=100):
 def header_budget_problems(name, header, old_header=None):
     """The compact-header rule for a new or changed unit file: no licence text in the file, one
     SPDX line for NG declarations, and at most HEADER_LIMIT header lines besides labels, sibling
-    citations and compared-function lines. A change that only removes lines from `old_header`
+    citations, compared-function and CI hash binding lines. A change that only removes lines from `old_header`
     makes nothing longer and is not held to the line count."""
     problems = []
     if FULL_LICENCE.search(header):
@@ -475,7 +479,7 @@ def header_budget_problems(name, header, old_header=None):
         over = len(counted) - HEADER_LIMIT
         shown = numbered[:HEADER_SHOWN]
         lines = [f'{name}: header is {over} line{"s" if over != 1 else ""} over the budget: {len(counted)} lines count, '
-                 f'keep at most {HEADER_LIMIT}. Labels, `Sibling source:`, `// 0x<rva> <Name>` and SPDX lines do not '
+                 f'keep at most {HEADER_LIMIT}. Labels, `Sibling source:`, `// 0x<rva> <Name>`, `// CI hash: 0x<rva> <symbol>` and SPDX lines do not '
                  f'count. These are the lines that count:']
         lines += [f'  - line {n}: `{shown_header_line(ln)}`' for n, ln in shown]
         if len(numbered) > len(shown):

@@ -392,6 +392,66 @@ def filled_skeleton(*args):
     return h, cpp.replace('SKELETON_TODO_BODY;', '').replace('SKELETON_TODO_ORIGIN', 'none')
 
 
+class MergeHeaderTests(unittest.TestCase):
+    EXISTING = ('// Source exposure: mixed (community headers; the pinned image listing).\n'
+                '// Code origin: original; the listing only\n'
+                '// SPDX-License-Identifier: CC0-1.0\n'
+                '// 0x1000 Widget::A\n'
+                '// CI hash: 0x1000 ?A@Widget@@QEAAXXZ\n'
+                '// Adapted bodies: none\n'
+                '// Widget, Widget::A: GUESS(low)\n'
+                '#include "Widget.h"\n\nvoid Widget::A() {}\n')
+    NEW = ('// Source exposure: mixed (community headers; the pinned image listing).\n'
+           '// Code origin: SKELETON_TODO_CODE_ORIGIN (state the actual origin)\n'
+           '// SPDX-License-Identifier: CC0-1.0\n'
+           '// 0x2000 Widget::B\n'
+           '// Adapted bodies: SKELETON_TODO_ORIGIN (write "none" when attempt prints no line;\n'
+           '// otherwise name each adapted body).\n'
+           '// Widget::B: GUESS(low)\n'
+           '#include "Widget.h"\n')
+
+    def merge(self, text, *blocks):
+        return contrib.merge_header_additions(text, [b.split('#include', 1)[0] for b in blocks])
+
+    def test_append_adds_the_new_function_and_label_without_repeating_boilerplate(self):
+        out = self.merge(self.EXISTING, self.NEW)
+        for key in ('Source exposure:', 'Code origin:', 'SPDX-License-Identifier:', 'Adapted bodies:'):
+            self.assertEqual(out.count(key), 1, key)
+        self.assertNotIn('SKELETON_TODO', out)
+        self.assertIn('// 0x2000 Widget::B\n', out)
+        self.assertIn('// Widget::B: GUESS(low)\n', out)
+        self.assertIn('// CI hash: 0x1000 ?A@Widget@@QEAAXXZ\n', out)
+        self.assertTrue(out.endswith('#include "Widget.h"\n\nvoid Widget::A() {}\n'))
+        lead = out.split('#include', 1)[0]
+        self.assertNotIn('\n\n', lead)  # the compared lines stay in the unbroken leading run
+        import rva_headers
+        self.assertEqual(rva_headers.claimed_rvas([out]), {0x1000, 0x2000})
+
+    def test_merging_twice_or_several_blocks_is_stable(self):
+        once = self.merge(self.EXISTING, self.NEW)
+        self.assertEqual(self.merge(once, self.NEW), once)
+        other = self.NEW.replace('0x2000 Widget::B', '0x3000 Widget::C').replace('Widget::B: GUESS', 'Widget::C: GUESS')
+        out = self.merge(self.EXISTING, self.NEW, other)
+        self.assertEqual(out.count('Adapted bodies:'), 1)
+        self.assertIn('// 0x3000 Widget::C\n', out)
+
+    def test_a_file_without_a_header_receives_the_whole_block(self):
+        out = self.merge('#include "Widget.h"\n', self.NEW)
+        self.assertTrue(out.startswith('// Source exposure:'))
+        self.assertIn('// 0x2000 Widget::B\n', out)
+        self.assertTrue(out.endswith('#include "Widget.h"\n'))
+
+    def test_a_missing_one_per_unit_line_is_added_once(self):
+        text = self.EXISTING.replace('// SPDX-License-Identifier: CC0-1.0\n', '')
+        out = self.merge(text, self.NEW)
+        self.assertEqual(out.count('SPDX-License-Identifier'), 1)
+
+    def test_merged_header_passes_the_budget(self):
+        import lint_reconstruction as lint
+        out = self.merge(self.EXISTING, self.NEW)
+        self.assertEqual(lint.header_budget_problems('Widget.cpp', lint.leading_comment(out)), [])
+
+
 class SkeletonTests(Base):
     def test_skeleton_header_carries_cc0_only_without_a_third_party_notice(self):
         data = contrib.inventory(ROOT)

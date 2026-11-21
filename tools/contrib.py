@@ -1936,6 +1936,55 @@ def write_source(path, text):
     Path(path).write_text(text, encoding='utf-8', newline='\n')
 
 
+# Header lines that appear once per unit: a second copy is boilerplate, not information.
+HEADER_ONCE = re.compile(r'^//[ \t]*(?:Source exposure:|Code origin:|SPDX-License-Identifier:|Adapted bodies:)')
+HEADER_COMPARED = re.compile(r'^//[ \t]*(0x[0-9a-fA-F]+)(?:[ \t]|$)')
+
+
+def merge_header_additions(text, blocks):
+    """`text` with the header metadata of newly added functions merged into its leading `//` block.
+
+    Each block is the comment a skeleton renders for one function. Its compared `// 0x<rva> Name`
+    line and its label lines are added to the unit's existing header (inside the unbroken run of
+    `//` lines at the top, which is where the compared-function parser reads); its one-per-unit
+    lines (source exposure, code origin, SPDX, adapted bodies, with their continuation lines) are
+    kept only when the header has none yet, and a line the header already has is not repeated.
+    """
+    from digest_v2 import LABEL_WORD
+    lines = text.split('\n')
+    end = 0
+    while end < len(lines) and lines[end].startswith('//'):
+        end += 1
+    head, rest = lines[:end], lines[end:]
+    for block in blocks:
+        entries = []  # (is one-per-unit, [lines]); continuation lines follow their one-per-unit line
+        for line in block.rstrip('\n').split('\n'):
+            if not line.strip():
+                continue
+            if HEADER_ONCE.match(line):
+                entries.append((True, [line]))
+            elif entries and entries[-1][0] and line.startswith('//') and not HEADER_COMPARED.match(line) \
+                    and not LABEL_WORD.search(line):
+                entries[-1][1].append(line)
+            else:
+                entries.append((False, [line]))
+        for once, group in entries:
+            first = group[0]
+            if once:
+                key = HEADER_ONCE.match(first).group(0).strip()
+                if any(ln.strip().startswith(key) for ln in head):
+                    continue
+            elif first in head:
+                continue
+            else:
+                m = HEADER_COMPARED.match(first)
+                if m and any((c := HEADER_COMPARED.match(ln)) and int(c.group(1), 16) == int(m.group(1), 16)
+                             for ln in head):
+                    continue
+            head += group
+    return '\n'.join(head + rest)
+
+
 def pdb_hints(repo, fns):
     """Lines naming the CrashLogger-PDB layout header (and names) of the functions, from the committed
     reconstruction/generated output; nothing, silently, when that is absent or knows none of them."""
@@ -2046,7 +2095,7 @@ def start(ctx, args, quiet=False):
                                         getattr(args, 'code_origin', None))
                 additions.append(metadata.split('#include', 1)[0])
         if additions:
-            write_source(ctx.repo / cpp, ''.join(additions) + text)
+            write_source(ctx.repo / cpp, merge_header_additions(text, additions))
         ctx.say('Function header metadata is prepared. Add the new declarations and bodies; '
                 'replace each code-origin placeholder truthfully before compare. '
                 'Accepted companions are re-confirmed by the project.')

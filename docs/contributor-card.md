@@ -35,7 +35,7 @@ Header: keep it short. The skeleton writes all of it; a `.cpp` looks like
 
 Never paste licence text, and leave out Task, Labels, Evidence, Drafted by, Recipe (unless it is
 not the default) and any "a byte match shows..." disclaimer: the records and git hold them. Labels,
-`Sibling source:` and `0x<rva> <Name>` lines do not count; keep the rest to 6 lines or fewer. The
+`Sibling source:`, `0x<rva> <Name>` and `CI hash: 0x<rva> <symbol>` lines do not count; keep the rest to 6 lines or fewer. The
 PR check fails a new or changed header that is longer or holds licence text. The failure names the file, how many lines it is over and the lines that count.
 
 A function is claimed only by its `// 0x<rva> <Name>` line (older units also use `RVA 0x<rva>, <n> bytes`
