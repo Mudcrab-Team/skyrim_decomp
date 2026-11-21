@@ -1,10 +1,7 @@
-// Code origin: bodies written by the contributor from the compared functions' behaviour; names and
-// declarations come from the header (CharmedBaryon/CommonLibSSE-NG, MIT).
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
+// Code origin: bodies written by the contributor (no adapted bodies); names and declarations from CharmedBaryon/CommonLibSSE-NG (MIT).
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
-// Adapted bodies: none.
 // 0x27f1b0 TESObjectARMO::GetDescriptionOwnerFile
 // 0x27ef24 TESObjectARMO::dtor
 // 0x27eef4 TESObjectARMO::dtor
