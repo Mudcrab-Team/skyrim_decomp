@@ -140,6 +140,13 @@ void Thing::Different() { Compute(); }
         self.assertTrue(co.declared('// Same parallels FNV.\n// Sibling source: momusdigital/fnv_decomp@91e1b6e8 '
                                     'src/Thing.cpp:3', 'momusdigital/fnv_decomp', 'src/Thing.cpp', 'Same'))
 
+    def test_f3_sibling_is_a_default_source_and_needs_its_line(self):
+        self.assertEqual(co.DEFAULT_SOURCES['momusdigital/f3_decomp'][:2], ('.local/sources/f3_decomp', 'CC0-1.0'))
+        self.assertIn('momusdigital/f3_decomp', co.SIBLINGS)
+        self.assertFalse(co.declared('// Same: see src/Thing.cpp', 'momusdigital/f3_decomp', 'src/Thing.cpp', 'Same'))
+        self.assertTrue(co.declared('// Same\n// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/Thing.cpp:3',
+                                    'momusdigital/f3_decomp', 'src/Thing.cpp', 'Same'))
+
     def test_threshold(self):
         self.write('')
         self.assertTrue(any(h['function'] == 'Thing::Same' for h in co.check_unit([self.unit], self.clones,

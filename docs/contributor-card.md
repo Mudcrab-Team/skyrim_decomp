@@ -18,6 +18,8 @@ including adaptations and sources. Community headers are
 hypotheses, not binary proof. Never write `asm`, `##`, `#pragma` (except `once`), byte arrays or
 `\x` strings, and never edit verifier inputs, tools, flags or another unit to force a pass.
 
+For Fallout 3 (`momusdigital/f3_decomp`, CC0-1.0) the same with `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`
+and `Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>`.
 For FNV reuse use `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` and cite each reused
 body in a `Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>` header line. Another
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.

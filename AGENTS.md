@@ -28,10 +28,12 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
   unlicensed copied code in commits, PRs, issues, logs, releases or CI artifacts. Maintainer
   exceptions: names, declarations and code from the FNV decompilation `momusdigital/fnv_decomp@91e1b6e8`
   may be reused in reconstructions, labelled `SIBLING(...)`, which is itself CC0 1.0 (`LICENSE`)
-  (`docs/authorizations.md`, Notes; `LEGAL.md`). The anonymous private Fallout 4 sibling
+  (`docs/authorizations.md`, Notes; `LEGAL.md`). The Fallout 3 decompilation
+  `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) is handled the same way, labelled
+  `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`. The anonymous private Fallout 4 sibling
   `fo4-private@1b765c70` is also permitted for game-code folders only, with author permission conditional on anonymity, labelled
   `SIBLING(fo4-private@1b765c70, author-permission)` (same policy references). Its middleware
-  folders and mixed generated aggregates are excluded. Neither sibling is
+  folders and mixed generated aggregates are excluded. None of the siblings is
   evidence about the Skyrim binary.
 - Do not upload game-derived material to an AI/cloud service without explicit owner authorization
   and assessment of the service terms. Permission to research locally is not permission to upload.

@@ -1,7 +1,7 @@
 """Report reconstruction bodies that resemble a same-named body in a community or sibling source.
 
 Advisory and local only, like tools/check_labels.py: it reads the private pinned clones under
-`.local/sources` (CommonLibSSE-NG, the powerof3 fork, the FNV decompilation), which CI does not
+`.local/sources` (CommonLibSSE-NG, the powerof3 fork, the FNV and Fallout 3 decompilations), which CI does not
 have. It never edits anything and never decides provenance; a Reviewer starts the provenance
 check from its list (`.claude/agents/reviewer.md`, item 2).
 
@@ -50,9 +50,10 @@ DEFAULT_SOURCES = {
     'CharmedBaryon/CommonLibSSE-NG': ('.local/sources/CommonLibSSE-NG', 'MIT', ('include', 'src')),
     'powerof3/CommonLibSSE': ('.local/sources/CommonLibSSE-po3', 'GPL-3.0', ('include', 'src')),
     'momusdigital/fnv_decomp': ('.local/sources/fnv_decomp', 'no-licence', ('include', 'src')),
+    'momusdigital/f3_decomp': ('.local/sources/f3_decomp', 'CC0-1.0', ('include', 'src')),
     'fo4-private': ('.local/sources/fo4-private', 'author-permission', GAME_DIRS),
 }
-SIBLINGS = {'momusdigital/fnv_decomp', 'fo4-private'}
+SIBLINGS = {'momusdigital/fnv_decomp', 'momusdigital/f3_decomp', 'fo4-private'}
 FORKS = {'powerof3/CommonLibSSE': 'CharmedBaryon/CommonLibSSE-NG'}
 SUFFIXES = ('.h', '.hpp', '.inl', '.cpp', '.cxx', '.cc', '.c')
 

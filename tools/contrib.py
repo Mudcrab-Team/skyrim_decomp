@@ -92,6 +92,11 @@ COMMUNITY_SOURCES = {
 # for a reused body, never evidence about the Skyrim binary. Optional: setup skips it with
 # --no-sibling, and nothing else depends on it.
 SIBLING_SOURCE = ('momusdigital/fnv_decomp', '.local/sources/fnv_decomp', '91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6')
+# The Fallout 3 decompilation (CC0-1.0), fetched with the FNV one on the same terms; the origin
+# check reads it, but no name index is built from it.
+SIBLING_EXTRA_SOURCES = {
+    'momusdigital/f3_decomp': ('.local/sources/f3_decomp', 'f5bac1b54fc8fde16294c1d6779f27407d0a117b', 'CC0-1.0'),
+}
 # Steam ids. The app and build ids come from findings/target-pin.md; the depot and manifest of the
 # executable are recorded from the maintainer's own install (its appmanifest lists them, and its
 # build id equals the pin). Steam may move the app to a newer build at any time, which is why the
@@ -1622,7 +1627,7 @@ def cmd_setup(ctx, args):
     if not args.no_sources and not getattr(args, 'no_sibling', False):
         repo, rel, rev = SIBLING_SOURCE
         try:
-            fetched = fetch_sources(ctx, {repo: (rel, rev, 'no-licence')})
+            fetched = fetch_sources(ctx, {repo: (rel, rev, 'no-licence'), **SIBLING_EXTRA_SOURCES})
             joined = build_sibling_index(ctx)
             step('sibling source', 'ok', f'{repo}@{rev[:8]} ' + ('fetched' if fetched else 'present')
                  + f'; index joins {joined} inventory functions by name')

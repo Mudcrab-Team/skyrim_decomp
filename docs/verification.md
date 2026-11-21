@@ -110,7 +110,7 @@ A function is accepted only when ALL of these hold:
    - code that cannot be what it claims, such as an unreachable branch or impossible type use
      that signals a wrong binding or a wrong class;
    - provenance: code from unlicensed projects other than the permitted sibling decompilations
-     `momusdigital/fnv_decomp@91e1b6e8` and game-only `fo4-private@1b765c70`, which the
+     `momusdigital/fnv_decomp@91e1b6e8`, `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) and game-only `fo4-private@1b765c70`, which the
      maintainer allowed (`docs/authorizations.md`, Notes); leaked or proprietary material; a
      source header that does not state provenance and source exposure, or whose origin or licence statement is false; and undeclared reuse of
      sibling code, meaning a unit that reuses a permitted sibling body or a substantial part of

@@ -22,6 +22,11 @@ reconstruction body close to a same-named body in the pinned community or FNV ch
   Adapted, with modifications, into `.claude/skills/matcher` (with `levers.md`), `.claude/skills/permute` and
   `.claude/skills/wall-identifier`; each directory has a `NOTICE.md`. Generic prose only: the source contains no game
   bytes, disassembly or symbols. Not an evidence source about the Skyrim binary. Other skills in that repo were not imported.
+- [momusdigital/f3_decomp](https://github.com/momusdigital/f3_decomp), at
+  `f5bac1b54fc8fde16294c1d6779f27407d0a117b`: Fallout 3 reconstruction. LICENSE is CC0 1.0. By
+  maintainer decision (`docs/authorizations.md`, Notes) used like the FNV one, labelled
+  `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`, a reused body cited by a `Sibling source:`
+  line; not vendored.
 - [momusdigital/fnv_decomp_exe](https://github.com/momusdigital/fnv_decomp_exe), reviewed at
   `d11951cb936c38252cefbc99eb69d777bf5decd2`: separate local executable-building project.
   Its LICENSE grants no license. Linked as a reference only; Skyrim building is not implemented.

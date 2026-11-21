@@ -157,6 +157,7 @@ LABEL = (r'(?:COMMUNITY\([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{7,40}, [A-Za-z
 # prefix, the licence word its labels must carry). A SIBLING label or `Sibling source:` line
 # citing anything else is refused, so a new sibling needs a recorded decision and an entry here.
 SIBLING_SOURCES = {'momusdigital/fnv_decomp': ('91e1b6e8', 'no-licence'),
+                   'momusdigital/f3_decomp': ('f5bac1b5', 'CC0-1.0'),
                    'fo4-private': ('1b765c70', 'author-permission')}
 SIBLING_ID = r'(?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|fo4-private)'
 SIBLING_LABEL = re.compile(rf'SIBLING\(({SIBLING_ID})@([0-9a-f]{{7,40}}), ([A-Za-z0-9.+-]+)\)')

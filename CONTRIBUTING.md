@@ -87,7 +87,7 @@ different, `setup` says so.
   provider's terms; your agent asks you once. The project grants no rights in the game and uploads
   nothing.
 - Community headers (CommonLibSSE-NG, powerof3's CommonLibSSE, meh321's Address Library names) and
-  the FNV decompilation (`momusdigital/fnv_decomp@91e1b6e8`, which `setup` clones) may be used, with
+  the FNV and Fallout 3 decompilations (`momusdigital/fnv_decomp@91e1b6e8`, `momusdigital/f3_decomp@f5bac1b5`, which `setup` clones) may be used, with
   their labels: `SIBLING(...)` for what you take from FNV and a `Sibling source:` header line for a
   reused body. FNV is another, older and 32-bit game: read it for shape and names, never as evidence
   about Skyrim's offsets or layouts.

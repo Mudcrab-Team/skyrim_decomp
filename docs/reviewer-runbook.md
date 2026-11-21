@@ -110,7 +110,7 @@ blocks; list what you find as `naming_findings` and still approve.
    - nothing that cannot be what it claims: an unreachable branch or impossible type use that
      signals a wrong binding or a wrong class.
 2. **Provenance.** No code from unlicensed projects other than the FNV decompilation
-   `momusdigital/fnv_decomp@91e1b6e8` (allowed by maintainer decision), no leaked or proprietary
+   `momusdigital/fnv_decomp@91e1b6e8` or `momusdigital/f3_decomp@f5bac1b5` (allowed by maintainer decision), no leaked or proprietary
    material. The source header states provenance and source exposure, and what it says about
    origin and licence is true. Start from the packet's `body origin` list and its per-function
    `community/sibling body similarity` line: every `adapted` body must be named in the unit

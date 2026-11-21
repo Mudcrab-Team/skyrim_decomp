@@ -349,6 +349,14 @@ class OriginFindingTests(unittest.TestCase):
     def test_an_admitted_sibling_with_a_valid_label_is_a_note(self):
         self.assertEqual(pr_bot.origin_findings([origin_hit()], {UNIT: FNV_HEADER}), ([], [UNIT]))
 
+    def test_a_declared_f3_sibling_body_is_a_note(self):
+        header = '// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/Game/Thing.cpp:12'
+        hit = origin_hit('momusdigital/f3_decomp')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: header}), ([], [UNIT]))
+        self.assertEqual(pr_bot.origin_findings([origin_hit('momusdigital/f3_decomp', declared=False)],
+                                                {UNIT: '// nothing'})[0], [(UNIT, 'unlabelled')])
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: FNV_HEADER})[0], [(UNIT, 'invalid-label')])
+
     def test_a_fo4_private_game_folder_with_a_valid_label_is_a_note(self):
         header = '// Sibling source: fo4-private@1b765c70 src/BSMain/Thing.cpp'
         hit = origin_hit('fo4-private', 'src/BSMain/Thing.cpp')

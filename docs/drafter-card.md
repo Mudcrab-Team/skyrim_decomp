@@ -84,6 +84,7 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   `COMMUNITY(<owner>/<repo>@<rev>, <licence>)` (e.g. `COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)`),
   `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` (a name or declaration taken from the
   Fallout: New Vegas decompilation, below),
+  `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)` (the same for the Fallout 3 decompilation),
   `SIBLING(fo4-private@1b765c70, author-permission)` (anonymous permitted game-code sibling),
   `CRASHLOGGER_PDB(59818@<version>)` (a name or layout from the community CrashLogger PDB output; a known name
   source, not evidence of identity),
@@ -102,6 +103,10 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   substantial part of one, add `// Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>`
   to the header comment (one line per body). `check_labels.py` verifies `SIBLING` names and the
   path; the Reviewer rejects undeclared reuse.
+- **Sibling source (Fallout 3).** `.local/sources/f3_decomp` (momusdigital/f3_decomp at `f5bac1b5`,
+  CC0-1.0) is used exactly like the FNV one: label what you take, cite each reused body with
+  `// Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>` and declare it as an adapted body.
+  It is an x86 VC++ 2005 SP1 build of another game, never evidence about Skyrim.
 - **Sibling source (`fo4-private`).** Game-code folders only at `1b765c70`, with author
   permission conditional on anonymity (`docs/authorizations.md`, `LEGAL.md`). Use
   `SIBLING(fo4-private@1b765c70, author-permission)` on names/declarations and
