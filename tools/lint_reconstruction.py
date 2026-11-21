@@ -92,7 +92,7 @@ NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'CRASHLOGGER_PDB', 'SYMBOLS', 'GUESS', '
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
 # The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
 # single-level layout is accepted too while units written against it are still landing.
-SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
 # A second unit of a split class is named `<Class>_<lowest rva>`; the class it declares is the base.
 SPLIT_TAG = re.compile(r'_[0-9a-f]{3,8}$')
 CODEGEN_DECLSPEC = r'naked|code_seg|allocate|safebuffers'
@@ -177,7 +177,7 @@ BRACED = re.compile(r'\{([^{}]*)\}', re.S)
 INCLUDE_NAME = re.compile(r'[A-Za-z0-9_][A-Za-z0-9_.+-]*(?:/[A-Za-z0-9_][A-Za-z0-9_.+-]*)*')
 # Accepted units spell a header in another area by walking up from their own folder. New units
 # use same-directory or reconstruction-root paths (docs/drafter-card.md).
-SHARED_HEADER = re.compile(r'(?:\.\./)+(?:[a-z][a-z0-9_]*/)+[A-Z][A-Za-z0-9_]*\.h')
+SHARED_HEADER = re.compile(r'(?:\.\./)+(?:[a-z][a-z0-9_]*/)+(?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*\.h')
 PRAGMA_LINE = re.compile(r'^[ \t]*#[ \t]*pragma\b(.*)$', re.M)
 # Placeholders of tools/skeleton.py (unit_skeleton.py): the stub body and the header fields the
 # Drafter has to fill. Any spelling that starts with the prefix counts, so a new placeholder is

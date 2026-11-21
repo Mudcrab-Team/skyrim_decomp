@@ -76,8 +76,8 @@ MAX_UNIT_FILE_BYTES = 64 * 1024
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # A matched function with a two-file unit, used by `setup` to prove the whole local chain works.
 SELF_TEST_RVA = 0xef8900
-UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
-PLAIN_NAME = re.compile(r'([A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
+UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+PLAIN_NAME = re.compile(r'((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
 RVA_TOKEN = re.compile(r'(?<![0-9A-Za-z])0x([0-9a-fA-F]{3,8})(?![0-9A-Za-z])')
 # Pinned community naming sources (SOURCES.md) that tools/check_labels.py and check_origin.py read
 # from .local/sources/.

@@ -16,7 +16,7 @@ from source_digest import include_closure, _repo_file
 from digest_v2 import tu_digest
 from local_paths import local_path, no_sibling_names
 
-UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
+UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 
 
 def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
