@@ -294,7 +294,10 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
                     leak_evidence=sorted(set(leak_evidence)), merge=False, verdicts={r: 'blocked' for r in functions})
     # A header change can break a matched function outside this PR's own list; the hash run names it too.
     if 'regressed' in list(host1.values()) + list(host2.values()):
-        return dict(blocked='regression', merge=False, verdicts={r: 'blocked' for r in functions})
+        regressed = sorted({r for h in (host1, host2) for r, v in h.items() if v == 'regressed'})
+        return dict(blocked='regression', merge=False, verdicts={r: 'blocked' for r in functions},
+                    regressed=regressed, regressed_hosts={r: [n for n, h in (('host1', host1), ('host2', host2))
+                                                              if h.get(r) == 'regressed'] for r in regressed})
     verdicts = {}
     for rva in functions:
         h1, h2, rv = host1.get(rva), host2.get(rva), review.get(rva)
@@ -735,8 +738,14 @@ def outcome_body(sha, decision, leak_codes=()):
                 f'check flagged it (rule codes: {codes}). Please remove what those rules describe and '
                 f'push again; nothing in the PR was merged.')
     if decision['blocked'] == 'regression':
-        return (f'This change makes an already matched function stop matching, so it was not '
-                f'merged. Please keep the shared code compatible or touch only your own unit.')
+        lines = ['This change makes an already matched function stop matching, so it was not merged:']
+        hosts = decision.get('regressed_hosts') or {}
+        for r in decision.get('regressed') or []:
+            on = ' and '.join(hosts.get(r) or ()) or 'a host'
+            lines.append(f'- 0x{int(r):x}: matched before this PR, differs now on {on}')
+        lines.append('Please keep the shared code (headers, layouts, inline helpers) compatible with those '
+                     'functions or touch only your own unit, and push again; the bot re-checks the new head.')
+        return '\n'.join(lines)
     if decision['blocked'] == 'stale':
         verdicts = decision['verdicts']
         lines = ['This PR changes a unit whose already accepted functions would go stale: their recorded '

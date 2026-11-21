@@ -107,6 +107,9 @@ class DecisionTests(unittest.TestCase):
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'regressed'}, {0x10: 'pass', 0x20: 'pass'},
                           {0x10: 'approve', 0x20: 'approve'})
         self.assertEqual((d['blocked'], d['merge']), ('regression', False))
+        text = pr_bot.comment_body(HEAD, d)
+        self.assertIn('- 0x20: matched before this PR, differs now on host1', text)
+        self.assertNotIn('0x10', text)
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'preexisting-fail'}, {0x10: 'pass', 0x20: 'fail'},
                           {0x10: 'approve', 0x20: 'reject'})
         self.assertEqual(d['verdicts'], {0x10: 'matched', 0x20: 'debt'})
