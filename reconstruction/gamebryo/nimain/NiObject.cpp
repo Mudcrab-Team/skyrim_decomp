@@ -1,9 +1,11 @@
-// Source exposure: mixed (pinned image and CommonLibSSE-NG declarations).
+// Source exposure: mixed (pinned image, CommonLibSSE-NG declarations, and FNV sibling comparison).
 // Licence: GPL-3.0 because the name Clone comes from powerof3/CommonLibSSE.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: original except for the bodies listed below.
 // Adapted bodies: IsEqual and RegisterStreamables, CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/N/NiObject.cpp (MIT).
 // NiObject::RegisterStreamables, NiStream::RegisterSaveObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiObject::RegisterStreamables: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); the pinned sibling has the same forwarding body.
+// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/staging/blk_00a40000_o2.cpp:3827
 // 0xedca00 NiObject::ProcessClone
 // 0xedcb60 NiObject::StreamCanSkip
 // 0xedcb90 NiObject::GetGroup
