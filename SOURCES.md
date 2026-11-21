@@ -16,6 +16,12 @@ reconstruction body close to a same-named body in the pinned community or FNV ch
   vendored. Units with such lines: `netimmerse/NiPSysModifier` (LinkObject, RegisterStreamables,
   ProcessClone) and `bsengine/BSLightingShaderMaterialBase` (NiRefObject reference counting); both
   declare close parallels found after drafting, not recorded copies.
+- [lemiur/Game-Decompilation-Skill-For-Claude](https://github.com/lemiur/Game-Decompilation-Skill-For-Claude),
+  pinned at `f49d2153f8ad9279262a720c88b5d337e7c63534`, licensed CC-BY-4.0
+  (`licenses/CC-BY-4.0.txt`). Author lemiur gave permission to copy, adapt and credit on PR #572.
+  Adapted, with modifications, into `.claude/skills/matcher` (with `levers.md`), `.claude/skills/permute` and
+  `.claude/skills/wall-identifier`; each directory has a `NOTICE.md`. Generic prose only: the source contains no game
+  bytes, disassembly or symbols. Not an evidence source about the Skyrim binary. Other skills in that repo were not imported.
 - [momusdigital/fnv_decomp_exe](https://github.com/momusdigital/fnv_decomp_exe), reviewed at
   `d11951cb936c38252cefbc99eb69d777bf5decd2`: separate local executable-building project.
   Its LICENSE grants no license. Linked as a reference only; Skyrim building is not implemented.
