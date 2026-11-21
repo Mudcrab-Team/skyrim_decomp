@@ -2,7 +2,8 @@
 // image).
 // Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
-// Adapted bodies: TestBit coincides with momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp (CC0-1.0).
+// Adapted bodies: TestBit
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp (TestBit, CC0-1.0)
 // 0x1f34d0 Leaf1f34d0::Invoke
 // 0x1f34c0 TESValueForm::InitializeDataComponent
 // 0x1f36d0 TESValueForm::~TESValueForm
