@@ -526,8 +526,56 @@ def review_grounds(text, functions):
 # Host 1 cannot judge a function with no published target hash; for a unit that changed from base only in
 # comments the Mac compare of the new text stands in for it (docs/verification.md, comment-only changes).
 CARRY_REASON = 'host1: carried (comment-only, no-target at base)'
+CARRY_REASON_TEXT = 'host1: carried (own function text unchanged, no-target at base)'
 CARRY_NOTE = ('Carried to new source: the unit differs from the text its runs compared only in comments, and the '
               'function has no published target hash, so the runs are unchanged.')
+CARRY_NOTE_TEXT = ('Carried to new source: the function\'s own definition is unchanged from the text its runs '
+                   'compared, the function has no published target hash, and the standing host\'s compare of the '
+                   'new text passes, so the earlier second-host result is kept.')
+
+
+def function_text(blobs, name):
+    """The comment-free definitions of `name` (a qualified function name) across the unit's files, or None.
+
+    Only a definition counts: a declaration ends in `;` before any body. Text is whitespace-normalised
+    so reflowing a body is not a change. None when no definition is found or a file cannot be scanned,
+    which leaves the carry refused rather than guessed.
+    """
+    from digest_v2 import strip_comments
+    found = []
+    pattern = re.compile(r'(?<![A-Za-z0-9_:~])' + r'\s*::\s*'.join(map(re.escape, name.split('::'))) + r'\s*\(')
+    for fname, blob in blobs:
+        try:
+            text = strip_comments(blob, fname, False)
+        except ValueError:
+            return None
+        for m in pattern.finditer(text):
+            depth, i = 1, m.end()
+            while i < len(text) and depth:
+                depth += (text[i] == '(') - (text[i] == ')')
+                i += 1
+            while i < len(text) and text[i] not in '{;':
+                i += 1
+            if i >= len(text) or text[i] == ';':
+                continue
+            start = max(text.rfind(c, 0, m.start()) for c in ';{}') + 1
+            depth, quote = 0, None
+            for j in range(i, len(text)):
+                c = text[j]
+                if quote:
+                    if c == '\\':
+                        continue
+                    quote = None if c == quote and text[j - 1] != '\\' else quote
+                elif c in '"\'':
+                    quote = c
+                elif c in '{}':
+                    depth += 1 if c == '{' else -1
+                    if not depth:
+                        found.append(' '.join(text[start:j + 1].split()))
+                        break
+            else:
+                return None
+    return '\n'.join(found) if found else None
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -1210,7 +1258,7 @@ class Bot:
         out = {}
         for rva in functions:
             reports = sorted(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{rva:x}/report.json'))
-            carried = str(rva) in carried_map
+            carried = carried_map.get(str(rva)) or False
             out[rva] = dict(report=reports[-1] if reports else None, host1=host1.get(rva), host2=host2.get(rva),
                             row=None if carried else (ci.get('rows') or {}).get(str(rva)), run=ci.get('run'),
                             carried=carried)
@@ -1274,7 +1322,7 @@ class Bot:
                          '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in first.items()))
         row, run = evidence.get('row'), evidence.get('run')
         if evidence.get('carried'):
-            lines.append(f'  second host (CI hash job): {CARRY_REASON}; the function has no published target hash, '
+            lines.append(f'  second host (CI hash job): {evidence["carried"]}; the function has no published target hash, '
                          'so the first host\'s compare of the new text is the only byte check of it')
         elif row:
             word = {True: 'agrees', False: 'DIFFERS'}
@@ -1504,12 +1552,13 @@ class Bot:
     def carry_host1(self, base, files, functions, units, host1, host2, state):
         """{str(rva): reason} for functions whose host 1 is carried from the Mac compare of the new text.
 
-        The narrow exception to the two-host rule for comment-only changes. Host 1 counts as a pass only if
+        The narrow exception to the two-host rule. Host 1 counts as a pass only if
         (a) the function was `no-target` at the PR's base too: the hash job's own compile of the base tree
         gave `no-target` for it, or the job made no row for it and no published target existed at base or
-        exists now; (b) every file of its unit that the PR changes equals its base version once all comments
-        are removed, so the code is unchanged; (c) host 2 passes on the new text. A function with no accepted
-        record has nothing to carry and never qualifies.
+        exists now; (b) either every file of its unit that the PR changes equals its base version once all
+        comments are removed, or the function's own definition is the same at base and head; (c) host 2
+        passes on the new text. A function with no accepted record has nothing to carry and never qualifies.
+        The reason names which of the two held, so the summary and state show it.
         """
         from source_digest import include_closure
         from digest_v2 import same_code
@@ -1525,6 +1574,7 @@ class Bot:
         published = None
         inventory = json.loads((self.tree / 'data/progress.json').read_text())
         accepted = {fn['rva'] for fn in inventory['functions'] if fn['status'] == 'matched' and fn.get('report')}
+        names = {fn['rva']: fn.get('name') for fn in inventory['functions']}
         changed = {f['filename'] for f in files}
         unit_of = {r: u for u, rs in units.items() for r in rs}
         out = {}
@@ -1536,24 +1586,35 @@ class Bot:
                 published = self.targets_at(base) | self.targets_at() if published is None else published
                 if rva in published:
                     continue
-            same = True
-            for name in sorted(set(include_closure(self.tree, unit)) & changed):
+            closure = sorted(include_closure(self.tree, unit))
+            same, olds = True, {}
+            for name in sorted(set(closure) & changed):
                 old = self.run(['git', 'show', f'{base}:{name}'], check=False)
+                olds[name] = old.stdout if old.returncode == 0 else None
                 same = same and old.returncode == 0 and same_code(old.stdout, (self.tree / name).read_bytes(), name)
-            if same:
-                out[str(rva)] = CARRY_REASON
-                print(f'{stamp()} 0x{rva:x}: {CARRY_REASON}', file=sys.stderr, flush=True)
+            reason = CARRY_REASON if same else None
+            if not same and names.get(rva):
+                # A file the PR changes has its base text from git (none if the PR adds it); the rest read the same.
+                before = function_text([(n, olds[n] if n in changed else (self.tree / n).read_bytes())
+                                        for n in closure if n not in changed or olds.get(n) is not None], names[rva])
+                after = function_text([(n, (self.tree / n).read_bytes()) for n in closure], names[rva])
+                if before is not None and before == after:
+                    reason = CARRY_REASON_TEXT
+            if reason:
+                out[str(rva)] = reason
+                print(f'{stamp()} 0x{rva:x}: {reason}', file=sys.stderr, flush=True)
         return out
 
-    def carried_records(self, tag, rvas, build_id):
+    def carried_records(self, tag, rvas, build_id, reasons=None):
         """Records for carried functions, from the accepted record of each; {rva} that could not be carried."""
-        out, failed = self.work / 'records' / tag, set()
+        out, failed, reasons = self.work / 'records' / tag, set(), reasons or {}
         for rva in sorted(rvas):
             made = out / build_id / f'0x{rva:x}.json'
             made.unlink(missing_ok=True)
             call = ("import sys\nsys.path.insert(0, sys.argv[1] + '/tools')\nimport record\n"
                     "record.build_carried_record(sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])\n")
-            done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, CARRY_NOTE], cwd=self.tree,
+            note = CARRY_NOTE_TEXT if reasons.get(str(rva)) == CARRY_REASON_TEXT else CARRY_NOTE
+            done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, note], cwd=self.tree,
                             check=False, timeout=self.config['compare_timeout'])
             if done.returncode or not made.is_file():
                 failed.add(rva)
@@ -1844,7 +1905,8 @@ class Bot:
         # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
         if carried:
             target = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
-            _, unmade = self.carried_records(tag, carried, target)
+            reasons = {**(state.get('carried') or {}), **(state.get('carried-c') or {})}
+            _, unmade = self.carried_records(tag, carried, target, reasons)
             built |= carried - unmade
             failed |= unmade
         failed |= set(rvas) - built - failed

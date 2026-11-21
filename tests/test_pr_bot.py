@@ -1401,7 +1401,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.state.data['carried'] = {'16': pr_bot.CARRY_REASON}
         self.state.data['ci']['rows'].pop('16')
         asked = []
-        self.bot.carried_records = lambda tag, rvas, build: (asked.append((set(rvas), build)), (self.work, set()))[1]
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (asked.append((set(rvas), build)), (self.work, set()))[1]
         out, failed = self.build()
         self.assertEqual((failed, asked), (set(), [({0x10}, 'b')]))
         self.assertEqual(len(self.seen('wine_confirm.py')), 1)
@@ -1410,7 +1410,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         (self.tree / 'builds').mkdir()
         (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
         self.state.data['carried'] = {'16': pr_bot.CARRY_REASON}
-        self.bot.carried_records = lambda tag, rvas, build: (self.work, set(rvas))
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (self.work, set(rvas))
         out, failed = self.build()
         self.assertEqual(failed, {0x10})
 
@@ -2159,6 +2159,31 @@ class CarryHost1Tests(unittest.TestCase):
     def test_a_code_change_never_carries(self):
         self.set_head(b'// U: GUESS(low)\nint f() { return 2; }\n')
         self.assertEqual(self.carry(), {})
+
+    def test_unchanged_own_text_carries_when_other_code_in_the_unit_changed(self):
+        self.write(self.repo, self.UNIT, b'int f() { return 1; }\n')
+        self.git('commit', '-qam', 'own')
+        self.base = self.git('rev-parse', 'HEAD')
+        self.set_head(b'int g() { return 7; }\nint f()\n{\n    return 1; // same\n}\n')
+        self.write(self.tree, 'data/progress.json', json.dumps({'functions': [
+            {'build_id': 'b', 'rva': 16, 'status': 'matched', 'report': 'r16.json', 'name': 'f'}]}))
+        self.assertEqual(self.carry(), {'16': pr_bot.CARRY_REASON_TEXT})
+
+    def test_a_changed_own_text_or_a_missing_definition_does_not_carry(self):
+        self.write(self.tree, 'data/progress.json', json.dumps({'functions': [
+            {'build_id': 'b', 'rva': 16, 'status': 'matched', 'report': 'r16.json', 'name': 'f'}]}))
+        self.set_head(b'int g() { return 7; }\nint f() { return 2; }\n')
+        self.assertEqual(self.carry(), {})
+        self.set_head(b'int g() { return 7; }\nint h() { return 1; }\n')
+        self.assertEqual(self.carry(), {})
+
+    def test_function_text_ignores_declarations_comments_and_layout(self):
+        a = function_text = pr_bot.function_text
+        one = [('a.cpp', b'int C::f(int x) const;\n// c\nint C::f(int x) const\n{ return x; }\n')]
+        two = [('a.cpp', b'int C::f(int x) const\n{\n  return x; /* k */\n}\nint C::g() { return 0; }\n')]
+        self.assertEqual(a(one, 'C::f'), a(two, 'C::f'))
+        self.assertIsNone(a([('a.cpp', b'int C::f();\n')], 'C::f'))
+        self.assertNotEqual(a(one, 'C::f'), a([('a.cpp', b'int C::f(int x) const { return 0; }\n')], 'C::f'))
 
     def test_a_string_or_include_change_is_code(self):
         self.set_head(b'// U: GUESS(low)\nconst char* s = "x";\nint f() { return 1; }\n')

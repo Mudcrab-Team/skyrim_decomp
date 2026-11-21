@@ -761,3 +761,8 @@ of the new text passes, the bot counts host 1 as a pass and logs `host1: carried
 at base)`; the function's accepted record then moves to the new digest with its original runs unchanged.
 Any code, string or include change, a function that had a target result at base, a failed Mac compare or
 a function with no accepted record gets no carry, and the review and every other rule still apply.
+
+The same carry applies when the unit changed in code elsewhere but the function's own definition (its body as
+extracted from the unit's files, comments and layout ignored) is identical at base and head, the function was
+accepted at base and has no target hash, and the Mac compare at head passes; the bot then logs and records
+`host1: carried (own function text unchanged, no-target at base)`. Every newly matched function still needs two hosts.
