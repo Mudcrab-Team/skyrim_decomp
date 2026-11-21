@@ -581,6 +581,10 @@ def function_text(blobs, name):
             else:
                 return None
     return '\n'.join(found) if found else None
+# Nothing was compared when no symbol bound, so this must not read as a byte difference.
+UNBOUND_FIX = ('the compiled object had no symbol the compare could bind to that RVA (nothing was compared); check '
+               'that the function name and signature match the mangled symbol, or add a '
+               '`// CI hash: 0x<rva> <symbol>` line (see docs/contributor-card.md)')
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -614,7 +618,7 @@ def other_failure_lines(decision, shown):
         if r in shown or not v.startswith('fail:'):
             continue
         row = why.get(r) or why.get(str(r)) or {}
-        hosts = [f'{HOST_NAMES[h]}: {row[h]}' for h in ('host1', 'host2') if h in row]
+        hosts = [f'{HOST_NAMES[h]}: ' + (UNBOUND_FIX if row[h] == 'unbound' else row[h]) for h in ('host1', 'host2') if h in row]
         lines.append(f'- 0x{r:x}: ' + ('; '.join(hosts) if hosts else reason_text(decision, r, v.split(':', 1)[1])))
     return lines
 
@@ -639,6 +643,8 @@ def reason_text(decision, rva, code):
     if code in ('host1', 'host2'):
         why = decision.get('host_why') or {}
         category = (why.get(rva) or why.get(str(rva)) or {}).get(code)
+        if category == 'unbound':
+            return f'{UNBOUND_FIX[0].upper()}{UNBOUND_FIX[1:]}'
         return f'{text} ({category})' if category else text
     if code != 'review':
         return text

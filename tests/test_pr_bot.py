@@ -802,8 +802,19 @@ class CompanionProcessTests(unittest.TestCase):
                  host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})
         self.assertIn('0x10: did not byte-match on the CI hash check (missing)', pr_bot.comment_body(HEAD, d))
         d['verdicts'] = {0x10: 'fail:host1'}
-        self.assertIn('host 1 (CI hash check): missing; host 2 (compiled and compared locally): unbound',
+        self.assertIn('host 1 (CI hash check): missing; host 2 (compiled and compared locally): the compiled object had no symbol',
                       '\n'.join(pr_bot.other_failure_lines(d, set())))
+
+    def test_unbound_host_failure_is_not_called_a_byte_mismatch(self):
+        d = dict(pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'fail'}, {0x10: 'approve'}),
+                 host_why={'16': {'host2': 'unbound'}})
+        body = pr_bot.comment_body(HEAD, d)
+        self.assertIn('no symbol the compare could bind to that RVA', body)
+        self.assertIn('// CI hash: 0x<rva> <symbol>', body)
+        self.assertNotIn('did not byte-match when compiled and compared locally (unbound)', body)
+        d['host_why'] = {'16': {'host2': 'bytes differ'}}
+        self.assertIn('did not byte-match when compiled and compared locally (bytes differ)',
+                      pr_bot.comment_body(HEAD, d))
 
     def test_removed_accepted_functions_are_named_when_nothing_else_blocks(self):
         d = dict(pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'}), removed=[0x2e6a70])
