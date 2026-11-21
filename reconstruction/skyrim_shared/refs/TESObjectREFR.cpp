@@ -14,6 +14,9 @@
 // 0x2f3e00 TESObjectREFR::GetWorldSpace
 // 0x2ebce0 TESObjectREFR::Get3D2
 // 0x2f41e0 TESObjectREFR::GetDistanceBetweenSquared
+// 0x2df5b0 TESObjectREFR::ForwardExtraList
+// 0x2f6280 TESObjectREFR::QueryExtraList
+// ForwardExtraList, QueryExtraList, ExtraDataList::Unk15eb00, ExtraDataList::Unk166af0: GUESS(low)
 #include "TESObjectREFR.h"
 
 #include <limits>
@@ -204,4 +207,16 @@ float TESObjectREFR::GetDistanceBetweenSquared(const TESObjectREFR* a_other, boo
 bool TESObjectREFR::GetAllowPromoteToPersistent() const
 {
     return true;
+}
+
+
+void TESObjectREFR::ForwardExtraList()
+{
+    extraList.Unk15eb00(this);
+}
+
+void* TESObjectREFR::QueryExtraList() const
+{
+    const ExtraDataList* list = &extraList;
+    return list ? list->Unk166af0() : nullptr;
 }

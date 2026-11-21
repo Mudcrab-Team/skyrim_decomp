@@ -10,6 +10,8 @@
 // 0x1564a00 BSImagespaceShader::ShutDown
 // 0x1564960 BSImagespaceShader::Setup
 // 0x1540db0 BSImagespaceShader::DispatchCopySubRegion
+// 0x15411e0 BSImagespaceShader::ResetSubRegionTarget
+// ResetSubRegionTarget: GUESS(low)
 #include "BSImagespaceShader.h"
 
 // RVA 0x150b490, 3 bytes: an empty slot body.
@@ -128,4 +130,10 @@ bool BSImagespaceShader::Setup(ImageSpaceManager*, ImageSpaceEffectParam*)
         }
     }
     return ready;
+}
+
+
+void BSImagespaceShader::ResetSubRegionTarget(CopySubRegionRequest* a_request)
+{
+    a_request->target->Slot09(0);
 }

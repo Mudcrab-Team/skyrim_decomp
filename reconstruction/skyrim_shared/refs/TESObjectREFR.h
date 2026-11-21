@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Names follow CharmedBaryon/CommonLibSSE-NG b93280e832f263dbef44e44cbe2936622a02f91a (MIT) and powerof3/CommonLibSSE 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), and callee names from meh321/AddressLibraryDatabase 0379cb6 (used with the author's permission as reported by the maintainer).
@@ -226,6 +227,9 @@ public:
     // ExtraDataList::GetInventoryChanges: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); the callee at RVA 0x164c20 (id 11717), taking the same argument as TESObjectREFR::GetInventoryChanges.
     InventoryChanges* GetInventoryChanges(FormType a_type) const;
 
+    // Unk15eb00, Unk166af0: GUESS(low); the callees at RVA 0x15eb00 and 0x166af0, declared, not defined here.
+    void Unk15eb00(TESObjectREFR* a_ref);
+    void* Unk166af0() const;
 
     std::uint8_t unk00[0x28];
 };
@@ -444,6 +448,10 @@ public:
 
     // GetEncounterZone: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); RVA 0x300ab0.
     BGSEncounterZone* GetEncounterZone() const;
+
+    // ForwardExtraList, QueryExtraList: GUESS(low); call into extraList (RVA 0x2df5b0, 0x2f6280).
+    void ForwardExtraList();
+    void* QueryExtraList() const;
 
     OBJ_REFR       data;         // 40
     TESObjectCELL* parentCell;   // 60
