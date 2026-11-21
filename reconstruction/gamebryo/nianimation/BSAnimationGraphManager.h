@@ -24,6 +24,11 @@ public:
     BSAnimationGraphManager();
     virtual ~BSAnimationGraphManager();  // compared: 0xbc3c30 (scalar deleting destructor)
 
+    // BSAnimationGraphManager::Functionbc0fb0: GUESS(low); forwards this+0x10 to the tail target
+    void Functionbc0fb0(void* a_arg);
+    // BSAnimationGraphManager::Functionbc0e60: GUESS(low); forwards this+0x10 to the other tail target
+    void Functionbc0e60(void* a_arg1, void* a_arg2);
+
     // TODO members: replace part of the padding with the members the bodies read,
     // keeping every offset and the size check true.
     std::uint8_t unknown08[0xB0];  // 08

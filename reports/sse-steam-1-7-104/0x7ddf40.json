@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "f8f7ecf894b47cf5c4d5c06814a42213569b6e99bd67554675f0e7c71456cf2d",
+        "object_sha256": "8f748e93d4b3138bd1b7f59cba0b0b6334f24a2312bb25e2d47ff5a6a50cddb9",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
@@ -37,7 +37,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "cb349a1456e0edce16e39abab6f140085414d095",
+    "base_sha": "60e5734a0c1c7b43eed6a1086c78d788895a7d7b",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -48,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "f86aeda7972405640363fac14abe66f3098603d9",
+    "head_sha": "21adfff14bfe208b85f790e31b600c98de990739",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -61,10 +61,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44887508616,
+    "run_id": 44944376456,
     "rva": "0x7ddf40",
     "schema": 2,
-    "source_sha256": "9d430bd380ef9e19a138800cb453c99f01703786dba492d8269019f14732e622",
+    "source_sha256": "6f205b7ae2f5b115f676eeefe9c47aa928cf8935a01598f074083c4b18a165a3",
     "status": "pass",
     "symbols": [
       "?GetGravity@ArrowProjectile@@UEAAMXZ"
@@ -99,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "24dec0e83c49c5e90009e4c3011f2b45911cd6d0c8269cf60261fe2e9a05708c",
           "code_sections": 1,
-          "object_sha256": "f8f7ecf894b47cf5c4d5c06814a42213569b6e99bd67554675f0e7c71456cf2d"
+          "object_sha256": "8f748e93d4b3138bd1b7f59cba0b0b6334f24a2312bb25e2d47ff5a6a50cddb9"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -162,7 +162,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
-          "source_revision": "9d430bd380ef9e19a138800cb453c99f01703786dba492d8269019f14732e622"
+          "source_revision": "6f205b7ae2f5b115f676eeefe9c47aa928cf8935a01598f074083c4b18a165a3"
         },
         "symbol_map_sha256": "d4b7a0561d7b21466f8c9e47fd159f8611fc992447138fc5ef8432a9dd2cfb4c",
         "target": {
@@ -175,7 +175,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
-    "digest": "9d430bd380ef9e19a138800cb453c99f01703786dba492d8269019f14732e622",
+    "digest": "6f205b7ae2f5b115f676eeefe9c47aa928cf8935a01598f074083c4b18a165a3",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/refs/ArrowProjectile.cpp",
@@ -183,7 +183,7 @@
       "reconstruction/skyrim_shared/refs/TESObjectREFR.h"
     ]
   },
-  "submitter": "ariizona",
+  "submitter": "eclepso",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/d4b7a0561d7b21466f8c9e47fd159f8611fc992447138fc5ef8432a9dd2cfb4c.json",
     "sha256": "d4b7a0561d7b21466f8c9e47fd159f8611fc992447138fc5ef8432a9dd2cfb4c"

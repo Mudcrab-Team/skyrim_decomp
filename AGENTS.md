@@ -15,6 +15,8 @@ before operating verifier hosts or publication. It preserves the role, gate, sta
 tooling-push and exact-SHA CI requirements. Its lane, queue, review-group and claims sections are
 superseded and pending deletion.
 
+Intake operators: docs/watcher.md.
+
 Read `LEGAL.md`, `PROVENANCE.md` and `docs/clean-room.md` before research or publication.
 [The full acceptance specification](docs/verification.md) remains authoritative; the contributor
 card explains the local-pass boundary. Follow `docs/anti-eu-bureaucracy.md`. This repository is

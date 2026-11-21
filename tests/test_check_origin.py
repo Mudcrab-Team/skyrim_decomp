@@ -56,11 +56,26 @@ class Normalise(unittest.TestCase):
         b = co.normalise('return GetRTTI()->other;')
         self.assertNotEqual(a, b)
 
+    def test_trivial_comparisons(self):
+        for body in ('return a == 3 || a == 7;', 'return type == kSpell || type == kLevSpell;',
+                     'return a_type == FormType::Spell || a_type == FormType::LeveledSpell;',
+                     'return a < 0x10;', 'return !(a >= 2 && b != -1);', 'return flags.mode == kOn;',
+                     'return this->type == kA || type == kB;', 'return a == b;'):
+            self.assertTrue(co.trivial(co.normalise(body, ['a', 'b', 'a_type'])), body)
+        for body in ('return f(a) == 3;', 'return a == g();', 'return a == 3 || h(a);',
+                     'return static_cast<bool>(a) == 1;', 'return a[1] == 3;', 'return a + b == 3;',
+                     'return (a & 4) == 4;', 'return a * 2 > b;', 'return a ? b == 1 : false;',
+                     'return a == 3 ||;', 'return (a == 3;', 'return a == 3 && b == 4 )',
+                     'if (a == 3) return true; return false;', 'while (a < 3) { ++a; } return a == 3;',
+                     'for (;;) { } return a == 3;', 'x = a == 3; return x;',
+                     'return a == 3; return b == 4;'):
+            self.assertFalse(co.trivial(co.normalise(body, ['a', 'b'])), body)
+
     def test_trivial(self):
         for body in ('', 'return nullptr;', 'return false;', 'return 0x10;', 'return this;',
                      'return Kind::kA;', 'return data.objectReference;', 'return a->b;'):
             self.assertTrue(co.trivial(co.normalise(body)), body)
-        for body in ('return data[a_pos];', 'return f();', 'return a == b;', 'x = 1; return x;',
+        for body in ('return data[a_pos];', 'return f();', 'x = 1; return x;',
                      'return static_cast<bool>(a);'):
             self.assertFalse(co.trivial(co.normalise(body, ['a_pos'])), body)
 

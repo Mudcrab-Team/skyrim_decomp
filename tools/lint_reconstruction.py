@@ -407,6 +407,7 @@ SPDX_MIT = ('SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyrig
 # header carries another SPDX line (NG MIT, powerof3 GPL) keep that licence and take no CC0 line.
 SPDX_CC0 = 'SPDX-License-Identifier: CC0-1.0'
 LICENCE_TEXT = 'licenses/CommonLibSSE-NG.txt'
+GPL_LICENCE_LINE = re.compile(r'^//[ \t]*Licen[cs]e:.*GPL', re.M | re.I)
 SPDX_LINE = re.compile(r'^//[ \t]*SPDX-License-Identifier:.*$', re.M)
 # Header lines that carry per-unit information and do not count against the header budget.
 HEADER_LIMIT = 6
@@ -425,6 +426,10 @@ def spdx_problems(name, header):
         problems.append(f'{name}: write the dedication as "// {SPDX_CC0}"')
     if SPDX_CC0 in lines and any(line != SPDX_CC0 for line in lines):
         problems.append(f'{name}: a unit with an MIT or GPL notice keeps that licence; drop "// {SPDX_CC0}"')
+    elif SPDX_CC0 in lines and GPL_LICENCE_LINE.search(header):
+        # A GPL unit may state its licence in a prose line instead of an SPDX line; the dedication
+        # would contradict it and the Reviewer rejects every function of the unit for it.
+        problems.append(f'{name}: the header states GPL; drop "// {SPDX_CC0}"')
     return problems
 
 

@@ -27,7 +27,7 @@
           "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "a95d877567643740fdf4df3ce3f100e9d66ad4277b9f72bfb21e86bb4abda970",
+        "object_sha256": "484070f2023b82bcfba5b0182bff7a9b484eb09775252cf34e58779a93f79481",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nimain/NiAVObject.h",
@@ -40,7 +40,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "d7df6edfc48c57d5dd32f6d21a1965b1ba009082",
+    "base_sha": "521df5ee2e9e1e9d674ddafa702e4bf5bdb74068",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -51,7 +51,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "4df1df921c293b02ae53700b482ffeda810dc6fc",
+    "head_sha": "9ad3e2adf9533b457f6d7591cbcbaa9acb2c1dde",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -64,10 +64,10 @@
     "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44771670259,
+    "run_id": 44931470616,
     "rva": "0xefe1a0",
     "schema": 2,
-    "source_sha256": "811e7e6f3ec3d1a4df7173a99888f49025a73a80cc566362efbd630d9f10d45f",
+    "source_sha256": "9bd61eeef76278982d651d1bed8b2c61a5deccc8f2a30aa2304f5303eeefba3c",
     "status": "pass",
     "symbols": [
       "?CopyMembers@NiPointLight@@QEAAXPEAV1@@Z"
@@ -102,7 +102,7 @@
         "candidate": {
           "code_section_sha256": "3509070fb6b9e806d29f512544feee3e89a563c2a011dbd66102562452350d97",
           "code_sections": 1,
-          "object_sha256": "a95d877567643740fdf4df3ce3f100e9d66ad4277b9f72bfb21e86bb4abda970"
+          "object_sha256": "484070f2023b82bcfba5b0182bff7a9b484eb09775252cf34e58779a93f79481"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -166,7 +166,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/gamebryo/nimain/NiPointLight_efe1a0.cpp",
-          "source_revision": "811e7e6f3ec3d1a4df7173a99888f49025a73a80cc566362efbd630d9f10d45f"
+          "source_revision": "9bd61eeef76278982d651d1bed8b2c61a5deccc8f2a30aa2304f5303eeefba3c"
         },
         "symbol_map_sha256": "e98167133f1a264798e52cc807dbc4a07ecb40eba0b8062cdd147e4b0410ff78",
         "target": {
@@ -179,7 +179,7 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/NiPointLight_efe1a0.cpp",
-    "digest": "811e7e6f3ec3d1a4df7173a99888f49025a73a80cc566362efbd630d9f10d45f",
+    "digest": "9bd61eeef76278982d651d1bed8b2c61a5deccc8f2a30aa2304f5303eeefba3c",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/gamebryo/nimain/NiAVObject.h",
@@ -189,7 +189,7 @@
       "reconstruction/gamebryo/nimain/NiPointLight_efe1a0.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "eclepso",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/e98167133f1a264798e52cc807dbc4a07ecb40eba0b8062cdd147e4b0410ff78.json",
     "sha256": "e98167133f1a264798e52cc807dbc4a07ecb40eba0b8062cdd147e4b0410ff78"

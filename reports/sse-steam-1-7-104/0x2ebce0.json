@@ -65,6 +65,7 @@
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
     "Source state: working tree on base commit 43cad82eab6c31d4fa0b69b0a80ea63ac8dae836, with uncommitted changes to reconstruction/forms/TESObjectREFR.cpp, reconstruction/forms/TESObjectREFR.h, reports/sse-steam-1-7-104/unit-symbols/395cbac090cdf82a71b634296660106a3592d717765bc7c3680ed607156ebc81.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 a9bc14136d2f69195e5062cf3a2652b8caf1b948b2cf9ae57d94502978828b55 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in.",
+    "Carried to new source: the function's own definition is unchanged from the text its runs compared, the function has no published target hash, and the standing host's compare of the new text passes, so the earlier second-host result is kept.",
     "Carried to new source: the function's own definition is unchanged from the text its runs compared, the function has no published target hash, and the standing host's compare of the new text passes, so the earlier second-host result is kept."
   ],
   "recipe": {
@@ -322,7 +323,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/refs/TESObjectREFR.cpp",
-    "digest": "6f858421e9f5c79ed652f6566cd3b726017d42954dfad49051d980efe785e290",
+    "digest": "d3188c53fd5a1f0773f36ed1b8ebbf616dab1159b4e5cbd71c8a9c654487d064",
     "digest_method": "tu-sha256-v2",
     "run_digest": "43786d9d02067878608acde4ee73ae35b791bc8417393706bf16400f8e68700f",
     "run_digest_method": "tu-sha256-v1",
@@ -331,7 +332,7 @@
       "reconstruction/skyrim_shared/refs/TESObjectREFR.h"
     ]
   },
-  "submitter": "ariizona",
+  "submitter": "eclepso",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/395cbac090cdf82a71b634296660106a3592d717765bc7c3680ed607156ebc81.json",
     "sha256": "395cbac090cdf82a71b634296660106a3592d717765bc7c3680ed607156ebc81"
