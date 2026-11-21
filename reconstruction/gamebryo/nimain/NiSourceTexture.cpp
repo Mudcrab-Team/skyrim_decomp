@@ -22,7 +22,7 @@ std::uint64_t NiSourceTexture::Unk_25()
     return 0;
 }
 
-// Unk_26 is the community name; same shape as Unk_25 with the neighbouring helper.
+// Unk_26 is the community name; same shape as Unk_25 but calls the update helper.
 std::uint64_t NiSourceTexture::Unk_26()
 {
     if (rendererTexture != nullptr) {
