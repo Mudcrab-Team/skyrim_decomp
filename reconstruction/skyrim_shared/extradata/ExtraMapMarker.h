@@ -4,6 +4,7 @@
 // ExtraMapMarker: EXE_RTTI
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
+// ExtraMapMarker::Function1811c0: GUESS(low)
 #pragma once
 #include <cstdint>
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
@@ -11,4 +12,8 @@ class ExtraMapMarker
 {
 public:
     virtual std::uint32_t GetType() const;
+    bool Function1811c0(const ExtraMapMarker* a_other);
+
+    std::uint8_t pad08[0x8];  // 08
+    void* member10;  // 10
 };

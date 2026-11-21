@@ -6,9 +6,17 @@
 // member, padding: GUESS(low); storage names invented for the measured member offset
 #pragma once
 #include <cstdint>
+// Function191fe0: GUESS(low); helper tail-called with the two stored pointers
+void Function191fe0(void* a_first, void* a_second);
+
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 class ExtraTeleport
 {
 public:
     virtual std::uint32_t GetType() const;
+    // ExtraTeleport::Function1810d0: GUESS(low); tail-calls a helper with this and the argument's stored pointers
+    void Function1810d0(ExtraTeleport* a_other);
+
+    std::uint8_t pad[0x8];  // 08
+    void* member10;  // 10
 };

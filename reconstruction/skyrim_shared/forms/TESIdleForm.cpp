@@ -1,8 +1,16 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x3b82d0 TESIdleForm::GetFormEditorID
+// Adapted bodies: none
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
 // 0x3b8200 TESIdleForm::~TESIdleForm
 // 0x3b7240 TESIdleForm::InitItemImpl
 #include "TESIdleForm.h"
+
+// kEmptyString: GUESS(low); the empty text returned when the editor id is unset
+extern const char kEmptyString[];
 
 // The constructor is not compared: it is defined so that this unit emits the vftable and with it
 // the deleting destructor.
@@ -55,4 +63,9 @@ void TESIdleForm::InitItemImpl()
 
         FinishInitItem(this, true);
     }
+}
+
+const char* TESIdleForm::GetFormEditorID() const
+{
+    return editorID ? editorID : kEmptyString;
 }
