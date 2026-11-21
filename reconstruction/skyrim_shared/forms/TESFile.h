@@ -1,4 +1,4 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers); declarations written here, no implementation bodies reused.
+// Source exposure: mixed (binary-analysis of the pinned image, community-headers); declarations written here.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: TESFile::OpenTES from fo4-private@1b765c70 (author-permission), declared in TESFile.cpp;
 // tools/check_origin.py reports no other above its threshold (0.75) at CommonLibSSE-NG b93280e,

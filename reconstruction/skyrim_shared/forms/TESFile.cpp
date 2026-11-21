@@ -1,7 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: brown-room reconstruction from disassembly (ReadFormHeader); original otherwise; no sibling code reused
+// Code origin: brown-room reconstruction from disassembly (ReadFormHeader); other bodies as labelled below (OpenTES is adapted from the fo4-private sibling)
 // 0x1cf0f0 TESFile::ReadFormHeader
-// Adapted bodies: none
+// Adapted bodies: TESFile::OpenTES (Sibling source line below)
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image, with the class layout from the header beside this file. SeekNextSubrecord, Duplicate and Seek were finished by claude-opus-5-5 from the Drafter's near-misses.
 // TESFile::OpenTES: SIBLING(fo4-private@1b765c70, author-permission); adapted to target observations.
@@ -103,10 +103,12 @@ bool TESFile::ReadFormHeader()
         if (bigEndian) {
             std::uint32_t* words = reinterpret_cast<std::uint32_t*>(header);
             for (std::uint32_t i = 0; i < 5; ++i) {
+                // Big-endian plugins store these header words swapped.
                 words[i] = _byteswap_ulong(words[i]);
             }
+            // The two version fields are 16-bit and stored swapped the same way.
             header->formVersion = _byteswap_ushort(header->formVersion);
-            header->vcVersion   = _byteswap_ushort(header->vcVersion);
+            header->vcVersion   = _byteswap_ushort(header->vcVersion);  // same 16-bit swap
         }
         if (currentform.form == g_tes4RecordType || currentform.form == g_secondRecordType) {
             return true;
