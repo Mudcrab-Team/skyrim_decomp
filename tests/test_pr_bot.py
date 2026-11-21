@@ -776,7 +776,10 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertEqual(pr_bot.host_category(None), 'missing')
         self.assertEqual(pr_bot.host_category('no-target'), 'unbound')
         self.assertEqual(pr_bot.host_category('symbol-unbound at /Users/x/y'), 'unbound')
+        self.assertEqual(pr_bot.host_category('function-symbol-missing'), 'unbound')
+        self.assertEqual(pr_bot.host_category('unresolved-symbol'), 'unbound')
         self.assertEqual(pr_bot.host_category('mismatch'), 'bytes differ')
+        self.assertEqual(pr_bot.host_category('code-byte-mismatch'), 'bytes differ')
         d = dict(pr_bot.decide([0x10], {0x10: 'fail'}, {0x10: 'fail'}, {0x10: 'approve'}),
                  host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})
         self.assertIn('0x10: did not byte-match on the CI hash check (missing)', pr_bot.comment_body(HEAD, d))

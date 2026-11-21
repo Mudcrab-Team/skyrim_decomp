@@ -536,7 +536,9 @@ def host_category(detail):
     if not detail:
         return 'missing'
     detail = str(detail).lower()
-    if 'no-target' in detail or 'unbound' in detail or 'bind' in detail:
+    # The comparator's binding reasons mean no function was compared, so they must not read as a byte
+    # difference; the contributor's remedy (a `// CI hash:` line for a renamed stand-in) differs.
+    if any(word in detail for word in ('no-target', 'unbound', 'bind', 'symbol-missing', 'unresolved-symbol')):
         return 'unbound'
     return 'bytes differ'
 
