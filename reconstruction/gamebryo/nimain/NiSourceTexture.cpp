@@ -6,7 +6,6 @@
 // 0xef3520 NiSourceTexture::Unk_26
 // Drafted by v-macrev, assisted by claude-opus-5-5.
 #include "NiSourceTexture.h"
-
 // TextureLookupState, g_textureLookupState, LookupRendererTexture, UpdateRendererTexture: STANDIN GUESS(low); names invented
 struct TextureLookupState;
 extern TextureLookupState g_textureLookupState;
@@ -22,7 +21,7 @@ std::uint64_t NiSourceTexture::Unk_25()
     return 0;
 }
 
-// Unk_26 is the community name; same shape as Unk_25 but calls the update helper.
+// Unk_26 is the community name; same shape as Unk_25 with the neighbouring helper.
 std::uint64_t NiSourceTexture::Unk_26()
 {
     if (rendererTexture != nullptr) {
