@@ -22,7 +22,6 @@
 // WorldLookup, worldLookup, WorldLookup::Function1a2200: GUESS(low)
 // ForwardExtraList, QueryExtraList, ExtraDataList::Unk15eb00, ExtraDataList::Unk166af0: GUESS(low)
 // Code origin: brown-room reconstruction from disassembly; the listing and community declarations only
-// SPDX-License-Identifier: CC0-1.0
 // Adapted bodies: none
 #include "TESObjectREFR.h"
 
