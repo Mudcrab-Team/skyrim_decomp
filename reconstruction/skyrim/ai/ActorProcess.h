@@ -20,6 +20,27 @@
 
 #include <cstdint>
 
+struct ObjectRefHandle
+{
+    ObjectRefHandle& operator=(const ObjectRefHandle& a_rhs)
+    {
+        native_handle = a_rhs.native_handle;
+        return *this;
+    }
+
+    bool operator==(const ObjectRefHandle& a_rhs) const
+    {
+        return native_handle == a_rhs.native_handle;
+    }
+
+    std::uint32_t native_handle;  // 0
+};
+static_assert(sizeof(ObjectRefHandle) == 0x4, "ObjectRefHandle size");
+
+extern const ObjectRefHandle kNullHandle;
+extern float defaultBreathTimer;
+extern float defaultDetectionModifierTimer;
+
 class BSFaceGenAnimationData;
 class BSFaceGenNiNode;
 class NiAVObject;
@@ -79,9 +100,28 @@ public:
     void Function728540();
     void Function728560();
     bool Function728580() const;
+    float Function6f5220() const;
+    void Function6f64b0(std::uint16_t a_action, std::uint64_t a_value);
+    ObjectRefHandle& Function6f6de0(ObjectRefHandle& a_handle) const;
+    void Function6f6e10(const ObjectRefHandle& a_handle, bool a_activated);
+    void Function6f6f30(float a_value);
+    bool Function6fe020() const;
+    float Function6fe5d0() const;
+    ObjectRefHandle& Function6ff4b0(ObjectRefHandle& a_handle) const;
+    void Function6ff500(const ObjectRefHandle& a_handle);
+    std::int32_t Function6ffe80(std::int32_t a_index) const;
+    void Function6ffef0();
+    bool Function720f60() const;
+    bool Function7216e0() const;
+    bool HasRunOncePackage() const;
+    ObjectRefHandle& Function726eb0(ObjectRefHandle& a_handle) const;
+    float Function7270a0() const;
+    ObjectRefHandle& Function727eb0(ObjectRefHandle& a_handle) const;
 
     struct ProcessData;
-    ProcessData* middleHigh;
-    std::uint8_t padding[0xe0];
+    struct HighProcessData;
+    ProcessData* middleHigh;  // 08
+    HighProcessData* high;  // 10
+    std::uint8_t padding[0xd8];  // 18
     void* member;
 };

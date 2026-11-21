@@ -115,6 +115,8 @@ WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
+PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
 RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
@@ -294,7 +296,10 @@ def decide(functions, host1, host2, review, leak_hits=(), leak='no', companions=
                     leak_evidence=sorted(set(leak_evidence)), merge=False, verdicts={r: 'blocked' for r in functions})
     # A header change can break a matched function outside this PR's own list; the hash run names it too.
     if 'regressed' in list(host1.values()) + list(host2.values()):
-        return dict(blocked='regression', merge=False, verdicts={r: 'blocked' for r in functions})
+        regressed = sorted({r for h in (host1, host2) for r, v in h.items() if v == 'regressed'})
+        return dict(blocked='regression', merge=False, verdicts={r: 'blocked' for r in functions},
+                    regressed=regressed, regressed_hosts={r: [n for n, h in (('host1', host1), ('host2', host2))
+                                                              if h.get(r) == 'regressed'] for r in regressed})
     verdicts = {}
     for rva in functions:
         h1, h2, rv = host1.get(rva), host2.get(rva), review.get(rva)
@@ -526,8 +531,56 @@ def review_grounds(text, functions):
 # Host 1 cannot judge a function with no published target hash; for a unit that changed from base only in
 # comments the Mac compare of the new text stands in for it (docs/verification.md, comment-only changes).
 CARRY_REASON = 'host1: carried (comment-only, no-target at base)'
+CARRY_REASON_TEXT = 'host1: carried (own function text unchanged, no-target at base)'
 CARRY_NOTE = ('Carried to new source: the unit differs from the text its runs compared only in comments, and the '
               'function has no published target hash, so the runs are unchanged.')
+CARRY_NOTE_TEXT = ('Carried to new source: the function\'s own definition is unchanged from the text its runs '
+                   'compared, the function has no published target hash, and the standing host\'s compare of the '
+                   'new text passes, so the earlier second-host result is kept.')
+
+
+def function_text(blobs, name):
+    """The comment-free definitions of `name` (a qualified function name) across the unit's files, or None.
+
+    Only a definition counts: a declaration ends in `;` before any body. Text is whitespace-normalised
+    so reflowing a body is not a change. None when no definition is found or a file cannot be scanned,
+    which leaves the carry refused rather than guessed.
+    """
+    from digest_v2 import strip_comments
+    found = []
+    pattern = re.compile(r'(?<![A-Za-z0-9_:~])' + r'\s*::\s*'.join(map(re.escape, name.split('::'))) + r'\s*\(')
+    for fname, blob in blobs:
+        try:
+            text = strip_comments(blob, fname, False)
+        except ValueError:
+            return None
+        for m in pattern.finditer(text):
+            depth, i = 1, m.end()
+            while i < len(text) and depth:
+                depth += (text[i] == '(') - (text[i] == ')')
+                i += 1
+            while i < len(text) and text[i] not in '{;':
+                i += 1
+            if i >= len(text) or text[i] == ';':
+                continue
+            start = max(text.rfind(c, 0, m.start()) for c in ';{}') + 1
+            depth, quote = 0, None
+            for j in range(i, len(text)):
+                c = text[j]
+                if quote:
+                    if c == '\\':
+                        continue
+                    quote = None if c == quote and text[j - 1] != '\\' else quote
+                elif c in '"\'':
+                    quote = c
+                elif c in '{}':
+                    depth += 1 if c == '{' else -1
+                    if not depth:
+                        found.append(' '.join(text[start:j + 1].split()))
+                        break
+            else:
+                return None
+    return '\n'.join(found) if found else None
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -536,7 +589,9 @@ def host_category(detail):
     if not detail:
         return 'missing'
     detail = str(detail).lower()
-    if 'no-target' in detail or 'unbound' in detail or 'bind' in detail:
+    # The comparator's binding reasons mean no function was compared, so they must not read as a byte
+    # difference; the contributor's remedy (a `// CI hash:` line for a renamed stand-in) differs.
+    if any(word in detail for word in ('no-target', 'unbound', 'bind', 'symbol-missing', 'unresolved-symbol')):
         return 'unbound'
     return 'bytes differ'
 
@@ -561,6 +616,20 @@ def other_failure_lines(decision, shown):
         row = why.get(r) or why.get(str(r)) or {}
         hosts = [f'{HOST_NAMES[h]}: {row[h]}' for h in ('host1', 'host2') if h in row]
         lines.append(f'- 0x{r:x}: ' + ('; '.join(hosts) if hosts else reason_text(decision, r, v.split(':', 1)[1])))
+    return lines
+
+
+def precheck_finding_lines(decision):
+    """The mechanical findings behind every `fail:precheck` function, so a comment that says "see the findings"
+    shows them; [] when there are none."""
+    found = list(dict.fromkeys(l for r, v in sorted(decision['verdicts'].items()) if v == 'fail:precheck'
+                               for l in (decision.get('pre') or {}).get(r, [])))
+    if not found:
+        return []
+    lines = ['Findings from the mechanical checks (no review was spent on these):']
+    lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
+    if len(found) > PRECHECK_SHOWN:
+        lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
     return lines
 
 
@@ -671,8 +740,14 @@ def outcome_body(sha, decision, leak_codes=()):
                 f'check flagged it (rule codes: {codes}). Please remove what those rules describe and '
                 f'push again; nothing in the PR was merged.')
     if decision['blocked'] == 'regression':
-        return (f'This change makes an already matched function stop matching, so it was not '
-                f'merged. Please keep the shared code compatible or touch only your own unit.')
+        lines = ['This change makes an already matched function stop matching, so it was not merged:']
+        hosts = decision.get('regressed_hosts') or {}
+        for r in decision.get('regressed') or []:
+            on = ' and '.join(hosts.get(r) or ()) or 'a host'
+            lines.append(f'- 0x{int(r):x}: matched before this PR, differs now on {on}')
+        lines.append('Please keep the shared code (headers, layouts, inline helpers) compatible with those '
+                     'functions or touch only your own unit, and push again; the bot re-checks the new head.')
+        return '\n'.join(lines)
     if decision['blocked'] == 'stale':
         verdicts = decision['verdicts']
         lines = ['This PR changes a unit whose already accepted functions would go stale: their recorded '
@@ -686,6 +761,7 @@ def outcome_body(sha, decision, leak_codes=()):
         more = other_failure_lines(decision, listed)
         if more:
             lines += ['Also failing in this PR:'] + more
+        lines += precheck_finding_lines(decision)
         lines.append('Please keep those functions compiling to the same code on both hosts, or leave the unit '
                      'alone, and push again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -702,6 +778,7 @@ def outcome_body(sha, decision, leak_codes=()):
         more = other_failure_lines(decision, listed)
         if more:
             lines += ['Also failing in this PR:'] + more
+        lines += precheck_finding_lines(decision)
         lines.append('Please keep those functions compiling to the same code, or leave their unit alone, and push '
                      'again; the bot re-checks the new head.')
         return '\n'.join(lines)
@@ -720,13 +797,7 @@ def outcome_body(sha, decision, leak_codes=()):
             lines.append(f'- 0x{r:x}: {reason_text(decision, r, c)}')
             if c == 'review':
                 lines += [f'  - {n}' for n in notes.get(r, [])]
-        found = list(dict.fromkeys(l for r, c in sorted(failed.items()) if c == 'precheck'
-                                   for l in (decision.get('pre') or {}).get(r, [])))
-        if found:
-            lines.append('Findings from the mechanical checks (no review was spent on these):')
-            lines += [f'- {l}' for l in found[:PRECHECK_SHOWN]]
-            if len(found) > PRECHECK_SHOWN:
-                lines.append(f'- and {len(found) - PRECHECK_SHOWN} more; run `python3 tools/prereview.py` locally')
+        lines += precheck_finding_lines(decision)
     return '\n'.join(lines) or 'Nothing to report.'
 
 
@@ -1198,7 +1269,7 @@ class Bot:
         out = {}
         for rva in functions:
             reports = sorted(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{rva:x}/report.json'))
-            carried = str(rva) in carried_map
+            carried = carried_map.get(str(rva)) or False
             out[rva] = dict(report=reports[-1] if reports else None, host1=host1.get(rva), host2=host2.get(rva),
                             row=None if carried else (ci.get('rows') or {}).get(str(rva)), run=ci.get('run'),
                             carried=carried)
@@ -1214,11 +1285,13 @@ class Bot:
         recipe = re.search(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', text)
         recipe = recipe.group(0) if recipe else 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe_sha = hashlib.sha256((tree / recipe).read_bytes()).hexdigest() if (tree / recipe).is_file() else None
-        # The CI job compiles an RVA requested by a `// CI hash:` line with its default recipe, whatever
-        # recipe the unit names, so the second host's hash is compared with the recipe that job selects.
+        # The CI job compiles a function that already has an accepted record with that record's recipe, an RVA
+        # requested by a `// CI hash:` line with its default recipe, and anything else with the recipe the unit
+        # names, so the second host's hash is compared with the recipe that job selects.
         import ci_target_hash_check as ci_job
         requested = {int(r, 16) for r, _ in ci_job.REQUEST.findall(text[:8192])}
-        ci_file = tree / ci_job.DEFAULT_RECIPE if rva in requested else tree / recipe
+        recorded = self.accepted_recipe(rva, cpp)
+        ci_file = tree / (recorded or (ci_job.DEFAULT_RECIPE if rva in requested else recipe))
         ci_recipe_sha = hashlib.sha256(ci_file.read_bytes()).hexdigest() if ci_file.is_file() else None
         report = None
         if evidence.get('report'):
@@ -1229,6 +1302,22 @@ class Bot:
         facts = prereview.binding_facts(report, evidence.get('row'), digest, cpp, recipe_sha, ci_recipe_sha,
                                         check.pinned_compiler_sha256(tree), target.get('image_sha256'))
         return facts, report
+
+    def accepted_recipe(self, rva, cpp):
+        """The recipe path of the accepted record the CI hash job binds `rva` to, read as its `bindings` does, or None."""
+        tree = self.tree
+        for fn in json.loads((tree / 'data/progress.json').read_text())['functions']:
+            if fn['rva'] != rva or not fn.get('report'):
+                continue
+            try:
+                record = json.loads((tree / fn['report']).read_text())
+                report = record['runs'][0]['report']
+            except (OSError, ValueError, KeyError, IndexError, TypeError):
+                return None
+            if record.get('source', {}).get('compiled') != cpp or report.get('contract_version') != 2:
+                return None
+            return (record.get('recipe') or {}).get('path')
+        return None
 
     def binding_lines(self, rva, cpp, digest, evidence):
         """Agreement of one function's comparator report and CI row with the files and pins, as computed here."""
@@ -1244,7 +1333,7 @@ class Bot:
                          '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in first.items()))
         row, run = evidence.get('row'), evidence.get('run')
         if evidence.get('carried'):
-            lines.append(f'  second host (CI hash job): {CARRY_REASON}; the function has no published target hash, '
+            lines.append(f'  second host (CI hash job): {evidence["carried"]}; the function has no published target hash, '
                          'so the first host\'s compare of the new text is the only byte check of it')
         elif row:
             word = {True: 'agrees', False: 'DIFFERS'}
@@ -1255,7 +1344,7 @@ class Bot:
             lines.append(f'  second-host run (CI hash job, which compares the published target hashes): {evidence.get("host1")}')
         return lines
 
-    def review_context(self, units, functions, evidence=None, changed=None):
+    def review_context(self, units, functions, evidence=None, changed=None, old_flags=()):
         """What the Reviewer needs beyond the diff: the inputs the old review brief and packet gave it.
 
         Both hosts' results are in before the review starts, because checklist item 3 asks whether
@@ -1304,7 +1393,7 @@ class Bot:
         out += ['', '## Mechanical readiness lint (tools/lint_review_readiness.py on the unit files)',
                 lint.stdout.decode(errors='replace').strip() or 'clean',
                 '', '## Body origin (tools/check_origin.py)',
-                *self.body_origin([f for f in sorted(files) if changed is None or f in changed]),
+                *self.body_origin([f for f in sorted(files) if changed is None or f in changed], old_flags),
                 '', '## Private reading', f'Function packs: {", ".join(packs) or "none found"}.',
                 'For the provenance comparison read .local/analysis/fnv_index.jsonl and the pinned FNV source '
                 'files it identifies. ' + EXPOSURE,
@@ -1318,8 +1407,12 @@ class Bot:
                 'adaptation; "unverified" alone is not a ground to reject.']
         return '\n'.join(out)
 
-    def body_origin(self, files):
-        """Lines for the runbook's provenance item, which starts from the list of bodies like a community one."""
+    def body_origin(self, files, old_flags=()):
+        """Lines for the runbook's provenance item, which starts from the list of bodies like a community one.
+
+        A finding the unit already had at the PR's base (`old_flags`, as the precheck reads them) is project
+        debt: it is counted and left out, so the Reviewer is not handed it as a ground against the PR.
+        """
         files = [f for f in files if f.startswith(SCOPE_PREFIX) and f.endswith(('.h', '.cpp'))]
         if not files:
             return ['no changed unit files to compare']
@@ -1334,13 +1427,18 @@ class Bot:
                 hits.append(json.loads(line))
             elif line.startswith('check_origin: threshold') and ' compared with ' in line:
                 pins = line.split(' compared with ', 1)[1]
+        total = len(hits)
+        hits = [h for h in hits if not old_flags or origin_key(h) not in old_flags]
+        skipped = (f'; {total - len(hits)} finding(s) identical to ones the unit already had on main are left out '
+                   f'(earlier provenance, not introduced by this PR)') if total != len(hits) else ''
         if not hits:
-            return [f'no same-named community/sibling body found (clone revisions: {pins})']
-        return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins})']
+            return [f'no same-named community/sibling body found (clone revisions: {pins}){skipped}']
+        return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins}){skipped}']
 
     def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=()):
         diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction'], cwd=self.root).stdout.decode(errors='replace')
-        context = self.review_context(units, set(functions), evidence, changed) if units else ''
+        old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
+        context = self.review_context(units, set(functions), evidence, changed, old_flags) if units else ''
         prompt = (PREAMBLE + '\n' + runbook_checklist(self.tree) + f'\n\nFunctions under review: '
                   f'{", ".join(f"0x{r:x}" for r in sorted(functions))}\n'
                   f'{self.companion_note(companions)}'
@@ -1465,12 +1563,13 @@ class Bot:
     def carry_host1(self, base, files, functions, units, host1, host2, state):
         """{str(rva): reason} for functions whose host 1 is carried from the Mac compare of the new text.
 
-        The narrow exception to the two-host rule for comment-only changes. Host 1 counts as a pass only if
+        The narrow exception to the two-host rule. Host 1 counts as a pass only if
         (a) the function was `no-target` at the PR's base too: the hash job's own compile of the base tree
         gave `no-target` for it, or the job made no row for it and no published target existed at base or
-        exists now; (b) every file of its unit that the PR changes equals its base version once all comments
-        are removed, so the code is unchanged; (c) host 2 passes on the new text. A function with no accepted
-        record has nothing to carry and never qualifies.
+        exists now; (b) either every file of its unit that the PR changes equals its base version once all
+        comments are removed, or the function's own definition is the same at base and head; (c) host 2
+        passes on the new text. A function with no accepted record has nothing to carry and never qualifies.
+        The reason names which of the two held, so the summary and state show it.
         """
         from source_digest import include_closure
         from digest_v2 import same_code
@@ -1486,6 +1585,7 @@ class Bot:
         published = None
         inventory = json.loads((self.tree / 'data/progress.json').read_text())
         accepted = {fn['rva'] for fn in inventory['functions'] if fn['status'] == 'matched' and fn.get('report')}
+        names = {fn['rva']: fn.get('name') for fn in inventory['functions']}
         changed = {f['filename'] for f in files}
         unit_of = {r: u for u, rs in units.items() for r in rs}
         out = {}
@@ -1497,24 +1597,35 @@ class Bot:
                 published = self.targets_at(base) | self.targets_at() if published is None else published
                 if rva in published:
                     continue
-            same = True
-            for name in sorted(set(include_closure(self.tree, unit)) & changed):
+            closure = sorted(include_closure(self.tree, unit))
+            same, olds = True, {}
+            for name in sorted(set(closure) & changed):
                 old = self.run(['git', 'show', f'{base}:{name}'], check=False)
+                olds[name] = old.stdout if old.returncode == 0 else None
                 same = same and old.returncode == 0 and same_code(old.stdout, (self.tree / name).read_bytes(), name)
-            if same:
-                out[str(rva)] = CARRY_REASON
-                print(f'{stamp()} 0x{rva:x}: {CARRY_REASON}', file=sys.stderr, flush=True)
+            reason = CARRY_REASON if same else None
+            if not same and names.get(rva):
+                # A file the PR changes has its base text from git (none if the PR adds it); the rest read the same.
+                before = function_text([(n, olds[n] if n in changed else (self.tree / n).read_bytes())
+                                        for n in closure if n not in changed or olds.get(n) is not None], names[rva])
+                after = function_text([(n, (self.tree / n).read_bytes()) for n in closure], names[rva])
+                if before is not None and before == after:
+                    reason = CARRY_REASON_TEXT
+            if reason:
+                out[str(rva)] = reason
+                print(f'{stamp()} 0x{rva:x}: {reason}', file=sys.stderr, flush=True)
         return out
 
-    def carried_records(self, tag, rvas, build_id):
+    def carried_records(self, tag, rvas, build_id, reasons=None):
         """Records for carried functions, from the accepted record of each; {rva} that could not be carried."""
-        out, failed = self.work / 'records' / tag, set()
+        out, failed, reasons = self.work / 'records' / tag, set(), reasons or {}
         for rva in sorted(rvas):
             made = out / build_id / f'0x{rva:x}.json'
             made.unlink(missing_ok=True)
             call = ("import sys\nsys.path.insert(0, sys.argv[1] + '/tools')\nimport record\n"
                     "record.build_carried_record(sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])\n")
-            done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, CARRY_NOTE], cwd=self.tree,
+            note = CARRY_NOTE_TEXT if reasons.get(str(rva)) == CARRY_REASON_TEXT else CARRY_NOTE
+            done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, note], cwd=self.tree,
                             check=False, timeout=self.config['compare_timeout'])
             if done.returncode or not made.is_file():
                 failed.add(rva)
@@ -1730,6 +1841,37 @@ class Bot:
         # Deleting the head branch ends the probe PR; the bot has no code path that closes a PR itself.
         self.run(['gh', 'api', '-X', 'DELETE', f'repos/{REPOSITORY}/git/refs/heads/probe/pr-{number}'], check=False)
 
+    def sweep_probes(self):
+        """Close the bot's own probe PRs that have done their job, deleting their branches; returns the numbers.
+
+        A probe exists only to get a hash run onto a commit. It is finished once that run has completed,
+        the bot has the CI result, or the target PR is closed or has moved to another head. Only a PR by
+        the owner, with the exact title and the matching `probe/pr-N` branch, is ever touched.
+        """
+        listed = self.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--limit', '200', '--json',
+                              'number,title,headRefName,headRefOid,author')
+        directory = self.work / ('dry' if self.dry_run else 'state')
+        closed = []
+        for probe in listed:
+            named = PROBE_TITLE.fullmatch(probe['title'])
+            if (not named or probe['author']['login'].casefold() != OWNER.casefold()
+                    or probe['headRefName'] != f'probe/pr-{named.group(1)}'):
+                continue
+            number = int(named.group(1))
+            target = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
+            head = probe['headRefOid']
+            state = State(directory, number, target['headRefOid'])
+            if target['state'] == 'OPEN' and target['headRefOid'] == head and not (
+                    state.get('done') or state.get('ci') or self.hash_run_completed(head)):
+                continue
+            self.run(['gh', 'pr', 'close', str(probe['number']), '-R', REPOSITORY, '--delete-branch'], check=False)
+            closed.append(probe['number'])
+        return closed
+
+    def hash_run_completed(self, head):
+        run = self.latest_hash_run(head)
+        return bool(run) and run['status'] == 'completed'
+
     def approve_pending(self, head):
         """A fork's first workflow run waits for approval; the workflows hold no secrets."""
         runs = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs?head_sha={head}&status=action_required')
@@ -1805,7 +1947,8 @@ class Bot:
         # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
         if carried:
             target = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
-            _, unmade = self.carried_records(tag, carried, target)
+            reasons = {**(state.get('carried') or {}), **(state.get('carried-c') or {})}
+            _, unmade = self.carried_records(tag, carried, target, reasons)
             built |= carried - unmade
             failed |= unmade
         failed |= set(rvas) - built - failed
@@ -2753,6 +2896,15 @@ def pollable(prs):
 POOL_SIZE = 2
 
 
+def outside_first(prs):
+    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+
+    The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
+    long-running ones.
+    """
+    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+
+
 def outcome(result, pr):
     """The log line for a finished PR: the summary, else the decision's keys.
 
@@ -2861,6 +3013,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     refilled = None
     retried = None
     swept = None
+    probes = None
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -2897,6 +3050,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                         print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
                     print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if not bot.dry_run and not inflight and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
+                probes = time.time()
+                try:
+                    for number in bot.for_slot(0).sweep_probes():
+                        print(f'{stamp()} probe #{number}: done, closed', flush=True)
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+                    print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
@@ -2907,7 +3067,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                       flush=True)
                 continue
             now = time.time()
-            for pr in pollable(prs):
+            for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
                 if pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now:

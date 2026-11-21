@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?RegisterStreamables@NiParticles@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 15749664,
+      "size": 53
+    },
+    "?AsParticlesGeom@NiParticles@@UEAAPEAV1@XZ": {
+      "rva": 15750560,
+      "size": 4
+    },
+    "?RegisterStreamables@BSGeometry@@UEAA_NAEAVNiStream@@@Z": {
+      "rva": 15713152,
+      "size": null
+    },
+    "?AdjustParticleTotal@NiParticles@@SAXH@Z": {
+      "rva": 15750704,
+      "size": 24
+    },
+    "??0NiParticles@@QEAA@XZ": {
+      "rva": 15750944,
+      "size": 80
+    },
+    "?particleTotal@NiParticles@@2JC": {
+      "rva": 53598296,
+      "size": null
+    },
+    "??0BSGeometry@@QEAA@XZ": {
+      "rva": 15713456,
+      "size": null
+    },
+    "??_7NiParticles@@6B@": {
+      "rva": 27571072,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?RegisterStreamables@NiParticles@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xf05220",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AsParticlesGeom@NiParticles@@UEAAPEAV1@XZ",
+        "rva": "0xf055a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?RegisterStreamables@BSGeometry@@UEAA_NAEAVNiStream@@@Z",
+        "rva": "0xefc380",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AdjustParticleTotal@NiParticles@@SAXH@Z",
+        "rva": "0xf05630",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0NiParticles@@QEAA@XZ",
+        "rva": "0xf05720",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?particleTotal@NiParticles@@2JC",
+        "rva": "0x331d858",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0BSGeometry@@QEAA@XZ",
+        "rva": "0xefc4b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7NiParticles@@6B@",
+        "rva": "0x1a4b380",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,6 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Code origin: original; the listing and community declarations only
+// Code origin: original reconstruction from the pinned image with community declarations.
 // Adapted bodies: none.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0xfcf830 BSMultiBoundOBB::GetType
@@ -8,12 +8,20 @@
 // 0x213af0 BSMultiBoundOBB::~BSMultiBoundOBB
 // 0xfcf630 BSMultiBoundOBB::LoadBinary
 // 0xfcf680 BSMultiBoundOBB::RegisterStreamables
+// 0xfcf5e0 BSMultiBoundOBB::CopyMembers
+// 0xfcf800 BSMultiBoundOBB::Ctor
 #include "BSMultiBoundOBB.h"
 
-// Not compared: defined so that the compiler emits the vftable and, beside it, the
-// deleting destructor that is compared (cookbook rule 14).
+void BSMultiBoundOBB::CopyMembers(BSMultiBoundOBB* destination) const
+{
+    BSMultiBoundAABB::CopyMembers(destination);
+    destination->unknown40 = unknown40;
+    destination->unknown64 = unknown64;
+}
+
 BSMultiBoundOBB::BSMultiBoundOBB()
 {
+    unknown64 = true;
 }
 
 // Compared function: RVA 0xfcf830, 6 bytes, BSMultiBoundOBB::GetType.

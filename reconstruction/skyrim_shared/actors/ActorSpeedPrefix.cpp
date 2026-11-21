@@ -3,7 +3,6 @@
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // Origin: original reconstruction; adapted declarations retain their cited source notices.
 // Source exposure: mixed; target packs and pinned community headers as recorded in declaration-evidence.json.
-// Drafted by gpt-6.1-terra. Original bodies; declarations adapted from CommonLibSSE-NG, MIT.
 // 0x6a7ce0 P2071::ActorSpeedPrefix::UpdateFastWalkCache
 // 0x6a7d30 P2071::ActorSpeedPrefix::UpdateJogCache
 // 0x6a7d80 P2071::ActorSpeedPrefix::UpdateRunCache

@@ -4,6 +4,8 @@ How a pull request opened with `tools/contrib.py submit` becomes an accepted fun
 changes the acceptance rule in `docs/verification.md`; an external pull request enters it at the
 same point as a Drafter's worktree branch.
 
+Intake operators: [docs/watcher.md](watcher.md).
+
 ## Flow
 
 1. **CI** (`.github/workflows/contrib-intake.yml`, GitHub-hosted, no secrets, no game data) runs the

@@ -87,10 +87,16 @@ different, `setup` says so.
   provider's terms; your agent asks you once. The project grants no rights in the game and uploads
   nothing.
 - Community headers (CommonLibSSE-NG, powerof3's CommonLibSSE, meh321's Address Library names) and
-  the FNV decompilation (`momusdigital/fnv_decomp@91e1b6e8`, which `setup` clones) may be used, with
-  their labels: `SIBLING(...)` for what you take from FNV and a `Sibling source:` header line for a
-  reused body. FNV is another, older and 32-bit game: read it for shape and names, never as evidence
-  about Skyrim's offsets or layouts.
+  the FNV and Fallout 3 decompilations (`momusdigital/fnv_decomp@91e1b6e8`, `momusdigital/f3_decomp@f5bac1b5`, which `setup` clones) may be used, with
+  their labels: `SIBLING(...)` for what you take from them and a `Sibling source:` header line for a
+  reused body. Both are other, older 32-bit games (FNV, and Fallout 3 built with VC++ 2005 SP1): read
+  them for shape and names, never as evidence about Skyrim's offsets or layouts. For engine-shared
+  classes (Gamebryo/NetImmerse, TES forms, AI, scripting) read FO3 and FNV first for names, layouts,
+  vtable order and body shape, whichever has the class.
+- The repository also carries names generated from the community CrashLogger PDBs
+  (`reconstruction/generated/crashlogger_pdb/`, label `CRASHLOGGER_PDB(59818@2026.10.24)`) and candidate
+  names from sibling symbol files (`data/symbol-names.json`, label `SYMBOLS(tesv-2013-map|fo4-pdb|fnv-x360-pdb)`,
+  `findings/sibling-symbol-files.md`); both are name sources, never evidence of identity.
 - State who drafted the unit and which AI model helped (`--drafted-by`). You stay responsible for
   what your agent submits.
 

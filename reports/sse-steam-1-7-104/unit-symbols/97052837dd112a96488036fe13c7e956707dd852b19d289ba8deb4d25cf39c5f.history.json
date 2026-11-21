@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/97052837dd112a96488036fe13c7e956707dd852b19d289ba8deb4d25cf39c5f.json",
+  "versions": [
+    {
+      "sha256": "97052837dd112a96488036fe13c7e956707dd852b19d289ba8deb4d25cf39c5f",
+      "base": null,
+      "added": [
+        "__real@3c23d70a",
+        "__real@7f7fffff",
+        "?GetTeleportData@ExtraDataList@@QEBAPEAUDoorTeleportData@@XZ",
+        "?GetExtraLocation@ExtraDataList@@QEBAPEAVBGSLocation@@XZ",
+        "?IsTemporaryFormID@TESDataHandler@@QEAA_NI@Z",
+        "?GetFormName@TESForm@@QEBAPEBDXZ",
+        "?GetInventoryChanges@TESObjectREFR@@QEBAPEAVInventoryChanges@@W4FormType@@@Z",
+        "?HasQuestItem@InventoryChanges@@QEAA_NXZ",
+        "?GetLevel@BGSEncounterZone@@QEBAGXZ",
+        "?GetLocation@TESObjectCELL@@QEBAPEAVBGSLocation@@XZ",
+        "?SameWorldspace@TESObjectREFR@@QEBA_NPEBV1@_N@Z",
+        "?HasQuestObject@TESObjectREFR@@QEBA_NXZ",
+        "?GetScale@TESObjectREFR@@QEBAMXZ",
+        "?CanBeMoved@TESObjectREFR@@QEAA_NXZ",
+        "?GetContainer@TESObjectREFR@@QEBAPEAVTESContainer@@XZ",
+        "?GetTransform@TESObjectREFR@@QEBAXAEAUNiTransform@@@Z",
+        "?GetReferenceName@TESObjectREFR@@QEBAPEBDXZ",
+        "?GetCurrentLocation@TESObjectREFR@@QEBAPEAVBGSLocation@@XZ",
+        "?GetWorldSpace@TESObjectREFR@@QEBAPEAVTESWorldSpace@@XZ",
+        "?GetDistanceBetweenSquared@TESObjectREFR@@QEBAMPEBV1@_N1@Z",
+        "?GetEncounterZone@TESObjectREFR@@QEBAPEAVBGSEncounterZone@@XZ",
+        "?GetCalcLevel@TESObjectREFR@@QEBAG_N@Z",
+        "?GetTeleportData@TESObjectREFR@@QEBAPEAUDoorTeleportData@@XZ",
+        "?GetLocationFromPosition@TESWorldSpace@@QEBAPEAVBGSLocation@@AEBUNiPoint3@@@Z",
+        "?GetScale@TESNPC@@QEAAMXZ",
+        "?GetLevel@PlayerCharacter@@QEAAGXZ",
+        "?SetEulerAngles@NiMatrix3@@QEAAXMMM@Z",
+        "?iCalcLevelAdjustDown@@3GA",
+        "?iCalcLevelAdjustUp@@3HA",
+        "?singleton@TESDataHandler@@2PEAV1@EA",
+        "?gDefaultEncounterZone@@3PEAVBGSEncounterZone@@EA",
+        "?gCalcLevelCounter@@3GA",
+        "?singleton@PlayerCharacter@@2PEAV1@EA",
+        "?Get3D2@TESObjectREFR@@UEBAPEAVNiAVObject@@XZ",
+        "?GetAllowPromoteToPersistent@TESObjectREFR@@QEBA_NXZ",
+        "?tlsOverrideRef@@3PEBVTESObjectREFR@@EB",
+        "?tlsOverrideNode@@3PEAVNiAVObject@@EA",
+        "?ForwardExtraList@TESObjectREFR@@QEAAXXZ",
+        "?QueryExtraList@TESObjectREFR@@QEBAPEAXXZ",
+        "?Unk15eb00@ExtraDataList@@QEAAXPEAVTESObjectREFR@@@Z",
+        "?Unk166af0@ExtraDataList@@QEBAPEAXXZ"
+      ]
+    }
+  ]
+}

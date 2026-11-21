@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Functionf78350@NiBSplineColorInterpolator@@QEBAIG@Z": {
+      "rva": 16221008,
+      "size": 18
+    },
+    "?Functionf78370@NiBSplineColorInterpolator@@QEBAIG@Z": {
+      "rva": 16221040,
+      "size": 18
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Functionf78350@NiBSplineColorInterpolator@@QEBAIG@Z",
+        "rva": "0xf78350",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionf78370@NiBSplineColorInterpolator@@QEBAIG@Z",
+        "rva": "0xf78370",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

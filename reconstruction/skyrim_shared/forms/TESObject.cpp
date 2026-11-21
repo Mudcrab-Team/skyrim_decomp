@@ -1,8 +1,15 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Adapted bodies: none
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
 // 0x275ee0 TESObject::IsOcclusionMarker
+// 0x275b20 TESObject::~TESObject
+// Adapted bodies: none
 #include "TESObject.h"
+
+TESObject::~TESObject()
+{
+}
 
 std::uint32_t TESObject::DecRef()
 {

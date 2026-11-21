@@ -1,7 +1,7 @@
 // Source exposure: mixed (community name; the pinned image listing).
 // Code origin: original; the listing of the pinned image and the community name only
 // SPDX-License-Identifier: CC0-1.0
-// 0x37bff0 ConsoleFunc::FunctionToggleVolumetricLighting: GUESS(low)
+// 0x37bff0 ConsoleFunc::FunctionToggleVolumetricLighting: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // Adapted bodies: none
 #include "ConsoleFunc.h"
 

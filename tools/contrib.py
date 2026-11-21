@@ -92,6 +92,11 @@ COMMUNITY_SOURCES = {
 # for a reused body, never evidence about the Skyrim binary. Optional: setup skips it with
 # --no-sibling, and nothing else depends on it.
 SIBLING_SOURCE = ('momusdigital/fnv_decomp', '.local/sources/fnv_decomp', '91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6')
+# The Fallout 3 decompilation (CC0-1.0), fetched with the FNV one on the same terms; the origin
+# check reads it, but no name index is built from it.
+SIBLING_EXTRA_SOURCES = {
+    'momusdigital/f3_decomp': ('.local/sources/f3_decomp', 'f5bac1b54fc8fde16294c1d6779f27407d0a117b', 'CC0-1.0'),
+}
 # Steam ids. The app and build ids come from findings/target-pin.md; the depot and manifest of the
 # executable are recorded from the maintainer's own install (its appmanifest lists them, and its
 # build id equals the pin). Steam may move the app to a newer build at any time, which is why the
@@ -1622,7 +1627,7 @@ def cmd_setup(ctx, args):
     if not args.no_sources and not getattr(args, 'no_sibling', False):
         repo, rel, rev = SIBLING_SOURCE
         try:
-            fetched = fetch_sources(ctx, {repo: (rel, rev, 'no-licence')})
+            fetched = fetch_sources(ctx, {repo: (rel, rev, 'no-licence'), **SIBLING_EXTRA_SOURCES})
             joined = build_sibling_index(ctx)
             step('sibling source', 'ok', f'{repo}@{rev[:8]} ' + ('fetched' if fetched else 'present')
                  + f'; index joins {joined} inventory functions by name')
@@ -1936,12 +1941,102 @@ def write_source(path, text):
     Path(path).write_text(text, encoding='utf-8', newline='\n')
 
 
+# Header lines that appear once per unit: a second copy is boilerplate, not information.
+HEADER_ONCE = re.compile(r'^//[ \t]*(?:Source exposure:|Code origin:|SPDX-License-Identifier:|Adapted bodies:)')
+HEADER_COMPARED = re.compile(r'^//[ \t]*(0x[0-9a-fA-F]+)(?:[ \t]|$)')
+
+
+def merge_header_additions(text, blocks):
+    """`text` with the header metadata of newly added functions merged into its leading `//` block.
+
+    Each block is the comment a skeleton renders for one function. Its compared `// 0x<rva> Name`
+    line and its label lines are added to the unit's existing header (inside the unbroken run of
+    `//` lines at the top, which is where the compared-function parser reads); its one-per-unit
+    lines (source exposure, code origin, SPDX, adapted bodies, with their continuation lines) are
+    kept only when the header has none yet, and a line the header already has is not repeated. A
+    placeholder (`SKELETON_TODO_*`) of a skipped line is appended to the existing line, so the added
+    functions still have to be answered for before the unit is publishable.
+    """
+    from digest_v2 import LABEL_WORD
+    lines = text.split('\n')
+    end = 0
+    while end < len(lines) and lines[end].startswith('//'):
+        end += 1
+    head, rest = lines[:end], lines[end:]
+    for block in blocks:
+        entries = []  # (is one-per-unit, [lines]); continuation lines follow their one-per-unit line
+        for line in block.rstrip('\n').split('\n'):
+            if not line.strip():
+                continue
+            if HEADER_ONCE.match(line):
+                entries.append((True, [line]))
+            elif entries and entries[-1][0] and line.startswith('//') and not HEADER_COMPARED.match(line) \
+                    and not LABEL_WORD.search(line):
+                entries[-1][1].append(line)
+            else:
+                entries.append((False, [line]))
+        for once, group in entries:
+            first = group[0]
+            if once:
+                key = HEADER_ONCE.match(first).group(0).strip()
+                at = next((i for i, ln in enumerate(head) if ln.strip().startswith(key)), None)
+                if at is not None:
+                    # An unfilled placeholder in the new block still has to be answered for the added
+                    # functions, so it rides on the existing line instead of repeating the line.
+                    todo = re.search(r'SKELETON_TODO\w*', first)
+                    if todo and todo.group(0) not in head[at]:
+                        head[at] += f'; {todo.group(0)} (state it for the added functions)'
+                    continue
+            elif first in head:
+                continue
+            else:
+                m = HEADER_COMPARED.match(first)
+                if m and any((c := HEADER_COMPARED.match(ln)) and int(c.group(1), 16) == int(m.group(1), 16)
+                             for ln in head):
+                    continue
+            head += group
+    return '\n'.join(head + rest)
+
+
 def pdb_hints(repo, fns):
     """Lines naming the CrashLogger-PDB layout header (and names) of the functions, from the committed
     reconstruction/generated output; nothing, silently, when that is absent or knows none of them."""
     try:
         import pdb_types
         return pdb_types.hint_for_rvas([fn['rva'] for fn in fns], repo)
+    except Exception:  # an optional hint must never stop `start`
+        return []
+
+
+SYMBOL_SOURCE_IDS = {'a': 'tesv-2013-map', 'b': 'fo4-pdb', 'c': 'fnv-x360-pdb', 'd': 'fnv-x360-pdb',
+                     'e': 'fnv-x360-pdb'}
+SYMBOL_NAME_CAP = 12
+
+
+def symbol_name_hints(repo, cls, fns=(), cap=SYMBOL_NAME_CAP):
+    """Lines listing member names that sibling-build symbol files give for the class, each with the
+    source-id to label it with; nothing, silently, when the data is absent or the class has none."""
+    try:
+        entry = json.loads((repo / 'data/symbol-names.json').read_text())['classes'].get(cls) or {}
+        cands = entry.get('candidates') or {}
+        corr = json.loads((repo / 'data/name-corroboration.json').read_text()).get('functions') or {}
+        build = target_manifest(repo)['build_id']
+
+        def ids(keys):
+            return sorted({SYMBOL_SOURCE_IDS[k] for k in keys if k in SYMBOL_SOURCE_IDS})
+        lines = []
+        for fn in fns:
+            seen = ids((corr.get(f'{build}-0x{fn["rva"]:x}') or {}).get('confirmed') or '')
+            if seen:
+                lines.append(f'Symbol sources with the member name of 0x{fn["rva"]:x}: {", ".join(seen)}')
+        shown = sorted(cands)[:cap]
+        if shown:
+            more = len(cands) - len(shown)
+            lines.append(f'Symbol-name candidates for {cls} (sibling builds; candidates only, never evidence of which '
+                         f'function is which; label a name you take SYMBOLS(<source-id>)): '
+                         + ', '.join(f'{n} [{"/".join(ids(cands[n]))}]' for n in shown)
+                         + (f' and {more} more in data/symbol-names.json' if more > 0 else ''))
+        return lines if shown else []
     except Exception:  # an optional hint must never stop `start`
         return []
 
@@ -2046,7 +2141,7 @@ def start(ctx, args, quiet=False):
                                         getattr(args, 'code_origin', None))
                 additions.append(metadata.split('#include', 1)[0])
         if additions:
-            write_source(ctx.repo / cpp, ''.join(additions) + text)
+            write_source(ctx.repo / cpp, merge_header_additions(text, additions))
         ctx.say('Function header metadata is prepared. Add the new declarations and bodies; '
                 'replace each code-origin placeholder truthfully before compare. '
                 'Accepted companions are re-confirmed by the project.')
@@ -2083,6 +2178,8 @@ def start(ctx, args, quiet=False):
         if sibling:
             ctx.say(f'sibling source pointers (FNV; shape and names only, never evidence): {tdir / "sibling.md"}')
         for line in pdb_hints(ctx.repo, fns):
+            ctx.say(line)
+        for line in symbol_name_hints(ctx.repo, cls, fns):
             ctx.say(line)
         ctx.say(f'unit: {header} and {cpp}' + (' (skeleton created)' if created else ''))
         ctx.say(f'profile {prof["name"]}: read {"; ".join(prof["contrib_docs"])}; '

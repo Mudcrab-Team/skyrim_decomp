@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "83f4f2cfe1ea029c4c41c8f278d5f20b34e7a2482730f3a306e77b8811bcfc6d",
+        "object_sha256": "3b409a02d77cb8728d70bceb2fea8d10840670a0b73932eb5a08b7d707dff59c",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsinput/BSPCGamepadDeviceHandler.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "dd196b5cc7de5b28014a7a5a58a8b899b96f9064",
+    "base_sha": "521df5ee2e9e1e9d674ddafa702e4bf5bdb74068",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "36b765c9aeedc15f96f90ffdcf58e8f1014704bd",
+    "head_sha": "604e2af73db2619eb9f1a223fd43d6437e704da7",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44394695552,
+    "run_id": 44927067357,
     "rva": "0xe12390",
     "schema": 2,
-    "source_sha256": "ae11ff476067b6fc32cfa38b0416696b2b8f7871073472917121b65e3eea1d2d",
+    "source_sha256": "c716df2b3fda74bd048a2657f08e0d043828f9629f5b73c768edb6868b24e722",
     "status": "pass",
     "symbols": [
       "??_GBSPCGamepadDeviceHandler@@UEAAPEAXI@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "909f6335cce45409d21a027c5034a43ef12b3de7b3eca8d91da43103e477ecd5",
           "code_sections": 1,
-          "object_sha256": "83f4f2cfe1ea029c4c41c8f278d5f20b34e7a2482730f3a306e77b8811bcfc6d"
+          "object_sha256": "3b409a02d77cb8728d70bceb2fea8d10840670a0b73932eb5a08b7d707dff59c"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,9 +161,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsinput/BSPCGamepadDeviceHandler.cpp",
-          "source_revision": "ae11ff476067b6fc32cfa38b0416696b2b8f7871073472917121b65e3eea1d2d"
+          "source_revision": "c716df2b3fda74bd048a2657f08e0d043828f9629f5b73c768edb6868b24e722"
         },
-        "symbol_map_sha256": "f3c557a72b1573dce519e2e0eddbd2d705c4fc60c7d195686ea01c01868dcd4a",
+        "symbol_map_sha256": "6d8f920dd4e01b48959f55a6db51557b9a72d1825b24929a02cd96e4939899c6",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,17 +174,17 @@
   ],
   "source": {
     "compiled": "reconstruction/bsinput/BSPCGamepadDeviceHandler.cpp",
-    "digest": "ae11ff476067b6fc32cfa38b0416696b2b8f7871073472917121b65e3eea1d2d",
+    "digest": "c716df2b3fda74bd048a2657f08e0d043828f9629f5b73c768edb6868b24e722",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsinput/BSPCGamepadDeviceHandler.cpp",
       "reconstruction/bsinput/BSPCGamepadDeviceHandler.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "eclepso",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/f3c557a72b1573dce519e2e0eddbd2d705c4fc60c7d195686ea01c01868dcd4a.json",
-    "sha256": "f3c557a72b1573dce519e2e0eddbd2d705c4fc60c7d195686ea01c01868dcd4a"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/6d8f920dd4e01b48959f55a6db51557b9a72d1825b24929a02cd96e4939899c6.json",
+    "sha256": "6d8f920dd4e01b48959f55a6db51557b9a72d1825b24929a02cd96e4939899c6"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

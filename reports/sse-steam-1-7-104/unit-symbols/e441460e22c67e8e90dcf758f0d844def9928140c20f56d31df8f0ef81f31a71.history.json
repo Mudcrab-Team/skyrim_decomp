@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/e441460e22c67e8e90dcf758f0d844def9928140c20f56d31df8f0ef81f31a71.json",
+  "versions": [
+    {
+      "sha256": "e441460e22c67e8e90dcf758f0d844def9928140c20f56d31df8f0ef81f31a71",
+      "base": null,
+      "added": [
+        "?GetCollisionObject@NiAVObject@@QEAAPEAVbhkCollisionObject@@XZ",
+        "??DNiTransform@@QEBA?AV0@AEBV0@@Z",
+        "?GetCollisionObject@NiAVObject@@QEBAPEAVbhkCollisionObject@@XZ",
+        "?FindCollisionObject@@YAXPEBVNiAVObject@@AEAPEAVbhkCollisionObject@@@Z",
+        "?Copy@BSFixedString@@QEAAXAEBV1@@Z",
+        "?HasValue@BSFixedString@@QEBAHXZ",
+        "?RegisterStreamables@NiAVObject@@UEAA_NAEAVNiStream@@@Z",
+        "?RegisterStreamables@NiObjectNET@@UEAA_NAEAVNiStream@@@Z",
+        "?SetName@NiAVObject@@QEAAXAEBVBSFixedString@@@Z",
+        "?GetExtraData@NiObjectNET@@QEBAPEAVNiExtraData@@AEBVBSFixedString@@@Z",
+        "?RecalculateWorldTransform@NiAVObject@@QEAAXXZ",
+        "?FindFlattenedBone@@YAPEAVNiAVObject@@PEAV1@AEBVBSFixedString@@_N@Z",
+        "?IsInvalid@@YA_NPEBVNiTransform@@@Z",
+        "?GetBoneFromName@NiAVObject@@SAPEAV1@PEAV1@AEBVBSFixedString@@_N@Z",
+        "?FindBone@@YA_NPEAVNiExtraData@@AEBVBSFixedString@@AEAPEAVNiAVObject@@@Z",
+        "?SetCollisionLayer@NiAVObject@@QEAAXW4COL_LAYER@@@Z",
+        "?SetCollisionLayerAndGroup@NiAVObject@@QEAAXW4COL_LAYER@@I@Z",
+        "?ApplyCollisionLayerAndGroup@@YAXPEAVNiAVObject@@AEBUCollisionLayerAndGroup@@@Z",
+        "?ApplyCollisionLayer@@YAXPEAVNiAVObject@@AEBW4COL_LAYER@@@Z",
+        "?UpdateRigidConstraints@NiAVObject@@QEAAX_NEI@Z",
+        "?EnableRigidConstraints@@YAXPEAVNiAVObject@@AEBE@Z",
+        "?DisableRigidConstraints@@YAXPEAVNiAVObject@@AEBE@Z",
+        "__CxxFrameHandler3",
+        "?NiRTTI_BSFlattenedBoneTree@@3VNiRTTI@@B",
+        "?kBoneMapName@@3VBSFixedString@@B",
+        "?NiRTTI_bhkCollisionObject@@3VNiRTTI@@B",
+        "?PerformOp@NiAVObject@@UEAAXAEAVPerformOpFunc@@@Z",
+        "?PostAttachUpdate@NiAVObject@@QEAAXXZ"
+      ]
+    }
+  ]
+}

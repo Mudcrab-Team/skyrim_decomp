@@ -180,6 +180,13 @@ class PrereviewUnitTests(unittest.TestCase):
                 dict(base, trivial=False, declared=False, fork_of=None)]
         self.assertEqual(len(prereview.origin_problems(hits, {})), 1)
 
+    def test_origin_problems_hide_the_private_sibling_path(self):
+        hit = {'function': 'A::f', 'file': 'reconstruction/a/A.cpp', 'repo': 'fo4-private@1b765c70',
+               'path': 'src/Secret/Path.cpp', 'trivial': False, 'declared': False, 'fork_of': None}
+        [(_, line)] = prereview.origin_problems([hit], {})
+        self.assertNotIn('src/Secret', line)
+        self.assertNotIn('fo4-private', line)
+
     def test_binding_split_separates_the_authors_facts_from_the_hosts(self):
         facts = {'result pass': True, 'source revision equals the tu digest and unit path': False,
                  'compiler hash equals the pinned cl.exe': False}
@@ -403,6 +410,9 @@ class VerifierHostTests(WorkDir):
 class PoolTests(WorkDir):
     class PoolBot(FakeBot):
         def close_done_claims(self):
+            return []
+
+        def sweep_probes(self):
             return []
 
         def attempt(self, pr, now=None):
@@ -654,6 +664,21 @@ class PoolTests(WorkDir):
         self.assertEqual(len(listed), 3)
         calls.clear()
         with mock.patch.object(pr_bot, 'CLAIM_SWEEP_EVERY', 0):
+            pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(len(calls), 3)
+
+    def test_idle_poll_sweeps_probe_prs_and_survives_a_failure(self):
+        calls = []
+
+        class Sweeping(PoolTests.PoolBot):
+            def sweep_probes(self):
+                calls.append(1)
+                if len(calls) == 1:
+                    raise pr_bot.Stop('gh failed')
+                return [9]
+        bot = Sweeping(self.work)
+        bot.gh_json = lambda *a: []
+        with mock.patch.object(pr_bot, 'PROBE_SWEEP_EVERY', 0):
             pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
         self.assertEqual(len(calls), 3)
 

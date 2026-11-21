@@ -107,6 +107,9 @@ class DecisionTests(unittest.TestCase):
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'regressed'}, {0x10: 'pass', 0x20: 'pass'},
                           {0x10: 'approve', 0x20: 'approve'})
         self.assertEqual((d['blocked'], d['merge']), ('regression', False))
+        text = pr_bot.comment_body(HEAD, d)
+        self.assertIn('- 0x20: matched before this PR, differs now on host1', text)
+        self.assertNotIn('0x10', text)
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'preexisting-fail'}, {0x10: 'pass', 0x20: 'fail'},
                           {0x10: 'approve', 0x20: 'reject'})
         self.assertEqual(d['verdicts'], {0x10: 'matched', 0x20: 'debt'})
@@ -348,6 +351,14 @@ class OriginFindingTests(unittest.TestCase):
 
     def test_an_admitted_sibling_with_a_valid_label_is_a_note(self):
         self.assertEqual(pr_bot.origin_findings([origin_hit()], {UNIT: FNV_HEADER}), ([], [UNIT]))
+
+    def test_a_declared_f3_sibling_body_is_a_note(self):
+        header = '// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/Game/Thing.cpp:12'
+        hit = origin_hit('momusdigital/f3_decomp')
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: header}), ([], [UNIT]))
+        self.assertEqual(pr_bot.origin_findings([origin_hit('momusdigital/f3_decomp', declared=False)],
+                                                {UNIT: '// nothing'})[0], [(UNIT, 'unlabelled')])
+        self.assertEqual(pr_bot.origin_findings([hit], {UNIT: FNV_HEADER})[0], [(UNIT, 'invalid-label')])
 
     def test_a_fo4_private_game_folder_with_a_valid_label_is_a_note(self):
         header = '// Sibling source: fo4-private@1b765c70 src/BSMain/Thing.cpp'
@@ -661,7 +672,10 @@ class ProcessTests(unittest.TestCase):
 
     def test_the_bot_never_closes_a_contributor_pr(self):
         source = (ROOT / 'tools/pr_bot.py').read_text()
-        self.assertNotRegex(source, r"""['"]close['"]|pr close""")
+        # The one close is the owner-only probe sweep, which is tested on its own.
+        sweep = source[source.index('    def sweep_probes'):source.index('    def hash_run_completed')]
+        self.assertEqual(sweep.count("'pr', 'close'"), 1)
+        self.assertNotRegex(source.replace(sweep, ''), r"""['"]close['"]|pr close""")
         scenarios = [dict(), dict(h2={0x10: 'fail', 0x20: 'fail'}), dict(grep=(True, ['asm-mnemonic'])),
                      dict(files=[{'filename': 'tools/x.py', 'status': 'modified'}]),
                      dict(review=json.dumps({'leak': 'yes', 'functions': {}})), dict(landed=[]), dict(history='leak')]
@@ -776,7 +790,10 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertEqual(pr_bot.host_category(None), 'missing')
         self.assertEqual(pr_bot.host_category('no-target'), 'unbound')
         self.assertEqual(pr_bot.host_category('symbol-unbound at /Users/x/y'), 'unbound')
+        self.assertEqual(pr_bot.host_category('function-symbol-missing'), 'unbound')
+        self.assertEqual(pr_bot.host_category('unresolved-symbol'), 'unbound')
         self.assertEqual(pr_bot.host_category('mismatch'), 'bytes differ')
+        self.assertEqual(pr_bot.host_category('code-byte-mismatch'), 'bytes differ')
         d = dict(pr_bot.decide([0x10], {0x10: 'fail'}, {0x10: 'fail'}, {0x10: 'approve'}),
                  host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})
         self.assertIn('0x10: did not byte-match on the CI hash check (missing)', pr_bot.comment_body(HEAD, d))
@@ -1217,6 +1234,53 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
         self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
 
+    def sweep(self, probes, targets, run_status='in_progress', done=False):
+        calls = []
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+
+        def gh(*a):
+            if a[0] == 'pr' and a[1] == 'list':
+                return probes
+            if a[0] == 'pr' and a[1] == 'view':
+                return targets[int(a[2])]
+            return {'check_runs': [dict(self.job, status=run_status)]}
+        self.bot.gh_json = gh
+        if done:
+            pr_bot.State(self.work / 'state', 7, HEAD).set('done', True)
+        return self.bot.sweep_probes(), calls
+
+    def probe(self, number=50, target=7, **over):
+        return dict({'number': number, 'title': f'pr-check run for the head of #{target}',
+                     'headRefName': f'probe/pr-{target}', 'headRefOid': HEAD,
+                     'author': {'login': pr_bot.OWNER}}, **over)
+
+    def test_a_probe_with_a_running_hash_for_an_open_target_is_left_alone(self):
+        got, calls = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}})
+        self.assertEqual((got, calls), ([], []))
+
+    def test_a_probe_is_closed_with_its_branch_once_the_hash_run_completed(self):
+        got, calls = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}}, run_status='completed')
+        self.assertEqual(got, [50])
+        self.assertEqual(calls[0][:4], ['gh', 'pr', 'close', '50'])
+        self.assertIn('--delete-branch', calls[0])
+
+    def test_a_probe_is_closed_when_the_bot_holds_the_result(self):
+        got, _ = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}}, done=True)
+        self.assertEqual(got, [50])
+
+    def test_a_probe_is_closed_when_its_target_is_gone_or_moved(self):
+        for target in ({'headRefOid': HEAD, 'state': 'MERGED'}, {'headRefOid': HEAD, 'state': 'CLOSED'},
+                       {'headRefOid': 'f' * 40, 'state': 'OPEN'}):
+            got, _ = self.sweep([self.probe()], {7: target})
+            self.assertEqual(got, [50], target)
+
+    def test_only_the_bots_own_probes_are_ever_closed(self):
+        done = {7: {'headRefOid': HEAD, 'state': 'MERGED'}}
+        others = [self.probe(author={'login': 'someone'}), self.probe(title='pr-check run for the head of #7 (copy)'),
+                  self.probe(headRefName='feature/x')]
+        got, calls = self.sweep(others, done)
+        self.assertEqual((got, calls), ([], []))
+
     def test_warm_probes_only_a_head_with_no_run_and_in_scope(self):
         probed = []
         self.bot.probe_hash_run = lambda number, head: probed.append(number)
@@ -1398,7 +1462,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.state.data['carried'] = {'16': pr_bot.CARRY_REASON}
         self.state.data['ci']['rows'].pop('16')
         asked = []
-        self.bot.carried_records = lambda tag, rvas, build: (asked.append((set(rvas), build)), (self.work, set()))[1]
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (asked.append((set(rvas), build)), (self.work, set()))[1]
         out, failed = self.build()
         self.assertEqual((failed, asked), (set(), [({0x10}, 'b')]))
         self.assertEqual(len(self.seen('wine_confirm.py')), 1)
@@ -1407,7 +1471,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         (self.tree / 'builds').mkdir()
         (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
         self.state.data['carried'] = {'16': pr_bot.CARRY_REASON}
-        self.bot.carried_records = lambda tag, rvas, build: (self.work, set(rvas))
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (self.work, set(rvas))
         out, failed = self.build()
         self.assertEqual(failed, {0x10})
 
@@ -1600,6 +1664,37 @@ class ReviewContextTests(unittest.TestCase):
         evidence[0x10]['row']['recipe_sha256'] = hashlib.sha256(b'other').hexdigest()
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
         self.assertIn('its recipe hash DIFFERS', self.prompts[0])
+
+    def test_an_accepted_function_is_compared_with_the_recipe_of_its_record_not_the_one_the_unit_names(self):
+        evidence = self.declare_other_recipe('')
+        default = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
+        record = {'source': {'compiled': 'reconstruction/a/B.cpp'}, 'recipe': {'path': default},
+                  'runs': [{'report': {'contract_version': 2}}]}
+        (self.tree / 'reports').mkdir()
+        (self.tree / 'reports/0x10.json').write_text(json.dumps(record))
+        (self.tree / 'data/progress.json').write_text(json.dumps({'functions': [
+            {'id': 'b-0x10', 'build_id': 'b', 'rva': 0x10, 'size': 8, 'status': 'matched', 'name': 'N',
+             'name_origin': 'GUESS', 'report': 'reports/0x10.json'}]}))
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash agrees', self.prompts[0])
+        record['runs'][0]['report']['contract_version'] = 3  # the job binds only contract v2 records
+        (self.tree / 'reports/0x10.json').write_text(json.dumps(record))
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[1])
+
+    def test_origin_findings_the_unit_already_had_on_main_are_left_out_of_the_prompt(self):
+        hit = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'revision': 'abc',
+               'path': 'src/B.cpp', 'upstream_line': 3, 'similarity': 0.75, 'trivial': False, 'declared': False,
+               'fork_of': None}
+        new = dict(hit, function='B::g', similarity=0.8)
+        self.origin_out = (b'check_origin: threshold 0.75; compared with x/ng@abc\n' + json.dumps(hit).encode() + b'\n'
+                           + json.dumps(new).encode() + b'\n')
+        self.bot.base_origin_flags = lambda units, base, tag: {pr_bot.origin_key(hit)}
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, self.evidence())
+        prompt = self.prompts[0]
+        self.assertNotIn('B::f ~', prompt)
+        self.assertIn('B::g ~ x/ng@abc src/B.cpp:3 similarity 0.80', prompt)
+        self.assertIn('1 finding(s) identical to ones the unit already had on main are left out', prompt)
 
     def test_a_report_for_other_source_or_compiler_is_shown_as_differing(self):
         bad = self.evidence(source={'source_revision': '0' * 64, 'path': 'reconstruction/a/B.cpp'})
@@ -2125,6 +2220,31 @@ class CarryHost1Tests(unittest.TestCase):
     def test_a_code_change_never_carries(self):
         self.set_head(b'// U: GUESS(low)\nint f() { return 2; }\n')
         self.assertEqual(self.carry(), {})
+
+    def test_unchanged_own_text_carries_when_other_code_in_the_unit_changed(self):
+        self.write(self.repo, self.UNIT, b'int f() { return 1; }\n')
+        self.git('commit', '-qam', 'own')
+        self.base = self.git('rev-parse', 'HEAD')
+        self.set_head(b'int g() { return 7; }\nint f()\n{\n    return 1; // same\n}\n')
+        self.write(self.tree, 'data/progress.json', json.dumps({'functions': [
+            {'build_id': 'b', 'rva': 16, 'status': 'matched', 'report': 'r16.json', 'name': 'f'}]}))
+        self.assertEqual(self.carry(), {'16': pr_bot.CARRY_REASON_TEXT})
+
+    def test_a_changed_own_text_or_a_missing_definition_does_not_carry(self):
+        self.write(self.tree, 'data/progress.json', json.dumps({'functions': [
+            {'build_id': 'b', 'rva': 16, 'status': 'matched', 'report': 'r16.json', 'name': 'f'}]}))
+        self.set_head(b'int g() { return 7; }\nint f() { return 2; }\n')
+        self.assertEqual(self.carry(), {})
+        self.set_head(b'int g() { return 7; }\nint h() { return 1; }\n')
+        self.assertEqual(self.carry(), {})
+
+    def test_function_text_ignores_declarations_comments_and_layout(self):
+        a = function_text = pr_bot.function_text
+        one = [('a.cpp', b'int C::f(int x) const;\n// c\nint C::f(int x) const\n{ return x; }\n')]
+        two = [('a.cpp', b'int C::f(int x) const\n{\n  return x; /* k */\n}\nint C::g() { return 0; }\n')]
+        self.assertEqual(a(one, 'C::f'), a(two, 'C::f'))
+        self.assertIsNone(a([('a.cpp', b'int C::f();\n')], 'C::f'))
+        self.assertNotEqual(a(one, 'C::f'), a([('a.cpp', b'int C::f(int x) const { return 0; }\n')], 'C::f'))
 
     def test_a_string_or_include_change_is_code(self):
         self.set_head(b'// U: GUESS(low)\nconst char* s = "x";\nint f() { return 1; }\n')
