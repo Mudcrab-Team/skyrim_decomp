@@ -28,8 +28,9 @@ giving up). They are adapted from lemiur's Game-Decompilation-Skill-For-Claude, 
 Read `docs/contributor-lessons.md` before your first PR: common Reviewer rejections. Optional
 advanced parallel work is in `docs/contributor-parallel.md`. Optional bulk sources for a contributor
 with their own exe: `tools/static_data_generate.py` (`findings/static-data-families.md`),
-`tools/fixed_argument_generate.py` (`findings/fixed-argument-wrappers.md`) and
-`tools/return_argument_generate.py` (`findings/return-argument-wrappers.md`) draft whole families
+`tools/fixed_argument_generate.py` (`findings/fixed-argument-wrappers.md`),
+`tools/return_argument_generate.py` (`findings/return-argument-wrappers.md`) and
+`tools/conditional_dealloc_generate.py` (`findings/conditional-deallocators.md`) draft whole families
 locally; their results are one-host until the PR's checks run.
 
 ## Tooling
