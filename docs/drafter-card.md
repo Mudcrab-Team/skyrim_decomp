@@ -106,7 +106,9 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
 - **Sibling source (Fallout 3).** `.local/sources/f3_decomp` (momusdigital/f3_decomp at `f5bac1b5`,
   CC0-1.0) is used exactly like the FNV one: label what you take, cite each reused body with
   `// Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>` and declare it as an adapted body.
-  It is an x86 VC++ 2005 SP1 build of another game, never evidence about Skyrim.
+  It is an x86 VC++ 2005 SP1 build of another game, never byte evidence about Skyrim. For
+  engine-shared classes and forms (Gamebryo/NetImmerse, TES forms, AI, scripting) read FO3 and FNV
+  first for names, layouts, vtable order and body shape; either is fine, prefer whichever has the class.
 - **Sibling source (`fo4-private`).** Game-code folders only at `1b765c70`, with author
   permission conditional on anonymity (`docs/authorizations.md`, `LEGAL.md`). Use
   `SIBLING(fo4-private@1b765c70, author-permission)` on names/declarations and

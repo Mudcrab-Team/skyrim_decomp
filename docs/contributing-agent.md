@@ -18,6 +18,13 @@ one comment per PR and edits it for each new push. Fix it and push to the same b
 big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
 per class, since each PR costs a full verification and merge cycle.
 
+## Skills
+
+`.claude/skills/` holds `matcher` (a near-miss you are iterating on), `permute` (only register
+allocation or ordering differs) and `wall-identifier` (a stalled function: classify the wall before
+giving up). They are adapted from lemiur's Game-Decompilation-Skill-For-Claude, CC-BY-4.0; see the
+`NOTICE.md` in each directory.
+
 ## Tooling
 
 Drive one tool, `tools/contrib.py` (macOS/Linux: `./sr`; Windows: `.\sr.cmd`), always with

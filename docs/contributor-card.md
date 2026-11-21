@@ -19,10 +19,16 @@ hypotheses, not binary proof. Never write `asm`, `##`, `#pragma` (except `once`)
 `\x` strings, and never edit verifier inputs, tools, flags or another unit to force a pass.
 
 For Fallout 3 (`momusdigital/f3_decomp`, CC0-1.0) the same with `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`
-and `Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>`.
+and `Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>`. Read FO3 and FNV first for
+engine-shared classes (names, layouts, vtable order, body shape); both are 32-bit, never byte evidence.
 For FNV reuse use `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` and cite each reused
 body in a `Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>` header line. Another
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.
+
+Skills in `.claude/skills/` (adapted from lemiur's Game-Decompilation-Skill, CC-BY-4.0, see each
+`NOTICE.md`): `matcher` for a near-miss you are iterating on, `permute` when only register
+allocation or ordering differs, `wall-identifier` when a function stalls, to classify the wall
+before giving up.
 
 Header: keep it short. The skeleton writes all of it; a `.cpp` looks like
 
