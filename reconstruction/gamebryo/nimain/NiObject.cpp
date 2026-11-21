@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: original except for the bodies listed below.
 // Adapted bodies: IsEqual and RegisterStreamables, CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/N/NiObject.cpp (MIT).
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // NiObject::RegisterStreamables, NiStream::RegisterSaveObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // 0xedca00 NiObject::ProcessClone
 // 0xedcb60 NiObject::StreamCanSkip
@@ -15,7 +14,7 @@
 // 0xedc7b0 NiObject::RegisterStreamables
 #include "NiObject.h"
 
-#include "gamebryo/nianimation/NiStream.h"
+#include "NiObjectNET.h"
 
 // Private stand-in used only by this translation unit; the shared header stays opaque.
 // NiCloneMap, NiCloneMap::Visit: GUESS(low); names invented, the callee is bound by address through bind-hints.json
