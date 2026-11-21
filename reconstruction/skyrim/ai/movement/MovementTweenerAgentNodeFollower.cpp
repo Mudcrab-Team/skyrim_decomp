@@ -16,6 +16,5 @@ const BSFixedString &MovementTweenerAgentNodeFollower::QClassAgentType()
 {
     static BSFixedString typeString("Node Follower");
     return typeString;
-
 }
 MovementTweenerAgentNodeFollower::~MovementTweenerAgentNodeFollower() {}
