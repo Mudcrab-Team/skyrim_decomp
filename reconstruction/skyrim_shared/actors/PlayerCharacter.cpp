@@ -1,13 +1,23 @@
 // Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"PlayerCharacter","rationale":"vtable owner and slot; method spelling invented","slot":8},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// PlayerCharacter: EXE_RTTI
-// Slot8: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Code origin: original reconstruction from the pinned listing and community declarations (names only); no adapted body.
+// Adapted bodies: none.
+// PlayerCharacter, Slot8: GUESS(low); vtable owner and slot; method spelling invented.
+// PlayerCharacter::Slot8: EXE_RTTI
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x75c2b0 PlayerCharacter::Slot8
 #include "PlayerCharacter.h"
-// Slot8: GUESS(low); method name inferred from vtable owner and slot
+
 std::uint8_t PlayerCharacter::Slot8() const
 {
     return 0x1;
+}
+
+// 0x75d390 PlayerCharacter::Function75d390
+void PlayerCharacter::Function75d390()
+{
+    if (g_playerCharacterManager->unknown160 <= 0)
+        return;
+    if (sleepSeconds != 0)
+        return;
+    Function5d2080(&magicTarget, 0.0f);
 }

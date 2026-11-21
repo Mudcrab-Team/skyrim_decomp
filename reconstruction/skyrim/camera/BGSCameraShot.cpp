@@ -1,5 +1,9 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listing of the
-// pinned image, with the class layout from the header beside this file. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
+// Code origin: written from the instruction listing of the pinned image; class layout and names from community declarations.
+// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Adapted bodies: none.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// 0x319330 BGSCameraShot::Function319330
 // 0x318c10 BGSCameraShot::InitializeData
 // 0x31a0c0 BGSCameraShot::~BGSCameraShot
 #include "BGSCameraShot.h"
@@ -42,4 +46,10 @@ void BGSCameraShot::InitItemImpl()
         data.globalTimeMult = 0.1f;
     }
     SetInitialized(true);
+}
+
+// BGSCameraShot::Function319330: GUESS(low); false for a zoom camera action, true for a shot without a model name, else the pointer at 0xA0 decides
+bool BGSCameraShot::Function319330()
+{
+    return data.cameraAction != 3 && (!model.HasValue() || unknownA0 != nullptr);
 }
