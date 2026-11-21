@@ -131,6 +131,7 @@ The repository carries names and layouts generated from the community "CrashLogg
   function whose PDB type is more than a bare `void()` stub; a method's first parameter is its `this`, often typed as
   another class. It also prints `PDB boundary warning` when a claimed RVA is inside a function that
   `boundaries/<NN>.tsv` records but is not its start; `intake` and `submit` give the same warning. It never blocks.
+- `start` also prints up to 12 sibling-symbol member-name candidates for the class with their `SYMBOLS(<source-id>)` ids (`data/symbol-names.json`; candidates, never evidence of which function is which).
 - Never commit the `.pdb`, or a name list from it outside the generated directory.
 
 ## Mapping-only PRs

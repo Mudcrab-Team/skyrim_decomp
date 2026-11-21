@@ -117,7 +117,8 @@ Fallout: New Vegas program databases; `findings/sibling-symbol-files.md`). They 
 members are called, never which function is which. A name a unit takes from them carries `SYMBOLS(<source-id>)`
 with `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`, one label per line, naming the source that
 has the member. The files themselves are never committed, and no address, type or decorated name from them goes
-into a unit; `compare` still decides.
+into a unit; `compare` still decides. `start` prints up to 12 of these names for the started class, each with its
+`<source-id>`, as candidates only.
 
 ## Mapping-only PRs
 
