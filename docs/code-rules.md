@@ -96,6 +96,9 @@ by intent: genuine code passes, and so can a determined fake, which stays the Re
 | R17 | `volatile` on a local, or elsewhere without a `// volatile: <evidence>` comment; an empty `if` or `else` body; a bare `;` statement (empty loop bodies and `case X: ;` pass); `do { } while (0)` outside a macro; self-assignment; `+ 0`; `* 1`; a member named `pad...` |
 | R18 | the inline-assembly tokens |
 
+The checker skips `reconstruction/generated/`. Those files are machine-generated declarations, not
+reconstructed units, and are not scored.
+
 Advisory rows never make a function pending: R7 placeholder and address-derived names, R25
 prototypes in a `.cpp`, R33 definitions with no comment above, R35 bodies without braces, R37
 `#if 0`, and `!!x`.

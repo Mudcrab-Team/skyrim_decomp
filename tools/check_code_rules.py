@@ -55,6 +55,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOT = 'reconstruction'
+# Machine-generated declarations (reconstruction/generated/crashlogger_pdb/README.md) are not reconstructed units.
+SKIPPED_ROOTS = ('reconstruction/generated/',)
 MATCH_RULES = ('R1', 'R2', 'R4', 'R13', 'R17', 'R18')
 ADVISORY_RULES = ('R7', 'R25', 'R33', 'R35', 'R37', 'F')
 COMPARED_LINE = re.compile(r'^//[ \t]*0x([0-9a-fA-F]+)[ \t]+(\S+)', re.M)
@@ -519,7 +521,8 @@ def readability_rows(unit):
 
 def source_files(root):
     base = Path(root) / SOURCE_ROOT
-    return sorted(p.relative_to(root).as_posix() for p in base.rglob('*') if p.suffix in ('.h', '.cpp') and p.is_file())
+    names = (p.relative_to(root).as_posix() for p in base.rglob('*') if p.suffix in ('.h', '.cpp') and p.is_file())
+    return sorted(name for name in names if not name.startswith(SKIPPED_ROOTS))
 
 
 def analyse(root=ROOT, names=None):

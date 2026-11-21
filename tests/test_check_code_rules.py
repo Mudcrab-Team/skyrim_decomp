@@ -222,6 +222,18 @@ class AdvisoryRowTest(unittest.TestCase):
         self.assertNotIn('R7 placeholder-name', found)
 
 
+class SourceFilesTest(unittest.TestCase):
+    def test_generated_tree_is_not_a_unit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root, 'reconstruction/area/Widget.h', HEADER)
+            write(root, 'reconstruction/area/Widget.cpp', '// 0x1000 Widget::Run\n#include "Widget.h"\n')
+            write(root, 'reconstruction/generated/tree/Gadget.h', '#pragma once\nstruct Gadget\n{\n    int pad04;\n};\n')
+            write(root, 'reconstruction/generated/tree/Gadget.cpp', 'void Gadget::Run()\n{\n    ;\n}\n')
+            self.assertEqual(rules.source_files(root), ['reconstruction/area/Widget.cpp', 'reconstruction/area/Widget.h'])
+            self.assertEqual(sorted(rules.analyse(root)), ['reconstruction/area/Widget.cpp', 'reconstruction/area/Widget.h'])
+
+
 class TotalsTest(unittest.TestCase):
     def test_function_status_and_totals(self):
         with tempfile.TemporaryDirectory() as tmp:
