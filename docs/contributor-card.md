@@ -3,6 +3,7 @@
 Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, assisted by
 <model>"`, edit the two source files it creates, `compare`, then `submit --dry-run` and `submit`.
 Open a PR that touches only `reconstruction/**`; checks run; the bot reviews and merges.
+Stuck or unsure? Ask in [Discussions (Q&A)](https://github.com/Mudcrab-Team/skyrim_decomp/discussions/categories/q-a).
 
 Aim for 50 to 200 functions per PR (200 is the per-PR cap); more is fine, and one PR per family or
 class is ideal. A single large function is also a fine PR on its own. Classes can be mixed. Fewer,
