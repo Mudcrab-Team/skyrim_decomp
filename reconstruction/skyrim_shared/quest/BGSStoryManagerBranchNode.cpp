@@ -1,9 +1,13 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold.
+// Source exposure: mixed (community declarations and the pinned image listing).
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original reconstruction with the labelled visitor interface.
+// Adapted bodies: none.
+// BGSStoryManagerBranchNode::AcceptVisitor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // 0x1c8500 BGSStoryManagerBranchNode::QChildCount
 // 0x1c7cd0 BGSStoryManagerBranchNode::GetChild
 // 0x5358d0 BGSStoryManagerBranchNode::InitItemImpl
+// 0x535900 BGSStoryManagerBranchNode::AcceptVisitor
 #include "BGSStoryManagerBranchNode.h"
 
 std::uint32_t BGSStoryManagerBranchNode::QChildCount() const
@@ -20,4 +24,10 @@ void BGSStoryManagerBranchNode::InitItemImpl()
 {
     BGSStoryManagerNodeBase::InitItemImpl();
     SetFormFlag(true);
+}
+
+// Dispatch the visitor to this story branch.
+BGSStoryManagerTreeVisitor::VisitControl BGSStoryManagerBranchNode::AcceptVisitor(BGSStoryManagerTreeVisitor& a_visitor)
+{
+    return a_visitor.VisitBranchNode(*this);
 }

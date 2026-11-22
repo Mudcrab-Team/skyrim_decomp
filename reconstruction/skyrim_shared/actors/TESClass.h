@@ -1,3 +1,4 @@
+// Code origin: original declarations with the labelled community layouts and member names.
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESClass: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -5,10 +6,11 @@
 // TESClass::InitializeData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown20: GUESS(low)
 // unk50, unk58, unk60, trainingLevel, trainingSkill, unk70: GUESS(low)
+// TESClass::trainingSkillIndex: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once
 
 #include <cstdint>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class TESClass : public TESForm
 {
@@ -16,11 +18,14 @@ public:
     std::uint8_t GetMaximumTrainingLevel();  // compared: 0x3b2b10; TODO signature: no community declaration, read it from the listing
     virtual void InitializeData();  // compared: 0x3b2890
 
+    std::uint32_t Function3b2ae0() const;
+
     std::uint8_t unknown20[0x30];  // 20
     union {
         std::uint64_t unk50;  // 50
         struct {
-            std::uint8_t unknown50[0x5];
+            std::uint8_t unknown50[0x4];
+            std::uint8_t trainingSkillIndex;    // 54
             std::uint8_t maximumTrainingLevel;  // 55
             std::uint8_t unknown56[0x2];
         };

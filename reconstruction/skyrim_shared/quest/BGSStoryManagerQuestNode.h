@@ -1,3 +1,4 @@
+// Code origin: original declarations with the labelled community layouts and member names.
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSStoryManagerQuestNode, ::Revert, ::quests, ::numQuestsToStart, ::padC4, ::childrenLastRun: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -14,73 +15,14 @@
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
-
-class BGSStoryManagerTreeVisitor {
-public:
-    enum class VisitControl : std::int32_t {
-    };
-};
-
-class TESCondition {
-public:
-    void* head;  // 00
-};
-
-class BGSStoryManagerTreeForm : public TESForm {
-public:
-    ~BGSStoryManagerTreeForm() override;  // 00
-
-    virtual std::uint32_t                            QChildCount() const;                                       // 3B
-    virtual BGSStoryManagerTreeForm*                 GetChild(std::uint32_t a_idx) const;                       // 3C
-    virtual TESCondition*                            QConditions() = 0;                                         // 3D
-    virtual BGSStoryManagerTreeVisitor::VisitControl AcceptVisitor(BGSStoryManagerTreeVisitor& a_visitor) = 0;  // 3E
-
-    // members
-    std::uint32_t lastVisitorID;  // 20
-    std::uint32_t pad24;          // 24
-};
-static_assert(sizeof(BGSStoryManagerTreeForm) == 0x28, "layout");
-
-class BGSStoryManagerBranchNode;
-
-class BGSStoryManagerNodeBase : public BGSStoryManagerTreeForm {
-public:
-    struct Flags {
-        std::uint16_t nodeFlags;  // 0
-        std::uint16_t questFags;  // 2
-    };
-    static_assert(sizeof(Flags) == 0x4, "layout");
-
-    void          InitializeData() override;  // 04
-    TESCondition* QConditions() override;     // 3D
-
-    // members
-    BGSStoryManagerBranchNode* parent;           // 28
-    BGSStoryManagerNodeBase*   previousSibling;  // 30
-    std::uint32_t              maxQuests;        // 38
-    Flags                      flags;            // 3C
-    TESCondition               conditions;       // 40
-};
-static_assert(sizeof(BGSStoryManagerNodeBase) == 0x48, "layout");
-
-class TESQuest;
-
-template <class T>
-class BSTArray {
-public:
-    T*            data;      // 00
-    std::uint32_t capacity;  // 08
-    std::uint32_t pad0C;     // 0C
-    std::uint32_t size;      // 10
-    std::uint32_t pad14;     // 14
-};
-static_assert(sizeof(BSTArray<float>) == 0x18, "layout");
+#include "BGSStoryManagerBranchNode.h"
 
 class BGSStoryManagerQuestNode : public BGSStoryManagerNodeBase {
 public:
     void Revert(BGSLoadFormBuffer* a_buf) override;  // 12
     void SaveGame(BGSSaveFormBuffer* a_buf) override;  // 0E
+
+    BGSStoryManagerTreeVisitor::VisitControl AcceptVisitor(BGSStoryManagerTreeVisitor& a_visitor) override;
 
     // members
     BSTArray<TESQuest*> quests;           // 48

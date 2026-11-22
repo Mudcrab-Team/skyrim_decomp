@@ -1,8 +1,12 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listing of the
-// pinned image, with names from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
-// Bodies adapted from community sources: none; tools/check_origin.py reports none above its threshold.
+// Source exposure: mixed (community declarations and the pinned image listing).
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original reconstruction with the labelled visitor interface.
+// Adapted bodies: none.
+// BGSStoryManagerQuestNode::AcceptVisitor: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // 0x539020 BGSStoryManagerQuestNode::Revert
 // 0x539050 BGSStoryManagerQuestNode::SaveGame
+// 0x538c20 BGSStoryManagerQuestNode::AcceptVisitor
 #include "BGSStoryManagerQuestNode.h"
 
 void BGSStoryManagerQuestNode::Revert(BGSLoadFormBuffer*)
@@ -27,4 +31,10 @@ void BGSStoryManagerQuestNode::SaveGame(BGSSaveFormBuffer* a_buf)
             i = i + 1;
         } while (i < count);
     }
+}
+
+// Dispatch the visitor to this quest node on entry.
+BGSStoryManagerTreeVisitor::VisitControl BGSStoryManagerQuestNode::AcceptVisitor(BGSStoryManagerTreeVisitor& a_visitor)
+{
+    return a_visitor.VisitQuestNode(*this, true);
 }

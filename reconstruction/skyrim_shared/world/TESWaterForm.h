@@ -1,3 +1,4 @@
+// Code origin: original declarations with the labelled community layouts and member names.
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESWaterForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -9,7 +10,7 @@
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class TESWaterForm : public TESForm {
 public:
@@ -17,6 +18,10 @@ public:
     ~TESWaterForm() override;  // 00
 
     bool GetDangerous() const override;  // 1B
+
+    bool Function306fc0() const;
+    bool Function307010() const;
+    bool Function307060() const;
 
     // members
     std::uint8_t unk20[0x98];   // 20

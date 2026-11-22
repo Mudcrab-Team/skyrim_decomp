@@ -1,3 +1,4 @@
+// Code origin: original declarations with the labelled community layouts and member names.
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSStoryManagerBranchNode, ::QChildCount, ::GetChild, ::InitItemImpl, ::children: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -14,13 +15,44 @@
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
+template <class T>
+class BSTArray {
+public:
+    T*            data;      // 00
+    std::uint32_t capacity;  // 08
+    std::uint32_t pad0C;     // 0C
+    std::uint32_t size;      // 10
+    std::uint32_t pad14;     // 14
+};
+static_assert(sizeof(BSTArray<void*>) == 0x18, "layout");
+
+class BGSStoryManagerBranchNode;
+class BGSStoryManagerQuestNode;
+class BGSStoryManagerTreeForm;
+class PeriodicUpdateTimer;
+class TESQuest;
+
+// Visitor dispatch and fields: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 class BGSStoryManagerTreeVisitor {
 public:
     enum class VisitControl : std::int32_t {
     };
+
+    virtual ~BGSStoryManagerTreeVisitor();
+    virtual VisitControl VisitBranchNode(BGSStoryManagerBranchNode& a_node);
+    virtual VisitControl VisitQuestNode(BGSStoryManagerQuestNode& a_node, bool a_entering);
+    virtual VisitControl VisitQuest(TESQuest& a_quest);
+    virtual void Revert();
+
+    PeriodicUpdateTimer* timer;
+    std::int32_t currentCursorDepth;
+    BGSStoryManagerQuestNode* lastQuestParent;
+    BSTArray<BGSStoryManagerTreeForm*> cursorAncestry;
+    std::uint32_t queryID;
 };
+static_assert(sizeof(BGSStoryManagerTreeVisitor) == 0x40, "story visitor size");
 
 class TESCondition {
 public:
@@ -65,23 +97,13 @@ public:
 };
 static_assert(sizeof(BGSStoryManagerNodeBase) == 0x48, "layout");
 
-template <class T>
-class BSTArray {
-public:
-    T*            data;      // 00
-    std::uint32_t capacity;  // 08
-    std::uint32_t pad0C;     // 0C
-    std::uint32_t size;      // 10
-    std::uint32_t pad14;     // 14
-};
-static_assert(sizeof(BSTArray<void*>) == 0x18, "layout");
-
 class BGSStoryManagerBranchNode : public BGSStoryManagerNodeBase {
 public:
     void                     InitItemImpl() override;                   // 13
     std::uint32_t            QChildCount() const override;              // 3B
     BGSStoryManagerTreeForm* GetChild(std::uint32_t a_idx) const override;  // 3C
 
+    BGSStoryManagerTreeVisitor::VisitControl AcceptVisitor(BGSStoryManagerTreeVisitor& a_visitor) override;
     void SetFormFlag(bool a_set);
 
     // members

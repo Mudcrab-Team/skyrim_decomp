@@ -1,3 +1,4 @@
+// Code origin: original declarations with the labelled community layouts and member names.
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // The shape of ClearData follows the sibling's TESLoadScreen::ClearData (clear the screen data, then the
@@ -6,21 +7,22 @@
 // TESLoadScreen, TESLoadScreen::ClearData, ::conditions, ::loadNIFData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESLoadScreen::LoadNIFData, ::cameraPath: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // LoadNIFData::unk00: GUESS(low); the members before cameraPath are one opaque block here
-// TESLoadScreen::unk30: GUESS(low); stands for loadingText
 // TESCondition, TESModel: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); layouts reduced to their sizes
 // TESCondition::head: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; its type is not claimed
 // TESCondition::Clear: GUESS(low); the callee at RVA 0x4a6d90 that ClearData calls with this + 0x20
 // TESModel::~TESModel, ::InitializeDataComponent, ::ClearDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only ClearDataComponent is called
 // TESModel::unk08: GUESS(low); the members of TESModel are not recovered
+// TESLoadScreen::CanDisplay, TESCondition::IsTrue: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class TESCondition {
 public:
     void Clear();
+    bool IsTrue(TESObjectREFR* a_subject, TESObjectREFR* a_target) const;
 
     void* head;  // 00
 };
@@ -35,6 +37,8 @@ public:
 };
 static_assert(sizeof(TESModel) == 0x28, "layout");
 
+extern TESObjectREFR* g_loadScreenConditionSubject;
+
 class TESLoadScreen : public TESForm {
 public:
     struct LoadNIFData {
@@ -46,8 +50,11 @@ public:
     void InitializeData() override;  // 04
     void ClearData() override;       // 05
 
+    bool CanDisplay() const;
+    bool Function341670() const;
+
     TESCondition  conditions;   // 20
     LoadNIFData*  loadNIFData;  // 28
-    std::uint64_t unk30;        // 30
+    std::uint64_t unk30;       // 30
 };
 static_assert(sizeof(TESLoadScreen) == 0x38, "layout");
