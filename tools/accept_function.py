@@ -996,6 +996,7 @@ def superseded_approval(fn, record, previous):
     refuse(is_hash(previous['review_sha256']), f'{where} names no review hash')
 
 
+@source_digest_cache()
 def label_only(root, select=None, when=None, *, prepare_only=False):
     """Re-accept `review behind` entries whose compared code section is unchanged, without a
     Reviewer pass (docs/verification.md, "Label-only re-acceptance"). All selected entries, or all
@@ -1058,6 +1059,7 @@ def label_only(root, select=None, when=None, *, prepare_only=False):
     return apply(root, data, new, target, prepared, stale_before - selected, when)
 
 
+@source_digest_cache()
 def refresh_named(root, select=None, when=None):
     """Recompute tier 2 for current `matched` entries (all, or the selected ones)."""
     root = Path(root)

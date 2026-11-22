@@ -15,7 +15,9 @@ import sys
 
 from compare import COMPARATOR_VERSION, CONTRACT_VERSION, REPORT_SCHEMA, comparator_source_sha256, sanitized
 from source_digest import INCLUDE_ROOTS, recipe_flag_problem
-from digest_v2 import DIGEST_METHOD, DIGEST_METHODS, review_binds, run_revision, run_digest_problem, tu_digest
+from digest_v2 import DIGEST_METHOD, DIGEST_METHODS, review_binds, run_revision, run_digest_problem
+from digest_v2 import tu_digest as _tu_digest
+from scoped_memo import memoized
 from check_source_digest import include_closure, source_digest_cache
 import source_moves
 from lint_reconstruction import lint_tree
@@ -138,6 +140,12 @@ def pinned_compiler_sha256(root):
         if len(parts) == 2 and parts[1] == 'cl.exe':
             return parts[0]
     raise ValueError(f'{TOOLCHAIN_PIN} names no cl.exe')
+
+
+def tu_digest(root, paths, method=None):
+    """digest_v2.tu_digest, computed once per unit and method within one operation."""
+    return memoized(('tu_digest', str(Path(root).resolve()), tuple(sorted(set(paths))), method),
+                    lambda: _tu_digest(root, paths, method))
 
 
 def check_unit(root, compiled, unit, what):
@@ -807,9 +815,12 @@ def validate(data, target, root=None, stale_ok=False):
                 'Evidence must reference public findings or reports')
         require(((ROOT if root is None else root) / path).is_file(), 'Evidence does not exist')
         heavy.append(fn)
-    for outcome in _check_functions(heavy, target, root):
-        if outcome is not None:
-            stale.append(outcome)
+    # Units share headers and most entries share a unit, so resolving include closures once per
+    # validation (not once per entry, per worker) is what keeps a full-inventory pass tolerable.
+    with source_digest_cache():
+        for outcome in _check_functions(heavy, target, root):
+            if outcome is not None:
+                stale.append(outcome)
     ordered_ranges = sorted(ranges)
     require(all(a[1] <= b[0] for a, b in zip(ordered_ranges, ordered_ranges[1:])),
             'Overlapping function ranges')

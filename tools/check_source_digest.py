@@ -4,6 +4,7 @@ from contextvars import ContextVar
 import os
 from pathlib import Path, PurePosixPath
 
+from scoped_memo import memo_scope
 from validation_reads import read_bytes
 
 from source_digest import INCLUDE_ROOTS, PRIVATE_DIRS, include_closure as reference_closure, quoted_includes
@@ -20,7 +21,8 @@ def source_digest_cache():
         return
     token = _CACHE.set({'directories': {}, 'includes': {}, 'closures': {}})
     try:
-        yield
+        with memo_scope():
+            yield
     finally:
         _CACHE.reset(token)
 
