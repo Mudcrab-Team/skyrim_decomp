@@ -32,16 +32,21 @@ accepted functions sit in classes it does not draw. Both pictures are generated 
 Bars show gross acceptances on the accepting commit's UTC date; reacceptances count again.
 The cumulative charts reflect revocations and size corrections. Attribution is a recorded
 claim about the Drafter model or generating tool, not proof of authorship; review and acceptance
-models are not counted. Distinct model counts exclude tools and unreported claims. One KiB is
+models are not counted. The model comes from the contributor's PR summary (kept in each record), the
+unit header or the generating tool; a contributor who states no model or no AI is charted as
+"Contributors (human / unstated)", and tool-stamped units as scripts and tools. Distinct model
+counts exclude those and unreported claims. One KiB is
 1,024 bytes. The [report site](https://mudcrab-team.github.io/skyrim_decomp/) has daily details.
 
 <!-- model-trend-totals -->
 | Model family | Gross accepted bytes |
 | --- | ---: |
-| Claude | 27,604 |
-| GPT / Codex | 94,021 |
-| Scripts and tools | 1,402,643 |
-| Not reported | 120,922 |
+| Claude | 20,740 |
+| GPT / Codex | 125,145 |
+| Other models | 8,456 |
+| Contributors (human / unstated) | 1,697 |
+| Scripts and tools | 1,440,471 |
+| Not reported | 48,681 |
 <!-- /model-trend-totals -->
 
 Regenerate from tracked first-parent history in a full checkout with
