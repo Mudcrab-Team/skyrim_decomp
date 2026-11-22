@@ -16,7 +16,8 @@ public:
     virtual void Unk2();
     virtual void Unk3();
     virtual std::uint8_t Slot4() const;
-    void Function159ded0();  // compared: 0x159ded0; STANDIN GUESS(low)
+    // Function159ded0: STANDIN GUESS(low)
+    void Function159ded0();  // compared: 0x159ded0
     std::uint8_t field8;
     std::uint8_t pad9[0x7];
 };
