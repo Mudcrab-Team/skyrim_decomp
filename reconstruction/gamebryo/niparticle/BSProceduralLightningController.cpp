@@ -1,13 +1,16 @@
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
-// Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Adapted bodies: none
+// Source exposure: mixed (pinned image listing and labelled declarations).
+// Code origin: original reconstruction from the pinned listing and labelled declarations.
+// Adapted bodies: none.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// BSProceduralLightningController::SendGeomEvent, geometry and event source: CRASHLOGGER_PDB(59818@2026.10.24)
+// Declarations derived from powerof3/CommonLibSSE are GPL-3.0.
 // 0xffd880 BSProceduralLightningController::GetInterpolator
 // 0xffd7d0 BSProceduralLightningController::GetInterpolatorID
 // 0xffc810 BSProceduralLightningController::LoadBinary
 // 0xffe540 BSProceduralLightningController::InterpolatorIsCorrectType
 // 0xffc920 BSProceduralLightningController::RegisterStreamables
 // 0xffca50 BSProceduralLightningController::IsEqual
+// 0xffdce0 BSProceduralLightningController::SendGeomEvent
 #include "BSProceduralLightningController.h"
 
 // RVA 0xffd880, 12 bytes.
@@ -94,4 +97,11 @@ bool BSProceduralLightningController::RegisterStreamables(NiStream& a_stream)
 std::uint32_t BSProceduralLightningController::GetInterpolatorCount() const
 {
     return 0x9;
+}
+
+// Publish the current geometry to listeners.
+void BSProceduralLightningController::SendGeomEvent()
+{
+    BSProceduralGeomEvent event{geometry};
+    geometryEvents.SendEvent(event);
 }

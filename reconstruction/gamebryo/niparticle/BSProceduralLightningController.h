@@ -1,5 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
+// Code origin: original declarations with the labelled community layouts.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // BSProceduralLightningController: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // NiInterpController: STANDIN EXE_RTTI
@@ -9,7 +10,8 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../nianimation/NiTimeController.h"
+#include "gamebryo/nianimation/NiTimeController.h"
+#include "generated/crashlogger_pdb/types/BSTEventSource_RE__BSProceduralGeomEvent_281d9705.h"
 
 class NiInterpolator;
 class NiStream;
@@ -88,6 +90,17 @@ extern NiRTTI NiRTTI_NiBoolTimelineInterpolator;
 // g_procLightningIDNames: GUESS(low)
 extern const char* const g_procLightningIDNames[9];
 
+class BSDynamicTriShape;
+
+struct BSProceduralGeomEvent {
+    BSDynamicTriShape* geometry;
+};
+
+class GeometryEventSource : public BSTEventSource_RE__BSProceduralGeomEvent_281d9705 {
+public:
+    void SendEvent(const BSProceduralGeomEvent& a_event);
+};
+
 class NiInterpController : public NiTimeController
 {
 public:
@@ -119,7 +132,11 @@ public:
     virtual bool IsEqual(NiObject* a_object);
 
     // unknown48: GUESS(low); padding up to the first member, apart from the offsets the bodies read
-    std::uint8_t unknown48[0xB8];
+    void SendGeomEvent();
+
+    GeometryEventSource geometryEvents;
+    BSDynamicTriShape* geometry;
+    std::uint8_t unknownA8[0x58];
     // object100: GUESS(low)
     NiInterpolator* object100;
     // interpolators: GUESS(low); nine entries read by index and compared one by one
