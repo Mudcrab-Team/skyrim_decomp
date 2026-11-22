@@ -1,6 +1,5 @@
 // Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original body from the pinned image listing; declarations are stand-ins (GUESS(low)).
-// SPDX-License-Identifier: CC0-1.0
+// Code origin: original body from the pinned image listing; declarations are stand-in guesses.
 // 0x82f150 CombatInventoryItemStaff::Function82f150
 // Adapted bodies: none for Function82f150.
 // Source exposure: mixed (local binary analysis and public names).

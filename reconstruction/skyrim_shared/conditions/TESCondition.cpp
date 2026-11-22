@@ -1,6 +1,5 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image listing; no adapted bodies
-// SPDX-License-Identifier: CC0-1.0
 // 0x4a6df0 TESCondition::Function4a6df0
 // Adapted bodies: none
 // Source exposure: mixed

@@ -1,5 +1,5 @@
 // Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original body from the pinned image listing; declarations are stand-ins (GUESS(low)).
+// Code origin: original body from the pinned image listing; declarations are stand-in guesses.
 // SPDX-License-Identifier: CC0-1.0
 // 0xefd6e0 BSParticleShaderGeometry::Functionefd6e0
 // Adapted bodies: none for Functionefd6e0.

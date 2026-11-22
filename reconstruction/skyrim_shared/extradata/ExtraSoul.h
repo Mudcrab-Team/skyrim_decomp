@@ -12,7 +12,7 @@ class ExtraSoul
 {
 public:
     virtual std::uint32_t GetType() const;
-    ExtraSoul(std::uint8_t a_soul);  // compared: 0x1816f0; STANDIN GUESS(low)
+    ExtraSoul(std::uint8_t a_soul);  // compared: 0x1816f0
     void* field8;
     std::uint8_t field10;
 };

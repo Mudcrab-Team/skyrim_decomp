@@ -1,6 +1,5 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original; the listing and community declarations only
-// SPDX-License-Identifier: CC0-1.0
 // 0xbbc150 BSTweenerModifier::Functionbbc150
 // Adapted bodies: none
 // Source exposure: mixed (local binary analysis and public names).

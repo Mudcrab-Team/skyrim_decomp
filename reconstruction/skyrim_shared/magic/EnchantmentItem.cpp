@@ -1,6 +1,5 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original; the ModifyWeaponValue body is written from the pinned image listing
-// SPDX-License-Identifier: CC0-1.0
 // 0x420c40 EnchantmentItem::ModifyWeaponValue
 // Recipe: reconstruction/recipes/o2-fpfast.json
 // Source exposure: mixed (local binary analysis and public names).

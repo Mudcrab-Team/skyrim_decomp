@@ -1,9 +1,8 @@
 // Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: SKELETON_TODO_CODE_ORIGIN (state the actual origin and any adaptation)
+// Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
 // 0x1df190 TESAttackDamageForm::Function1df190
-// Adapted bodies: SKELETON_TODO_ORIGIN (write "none" when attempt prints no "origin advice" line;
-// otherwise name each adapted body, its upstream file, revision and licence).
+// Adapted bodies: none
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listings of the
 // pinned image, with the class layout from the header beside this file. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
 #include "TESAttackDamageForm.h"
