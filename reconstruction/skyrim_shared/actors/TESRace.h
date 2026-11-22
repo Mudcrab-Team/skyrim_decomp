@@ -14,7 +14,7 @@
 // BSFixedString, BSFixedString::_data, ::EMPTY, ::data, ::c_str: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG templates the class, EMPTY is an external constant at RVA 0x1b58020 bound by hint
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
 // TESRace::validEquipTypes, TESRace::faceRelatedData, TESRace::FaceRelatedData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// TESRace::QCanUseMeleeWeapons, TESRace::QCanUseWeaponType: CRASHLOGGER_PDB(59818@2026.10.24)
+// TESRace::QCanUseMeleeWeapons: CRASHLOGGER_PDB(59818@2026.10.24)
 // TESRace::GetValidEquipTypes: GUESS(low)
 #pragma once
 
@@ -62,7 +62,6 @@ public:
     BGSMovementType* GetMovementType(std::int32_t a_index);
 
     bool QCanUseMeleeWeapons() const;
-    bool QCanUseWeaponType(std::uint32_t a_type) const;
     bool Function3e82e0() const;
     BGSTextureSet* Function3e8610(std::int32_t a_sex, std::uint32_t a_index) const;
 

@@ -5,14 +5,13 @@
 // Adapted bodies: TestBit from the Fallout 3 sibling (CC0-1.0).
 // TestBit: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422
-// TESRace::QCanUseMeleeWeapons, TESRace::QCanUseWeaponType: CRASHLOGGER_PDB(59818@2026.10.24)
+// TESRace::QCanUseMeleeWeapons: CRASHLOGGER_PDB(59818@2026.10.24)
 // 0x3ebda0 TESRace::GetPlayable
 // 0x3e6250 TESRace::GetBodyPartData
 // 0x3ebd80 TESRace::GetFormEditorID
 // 0x3e64a0 TESRace::GetMovementType
 // 0x3eb840 TESRace::~TESRace
 // 0x3e8300 TESRace::QCanUseMeleeWeapons
-// 0x3e82c0 TESRace::QCanUseWeaponType
 // 0x3e82e0 TESRace::Function3e82e0
 // 0x3e8610 TESRace::Function3e8610
 #include "TESRace.h"
@@ -61,12 +60,6 @@ BGSMovementType* TESRace::GetMovementType(std::int32_t a_index)
 bool TESRace::QCanUseMeleeWeapons() const
 {
     return GetValidEquipTypes(kMeleeWeapons) > 0;
-}
-
-// Report whether the race supports the indexed weapon type.
-bool TESRace::QCanUseWeaponType(std::uint32_t a_type) const
-{
-    return GetValidEquipTypes(1u << a_type) != 0;
 }
 
 // Report whether this race can equip a weapon, staff or spell.
