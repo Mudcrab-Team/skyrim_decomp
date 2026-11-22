@@ -25,8 +25,17 @@ public:
     virtual BGSPerk* GetPerk();
 };
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// value: GUESS(low); pooled string pointer.
-class BSFixedString { public: ~BSFixedString(); const char* value; };
+class BSFixedString {
+public:
+    ~BSFixedString();
+    // LoadFromFile: GUESS(low); reads the pooled string with the selected file context.
+    void LoadFromFile(TESFile* a_file);
+    // value: GUESS(low); pooled string pointer.
+    const char* value;
+};
+
+// g_memoryContext_tls_0x768: GUESS(low); current thread's memory context.
+extern __declspec(thread) std::uint32_t g_memoryContext_tls_0x768;
 class BGSEntryPointFunctionDataText : public BGSEntryPointFunctionData {
 public:
     // BGSEntryPointFunctionDataText::BGSEntryPointFunctionDataText: GUESS(low); retained for vftable emission.
