@@ -1338,27 +1338,44 @@ class Bot:
             if entry.is_dir() and entry.name not in own and not (local / entry.name).exists():
                 (local / entry.name).symlink_to(entry, target_is_directory=True)
 
+    def head_blob(self, head, name):
+        """The file's bytes at the PR head, or None when the head has no such path (deleted, or never there).
+
+        The head is fetched again when the checkout no longer holds it: it is only ever reachable through
+        FETCH_HEAD, so a housekeeping pass can drop it between two steps of one run."""
+        shown = self.run(['git', 'show', f'{head}:{name}'], check=False)
+        if shown.returncode == 0:
+            return shown.stdout
+        if self.run(['git', 'cat-file', '-e', f'{head}^{{commit}}'], check=False).returncode:
+            with self.root_lock:
+                self.run(['git', 'fetch', '--quiet', 'origin', head])
+            shown = self.run(['git', 'show', f'{head}:{name}'], check=False)
+            if shown.returncode == 0:
+                return shown.stdout
+        return None
+
     def drop_landed(self, head, files, ref='origin/main'):
         """Files whose head content already equals main's: a stacked PR repeats its lower PRs' files."""
         keep = []
         for item in files:
             there = self.run(['git', 'show', f'{ref}:{item["filename"]}'], check=False)
-            if item.get('status') == 'removed':
+            mine = None if item.get('status') == 'removed' else self.head_blob(head, item['filename'])
+            if mine is None:
+                # A removal, or a path the head does not have: only a file main still has is left to delete.
                 if there.returncode == 0:
                     keep.append(item)
                 continue
-            mine = self.run(['git', 'show', f'{head}:{item["filename"]}']).stdout
             if there.returncode or there.stdout != mine:
                 keep.append(item)
         return keep
 
     def overlay(self, head, files):
         for item in files:
-            if item.get('status') == 'removed':
-                (self.tree / item['filename']).unlink(missing_ok=True)
-                continue
-            blob = self.run(['git', 'show', f'{head}:{item["filename"]}']).stdout
+            blob = None if item.get('status') == 'removed' else self.head_blob(head, item['filename'])
             dest = self.tree / item['filename']
+            if blob is None:
+                dest.unlink(missing_ok=True)
+                continue
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(blob)
 

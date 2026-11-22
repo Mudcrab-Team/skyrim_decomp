@@ -215,6 +215,28 @@ class DropLandedTests(unittest.TestCase):
                      {'filename': 'reconstruction/high.cpp', 'status': 'added'}]
             self.assertEqual([f['filename'] for f in bot.drop_landed(head, files)], ['reconstruction/high.cpp'])
 
+    def test_a_path_the_head_lacks_is_a_deletion_not_a_stop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            def git(*a):
+                return subprocess.run(['git', '-C', tmp, *a], check=True, capture_output=True, text=True).stdout.strip()
+            git('init', '-q', '-b', 'main')
+            git('config', 'user.email', 't@example.invalid'); git('config', 'user.name', 't')
+            (repo / 'reconstruction').mkdir()
+            (repo / 'reconstruction/gone.cpp').write_text('1\n')
+            git('add', '.'); git('commit', '-qm', 'main'); git('update-ref', 'refs/remotes/origin/main', 'HEAD')
+            git('rm', '-q', 'reconstruction/gone.cpp'); git('commit', '-qm', 'head', '--allow-empty')
+            head = git('rev-parse', 'HEAD')
+            bot = pr_bot.Bot(root=repo, work=repo / 'w')
+            bot.tree = repo / 'tree'
+            (bot.tree / 'reconstruction').mkdir(parents=True)
+            (bot.tree / 'reconstruction/gone.cpp').write_text('1\n')
+            files = [{'filename': 'reconstruction/gone.cpp', 'status': 'modified'},
+                     {'filename': 'reconstruction/never.cpp', 'status': 'modified'}]
+            self.assertEqual([f['filename'] for f in bot.drop_landed(head, files)], ['reconstruction/gone.cpp'])
+            bot.overlay(head, files)
+            self.assertFalse((bot.tree / 'reconstruction/gone.cpp').exists())
+
 
 class RemovedAcceptedTests(unittest.TestCase):
     def test_only_accepted_functions_a_changed_unit_no_longer_names_are_removed(self):
