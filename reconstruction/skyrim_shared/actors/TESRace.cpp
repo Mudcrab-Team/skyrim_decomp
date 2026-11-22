@@ -30,7 +30,7 @@ TESRace::TESRace()
 
 bool TESRace::GetPlayable() const
 {
-    return data.flags & kPlayableRaceFlag;
+    return TestBit(data.flags, 0);
 }
 
 BGSBodyPartData* TESRace::GetBodyPartData()
