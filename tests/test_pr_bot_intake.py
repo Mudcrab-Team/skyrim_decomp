@@ -211,6 +211,8 @@ if root.joinpath('refuse').exists():
     print(json.dumps({'recorded': [], 'refused': {r: 'no' for r in rvas}, 'files': []}))
     raise SystemExit(1)
 (root / 'reports').mkdir(exist_ok=True)
+if '--drafter' in args:
+    (root / 'drafter').write_text(args[args.index('--drafter') + 1])
 for r in rvas:
     (root / 'reports' / (r + '.json')).write_text('{}')
 print(json.dumps({'recorded': rvas, 'refused': {}, 'files': ['reports/' + r + '.json' for r in rvas]}))
@@ -283,6 +285,16 @@ class LandWithRecordsTests(WorkDir):
         self.assertEqual(sorted(names), ['reconstruction/U.cpp', 'reports/0x1000.json'])
         self.assertTrue(git(self.origin, 'log', '-1', '--format=%s', squash).startswith('Reconstruct 1 function'))
         self.assertIn('Co-authored-by: a', git(self.origin, 'log', '-1', '--format=%B', squash))
+
+    def test_the_prs_drafter_line_is_passed_to_the_record_step(self):
+        body = '- Drafted by: someone, assisted by claude-sonnet-5-5 (a person, and the AI model if one wrote code)'
+        self.bot.gh_json = lambda *a: {'headRefOid': self.head, 'state': 'OPEN', 'body': body}
+        self.assertTrue(self.land())
+        self.assertEqual((self.tree / 'drafter').read_text(), 'claude-sonnet-5-5')
+
+    def test_a_pr_that_states_no_drafter_passes_none(self):
+        self.assertTrue(self.land())
+        self.assertFalse((self.tree / 'drafter').exists())
 
     def test_a_refused_record_leaves_main_alone_and_asks_for_the_plain_merge(self):
         (self.tree / 'refuse').write_text('')

@@ -53,6 +53,7 @@ import threading
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import drafter_claim  # noqa: E402
 import header_check  # noqa: E402
 import lint_reconstruction  # noqa: E402
 import mapping_check  # noqa: E402
@@ -3178,6 +3179,20 @@ class Bot:
         except (OSError, ValueError):
             return False
 
+    def drafter_args(self, number):
+        """`--drafter <claim>` for tools/record.py from the PR's own summary; [] when it states none.
+
+        Read when the record is written, not at head time, so a contributor's later edit of the summary
+        is what is kept. A GitHub error must never hold up the record, so it only drops the claim; the
+        backfill tool recovers it from the merged PR later.
+        """
+        try:
+            body = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'body').get('body')
+        except (GhFailure, OSError, ValueError, subprocess.SubprocessError):
+            return []
+        claim = drafter_claim.from_body(body)
+        return ['--drafter', claim] if claim else []
+
     def land_with_records(self, pr, state, rvas, subject, body):
         """Squash the PR and write its records in one commit on main; False when the usual merge must be used.
 
@@ -3226,7 +3241,8 @@ class Bot:
                 # function is refused, this path gives up and the plain merge leaves main red until a retry.
                 self.rebind_unit_maps(number, head, todo)
                 argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--task-id', task_id,
-                        '--author', pr['author']['login'], '--records', records, '--root', tree]
+                        '--author', pr['author']['login'], '--records', records, '--root', tree,
+                        *self.drafter_args(number)]
                 for r in todo:
                     argv += ['--rva', hex(r)]
                 done = self.run(argv, cwd=tree, timeout=1800, check=False)
@@ -3270,7 +3286,7 @@ class Bot:
         self.rebind_unit_maps(pr['number'], pr['headRefOid'], rvas)
         argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--push',
                 '--task-id', task_id, '--author', pr['author']['login'],
-                '--records', state.get('records')]
+                '--records', state.get('records'), *self.drafter_args(pr['number'])]
         for r in rvas:
             argv += ['--rva', hex(r)]
         done = self.run(argv, cwd=self.tree, timeout=1800, check=False)

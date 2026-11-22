@@ -9,8 +9,16 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-COLORS = {'Claude': '#e5796b', 'GPT / Codex': '#58a6ff',
-          'Scripts and tools': '#d29922', 'Not reported': '#6e7681'}
+CONTRIBUTORS = 'Contributors (human / unstated)'
+COLORS = {'Claude': '#e5796b', 'GPT / Codex': '#58a6ff', 'Other models': '#a371f7',
+          CONTRIBUTORS: '#3fb950', 'Scripts and tools': '#d29922', 'Not reported': '#6e7681'}
+# Categories that are not a named model, left out of the per-day model count.
+NOT_A_MODEL = ('Not reported', 'Scripts and tools', CONTRIBUTORS)
+CLAIMS = 'data/drafter-claims.json'
+# A contributor who says no AI wrote it, or leaves the field blank, is a human or unstated author.
+UNSTATED = re.compile(r'\b(?:not stated|unstated|no ai|no model|none|human|by hand|hand[- ]?written|manual(?:ly)?|myself|n/?a)\b', re.I)
+# Tool stamps and L1 templates write their own header lines; a stamped body is the tool's, not a model's.
+STAMPED = re.compile(r'(?im)^//\s*Origin:\s*[\w-]+\s+v\d|\bStamped as a twin\b|\btools/\w+\.py\b')
 
 
 class GitBlobs:
@@ -37,15 +45,22 @@ class GitBlobs:
         self.proc.wait()
 
 
-def model_claim(claim):
+OTHER = r'(?:[\w-]+/)?(?:deepseek|gemini|hy\d|qwen|kimi|glm|grok|mistral|llama)[\w.-]*(?: v?\d[\w.]*)?(?: (?:flash|pro|lite|free))?'
+MODELS = re.compile(r'\b(?:claude[- .]*)?(?:haiku|sonnet|opus|fable)(?:[- .\d]+\d)?|\b(?:gpt[- .\d]*|codex[- .]*)?(?:luna|terra|sol|astra)\b(?:[- .\d]+\d)?|\bgpt[- .\d]+\d+|\bclaude\b|\bcodex\b|\b' + OTHER, re.I)
+
+
+def model_claim(claim, contributor=False):
+    """(family, model) for a stated drafter; `contributor` lets a plain "not stated" or "human" count."""
     if not isinstance(claim, str) or not claim.strip():
         return 'Not reported', 'Not reported'
     claim = claim.strip()
-    if re.search(r'\b(generated|generator|stamp(?:\.py)?)\b', claim, re.I):
+    if re.search(r'\b(generated|generator|stamp(?:\.py)?)\b|\btools/\w+\.py\b', claim, re.I):
         return 'Scripts and tools', 'Scripts and tools'
     claim = re.sub(r'\bcodex\s+(?=gpt)', '', claim, flags=re.I)
-    models = re.findall(r'\b(?:claude[- .]*)?(?:haiku|sonnet|opus|fable)(?:[- .\d]+\d)?|\b(?:gpt[- .\d]*|codex[- .]*)?(?:luna|terra|sol)(?:[- .\d]+\d)?|\bgpt[- .\d]+\d+|\bclaude\b|\bcodex\b', claim, re.I)
+    models = MODELS.findall(claim)
     unique = list(dict.fromkeys(m.strip(' .-').lower() for m in models))
+    if not unique and contributor and UNSTATED.search(claim):
+        return CONTRIBUTORS, CONTRIBUTORS
     if len(unique) != 1:
         return 'Not reported', 'Not reported'
     model = unique[0]
@@ -53,9 +68,14 @@ def model_claim(claim):
     legacy = {'haiku-202611122314-1': 'claude-haiku-5-5',
               'haiku-202611131358-1': 'claude-haiku-5-5'}
     model = legacy.get(model, model)
-    named_gpt = re.fullmatch(r'gpt[- .]*(\d+(?:\.\d+)*)[- .]*(sol|terra|luna)', model)
+    named_gpt = re.fullmatch(r'gpt[- .]*(\d+(?:\.\d+)*)[- .]*(sol|terra|luna|astra)', model)
     if named_gpt:
         model = f'gpt-{named_gpt[1]}-{named_gpt[2]}'
+    spaced_claude = re.fullmatch(r'claude[- .]+(haiku|sonnet|opus)[- .]+(\d+)[- .](\d+)', model)
+    if spaced_claude:
+        model = 'claude-{}-{}-{}'.format(*spaced_claude.groups())
+    if re.match(r'(?:[\w-]+/)?(?:deepseek|gemini|hy\d|qwen|kimi|glm|grok|mistral|llama)', model):
+        return 'Other models', re.sub(r'\s+', '-', model.rsplit('/', 1)[-1])
     family = 'Claude' if re.search(r'claude|haiku|sonnet|opus|fable', model) else 'GPT / Codex'
     return family, model
 
@@ -68,18 +88,33 @@ def header_claim(source):
     return match.group(1) if match else None
 
 
-def attribution(fn, report, generated, source):
+def header_stamped(source):
+    if not source:
+        return False
+    return bool(STAMPED.search(source.decode('utf-8', errors='replace').split('#include', 1)[0][:6000]))
+
+
+def attribution(fn, report, generated, source, claims=None):
     # Only explicit drafter fields count; reviewer and verifier fields are unrelated.
+    contributor = bool((report or {}).get('submitter'))
     for record in (fn, report or {}):
         for field in ('drafter_model', 'drafter_worker', 'drafter'):
             claim = record.get(field)
             if isinstance(claim, dict):
                 claim = claim.get('model') or claim.get('worker')
             if isinstance(claim, str) and claim.strip():
-                family, model = model_claim(claim)
+                family, model = model_claim(claim, contributor)
                 return family, model, 'Per-function record'
+    # A claim copied from the merged PR's own summary, for records written before the bot kept it.
+    sidecar = (claims or {}).get(fn['id'])
+    if sidecar:
+        family, model = model_claim(sidecar['claim'], True)
+        if family != 'Not reported':
+            return family, model, 'PR summary'
     if fn['id'] in generated:
         return 'Scripts and tools', 'Scripts and tools', 'Family manifest'
+    if header_stamped(source):
+        return 'Scripts and tools', 'Scripts and tools', 'Tool stamp'
     claim = header_claim(source)
     if claim:
         family, model = model_claim(claim)
@@ -105,7 +140,8 @@ def generated_members(revision, blobs):
     return members
 
 
-def history(revision, blobs, pending=None):
+def history(revision, blobs, pending=None, on_gap=None):
+    """Daily rows and the current accepted set; `on_gap(fn, report, commit, when)` hears each first acceptance left unattributed."""
     shallow = subprocess.check_output(['git', 'rev-parse', '--is-shallow-repository'], cwd=ROOT, text=True).strip()
     if shallow != 'false':
         raise ValueError('A full Git history is required; this checkout is shallow.')
@@ -116,6 +152,8 @@ def history(revision, blobs, pending=None):
     current, rows = {}, defaultdict(lambda: {'families': Counter(), 'models': Counter(), 'sources': Counter(),
                                              'functions': 0, 'revoked_bytes': 0, 'correction_bytes': 0})
     generated = generated_members(':' if pending else revision, blobs)
+    raw_claims = blobs.read(':' if pending else revision, CLAIMS)
+    claims = json.loads(raw_claims)['claims'] if raw_claims else {}
     for line in lines:
         commit, timestamp = line.split()
         day = datetime.fromisoformat(timestamp).astimezone(timezone.utc).date().isoformat()
@@ -134,7 +172,9 @@ def history(revision, blobs, pending=None):
             report = json.loads(raw) if raw else {}
             unit = report.get('source', {}).get('compiled', '')
             source = blobs.read(commit, unit) if unit else None
-            family, model, origin = attribution(fn, report, generated, source)
+            family, model, origin = attribution(fn, report, generated, source, claims)
+            if on_gap and family == 'Not reported':
+                on_gap(fn, report, commit, timestamp)
             current[key] = (fn['size'], family, model, origin)
             row['families'][family] += fn['size']
             row['models'][model] += fn['size']
@@ -178,8 +218,10 @@ def render(rows):
              '<g font-family="sans-serif"><text x="24" y="32" fill="#e6edf3" font-size="18">New accepted bytes by model family</text>',
              '<text x="24" y="52" fill="#9ba3ad" font-size="12">Gross acceptances · KiB · UTC</text>']
     for i, (family, color) in enumerate(COLORS.items()):
-        parts += [f'<rect x="{24+i*195}" y="65" width="10" height="10" fill="{color}"/>',
-                  f'<text x="{39+i*195}" y="75" fill="#c9d1d9" font-size="11">{escape(family)}</text>']
+        # Three columns by two rows keep six labels inside the narrowest chart width.
+        x, y = 24 + i % 3 * 260, 60 + i // 3 * 14
+        parts += [f'<rect x="{x}" y="{y}" width="10" height="10" fill="{color}"/>',
+                  f'<text x="{x+15}" y="{y+10}" fill="#c9d1d9" font-size="11">{escape(family)}</text>']
     for n in range(5):
         y = 250 - n * 37
         parts += [f'<path d="M65 {y}H{width-25}" stroke="#30363d"/>',
@@ -198,7 +240,7 @@ def render(rows):
         if totals[i] > limit:
             parts += [f'<path d="M{x:.2f} 112 l{bar:.2f} -8 M{x:.2f} 118 l{bar:.2f} -8" stroke="#0d1117" stroke-width="3"/>',
                       f'<text x="{x+bar/2:.2f}" y="96" fill="#e6edf3" font-size="11" text-anchor="middle">{totals[i]/1024:.1f} KiB</text>']
-        count = len([m for m in rows[date]['models'] if m not in ('Not reported', 'Scripts and tools')])
+        count = len([m for m in rows[date]['models'] if m not in NOT_A_MODEL])
         parts += [f'<text x="{x+bar/2:.2f}" y="272" fill="#9ba3ad" font-size="11" text-anchor="middle">{date[5:]}</text>',
                   f'<text x="{x+bar/2:.2f}" y="296" fill="#c9d1d9" font-size="11" text-anchor="middle">{count}</text>']
     parts.append('<text x="24" y="296" fill="#9ba3ad" font-size="11">Models</text></g></svg>\n')

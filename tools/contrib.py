@@ -2708,6 +2708,9 @@ def cmd_submit(ctx, args):
     for b in blockers:
         ctx.say(f'BLOCKED: {b}')
     drafted = args.drafted_by or load_config(ctx).get('drafted_by') or 'not stated'
+    if drafted == 'not stated':
+        ctx.say('warning: no drafter is stated, so the project charts this as human or unstated. To credit the model, '
+                f"give {ctx.cli} submit --drafted-by 'your name, assisted by <model>'.")
     data = {'title': title, 'body_file': str(tdir / 'pr-body.md'), 'files': unit, 'blockers': blockers,
             'warnings': warnings, 'project_reconfirmation': reconfirmation,
             'dry_run': bool(args.dry_run), 'base': base, 'preflight': preflight,
