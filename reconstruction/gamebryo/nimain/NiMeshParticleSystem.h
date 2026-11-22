@@ -1,10 +1,8 @@
-// Source exposure: mixed (community declarations and the contributor-owned pack).
-// Code origin: original; the listing and community declarations only
+// Source exposure: mixed (community declarations and the pinned image).
+// Code origin: existing unit plus original reconstruction of Functionf9e800.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Base form: shared header gamebryo/niparticle/NiParticleSystem.h for NiParticleSystem.
-// NiMeshParticleSystem, NiMeshParticleSystem::~NiMeshParticleSystem, NiMeshParticleSystem::GetRTTI, NiMeshParticleSystem::CreateClone, NiMeshParticleSystem::LoadBinary, NiMeshParticleSystem::LinkObject, NiMeshParticleSystem::RegisterStreamables, NiMeshParticleSystem::SaveBinary, NiMeshParticleSystem::IsEqual, NiMeshParticleSystem::SetSelectiveUpdateFlags, NiMeshParticleSystem::UpdateDownwardPass, NiMeshParticleSystem::UpdateSelectedDownwardPass, NiMeshParticleSystem::UpdateRigidDownwardPass, NiMeshParticleSystem::UpdateWorldBound, NiMeshParticleSystem::UpdateWorldData, NiMeshParticleSystem::OnVisible: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// unk198: GUESS(low); the eight bytes the deleting destructor frees beyond NiParticleSystem
-// NiRTTI, NiCloningProcess, NiCullingProcess: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiMeshParticleSystem, ~NiMeshParticleSystem, GetRTTI, CreateClone, LoadBinary, LinkObject, RegisterStreamables, SaveBinary, IsEqual, SetSelectiveUpdateFlags, UpdateDownwardPass, UpdateSelectedDownwardPass, UpdateRigidDownwardPass, UpdateWorldBound, UpdateWorldData, OnVisible, NiParticlesData, NiRTTI, NiCloningProcess, NiCullingProcess: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// MeshParticleTarget, Functionf9e800, unk198, unknown00, target: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -14,6 +12,71 @@
 class NiRTTI;
 class NiCloningProcess;
 class NiCullingProcess;
+
+class MeshParticleTarget
+{
+public:
+    virtual void Slot00();
+    virtual void Slot01();
+    virtual void Slot02();
+    virtual void Slot03();
+    virtual void Slot04();
+    virtual void Slot05();
+    virtual void Slot06();
+    virtual void Slot07();
+    virtual void Slot08();
+    virtual void Slot09();
+    virtual void Slot0A();
+    virtual void Slot0B();
+    virtual void Slot0C();
+    virtual void Slot0D();
+    virtual void Slot0E();
+    virtual void Slot0F();
+    virtual void Slot10();
+    virtual void Slot11();
+    virtual void Slot12();
+    virtual void Slot13();
+    virtual void Slot14();
+    virtual void Slot15();
+    virtual void Slot16();
+    virtual void Slot17();
+    virtual void Slot18();
+    virtual void Slot19();
+    virtual void Slot1A();
+    virtual void Slot1B();
+    virtual void Slot1C();
+    virtual void Slot1D();
+    virtual void Slot1E();
+    virtual void Slot1F();
+    virtual void Slot20();
+    virtual void Slot21();
+    virtual void Slot22();
+    virtual void Slot23();
+    virtual void Slot24();
+    virtual void Slot25();
+    virtual void Slot26();
+    virtual void Slot27();
+    virtual void Slot28();
+    virtual void Slot29();
+    virtual void Slot2A();
+    virtual void Slot2B();
+    virtual void Slot2C();
+    virtual void Slot2D();
+    virtual void Slot2E();
+    virtual void Slot2F();
+    virtual void Slot30();
+    virtual void Slot31();
+    virtual void Slot32();
+    virtual void Slot33();
+    virtual void Slot34();
+};
+
+class NiParticlesData
+{
+public:
+    std::uint8_t unknown00[0xA8];
+    MeshParticleTarget* target;
+};
 
 class NiMeshParticleSystem : public NiParticleSystem
 {
@@ -35,6 +98,7 @@ public:
     void UpdateWorldData(NiUpdateData* a_data);  // 30
     void OnVisible(NiCullingProcess& a_process);  // 34
     NiMeshParticleSystem();
+    void Functionf9e800();
 
     std::uint64_t unk198;  // 198
 };

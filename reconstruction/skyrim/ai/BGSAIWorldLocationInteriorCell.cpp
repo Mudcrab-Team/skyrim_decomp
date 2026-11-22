@@ -1,13 +1,20 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSAIWorldLocationInteriorCell","rationale":"vtable owner and slot; method spelling invented","slot":13},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BGSAIWorldLocationInteriorCell: EXE_RTTI
-// Slot13: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (pinned image listing and community names).
+// Code origin: existing leaf plus original reconstruction of Function449350.
+// Adapted bodies: none
 // 0x4493d0 BGSAIWorldLocationInteriorCell::Slot13
+// 0x449350 BGSAIWorldLocationInteriorCell::Function449350
+#include <cfloat>
 #include "BGSAIWorldLocationInteriorCell.h"
-// Slot13: GUESS(low); method name inferred from vtable owner and slot
+
 std::uint8_t BGSAIWorldLocationInteriorCell::Slot13() const
 {
     return 0x1;
+}
+
+float BGSAIWorldLocationInteriorCell::Function449350(const LocationCellHolder* a_target) const
+{
+    if (a_target->cell == cell) {
+        return 0.0f;
+    }
+    return FLT_MAX;
 }

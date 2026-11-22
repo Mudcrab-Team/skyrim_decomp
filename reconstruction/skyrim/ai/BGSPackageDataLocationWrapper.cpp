@@ -1,13 +1,19 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSPackageDataLocationWrapper","rationale":"vtable owner and slot; method spelling invented","slot":5},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BGSPackageDataLocationWrapper: EXE_RTTI
-// Slot5: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (pinned image listing and public names).
+// Code origin: existing leaf plus original reconstruction of Function44e3f0.
+// Adapted bodies: none
 // 0x44e300 BGSPackageDataLocationWrapper::Slot5
+// 0x44e3f0 BGSPackageDataLocationWrapper::Function44e3f0
 #include "BGSPackageDataLocationWrapper.h"
-// Slot5: GUESS(low); method name inferred from vtable owner and slot
+
 std::uint8_t BGSPackageDataLocationWrapper::Slot5() const
 {
     return 0x1;
+}
+
+bool BGSPackageDataLocationWrapper::Function44e3f0(void*, void* a_arg)
+{
+    if (target) {
+        return target->Slot5(a_arg);
+    }
+    return false;
 }

@@ -1,15 +1,63 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BSMultiBoundCapsule: EXE_RTTI
-// GetType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (pinned image listing and community names).
+// Code origin: existing leaf plus original reconstruction of Function1002760.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// BSMultiBoundCapsule: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// GetType, BoundCapsuleTarget, BoundCapsuleArg, Function1002760, unknown00, target: GUESS(low)
 #pragma once
 #include <cstdint>
-// GetType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+
+class BoundCapsuleTarget
+{
+public:
+    virtual void Slot00();
+    virtual void Slot01();
+    virtual void Slot02();
+    virtual void Slot03();
+    virtual void Slot04();
+    virtual void Slot05();
+    virtual void Slot06();
+    virtual void Slot07();
+    virtual void Slot08();
+    virtual void Slot09();
+    virtual void Slot0A();
+    virtual void Slot0B();
+    virtual void Slot0C();
+    virtual void Slot0D();
+    virtual void Slot0E();
+    virtual void Slot0F();
+    virtual void Slot10();
+    virtual void Slot11();
+    virtual void Slot12();
+    virtual void Slot13();
+    virtual void Slot14();
+    virtual void Slot15();
+    virtual void Slot16();
+    virtual void Slot17();
+    virtual void Slot18();
+    virtual void Slot19();
+    virtual void Slot1A();
+    virtual void Slot1B();
+    virtual void Slot1C();
+    virtual void Slot1D();
+    virtual void Slot1E();
+    virtual void Slot1F();
+    virtual void Slot20();
+    virtual void Slot21();
+    virtual void Slot22();
+    virtual void Slot23();
+    virtual void Slot24();
+    virtual void Slot25();
+};
+
+struct BoundCapsuleArg
+{
+    std::uint8_t unknown00[0x18];
+    BoundCapsuleTarget* target;
+};
+
 class BSMultiBoundCapsule
 {
 public:
     virtual std::uint32_t GetType() const;
+    std::uint32_t Function1002760(BoundCapsuleArg* a_arg);
 };

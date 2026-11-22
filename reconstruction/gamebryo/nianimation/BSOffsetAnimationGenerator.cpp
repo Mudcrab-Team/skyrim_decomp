@@ -1,14 +1,20 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BSOffsetAnimationGenerator: EXE_RTTI
-// Unk_18: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (pinned image listing and community names).
+// Code origin: existing leaf plus original reconstruction of Functionbb5530.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Adapted bodies: none
 // 0xbb4d50 BSOffsetAnimationGenerator::Unk_18
+// 0xbb5530 BSOffsetAnimationGenerator::Functionbb5530
 #include "BSOffsetAnimationGenerator.h"
-// Unk_18: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+
 std::uint8_t BSOffsetAnimationGenerator::Unk_18() const
 {
     return 0x1;
+}
+
+std::uint32_t BSOffsetAnimationGenerator::Functionbb5530(std::uint8_t a_flags) const
+{
+    if (state42 == 2 || (a_flags & 1u) != 0u) {
+        return 1u;
+    }
+    return 2u;
 }
