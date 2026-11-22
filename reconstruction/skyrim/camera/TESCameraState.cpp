@@ -1,9 +1,25 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x24a090 TESCameraState::Update
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
-// 0x24a020 TESCameraState::GetRotation
-// 0x24a030 TESCameraState::GetTranslation
+// TESCameraState::Update: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #include "TESCameraState.h"
+#include <intrin.h>
+
+void TESCameraState::Update(NextStateHandle& a_nextState)
+{
+    RefCountedState* state = a_nextState.ptr;
+    if (!state)
+        return;
+    a_nextState.ptr = nullptr;
+    // The count is shared across threads; the last releaser owns deletion.
+    if (_InterlockedExchangeAdd(&state->refCount, -1) == 1)
+        delete state;
+}
 
 void TESCameraState::GetRotation(NiQuaternion& a_rotation)
 {

@@ -4,8 +4,9 @@
 // 0xfc0310 NiPSysVolumeEmitter::LoadBinary
 // 0xfc0340 NiPSysVolumeEmitter::LinkObject
 // 0xfc0390 NiPSysVolumeEmitter::SaveBinary
-// 0xfc08d0 NiPSysVolumeEmitter::dtor
-// Adapted bodies: none
+// Adapted bodies: the FNV body named by the Sibling source line above.
+// Sibling source: momusdigital/fnv_decomp@91e1b6e src/gamebryo2.2/corelibs/niparticle/nipsysvolumeemitter.cpp
+// SaveBinary: SIBLING(momusdigital/fnv_decomp@91e1b6e, no-licence)
 #include "NiPSysVolumeEmitter.h"
 
 // Emit the virtual deleting destructor with the class constructor.
