@@ -1252,6 +1252,26 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(set(ci['rows']), {'16'})
         self.assertEqual(ci['report']['base_sha'], BASE)
 
+    def test_a_run_that_skipped_its_compile_has_an_empty_map_instead_of_a_reprobe(self):
+        self.files = {}
+        self.jobs_of_run = [{'name': 'hash', 'steps': [
+            {'name': 'Compile at base and head; block only on regressions', 'conclusion': 'skipped'}]}]
+        gh = self.gh
+        self.bot.gh_json = lambda *a: {'jobs': self.jobs_of_run} if a[1].endswith('/jobs?per_page=100') else gh(*a)
+        got, state = self.host1()
+        self.assertEqual(got, {0x10: 'fail', 0x20: 'fail'})
+        self.assertEqual(state.get('ci')['map'], {})
+        self.assertEqual(state.get('ci')['run']['run_id'], 555)
+
+    def test_a_run_with_no_artifact_and_a_compile_that_ran_is_still_no_result(self):
+        self.files = {}
+        gh = self.gh
+        self.bot.gh_json = lambda *a: ({'jobs': [{'name': 'hash', 'steps': [
+            {'name': 'Compile at base and head; block only on regressions', 'conclusion': 'success'}]}]}
+            if a[1].endswith('/jobs?per_page=100') else gh(*a))
+        with self.assertRaises(pr_bot.Stop):
+            self.host1()
+
     def test_a_run_of_another_head_is_not_this_pr(self):
         self.meta['head_sha'] = 'c' * 40
         with self.assertRaises(pr_bot.Stop):

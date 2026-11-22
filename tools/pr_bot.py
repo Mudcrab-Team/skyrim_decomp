@@ -1830,6 +1830,11 @@ class Bot:
                 if meta.get('head_sha') != head or str(meta.get('id')) != run_id.group(1):
                     raise Stop('hash run belongs to another revision')
                 found = self.download_hash_result(run_id.group(1), target)
+                if not found and run.get('conclusion') == 'success' and self.compile_skipped(run_id.group(1)):
+                    # The job requested no function (a comment-only change to units of accepted functions), so it
+                    # skipped the compile and uploaded nothing. Waiting for an artifact would re-probe forever; the
+                    # empty map lets the carry rule judge each function.
+                    break
                 late = [] if not found or state is None or state.get('rows_rerun') else self.late_rows(target, functions)
                 if found and not late:
                     break
@@ -1859,7 +1864,7 @@ class Bot:
             if time.time() > deadline:
                 raise Stop('hash check has not finished')
             time.sleep(20)
-        table = results_from_report(found[0])
+        table = results_from_report(found[0]) if found else {}
         if run.get('conclusion') != 'success' and 'regressed' not in table.values():
             return {r: 'fail' for r in functions}  # a job that failed for any other reason confirms nothing
         reports = sorted(target.rglob('target-result.json'))
@@ -1877,6 +1882,13 @@ class Bot:
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
         return got
+
+    def compile_skipped(self, run_id):
+        """True when the run's hash job skipped its compile step, which is how it reports that nothing was requested."""
+        jobs = self.gh_json('api', f'repos/{REPOSITORY}/actions/runs/{run_id}/jobs?per_page=100').get('jobs', [])
+        return any(job.get('name') in HASH_CHECKS and any(
+            str(step.get('name', '')).startswith('Compile at base and head') and step.get('conclusion') == 'skipped'
+            for step in job.get('steps') or []) for job in jobs)
 
     def late_rows(self, directory, functions):
         """RVAs the run's own rows call `no-target` although main now publishes a target row for them."""
