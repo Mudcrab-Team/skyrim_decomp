@@ -288,7 +288,7 @@ class AttemptTests(WorkDir):
         self.assertEqual(len(bot.comments), 1)
 
     def test_other_infrastructure_failures_back_off_without_a_comment(self):
-        bot = self.bot_failing_with(pr_bot.Stop('hash check has not finished'))
+        bot = self.bot_failing_with(pr_bot.Waiting('hash check has not finished'))
         for _ in range(3):
             with self.assertRaises(pr_bot.Stop):
                 bot.attempt(PR, now=5.0)

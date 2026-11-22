@@ -24,6 +24,17 @@ The poll works on two PRs at once, each on its own scratch tree; pushes to main,
 the shared checkout take turns. The same infrastructure failure on one head three times in a row backs that
 head off with a growing delay (a verifier failure is said once on the PR), and a `gh` failure backs the whole
 poll off instead of looping.
+The same error (by type, message and raising function) on one head three times in a row stops all retries of that
+head: the state records `blocked: bot-error` with the signature, one log line says so, and the sticky comment says
+the bot hit an internal error and a maintainer agent will look, never a stack trace. A new head or a new code
+revision starts the count again. Waiting for CI and verifier-host failures have their own backoff and never count.
+`pr_bot.py --dry-run` alone runs the code once over every open PR with all writes refused (no push, comment, merge,
+label, probe or live state write) and exits non-zero on any exception; a stage that would pay for a compile or a
+review ends that PR's run. `tools/pr_bot_deploy.sh SHA` does this for a revision in a temporary checkout and only on
+success checks the SHA out in the service checkout and restarts the service (see the script header for the
+environment). A service wrapper that refreshes its checkout from main on every restart must honour the pin file
+the deploy writes, or it undoes the deploy. tests/test_pr_bot_replay.py replays the poll, review, hash-check and
+landing paths against scripted GitHub, CI, reviewer and compile-host fakes with real git.
 A PR that conflicts with main is not reviewed. If the contributor allows maintainer edits and only unit header
 comment blocks in reconstruction/ conflict, the bot merges main into their branch (a pushed merge commit, never a
 rebase) with the union of the header lines, and the new head is processed on the next tick; any other conflict
@@ -51,6 +62,7 @@ import subprocess
 import sys
 import threading
 import time
+import traceback
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import header_check  # noqa: E402
@@ -191,6 +203,14 @@ record.build_match_record(sys.argv[1], sys.argv[2], json.loads(sys.argv[4]), sys
 
 class Stop(Exception):
     """Infrastructure did not complete; nothing is cached and the next tick retries."""
+
+
+class Waiting(Stop):
+    """An external job has not finished yet. A long queue is not a fault, so the error breaker never counts it."""
+
+
+class WouldSpend(Exception):
+    """A dry run reached a stage that costs a compile or a review; it stops there instead of paying."""
 
 
 class HostFailure(Stop):
@@ -411,6 +431,11 @@ def union_header_conflicts(text):
 FAILURE_THRESHOLD = 3
 FAILURE_BACKOFF_FIRST, FAILURE_BACKOFF_CAP = 300, 7200
 GH_BACKOFF_FIRST, GH_BACKOFF_CAP = 60, 900
+# The same error on one head this many times stops every retry of that head until it is pushed or the bot is deployed.
+BREAKER_THRESHOLD = 3
+BOT_ERROR_COMMENT = ('The bot hit an internal error while checking this head. This is a fault in the bot, not a '
+                     'finding about your PR, and nothing was merged. A maintainer agent will look; there is nothing '
+                     'to change on your side, and a new push is checked again at once.')
 HOST_FAILURE_COMMENT = ('A verifier host did not complete the comparison of this head several times in a row. '
                         'This is a fault of the bot\'s own machine, not a finding about the PR; nothing was merged. '
                         'The bot retries with a growing delay, and re-checks at once on a new push.')
@@ -428,6 +453,44 @@ def failure_record(previous, signature, now, post=False):
     wait = 0 if count < FAILURE_THRESHOLD else min(FAILURE_BACKOFF_FIRST * 2 ** (count - FAILURE_THRESHOLD),
                                                    FAILURE_BACKOFF_CAP)
     return dict(signature=signature, count=count, next=now + wait, posted=bool(same and previous.get('posted')))
+
+
+def error_signature(exc):
+    """A stable label for an error: its type and message with the numbers and hashes that differ per run removed.
+
+    An unexpected exception also names where it was raised, since `AttributeError: x` alone would equate faults
+    in different places. The stack trace itself is never kept.
+    """
+    text = re.sub(r'0x[0-9a-fA-F]+|\b[0-9a-fA-F]{7,40}\b|\d+', '#', str(exc)).strip().splitlines()
+    label = f'{type(exc).__name__}: {text[0][:160] if text else ""}'
+    if not isinstance(exc, Stop):
+        frames = traceback.extract_tb(exc.__traceback__)
+        if frames:
+            label += f' @ {Path(frames[-1].filename).name}:{frames[-1].name}'
+    return label
+
+
+# `gh` subcommands that only read; every other `gh pr`, `gh issue`, `gh run`, `gh workflow` or `gh label` verb
+# is a write, so a verb added later is refused in a dry run until it is listed here.
+GH_READ_VERBS = {'view', 'list', 'diff', 'checks', 'status', 'download', 'watch'}
+GH_STATEFUL = {'pr', 'issue', 'run', 'workflow', 'label', 'release', 'repo', 'secret', 'variable'}
+
+
+def is_write(argv):
+    """True for a command that changes GitHub, a remote or published state."""
+    names = [str(a) for a in argv]
+    tool = Path(names[0]).name
+    if tool == 'gh':
+        if names[1:2] and names[1] in GH_STATEFUL and names[2:3] and names[2] not in GH_READ_VERBS:
+            return True
+        if names[1:2] == ['api']:
+            method = next((names[i + 1].upper() for i, a in enumerate(names[:-1]) if a in ('-X', '--method')), None)
+            fields = any(a in ('-f', '-F', '--field', '--raw-field', '--input') for a in names)
+            return method not in (None, 'GET') or (method is None and fields)
+        return False
+    if tool == 'git':
+        return 'push' in names[1:]
+    return '--push' in names
 
 
 class GhBackoff:
@@ -1083,8 +1146,8 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = dict(model_timeout=2250, compare_timeout=3600, hash_wait=1800, max_functions=120,
-                           **(config or {}))
+        self.config = {**dict(model_timeout=2250, compare_timeout=3600, hash_wait=1800, max_functions=120),
+                       **(config or {})}
         self.tree = self.work / 'tree'
         self.clock = time.time
         self.used = threading.local()  # the reviewer of this thread's latest review
@@ -1093,11 +1156,26 @@ class Bot:
         self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
+        self.code_sha_cache = self.config.get('code_sha')
+        self.blocked_writes = []  # what a dry run refused to do, for its report
         # Shared by every slot of a pool (see for_slot): git in the shared checkout races on ref locks,
         # headless Ghidra takes an exclusive project lock, and every push to main must be one at a time.
         self.root_lock = threading.RLock()
         self.ghidra_lock = threading.Lock()
         self.land_lock = threading.Lock()
+
+    @property
+    def code_sha(self):
+        """The revision of the bot's own code; an error count is valid for one revision only."""
+        if self.code_sha_cache is None:
+            try:
+                done = subprocess.run(['git', '-C', str(self.tools), 'rev-parse', 'HEAD'], capture_output=True,
+                                      timeout=30)
+                self.code_sha_cache = done.stdout.decode().strip() if done.returncode == 0 else ''
+            except (OSError, subprocess.SubprocessError):
+                self.code_sha_cache = ''
+            self.code_sha_cache = self.code_sha_cache or 'unknown'
+        return self.code_sha_cache
 
     def for_slot(self, slot):
         """A copy of this bot with its own scratch tree, sharing the locks, so two PRs never share a checkout."""
@@ -1123,6 +1201,9 @@ class Bot:
 
     def run(self, argv, cwd=None, input=None, timeout=None, check=True):
         name = Path(str(argv[0])).name
+        if self.dry_run and is_write(argv):
+            self.blocked_writes.append(' '.join(str(a) for a in argv[:4]))
+            return subprocess.CompletedProcess([str(a) for a in argv], 0, b'', b'')
         try:
             result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
                                     capture_output=True, timeout=timeout)
@@ -1145,6 +1226,8 @@ class Bot:
         """One review: codex first, the Claude Code CLI on Sonnet when codex fails for an account or capacity reason.
 
         A review verdict or malformed output is never a failure here; only the invocation is judged."""
+        if self.dry_run:
+            raise WouldSpend('review')
         text, reviewer = None, 'codex'
         if self.clock() >= self.codex_paused_until[0]:
             try:
@@ -1753,6 +1836,11 @@ class Bot:
 
     def mac_compare(self, units, tag):
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
+        if self.dry_run:
+            raise WouldSpend('local compare')
+        return self.compare_on_host(units, tag)
+
+    def compare_on_host(self, units, tag):
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
         lines, tasks = [], []
         for index, (cpp, rvas) in enumerate(sorted(units.items())):
@@ -1862,8 +1950,10 @@ class Bot:
                     if since:
                         self.drop_probe(number)  # a probe branch left at this commit would not run again
                     self.probe_hash_run(number, head)
+            if self.dry_run:
+                raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
-                raise Stop('hash check has not finished')
+                raise Waiting('hash check has not finished')
             time.sleep(20)
         table = results_from_report(found[0]) if found else {}
         if run.get('conclusion') != 'success' and 'regressed' not in table.values():
@@ -2099,6 +2189,37 @@ class Bot:
                 State(self.work / 'state', pr['number'], pr['headRefOid']).set('rejected', str(exc))
             raise
 
+    def bot_error_blocked(self, pr):
+        """True when this head hit the same bot error BREAKER_THRESHOLD times on this revision of the code.
+
+        A push is a new head (its own state file) and a deploy changes the code revision, so either lets the
+        PR be looked at again.
+        """
+        if self.dry_run:
+            return False
+        state = State(self.work / 'state', pr['number'], pr['headRefOid'])
+        return state.get('blocked') == 'bot-error' and (state.get('bot_error') or {}).get('code') == self.code_sha
+
+    def count_error(self, pr, state, exc):
+        """Count one more occurrence of this error on the head; True when the breaker has just opened."""
+        signature = error_signature(exc)
+        previous = state.get('bot_error') or {}
+        same = previous.get('signature') == signature and previous.get('code') == self.code_sha
+        count = previous['count'] + 1 if same else 1
+        record = dict(signature=signature, count=count, code=self.code_sha)
+        if count < BREAKER_THRESHOLD or self.dry_run:
+            state.set('bot_error', record)
+            return False
+        state.set('bot_error', record)
+        state.set('blocked', 'bot-error')
+        print(f'{stamp()} pr {pr["number"]}: BLOCKED bot-error head {pr["headRefOid"][:8]} after {count} identical '
+              f'errors, no more retries until a new head or a deploy: {signature}', file=sys.stderr, flush=True)
+        try:
+            self.say(pr['number'], sticky_body(pr['headRefOid'], BOT_ERROR_COMMENT))
+        except (Stop, subprocess.SubprocessError, OSError):
+            pass  # the block stands; the comment is only a courtesy
+        return True
+
     def already_rejected(self, pr):
         """True when this head was rejected before; only a push (a new head) gets another look."""
         return not self.dry_run and bool(State(self.work / 'state', pr['number'], pr['headRefOid']).get('rejected'))
@@ -2115,14 +2236,14 @@ class Bot:
         with self.pr_lock(number) as mine:
             if not mine:
                 return None
-            if self.already_rejected(pr):
+            if self.already_rejected(pr) or self.bot_error_blocked(pr):
                 return None
             ledger = State(directory, number, head).get('failure')
             if ledger and ledger.get('next', 0) > (now if now is not None else time.time()):
                 return None
             try:
                 result = self.process(pr)
-            except GhFailure:
+            except (GhFailure, WouldSpend):
                 raise
             except Stop as exc:
                 state = State(directory, number, head)  # process may have rewritten it
@@ -2133,9 +2254,19 @@ class Bot:
                     self.say(number, sticky_body(head, HOST_FAILURE_COMMENT))
                     record['posted'] = True
                 state.set('failure', record)
+                if not isinstance(exc, (HostFailure, Waiting)) and self.count_error(pr, state, exc):
+                    return None
+                raise
+            except Rejected:
+                raise
+            except Exception as exc:  # a bug in the bot: counted, so one bad head cannot loop forever
+                if self.count_error(pr, State(directory, number, head), exc):
+                    return None
                 raise
             state = State(directory, number, head)
             state.drop('failure')
+            state.drop('bot_error')
+            state.drop('blocked')
             return result
 
     def tell_rejection(self, pr, text):
@@ -2534,7 +2665,7 @@ class Bot:
             self.approve_pending(head)
             raise Stop('mapping check has no run on this head yet')
         if run['status'] != 'completed':
-            raise Stop('mapping check has not finished')
+            raise Waiting('mapping check has not finished')
         return run.get('conclusion')
 
     def process_mapping(self, pr, state, files, started):
@@ -3536,7 +3667,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
                 # bot will not look at, and queueing it costs a `gh pr view` per tick.
                 if (pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now
-                        or bot.already_rejected(pr)):
+                        or bot.already_rejected(pr) or bot.bot_error_blocked(pr)):
                     continue
                 try:
                     bot.warm(pr)
@@ -3554,6 +3685,39 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     return 0
 
 
+def dry_run_open_prs(bot, seed=None):
+    """Run the bot's code once over every PR it would poll, with every write refused; the failure count.
+
+    State goes to the bot's own scratch directory, optionally seeded with copies of the live per-head files so
+    cached stages run the code paths a live tick would. A stage that would pay for a compile or a review ends that
+    PR's run ("stopped before spending"); a rejection is a finding about the PR. Any other exception is a fault.
+    """
+    directory = bot.work / 'dry'
+    directory.mkdir(parents=True, exist_ok=True)
+    for path in Path(seed).glob('pr*-*.json') if seed else ():
+        shutil.copy2(path, directory / path.name)
+    prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
+                      'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
+    mark_owner_reconstruction(bot, prs, {})
+    failures = 0
+    for pr in outside_first(pollable(prs)):
+        try:
+            result = bot.process(pr)
+            verdict = 'ok' if not isinstance(result, dict) or not result.get('blocked') else f'ok, blocked {result["blocked"]}'
+        except WouldSpend as exc:
+            verdict = f'ok, stopped before spending on: {exc}'
+        except Rejected as exc:
+            verdict = f'ok, rejected: {exc}'
+        except Exception as exc:
+            failures += 1
+            frames = traceback.extract_tb(exc.__traceback__)
+            where = f'{Path(frames[-1].filename).name}:{frames[-1].lineno}' if frames else '?'
+            verdict = f'FAILED {type(exc).__name__}: {str(exc)[:200]} ({where})'
+        print(f'{stamp()} dry run pr {pr["number"]} {pr["headRefOid"][:8]}: {verdict}', flush=True)
+    print(f'{stamp()} dry run: {failures} failure(s); refused {len(bot.blocked_writes)} write(s)', flush=True)
+    return failures
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('command', nargs='?', choices=['pr'])
@@ -3561,7 +3725,10 @@ def main(argv=None):
     p.add_argument('--poll', action='store_true')
     p.add_argument('--interval', type=int, default=60)
     p.add_argument('--restart-after', type=int, help='--poll: exit between cycles after this many seconds')
-    p.add_argument('--dry-run', action='store_true', help='no merge, push or comment')
+    p.add_argument('--dry-run', action='store_true',
+                   help='no merge, push, comment, label or live state write; alone, run every open PR once and '
+                        'exit non-zero on any exception')
+    p.add_argument('--seed-state', type=Path, help='--dry-run: copy this state directory in first')
     p.add_argument('--head')
     p.add_argument('--base')
     p.add_argument('--root', type=Path, default=ROOT, help='checkout holding .local and origin')
@@ -3574,6 +3741,8 @@ def main(argv=None):
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
         return poll(bot, a.interval, a.restart_after, refill_every=REFILL_EVERY)
+    if a.dry_run and a.command is None:
+        return 1 if dry_run_open_prs(bot, a.seed_state) else 0
     if a.command != 'pr' or not a.number:
         p.error('give `pr NUMBER` or --poll')
     pr = bot.gh_json('pr', 'view', str(a.number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
