@@ -9,7 +9,7 @@
         "drafter": {"provider": "claude", "model": "haiku", "effort": null, "harness": "claude-code",
                     "alternatives": [{"provider": "openai", "model": "gpt-5.6-luna", "effort": "medium", "harness": "codex"}]},
         "reviewer": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"},
-        "strong": {"provider": "claude", "model": "opus", "effort": null, "harness": "claude-code"}
+        "strong": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"}
       },
       "project_docs": ["docs/drafter-runbook.md", "docs/drafter-card-small.md"],
       "contrib_docs": ["docs/contributing-agent.md", "docs/contributor-card.md"],
@@ -25,7 +25,7 @@
         "orchestrator": {"provider": "claude", "model": "fable", "effort": null, "harness": "claude-code"},
         "drafter": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"},
         "reviewer": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"},
-        "strong": {"provider": "claude", "model": "opus", "effort": null, "harness": "claude-code"}
+        "strong": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"}
       },
       "project_docs": ["docs/drafter-card.md", "docs/matching-cookbook.md", "the unit BRIEF.md and packs"],
       "contrib_docs": ["docs/contributing-agent.md", "docs/contributor-card.md"],

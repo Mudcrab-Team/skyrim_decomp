@@ -1,14 +1,29 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSQueuedTerrainDowngrade","rationale":"vtable owner and slot; method spelling invented","slot":5},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BGSQueuedTerrainDowngrade: EXE_RTTI
-// Slot5: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (pinned image listing and RTTI).
+// Code origin: original declarations and the existing bounded leaf.
+// Ownership and member names: GUESS(low)
 #pragma once
 #include <cstdint>
+
+struct QueuedLodOwner;
+
+struct QueuedLodTask {
+    std::uint8_t unknown00[0xC];
+    std::uint32_t status;
+};
 // Slot5: GUESS(low); method name inferred from vtable owner and slot
 class BGSQueuedTerrainDowngrade
 {
 public:
     virtual std::uint32_t Slot5() const;
+
+    bool Function51ac30() const;
+    void Function51acf0();
+
+    QueuedLodOwner* owner;
+    std::uint8_t unknown10[4];
+    bool cancelled;
+    QueuedLodTask* task;
+
 };
+
+void ReleaseTerrainDowngradeTask(QueuedLodTask* a_task);
