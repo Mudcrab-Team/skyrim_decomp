@@ -6,7 +6,6 @@
 // 0xef3520 NiSourceTexture::Unk_26
 // Drafted by v-macrev, assisted by claude-opus-5-5.
 #include "NiSourceTexture.h"
-
 // TextureLookupState, g_textureLookupState, LookupRendererTexture, UpdateRendererTexture: STANDIN GUESS(low); names invented
 struct TextureLookupState;
 extern TextureLookupState g_textureLookupState;
