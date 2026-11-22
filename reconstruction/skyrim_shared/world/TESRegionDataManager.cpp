@@ -1,12 +1,10 @@
+// Code origin: original; reconstructed from the pinned listing, with the community name and PDB layout
+// GetLastLoadedRegion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// lastLoadedRegion: CRASHLOGGER_PDB(59818@2026.10.24)
+// 0x251ca0 TESRegionDataManager::GetLastLoadedRegion
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Adapted bodies: none
-// 0x251870 TESRegionDataManager::AsRegionDataObjects
-// 0x2518b0 TESRegionDataManager::AsRegionDataWeather
-// 0x2518f0 TESRegionDataManager::AsRegionDataMap
-// 0x251930 TESRegionDataManager::AsRegionDataLandscape
-// 0x251970 TESRegionDataManager::AsRegionDataGrass
-// 0x2519b0 TESRegionDataManager::AsRegionDataSound
 #include "TESRegionDataManager.h"
 
 TESRegionDataObjects* TESRegionDataManager::AsRegionDataObjects(TESRegionData* a_data) const
@@ -55,4 +53,9 @@ TESRegionDataSound* TESRegionDataManager::AsRegionDataSound(TESRegionData* a_dat
         return reinterpret_cast<TESRegionDataSound*>(a_data);
     }
     return nullptr;
+}
+
+TESRegion* TESRegionDataManager::GetLastLoadedRegion() const
+{
+    return lastLoadedRegion;
 }
