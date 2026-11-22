@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers and the pinned image).
 // Code origin: existing unit plus original reconstruction of BSAudio constructor and Functioncd4b80.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSAudio, Shutdown, Init, GetReceiver, BSAudioMonitor: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // REX::W32::HWND: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSAudioListener, BSAudioVec3, g_bsAudioDefaultReceiver, g_bsAudioDefaultFront, field08, unknown09, listener, Functioncd4b80: GUESS(low)
