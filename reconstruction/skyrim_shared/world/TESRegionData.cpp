@@ -1,7 +1,11 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x24ff10 TESRegionData::Function24ff10
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
-// 0x24fee0 TESRegionData::LoadDataHeader
 #include "TESRegionData.h"
 
 // TESRegionData::TESRegionData: GUESS(low); defined so the vftable and the deleting destructor are emitted
@@ -26,4 +30,13 @@ bool TESRegionData::LoadDataHeader(void* a_arg1)
         unk0A = priority;
     }
     return true;
+}
+
+bool TESRegionData::Function24ff10(std::uint8_t a_value)
+{
+    const bool valid = a_value <= 100;
+    if (valid) {
+        unk0A = a_value;
+    }
+    return valid;
 }

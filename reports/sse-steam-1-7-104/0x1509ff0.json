@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "8b187ba92152511320a14184d3bb8f924819884e9d301a61ce6e48d7124f1159",
+        "object_sha256": "485f476cc6ad89d3963ac58baea6ce0b6aceff4a2a20883e4413a5c603586bdc",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSImagespaceShaderCopyCustomViewport.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "f68e84a88f69866a705ffb6071aff0050e3ccb2c",
+    "base_sha": "65e3b0df1933f7c611db054ababbe4be56e3e656",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "0aebaf02ca5eb3bfc08c4db71ba17d91c9c4ddf9",
+    "head_sha": "aec4678e4d5f71ee58ad4b76255b33516f8b9ffc",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44738610851,
+    "run_id": 44967984790,
     "rva": "0x1509ff0",
     "schema": 2,
-    "source_sha256": "9d6973f1ca4676a9188bc7cffc2481e9e9ca9f39abf930c3abb13956daa0cd6e",
+    "source_sha256": "398b0972e2d06a42db76b26d1784a02cdacd7d88db3a2bcc3cedca8b02509f11",
     "status": "pass",
     "symbols": [
       "?Unk_0D@BSImagespaceShaderCopyCustomViewport@@QEAAPEAPEBXPEAPEBX@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "4780f8ec4780db23a28edd0ba6b59e9474f0b8736935e505918c93e129efcd7b",
           "code_sections": 1,
-          "object_sha256": "8b187ba92152511320a14184d3bb8f924819884e9d301a61ce6e48d7124f1159"
+          "object_sha256": "485f476cc6ad89d3963ac58baea6ce0b6aceff4a2a20883e4413a5c603586bdc"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +159,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSImagespaceShaderCopyCustomViewport.cpp",
-          "source_revision": "9d6973f1ca4676a9188bc7cffc2481e9e9ca9f39abf930c3abb13956daa0cd6e"
+          "source_revision": "398b0972e2d06a42db76b26d1784a02cdacd7d88db3a2bcc3cedca8b02509f11"
         },
-        "symbol_map_sha256": "768c5164202e069f68eed0c1e6ff868535ae58c6995057144a00ffb05fb9199d",
+        "symbol_map_sha256": "e719738f42d62a0130b0c783bb40e68967f25fee7bf623de26cb3c85695a825d",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSImagespaceShaderCopyCustomViewport.cpp",
-    "digest": "9d6973f1ca4676a9188bc7cffc2481e9e9ca9f39abf930c3abb13956daa0cd6e",
+    "digest": "398b0972e2d06a42db76b26d1784a02cdacd7d88db3a2bcc3cedca8b02509f11",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSImagespaceShaderCopyCustomViewport.cpp",
       "reconstruction/bsshader/BSImagespaceShaderCopyCustomViewport.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "v0id-array",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/768c5164202e069f68eed0c1e6ff868535ae58c6995057144a00ffb05fb9199d.json",
-    "sha256": "768c5164202e069f68eed0c1e6ff868535ae58c6995057144a00ffb05fb9199d"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/e719738f42d62a0130b0c783bb40e68967f25fee7bf623de26cb3c85695a825d.json",
+    "sha256": "e719738f42d62a0130b0c783bb40e68967f25fee7bf623de26cb3c85695a825d"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

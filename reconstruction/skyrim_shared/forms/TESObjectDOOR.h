@@ -6,6 +6,8 @@
 // TESFullName, TESModel, TESModelTextureSwap, BGSDestructibleObjectForm, BGSOpenCloseForm, BGSKeywordForm, BaseFormComponent and their members: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); secondary bases of TESObjectDOOR flattened into members at their NG offsets (BGSOpenCloseForm::HandleOpen is not declared)
 // BSTArray: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NG's template reduced to its 0x18 byte layout for pointer elements, with the field names _data, _capacity, _size and pads are low-confidence guesses
 // BSFixedString, BSString, TESFileArray, TESFile, TESObjectREFR, Actor, TESWaterForm, NiAVObject, BGSVoiceType, BGSSoundDescriptorForm, BGSKeyword: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); forward declarations or a pointer-sized reduction
+// TESObjectDOOR::kSliding: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESObjectDOOR::IsSliding: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -250,6 +252,9 @@ public:
     NiAVObject* Clone3D(TESObjectREFR* a_ref) override;  // 4A
     bool GetActivateText(TESObjectREFR* a_activator, BSString& a_dst) override;  // 4C
     bool CalculateDoFavor(Actor* a_activator, bool a_arg2, TESObjectREFR* a_toActivate, float a_arg3) override;  // 4D
+
+    enum : std::uint8_t { kSliding = 1 << 4 };
+    bool IsSliding() const;
 
     TESFullName               fullName;          // 30
     TESModelTextureSwap       modelTextureSwap;  // 40

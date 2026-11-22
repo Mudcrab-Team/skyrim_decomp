@@ -5,9 +5,17 @@
 // IsTransformValueSupported: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // 0xf67e80 NiBlendTransformInterpolator::IsTransformValueSupported
+// 0xf67ed0 NiBlendTransformInterpolator::InterpolatorIsCorrectType
+// InterpolatorIsCorrectType: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); FNV names the other blend interpolators' functions NiBlend*Interpolator_InterpolatorIsCorrectType
 #include "NiBlendTransformInterpolator.h"
 // IsTransformValueSupported: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 std::uint8_t NiBlendTransformInterpolator::IsTransformValueSupported() const
 {
     return 0x1;
+}
+
+
+bool NiBlendTransformInterpolator::InterpolatorIsCorrectType(NiInterpolator* a_interpolator) const
+{
+    return a_interpolator->IsTransformValueSupported();
 }

@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "45e80eeb0c45ed99facbbf60bcf806e39968cc79c1e2e297d666df318fc5ea60",
+        "object_sha256": "4ce792c4a50ff58206129696dca70264c995697c72b50373f671b9704b76224a",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/ImageSpaceEffect.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "336de150548f23906a43ec82b1a70fa07902a5a3",
+    "base_sha": "65e3b0df1933f7c611db054ababbe4be56e3e656",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "028a40fcc8b8574e2bbefef13d00c210f1594e88",
+    "head_sha": "aec4678e4d5f71ee58ad4b76255b33516f8b9ffc",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44591279217,
+    "run_id": 44967984790,
     "rva": "0x150b480",
     "schema": 2,
-    "source_sha256": "2a8d21739a60ecacdba8e00bdad105531529d446fae3e38b8a73ff0182cc2d6b",
+    "source_sha256": "2fc0c252fef2f2354853e2751cbf9543ea988052dee177624cc47309324a6992",
     "status": "pass",
     "symbols": [
       "?IsActive@ImageSpaceEffect@@UEAA_NXZ"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "a6637a0ee29178f269a6572c5bb6c99fc6fe81a7a7b8a6d802f1f61adfa8b518",
           "code_sections": 1,
-          "object_sha256": "45e80eeb0c45ed99facbbf60bcf806e39968cc79c1e2e297d666df318fc5ea60"
+          "object_sha256": "4ce792c4a50ff58206129696dca70264c995697c72b50373f671b9704b76224a"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +159,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/ImageSpaceEffect.cpp",
-          "source_revision": "2a8d21739a60ecacdba8e00bdad105531529d446fae3e38b8a73ff0182cc2d6b"
+          "source_revision": "2fc0c252fef2f2354853e2751cbf9543ea988052dee177624cc47309324a6992"
         },
-        "symbol_map_sha256": "354f26f784eca1689391c7934bc4f7be03fd6bfbe960c9f4f93adb9fc5fc998b",
+        "symbol_map_sha256": "def4b023f26c2b763000fa04187bac7afa73ed1f457b5e6539427450312b45d5",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/ImageSpaceEffect.cpp",
-    "digest": "2a8d21739a60ecacdba8e00bdad105531529d446fae3e38b8a73ff0182cc2d6b",
+    "digest": "2fc0c252fef2f2354853e2751cbf9543ea988052dee177624cc47309324a6992",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/ImageSpaceEffect.cpp",
       "reconstruction/bsshader/ImageSpaceEffect.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "v0id-array",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/354f26f784eca1689391c7934bc4f7be03fd6bfbe960c9f4f93adb9fc5fc998b.json",
-    "sha256": "354f26f784eca1689391c7934bc4f7be03fd6bfbe960c9f4f93adb9fc5fc998b"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/def4b023f26c2b763000fa04187bac7afa73ed1f457b5e6539427450312b45d5.json",
+    "sha256": "def4b023f26c2b763000fa04187bac7afa73ed1f457b5e6539427450312b45d5"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

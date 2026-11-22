@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "08239078b09cac08957b1c4b12a4d44f4d8788d4e7c2d6199d2706d4d41a579d",
+        "object_sha256": "ef2cc997e17c9ec7857577ad0142dae359053a3f814565fbdfca5f2bdd12371f",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nimain/BSMultiIndexTriShape.cpp",
@@ -36,37 +36,38 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "bd274fb4e8242e4955a9aad970b5a6d940cdd183",
+    "base_sha": "65e3b0df1933f7c611db054ababbe4be56e3e656",
     "build_id": "sse-steam-1-7-104",
-    "cache_verified": true,
-    "candidate_sha": "ece5aa4438827f2e72476c4ec24a70a9a6d6a4f6",
-    "compiler_sha256": {
-      "c1xx.dll": "4d5f2f8c1ed3384ae15be5b31e2918e4a200913cb58374543b7a05762de234be",
-      "c2.dll": "03627abf4cde10390bc086ba1a85625ed61c2708838db9fff0dc9830040bbf2b",
-      "cl.exe": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
-      "link.exe": "70e987473cc4c67f65cdcabb82b3dc4827cb9d224d6016843051363b4cacb099"
-    },
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
-    "content_sha256": "d4d24276caff3f73c98c1df2b40e2554f3c36249ebf0fe01aacb0c5b583a46f1",
-    "deterministic": true,
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "aec4678e4d5f71ee58ad4b76255b33516f8b9ffc",
     "host_id": "github-windows-native",
-    "kind": "ci-hash",
+    "job": "hash",
+    "kind": "pr-check-hash",
     "layout_sha256": "c9ff3f77172dc6cbc4b9ea367653a87153524e8099ebb47f427202d935b0bc13",
     "loader": "native",
-    "mac_content_sha256": "d4d24276caff3f73c98c1df2b40e2554f3c36249ebf0fe01aacb0c5b583a46f1",
-    "mac_object_sha256": "08239078b09cac08957b1c4b12a4d44f4d8788d4e7c2d6199d2706d4d41a579d",
     "machine": "github-hosted-windows",
+    "map_status": "pass",
     "normalized_sha256": "cbc18d5e3d66ae414162c4a417b073a375f2804b50567d073ef1c62e50d8d523",
-    "object_sha256": "931011b997556dc7f11afb9df75b02285a61854b400bba2c7165a5a780dacd71",
     "os": "windows",
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
-    "request_sha256": "6674649d80ce49ae2d9d5596eb6cb27310050c3cea4d1a26d94ca4d6cee543f8",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 43990421342,
-    "rva": 22500432,
-    "schema": 1,
-    "source_sha256": "ad426c3cfd4b4b7b6d145c649f3ad495d8a6f1e0c1a734f510ed2340c03ee7df",
+    "run_id": 44967984790,
+    "rva": "0x1575450",
+    "schema": 2,
+    "source_sha256": "b6e42a01b38b5fc5aeee58d6e4571d105319c0bbde71ae999adf2acc9e234e03",
+    "status": "pass",
+    "symbols": [
+      "?AsMultiIndexTriShape@BSMultiIndexTriShape@@UEAAPEAV1@XZ"
+    ],
     "target": {
       "extraction": "linked-reference-inference",
       "layout_sha256": "c9ff3f77172dc6cbc4b9ea367653a87153524e8099ebb47f427202d935b0bc13",
@@ -74,23 +75,20 @@
       "rva": 22500432,
       "size": 4
     },
-    "task_id": "contrib-pr97-80d4ef93-0-squash-1575450",
-    "toolchain_manifest_sha256": "3d358035ccde903aeed022b7dc6ea2b7e91a33922b0f9eda2bc7655749690337",
-    "tools_sha256": "02fbf01017565a7aa71b2dc105f0f39acf83071818896367655deb2a0f6be116",
     "toolset": "MATCH",
-    "unit": "reconstruction/bsengine/BSMultiIndexTriShape.cpp",
-    "workflow": ".github/workflows/ci-confirm.yml"
+    "unit": "reconstruction/gamebryo/nimain/BSMultiIndexTriShape.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0x1575450",
   "match_record_schema": 2,
   "notes": [
-    "CI second-host exception authorized by awarebayes 2026-11-15. Full local comparator report is verbatim; CI independently verifies published target hashes and whole non-debug object content. No game bytes enter CI."
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
     "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
   },
-  "reproduction": "Run tools/verifier/confirm with a Mac/Wine runner and the ci-hash confirmation runner; tools/ci_confirm_batch.py compiles twice with the pinned recipe and checks published hashes.",
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -100,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "6c6f313015e13e180ed884262eba551cfe5db44829e9c5894983df06dadc8aa5",
           "code_sections": 1,
-          "object_sha256": "08239078b09cac08957b1c4b12a4d44f4d8788d4e7c2d6199d2706d4d41a579d"
+          "object_sha256": "ef2cc997e17c9ec7857577ad0142dae359053a3f814565fbdfca5f2bdd12371f"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -160,10 +158,10 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/bsengine/BSMultiIndexTriShape.cpp",
-          "source_revision": "ad426c3cfd4b4b7b6d145c649f3ad495d8a6f1e0c1a734f510ed2340c03ee7df"
+          "path": "reconstruction/gamebryo/nimain/BSMultiIndexTriShape.cpp",
+          "source_revision": "b6e42a01b38b5fc5aeee58d6e4571d105319c0bbde71ae999adf2acc9e234e03"
         },
-        "symbol_map_sha256": "fdc651264e00e2326495d7ae7e94e67ab7e4dcd10ec01c45071e4a96fb07afcf",
+        "symbol_map_sha256": "e8afde46d7239ab420666a85ac08844a310c784ff34ce6346d3308bb9e76777c",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,19 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/BSMultiIndexTriShape.cpp",
-    "digest": "7e7856c10cf80176edbd786af0535e6294869dfbc31c1f8c8495c89aa8a2968f",
+    "digest": "b6e42a01b38b5fc5aeee58d6e4571d105319c0bbde71ae999adf2acc9e234e03",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "ad426c3cfd4b4b7b6d145c649f3ad495d8a6f1e0c1a734f510ed2340c03ee7df",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/gamebryo/nimain/BSMultiIndexTriShape.cpp",
       "reconstruction/gamebryo/nimain/BSMultiIndexTriShape.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "v0id-array",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/fdc651264e00e2326495d7ae7e94e67ab7e4dcd10ec01c45071e4a96fb07afcf.json",
-    "sha256": "fdc651264e00e2326495d7ae7e94e67ab7e4dcd10ec01c45071e4a96fb07afcf"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/e8afde46d7239ab420666a85ac08844a310c784ff34ce6346d3308bb9e76777c.json",
+    "sha256": "e8afde46d7239ab420666a85ac08844a310c784ff34ce6346d3308bb9e76777c"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

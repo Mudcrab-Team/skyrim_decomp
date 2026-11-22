@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?OnVisible@BSTreeNode@@QEAAXPEAUNiCullingProcess@@H@Z": {
+      "rva": 21926864,
+      "size": 108
+    },
+    "?gVisibilityGate@@3_NA": {
+      "rva": 34433016,
+      "size": null
+    },
+    "?gFadeDelta@@3MA": {
+      "rva": 54344944,
+      "size": null
+    },
+    "?gFadeThreshold@@3MA": {
+      "rva": 34432992,
+      "size": null
+    },
+    "?OnVisible@BSLeafAnimNode@@QEAAXPEAUNiCullingProcess@@H@Z": {
+      "rva": 21924304,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?OnVisible@BSTreeNode@@QEAAXPEAUNiCullingProcess@@H@Z",
+        "rva": "0x14e93d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gVisibilityGate@@3_NA",
+        "rva": "0x20d67f8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gFadeDelta@@3MA",
+        "rva": "0x33d3cf0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gFadeThreshold@@3MA",
+        "rva": "0x20d67e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?OnVisible@BSLeafAnimNode@@QEAAXPEAUNiCullingProcess@@H@Z",
+        "rva": "0x14e89d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -26,6 +26,7 @@ from source_digest import include_closure
 import digest_v2
 from digest_v2 import tu_digest
 import target_hashes as hashes
+import unit_deletion
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # Optional source-header request for a new unit with no accepted symbol binding yet. It is a
@@ -70,6 +71,19 @@ def comment_only_change(root, base, name, blob):
         return False
 
 
+def base_text(root, rev, name):
+    shown = subprocess.run(['git', '-C', str(root), 'show', f'{rev}:{name}'], capture_output=True)
+    return shown.stdout.decode('utf-8-sig', 'replace') if shown.returncode == 0 else None
+
+
+class LintFailure(ValueError):
+    """The changed units fail the source lint; `findings` are the lint's own file:line messages."""
+
+    def __init__(self, findings):
+        super().__init__('contributor source lint failed')
+        self.findings = findings
+
+
 def prepare(root, base, head, work):
     if not SHA.fullmatch(base) or not SHA.fullmatch(head):
         raise ValueError('revision must be a full SHA')
@@ -77,7 +91,7 @@ def prepare(root, base, head, work):
         raise ValueError('tools must be from the trusted base revision')
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
-    rows, comment_only = [], set()
+    rows, comment_only, deleted = [], set(), []
     # Generated CrashLogger PDB output is neither a unit nor read by this job: it is never compiled.
     names = [n for i in range(0, len(diff) - 1, 2) if not pdb_types.is_generated(n := diff[i + 1].decode('utf-8'))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
@@ -92,6 +106,9 @@ def prepare(root, base, head, work):
             if name.startswith(CI_INPUTS):
                 continue  # Never read or execute PR tooling; test trusted base references instead.
             raise ValueError('outside contributor intake scope')
+        if status == 'D':
+            deleted.append(name)
+            continue
         if status not in ('A', 'M'):
             raise ValueError('outside contributor intake scope')
         # Read only bounded, regular source blobs. Never follow a PR symlink or check out head.
@@ -108,6 +125,11 @@ def prepare(root, base, head, work):
         rows.append((name, blob))
         if status == 'M' and comment_only_change(root, merge_base, name, blob):
             comment_only.add(name)
+    if deleted:
+        found = unit_deletion.problems(root, deleted, lambda n: base_text(root, merge_base, n),
+                                       lambda n: bool(git(root, 'ls-tree', head, '--', n).strip()))
+        if found:
+            raise ValueError('unit deletion would orphan an accepted function: ' + '; '.join(found))
     if not rows:
         return root, []
     tree = work / 'source'
@@ -119,9 +141,9 @@ def prepare(root, base, head, work):
         path = tree / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(blob)
-    for name, _blob in rows:
-        if lint.lint_file(tree, name, target):
-            raise ValueError('contributor source lint failed')
+    found = [line for name, _blob in rows for line in lint.lint_file(tree, name, target)]
+    if found:
+        raise LintFailure(found)
     # A file whose text differs from base only in comments (digest_v2.strip_comments) compiles to the
     # same code, so it asks for no compile of its own; it is still linted and still in the tree above.
     return tree, [name for name, _ in rows if name not in comment_only]
@@ -169,7 +191,14 @@ def requests(tree, changed, known):
         units.update(index.get(name, []))
     result = []
     for unit in sorted(units):
+        unit_text = (tree / unit).read_text(encoding='utf-8-sig')
+        declared = UNIT_RECIPE.search(unit_text)
         entries = {r['rva']: dict(r) for r in known.get(unit, [])}
+        # The first host compiles the whole unit with the recipe the unit declares, or the default one when
+        # it declares none; an accepted function's older recorded recipe would give a second-host row whose
+        # recipe the record cannot bind.
+        for entry in entries.values():
+            entry['recipe'] = declared[0] if declared else DEFAULT_RECIPE
         # New source may request an RVA/symbol, but cannot select the target mask, size or recipe.
         for rva, symbol in REQUEST.findall((tree / unit).read_text(encoding='utf-8-sig')[:8192]):
             value = int(rva, 16)
@@ -327,6 +356,8 @@ def summary_text(report):
         lines.append(f'| {row["rva"] or "unbound"} | {row["unit"]} | {result} |')
     if report.get('error'):
         lines += ['', 'Check could not complete: ' + report['error'] + '. No strike.']
+        # The contributor reads this summary; without the lint's own words a bare error name gives no fix.
+        lines += [f'- {finding}' for finding in report.get('findings', [])]
     return '\n'.join(lines) + '\n'
 
 
@@ -375,6 +406,8 @@ def main(argv=None):
     except (ValueError, OSError, KeyError, StopIteration, Reject, contrib.Stop,
             subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         report['error'] = type(exc).__name__
+        if isinstance(exc, LintFailure):
+            report['findings'] = exc.findings
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))

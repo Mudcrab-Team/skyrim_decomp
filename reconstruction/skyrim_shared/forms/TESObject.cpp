@@ -1,11 +1,9 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original; the listing and community declarations only
-// SPDX-License-Identifier: CC0-1.0
-// 0x275b20 TESObject::~TESObject
-// CI hash: 0x275b20 ??1TESObject@@UEAA@XZ
-// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x275ee0 TESObject::IsOcclusionMarker
+// 0x275b20 TESObject::~TESObject
 // Adapted bodies: none
 #include "TESObject.h"
 

@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CreateClone@BGSDecalNode@@UEAAPEAVNiObject@@AEAVNiCloningProcess@@@Z": {
+      "rva": 2109616,
+      "size": 17
+    },
+    "?AttachDecal@BGSDecalNode@@UEAAXPEAVBSTempEffect@@_N@Z": {
+      "rva": 2110304,
+      "size": 54
+    },
+    "?g_nodeInstanceOwner@@3PEAXEA": {
+      "rva": 35274232,
+      "size": null
+    },
+    "?CreateNodeInstance@@YAPEAVNiObject@@PEAX00@Z": {
+      "rva": 2095072,
+      "size": null
+    },
+    "?AttachChild@NiNode@@UEAAXPEAVNiAVObject@@_N@Z": {
+      "rva": 15604480,
+      "size": null
+    },
+    "?Function2033b0@BGSDecalNode@@QEAAXPEAVBSTempEffect@@@Z": {
+      "rva": 2110384,
+      "size": 34
+    },
+    "?Function203750@?$BSTArray@V?$NiPointer@VBSTempEffect@@@@@@QEAAXAEBV?$NiPointer@VBSTempEffect@@@@_N@Z": {
+      "rva": 2111312,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CreateClone@BGSDecalNode@@UEAAPEAVNiObject@@AEAVNiCloningProcess@@@Z",
+        "rva": "0x2030b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AttachDecal@BGSDecalNode@@UEAAXPEAVBSTempEffect@@_N@Z",
+        "rva": "0x203360",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_nodeInstanceOwner@@3PEAXEA",
+        "rva": "0x21a3df8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CreateNodeInstance@@YAPEAVNiObject@@PEAX00@Z",
+        "rva": "0x1ff7e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AttachChild@NiNode@@UEAAXPEAVNiAVObject@@_N@Z",
+        "rva": "0xee1b00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function2033b0@BGSDecalNode@@QEAAXPEAVBSTempEffect@@@Z",
+        "rva": "0x2033b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function203750@?$BSTArray@V?$NiPointer@VBSTempEffect@@@@@@QEAAXAEBV?$NiPointer@VBSTempEffect@@@@_N@Z",
+        "rva": "0x203750",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,5 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original; the listing and community declarations only
 // TESObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject::IsOcclusionMarker: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // g_occlusionMarkerA, g_occlusionMarkerB, g_occlusionMarkerC: GUESS(low)
@@ -11,15 +12,14 @@
 class TESWaterForm;
 
 // TESObject::DecRef, TESObject::GetRefCount, TESObject::GetWaterType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); compared at RVA 0x146640, 0x146810, 0x146840
-// Function275b20: GUESS(low); the plain destructor that sets the vftable and tail-calls the base destructor
 class TESObject : public TESForm
 {
 public:
+    ~TESObject() override;  // 00
     virtual bool IsOcclusionMarker();  // compared: 0x275ee0
     virtual std::uint32_t DecRef();  // compared: 0x146640
     virtual std::uint32_t GetRefCount() const;  // compared: 0x146810
     virtual TESWaterForm* GetWaterType() const;  // compared: 0x146840
-    ~TESObject();  // compared: 0x275b20
 };
 
 extern TESObject* g_occlusionMarkerA;

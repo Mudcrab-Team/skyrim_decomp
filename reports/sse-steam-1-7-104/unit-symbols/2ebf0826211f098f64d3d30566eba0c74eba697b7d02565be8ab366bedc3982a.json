@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function190a90@TESFullName@@QEBAPEBDXZ": {
+      "rva": 1641104,
+      "size": 7
+    },
+    "?Function190b00@TESFullName@@QEBAEXZ": {
+      "rva": 1641216,
+      "size": 7
+    },
+    "?Function190b40@TESFullName@@QEBAEXZ": {
+      "rva": 1641280,
+      "size": 9
+    },
+    "?Function190b80@TESFullName@@QEBAEXZ": {
+      "rva": 1641344,
+      "size": 10
+    },
+    "?Function190bc0@TESFullName@@QEBAGXZ": {
+      "rva": 1641408,
+      "size": 5
+    },
+    "?Function190bd0@TESFullName@@QEAAXE@Z": {
+      "rva": 1641424,
+      "size": 8
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function190a90@TESFullName@@QEBAPEBDXZ",
+        "rva": "0x190a90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function190b00@TESFullName@@QEBAEXZ",
+        "rva": "0x190b00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function190b40@TESFullName@@QEBAEXZ",
+        "rva": "0x190b40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function190b80@TESFullName@@QEBAEXZ",
+        "rva": "0x190b80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function190bc0@TESFullName@@QEBAGXZ",
+        "rva": "0x190bc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function190bd0@TESFullName@@QEAAXE@Z",
+        "rva": "0x190bd0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

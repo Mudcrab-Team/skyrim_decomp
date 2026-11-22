@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?ResetCenter@GridCellArray@@QEAAXXZ": {
+      "rva": 2255936,
+      "size": 15
+    },
+    "?GetCellSlot@GridCellArray@@QEBAPEAPEAVTESObjectCELL@@II@Z": {
+      "rva": 2257184,
+      "size": 30
+    },
+    "?IsCellAttached@GridCellArray@@QEBA_NII@Z": {
+      "rva": 2257360,
+      "size": 47
+    },
+    "?SetCenter@GridCellArray@@UEAA_NHH@Z": {
+      "rva": 2257584,
+      "size": 117
+    },
+    "?ClearItem@GridCellArray@@UEAAXII@Z": {
+      "rva": 2257824,
+      "size": 46
+    },
+    "?SetCenter@GridArray@@UEAA_NHH@Z": {
+      "rva": 2256096,
+      "size": null
+    },
+    "?NotifyGridCenter@@YAXAEBUGridCenter@@@Z": {
+      "rva": 2935840,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?ResetCenter@GridCellArray@@QEAAXXZ",
+        "rva": "0x226c40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetCellSlot@GridCellArray@@QEBAPEAPEAVTESObjectCELL@@II@Z",
+        "rva": "0x227120",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsCellAttached@GridCellArray@@QEBA_NII@Z",
+        "rva": "0x2271d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetCenter@GridCellArray@@UEAA_NHH@Z",
+        "rva": "0x2272b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ClearItem@GridCellArray@@UEAAXII@Z",
+        "rva": "0x2273a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetCenter@GridArray@@UEAA_NHH@Z",
+        "rva": "0x226ce0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NotifyGridCenter@@YAXAEBUGridCenter@@@Z",
+        "rva": "0x2ccc20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

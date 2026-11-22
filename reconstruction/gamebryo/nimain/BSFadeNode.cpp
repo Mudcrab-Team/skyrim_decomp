@@ -6,6 +6,7 @@
 // Adapted bodies: none
 // 0x106b550 BSFadeNode::UpdateCollisionObject
 // 0x14e5a20 BSFadeNode::ctor
+// 0x14e6a10 BSFadeNode::Function14e6a10
 #include "BSFadeNode.h"
 
 void BSFadeNode::UpdateCollisionObject(bool a_arg)
@@ -18,4 +19,10 @@ BSFadeNode::BSFadeNode() :
     NiNode(0)
 {
     InitRuntimeData();
+}
+
+void BSFadeNode::Function14e6a10(std::uint8_t a_value)
+{
+    unk153 &= 0xf0;
+    unk153 |= a_value & 0x0f;
 }

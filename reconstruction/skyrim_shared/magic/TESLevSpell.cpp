@@ -1,4 +1,4 @@
-// Code origin: hand-written from the local listings; names and declarations from the community header named in TESLevSpell.h.
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
@@ -7,6 +7,7 @@
 // 0x272ee0 TESLevSpell::SaveGame
 // 0x272f20 TESLevSpell::LoadGame
 // 0x272f60 TESLevSpell::Revert
+// 0x272ec0 TESLevSpell::GetCanContainFormsOfType
 #include "TESLevSpell.h"
 
 // TESLeveledList is a secondary base at offset 0x30, so the base calls take this + 0x30.
@@ -26,4 +27,10 @@ void TESLevSpell::Revert(BGSLoadFormBuffer* a_buf)
 {
     TESForm::Revert(a_buf);
     TESLeveledList::Revert(a_buf);
+}
+
+// kSpell, kScroll: GUESS(low); the two form type values the image compares against
+bool TESLevSpell::GetCanContainFormsOfType(std::uint8_t a_type) const
+{
+    return a_type == 0x16 || a_type == 0x52;
 }

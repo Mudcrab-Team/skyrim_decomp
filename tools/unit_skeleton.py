@@ -294,7 +294,7 @@ def load_unit(task_dir, repo=None):
         raise SkeletonError(f'{task_dir}: no readable task.json ({exc}); give a unit task directory, '
                             'not a group directory') from None
     compiled = task.get('compiled') or ''
-    m = re.fullmatch(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.cpp', compiled)
+    m = re.fullmatch(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.cpp', compiled)
     if not m:
         raise SkeletonError(f'{task_dir}/task.json: compiled must be reconstruction/<area>/<Class>.cpp')
     brief_path = task_dir / 'BRIEF.md'
