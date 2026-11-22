@@ -6,6 +6,7 @@
 // Function1582600, Function1582620, Function1582640, Function1582660: GUESS(low)
 // Function15826f0, Function1582710, Function15827a0, Function1582870: GUESS(low)
 // Function15829a0, Function15829c0: GUESS(low)
+// Function15828b0, Function15828c0: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -13,6 +14,8 @@
 class BSShaderResourceManager
 {
 public:
+    std::uint32_t Function15828b0();
+    float Function15828c0();
     void Function1582070();
     void Function1582100();
     void Function1582120();

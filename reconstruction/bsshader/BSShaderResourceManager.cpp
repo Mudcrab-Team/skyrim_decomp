@@ -1,3 +1,7 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Adapted bodies: none
+// 0x15828b0 BSShaderResourceManager::Function15828b0
+// 0x15828c0 BSShaderResourceManager::Function15828c0
 // Source exposure: mixed (published inventory and listings from the pinned image).
 // Code origin: original forwarding methods inferred from the pinned image.
 // Adapted bodies: none
@@ -22,6 +26,7 @@
 // 0x1582870 BSShaderResourceManager::Function1582870
 // 0x15829a0 BSShaderResourceManager::Function15829a0
 // 0x15829c0 BSShaderResourceManager::Function15829c0
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSShaderResourceManager.h"
 
 // TextureLookupState, g_textureLookupState: STANDIN GUESS(low)
@@ -31,6 +36,10 @@ extern TextureLookupState g_textureLookupState;
 // ShaderResourceState, g_shaderResourceState: STANDIN GUESS(low)
 struct ShaderResourceState;
 extern ShaderResourceState* g_shaderResourceState;
+
+// g_shaderResourceFlags, g_shaderResourceScale: STANDIN GUESS(low)
+extern std::uint32_t g_shaderResourceFlags;
+extern float g_shaderResourceScale;
 
 // Function100b530, Function100bac0, Function100c000, Function100c010: GUESS(low)
 // Function100bcd0, Function100c850, Function100c090, Function100cf10: GUESS(low)
@@ -59,6 +68,18 @@ void Function100d8d0(TextureLookupState* a_state);
 void Function100d950(TextureLookupState* a_state);
 void Function154af80(ShaderResourceState* a_state);
 void Function154afb0(ShaderResourceState* a_state);
+
+std::uint32_t BSShaderResourceManager::Function15828b0()
+{
+    std::uint32_t flags = g_shaderResourceFlags;
+    return flags;
+}
+
+float BSShaderResourceManager::Function15828c0()
+{
+    float scale = g_shaderResourceScale;
+    return scale;
+}
 
 void BSShaderResourceManager::Function1582070()
 {
