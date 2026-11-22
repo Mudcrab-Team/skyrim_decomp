@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "7bd154dbff97d7e563bd708a2e184293ea2887580076026ded0d8efeb7e6815b",
+        "object_sha256": "7878bd6d359fb72fc3160f598b4e7181a3d215a8e953743357aa1e95bf9300cc",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/niparticle/BSPSysArrayEmitter.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "f68e84a88f69866a705ffb6071aff0050e3ccb2c",
+    "base_sha": "abed46e060af0cb7efb4fb8a13ee54bfca6f54fd",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "882459e4272475f7b597f1e2f88dcb3dd346aa6c",
+    "head_sha": "25b3f056306fad1ea84600e0d31fbe8748aa35ea",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44741364371,
+    "run_id": 44975574751,
     "rva": "0xfe1410",
     "schema": 2,
-    "source_sha256": "b33144f6624c98fb6e00ec76648ec1cf309a46536a382f461a5b9133d1ef85fb",
+    "source_sha256": "29b4bab0a240707bb9815a9c3c7039cd1e8789ceaed12740c34ad8f9001fe8b3",
     "status": "pass",
     "symbols": [
       "?PostLinkObject@BSPSysArrayEmitter@@QEAAXAEAVNiStream@@@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "c2903c53437ea4b80f061a1595b8189a0500c797582d12bca8fc28c30afa8ce7",
           "code_sections": 1,
-          "object_sha256": "7bd154dbff97d7e563bd708a2e184293ea2887580076026ded0d8efeb7e6815b"
+          "object_sha256": "7878bd6d359fb72fc3160f598b4e7181a3d215a8e953743357aa1e95bf9300cc"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,9 +161,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/gamebryo/niparticle/BSPSysArrayEmitter.cpp",
-          "source_revision": "b33144f6624c98fb6e00ec76648ec1cf309a46536a382f461a5b9133d1ef85fb"
+          "source_revision": "29b4bab0a240707bb9815a9c3c7039cd1e8789ceaed12740c34ad8f9001fe8b3"
         },
-        "symbol_map_sha256": "4c44eab830e2644d8cc9a0124c11e5de59e3df70553a54dabcb1a92e5edc28a5",
+        "symbol_map_sha256": "36b866e72e6ed4176f4b9a779004957d2186cf79a757166d34b560490536b447",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,17 +174,17 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/niparticle/BSPSysArrayEmitter.cpp",
-    "digest": "b33144f6624c98fb6e00ec76648ec1cf309a46536a382f461a5b9133d1ef85fb",
+    "digest": "29b4bab0a240707bb9815a9c3c7039cd1e8789ceaed12740c34ad8f9001fe8b3",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/gamebryo/niparticle/BSPSysArrayEmitter.cpp",
       "reconstruction/gamebryo/niparticle/BSPSysArrayEmitter.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "v0id-array",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/4c44eab830e2644d8cc9a0124c11e5de59e3df70553a54dabcb1a92e5edc28a5.json",
-    "sha256": "4c44eab830e2644d8cc9a0124c11e5de59e3df70553a54dabcb1a92e5edc28a5"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/36b866e72e6ed4176f4b9a779004957d2186cf79a757166d34b560490536b447.json",
+    "sha256": "36b866e72e6ed4176f4b9a779004957d2186cf79a757166d34b560490536b447"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

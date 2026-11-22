@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// 0x1ef710 compared function
 // TESRaceForm: EXE_RTTI; class name and base from the image RTTI
 #pragma once
 

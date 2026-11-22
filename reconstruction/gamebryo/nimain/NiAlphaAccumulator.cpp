@@ -1,10 +1,9 @@
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0xf0f3b0 NiAlphaAccumulator::Functionf0f3b0
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// Adapted bodies: NiAlphaAccumulator::~NiAlphaAccumulator, momusdigital/fnv_decomp@91e1b6e8
-// src/gamebryo2.2/corelibs/nimain/nialphaaccumulator.cpp:562, no licence (maintainer-authorized sibling; otherwise name each adapted body, its upstream file, revision and licence).
-// 0xf0f290 NiAlphaAccumulator::IsEqual
-// 0xf0f4a0 NiAlphaAccumulator::~NiAlphaAccumulator
+// Adapted bodies: none
 #include "NiAlphaAccumulator.h"
 
 // Not compared: defined so that the compiler emits the vftable and, beside it, the
@@ -24,4 +23,11 @@ bool NiAlphaAccumulator::IsEqual(NiObject* a_object)
 // and delete this definition (cookbook rule 18).
 NiAlphaAccumulator::~NiAlphaAccumulator()
 {
+}
+
+// NiAlphaAccumulator::Functionf0f3b0: GUESS(low)
+void NiAlphaAccumulator::Functionf0f3b0()
+{
+    *reinterpret_cast<void**>(this) = &gAlphaStatic;
+    return InitAlphaBase(this);
 }

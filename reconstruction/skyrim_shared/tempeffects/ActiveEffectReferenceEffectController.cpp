@@ -1,15 +1,17 @@
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
-// Adapted bodies: none
-// 0x5dc6d0 ActiveEffectReferenceEffectController::GetElapsedTime
-// 0x5dc7f0 ActiveEffectReferenceEffectController::GetNoInitialFlare
-// 0x5dc760 ActiveEffectReferenceEffectController::GetSourcePosition
-// 0x5dc810 ActiveEffectReferenceEffectController::GetEffectPersists
-// 0x5dc830 ActiveEffectReferenceEffectController::GetGoryVisuals
-// 0x5dc990 ActiveEffectReferenceEffectController::GetHitEffectShader
-// 0x5dc950 ActiveEffectReferenceEffectController::GetHitEffectArt
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x5dc660 ActiveEffectReferenceEffectController::SetTarget
+// Adapted bodies: none
 #include "ActiveEffectReferenceEffectController.h"
+
+// MakeRefHandle: GUESS(low); builds a handle through the declared callee
+static std::uint32_t MakeRefHandle(ReferenceTarget* a_target)
+{
+    std::uint32_t handle;
+    CreateRefHandle(&handle, a_target);
+    return handle;
+}
 
 float ActiveEffectReferenceEffectController::GetElapsedTime()
 {
@@ -54,4 +56,12 @@ BGSArtObject* ActiveEffectReferenceEffectController::GetHitEffectArt()
         return GetEffectArtForRef(GetEffectRefData(a_owner), TestBit(flags, 12));
     }
     return nullptr;
+}
+
+// ActiveEffectReferenceEffectController::SetTarget: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
+void ActiveEffectReferenceEffectController::SetTarget(ReferenceTarget* a_target)
+{
+    targetHandle = (a_target == nullptr || (a_target->flags & 0x3FF) != 0)
+        ? MakeRefHandle(a_target)
+        : gNullHandle;
 }

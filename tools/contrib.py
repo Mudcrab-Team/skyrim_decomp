@@ -59,6 +59,7 @@ import agent_advice
 import agent_identity
 import repo_slug
 import attempt_progress
+import ready_queue
 import crashlogger_pdb
 from local_paths import local_dir, local_path, main_checkout_local, main_worktree_local, no_sibling_names
 
@@ -76,8 +77,8 @@ MAX_UNIT_FILE_BYTES = 64 * 1024
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # A matched function with a two-file unit, used by `setup` to prove the whole local chain works.
 SELF_TEST_RVA = 0xef8900
-UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
-PLAIN_NAME = re.compile(r'([A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
+UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+PLAIN_NAME = re.compile(r'((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
 RVA_TOKEN = re.compile(r'(?<![0-9A-Za-z])0x([0-9a-fA-F]{3,8})(?![0-9A-Za-z])')
 # Pinned community naming sources (SOURCES.md) that tools/check_labels.py and check_origin.py read
 # from .local/sources/.
@@ -388,8 +389,8 @@ def unit_files(repo, cls, area=None, index=None):
     return area, f'reconstruction/{area}/{cls}.h', f'reconstruction/{area}/{cls}.cpp'
 
 
-def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None):
-    """Unclaimed targets: small functions first (under 64 bytes, then 64-255), classes that already have
+def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None, ready=None):
+    """Unclaimed targets: callee-ready functions first (`ready`, from tools/ready_queue.py), then small functions first (under 64 bytes, then 64-255), classes that already have
     a layout before those that do not, then advisory declaration/draft readiness, size and RVA.
 
     With `published`, functions of the target-hash list that have no inventory entry are included when
@@ -428,8 +429,10 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
                     'startable': bool(m and area), 'readiness_rank': rank, 'reason': reason,
                     'cautions': cautions, 'in_inventory': fn.get('owner') != 'claim-time',
                     'size_band': claimable.band(fn['size']), 'has_layout': bool(headers[header]),
-                    '_key': (not m or area is None, claimable.band(fn['size']), not headers[header],
-                             rank, fn['size'], fn['rva'])})
+                    'callee_ready': fn['rva'] in (ready or {}),
+                    '_key': (not m or area is None, fn['rva'] not in (ready or {}),
+                             claimable.band(fn['size']), not headers[header], rank,
+                             -(ready or {}).get(fn['rva'], {}).get('blocks', 0), fn['size'], fn['rva'])})
     out.sort(key=lambda c: c.pop('_key'))
     return out
 
@@ -1708,11 +1711,13 @@ def cmd_next(ctx, args):
         except re.error as exc:
             raise Stop(USAGE, f'--class is not a regular expression: {exc}') from None
     ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True,
-                                   class_filter=class_filter) if c['startable']]
+                                   class_filter=class_filter, ready=ready_queue.load_queue(ctx.repo))
+             if c['startable']]
     counts = {'claimable': len(ready), 'without_inventory_entry': sum(not c['in_inventory'] for c in ready),
               'under_64_bytes': sum(c['size_band'] == 0 for c in ready),
               '64_to_255_bytes': sum(c['size_band'] == 1 for c in ready),
-              'with_existing_layout': sum(c['has_layout'] for c in ready)}
+              'with_existing_layout': sum(c['has_layout'] for c in ready),
+              'callee_ready': sum(c['callee_ready'] for c in ready)}
     rows = ready[:args.count]
     pdb = pdb_names(ctx)
     ctx.say('claimable now: ' + ', '.join(f'{v} {k.replace("_", " ")}' for k, v in counts.items()))
@@ -2008,6 +2013,39 @@ def pdb_hints(repo, fns):
         return []
 
 
+SYMBOL_SOURCE_IDS = {'a': 'tesv-2013-map', 'b': 'fo4-pdb', 'c': 'fnv-x360-pdb', 'd': 'fnv-x360-pdb',
+                     'e': 'fnv-x360-pdb'}
+SYMBOL_NAME_CAP = 12
+
+
+def symbol_name_hints(repo, cls, fns=(), cap=SYMBOL_NAME_CAP):
+    """Lines listing member names that sibling-build symbol files give for the class, each with the
+    source-id to label it with; nothing, silently, when the data is absent or the class has none."""
+    try:
+        entry = json.loads((repo / 'data/symbol-names.json').read_text())['classes'].get(cls) or {}
+        cands = entry.get('candidates') or {}
+        corr = json.loads((repo / 'data/name-corroboration.json').read_text()).get('functions') or {}
+        build = target_manifest(repo)['build_id']
+
+        def ids(keys):
+            return sorted({SYMBOL_SOURCE_IDS[k] for k in keys if k in SYMBOL_SOURCE_IDS})
+        lines = []
+        for fn in fns:
+            seen = ids((corr.get(f'{build}-0x{fn["rva"]:x}') or {}).get('confirmed') or '')
+            if seen:
+                lines.append(f'Symbol sources with the member name of 0x{fn["rva"]:x}: {", ".join(seen)}')
+        shown = sorted(cands)[:cap]
+        if shown:
+            more = len(cands) - len(shown)
+            lines.append(f'Symbol-name candidates for {cls} (sibling builds; candidates only, never evidence of which '
+                         f'function is which; label a name you take SYMBOLS(<source-id>)): '
+                         + ', '.join(f'{n} [{"/".join(ids(cands[n]))}]' for n in shown)
+                         + (f' and {more} more in data/symbol-names.json' if more > 0 else ''))
+        return lines if shown else []
+    except Exception:  # an optional hint must never stop `start`
+        return []
+
+
 def start(ctx, args, quiet=False):
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
@@ -2145,6 +2183,8 @@ def start(ctx, args, quiet=False):
         if sibling:
             ctx.say(f'sibling source pointers (FNV; shape and names only, never evidence): {tdir / "sibling.md"}')
         for line in pdb_hints(ctx.repo, fns):
+            ctx.say(line)
+        for line in symbol_name_hints(ctx.repo, cls, fns):
             ctx.say(line)
         ctx.say(f'unit: {header} and {cpp}' + (' (skeleton created)' if created else ''))
         ctx.say(f'profile {prof["name"]}: read {"; ".join(prof["contrib_docs"])}; '

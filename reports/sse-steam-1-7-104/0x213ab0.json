@@ -22,11 +22,11 @@
           "/GS-",
           "/EHsc",
           "/GR",
-          "/fp:precise",
+          "/fp:fast",
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "c35c2a32af8b67da4edf56b3f91e39bc4bfb323058a6069b16793bea9dbb220e",
+        "object_sha256": "56756d51007a1af701835cb0328128ece210a37bb0e2b4a3be0df4bf32380afb",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "097869ff3e896cda8b3a41af63e72c71a87fc8f6",
+    "base_sha": "ec7d97417850ffafb8c7cdba44c6c9d26b10bc73",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "c99eb0e996b1984e9ea78d782fcefcf870d1ddc8",
+    "head_sha": "d75eb3d2ee6752cf414f840001ff6a29fd978986",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -57,13 +57,13 @@
     "map_status": "pass",
     "normalized_sha256": "a8bc2a51b78342d35b98da444bd072d09651dfa366f908331cb7d5b5ea9d9397",
     "os": "windows",
-    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "recipe_sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3",
     "result": "hash-match",
-    "run_attempt": 1,
-    "run_id": 44274706056,
+    "run_attempt": 2,
+    "run_id": 44992396616,
     "rva": "0x213ab0",
     "schema": 2,
-    "source_sha256": "7735d4149231941024bd559254a04cfec65d9e30c42aa5f03c8a90eb98cf7938",
+    "source_sha256": "9f81303eb61819f4d084e0388a287f7a641782a49b586dd6ff19a7728b3ba461",
     "status": "pass",
     "symbols": [
       "??_GBSMultiBoundAABB@@UEAAPEAXI@Z"
@@ -76,7 +76,7 @@
       "size": 50
     },
     "toolset": "MATCH",
-    "unit": "reconstruction/bsengine/BSMultiBoundAABB.cpp",
+    "unit": "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0x213ab0",
@@ -85,8 +85,8 @@
     "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
-    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
-    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+    "path": "reconstruction/recipes/o2-fpfast.json",
+    "sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3"
   },
   "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "79e38d81aff549a9003f4c037b866af72da385f0dcca0277c07328367420f5ec",
           "code_sections": 1,
-          "object_sha256": "c35c2a32af8b67da4edf56b3f91e39bc4bfb323058a6069b16793bea9dbb220e"
+          "object_sha256": "56756d51007a1af701835cb0328128ece210a37bb0e2b4a3be0df4bf32380afb"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -152,16 +152,16 @@
             "/GS-",
             "/EHsc",
             "/GR",
-            "/fp:precise",
+            "/fp:fast",
             "/Gy"
           ],
-          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+          "recipe_sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3"
         },
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/bsengine/BSMultiBoundAABB.cpp",
-          "source_revision": "7735d4149231941024bd559254a04cfec65d9e30c42aa5f03c8a90eb98cf7938"
+          "path": "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
+          "source_revision": "9f81303eb61819f4d084e0388a287f7a641782a49b586dd6ff19a7728b3ba461"
         },
         "symbol_map_sha256": "e99c562a6bd7c7f7928558b91856ac7b6c45d1286b5760af99d658282600dd13",
         "target": {
@@ -174,16 +174,14 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
-    "digest": "5ab33bedb6ec0c4aadbc35896693ad5371860d2032a7fa50116789b2372122f0",
+    "digest": "9f81303eb61819f4d084e0388a287f7a641782a49b586dd6ff19a7728b3ba461",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "7735d4149231941024bd559254a04cfec65d9e30c42aa5f03c8a90eb98cf7938",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/gamebryo/nimain/BSMultiBoundAABB.cpp",
       "reconstruction/gamebryo/nimain/BSMultiBoundAABB.h"
     ]
   },
-  "submitter": "hinkiii",
+  "submitter": "moreirapenna2",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/e99c562a6bd7c7f7928558b91856ac7b6c45d1286b5760af99d658282600dd13.json",
     "sha256": "e99c562a6bd7c7f7928558b91856ac7b6c45d1286b5760af99d658282600dd13"

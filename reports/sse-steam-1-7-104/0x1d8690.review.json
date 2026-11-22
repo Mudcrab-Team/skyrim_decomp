@@ -3,21 +3,19 @@
   "code_section_sha256": "2b2924902cd1ad3b60bf27576f86a983864f80d482be4ba1c2dcb4873355682e",
   "escalation_category": "none",
   "function_id": "sse-steam-1-7-104-0x1d8690",
-  "naming_findings": [
-    "The inventory placeholder and the source method name differ; the target name remains unverified."
-  ],
+  "naming_findings": [],
   "previous_code_section_sha256": null,
   "previous_review_sha256": null,
   "previous_source_digest": null,
-  "review_date": "2026-11-14",
+  "review_date": "2026-11-21",
   "review_kind": "full",
   "review_record_schema": 3,
-  "review_sha256": "2b0f341c607f7db60f48477e2519286920976d517549e95515dee33370815e3c",
-  "review_task_id": "review-p85-priority-w2-1",
+  "review_sha256": "2f8021ea330365b272dd2330ef80054e49ac837d19b4c7cf226494d668de60fc",
+  "review_task_id": "pr-bot-713-e8b745e8",
   "reviewer_model": "gpt-6.1-terra",
   "rva": 1934992,
   "size": 3,
-  "source_digest": "08d675818e0fe479a048c126c465219e9c1b94bb7bb56b546b13e8d496216e53",
-  "source_digest_method": "tu-sha256-v1",
+  "source_digest": "e839cd4b12ef233797aef0a0df1563fc8b7fc079933cf3ab65a275e0339ffaba",
+  "source_digest_method": "tu-sha256-v2",
   "verdict": "approve"
 }

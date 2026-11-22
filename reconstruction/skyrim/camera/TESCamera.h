@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESCamera, TESCamera::~TESCamera, ::SetCameraRoot, ::Update, ::rotationInput, ::translationInput, ::zoomInput, ::cameraRoot, ::currentState, ::enabled, ::pad31, ::pad32, ::pad34: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESCamera::SetState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// TESCamera::GetNode: STANDIN GUESS(low); NG declares no such function, the name comes from the target's symbol context and its signature and body are written from the listing
+// TESCamera::GetNode: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); signature from the pinned image
 // NiPointer, NiPointer::operator=, NiRefObject, NiRefObject::DeleteThis, NiRefObject::_refCount, NiNode, BSTPoint2, BSTPoint3, BSTSmartPointer, TESCameraState: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to the members the code needs, NiNode only as a reference-counted target
 // NiRefObject::pad0C: GUESS(low)
 #pragma once
@@ -14,15 +14,18 @@
 #include <intrin.h>
 
 class TESCameraState;
+template <class T> class BSTSmartPointer;
 
 // TESCameraState, TESCameraState::Begin, TESCameraState::End: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESCameraState::Release, TESCameraState::refCount, TESCameraState::unk0C: GUESS(low); slot 0, called with 1 when the last reference is dropped
 class TESCameraState
 {
 public:
-    virtual void Release(std::uint32_t a_free);  // 00
+    virtual void Release(std::uint32_t a_free) noexcept;  // 00
     virtual void Begin();               // 01
     virtual void End();                 // 02
+    // Update: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    virtual void Update(BSTSmartPointer<TESCameraState>& a_nextState);  // 03
 
     std::uint32_t refCount;  // 08
     std::uint32_t unk0C;     // 0C
@@ -85,10 +88,23 @@ struct BSTPoint3
     float z;  // 08
 };
 
+// gNeutralCameraRotationInput, gNeutralCameraTranslationInput: GUESS(low)
+extern const BSTPoint2 gNeutralCameraRotationInput;
+extern const BSTPoint3 gNeutralCameraTranslationInput;
+
 template <class T>
 class BSTSmartPointer
 {
 public:
+    ~BSTSmartPointer()
+    {
+        T* object = ptr;
+        // Atomically drop the owned reference and test whether it was the last one.
+        if (object && _InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&object->refCount), -1) == 1) {
+            object->Release(1);
+        }
+    }
+
     BSTSmartPointer& operator=(T* a_rhs)
     {
         T* old = ptr;

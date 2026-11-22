@@ -1,18 +1,14 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: brown-room reconstruction from disassembly (ReadFormHeader); other bodies as labelled below (OpenTES is adapted from the fo4-private sibling)
 // 0x1cf0f0 TESFile::ReadFormHeader
+// 0x1cdf30 TESFile::Function1cdf30
+// Function1cdf30, Function1cdd10Stub: GUESS(low)
 // Adapted bodies: TESFile::OpenTES (Sibling source line below)
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image, with the class layout from the header beside this file. SeekNextSubrecord, Duplicate and Seek were finished by claude-opus-5-5 from the Drafter's near-misses.
 // TESFile::OpenTES: SIBLING(fo4-private@1b765c70, author-permission); adapted to target observations.
 // Sibling source: fo4-private@1b765c70 src/Shared/FileIO/TESFile.cpp:252
 // GetCurrentThreadId, GetLastError, FormatMessageA, LocalFree: STANDIN OBSERVED; Win32 imports of the image, declared locally
-// 0x1ca460 TESFile::OpenTES
-// 0x1cdc10 TESFile::GetCurrentSubRecordType
-// 0x1cd7d0 TESFile::GetFormType
-// 0x1cdc60 TESFile::SeekNextSubrecord
-// 0x1ce7e0 TESFile::Duplicate
-// 0x1cd860 TESFile::Seek
 #include "TESFile.h"
 
 #include <cstddef>
@@ -33,6 +29,7 @@ bool                        IsReservedFormID(std::uint32_t a_formID);
 void                        CopyBytes(void* a_dest, std::size_t a_destSize, const void* a_src, std::size_t a_count);
 extern const std::uint32_t  g_seekOrigin;
 FormType                    ConvertFormType(std::uint32_t a_recordType);
+void                        Function1cdd10Stub(TESFile* a_self, std::uint32_t a_arg, std::uint32_t a_zero);
 Main*                       Main::singleton;
 
 // IsReservedFormID, CopyBytes, g_secondRecordType: GUESS(low); callees at RVAs 0x1e6600 and 0x10c240 and a global at 0x2078a30, no community name
@@ -224,6 +221,11 @@ std::uint32_t TESFile::QueryFilePosition()
         position = file->trueFilePos;
     }
     return position;
+}
+
+void TESFile::Function1cdf30(std::uint32_t a_arg)
+{
+    return Function1cdd10Stub(this, a_arg, 0);
 }
 
 bool TESFile::Seek(std::uint32_t a_offset)

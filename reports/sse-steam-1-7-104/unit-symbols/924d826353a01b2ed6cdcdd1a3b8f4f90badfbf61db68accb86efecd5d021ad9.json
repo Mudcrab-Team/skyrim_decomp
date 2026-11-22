@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?IsEqual@BSGrassShaderProperty@@UEAA_NPEAVNiObject@@@Z": {
+      "rva": 22140624,
+      "size": 7
+    },
+    "?QShader@BSGrassShaderProperty@@UEBAIXZ": {
+      "rva": 22141344,
+      "size": 6
+    },
+    "?Function151de70@BSGrassShaderProperty@@QEBAIXZ": {
+      "rva": 22142576,
+      "size": 7
+    },
+    "?Function151de80@BSGrassShaderProperty@@QEAAXI@Z": {
+      "rva": 22142592,
+      "size": 7
+    },
+    "?GetRenderPasses_ShadowMapOrMask@BSGrassShaderProperty@@UEAAXXZ": {
+      "rva": 22141840,
+      "size": 10
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?IsEqual@BSGrassShaderProperty@@UEAA_NPEAVNiObject@@@Z",
+        "rva": "0x151d6d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?QShader@BSGrassShaderProperty@@UEBAIXZ",
+        "rva": "0x151d9a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function151de70@BSGrassShaderProperty@@QEBAIXZ",
+        "rva": "0x151de70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function151de80@BSGrassShaderProperty@@QEAAXI@Z",
+        "rva": "0x151de80",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetRenderPasses_ShadowMapOrMask@BSGrassShaderProperty@@UEAAXXZ",
+        "rva": "0x151db90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

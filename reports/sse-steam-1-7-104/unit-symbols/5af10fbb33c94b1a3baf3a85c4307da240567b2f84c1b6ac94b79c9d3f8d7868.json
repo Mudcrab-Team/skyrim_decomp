@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?InitItem@BGSMusicTrack@@QEAAXPEAVTESForm@@@Z": {
+      "rva": 3304896,
+      "size": 14
+    },
+    "?TestCanPlay@BGSMusicTrack@@QEBA_NXZ": {
+      "rva": 3304704,
+      "size": 35
+    },
+    "?InitItem@MusicCondition@@QEAAXPEAVTESForm@@@Z": {
+      "rva": 4876608,
+      "size": null
+    },
+    "?musicPlayer@@3PEAVPlayer@@EA": {
+      "rva": 52627320,
+      "size": null
+    },
+    "?IsTrue@MusicCondition@@QEAA_NPEAVPlayer@@0@Z": {
+      "rva": 4877856,
+      "size": null
+    },
+    "??0BGSMusicTrack@@QEAA@XZ": {
+      "rva": 3304752,
+      "size": 26
+    },
+    "??_7BGSMusicTrack@@6B@": {
+      "rva": 25378088,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?InitItem@BGSMusicTrack@@QEAAXPEAVTESForm@@@Z",
+        "rva": "0x326dc0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TestCanPlay@BGSMusicTrack@@QEBA_NXZ",
+        "rva": "0x326d00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitItem@MusicCondition@@QEAAXPEAVTESForm@@@Z",
+        "rva": "0x4a6940",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?musicPlayer@@3PEAVPlayer@@EA",
+        "rva": "0x3230778",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsTrue@MusicCondition@@QEAA_NPEAVPlayer@@0@Z",
+        "rva": "0x4a6e20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??0BGSMusicTrack@@QEAA@XZ",
+        "rva": "0x326d30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_7BGSMusicTrack@@6B@",
+        "rva": "0x1833d28",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -1,10 +1,8 @@
-// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
-// the compared functions from the pinned image).
+// Source exposure: mixed (community headers and pinned image).
+// Code origin: existing unit plus original reconstruction of UpdateSelectedDownwardPass and UpdateRigidDownwardPass.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
-// BSFlattenedBoneTree: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
-// BSFlattenedBoneTree::UpdateDownwardPass: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
-// UpdateBoneRoots: GUESS(low)
-// unknown128: GUESS(low)
+// BSFlattenedBoneTree, BSFlattenedBoneTree::UpdateDownwardPass, UpdateSelectedDownwardPass, UpdateRigidDownwardPass: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
+// UpdateBoneRoots, unknown128: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -13,7 +11,9 @@
 class BSFlattenedBoneTree : public NiNode
 {
 public:
-    virtual void UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);  // compared: 0xef4d10
+    void UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2) override;  // compared: 0xef4d10
+    virtual void UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);  // compared: 0xef4d40
+    virtual void UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2);  // compared: 0xef4d70
 
     void UpdateBoneRoots();
 

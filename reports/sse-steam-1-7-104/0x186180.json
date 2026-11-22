@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "f2327405a49c3231c54f9a30e2b64e282a9be987746237a4d85f364314e7ebc2",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/extradata/BSExtraData.h",
+          "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.cpp",
+          "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "d65d8c15c7918dddc4115542239843803055dc7c505b271fefe14cedd8e82bef",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "18c49a9711d63955ea2bc35f08cd7cfe8f1203ff5897f192f0273d824e6b696e",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44954941715,
+    "rva": "0x186180",
+    "schema": 2,
+    "source_sha256": "9e6e522e3ed3c46a0cb08ca369e3a99e160c50aa4cf5775f04b80fc9bce0c5bd",
+    "status": "pass",
+    "symbols": [
+      "?IsNotEqual@ExtraPatrolRefData@@UEBA_NPEBVBSExtraData@@@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "d65d8c15c7918dddc4115542239843803055dc7c505b271fefe14cedd8e82bef",
+      "normalized_sha256": "18c49a9711d63955ea2bc35f08cd7cfe8f1203ff5897f192f0273d824e6b696e",
+      "rva": 1597824,
+      "size": 36
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x186180",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "22240ba90a4b6db3235219f9a2ebcbb72d2fc973856bb555e10fe623b3642fef",
+          "code_sections": 1,
+          "object_sha256": "f2327405a49c3231c54f9a30e2b64e282a9be987746237a4d85f364314e7ebc2"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 32,
+          "code_bytes_total": 36,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 1597824,
+          "size": 36,
+          "symbol": "?IsNotEqual@ExtraPatrolRefData@@UEBA_NPEBVBSExtraData@@@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.cpp",
+          "source_revision": "9e6e522e3ed3c46a0cb08ca369e3a99e160c50aa4cf5775f04b80fc9bce0c5bd"
+        },
+        "symbol_map_sha256": "c4ce2b3b75ec29caef1645e6f015a3a5395a79756dc1a0c7bb9225cb9d70f6b7",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x186180"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.cpp",
+    "digest": "9e6e522e3ed3c46a0cb08ca369e3a99e160c50aa4cf5775f04b80fc9bce0c5bd",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/extradata/BSExtraData.h",
+      "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.cpp",
+      "reconstruction/skyrim_shared/extradata/ExtraPatrolRefData.h"
+    ]
+  },
+  "submitter": "ariizona",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/c4ce2b3b75ec29caef1645e6f015a3a5395a79756dc1a0c7bb9225cb9d70f6b7.json",
+    "sha256": "c4ce2b3b75ec29caef1645e6f015a3a5395a79756dc1a0c7bb9225cb9d70f6b7"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

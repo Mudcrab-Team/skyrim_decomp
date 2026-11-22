@@ -24,14 +24,11 @@
           "/GR",
           "/fp:precise",
           "/Gy",
-          "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "0b040ce14ac9696aabd1d36e11bd94b92d7365f2f9f449006be154718d15235c",
+        "object_sha256": "7bf02eafad8d71bf846479777121dac82dfa7d07f35380a658dd76f2e865e721",
         "opened_equals_closure": true,
         "repository_files_opened": [
-          "reconstruction/declarations/NiObject.h",
-          "reconstruction/declarations/NiRefObject.h",
           "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
           "reconstruction/gamebryo/nimain/NiSourceTexture.h"
         ]
@@ -39,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "875d87a7c84c224994ac765672edbf4b52a27da5",
+    "base_sha": "65e3b0df1933f7c611db054ababbe4be56e3e656",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -50,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "79bc0df2873d3f0084241dac68744c6a99d31c65",
+    "head_sha": "cbef03fc38b929d9bef6194e5ddf4a2423fca39e",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,13 +57,13 @@
     "map_status": "pass",
     "normalized_sha256": "376dc2812b3d6fac39578e9a60e90fcc8d7563c991178868b7fcdac29bacde76",
     "os": "windows",
-    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44306358757,
+    "run_id": 44966717128,
     "rva": "0xef3500",
     "schema": 2,
-    "source_sha256": "01d2d87aadf3b8a7050710d413e502c6c1cc1f1a6b9e57db066ba99ab604feb1",
+    "source_sha256": "2a8f45b6e7d5d6ddf56d7a8560ff1810898e37773c2de1941c33d3dccaa56113",
     "status": "pass",
     "symbols": [
       "?Unk_25@NiSourceTexture@@UEAA_KXZ"
@@ -79,7 +76,7 @@
       "size": 24
     },
     "toolset": "MATCH",
-    "unit": "reconstruction/netimmerse/NiSourceTexture.cpp",
+    "unit": "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0xef3500",
@@ -88,8 +85,8 @@
     "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
-    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
-    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
   },
   "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
@@ -101,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "a4dc5eade14b49dd4ac95234143390e79405af5fdc03669fe54b8b340adb0b96",
           "code_sections": 1,
-          "object_sha256": "0b040ce14ac9696aabd1d36e11bd94b92d7365f2f9f449006be154718d15235c"
+          "object_sha256": "7bf02eafad8d71bf846479777121dac82dfa7d07f35380a658dd76f2e865e721"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -156,18 +153,17 @@
             "/EHsc",
             "/GR",
             "/fp:precise",
-            "/Gy",
-            "/Ireconstruction"
+            "/Gy"
           ],
-          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
         },
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/netimmerse/NiSourceTexture.cpp",
-          "source_revision": "01d2d87aadf3b8a7050710d413e502c6c1cc1f1a6b9e57db066ba99ab604feb1"
+          "path": "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
+          "source_revision": "2a8f45b6e7d5d6ddf56d7a8560ff1810898e37773c2de1941c33d3dccaa56113"
         },
-        "symbol_map_sha256": "7cc18b29d792579c1404bcd43827077d325d759185325cf38b21f5741c3bc971",
+        "symbol_map_sha256": "0b61d22f288167e2880bb988df62d0ddae77af34301009dceae26de95b4a7df1",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -178,21 +174,17 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
-    "digest": "8202745aa23250e5a427a8b8bcca487918c6a0268e9fcc6aea782d79bcc68b0d",
+    "digest": "2a8f45b6e7d5d6ddf56d7a8560ff1810898e37773c2de1941c33d3dccaa56113",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "01d2d87aadf3b8a7050710d413e502c6c1cc1f1a6b9e57db066ba99ab604feb1",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
-      "reconstruction/declarations/NiObject.h",
-      "reconstruction/declarations/NiRefObject.h",
       "reconstruction/gamebryo/nimain/NiSourceTexture.cpp",
       "reconstruction/gamebryo/nimain/NiSourceTexture.h"
     ]
   },
-  "submitter": "hinkiii",
+  "submitter": "awarebayes",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/7cc18b29d792579c1404bcd43827077d325d759185325cf38b21f5741c3bc971.json",
-    "sha256": "7cc18b29d792579c1404bcd43827077d325d759185325cf38b21f5741c3bc971"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/0b61d22f288167e2880bb988df62d0ddae77af34301009dceae26de95b4a7df1.json",
+    "sha256": "0b61d22f288167e2880bb988df62d0ddae77af34301009dceae26de95b4a7df1"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

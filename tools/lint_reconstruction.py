@@ -92,7 +92,7 @@ NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'CRASHLOGGER_PDB', 'SYMBOLS', 'GUESS', '
 ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
 # The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
 # single-level layout is accepted too while units written against it are still landing.
-SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
 # A second unit of a split class is named `<Class>_<lowest rva>`; the class it declares is the base.
 SPLIT_TAG = re.compile(r'_[0-9a-f]{3,8}$')
 CODEGEN_DECLSPEC = r'naked|code_seg|allocate|safebuffers'
@@ -177,7 +177,7 @@ BRACED = re.compile(r'\{([^{}]*)\}', re.S)
 INCLUDE_NAME = re.compile(r'[A-Za-z0-9_][A-Za-z0-9_.+-]*(?:/[A-Za-z0-9_][A-Za-z0-9_.+-]*)*')
 # Accepted units spell a header in another area by walking up from their own folder. New units
 # use same-directory or reconstruction-root paths (docs/drafter-card.md).
-SHARED_HEADER = re.compile(r'(?:\.\./)+(?:[a-z][a-z0-9_]*/)+[A-Z][A-Za-z0-9_]*\.h')
+SHARED_HEADER = re.compile(r'(?:\.\./)+(?:[a-z][a-z0-9_]*/)+(?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*\.h')
 PRAGMA_LINE = re.compile(r'^[ \t]*#[ \t]*pragma\b(.*)$', re.M)
 # Placeholders of tools/skeleton.py (unit_skeleton.py): the stub body and the header fields the
 # Drafter has to fill. Any spelling that starts with the prefix counts, so a new placeholder is
@@ -407,6 +407,7 @@ SPDX_MIT = ('SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyrig
 # header carries another SPDX line (NG MIT, powerof3 GPL) keep that licence and take no CC0 line.
 SPDX_CC0 = 'SPDX-License-Identifier: CC0-1.0'
 LICENCE_TEXT = 'licenses/CommonLibSSE-NG.txt'
+GPL_LICENCE_LINE = re.compile(r'^//[ \t]*Licen[cs]e:.*GPL', re.M | re.I)
 SPDX_LINE = re.compile(r'^//[ \t]*SPDX-License-Identifier:.*$', re.M)
 # Header lines that carry per-unit information and do not count against the header budget.
 HEADER_LIMIT = 6
@@ -425,6 +426,10 @@ def spdx_problems(name, header):
         problems.append(f'{name}: write the dedication as "// {SPDX_CC0}"')
     if SPDX_CC0 in lines and any(line != SPDX_CC0 for line in lines):
         problems.append(f'{name}: a unit with an MIT or GPL notice keeps that licence; drop "// {SPDX_CC0}"')
+    elif SPDX_CC0 in lines and GPL_LICENCE_LINE.search(header):
+        # A GPL unit may state its licence in a prose line instead of an SPDX line; the dedication
+        # would contradict it and the Reviewer rejects every function of the unit for it.
+        problems.append(f'{name}: the header states GPL; drop "// {SPDX_CC0}"')
     return problems
 
 

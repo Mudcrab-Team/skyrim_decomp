@@ -107,6 +107,9 @@ class DecisionTests(unittest.TestCase):
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'regressed'}, {0x10: 'pass', 0x20: 'pass'},
                           {0x10: 'approve', 0x20: 'approve'})
         self.assertEqual((d['blocked'], d['merge']), ('regression', False))
+        text = pr_bot.comment_body(HEAD, d)
+        self.assertIn('- 0x20: matched before this PR, differs now on host1', text)
+        self.assertNotIn('0x10', text)
         d = pr_bot.decide([0x10, 0x20], {0x10: 'pass', 0x20: 'preexisting-fail'}, {0x10: 'pass', 0x20: 'fail'},
                           {0x10: 'approve', 0x20: 'reject'})
         self.assertEqual(d['verdicts'], {0x10: 'matched', 0x20: 'debt'})
@@ -235,6 +238,7 @@ class FakeBot(pr_bot.Bot):
         self.comments = []  # the PR's issue comments as {id, login, body}
         self.sizes = {}
         self.pre = {}  # rva -> mechanical findings the pre-review gate returns
+        self.lint = []  # source-lint findings the intake stage returns
 
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
@@ -280,6 +284,9 @@ class FakeBot(pr_bot.Bot):
 
     def header_sizes(self, units):
         return dict(self.sizes)
+
+    def lint_problems(self, files):
+        return list(self.lint)
 
     def companions(self, units, files, functions):
         return self.extra
@@ -669,7 +676,10 @@ class ProcessTests(unittest.TestCase):
 
     def test_the_bot_never_closes_a_contributor_pr(self):
         source = (ROOT / 'tools/pr_bot.py').read_text()
-        self.assertNotRegex(source, r"""['"]close['"]|pr close""")
+        # The one close is the owner-only probe sweep, which is tested on its own.
+        sweep = source[source.index('    def sweep_probes'):source.index('    def hash_run_completed')]
+        self.assertEqual(sweep.count("'pr', 'close'"), 1)
+        self.assertNotRegex(source.replace(sweep, ''), r"""['"]close['"]|pr close""")
         scenarios = [dict(), dict(h2={0x10: 'fail', 0x20: 'fail'}), dict(grep=(True, ['asm-mnemonic'])),
                      dict(files=[{'filename': 'tools/x.py', 'status': 'modified'}]),
                      dict(review=json.dumps({'leak': 'yes', 'functions': {}})), dict(landed=[]), dict(history='leak')]
@@ -743,6 +753,14 @@ class CompanionProcessTests(unittest.TestCase):
                              {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
         self.assertEqual((debt['blocked'], debt['merge']), ('companion', False))
 
+    def test_companion_comment_carries_the_review_notes_of_the_blocking_function(self):
+        ok = {0x10: 'pass', 0x30: 'pass'}
+        done = pr_bot.decide([0x10, 0x30], ok, ok, {0x10: 'approve', 0x30: 'reject'}, companions=[0x30])
+        done['notes'] = {0x30: ['Header says no external code copied.']}
+        body = pr_bot.comment_body('abcdef123456', done)
+        self.assertIn('- 0x30: ', body)
+        self.assertIn('  - Header says no external code copied.', body)
+
     def test_decide_blocks_a_named_stale_function_that_is_not_matched_even_as_debt(self):
         h1 = {0x10: 'pass', 0x20: 'pass'}
         for h2_20 in ('fail', 'preexisting-fail'):
@@ -792,8 +810,19 @@ class CompanionProcessTests(unittest.TestCase):
                  host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})
         self.assertIn('0x10: did not byte-match on the CI hash check (missing)', pr_bot.comment_body(HEAD, d))
         d['verdicts'] = {0x10: 'fail:host1'}
-        self.assertIn('host 1 (CI hash check): missing; host 2 (compiled and compared locally): unbound',
+        self.assertIn('host 1 (CI hash check): missing; host 2 (compiled and compared locally): the compiled object had no symbol',
                       '\n'.join(pr_bot.other_failure_lines(d, set())))
+
+    def test_unbound_host_failure_is_not_called_a_byte_mismatch(self):
+        d = dict(pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'fail'}, {0x10: 'approve'}),
+                 host_why={'16': {'host2': 'unbound'}})
+        body = pr_bot.comment_body(HEAD, d)
+        self.assertIn('no symbol the compare could bind to that RVA', body)
+        self.assertIn('// CI hash: 0x<rva> <symbol>', body)
+        self.assertNotIn('did not byte-match when compiled and compared locally (unbound)', body)
+        d['host_why'] = {'16': {'host2': 'bytes differ'}}
+        self.assertIn('did not byte-match when compiled and compared locally (bytes differ)',
+                      pr_bot.comment_body(HEAD, d))
 
     def test_removed_accepted_functions_are_named_when_nothing_else_blocks(self):
         d = dict(pr_bot.decide([0x10], {0x10: 'pass'}, {0x10: 'pass'}, {0x10: 'approve'}), removed=[0x2e6a70])
@@ -841,11 +870,32 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertEqual(out['blocked'], 'companion')
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
 
+    def test_a_named_accepted_function_whose_record_cannot_be_written_blocks_the_merge(self):
+        bot = FakeBot(self.work)
+        bot.stale = [0x20]
+        bot.refused = {0x20}
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('record', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x20', body)
+        self.assertNotIn('0x10', body)
+        self.assertIn('record could not be written', body)
+        self.assertIn('bot or host issue', body)
+
+    def test_a_new_function_whose_record_cannot_be_written_still_lets_the_rest_merge(self):
+        bot = FakeBot(self.work)
+        bot.stale = [0x10]
+        bot.refused = {0x20}
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), (None, True))
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'fail:record'})
+
     def test_a_companion_whose_record_cannot_be_built_blocks_before_the_merge(self):
         bot = self.bot()
         bot.refused = {0x30}
         out = bot.process(PR)
-        self.assertEqual((out['blocked'], out['merge']), ('companion', False))
+        self.assertEqual((out['blocked'], out['merge']), ('record', False))
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
         self.assertEqual(bot.seen('record'), [])
 
@@ -1227,6 +1277,53 @@ class Host1Tests(unittest.TestCase):
         self.assertIn('ref=refs/heads/probe/pr-7', branch[0])
         self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
         self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
+
+    def sweep(self, probes, targets, run_status='in_progress', done=False):
+        calls = []
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+
+        def gh(*a):
+            if a[0] == 'pr' and a[1] == 'list':
+                return probes
+            if a[0] == 'pr' and a[1] == 'view':
+                return targets[int(a[2])]
+            return {'check_runs': [dict(self.job, status=run_status)]}
+        self.bot.gh_json = gh
+        if done:
+            pr_bot.State(self.work / 'state', 7, HEAD).set('done', True)
+        return self.bot.sweep_probes(), calls
+
+    def probe(self, number=50, target=7, **over):
+        return dict({'number': number, 'title': f'pr-check run for the head of #{target}',
+                     'headRefName': f'probe/pr-{target}', 'headRefOid': HEAD,
+                     'author': {'login': pr_bot.OWNER}}, **over)
+
+    def test_a_probe_with_a_running_hash_for_an_open_target_is_left_alone(self):
+        got, calls = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}})
+        self.assertEqual((got, calls), ([], []))
+
+    def test_a_probe_is_closed_with_its_branch_once_the_hash_run_completed(self):
+        got, calls = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}}, run_status='completed')
+        self.assertEqual(got, [50])
+        self.assertEqual(calls[0][:4], ['gh', 'pr', 'close', '50'])
+        self.assertIn('--delete-branch', calls[0])
+
+    def test_a_probe_is_closed_when_the_bot_holds_the_result(self):
+        got, _ = self.sweep([self.probe()], {7: {'headRefOid': HEAD, 'state': 'OPEN'}}, done=True)
+        self.assertEqual(got, [50])
+
+    def test_a_probe_is_closed_when_its_target_is_gone_or_moved(self):
+        for target in ({'headRefOid': HEAD, 'state': 'MERGED'}, {'headRefOid': HEAD, 'state': 'CLOSED'},
+                       {'headRefOid': 'f' * 40, 'state': 'OPEN'}):
+            got, _ = self.sweep([self.probe()], {7: target})
+            self.assertEqual(got, [50], target)
+
+    def test_only_the_bots_own_probes_are_ever_closed(self):
+        done = {7: {'headRefOid': HEAD, 'state': 'MERGED'}}
+        others = [self.probe(author={'login': 'someone'}), self.probe(title='pr-check run for the head of #7 (copy)'),
+                  self.probe(headRefName='feature/x')]
+        got, calls = self.sweep(others, done)
+        self.assertEqual((got, calls), ([], []))
 
     def test_warm_probes_only_a_head_with_no_run_and_in_scope(self):
         probed = []
@@ -1612,7 +1709,9 @@ class ReviewContextTests(unittest.TestCase):
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
         self.assertIn('its recipe hash DIFFERS', self.prompts[0])
 
-    def test_an_accepted_function_is_compared_with_the_recipe_of_its_record_not_the_one_the_unit_names(self):
+    def test_an_accepted_function_is_compared_with_the_recipe_the_unit_names_not_the_one_of_its_record(self):
+        # The CI job rebuilds a changed unit with the unit's recipe whatever its old record pinned, so a row
+        # built with the record's older recipe is a binding mismatch.
         evidence = self.declare_other_recipe('')
         default = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         record = {'source': {'compiled': 'reconstruction/a/B.cpp'}, 'recipe': {'path': default},
@@ -1623,11 +1722,7 @@ class ReviewContextTests(unittest.TestCase):
             {'id': 'b-0x10', 'build_id': 'b', 'rva': 0x10, 'size': 8, 'status': 'matched', 'name': 'N',
              'name_origin': 'GUESS', 'report': 'reports/0x10.json'}]}))
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
-        self.assertIn('its recipe hash agrees', self.prompts[0])
-        record['runs'][0]['report']['contract_version'] = 3  # the job binds only contract v2 records
-        (self.tree / 'reports/0x10.json').write_text(json.dumps(record))
-        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
-        self.assertIn('its recipe hash DIFFERS', self.prompts[1])
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
 
     def test_origin_findings_the_unit_already_had_on_main_are_left_out_of_the_prompt(self):
         hit = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'revision': 'abc',
@@ -1720,6 +1815,55 @@ class MappingBot(FakeBot):
 
     def regenerate(self, number):
         self.calls.append(['regenerate', number])
+
+
+class DeletionBot(FakeBot):
+    """The deletion lane with the orphan rule and the model stubbed."""
+    GONE = [{'filename': 'reconstruction/a/Old.cpp', 'status': 'removed'},
+            {'filename': 'reconstruction/a/Old.h', 'status': 'removed'}]
+
+    def __init__(self, work, found=(), review=MappingBot.APPROVE, **kw):
+        super().__init__(work, files=list(self.GONE), **kw)
+        self.found, self.text = list(found), review
+
+    def deletion_problems(self, base, files):
+        self.calls.append(['deletion_problems'])
+        return list(self.found)
+
+    def deletion_review(self, number, head, base, names):
+        self.calls.append(['deletion_review', len(names)])
+        return self.text
+
+
+class DeletionLaneBotTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_a_safe_deletion_is_reviewed_once_and_merged_without_hosts(self):
+        bot = DeletionBot(self.work)
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), (None, True))
+        for stage in ('mac', 'host1', 'build_records', 'record'):
+            self.assertEqual(bot.seen(stage), [], stage)
+        self.assertEqual(bot.seen('deletion_review'), [['deletion_review', 2]])
+        merge = bot.seen('gh', 'pr', 'merge')
+        self.assertEqual(len(merge), 1)
+        self.assertEqual(merge[0][merge[0].index('--subject') + 1], 'Delete 2 duplicate unit files (#7)')
+
+    def test_an_orphaning_deletion_is_refused_before_any_review(self):
+        bot = DeletionBot(self.work, found=['a/Old: accepted function 0x200 is bound by its record to this unit'])
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('deletion', False))
+        self.assertEqual((bot.seen('deletion_review'), bot.seen('gh', 'pr', 'merge')), ([], []))
+        self.assertIn('0x200', bot.seen('gh', 'pr', 'comment')[0][-1])
+
+    def test_a_rejecting_review_never_merges(self):
+        reject = json.dumps({'leak': 'no', 'verdict': 'reject', 'ground': 'hygiene', 'why': 'still used'})
+        bot = DeletionBot(self.work, review=reject)
+        self.assertEqual(bot.process(PR)['blocked'], 'review')
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
 
 
 class MappingLaneTests(unittest.TestCase):
@@ -2004,6 +2148,19 @@ class StickyCommentTests(unittest.TestCase):
         with self.assertRaises(pr_bot.Stop):
             other.process(PR)
         self.assertEqual(other.comments, [])
+
+    def test_a_lint_failure_is_named_in_the_comment_before_any_compare(self):
+        bot = FakeBot(self.work)
+        bot.lint = ['reconstruction/a/B.cpp:9: label outside the v2 grammar; write "// <names>: <LABEL>"']
+
+        def never(units, tag):
+            raise AssertionError('compared a unit that fails the lint')
+        bot.mac_compare = never
+        with self.assertRaises(pr_bot.Rejected):
+            bot.process(PR)
+        body = bot.comments[0]['body']
+        self.assertIn('reconstruction/a/B.cpp:9: label outside the v2 grammar', body)
+        self.assertIn('source lint', body)
 
     def test_the_batching_request_is_a_line_in_the_sticky_comment(self):
         bot = FakeBot(self.work)

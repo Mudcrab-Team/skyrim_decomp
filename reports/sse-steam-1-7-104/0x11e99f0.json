@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "d63e847a9485f541af259795f2c8f8a367464f47533e2a30dead6791846c3b8a",
+        "object_sha256": "61ff22dd8fe896dbe0d36d19733870cdf08995ed10e9dc30daa3b876de764d21",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "cb349a1456e0edce16e39abab6f140085414d095",
+    "base_sha": "438259cbb0018b32c39c05b2a35bdd14a0782f90",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "f86aeda7972405640363fac14abe66f3098603d9",
+    "head_sha": "b07f50c90371a37d604c558b3acc318059735594",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44887508616,
+    "run_id": 45026062912,
     "rva": "0x11e99f0",
     "schema": 2,
-    "source_sha256": "c2fc95b04d19f7b23ad7de3e55e05e9afa0b4a5f18f2d240f803414a8ed4bd77",
+    "source_sha256": "f8b8854617ca7eb4fb995d01c90838fa7cf79c3d901d7c76c5cc5178a56d738c",
     "status": "pass",
     "symbols": [
       "??_GBSNavmesh@@UEAAPEAXI@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "fbdb9c9406b0af3fbb6a204b2962722a516fe5bee55ec2a8e0778ef5f6c5997e",
           "code_sections": 1,
-          "object_sha256": "d63e847a9485f541af259795f2c8f8a367464f47533e2a30dead6791846c3b8a"
+          "object_sha256": "61ff22dd8fe896dbe0d36d19733870cdf08995ed10e9dc30daa3b876de764d21"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,9 +161,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
-          "source_revision": "c2fc95b04d19f7b23ad7de3e55e05e9afa0b4a5f18f2d240f803414a8ed4bd77"
+          "source_revision": "f8b8854617ca7eb4fb995d01c90838fa7cf79c3d901d7c76c5cc5178a56d738c"
         },
-        "symbol_map_sha256": "ba67145a6d2653a388e27de298b542c9b7be96afafccd606528270598817d7fb",
+        "symbol_map_sha256": "7c9d203ff162a170ed0ea97f259d22a7a6110b66b24f2b9c14e62fda27293840",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,17 +174,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
-    "digest": "c2fc95b04d19f7b23ad7de3e55e05e9afa0b4a5f18f2d240f803414a8ed4bd77",
+    "digest": "f8b8854617ca7eb4fb995d01c90838fa7cf79c3d901d7c76c5cc5178a56d738c",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/pathfinding/BSNavmesh.cpp",
       "reconstruction/skyrim_shared/pathfinding/BSNavmesh.h"
     ]
   },
-  "submitter": "ariizona",
+  "submitter": "aivv73",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/ba67145a6d2653a388e27de298b542c9b7be96afafccd606528270598817d7fb.json",
-    "sha256": "ba67145a6d2653a388e27de298b542c9b7be96afafccd606528270598817d7fb"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/7c9d203ff162a170ed0ea97f259d22a7a6110b66b24f2b9c14e62fda27293840.json",
+    "sha256": "7c9d203ff162a170ed0ea97f259d22a7a6110b66b24f2b9c14e62fda27293840"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

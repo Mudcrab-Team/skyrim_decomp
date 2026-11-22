@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis, community headers).
+// Code origin: brown-room reconstruction from disassembly
 // Code origin: original reconstruction from the pinned image listing; declarations from CommonLibSSE-NG (MIT). No community body copied.
 // Origin: original reconstruction; types informed by CommonLibSSE-NG.
 // NiNode: EXE_RTTI

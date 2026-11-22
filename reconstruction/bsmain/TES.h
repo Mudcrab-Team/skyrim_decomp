@@ -11,4 +11,6 @@ class TESLandTexture { public: unsigned int GetHavokMaterialType(); };
 class BGSDynamicPersistenceManager { public: static BGSDynamicPersistenceManager* instance; void Pause(); void Resume(); };
 class ExteriorCellLoader { public: void CancelAllCellLoads(); };
 extern ExteriorCellLoader* loader;
-class TES { public: void ResumeMasterFileLoads(); void CancelMasterFileLoads(); public: TESLandTexture* GetLandTexture(const NiPoint3& coord); unsigned int GetLandMaterialType(const NiPoint3& coord); };
+// Function1a2200, Function1a2200Arg, kind, a_flag: GUESS(low); the receiver, the argument type and the byte at 0x44 are unidentified
+struct Function1a2200Arg { unsigned char unk00[0x44]; unsigned char kind; };
+class TES { public: bool Function1a2200(const Function1a2200Arg* a_arg, bool a_flag) const; void ResumeMasterFileLoads(); void CancelMasterFileLoads(); public: TESLandTexture* GetLandTexture(const NiPoint3& coord); unsigned int GetLandMaterialType(const NiPoint3& coord); };

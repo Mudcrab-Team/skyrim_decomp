@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "742ea68656c7e7e7d8a545c9397950f7482e3095cb409ffc91238bd4422d2355",
+        "object_sha256": "b5bc34f0b1bc0807ecd3d088637892c5e68ae71b2c61eec9645be8e728c04338",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSParticleShaderGeometry.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "f68e84a88f69866a705ffb6071aff0050e3ccb2c",
+    "base_sha": "65e3b0df1933f7c611db054ababbe4be56e3e656",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "882459e4272475f7b597f1e2f88dcb3dd346aa6c",
+    "head_sha": "aec4678e4d5f71ee58ad4b76255b33516f8b9ffc",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44741364371,
+    "run_id": 44967984790,
     "rva": "0x26d310",
     "schema": 2,
-    "source_sha256": "71638c6d69ab54465806a634740677eb2fcf8883d7e4af34dc659b6e4225ac37",
+    "source_sha256": "172ea75fd1ab8c21151ca2bef753f4ae006b6f1cc2ea9534c01af838df473146",
     "status": "pass",
     "symbols": [
       "??_GBSParticleShaderGeometry@@UEAAPEAXI@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "408c785ecf2e9ab7855c1486678e62fc11718549731fb23c94366956c8ed7504",
           "code_sections": 1,
-          "object_sha256": "742ea68656c7e7e7d8a545c9397950f7482e3095cb409ffc91238bd4422d2355"
+          "object_sha256": "b5bc34f0b1bc0807ecd3d088637892c5e68ae71b2c61eec9645be8e728c04338"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,9 +161,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSParticleShaderGeometry.cpp",
-          "source_revision": "71638c6d69ab54465806a634740677eb2fcf8883d7e4af34dc659b6e4225ac37"
+          "source_revision": "172ea75fd1ab8c21151ca2bef753f4ae006b6f1cc2ea9534c01af838df473146"
         },
-        "symbol_map_sha256": "b01af017b1b4b46a1e54b72f23e08019d6f48b3fb03731615b9501516cc21c2d",
+        "symbol_map_sha256": "9e19dee6da9ec0341ca1c76f5cf4977bdb1ebf95d34f815f12e99d8f4537cfb1",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,17 +174,17 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSParticleShaderGeometry.cpp",
-    "digest": "71638c6d69ab54465806a634740677eb2fcf8883d7e4af34dc659b6e4225ac37",
+    "digest": "172ea75fd1ab8c21151ca2bef753f4ae006b6f1cc2ea9534c01af838df473146",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSParticleShaderGeometry.cpp",
       "reconstruction/bsshader/BSParticleShaderGeometry.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "v0id-array",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/b01af017b1b4b46a1e54b72f23e08019d6f48b3fb03731615b9501516cc21c2d.json",
-    "sha256": "b01af017b1b4b46a1e54b72f23e08019d6f48b3fb03731615b9501516cc21c2d"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/9e19dee6da9ec0341ca1c76f5cf4977bdb1ebf95d34f815f12e99d8f4537cfb1.json",
+    "sha256": "9e19dee6da9ec0341ca1c76f5cf4977bdb1ebf95d34f815f12e99d8f4537cfb1"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

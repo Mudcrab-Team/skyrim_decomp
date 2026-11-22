@@ -1,6 +1,6 @@
-// Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original reconstruction from the pinned image and community declarations.
-// SPDX-License-Identifier: CC0-1.0
+// Source exposure: mixed. Existing bodies were drafted by claude-sonnet-5-5 from the pinned image.
+// Code origin: original reconstruction from the pinned image and community declarations; GetMountInteraction from the listing and the CrashLogger PDB name.
+// Consulted (private, not in repo): decompiler control-flow hints.
 // Adapted bodies: none in this change.
 // 0x6d5e30 Actor::Function6d5e30
 // 0x7cf670 Actor::Function7cf670
@@ -16,6 +16,8 @@
 // 0x6d92b0 Actor::GetVoiceRecoveryTime
 // 0x687c20 Actor::IsInRagdollState
 // 0x6c5440 Actor::GetActorValueModifier
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x2e6710 Actor::GetMountInteraction
 #include "Actor.h"
 
 // Actor::Function6d5e30: GUESS(low); the compared form type is Armor, whose enchantment is applied through the instant magic caster.
@@ -74,6 +76,12 @@ hkpCharacterStateType Actor::Function6b5bf0()
         return static_cast<hkpCharacterStateType>(0);
     }
     return controller->context.Functionb97880();
+}
+
+bool Actor::GetMountInteraction(MountInteraction*& a_out)
+{
+    extraList.GetMountInteraction(a_out);
+    return a_out != nullptr;
 }
 
 std::uint16_t Actor::GetLevel() const

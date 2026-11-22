@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0A@CompressedArchiveFile@@UEBAIXZ": {
+      "rva": 15441632,
+      "size": 7
+    },
+    "?seek@CompressedArchiveFile@@UEAAXH@Z": {
+      "rva": 15441568,
+      "size": 13
+    },
+    "?Functioneb9ef0@CompressedArchiveFile@@QEBAIXZ": {
+      "rva": 15441648,
+      "size": 7
+    },
+    "?Functioneb9f10@CompressedArchiveFile@@QEBA_NXZ": {
+      "rva": 15441680,
+      "size": 12
+    },
+    "?Functioneb9f40@CompressedArchiveFile@@QEAAX_N@Z": {
+      "rva": 15441728,
+      "size": 31
+    },
+    "?SetEndianSwapFallback@@YAXPEAVCompressedArchiveFile@@_N@Z": {
+      "rva": 15464352,
+      "size": null
+    },
+    "?CompressedReadFn@@YAXXZ": {
+      "rva": 15441712,
+      "size": null
+    },
+    "?CompressedWriteFn@@YAXXZ": {
+      "rva": 15464432,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0A@CompressedArchiveFile@@UEBAIXZ",
+        "rva": "0xeb9ee0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?seek@CompressedArchiveFile@@UEAAXH@Z",
+        "rva": "0xeb9ea0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioneb9ef0@CompressedArchiveFile@@QEBAIXZ",
+        "rva": "0xeb9ef0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioneb9f10@CompressedArchiveFile@@QEBA_NXZ",
+        "rva": "0xeb9f10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioneb9f40@CompressedArchiveFile@@QEAAX_N@Z",
+        "rva": "0xeb9f40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SetEndianSwapFallback@@YAXPEAVCompressedArchiveFile@@_N@Z",
+        "rva": "0xebf7a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CompressedReadFn@@YAXXZ",
+        "rva": "0xeb9f30",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CompressedWriteFn@@YAXXZ",
+        "rva": "0xebf7f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "fb849d95de19e213f33dd6ac00ae7ecbc6b3f745fdb1171ad096e1fb9316e419",
+        "object_sha256": "0da01dd3f903cc216d3da828d6f32980953e202ed06c863fa33ba5c6890120e4",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/camera/TESCamera.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "466aa251a623c4b93e3a55606365b62b58a8a486",
+    "base_sha": "26e3c0f21f935f84b38bf0efa79dce733cf16c7a",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "dfd5929b0bbff818bf4f9a2d1313af931dd493b4",
+    "head_sha": "8f1a6ad0ff56c6734e088053b01459970961d15f",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44592756335,
+    "run_id": 44997855471,
     "rva": "0x558e10",
     "schema": 2,
-    "source_sha256": "b2338bf899d04bb6285e9350a95f0e592175f3da5b3c0053ec119b78d69844b1",
+    "source_sha256": "77bb7c83efd2a767e2ba93f4378ed57c22fe688102938c5745228aa7099cdf72",
     "status": "pass",
     "symbols": [
       "?GetNode@TESCamera@@QEAA_NAEAV?$NiPointer@VNiNode@@@@@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "c6c87300a9c5aaf6723c477d3943735370ce0be9704bd9379a11ff74c2205d08",
           "code_sections": 1,
-          "object_sha256": "fb849d95de19e213f33dd6ac00ae7ecbc6b3f745fdb1171ad096e1fb9316e419"
+          "object_sha256": "0da01dd3f903cc216d3da828d6f32980953e202ed06c863fa33ba5c6890120e4"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +159,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim/camera/TESCamera.cpp",
-          "source_revision": "b2338bf899d04bb6285e9350a95f0e592175f3da5b3c0053ec119b78d69844b1"
+          "source_revision": "77bb7c83efd2a767e2ba93f4378ed57c22fe688102938c5745228aa7099cdf72"
         },
-        "symbol_map_sha256": "6c786408acc05eefc44b5435a99ed28e0c36e71ad10f4cb74f6d28d84413be86",
+        "symbol_map_sha256": "0438f8aa5de55a426a9f8847722871e5d6c698094dbd33df5537beaf51f87b73",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/camera/TESCamera.cpp",
-    "digest": "b2338bf899d04bb6285e9350a95f0e592175f3da5b3c0053ec119b78d69844b1",
+    "digest": "77bb7c83efd2a767e2ba93f4378ed57c22fe688102938c5745228aa7099cdf72",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim/camera/TESCamera.cpp",
       "reconstruction/skyrim/camera/TESCamera.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "aivv73",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/6c786408acc05eefc44b5435a99ed28e0c36e71ad10f4cb74f6d28d84413be86.json",
-    "sha256": "6c786408acc05eefc44b5435a99ed28e0c36e71ad10f4cb74f6d28d84413be86"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/0438f8aa5de55a426a9f8847722871e5d6c698094dbd33df5537beaf51f87b73.json",
+    "sha256": "0438f8aa5de55a426a9f8847722871e5d6c698094dbd33df5537beaf51f87b73"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

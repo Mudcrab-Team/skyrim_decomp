@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetType@PathingRequestStopMoving@@QEBAIXZ": {
+      "rva": 5215856,
+      "size": 47
+    },
+    "?typeId@PathingRequestStopMoving@@2IA": {
+      "rva": 52357640,
+      "size": null
+    },
+    "??_C@_0BJ@FANCGOFL@PathingRequestStopMoving@": {
+      "rva": 26084296,
+      "size": null
+    },
+    "?GenerateCRC@BSCRC32@@SAXAEAIPEBDH@Z": {
+      "rva": 13509184,
+      "size": null
+    },
+    "?Function11cbed0@PathingRequestStopMoving@@QEAAXXZ": {
+      "rva": 18661072,
+      "size": 17
+    },
+    "?AvoidanceHelper@@YAXPEAXH@Z": {
+      "rva": 19156752,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetType@PathingRequestStopMoving@@QEBAIXZ",
+        "rva": "0x4f9670",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?typeId@PathingRequestStopMoving@@2IA",
+        "rva": "0x31eea08",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_C@_0BJ@FANCGOFL@PathingRequestStopMoving@",
+        "rva": "0x18e03c8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GenerateCRC@BSCRC32@@SAXAEAIPEBDH@Z",
+        "rva": "0xce2240",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function11cbed0@PathingRequestStopMoving@@QEAAXXZ",
+        "rva": "0x11cbed0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?AvoidanceHelper@@YAXPEAXH@Z",
+        "rva": "0x1244f10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

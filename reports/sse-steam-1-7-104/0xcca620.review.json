@@ -3,21 +3,19 @@
   "code_section_sha256": "98407bd5c8d9f6b4ec45b53662ce56e8dee92a12cc2d04a934450ce8fce255c8",
   "escalation_category": "none",
   "function_id": "sse-steam-1-7-104-0xcca620",
-  "naming_findings": [
-    "The target name and signature remain guesses; the sibling hint does not establish identity."
-  ],
+  "naming_findings": [],
   "previous_code_section_sha256": null,
   "previous_review_sha256": null,
   "previous_source_digest": null,
-  "review_date": "2026-11-16",
+  "review_date": "2026-11-22",
   "review_kind": "full",
   "review_record_schema": 3,
-  "review_sha256": "cfceb8ac836e317a667d436ef46f1c6266b04f45723d12b1c62cbc0a1091637b",
-  "review_task_id": "review-flow-g214-p177b4-001",
+  "review_sha256": "ec9b9929d4e1f718b617da1d1c5f54cba3a1f89199175b7d8fc49934e1514da0",
+  "review_task_id": "pr-bot-819-aef0f99a",
   "reviewer_model": "gpt-6.1-terra",
   "rva": 13411872,
   "size": 8,
-  "source_digest": "4780e9a319a18076b4b9f081e62d0cd15baf304b8cfc99e5ff9d31c99bc6d8d6",
-  "source_digest_method": "tu-sha256-v1",
+  "source_digest": "33d815882f5367316c03154f299900b97c74385d6e46ca423b6cf1080377f0b1",
+  "source_digest_method": "tu-sha256-v2",
   "verdict": "approve"
 }

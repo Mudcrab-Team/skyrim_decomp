@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetType@ExtraTeleport@@UEBAIXZ": {
+      "rva": 1577200,
+      "size": 6
+    },
+    "?Function1810d0@ExtraTeleport@@QEAAXPEAV1@@Z": {
+      "rva": 1577168,
+      "size": 13
+    },
+    "?Function191fe0@@YAXPEAX0@Z": {
+      "rva": 1646560,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetType@ExtraTeleport@@UEBAIXZ",
+        "rva": "0x1810f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1810d0@ExtraTeleport@@QEAAXPEAV1@@Z",
+        "rva": "0x1810d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function191fe0@@YAXPEAX0@Z",
+        "rva": "0x191fe0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

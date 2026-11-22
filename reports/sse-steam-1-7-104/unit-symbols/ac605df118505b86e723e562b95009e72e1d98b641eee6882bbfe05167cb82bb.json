@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Slot6@CombatAimController@@UEBAEXZ": {
+      "rva": 8430128,
+      "size": 3
+    },
+    "?Function80a280@CombatAimController@@QEAAXXZ": {
+      "rva": 8430208,
+      "size": 5
+    },
+    "?Function80a2f0@CombatAimController@@QEAAXXZ": {
+      "rva": 8430320,
+      "size": 21
+    },
+    "?gAimDefault@@3MA": {
+      "rva": 52708108,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Slot6@CombatAimController@@UEBAEXZ",
+        "rva": "0x80a230",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function80a280@CombatAimController@@QEAAXXZ",
+        "rva": "0x80a280",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function80a2f0@CombatAimController@@QEAAXXZ",
+        "rva": "0x80a2f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?gAimDefault@@3MA",
+        "rva": "0x324430c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

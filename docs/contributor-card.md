@@ -10,6 +10,8 @@ per class, since each PR costs a full verification and merge cycle. `submit <tas
 `submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
 `next --class REGEX` ranks only classes whose name matches, and `claim ... --skip-conflicts` claims
 the functions nobody holds and names the others with their claim issues.
+`next` offers callee-ready functions first (every callee already matched; `data/ready-queue.json`,
+regenerated with `tools/ready_queue.py`); the ordering is advisory.
 
 Read only the private pack named by the helper, after the owner has agreed to model exposure.
 Never post listings, pseudo-C, Ghidra projects, bytes, objects, raw diagnostics or paths. Keep the
@@ -46,7 +48,9 @@ Header: keep it short. The skeleton writes all of it; a `.cpp` looks like
 Never paste licence text, and leave out Task, Labels, Evidence, Drafted by, Recipe (unless it is
 not the default) and any "a byte match shows..." disclaimer: the records and git hold them. Labels,
 `Sibling source:`, `0x<rva> <Name>` and `CI hash: 0x<rva> <symbol>` lines do not count; keep the rest to 6 lines or fewer. The
-PR check fails a new or changed header that is longer or holds licence text. The failure names the file, how many lines it is over and the lines that count. To fix a `header` rejection run `python3 tools/compact_headers.py --apply <files>` (per file; it changes comments only and leaves a file alone if its digest or lint would change).
+PR check fails a new or changed header that is longer or holds licence text. The failure names the file, how many lines it is over and the lines that count. To fix a `header` rejection run `python3 tools/compact_headers.py --apply <files>` (per file; it changes comments only and leaves a file alone if its digest or lint would change). It keeps every `Source exposure`, `Code origin` and `Adapted bodies` line, because the digest hashes them, so it reports a file "unchanged" when the overrun is repeated copies of those lines (a second skeleton block, or a header pasted from another unit, after you added functions to a unit): keep one of each, merge their text, and delete the rest by hand.
+
+Intake also refuses, in the files you change: codegen steering (`#pragma optimize`/`intrinsic`/`function`, `_ReadWriteBarrier`, `noinline` without a `// noinline: <evidence>` comment; R38), decompiler leftovers (`undefined`, `CONCAT44`, `SUB41`, `ZEXT48`, `SEXT48`, `CARRY4`, `SBORROW4`; R39) and comments that name a model or tool, a checkpoint id, a host path or an e-mail address (R40). The message gives the rule, line, text and fix; `docs/code-rules.md` has the full rows.
 
 A function is claimed only by its `// 0x<rva> <Name>` line (older units also use `RVA 0x<rva>, <n> bytes`
 or `compared at RVA 0x<rva>`). An address in prose, such as a callee or a global in a provenance line, is not
@@ -117,7 +121,8 @@ Fallout: New Vegas program databases; `findings/sibling-symbol-files.md`). They 
 members are called, never which function is which. A name a unit takes from them carries `SYMBOLS(<source-id>)`
 with `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`, one label per line, naming the source that
 has the member. The files themselves are never committed, and no address, type or decorated name from them goes
-into a unit; `compare` still decides.
+into a unit; `compare` still decides. `start` prints up to 12 of these names for the started class, each with its
+`<source-id>`, as candidates only.
 
 ## Mapping-only PRs
 

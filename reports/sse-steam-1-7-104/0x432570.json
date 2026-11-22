@@ -1,0 +1,191 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "c0873c5d7dbc6691f148ff9a926963a3c37f2f15ce93f570876dfe5e90c75444",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.cpp",
+          "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "438259cbb0018b32c39c05b2a35bdd14a0782f90",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "b07f50c90371a37d604c558b3acc318059735594",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "c9ff3f77172dc6cbc4b9ea367653a87153524e8099ebb47f427202d935b0bc13",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "58fe1e82336f83a497f332af7b8969520db58aa636e1f67822bb1e7699c22b3a",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 45026062912,
+    "rva": "0x432570",
+    "schema": 2,
+    "source_sha256": "5b93b0161a3a57bede3973594846feb2fb58627fc042093d4eb877b56ed17266",
+    "status": "pass",
+    "symbols": [
+      "?Function432570@BSFaceGenKeyframeExclusive@@QEAAXE@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "c9ff3f77172dc6cbc4b9ea367653a87153524e8099ebb47f427202d935b0bc13",
+      "normalized_sha256": "58fe1e82336f83a497f332af7b8969520db58aa636e1f67822bb1e7699c22b3a",
+      "rva": 4400496,
+      "size": 4
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x432570",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "99c2307921ac9519539c635094af52b97a9012604eb941533ec4cd967490c65d",
+          "code_sections": 1,
+          "object_sha256": "c0873c5d7dbc6691f148ff9a926963a3c37f2f15ce93f570876dfe5e90c75444"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 4,
+          "code_bytes_total": 4,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 4400496,
+          "size": 4,
+          "symbol": "?Function432570@BSFaceGenKeyframeExclusive@@QEAAXE@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.cpp",
+          "source_revision": "5b93b0161a3a57bede3973594846feb2fb58627fc042093d4eb877b56ed17266"
+        },
+        "symbol_map_sha256": "6c42a1830eca8dd30eb4cdb9f457656c6db5e111379db6f513c799014add47b2",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x432570"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.cpp",
+    "digest": "5b93b0161a3a57bede3973594846feb2fb58627fc042093d4eb877b56ed17266",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.cpp",
+      "reconstruction/skyrim_shared/facegen/BSFaceGenKeyframeExclusive.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/6c42a1830eca8dd30eb4cdb9f457656c6db5e111379db6f513c799014add47b2.json",
+    "sha256": "6c42a1830eca8dd30eb4cdb9f457656c6db5e111379db6f513c799014add47b2"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

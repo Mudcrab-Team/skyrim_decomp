@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?WorldRootCamera@Main@@SAPEAXXZ": {
+      "rva": 6669440,
+      "size": 15
+    },
+    "?worldRoot@@3PEAUWorldRoot@@EA": {
+      "rva": 52627264,
+      "size": null
+    },
+    "?Function65b6a0@Main@@SA_NXZ": {
+      "rva": 6665888,
+      "size": 24
+    },
+    "?GetMainState@@YAPEAUMainState65b6a0@@XZ": {
+      "rva": 22646512,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?WorldRootCamera@Main@@SAPEAXXZ",
+        "rva": "0x65c480",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?worldRoot@@3PEAUWorldRoot@@EA",
+        "rva": "0x3230740",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function65b6a0@Main@@SA_NXZ",
+        "rva": "0x65b6a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetMainState@@YAPEAUMainState65b6a0@@XZ",
+        "rva": "0x1598ef0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

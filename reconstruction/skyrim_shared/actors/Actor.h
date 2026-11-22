@@ -221,7 +221,16 @@ struct BSSimpleList {
     BSSimpleList* next;  // 0x08
 };
 
-class ExtraDataList;
+class MountInteraction;
+
+// ExtraDataList::GetMountInteraction: CRASHLOGGER_PDB(59818@2026.10.24); 0x18 bytes as in NG, members not modelled
+// MountInteraction: GUESS(low); the out parameter is modelled as a plain pointer
+class ExtraDataList {
+public:
+    void GetMountInteraction(MountInteraction*& a_out);
+
+    std::uint8_t unk00[0x18];
+};
 
 class InventoryEntryData {
 public:
@@ -525,14 +534,10 @@ public:
     OBJ_REFR     data;  // 0x40
     // parentCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     TESObjectCELL* parentCell;
-    // unknown68 to unknown98: GUESS(low); unresolved words between the cell pointer and the magic-target base.
-    std::uint64_t unknown68;  // 0x68
-    std::uint64_t unknown70;  // 0x70
-    std::uint64_t unknown78;  // 0x78
-    std::uint64_t unknown80;  // 0x80
-    std::uint64_t unknown88;  // 0x88
-    std::uint64_t unknown90;  // 0x90
-    std::uint64_t unknown98;  // 0x98
+    // extraList: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); at 0x70
+    std::uint8_t unk68[0x8];
+    ExtraDataList extraList;
+    std::uint8_t unk88[0x18];
 
     // GetScale: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     float GetScale() const;
@@ -688,6 +693,8 @@ public:
     // GetCharController, IsOnMount: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     bhkCharacterController* GetCharController() const;
     bool IsOnMount() const;
+    // GetMountInteraction: CRASHLOGGER_PDB(59818@2026.10.24)
+    bool GetMountInteraction(MountInteraction*& a_out);
 
     // Function6b5bf0: GUESS(low); the character controller's context state, 0 when either link is absent.
     hkpCharacterStateType Function6b5bf0();
@@ -718,6 +725,7 @@ public:
     void AddPerk(BGSPerk* a_perk, std::uint32_t a_rank = 0);  // compared: 0x69f8e0
 };
 
+static_assert(offsetof(TESObjectREFR, extraList) == 0x70, "TESObjectREFR::extraList offset");
 static_assert(offsetof(Actor, moveFinishSink) == 0xd8, "Actor::moveFinishSink offset");
 static_assert(offsetof(Actor, race) == 0x1f8, "Actor::race offset");
 static_assert(offsetof(Actor, boolBits) == 0xe8, "Actor::boolBits offset");

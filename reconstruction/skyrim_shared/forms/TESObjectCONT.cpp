@@ -1,10 +1,19 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Adapted bodies: none.
+// Adapted bodies: none
 // Code origin: original; the listing and community declarations only
 // 0x281530 TESObjectCONT::InitializeData
 // 0x281a30 TESObjectCONT::InitItemImpl
+// SPDX-License-Identifier: CC0-1.0
+// 0x282130 TESObjectCONT::OpenForActivator
 #include "TESObjectCONT.h"
+
+void TESObjectCONT::OpenForActivator(TESObjectREFR* a_container, TESObjectREFR* a_activator)
+{
+    if (a_container && a_activator && a_activator == g_containerOpener) {
+        a_container->OpenContainer(0);
+    }
+}
 
 // Callees of the compared member below: GUESS(low); declared without bodies; the compare binds each call by position.
 void     TESObjectCONTInitSub30(void* a_sub, TESObjectCONT* a_owner);   // RVA 0x1e01d0

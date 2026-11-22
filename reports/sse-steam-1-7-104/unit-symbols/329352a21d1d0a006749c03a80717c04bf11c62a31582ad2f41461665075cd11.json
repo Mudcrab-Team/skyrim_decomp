@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?QPlatformInstance@BSAudioManager@@SAAEAVBSAudio@@XZ": {
+      "rva": 13411872,
+      "size": 8
+    },
+    "?platformInstance@@3PEAVBSAudio@@EA": {
+      "rva": 52902200,
+      "size": null
+    },
+    "?Functioncca630@BSAudioManager@@SA_NXZ": {
+      "rva": 13411888,
+      "size": 26
+    },
+    "?audioManagerInstance@@3PEAXEA": {
+      "rva": 52902200,
+      "size": null
+    }
+  },
+  "folds": [
+    [
+      "?platformInstance@@3PEAVBSAudio@@EA",
+      "?audioManagerInstance@@3PEAXEA"
+    ]
+  ],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?QPlatformInstance@BSAudioManager@@SAAEAVBSAudio@@XZ",
+        "rva": "0xcca620",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?platformInstance@@3PEAVBSAudio@@EA",
+        "rva": "0x3273938",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioncca630@BSAudioManager@@SA_NXZ",
+        "rva": "0xcca630",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?audioManagerInstance@@3PEAXEA",
+        "rva": "0x3273938",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

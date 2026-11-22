@@ -1,9 +1,16 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0xfda6e0 BSPortalGraph::Functionfda6e0
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
-// otherwise name each adapted body, its upstream file, revision and licence).
-// 0xfdb1b0 BSPortalGraph::~BSPortalGraph
 #include "BSPortalGraph.h"
+
+std::uint32_t BSPortalGraph::Functionfda6e0() const
+{
+    return member68;
+}
 
 // Not compared: defined so that the compiler emits the vftable and, beside it, the
 // deleting destructor that is compared (cookbook rule 14).
