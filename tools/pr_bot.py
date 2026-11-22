@@ -4,7 +4,8 @@
     python3 tools/pr_bot.py pr NUMBER [--dry-run] [--head SHA] [--base SHA] [--host1 check-run|assume-pass]
     python3 tools/pr_bot.py --poll [--interval 60]     # launchd entry point
 
-The poll skips PRs opened under the owner's account unless they carry the `bot-process` label.
+The poll skips PRs opened under the owner's account unless they carry the `bot-process` label, change only
+reconstruction/, or change reconstruction/ plus the match records they carry (the carried-records lane).
 
 A function is `matched` only if host 1 (the PR's `hash` check run) and host 2 (the Mac Wine
 compare of the changed units) both byte-match and the single review approves it. A leakgrep hit,
@@ -623,6 +624,68 @@ def deletion_comment(decision):
                 'merged. Please remove it and push again; the bot re-checks the new head.')
     return '\n'.join(['The review did not approve this deletion, so nothing was merged. Push a fix and the bot '
                       're-checks the new head.'] + [f'- {n}' for n in decision.get('notes', [])])
+
+
+# Files an owner PR may carry beside reconstruction/ when it brings its own match records: the records and
+# their review records, the inventory they are listed in, and the progress images generated from it.
+CARRIED_RECORD = re.compile(r'reports/(?P<build>[^/]+)/0x(?P<rva>[0-9a-f]+)(?P<review>\.review)?\.json')
+CARRIED_GENERATED = ('data/progress.json', 'docs/progress.svg', 'docs/progress-map.svg')
+CHECK_JOBS = ('check', 'check / check')
+
+
+def carried_names(item):
+    return [n for n in (item.get('filename'), item.get('previous_filename')) if n is not None]
+
+
+def carried_lane(files):
+    """True if the PR carries match records: reconstruction/ plus record, inventory and image files only.
+
+    Records are never removed or renamed by this shape, and at least one record must be present; anything
+    else outside reconstruction/ keeps the PR a scope problem.
+    """
+    if not files or any(item.get('previous_filename') for item in files):
+        return False
+    records = False
+    for item in files:
+        name = item.get('filename', '')
+        if '..' in Path(name).parts:
+            return False
+        if name.startswith(SCOPE_PREFIX):
+            continue
+        if item.get('status') == 'removed' or not (CARRIED_RECORD.fullmatch(name) or name in CARRIED_GENERATED):
+            return False
+        records = records or bool(CARRIED_RECORD.fullmatch(name))
+    return records
+
+
+def owner_pr_in_scope(files):
+    """Whether an owner PR's files are a shape the bot lands without the opt-in label."""
+    return scope_problem(files) is None or carried_lane(files)
+
+
+def carried_squash_message(number, login, user_id, rvas):
+    shown = ', '.join(f'0x{r:x}' for r in sorted(rvas))
+    subject = f'Land {len(rvas)} carried match record{"s" if len(rvas) != 1 else ""} ({shown}) (#{number})'
+    if len(subject) > 200:
+        subject = f'Land {len(rvas)} carried match records (#{number})'
+    body = ('Owner change that brings its own records: each was confirmed on two hosts and approved in review before '
+            'this change, and the bot checked that the records are present and bound to units that exist, that '
+            'the check and CI hash jobs passed on the head, and that no function was newly matched without one.\n\n'
+            f'Co-authored-by: {login} <{user_id}+{login}@users.noreply.github.com>')
+    return subject, body
+
+
+def carried_comment(decision):
+    kind = decision['blocked']
+    if kind == 'ci':
+        return ('A required check did not pass on this head, so nothing was merged: '
+                + ', '.join(decision.get('failed') or ()) + '. Push a fix and the bot re-checks the new head.')
+    if kind == 'leak':
+        return ('The leak scan flagged this change, so nothing was merged. Remove the flagged text and push; '
+                'the bot re-checks the new head.')
+    return '\n'.join(['The carried records did not verify, so nothing was merged:']
+                      + [f'- {p}' for p in decision.get('problems') or ()]
+                      + ['Fix them and push; the bot re-checks the new head.'])
 
 
 def merge_command(number, sha, subject, body):
@@ -2341,6 +2404,8 @@ class Bot:
         # marks it merged with credit instead of calling it out of scope.
         if tooling_lane(files):
             return self.process_tooling(pr, state, started)
+        if pr['author']['login'].casefold() == OWNER.casefold() and carried_lane(files):
+            return self.process_carried(pr, state, files, started)
         if scope_problem(files) not in (None, 'empty'):
             decision = dict(blocked='scope', merge=False, verdicts={})
             state.set('decision', decision)
@@ -2700,6 +2765,136 @@ class Bot:
         if not state.get('commented'):
             text = ('Merged: unit files deleted. No function was matched by this change.' if decision['merge']
                     else deletion_comment(decision))
+            self.say(number, sticky_body(head, text), create=not decision['merge'])
+            state.set('commented', True)
+        self.drop_probe(number)
+        state.set('done', True)
+        return summary
+
+    def carried_ci(self, head):
+        """([failed job names]) from the head's `check` and `hash` runs; a missing or running one is a retry."""
+        failed = []
+        for names in (CHECK_JOBS, HASH_CHECKS):
+            run = self.latest_check_run(head, names)
+            if run is None:
+                self.approve_pending(head)
+                raise Stop(f'{names[0]} check has no run on this head yet')
+            if run['status'] != 'completed':
+                raise Waiting(f'{names[0]} check has not finished')
+            if run.get('conclusion') != 'success':
+                failed.append(names[0])
+        return failed
+
+    def carried_problems(self, base, head, files):
+        """Messages for carried records that are missing, unbound, unapproved or not listed as matched.
+
+        Reads the head's blobs, never the contributor's tools. The comparator digests and the review binding
+        are the `check` job's to judge; this holds what that job cannot know about the PR's shape.
+        """
+        def show(rev, name):
+            done = self.run(['git', 'show', f'{rev}:{name}'], check=False, cwd=self.root)
+            return done.stdout if done.returncode == 0 else None
+
+        def load(rev, name):
+            blob = show(rev, name)
+            try:
+                return json.loads(blob) if blob is not None else None
+            except ValueError:
+                return None
+        build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+        found = {}
+        for item in files:
+            match = CARRIED_RECORD.fullmatch(item.get('filename', ''))
+            if match:
+                found.setdefault(int(match['rva'], 16), set()).add('review' if match['review'] else 'record')
+        problems = []
+        inventory = load(head, 'data/progress.json')
+        before = load(base, 'data/progress.json')
+        if inventory is None or before is None:
+            return ['data/progress.json cannot be read on the head or its base']
+        listed = {fn['rva']: fn for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
+        was = {fn['rva'] for fn in before['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
+        for rva in sorted(was - set(listed)):
+            problems.append(f'0x{rva:x} was matched on the base and is not on the head')
+        for rva in sorted(set(listed) - was - set(found)):
+            problems.append(f'0x{rva:x} is newly matched with no record in this PR')
+        for rva, kinds in sorted(found.items()):
+            tag = f'0x{rva:x}'
+            if kinds != {'record', 'review'}:
+                problems.append(f'{tag}: the match record and its review record must both be in the PR')
+                continue
+            row = listed.get(rva)
+            path = f'reports/{build}/{tag}.json'
+            if row is None or row.get('report') != path:
+                problems.append(f'{tag}: not listed as matched with this record in data/progress.json')
+                continue
+            record, review = load(head, path), load(head, f'reports/{build}/{tag}.review.json')
+            if not isinstance(record, dict) or not isinstance(review, dict):
+                problems.append(f'{tag}: a record file is not readable JSON')
+                continue
+            if record.get('function_id') != f'{build}-{tag}' or review.get('function_id') != f'{build}-{tag}':
+                problems.append(f'{tag}: a record names another function')
+            if review.get('verdict') != 'approve':
+                problems.append(f'{tag}: the review record is not an approval')
+            unit = (record.get('source') or {}).get('compiled')
+            if not unit or show(head, unit) is None:
+                problems.append(f'{tag}: the record binds a unit that does not exist on the head')
+        return problems[:50]
+
+    def carried_decision(self, pr, state, files, base):
+        number, head = pr['number'], pr['headRefOid']
+        blocked = dict(merge=False, verdicts={})
+        hit, codes = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
+        if hit:
+            return dict(blocked, blocked='leak', leak_source='leakgrep', leak_evidence=codes)
+        tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
+        self.prepare_tree(tip)
+        self.overlay(head, files)
+        problems = state.once('carried', lambda: self.carried_problems(base, head, files))
+        removed = [item['filename'] for item in files if item.get('status') == 'removed']
+        if removed:
+            problems = problems + state.once('deletion', lambda: self.deletion_problems(base, files))
+        if problems:
+            return dict(blocked, blocked='carried', problems=problems)
+        failed = self.carried_ci(head)
+        if failed:
+            return dict(blocked, blocked='ci', failed=failed)
+        return dict(blocked=None, merge=True, verdicts={})
+
+    def process_carried(self, pr, state, files, started):
+        """The owner lane for a PR that brings its own match records: verify them, then the usual squash merge.
+
+        Nothing is compiled or reviewed again: the records hold the two-host comparisons and the approving
+        review. The bot holds the PR's shape, the leak scan, the CI `check` and `hash` results on the head and
+        the orphan rule for deleted units, so a stale or partial record set cannot land.
+        """
+        number, head = pr['number'], pr['headRefOid']
+        with self.root_lock:
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+            if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', head])
+        base = self.run(['git', 'merge-base', 'origin/main', head]).stdout.decode().strip()
+        decision = state.get('decision')
+        if not decision:
+            decision = self.carried_decision(pr, state, files, base)
+            state.set('decision', decision)
+        rvas = sorted({int(m['rva'], 16) for m in map(CARRIED_RECORD.fullmatch, (f['filename'] for f in files)) if m})
+        summary = dict(pr=number, head=head, blocked=decision['blocked'], merge=decision['merge'],
+                       verdicts={}, carried=len(rvas), seconds=round(time.time() - started, 1))
+        state.set('summary', summary)
+        if self.dry_run:
+            return summary
+        with self.land_lock:
+            if decision['merge'] and not state.get('merged'):
+                login = pr['author']['login']
+                uid = self.gh_json('api', f'users/{login}')['id']
+                merged = self.run(merge_command(number, head, *carried_squash_message(number, login, uid, rvas)),
+                                  check=False)
+                if merged.returncode:
+                    return self.merge_refused(pr, state, summary)
+                state.set('merged', True)
+        if not state.get('commented'):
+            text = ('Merged: the carried records verified.' if decision['merge'] else carried_comment(decision))
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
@@ -3517,7 +3712,8 @@ def merged_unrecorded(directory, now, max_age=RECORD_RETRY_WINDOW):
 
 def pollable(prs):
     """The open PRs the poll loop processes: outside PRs, owner PRs that opted in with the label, and owner PRs
-    whose head the poll found to change only reconstruction/ (the same two-host and review gate applies)."""
+    whose head the poll found to change only reconstruction/, or reconstruction/ plus the records it carries (the
+    same gate applies, or the carried-records checks)."""
     def opted_in(pr):
         return (any(label.get('name') == OPT_IN_LABEL for label in pr.get('labels') or [])
                 or (bool(pr.get('reconstruction_head')) and pr['reconstruction_head'] == pr.get('headRefOid')))
@@ -3529,7 +3725,7 @@ POOL_SIZE = 2
 
 
 def mark_owner_reconstruction(bot, prs, known):
-    """Tag the owner's open PRs whose changed files are all under reconstruction/, once per head.
+    """Tag the owner's open PRs whose changed files are reconstruction/ or carried records, once per head.
 
     The tag carries the head it was computed for, so a push to another head loses it until the files are
     listed again. Tooling, mapping and mixed PRs stay opt-in: nothing else of the owner's is merged by the bot.
@@ -3540,7 +3736,7 @@ def mark_owner_reconstruction(bot, prs, known):
             continue
         key = (pr['number'], pr['headRefOid'])
         if key not in known:
-            known[key] = scope_problem(bot.changed_files(pr['number'])) is None
+            known[key] = owner_pr_in_scope(bot.changed_files(pr['number']))
         if known[key]:
             pr['reconstruction_head'] = pr['headRefOid']
 

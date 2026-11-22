@@ -765,6 +765,74 @@ class OwnerAndScopeTests(Replay):
         self.assertEqual(self.w.compiled, [])
 
 
+class CarriedRecordsTests(Replay):
+    """An owner PR that brings its own match records, inventory and images lands without a new compile or review."""
+
+    def carried_files(self, rva=0x1000, review=True, listed=True, verdict='approve'):
+        name = f'reports/{BUILD}/0x{rva:x}'
+        files = {unit_path(rva): unit(rva), f'{name}.json': json.dumps(dict(
+            function_id=f'{BUILD}-0x{rva:x}', source=dict(compiled=unit_path(rva)))),
+            'data/progress.json': json.dumps({'functions': [dict(
+                build_id=BUILD, rva=rva, status='matched', report=f'{name}.json')] if listed else []}),
+            'docs/progress-map.svg': '<svg/>\n', 'reconstruction/INDEX.md': 'index\n'}
+        if review:
+            files[f'{name}.review.json'] = json.dumps(dict(function_id=f'{BUILD}-0x{rva:x}', verdict=verdict))
+        return files
+
+    def add_check(self, number, conclusion='success'):
+        head = self.w.github.prs[number]['head']
+        self.w.ci.runs.setdefault(head, []).append(dict(
+            id=900 + number, name='check', head_sha=head, status='completed', conclusion=conclusion,
+            started_at=OLD, details_url='https://ci.invalid/runs/1'))
+
+    def test_the_poll_takes_an_owner_pr_with_records_and_merges_it_with_no_compile_or_review(self):
+        self.w.make_pr(7, self.carried_files(), author=pr_bot.OWNER)
+        self.add_check(7)
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual((self.w.reviewers.calls, self.w.compiled, self.w.recorded), ([], [], []))
+        self.assertTrue(self.w.main_log()[0].startswith('Land 1 carried match record'))
+
+    def test_a_missing_review_record_blocks_the_merge_and_says_which(self):
+        self.w.make_pr(7, self.carried_files(review=False), author=pr_bot.OWNER)
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'carried')
+        self.assertIn('0x1000', self.w.sticky(7)[0])
+
+    def test_a_function_listed_as_matched_without_a_record_in_the_pr_blocks_the_merge(self):
+        files = self.carried_files()
+        files['data/progress.json'] = json.dumps({'functions': [
+            dict(build_id=BUILD, rva=0x1000, status='matched', report=f'reports/{BUILD}/0x1000.json'),
+            dict(build_id=BUILD, rva=0x2000, status='matched', report=f'reports/{BUILD}/0x2000.json')]})
+        self.w.make_pr(7, files, author=pr_bot.OWNER)
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertIn('0x2000 is newly matched', ' '.join(self.w.state(self.bot, 7).get('decision')['problems']))
+
+    def test_an_unapproved_review_record_blocks_the_merge(self):
+        self.w.make_pr(7, self.carried_files(verdict='reject'), author=pr_bot.OWNER)
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+    def test_a_failed_check_job_blocks_the_merge(self):
+        self.w.make_pr(7, self.carried_files(), author=pr_bot.OWNER)
+        self.add_check(7, conclusion='failure')
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'ci')
+
+    def test_a_contributor_pr_with_the_same_files_is_a_scope_finding_not_a_carried_merge(self):
+        self.w.make_pr(7, self.carried_files(), author='alice')
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'scope')
+
+
 class CircuitBreakerTests(Replay):
     def setUp(self):
         super().setUp()
