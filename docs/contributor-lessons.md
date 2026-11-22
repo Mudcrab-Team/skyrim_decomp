@@ -5,5 +5,5 @@
 - Avoid code whose only plausible purpose is steering emitted bytes. (docs/reviewer-runbook.md#checklist-per-function)
 - Ensure each submitted function compiles and binds to its intended symbol. (docs/verification.md)
 - Reproduce the comparator pass on both verifier hosts before claiming a match. (docs/verification.md#acceptance-rule)
-- Keep the unit header compact: the skeleton's lines only, the one-line `SPDX-License-Identifier: MIT (CommonLibSSE-NG ...)` notice instead of licence text, no Task, Labels, Evidence, Drafted by, default Recipe or disclaimer lines, and at most 6 header lines besides labels, `Sibling source:` and `0x<rva> <Name>` lines. (docs/contributor-card.md, compact headers)
+- Keep the unit header compact: the skeleton's lines only, the one-line `SPDX-License-Identifier: MIT (CommonLibSSE-NG ...)` notice instead of licence text, no Task, Labels, Evidence, Drafted by, default Recipe or disclaimer lines, and at most 6 header lines besides labels, `Sibling source:` and `0x<rva> <Name>` lines. (docs/contributor-card.md, compact headers) When you add functions to an existing unit, merge into its header instead of appending another block: one `Source exposure`, one `Code origin`, one `Adapted bodies`.
 - Mark inferred names as guesses and preserve unknowns. (docs/reviewer-runbook.md#checklist-per-function)
