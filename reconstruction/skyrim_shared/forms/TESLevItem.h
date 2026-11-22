@@ -1,13 +1,17 @@
-// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// Source exposure: mixed (community headers and pinned image).
+// Code origin: existing sibling-adapted LoadGame plus original reconstruction of SaveGame, Revert, and helpers.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/teslevcharacter.cpp:19
-// TESLevItem: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// TESLevItem, TESLevItem::SaveGame, TESLevItem::LoadGame, TESLevItem::Revert: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject, TESBoundObject: STANDIN EXE_RTTI
-// TESLevItem::LoadGame: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESLeveledList, leveledList: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
+// g_levItem207ACE8, unknown20, Function272110, Function272120: GUESS(low)
 #pragma once
 
 #include <cstdint>
 #include "TESForm.h"
+
+extern std::uint32_t g_levItem207ACE8;
 
 class TESObject : public TESForm
 {
@@ -22,17 +26,20 @@ public:
 class TESLeveledList
 {
 public:
-    // LoadGame: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
+    void SaveGame(BGSSaveFormBuffer* a_buf);
     void LoadGame(BGSLoadFormBuffer* a_buf);
+    void Revert(BGSLoadFormBuffer* a_buf);
 };
 
 class TESLevItem : public TESBoundObject
 {
 public:
-    virtual void LoadGame(BGSLoadFormBuffer* a_buf);  // compared: 0x272170
+    void SaveGame(BGSSaveFormBuffer* a_buf) override;  // compared: 0x272130
+    void LoadGame(BGSLoadFormBuffer* a_buf) override;  // compared: 0x272170
+    void Revert(BGSLoadFormBuffer* a_buf) override;  // compared: 0x2721b0
+    std::uint32_t Function272110() const;
+    bool Function272120(std::uint8_t a_formType) const;
 
-    // unknown20: GUESS(low)
     std::uint8_t unknown20[0x10];  // 20
-    // leveledList: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
     TESLeveledList leveledList;  // 30
 };

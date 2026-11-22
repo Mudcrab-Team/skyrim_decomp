@@ -1,14 +1,28 @@
 // Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// IngredientItem: EXE_RTTI
-// GetAssociatedSkill: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Code origin: existing leaf plus original reconstruction of GetData2 and GetIngredientSkillUseModifier.
+// Recipe: reconstruction/recipes/o2-fpfast.json
+// Adapted bodies: none.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x14fcd0 IngredientItem::GetAssociatedSkill
+// 0x14fd00 IngredientItem::GetData2
+// 0x14f510 IngredientItem::GetIngredientSkillUseModifier
 #include "IngredientItem.h"
-// GetAssociatedSkill: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+
 std::uint32_t IngredientItem::GetAssociatedSkill() const
 {
     return 0x10;
+}
+
+IngredientItem::Data* IngredientItem::GetData2()
+{
+    return &data;
+}
+
+float IngredientItem::GetIngredientSkillUseModifier() const
+{
+    float value = g_fAlchemyIngredientInitMult;
+    if (value == -1.0f) {
+        return g_fAlchemySkillUsageMult;
+    }
+    return value;
 }

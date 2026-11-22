@@ -1,16 +1,13 @@
 // Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"member-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"1254832e5ca7cdca7f6330a2018dde32919625f6149744dd0138e59a943106d8"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// CompressedArchiveFile: EXE_RTTI
-// Unk_0A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Code origin: existing unit plus original reconstruction of archive stream helpers.
+// Adapted bodies: none.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// NiBinaryStream::good, NiBinaryStream::seek, NiBinaryStream::tell, NiBinaryStream::get_info, NiBinaryStream::set_endian_swap, NiFile::seek, NiFile::size: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); get_info's BufferInfo reduced to void*
-// NiFile::Unk_08, NiFile::Unk_09: GUESS(low); placeholders for slots 08 and 09 (NG declares them on BSFile)
+// CompressedArchiveFile: EXE_RTTI
+// NiBinaryStream, NiFile, good, seek, tell, get_info, set_endian_swap, size: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// Unk_08, Unk_09, Unk_0A, padding08, readFn, writeFn, padding20, streamPtr, padding188, member, Functioneb9ef0, Functioneb9f10, Functioneb9f40: GUESS(low)
 #pragma once
 #include <cstdint>
-// Unk_0A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// NiBinaryStream, NiFile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); bases reduced to their virtual slots (BSFile omitted)
+
 class NiBinaryStream
 {
 public:
@@ -37,6 +34,15 @@ public:
     using NiFile::seek;
     void seek(std::int32_t a_numBytes) override;  // 02
     virtual std::uint32_t Unk_0A() const;  // 0A
-    std::uint8_t padding[0x198];
-    std::uint32_t member;
+    std::uint32_t Functioneb9ef0() const;
+    bool Functioneb9f10() const;
+    void Functioneb9f40(bool a_doSwap);
+
+    std::uint8_t padding08[0x8];  // 08
+    void* readFn;  // 10
+    void* writeFn;  // 18
+    std::uint8_t padding20[0x160];  // 20
+    void* streamPtr;  // 180
+    std::uint8_t padding188[0x18];  // 188
+    std::uint32_t member;  // 1A0
 };
