@@ -1,21 +1,26 @@
 {
   "build_id": "sse-steam-1-7-104",
-  "code_section_sha256": "618ea5d807bbcb4c07ebec157935a84e691a43d4afb7f5cdcc2338563b04e523",
+  "code_section_sha256": "6e79c3ff58011dd58c5d7a28c1fddb958d4e1983e524de851341ca9d4a6a7056",
   "escalation_category": "none",
   "function_id": "sse-steam-1-7-104-0xf02ce0",
-  "naming_findings": [],
+  "naming_findings": [
+    "the stream and its read callback and position are reached through fixed-offset accessors although the shared base header already declares the community stream members",
+    "the mode field is the GUESS placeholder unk128 where the community header and the removed duplicate name it mode",
+    "BaseLoadBinary is a GUESS stand-in name for the NiNode base-class call",
+    "the shared header's TestBit helper is flagged by the origin check as similar to an f3_decomp body without a Sibling source line; it is a one-line bit test, noted only"
+  ],
   "previous_code_section_sha256": null,
   "previous_review_sha256": null,
   "previous_source_digest": null,
-  "review_date": "2026-11-20",
+  "review_date": "2026-11-22",
   "review_kind": "full",
   "review_record_schema": 3,
-  "review_sha256": "6561210a3f8472645e12e0eb69cff50fbdacb83f1d9cff5e08edd3bb67945236",
-  "review_task_id": "pr-bot-523-4df1df92",
-  "reviewer_model": "gpt-6.1-terra",
+  "review_sha256": "f87fae503e18d623d9e458c1fad97a1c59f4d6648db4fd1d3d967ebac573d122",
+  "review_task_id": "tierb-chunk2-1",
+  "reviewer_model": "claude-opus-5-5",
   "rva": 15740128,
   "size": 82,
-  "source_digest": "93d6df2ba4891df0ad33eae819a366fa9e856d69e44b6bca27c1d5ac3d47d7fc",
+  "source_digest": "3400188c55a2ccd77ddafe33424395883acdd18a0b4498b7eed0cca540b380e7",
   "source_digest_method": "tu-sha256-v2",
   "verdict": "approve"
 }

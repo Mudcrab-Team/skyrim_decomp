@@ -12,7 +12,6 @@
 // 0x14b7e0 EffectSetting::Function14b7e0
 // 0x14b810 EffectSetting::Function14b810
 // 0x14b840 EffectSetting::Function14b840
-// 0x14b870 EffectSetting::Function14b870
 // 0x14b890 EffectSetting::Function14b890
 #include "EffectSetting_14b4f0.h"
 
@@ -122,11 +121,6 @@ bool EffectSetting::Function14b840() const
 {
     const auto* dual = data.dualCastData;
     return dual && dual->data.pExplosion && !TestBit(dual->data.flags, 2);
-}
-
-bool EffectSetting::Function14b870() const
-{
-    return (archetypes[static_cast<std::uint32_t>(data.archetype)].flags >> 8) & 1u;
 }
 
 bool EffectSetting::Function14b890(TESObjectREFR* subject, TESObjectREFR* target) const

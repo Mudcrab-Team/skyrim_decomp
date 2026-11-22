@@ -7,7 +7,5 @@
 // names: GUESS(low); names and original signatures are tentative.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x82d640 CombatInventoryItemMelee::LoadGame
-// 0x82d5f0 CombatInventoryItemMelee::SaveGame
 #include "CombatInventoryItemMelee_82d640.h"
 void CombatInventoryItemMelee::LoadGame(LoadBuffer* buffer) { CombatInventoryItem::LoadGame(buffer); buffer->LoadDataEndian(&maxRange, 4, 4); }
-void CombatInventoryItemMelee::SaveGame(SaveBuffer* buffer) { CombatInventoryItem::SaveGame(buffer); buffer->SaveDataEndian(&maxRange, 4, 4, false); }

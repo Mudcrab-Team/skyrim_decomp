@@ -2,16 +2,10 @@
 // Code origin: original reconstruction from the pinned blend and spline code.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Recipe: reconstruction/recipes/o2-fpfast-root-includes.json
-// 0xf67ed0 NiBlendTransformInterpolator::SupportsBlendValue
 // 0xf68630 NiBlendTransformInterpolator::~NiBlendTransformInterpolator
 // CI hash: 0xf68630 ??_GNiBlendTransformInterpolator@@UEAAPEAXI@Z
 // Adapted bodies: none
 #include "NiBlendTransformInterpolator_f67ed0.h"
-
-bool NiBlendTransformInterpolator::SupportsBlendValue(const BlendSourceInterpolator* input) const
-{
-    return input->IsTransformValueSupported();
-}
 
 NiBlendTransformInterpolator::NiBlendTransformInterpolator() = default;
 

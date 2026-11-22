@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "81df9e4ae551b4e7ce822b7b33cf8d1ad4bce390e1785305ad56c2c56a88ba1e",
+        "object_sha256": "41fb38b28d9acfdd7eaecc30874155bae2f0f1be73901452be35b3f600a5eb23",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
@@ -46,7 +46,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "dde168f268fc41cb31e77de3c05727d1f0a4023c1d0fb57d15c8953a442b56d5",
+        "object_sha256": "7ccc9dbaced308844e188601c59a8c23f8c3dc6da53569dd0a47d3df99140754",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
@@ -64,13 +64,13 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit 8292d7bf3b0e006a010a23cee3ce467cd7600bf7, with uncommitted changes to reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp, reconstruction/fo4b4a_2e3da0/TESObjectREFR.h, reports/sse-steam-1-7-104/unit-symbols/837d7ce7e8e0c8f99ac988b6cedbc82a23c7fa2aac2b4f53ba07a0f5c63bfecb.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit 348c5f6f5516503df8a959acd67916bab773351b, with uncommitted changes to reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
     "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
   },
-  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_boat_machine.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x2e3da0 --symbol '?GetDangerous@TESObjectREFR@@UEBA_NXZ' --compiled reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp --unit reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp reconstruction/fo4b4a_2e3da0/TESObjectREFR.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/837d7ce7e8e0c8f99ac988b6cedbc82a23c7fa2aac2b4f53ba07a0f5c63bfecb.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
+  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_toolchain.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x2e3da0 --symbol '?GetDangerous@TESObjectREFR@@UEBA_NXZ' --compiled reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp --unit reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/837d7ce7e8e0c8f99ac988b6cedbc82a23c7fa2aac2b4f53ba07a0f5c63bfecb.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -80,7 +80,7 @@
         "candidate": {
           "code_section_sha256": "9136fedf3f65e33b9da52d33e435853746d8973b5d9a597b08de9cc9e390bd75",
           "code_sections": 1,
-          "object_sha256": "81df9e4ae551b4e7ce822b7b33cf8d1ad4bce390e1785305ad56c2c56a88ba1e"
+          "object_sha256": "41fb38b28d9acfdd7eaecc30874155bae2f0f1be73901452be35b3f600a5eb23"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -140,8 +140,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp",
-          "source_revision": "d1bd0a0132720760dec090e082bbf9d17110e35c1e5eb5607f637bd7c972953f"
+          "path": "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
+          "source_revision": "b7d2c7c093de6dbdc92de24905d2310b0a18c6d0058542d69598930454222b2b"
         },
         "symbol_map_sha256": "837d7ce7e8e0c8f99ac988b6cedbc82a23c7fa2aac2b4f53ba07a0f5c63bfecb",
         "target": {
@@ -159,7 +159,7 @@
         "candidate": {
           "code_section_sha256": "9136fedf3f65e33b9da52d33e435853746d8973b5d9a597b08de9cc9e390bd75",
           "code_sections": 1,
-          "object_sha256": "dde168f268fc41cb31e77de3c05727d1f0a4023c1d0fb57d15c8953a442b56d5"
+          "object_sha256": "7ccc9dbaced308844e188601c59a8c23f8c3dc6da53569dd0a47d3df99140754"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -219,8 +219,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp",
-          "source_revision": "d1bd0a0132720760dec090e082bbf9d17110e35c1e5eb5607f637bd7c972953f"
+          "path": "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
+          "source_revision": "b7d2c7c093de6dbdc92de24905d2310b0a18c6d0058542d69598930454222b2b"
         },
         "symbol_map_sha256": "837d7ce7e8e0c8f99ac988b6cedbc82a23c7fa2aac2b4f53ba07a0f5c63bfecb",
         "target": {
@@ -238,7 +238,7 @@
         "candidate": {
           "code_section_sha256": "9136fedf3f65e33b9da52d33e435853746d8973b5d9a597b08de9cc9e390bd75",
           "code_sections": 1,
-          "object_sha256": "dde168f268fc41cb31e77de3c05727d1f0a4023c1d0fb57d15c8953a442b56d5"
+          "object_sha256": "7ccc9dbaced308844e188601c59a8c23f8c3dc6da53569dd0a47d3df99140754"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -298,8 +298,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4a_2e3da0/TESObjectREFR.cpp",
-          "source_revision": "d1bd0a0132720760dec090e082bbf9d17110e35c1e5eb5607f637bd7c972953f"
+          "path": "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
+          "source_revision": "b7d2c7c093de6dbdc92de24905d2310b0a18c6d0058542d69598930454222b2b"
         },
         "symbol_map_sha256": "837d7ce7e8e0c8f99ac988b6cedbc82a23c7fa2aac2b4f53ba07a0f5c63bfecb",
         "target": {
@@ -312,10 +312,8 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
-    "digest": "50967aaf9ebd8bb8974a33db2cc94aa033b374ca2ff56fa7a472e1cb3358e741",
+    "digest": "b7d2c7c093de6dbdc92de24905d2310b0a18c6d0058542d69598930454222b2b",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "d1bd0a0132720760dec090e082bbf9d17110e35c1e5eb5607f637bd7c972953f",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.cpp",
       "reconstruction/skyrim_shared/refs/TESObjectREFR_2e3da0.h"

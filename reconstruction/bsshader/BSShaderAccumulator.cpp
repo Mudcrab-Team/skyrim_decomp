@@ -11,7 +11,6 @@
 // 0x14ecb90 BSShaderAccumulator::GetCurrentAccumulator
 // 0x14ecba0 BSShaderAccumulator::SetCurrentAccumulator
 // 0x1520d50 BSShaderAccumulator::StartGroupingAlphas
-// 0x151ef00 BSShaderAccumulator::FinishAccumulatingPostResolveDepth
 #include "BSShaderAccumulator.h"
 
 // ms_currentAccumulator: GUESS(low); the global slot the accessors read and write
@@ -34,14 +33,6 @@ void BSShaderAccumulator::SetCurrentAccumulator(BSShaderAccumulator* a_accumulat
 BSBatchRenderer::GeometryGroup* BSShaderAccumulator::StartGroupingAlphas(NiBound* a_bound)
 {
     return BuildAlphaGroups(unknown130, a_bound, unknown10, unknown51);
-}
-
-void BSShaderAccumulator::FinishAccumulatingPostResolveDepth(std::uint32_t flags)
-{
-    if (unknown150 == 0) {
-        PrepareDepth();
-    }
-    NiAccumulator::FinishAccumulating();
 }
 
 // ProcessGroup, FlushGroups, ResetGroups: GUESS(low); the callees take the renderer or one of its groups

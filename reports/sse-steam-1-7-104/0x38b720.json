@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "46219d73973d403ca6633855724c366cb42c13b2a834bc6b0eef78b0fbc9ee85",
+        "object_sha256": "a4eb95b4589c40ea0b7ba96b012ea44e8c1323a6b6e0e04d6f6a64be509657d8",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
@@ -46,7 +46,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "666671cbb92f52bbb52bf9b6288f7566e36d29696492c90a6ed47e94f16ef04e",
+        "object_sha256": "d18c55456c2253d68014cf4d1a6f9171098f9d37148d5cec93e47fad7244e435",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
@@ -64,13 +64,13 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit 8292d7bf3b0e006a010a23cee3ce467cd7600bf7, with uncommitted changes to reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp, reconstruction/fo4b4b_38b720/BGSBodyPartData.h, reports/sse-steam-1-7-104/unit-symbols/bf09e43e0b3d98c7816880e8abb5726fbe31a263c99758c03c72de847bfdb155.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit 348c5f6f5516503df8a959acd67916bab773351b, with uncommitted changes to reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
     "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
   },
-  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_boat_machine.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x38b720 --symbol '?GetBodyPart@BGSBodyPartData@@QEBAPEAVBGSBodyPart@@H@Z' --compiled reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp --unit reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp reconstruction/fo4b4b_38b720/BGSBodyPartData.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/bf09e43e0b3d98c7816880e8abb5726fbe31a263c99758c03c72de847bfdb155.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
+  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_toolchain.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x38b720 --symbol '?GetBodyPart@BGSBodyPartData@@QEBAPEAVBGSBodyPart@@H@Z' --compiled reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp --unit reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp reconstruction/skyrim_shared/actors/BGSBodyPartData.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/bf09e43e0b3d98c7816880e8abb5726fbe31a263c99758c03c72de847bfdb155.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -80,7 +80,7 @@
         "candidate": {
           "code_section_sha256": "e50cb1a9f246a801fd8c341232014902e2215aaaf655b34420c9fb10a1916938",
           "code_sections": 1,
-          "object_sha256": "46219d73973d403ca6633855724c366cb42c13b2a834bc6b0eef78b0fbc9ee85"
+          "object_sha256": "a4eb95b4589c40ea0b7ba96b012ea44e8c1323a6b6e0e04d6f6a64be509657d8"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -140,8 +140,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp",
-          "source_revision": "a71cacadd3b3bf66458a8bc150be75d96496b53b4c5a42cf1e1ef3a809c36851"
+          "path": "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
+          "source_revision": "01de722da769eaa9007502f03f01e7cddeedd96fbe58c5e8e382f9a72a6d16da"
         },
         "symbol_map_sha256": "bf09e43e0b3d98c7816880e8abb5726fbe31a263c99758c03c72de847bfdb155",
         "target": {
@@ -159,7 +159,7 @@
         "candidate": {
           "code_section_sha256": "e50cb1a9f246a801fd8c341232014902e2215aaaf655b34420c9fb10a1916938",
           "code_sections": 1,
-          "object_sha256": "666671cbb92f52bbb52bf9b6288f7566e36d29696492c90a6ed47e94f16ef04e"
+          "object_sha256": "d18c55456c2253d68014cf4d1a6f9171098f9d37148d5cec93e47fad7244e435"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -219,8 +219,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp",
-          "source_revision": "a71cacadd3b3bf66458a8bc150be75d96496b53b4c5a42cf1e1ef3a809c36851"
+          "path": "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
+          "source_revision": "01de722da769eaa9007502f03f01e7cddeedd96fbe58c5e8e382f9a72a6d16da"
         },
         "symbol_map_sha256": "bf09e43e0b3d98c7816880e8abb5726fbe31a263c99758c03c72de847bfdb155",
         "target": {
@@ -238,7 +238,7 @@
         "candidate": {
           "code_section_sha256": "e50cb1a9f246a801fd8c341232014902e2215aaaf655b34420c9fb10a1916938",
           "code_sections": 1,
-          "object_sha256": "666671cbb92f52bbb52bf9b6288f7566e36d29696492c90a6ed47e94f16ef04e"
+          "object_sha256": "d18c55456c2253d68014cf4d1a6f9171098f9d37148d5cec93e47fad7244e435"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -298,8 +298,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4b_38b720/BGSBodyPartData.cpp",
-          "source_revision": "a71cacadd3b3bf66458a8bc150be75d96496b53b4c5a42cf1e1ef3a809c36851"
+          "path": "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
+          "source_revision": "01de722da769eaa9007502f03f01e7cddeedd96fbe58c5e8e382f9a72a6d16da"
         },
         "symbol_map_sha256": "bf09e43e0b3d98c7816880e8abb5726fbe31a263c99758c03c72de847bfdb155",
         "target": {
@@ -312,10 +312,8 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
-    "digest": "082603a32491558331ea379fdca974031aef68623ca48dc243234082cdfe61d0",
+    "digest": "01de722da769eaa9007502f03f01e7cddeedd96fbe58c5e8e382f9a72a6d16da",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "a71cacadd3b3bf66458a8bc150be75d96496b53b4c5a42cf1e1ef3a809c36851",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/skyrim_shared/actors/BGSBodyPartData.cpp",
       "reconstruction/skyrim_shared/actors/BGSBodyPartData.h"
