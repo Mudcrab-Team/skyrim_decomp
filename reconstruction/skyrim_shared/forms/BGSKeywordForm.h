@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// 0x1d85e0 compared function
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSKeywordForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BaseFormComponent: STANDIN EXE_RTTI
@@ -24,9 +25,10 @@ class BGSKeywordForm : public BaseFormComponent
 public:
     virtual BGSKeyword* GetDefaultKeyword() const;  // compared: 0x14c8b0
     virtual void InitializeDataComponent();  // compared: 0x1d8690
+    BGSKeywordForm();  // compared: 0x1d85e0
 
-    // TODO members: replace part of the padding with the members the bodies read,
-    // keeping every offset and the size check true.
-    std::uint8_t unknown08[0x10];  // 08
+    // field08, field10: GUESS(low); the zeroed members the compared constructor writes
+    void* field08;  // 08
+    std::uint32_t field10;  // 10
 };
 static_assert(sizeof(BGSKeywordForm) == 0x18, "BGSKeywordForm size");

@@ -1,5 +1,6 @@
 // Code origin: hand-written class layouts and declarations adapted from the CharmedBaryon/CommonLibSSE-NG headers named below; the compared bodies are written from the local listings.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
+// 0xf05630 compared function
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiParticles, NiParticles::AsParticlesGeom, NiParticles::RegisterStreamables, NiParticles::~NiParticles, NiParticles::GetRTTI, NiParticles::CreateClone, NiParticles::LoadBinary, NiParticles::LinkObject, NiParticles::SaveBinary, NiParticles::IsEqual, BSGeometry::~BSGeometry, BSGeometry::GetRTTI, BSGeometry::AsGeometry, BSGeometry::LoadBinary, BSGeometry::LinkObject, BSGeometry::RegisterStreamables, BSGeometry::SaveBinary, BSGeometry::IsEqual, BSGeometry::ProcessClone, BSGeometry::PostLinkObject, BSGeometry::AttachProperty, BSGeometry::SetSelectiveUpdateFlags, BSGeometry::UpdateDownwardPass, BSGeometry::UpdateSelectedDownwardPass, BSGeometry::UpdateRigidDownwardPass, BSGeometry::UpdateWorldBound, BSGeometry::OnVisible, BSGeometry::AsMultiIndexTriShape, BSGeometry::AsSkinnedDecalTriShape, BSGeometry::Unk_37: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -86,6 +87,7 @@ public:
     void SaveBinary(NiStream& a_stream) override;  // 1B
     bool IsEqual(NiObject* a_object) override;  // 1C
 
+    static void Functionf05630(std::uint32_t a_delta);  // compared: 0xf05630; STANDIN GUESS(low)
     NiParticlesData* particleData;  // 158
     std::uint64_t unk160;  // 160
 };

@@ -1,27 +1,15 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the five bodies below are written from the pinned image listing
+// SPDX-License-Identifier: CC0-1.0
+// 0x1582730 BSShaderResourceManager::Function1582730
+// 0x1582760 BSShaderResourceManager::Function1582760
+// 0x1582890 BSShaderResourceManager::Function1582890
+// 0x15828b0 BSShaderResourceManager::Function15828b0
+// 0x15828c0 BSShaderResourceManager::Function15828c0
+// Adapted bodies: none
 // Source exposure: mixed (published inventory and listings from the pinned image).
 // Code origin: original forwarding methods inferred from the pinned image.
 // Adapted bodies: none
-// 0x1582070 BSShaderResourceManager::Function1582070
-// 0x1582100 BSShaderResourceManager::Function1582100
-// 0x1582120 BSShaderResourceManager::Function1582120
-// 0x1582140 BSShaderResourceManager::Function1582140
-// 0x1582160 BSShaderResourceManager::Function1582160
-// 0x1582180 BSShaderResourceManager::Function1582180
-// 0x15821a0 BSShaderResourceManager::Function15821a0
-// 0x1582250 BSShaderResourceManager::Function1582250
-// 0x1582270 BSShaderResourceManager::Function1582270
-// 0x1582290 BSShaderResourceManager::Function1582290
-// 0x1582550 BSShaderResourceManager::Function1582550
-// 0x1582600 BSShaderResourceManager::Function1582600
-// 0x1582620 BSShaderResourceManager::Function1582620
-// 0x1582640 BSShaderResourceManager::Function1582640
-// 0x1582660 BSShaderResourceManager::Function1582660
-// 0x15826f0 BSShaderResourceManager::Function15826f0
-// 0x1582710 BSShaderResourceManager::Function1582710
-// 0x15827a0 BSShaderResourceManager::Function15827a0
-// 0x1582870 BSShaderResourceManager::Function1582870
-// 0x15829a0 BSShaderResourceManager::Function15829a0
-// 0x15829c0 BSShaderResourceManager::Function15829c0
 #include "BSShaderResourceManager.h"
 
 // TextureLookupState, g_textureLookupState: STANDIN GUESS(low)
@@ -163,4 +151,36 @@ void BSShaderResourceManager::Function15829a0()
 void BSShaderResourceManager::Function15829c0()
 {
     return Function154afb0(g_shaderResourceState);
+}
+
+void BSShaderResourceManager::Function1582730(LookupSource* a_source, unsigned* a_out1, unsigned* a_out2)
+{
+    void* data = a_source->data48;
+    if (data) {
+        Function100f230(gLookupGlobal, data);
+    } else {
+        *a_out1 = 0;
+        *a_out2 = 0;
+    }
+}
+
+void BSShaderResourceManager::Function1582760(void* a_arg1, void* a_arg2, std::uint64_t a_arg3)
+{
+    unsigned mask = static_cast<unsigned>((a_arg3 << 2) & 0x3C);
+    Function100d6f0(gLookupGlobal, a_arg1, a_arg2, mask, a_arg3, true);
+}
+
+void BSShaderResourceManager::Function1582890(void* a1, void* a2, void* a3, void* a4)
+{
+    Function1019c00(a1, a2, a3, a4);
+}
+
+unsigned BSShaderResourceManager::Function15828b0()
+{
+    return gResourceCount;
+}
+
+float BSShaderResourceManager::Function15828c0()
+{
+    return gResourceScale;
 }

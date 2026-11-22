@@ -1,5 +1,6 @@
 // Code origin: hand-written class layouts and declarations adapted from the CharmedBaryon/CommonLibSSE-NG headers named below; the compared body is written from the local listing.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
+// 0xef3520 compared function
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiSourceTexture, NiSourceTexture::Unk_25, NiSourceTexture::~NiSourceTexture, NiSourceTexture::GetRTTI, NiSourceTexture::Unk_26, NiSourceTexture::Unk_27, NiSourceTexture::Unk_28, NiSourceTexture::Unk_29, NiSourceTexture::Unk_2A, NiTexture::GetRTTI, NiTexture::Unk_25, NiTexture::Unk_26, NiTexture::Unk_27, NiTexture::Unk_28, NiTexture::Unk_29, NiTexture::Unk_2A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -33,7 +34,7 @@ class NiTexture : public NiObject
 public:
     const NiRTTI* GetRTTI() const override;  // 02
     virtual std::uint64_t Unk_25(void);  // 25 (result type is a low-confidence guess)
-    virtual void Unk_26(void);  // 26
+    virtual std::uint64_t Unk_26();  // 26
     virtual void Unk_27(void);  // 27
     virtual void Unk_28(void);  // 28
     virtual void Unk_29(void);  // 29
@@ -53,7 +54,7 @@ public:
     ~NiSourceTexture() override;  // 00
     const NiRTTI* GetRTTI() const override;  // 02
     std::uint64_t Unk_25();  // compared: 0xef3500  // slot 25
-    void Unk_26(void) override;  // 26
+    std::uint64_t Unk_26();  // compared: 0xef3520  // slot 26
     void Unk_27(void) override;  // 27
     void Unk_28(void) override;  // 28
     void Unk_29(void) override;  // 29

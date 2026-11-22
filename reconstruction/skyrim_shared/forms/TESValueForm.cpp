@@ -1,15 +1,29 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x1f36a0 TESValueForm::Function1f36a0
+// Adapted bodies: none
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x1f3480 TESValueForm::Function1f3480
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
-// 0x1f34d0 Leaf1f34d0::Invoke
-// 0x1f34c0 TESValueForm::InitializeDataComponent
-// 0x1f36d0 TESValueForm::~TESValueForm
 #include "TESValueForm.h"
 
-// Not compared: defined so that the compiler emits the vftable and, beside it, the
-// deleting destructor that is compared (cookbook rule 14).
-TESValueForm::TESValueForm()
+void TESValueForm::Function1f36a0(BGSLoadGameBuffer* a_buf)
 {
+    if (TestBit(a_buf->flags40, 1)) {
+        a_buf->LoadDataEndian(&unk08, 4, 4);
+    }
+}
+#include <new>
+
+TESValueForm* TESValueForm::Function1f3480()
+{
+    return new (this) TESValueForm;
 }
 
 // Compared function: RVA 0x1f34d0, 3 bytes, TESValueForm::ClearDataComponent.
