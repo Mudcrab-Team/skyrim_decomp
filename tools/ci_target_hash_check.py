@@ -46,6 +46,7 @@ CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
 
 # Files an owner PR carries beside its units (match records, inventory, generated images and index). The hash job
 # reads none of them as source: it neither compiles nor trusts them, and the scope job judges their presence.
+CARRIED_RECORD = re.compile(r'reports/[^/]+/0x(?P<rva>[0-9a-f]+)\.json')
 CARRIED = re.compile(r'reports/[^/]+/0x[0-9a-f]+(?:\.review)?\.json|data/progress\.json|docs/progress(?:-map)?\.svg'
                      r'|reconstruction/INDEX\.md')
 
@@ -163,6 +164,33 @@ def prepare(root, base, head, work):
     # A file whose text differs from base only in comments (digest_v2.strip_comments) compiles to the
     # same code, so it asks for no compile of its own; it is still linted and still in the tree above.
     return tree, [name for name, _ in rows if name not in comment_only]
+
+
+def rebound_units(root, base, head):
+    """{rva: unit} for match records the PR carries, from the head's own record files.
+
+    A PR that moves a function's definition and carries the rebound record must not be held to the base binding
+    to the unit it left: that unit no longer defines the function, which is not a regression of it.
+    """
+    merge_base = git(root, 'merge-base', base, head).decode().strip()
+    out = {}
+    for name in git(root, 'diff', '--name-only', '-z', merge_base, head).decode().split('\0'):
+        match = CARRIED_RECORD.fullmatch(name)
+        if not match:
+            continue
+        shown = subprocess.run(['git', '-C', str(root), 'show', f'{head}:{name}'], capture_output=True)
+        try:
+            unit = (json.loads(shown.stdout).get('source') or {}).get('compiled')
+        except ValueError:
+            continue
+        if shown.returncode == 0 and isinstance(unit, str):
+            out[int(match['rva'], 16)] = unit
+    return out
+
+
+def without_rebound(known, rebound):
+    """`known` bindings minus the entries whose carried record binds another unit."""
+    return {unit: [e for e in entries if rebound.get(e['rva'], unit) == unit] for unit, entries in known.items()}
 
 
 def bindings(root):
@@ -395,7 +423,7 @@ def main(argv=None):
         manifest = hashes.load_manifest(ROOT)
         if a.command == 'prepare':
             tree, changed = prepare(ROOT, a.base, a.head, a.work)
-            refs = requests(tree, changed, bindings(ROOT))
+            refs = requests(tree, changed, without_rebound(bindings(ROOT), rebound_units(ROOT, a.base, a.head)))
             (a.work / 'requests.json').write_text(json.dumps(refs))
             report['intake'] = 'pass'
             report['requested_functions'] = len(refs)
