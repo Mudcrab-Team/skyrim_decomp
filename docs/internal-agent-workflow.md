@@ -219,7 +219,7 @@ Every brief from the orchestrator states: task id, plan step and issue, gates in
 they forbid, allowed inputs, the exact output paths, acceptance criteria, attempt and time limits,
 and "do not push, post publicly, mark `matched`, or start further agents." Only an integration
 brief lifts the push and `matched` parts, and only for work that meets the acceptance rule; the
-Reviewer brief also names the functions, source revision and report paths. Every worker writes a
+Reviewer brief also names the functions, source revision and report paths. Drafter and Engineer briefs for a function include the output of `python3 tools/pdb_facts.py <rva>` for each target (names and types only; never paste map addresses), and the Reviewer packet and the bot's review context carry the same facts. Every worker writes a
 handoff to `.local/handoffs/<task-id>.md` (model, inputs and their revisions, commands, outcome,
 blockers, next step) and returns its summary. A Reviewer's full review is stored at
 `.local/reviews/<task-id>.md`, with a sanitized verdict record alongside the public report

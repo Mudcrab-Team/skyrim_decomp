@@ -343,6 +343,15 @@ def unit_view(root, compiled, fns, notes, community=True, extras=None):
     return out
 
 
+def pdb_fact_lines(root, fn):
+    """The PDB facts held for a function (checklist item 7), indented under it; never stops the packet."""
+    try:
+        import pdb_facts
+        return pdb_facts.render(pdb_facts.collect(Path(root), fn['rva'])).split('\n')
+    except Exception as exc:  # optional facts must never stop a packet
+        return [f'PDB facts unavailable: {exc}']
+
+
 def function_view(root, fn, record, shown):
     out = ['', f'### {fn["build_id"]} 0x{fn["rva"]:x} {fn["size"]}  {fn["name"]} ({fn["name_origin"]})']
     state = acceptance_staleness(fn, root) if fn['status'] == 'matched' else None
@@ -361,6 +370,7 @@ def function_view(root, fn, record, shown):
     out.append(f'record: {fn["report"]}; {len(runs)} runs; compiled on {", ".join(compiled_on)}; '
                f'compared on {", ".join(compared_on)}')
     out.append(f'symbol: {", ".join(map(str, symbols))}')
+    out += pdb_fact_lines(root, fn)
     results = sorted({f'{rep.get("result")}/{rep.get("reason")}' for rep in reports})
     cov = sorted({(c.get('code_bytes_exact'), c.get('code_bytes_by_reference'), c.get('code_bytes_total'),
                    c.get('unwind')) for c in (rep.get('coverage') or {} for rep in reports)}, key=str)

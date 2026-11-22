@@ -75,3 +75,30 @@ class Setup(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class Advisory(unittest.TestCase):
+    def test_unit_advisory_reads_claimed_functions(self):
+        unit = '// 0x1000 Widget::Poke\nbool Widget::Poke(int a, float b) const { return a > 0; }\n'
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / 'w.cpp').write_text(unit)
+            with mock.patch.object(pf, 'committed_facts', return_value=CL), \
+                    mock.patch.object(pf, 'inventory_entry', return_value={'size': 0x20}):
+                lines = pf.advisory_for_unit(Path(tmp), 'w.cpp')
+        self.assertEqual(len(lines), 1)
+        self.assertIn('0x1000', lines[0])
+
+    def test_bot_comment_lists_advisory_without_blocking(self):
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
+        import pr_bot
+        decision = {'blocked': None, 'merge': True, 'verdicts': {}, 'pdb_advisory': ['u.cpp 0x1000: name differs']}
+        text = pr_bot.comment_body('abc', decision)
+        self.assertIn('Advisory (does not block the merge)', text)
+        self.assertIn('0x1000', text)
+
+
+class Canonical(unittest.TestCase):
+    def test_constructor_spellings_agree(self):
+        self.assertEqual(pf.canonical('Widget::ctor'), pf.canonical('Widget::Widget'))
+        self.assertEqual(pf.canonical('Widget::Dtor'), pf.canonical('Widget::~Widget'))
+        self.assertNotEqual(pf.canonical('Widget::Poke'), pf.canonical('Widget::Prod'))

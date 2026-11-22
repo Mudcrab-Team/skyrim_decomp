@@ -141,6 +141,11 @@ blocks; list what you find as `naming_findings` and still approve.
    or comment wording and missing notes go in `naming_findings`, one short line each, at most 20
    per function. They are published: no code, braces, bytes, disassembly, digests or private
    paths.
+7. **PDB agreement (not blocking).** The packet and the binding sheet list the PDB facts held for each function
+   (CrashLogger prototype, name and size; the 2013 map's name, prototype and object file; the Fallout 4 layout).
+   When a prototype, name or size exists, the reconstruction has to agree with it or say in a comment or the
+   handoff why it does not (another build, a shared `this`, inlining). A silent disagreement is a naming finding;
+   an agreement is not evidence of identity, and a byte match remains the only acceptance.
 
 For a change to the comparator, the validator's gate logic or the acceptance rule, review instead
 whether it keeps every existing fail-closed check, has tests for the new behaviour (including

@@ -151,11 +151,17 @@ def _undname(decorated):
     return symbol_align.undname_all(decorated, tool)
 
 
+_MAP_CACHE = {}  # one parse of the map per process: a review asks about many functions
+
+
 def map_facts(path, rva, name, inventory):
     """Aligned or anchored name, prototype, object file and neighbouring member names from the 2013 map."""
-    with open(path, encoding='latin-1') as handle:
-        sets = symbol_align.variants(handle)
-    aligners = [symbol_align.Aligner(e, inventory) for e in sets]
+    key = (str(path), len(inventory))
+    if key not in _MAP_CACHE:
+        with open(path, encoding='latin-1') as handle:
+            sets = symbol_align.variants(handle)
+        _MAP_CACHE[key] = (sets, [symbol_align.Aligner(e, inventory) for e in sets])
+    sets, aligners = _MAP_CACHE[key]
     entries = sets[0]
     hit = symbol_align.propose_any(aligners, rva)
     how = 'aligned' if hit else None
@@ -321,13 +327,25 @@ def pdb_signature(prototype):
     return m.group(1).strip(), max(len(params) - 1, 0)
 
 
+def canonical(name):
+    """Class::Method with constructor and destructor spellings folded (ctor, Ctor, Class, dtor, ~Class)."""
+    cls, _, method = name.rpartition('::')
+    last = cls.rpartition('::')[2]
+    low = method.lower()
+    if low in ('ctor', 'constructor') or method == last:
+        method = '<ctor>'
+    elif low in ('dtor', 'destructor') or method == '~' + last:
+        method = '<dtor>'
+    return f'{cls}::{method}'
+
+
 def agreement(repo, rva, name, source=None, compiled_size=None):
     """Advisory findings where a reconstruction disagrees with a known PDB name, prototype or size. An
     empty list means no PDB fact contradicts it (or none exists)."""
     facts = committed_facts(repo, rva, name)
     cl = facts.get('crashlogger') or {}
     out = []
-    if cl.get('name') and name and cl['name'] != name and not symbol_align.is_placeholder(name):
+    if cl.get('name') and name and canonical(cl['name']) != canonical(name) and not symbol_align.is_placeholder(name):
         out.append(f'name {name} differs from the CrashLogger PDB name {cl["name"]}')
     if source and cl.get('prototype') and name and '::' in name:
         cls, _, method = name.rpartition('::')
@@ -340,6 +358,33 @@ def agreement(repo, rva, name, source=None, compiled_size=None):
                 out.append(f'{name} returns {ret}; the CrashLogger PDB prototype returns {want[0]}')
     if cl.get('size') is not None and compiled_size is not None and cl['size'] != compiled_size:
         out.append(f'compiled size 0x{compiled_size:x} differs from the PDB size 0x{cl["size"]:x}')
+    return out
+
+
+COMPARED = re.compile(r'^//[ \t]*0x([0-9a-fA-F]+)[ \t]+(\S+)', re.M)
+
+
+def unit_functions(source):
+    """{rva: name} of the functions a unit claims with its `// 0x<rva> Class::Method` lines."""
+    return {int(r, 16): n for r, n in COMPARED.findall(source)}
+
+
+def advisory_for_unit(repo, rel_path):
+    """Advisory lines for each function a unit claims whose name, signature or size disagrees with a known
+    CrashLogger PDB fact. The header beside a .cpp is read too, where declarations live."""
+    path = Path(repo) / rel_path
+    try:
+        source = path.read_text(encoding='utf-8', errors='replace')
+    except OSError:
+        return []
+    header = path.with_suffix('.h')
+    if header != path and header.is_file():
+        source += '\n' + header.read_text(encoding='utf-8', errors='replace')
+    out = []
+    for rva, name in sorted(unit_functions(source).items()):
+        fn = inventory_entry(repo, rva)
+        for finding in agreement(repo, rva, name, source, (fn or {}).get('size')):
+            out.append(f'0x{rva:x}: {finding}')
     return out
 
 
