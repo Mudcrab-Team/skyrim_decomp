@@ -87,6 +87,63 @@ class ExportV2Tests(unittest.TestCase):
         self.assertIsNone(funclets[hex(catch0 + 0x21)])     # leaf unwind funclet: no .pdata
         self.assertEqual(self.comparator_with_exporter_map(unit, fx.CATCH_FUNCTION, fact, image)['result'], 'pass')
 
+    def test_funclet_jump_to_out_of_line_function_is_listed(self):
+        unit = fx.catch_unit()
+        image = unit.link(fx.image_externals())
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / 'i').write_bytes(image)
+            img = ep.ImageFacts(Path(tmp) / 'i')
+            img.handler_names = {rva: name for name, rva in fx.HANDLER_THUNKS.items()}
+            callee = fx.LAYOUT[fx.CALLEE]
+            rva = fx.section_rva(unit, fx.CATCH_FUNCTION)
+            # The parent's own call is not passed in, so a row for the callee can only come from a funclet.
+            without = ep.classify(img, ADDRLIB, [], rva, gmeta(rva, len(fx.CATCH_CODE)), [])
+            self.assertFalse([r for r in without['references'] if r['target_rva'] == callee])
+            img.pdata_at[callee] = (callee + 8, 0)
+            fact = ep.classify(img, ADDRLIB, [], rva, gmeta(rva, len(fx.CATCH_CODE)), [])
+        rows = [r for r in fact['references'] if r['target_rva'] == callee]
+        self.assertEqual([(r['kind'], r['mnemonic']) for r in rows], [('jump', 'JMP')])
+        self.assertGreater(rows[0]['from_offset'], len(fx.CATCH_CODE))
+
+    def test_local_pack_lists_funclet_jump_target_with_its_public_name(self):
+        import contrib
+        unit = fx.catch_unit()
+        callee = fx.LAYOUT[fx.CALLEE]
+        image = unit.link(fx.image_externals(), extra_pdata=((callee, callee + 8, 0x2000),))
+        rva = fx.section_rva(unit, fx.CATCH_FUNCTION)
+        refs = {}
+        facts = ep.ImageFacts(blob=image)
+        facts.handler_names = {h: name for name, h in fx.HANDLER_THUNKS.items()}
+        note = contrib.add_funclet_references(image, rva, refs, {callee: ['Synthetic::AddOne']}, img=facts)
+        self.assertIsNone(note)
+        self.assertEqual([(r['target_rva'], r['in_funclet'], r['community_names'][0]['name']) for r in refs.values()],
+                         [(callee, True, 'Synthetic::AddOne')])
+
+    def test_funclet_bytes_that_only_look_like_a_branch_are_ignored(self):
+        class Sec:
+            flags = 0x20000000
+
+        class Img:
+            pdata_at = {0x5000: (0x5010, 0)}
+
+            def section(self, rva):
+                return Sec()
+
+            def pdata_intersecting(self, start, end):
+                return [(0x4f00, 0x5000, 0)]
+
+            def read(self, rva, size):
+                if size == 1:
+                    return b'\xcc' if rva in (0x6fff,) else b'\x00'
+                # jmp to a .pdata start, call to an unaligned spot, jmp to an aligned leaf after int3
+                # padding, jmp to an aligned spot that follows no padding or range end, then int3.
+                return (b'\xe9' + (0x5000 - 0x1005).to_bytes(4, 'little') + b'\xe8' + bytes(4)
+                        + b'\xe9' + (0x7000 - 0x100f).to_bytes(4, 'little')
+                        + b'\xe9' + (0x8000 - 0x1014).to_bytes(4, 'little') + b'\xcc' * 8)
+
+        hit = ep.funclet_branch_refs(Img(), 0x1000, [(0x1000, None)])
+        self.assertEqual([(h['target'], h['mnemonic']) for h in hit], [(0x5000, 'JMP'), (0x7000, 'JMP')])
+
     def test_seh_scope_table_with_filter_funclet(self):
         unit = fx.seh_unit()
         fact, image, *_ = self.facts(unit, fx.SEH_FUNCTION)

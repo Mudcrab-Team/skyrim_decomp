@@ -822,6 +822,35 @@ def public_names(repo, data):
     return {k: list(dict.fromkeys(v)) for k, v in names.items()}
 
 
+def add_funclet_references(image_bytes, rva, refs, names, img=None):
+    """Add the call/jump targets of the function's EH funclets to `refs`; a note on failure, else None.
+
+    An unwind funclet that jumps to an out-of-line destructor (a scope guard, a local visitor) is
+    outside the function's own range, so without this the reference table never lists that target
+    and no bind hint can name it. Rows carry `in_funclet` and the offset from the function start.
+    """
+    try:
+        import export_pack
+        img = img or export_pack.ImageFacts(blob=image_bytes)
+        entry = img.pdata_at.get(rva)
+        if entry is None:
+            return None
+        end, parts, _split = export_pack.function_extent(img, rva, entry[0])
+        own = [(rva, entry[0], entry[1])] + parts
+        funclets = sorted((export_pack.eh_facts(img, {'by_rva': {}}, [], rva, own)).get('funclets', {}).items())
+        for row in export_pack.funclet_branch_refs(img, rva, funclets):
+            ref = refs.get(row['target'])
+            if ref is None:
+                ref = refs[row['target']] = {'target_rva': row['target'], 'kind': 'call-or-jump', 'at': [],
+                                             'in_funclet': True,
+                                             'community_names': [{'name': n, 'kind': 'name'}
+                                                                 for n in names.get(row['target'], [])]}
+            ref['at'].append(row['offset'] + 1)
+    except Exception as exc:  # a reading aid: the pack is still usable without the funclet rows
+        return f'funclet references not added: {type(exc).__name__}'
+    return None
+
+
 def build_pack(image_bytes, rva, size, identity, names):
     """Pack of one function from the image: its bytes, instruction boundaries and the targets of its
     calls, jumps and rip-relative references with any public name. Private (game-derived)."""
@@ -845,6 +874,7 @@ def build_pack(image_bytes, rva, size, identity, names):
             r = refs.setdefault(target, {'target_rva': target, 'kind': kind, 'at': [],
                                          'community_names': [{'name': n, 'kind': 'name'} for n in names.get(target, [])]})
             r['at'].append(off + field[0])
+    note = add_funclet_references(image_bytes, rva, refs, names) or note
     pdata = [e for e in image.runtime_functions() if rva <= e[0] < rva + size]
     return {'pack_schema': 1, 'source': 'local-exe', 'identity': dict(identity, name_how=None),
             'bytes_hex': code.hex(), 'instructions': rows, 'references': list(refs.values()),
@@ -868,6 +898,11 @@ def pack_listing(pack):
             names = ', '.join(c['name'] for c in ref['community_names'][:2]) or 'no public name'
             text += f' -> 0x{row["target"]:x} {names}'
         lines.append(text.rstrip())
+    for ref in pack['references']:
+        if ref.get('in_funclet'):
+            names = ', '.join(c['name'] for c in ref['community_names'][:2]) or 'no public name'
+            where = ', '.join(f'+0x{at:x}' for at in ref['at'])
+            lines.append(f'# EH funclet call/jump at {where} -> 0x{ref["target_rva"]:x} {names}')
     if pack.get('note'):
         lines.append(f'# {pack["note"]}')
     return '\n'.join(lines) + '\n'

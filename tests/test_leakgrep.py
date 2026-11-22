@@ -116,5 +116,16 @@ class Cli(unittest.TestCase):
             self.assertNotIn(text, out)
 
 
+class StandardHeaderAgreementTests(unittest.TestCase):
+    """The leak scan and the contributor preflight screen must admit the same C math header."""
+
+    def test_math_h_is_admitted_by_both_checks(self):
+        import contrib_screen
+        self.assertFalse(leakgrep.include_problem('#include <math.h>'))
+        self.assertEqual(contrib_screen.screen(b'#include <math.h>\nint f();\n', 'reconstruction/a/B.cpp'), [])
+        self.assertIn('include-outside-roots',
+                      contrib_screen.screen(b'#include <windows.>\n', 'reconstruction/a/B.cpp'))
+
+
 if __name__ == '__main__':
     unittest.main()

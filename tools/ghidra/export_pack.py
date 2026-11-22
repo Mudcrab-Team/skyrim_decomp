@@ -67,8 +67,8 @@ def sha256_bytes(blob):
 # Image facts the comparator also sees: .pdata, unwind info, DIR64 base relocations, imports.
 
 class ImageFacts:
-    def __init__(self, path):
-        self.blob = Path(path).read_bytes()
+    def __init__(self, path=None, blob=None):
+        self.blob = Path(path).read_bytes() if blob is None else blob
         self.sha256 = sha256_bytes(self.blob)
         self.pe = PeImage(self.blob)
         pdata = sorted(self.pe.runtime_functions())
@@ -626,6 +626,55 @@ def constant_symbol(img, target, mnemonic):
     return '__real@' + data[::-1].hex()
 
 
+FUNCLET_SCAN_LIMIT = 0x100
+
+
+def starts_function(img, target):
+    """True for a .pdata function start, or an aligned code address after int3 padding or a .pdata range's end
+    (a leaf function has no .pdata entry, and the shared destructors a funclet jumps to are often leaves)."""
+    if target in img.pdata_at:
+        return True
+    try:
+        sec = img.section(target)
+        if not (sec and sec.flags & 0x20000000 and target % 16 == 0):
+            return False
+        # Aligned and either padded with int3 before it or starting right where a .pdata range ends.
+        return img.read(target - 1, 1) == b'\xcc' or any(e == target for _b, e, _u in img.pdata_intersecting(target - 0x400, target))
+    except Exception:
+        return False
+
+
+def funclet_branch_refs(img, rva, funclets):
+    """Direct call/jump rows from funclet code, in the shape of the analysis' reference rows.
+
+    The analysis covers the parent body only, so an unwind funclet that jumps to an out-of-line
+    destructor (a scope guard, a local visitor) would leave that function out of the reference
+    table and no bind hint could name it. A funclet has no leaf-size record without .pdata, so the
+    window ends at the first int3 or the scan limit. A byte pair is accepted only when its rel32
+    lands exactly on a function start (a .pdata begin, or an aligned address after int3 padding), which makes a stray E8/E9 inside another operand
+    practically never a row.
+    """
+    rows = []
+    for start, size in funclets:
+        try:
+            blob = img.read(start, size or FUNCLET_SCAN_LIMIT)
+        except Exception:
+            continue
+        end = len(blob) if size else (blob.find(b'\xcc') if b'\xcc' in blob else len(blob))
+        for i in range(max(end, 0) - 4):
+            op = blob[i]
+            if op not in (0xE8, 0xE9):
+                continue
+            target = (start + i + 5 + struct.unpack_from('<i', blob, i + 1)[0]) & 0xFFFFFFFF
+            if not starts_function(img, target):
+                continue
+            call = op == 0xE8
+            rows.append({'offset': start + i - rva, 'ref_type': 'UNCONDITIONAL_CALL' if call else 'UNCONDITIONAL_JUMP',
+                         'target': target, 'mnemonic': 'CALL' if call else 'JMP', 'operand': 0,
+                         'ghidra_names': '', 'target_entry': target})
+    return rows
+
+
 def classify(img, addrlib, communities, rva, gmeta, grefs):
     """Return the pack facts for one function: range, unwind, exception data, references and a
     verdict against comparator contract v2."""
@@ -701,8 +750,9 @@ def classify(img, addrlib, communities, rva, gmeta, grefs):
         cautions.append('indirect jump without recovered targets (tail call through a register or memory, '
                         'or an unrecovered switch)')
     if funclets:
-        cautions.append('funclet code references are not listed (the analysis covered the parent only); '
-                        'bind them by hint or by position')
+        cautions.append('funclet code references are not listed except direct call/jump targets that start a '
+                        'function (found by a byte scan, not the analysis); bind the rest by hint or by position')
+        grefs = list(grefs) + funclet_branch_refs(img, rva, funclets)
     if gmeta['thunk']:
         reasons.append('thunk')
     refs, seen = [], set()

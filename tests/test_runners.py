@@ -668,6 +668,20 @@ class AgentEndToEnd(unittest.TestCase):
         self.assertEqual(code, 3)
         self.assertIn('undeclared', (dest / 'compile.log').read_text())
         self.assertNotIn('undeclared', out)
+        self.assertEqual((dest / 'unit-exit.txt').read_text().strip(), '3')
+
+    def test_ssh_shell_that_folds_exit_codes_still_reports_a_compile_failure(self):
+        import importlib.machinery
+        import importlib.util
+        loader = importlib.machinery.SourceFileLoader('recorded_attempt', str(ROOT / 'tools/verifier/attempt'))
+        spec = importlib.util.spec_from_loader(loader.name, loader)
+        attempt = importlib.util.module_from_spec(spec)
+        loader.exec_module(attempt)
+        with mock.patch.dict(os.environ, {'FAKE_MODE': 'fail'}):
+            code, _out, dest, _, _ = self.run_one('ssh')
+        # Windows OpenSSH with a PowerShell shell reports every failed command as 1.
+        self.assertEqual(attempt.recorded_exit(dest, 1), code)
+        self.assertEqual(attempt.recorded_exit(dest / 'missing', 1), 1)
 
     def test_wrong_toolchain_is_refused_on_the_host(self):
         (self.msvc / 'bin/x64/cl.exe').write_bytes(b'another compiler')

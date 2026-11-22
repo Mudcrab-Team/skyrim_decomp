@@ -15,7 +15,7 @@ PRIVATE_LIST = ROOT / '.local/leakgrep-private.txt'
 # Pinned compiler headers; anything else quoted must be a repo-relative reconstruction header.
 STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath', 'type_traits',
                               'utility', 'new', 'limits', 'memory', 'typeinfo', 'atomic', 'algorithm', 'stddef.h', 'stdint.h',
-                              'intrin.h'))
+                              'intrin.h', 'math.h'))
 MNEMONICS = ('mov movzx movsx movaps movups movss movsd lea push pop call jmp je jne jz jnz ja jae jb jbe jg jge '
              'jl jle cmp test xor and or add sub adc sbb imul mul idiv div inc dec shl shr sar sal rol ror neg not '
              'fld fstp fild fistp fadd fmul fsub fdiv fxch xchg cmov\\w+ set\\w+ rep\\s+movs\\w ret retn').split()
