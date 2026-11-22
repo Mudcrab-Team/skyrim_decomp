@@ -26,6 +26,7 @@ from source_digest import include_closure
 import digest_v2
 from digest_v2 import tu_digest
 import target_hashes as hashes
+import unit_deletion
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # Optional source-header request for a new unit with no accepted symbol binding yet. It is a
@@ -70,6 +71,11 @@ def comment_only_change(root, base, name, blob):
         return False
 
 
+def base_text(root, rev, name):
+    shown = subprocess.run(['git', '-C', str(root), 'show', f'{rev}:{name}'], capture_output=True)
+    return shown.stdout.decode('utf-8-sig', 'replace') if shown.returncode == 0 else None
+
+
 class LintFailure(ValueError):
     """The changed units fail the source lint; `findings` are the lint's own file:line messages."""
 
@@ -85,7 +91,7 @@ def prepare(root, base, head, work):
         raise ValueError('tools must be from the trusted base revision')
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
-    rows, comment_only = [], set()
+    rows, comment_only, deleted = [], set(), []
     # Generated CrashLogger PDB output is neither a unit nor read by this job: it is never compiled.
     names = [n for i in range(0, len(diff) - 1, 2) if not pdb_types.is_generated(n := diff[i + 1].decode('utf-8'))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
@@ -100,6 +106,9 @@ def prepare(root, base, head, work):
             if name.startswith(CI_INPUTS):
                 continue  # Never read or execute PR tooling; test trusted base references instead.
             raise ValueError('outside contributor intake scope')
+        if status == 'D':
+            deleted.append(name)
+            continue
         if status not in ('A', 'M'):
             raise ValueError('outside contributor intake scope')
         # Read only bounded, regular source blobs. Never follow a PR symlink or check out head.
@@ -116,6 +125,11 @@ def prepare(root, base, head, work):
         rows.append((name, blob))
         if status == 'M' and comment_only_change(root, merge_base, name, blob):
             comment_only.add(name)
+    if deleted:
+        found = unit_deletion.problems(root, deleted, lambda n: base_text(root, merge_base, n),
+                                       lambda n: bool(git(root, 'ls-tree', head, '--', n).strip()))
+        if found:
+            raise ValueError('unit deletion would orphan an accepted function: ' + '; '.join(found))
     if not rows:
         return root, []
     tree = work / 'source'

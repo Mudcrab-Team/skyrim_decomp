@@ -1809,6 +1809,55 @@ class MappingBot(FakeBot):
         self.calls.append(['regenerate', number])
 
 
+class DeletionBot(FakeBot):
+    """The deletion lane with the orphan rule and the model stubbed."""
+    GONE = [{'filename': 'reconstruction/a/Old.cpp', 'status': 'removed'},
+            {'filename': 'reconstruction/a/Old.h', 'status': 'removed'}]
+
+    def __init__(self, work, found=(), review=MappingBot.APPROVE, **kw):
+        super().__init__(work, files=list(self.GONE), **kw)
+        self.found, self.text = list(found), review
+
+    def deletion_problems(self, base, files):
+        self.calls.append(['deletion_problems'])
+        return list(self.found)
+
+    def deletion_review(self, number, head, base, names):
+        self.calls.append(['deletion_review', len(names)])
+        return self.text
+
+
+class DeletionLaneBotTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_a_safe_deletion_is_reviewed_once_and_merged_without_hosts(self):
+        bot = DeletionBot(self.work)
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), (None, True))
+        for stage in ('mac', 'host1', 'build_records', 'record'):
+            self.assertEqual(bot.seen(stage), [], stage)
+        self.assertEqual(bot.seen('deletion_review'), [['deletion_review', 2]])
+        merge = bot.seen('gh', 'pr', 'merge')
+        self.assertEqual(len(merge), 1)
+        self.assertEqual(merge[0][merge[0].index('--subject') + 1], 'Delete 2 duplicate unit files (#7)')
+
+    def test_an_orphaning_deletion_is_refused_before_any_review(self):
+        bot = DeletionBot(self.work, found=['a/Old: accepted function 0x200 is bound by its record to this unit'])
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('deletion', False))
+        self.assertEqual((bot.seen('deletion_review'), bot.seen('gh', 'pr', 'merge')), ([], []))
+        self.assertIn('0x200', bot.seen('gh', 'pr', 'comment')[0][-1])
+
+    def test_a_rejecting_review_never_merges(self):
+        reject = json.dumps({'leak': 'no', 'verdict': 'reject', 'ground': 'hygiene', 'why': 'still used'})
+        bot = DeletionBot(self.work, review=reject)
+        self.assertEqual(bot.process(PR)['blocked'], 'review')
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+
+
 class MappingLaneTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
