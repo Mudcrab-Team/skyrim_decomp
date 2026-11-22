@@ -1,8 +1,0 @@
-// Source exposure: binary-analysis
-// Leaf1db710, Invoke, object, construct: GUESS(low) STANDIN
-// Origin: primitive-empty-entry v1
-#pragma once
-class Leaf1db710 {
-public:
-    void Invoke();
-};

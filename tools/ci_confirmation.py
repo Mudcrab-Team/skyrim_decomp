@@ -14,6 +14,7 @@ from pecoff import CoffObject
 import target_hashes
 from digest_v2 import run_revision
 import source_moves
+from scoped_memo import memoized
 
 WORKFLOW = '.github/workflows/ci-confirm.yml'
 PR_WORKFLOW = '.github/workflows/pr-check.yml'
@@ -106,7 +107,7 @@ def pr_check_evidence(root, run, report, row, map_status, first_host):
             'artifact belongs to another revision than the run')
     require(is_sha(report.get('base_sha')) and 'error' not in report and report.get('toolset') == 'MATCH',
             'hash run did not complete on a verified toolset')
-    manifest = target_hashes.load_manifest(root)
+    manifest = _manifest(root)
     target = next((r for r in manifest['functions'] if r['rva'] == int(row['rva'], 16)), None)
     require(target is not None, 'no published target hash')
     return dict(schema=2, kind='pr-check-hash', **CI_HOST, workflow=PR_WORKFLOW, job=PR_JOB,
@@ -119,6 +120,14 @@ def pr_check_evidence(root, run, report, row, map_status, first_host):
                 source_sha256=row.get('source_sha256'), recipe_sha256=row.get('recipe_sha256'),
                 target=target, normalized_sha256=target['normalized_sha256'],
                 layout_sha256=target['layout_sha256'], first_host=first_host)
+
+
+def _manifest(root):
+    """The verified target-hash manifest, read once per operation (callers only read it).
+
+    target_hashes.py is itself bound by the manifest's normalizer hash, so the memo lives here.
+    """
+    return memoized(('load_manifest', str(Path(root).resolve())), lambda: target_hashes.load_manifest(root))
 
 
 def validate_pr_check(root, record, fn, target, c):
@@ -146,7 +155,7 @@ def validate_pr_check(root, record, fn, target, c):
             'hash did not pass')
     require(c.get('toolset') == 'MATCH' and c.get('compiler_pins_sha256') ==
             sha((root / 'tools/verifier/pinned.sha256').read_bytes()), 'compiler pins differ')
-    manifest = target_hashes.load_manifest(root)
+    manifest = _manifest(root)
     row = next((r for r in manifest['functions'] if r['rva'] == fn['rva']), None)
     require(row is not None and row['size'] == fn['size'] and row['extraction'] != 'unmasked-unsupported',
             'no supported published target hash')
@@ -186,7 +195,7 @@ def validate(root, record, fn, target):
     pins = {name: digest for digest, name in
             (line.split() for line in (root / 'tools/verifier/pinned.sha256').read_text().splitlines() if line.strip())}
     require(c.get('compiler_sha256') == pins, 'compiler pins differ')
-    manifest = target_hashes.load_manifest(root)
+    manifest = _manifest(root)
     row = next((r for r in manifest['functions'] if r['rva'] == fn['rva']), None)
     require(row is not None and row['size'] == fn['size'] and row['extraction'] != 'unmasked-unsupported',
             'no supported published target hash')

@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Delete1259d40@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19242304,
+      "size": 33
+    },
+    "?Delete1259da0@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19242400,
+      "size": 33
+    },
+    "?Delete1283370@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19411824,
+      "size": 33
+    },
+    "?Delete12adf70@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19586928,
+      "size": 33
+    },
+    "?Delete12adfd0@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19587024,
+      "size": 33
+    },
+    "?Delete12ae060@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19587168,
+      "size": 33
+    },
+    "?Delete12bc650@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19646032,
+      "size": 33
+    },
+    "?Delete12c99f0@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19700208,
+      "size": 33
+    },
+    "?Delete12c9a20@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 19700256,
+      "size": 33
+    },
+    "?Delete1338d60@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 20155744,
+      "size": 33
+    },
+    "?Delete1338d90@ConditionalDeallocators1@@SAPEAXPEAXI@Z": {
+      "rva": 20155792,
+      "size": 33
+    },
+    "DeallocatorTarget15a743c": {
+      "rva": 22705212,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Delete1259d40@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x1259d40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete1259da0@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x1259da0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete1283370@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x1283370",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete12adf70@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x12adf70",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete12adfd0@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x12adfd0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete12ae060@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x12ae060",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete12bc650@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x12bc650",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete12c99f0@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x12c99f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete12c9a20@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x12c9a20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete1338d60@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x1338d60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Delete1338d90@ConditionalDeallocators1@@SAPEAXPEAXI@Z",
+        "rva": "0x1338d90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "DeallocatorTarget15a743c",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

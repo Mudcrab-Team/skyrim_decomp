@@ -313,5 +313,33 @@ class ReproduceSummaries(unittest.TestCase):
             self.assertEqual(len(list((Path(tmp) / 'summaries').iterdir())), 2)
 
 
+class ComparatorErrorHandling(unittest.TestCase):
+    """A comparator that stops before a verdict must stay visible and must not skip binding."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp()).resolve()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.task = {'functions': [{'rva': 0x1000, 'size': 8, 'symbol': 'synthetic'}]}
+        (self.tmp / '0x1000').mkdir()
+
+    def write(self, record):
+        (self.tmp / '0x1000' / 'report.json').write_text(json.dumps(record))
+
+    def test_error_record_triggers_binding_and_a_fail_report_does_not(self):
+        attempt = load_script('attempt')
+        self.write({'verify_function': 'comparator-error', 'result': 'error', 'detail': 'Traceback\nValueError: stopped'})
+        self.assertTrue(attempt.comparator_errored(self.task, self.tmp))
+        self.write({'result': 'fail', 'reason': 'code-byte-mismatch'})
+        self.assertFalse(attempt.comparator_errored(self.task, self.tmp))
+        (self.tmp / '0x1000' / 'report.json').unlink()
+        self.assertFalse(attempt.comparator_errored(self.task, self.tmp))
+
+    def test_function_line_names_the_comparator_complaint(self):
+        self.write({'verify_function': 'comparator-error', 'result': 'error', 'detail': 'Traceback\nValueError: stopped early'})
+        line, result = pipeline.function_line(self.task['functions'][0], self.tmp / '0x1000', self.tmp / 'missing.obj')
+        self.assertEqual(result, 'error')
+        self.assertIn('stopped early', line)
+
+
 if __name__ == '__main__':
     unittest.main()

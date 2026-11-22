@@ -1,8 +1,9 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Code origin: original declarations incorporating the labelled community types and observed list layout.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESQuest, ::QConditions, ::GetFormEditorID, ::FinishLoadGame, ::InitializeData, ::instanceData, ::currentInstanceID, ::aliases, ::data, ::eventID, ::objConditions, ::currentStage, ::alreadyRun, ::formEditorID, ::startEventData, ::promoteTask, ::promotedRefs, ::pad054, ::pad0E4, ::pad22B, ::pad22C: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESQuest::~TESQuest: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declared out of line, the target's deleting destructor calls the plain one
-// TESQuest::unk28, ::unk70, ::unkE8, ::unk110, ::unk220: GUESS(low); regions the compared code does not touch; TESFullName at 28 and the other members are not modelled
+// TESQuest::unk28, ::unk70, ::unkF8, ::unk110, ::unk220: GUESS(low); regions outside the compared access paths.
 // TESQuest::promoteTask: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares NiPointer<QueuedPromoteQuestTask>, a raw pointer here
 // QUEST_DATA, QUEST_DATA::flags, ::priority, ::questType, ::questDelayTime, QuestFlag, QuestFlag::kRunOnce: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); plain integers for the stl::enumeration members
 // BGSBaseAlias, BGSBaseAlias::aliasName, ::owningQuest, ::aliasID: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -16,11 +17,14 @@
 // BGSStoryManagerTreeVisitor, BGSStoryManagerTreeVisitor::VisitControl: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the type is needed for the slot signature
 // BGSStoryManagerTreeForm::AcceptVisitor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; slot 3E, only the slot matters here
 // TESCondition, TESCondition::head: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); one pointer
+// TESQuestStage, QUEST_STAGE_DATA and index: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESQuest::FindStage, TESQuest::executedStages: CRASHLOGGER_PDB(59818@2026.10.24)
+// TESQuest::StageEntry and embedded head: OBSERVED
 #pragma once
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class BGSStoryManagerTreeVisitor {
 public:
@@ -103,8 +107,25 @@ enum class QuestFlag : std::uint16_t {
     kRunOnce = 1 << 8
 };
 
+struct QUEST_STAGE_DATA {
+    std::uint16_t index;  // 00
+    std::uint8_t flags;   // 02
+    std::uint8_t unk03[5];
+};
+static_assert(sizeof(QUEST_STAGE_DATA) == 0x8, "quest stage data size");
+
+class TESQuestStage {
+public:
+    QUEST_STAGE_DATA data;
+};
+
 class TESQuest : public BGSStoryManagerTreeForm {
 public:
+    struct StageEntry {
+        TESQuestStage* stage;
+        StageEntry* next;
+    };
+
     TESQuest();
     ~TESQuest() override;  // 00
 
@@ -112,6 +133,7 @@ public:
     void          FinishLoadGame(BGSLoadFormBuffer* a_buf) override;  // 11
     const char*   GetFormEditorID() const override;                // 32
     TESCondition* QConditions() override;                          // 3D
+    TESQuestStage* FindStage(std::uint16_t a_index) const;
 
     // members
     std::uint8_t            unk28[0x10];      // 28
@@ -123,7 +145,8 @@ public:
     QUEST_DATA              data;             // D8
     std::uint32_t           eventID;          // E0
     std::uint32_t           pad0E4;           // E4
-    std::uint8_t            unkE8[0x20];      // E8
+    StageEntry              executedStages;   // E8
+    std::uint8_t            unkF8[0x10];       // F8
     TESCondition            objConditions;    // 108
     std::uint8_t            unk110[0x110];    // 110
     void*                   unk220;           // 220

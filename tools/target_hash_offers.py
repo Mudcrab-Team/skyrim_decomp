@@ -276,6 +276,8 @@ def main(argv=None):
     reserved=reserved_rvas(a.reserved_dir)
     output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved,a.extra_rva)
     (ROOT/hashes.OFFERED).write_text(json.dumps(output,indent=2)+'\n')
+    import target_facts  # the sidecar must follow the list it describes
+    (ROOT/target_facts.OUT).write_text(target_facts.render(target_facts.build(ROOT)))
     print(json.dumps(dict(extra_targets=len(output['functions']),next_candidates=output['next_candidate_count'],
                           claims=len(output['claims']),window=window,acceptance='not-evaluated')))
     return 0

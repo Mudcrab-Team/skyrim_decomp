@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Slot5@BGSPackageDataLocationWrapper@@UEBAEXZ": {
+      "rva": 4514560,
+      "size": 3
+    },
+    "?Function44e3f0@BGSPackageDataLocationWrapper@@QEAA_NPEAX0@Z": {
+      "rva": 4514800,
+      "size": 22
+    },
+    "?LoadGame@BGSPackageDataLocationWrapper@@QEAAXAEAVBGSLoadGameBuffer@@@Z": {
+      "rva": 4514608,
+      "size": 27
+    },
+    "?ReadPackageLocation@@YAPEAVPackageLocationTarget@@AEAVBGSLoadGameBuffer@@@Z": {
+      "rva": 4488112,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Slot5@BGSPackageDataLocationWrapper@@UEBAEXZ",
+        "rva": "0x44e300",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function44e3f0@BGSPackageDataLocationWrapper@@QEAA_NPEAX0@Z",
+        "rva": "0x44e3f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@BGSPackageDataLocationWrapper@@QEAAXAEAVBGSLoadGameBuffer@@@Z",
+        "rva": "0x44e330",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReadPackageLocation@@YAPEAVPackageLocationTarget@@AEAVBGSLoadGameBuffer@@@Z",
+        "rva": "0x447bb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

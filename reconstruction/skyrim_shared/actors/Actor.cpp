@@ -1,4 +1,4 @@
-// Source exposure: mixed. Existing bodies were drafted by claude-sonnet-5-5 from the pinned image.
+// Source exposure: mixed. Existing bodies were drafted from the pinned image.
 // Code origin: original reconstruction from the pinned image and community declarations; GetMountInteraction from the listing and the CrashLogger PDB name.
 // Consulted (private, not in repo): decompiler control-flow hints.
 // Adapted bodies: none in this change.
@@ -14,6 +14,7 @@
 // 0x6c5440 Actor::GetActorValueModifier
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x2e6710 Actor::GetMountInteraction
+// 0x681d60 Actor::Function681d60
 #include "Actor.h"
 
 bool Actor::GetMountInteraction(MountInteraction*& a_out)
@@ -230,4 +231,12 @@ int Actor::ProcessEvent(MoveFinishSink* a_sink, const bhkCharacterMoveFinishEven
         actor->Unk_68();
     }
     return 0;
+}
+
+bool Actor::Function681d60() const
+{
+    if (currentProcess && currentProcess->middleHigh && currentProcess->middleHigh->alarmState == 0x15) {
+        return true;
+    }
+    return false;
 }

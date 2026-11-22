@@ -465,6 +465,10 @@ def function_line(fn, fdir, obj):
         parts.append(f'unwind {cov.get("unwind")}')
     if reason == 'function-symbol-missing':
         parts.append(f'(object does not define {fn["symbol"]})')
+    elif reason == 'comparator-error':
+        # The error record's detail is the comparator's own masked complaint (no report was written).
+        last = [line for line in detail.splitlines() if line.strip()][-1:] or ['no detail']
+        parts.append(f'(the comparator stopped before a verdict: {last[0].strip()[:160]})')
     elif reason == 'unresolved-symbol':
         # The comparator's detail names the symbol only; it holds no bytes.
         parts.append(f'({detail})')

@@ -129,6 +129,39 @@ def results_of(task, dest):
     return out
 
 
+# unit_build's status when the comparator process failed instead of writing a pass or fail report.
+COMPARATOR_ERROR_EXIT = 2
+
+
+def comparator_errored(task, dest):
+    """True when some function's report is the error record of a comparator that wrote no verdict.
+
+    A reference the map does not name yet (a compiler-made constant, for one) can end that way
+    before binding has had a chance to add it, so binding still has to run.
+    """
+    for fn in task['functions']:
+        try:
+            report = json.loads((Path(dest) / f'0x{fn["rva"]:x}' / 'report.json').read_text())
+        except (OSError, ValueError):
+            continue
+        if isinstance(report, dict) and report.get('verify_function') == 'comparator-error':
+            return True
+    return False
+
+
+def recorded_exit(dest, code):
+    """The unit build's own exit status when the host agent recorded it, else the transport's.
+
+    An ssh shell on Windows can report any failed command as exit 1, which made a compile
+    failure (3) look like a comparison run that produced no report.
+    """
+    try:
+        recorded = int((Path(dest) / 'unit-exit.txt').read_text().strip())
+    except (OSError, ValueError):
+        return code
+    return recorded if recorded in (0, 1, 2, 3, 4, 125) else code
+
+
 def run_once(task, host, files, task_dir, dest):
     code, out = host.run(files, task_dir / '.attempt')
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -137,7 +170,7 @@ def run_once(task, host, files, task_dir, dest):
     except (boatctl.BoatError, runners.RunnerError):
         dest.mkdir(parents=True, exist_ok=True)
     (dest / 'remote.txt').write_text(out)
-    return code
+    return recorded_exit(dest, code)
 
 
 def fallback_budget(task_dir, qdir, tier='fallback'):
@@ -204,7 +237,8 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     internal = any('internal_selector' in fn for fn in task['functions'])
     if internal:
         bind_lines.append('  internal identities: automatic name binding disabled; use explicit scoped map keys')
-    if not internal and code in (0, 1) and not (dest / 'error.json').is_file() and (dest / 'candidate.obj').is_file():
+    if (not internal and code in (0, 1, COMPARATOR_ERROR_EXIT) and not (dest / 'error.json').is_file()
+            and (dest / 'candidate.obj').is_file() and (code != COMPARATOR_ERROR_EXIT or comparator_errored(task, dest))):
         try:
             report = bind.bind(task_dir, dest / 'candidate.obj', config.get('image'), config.get('objdump'))
         except (OSError, ValueError) as exc:

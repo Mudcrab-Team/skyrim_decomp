@@ -89,8 +89,12 @@ def new_claimed_functions(git, base, head, files):
     return len(now - before)
 
 
+# Per-PR cap on new functions; the intake bot's limit and its timeouts are sized for it.
+MAX_FUNCTIONS = 200
+
+
 def screen_publication(root, base, head, *, merge_method='squash', headers=STANDARD_HEADERS,
-                       max_functions=120, max_files=None, git=None):
+                       max_functions=MAX_FUNCTIONS, max_files=None, git=None):
     """Return files, diff, merge_method and resolved base/head; raise on refused content.
 
     Optional git(*args) returns bytes and lets intake keep command diagnostics in its private

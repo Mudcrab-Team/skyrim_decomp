@@ -32,16 +32,21 @@ accepted functions sit in classes it does not draw. Both pictures are generated 
 Bars show gross acceptances on the accepting commit's UTC date; reacceptances count again.
 The cumulative charts reflect revocations and size corrections. Attribution is a recorded
 claim about the Drafter model or generating tool, not proof of authorship; review and acceptance
-models are not counted. Distinct model counts exclude tools and unreported claims. One KiB is
+models are not counted. The model comes from the contributor's PR summary (kept in each record), the
+unit header or the generating tool; a contributor who states no model or no AI is charted as
+"Contributors (human / unstated)", and tool-stamped units as scripts and tools. Distinct model
+counts exclude those and unreported claims. One KiB is
 1,024 bytes. The [report site](https://mudcrab-team.github.io/skyrim_decomp/) has daily details.
 
 <!-- model-trend-totals -->
 | Model family | Gross accepted bytes |
 | --- | ---: |
-| Claude | 22,725 |
-| GPT / Codex | 93,791 |
-| Scripts and tools | 1,402,643 |
-| Not reported | 9,197 |
+| Claude | 20,740 |
+| GPT / Codex | 127,091 |
+| Other models | 8,456 |
+| Contributors (human / unstated) | 2,908 |
+| Scripts and tools | 1,440,471 |
+| Not reported | 48,681 |
 <!-- /model-trend-totals -->
 
 Regenerate from tracked first-parent history in a full checkout with
@@ -57,7 +62,7 @@ Regenerate from tracked first-parent history in a full checkout with
 
 On Windows, use `.\sr.cmd` in place of `./sr`.
 You need git, Python 3.11+, a GitHub account and your own Steam copy.
-`./sr next` suggests a function; claims appear as issues.
+`./sr next` suggests a function; claims appear as issues. Bigger PRs are welcome: 50 to 200 functions, one PR per family, and subagents for the drafting ([how](docs/contributor-card.md)).
 See the [agent guide](docs/contributing-agent.md) and [contribution guide](CONTRIBUTING.md).
 Tip: if cloning stalls, run `git -c http.version=HTTP/1.1 clone https://github.com/Mudcrab-Team/skyrim_decomp.git`.
 

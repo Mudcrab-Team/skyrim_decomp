@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "465049597760aeeefe5fabcec57add43e492896fe810d173c33a1eeaad50e5d4",
+        "object_sha256": "0729a71373567c9ac2f489c1947fcf7488a56e491380cf21d2bbc0745989721f",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nimain/NiExtraData.h",
@@ -37,7 +37,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "790aaeb65be00c5f5828f44ff0bf15ed7cc46dfa",
+    "base_sha": "638a5c1e0cc53ad49e68e53aba106c8da8b34bba",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -48,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "aef0f99af9eaebc615028a3e48de1f5940300977",
+    "head_sha": "20297bef31a19f150719b5c438d74ac0f8f5cbcd",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -61,10 +61,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 45015814996,
+    "run_id": 45054142314,
     "rva": "0xf11850",
     "schema": 2,
-    "source_sha256": "18dcae09b8c46d155691459285bafd7b41706aacab8946ceb3b95da833c0e134",
+    "source_sha256": "096997f8ca233e6fbcc053204888a35c771fb0fcde49baa47d1118ff1e0a7b34",
     "status": "pass",
     "symbols": [
       "?Functionf11850@NiFloatsExtraData@@QEAA_NIM@Z"
@@ -80,6 +80,7 @@
     "unit": "reconstruction/gamebryo/nimain/NiFloatsExtraData.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "not stated",
   "function_id": "sse-steam-1-7-104-0xf11850",
   "match_record_schema": 2,
   "notes": [
@@ -99,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "e293804d8503314ed135d085d17b19630edd08140f66e201f29cb6cacb7277e5",
           "code_sections": 1,
-          "object_sha256": "465049597760aeeefe5fabcec57add43e492896fe810d173c33a1eeaad50e5d4"
+          "object_sha256": "0729a71373567c9ac2f489c1947fcf7488a56e491380cf21d2bbc0745989721f"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -160,9 +161,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/gamebryo/nimain/NiFloatsExtraData.cpp",
-          "source_revision": "18dcae09b8c46d155691459285bafd7b41706aacab8946ceb3b95da833c0e134"
+          "source_revision": "096997f8ca233e6fbcc053204888a35c771fb0fcde49baa47d1118ff1e0a7b34"
         },
-        "symbol_map_sha256": "c320d3707c77b5769ea968ecdaa128b69df36792c9e7114fba35477a288e6a30",
+        "symbol_map_sha256": "6fff8421faa5190fe52573cd446d1f723e817bbdcb2998e9b08a784122c584f6",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -173,7 +174,7 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/NiFloatsExtraData.cpp",
-    "digest": "18dcae09b8c46d155691459285bafd7b41706aacab8946ceb3b95da833c0e134",
+    "digest": "096997f8ca233e6fbcc053204888a35c771fb0fcde49baa47d1118ff1e0a7b34",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/gamebryo/nimain/NiExtraData.h",
@@ -181,10 +182,10 @@
       "reconstruction/gamebryo/nimain/NiFloatsExtraData.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "samintanim",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/c320d3707c77b5769ea968ecdaa128b69df36792c9e7114fba35477a288e6a30.json",
-    "sha256": "c320d3707c77b5769ea968ecdaa128b69df36792c9e7114fba35477a288e6a30"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/6fff8421faa5190fe52573cd446d1f723e817bbdcb2998e9b08a784122c584f6.json",
+    "sha256": "6fff8421faa5190fe52573cd446d1f723e817bbdcb2998e9b08a784122c584f6"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

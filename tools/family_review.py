@@ -314,7 +314,8 @@ def private_approval(root, family, profile):
     return doc
 
 
-@lru_cache(maxsize=8)
+# One entry per published batch (a few dozen) so a full-inventory pass does not thrash.
+@lru_cache(maxsize=256)
 def _public_family_batch(family_blob, batch_blob):
     """Validate shared metadata once per exact content pair, never per path or mtime.
 

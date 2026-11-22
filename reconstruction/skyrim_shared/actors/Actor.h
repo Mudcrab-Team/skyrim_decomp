@@ -271,12 +271,20 @@ public:
 class TESNPC : public TESBoundObject, public TESActorBaseData, public TESContainer, public TESSpellList {
 };
 
+struct MiddleHighProcessData {
+    std::uint8_t pad00[0x24];  // 00
+    std::uint8_t alarmState;   // 24
+};
+
 class AIProcess {
 public:
     float GetMoveDirectionRelativeToFacing();
     float GetVoiceRecoveryTime() const;
     // AIProcess::GetCharController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     bhkCharacterController* GetCharController();
+
+    std::uint8_t           pad00[0x20];  // 00
+    MiddleHighProcessData* middleHigh;   // 20
 };
 
 struct OBJ_REFR {
@@ -573,6 +581,7 @@ public:
     void SetAvoidanceDisabled(bool a_set);  // compared: 0x675350
     void UseSkill(ActorValue a_av, float a_points, TESForm* a_arg3);  // compared: 0x6990e0
     void AddPerk(BGSPerk* a_perk, std::uint32_t a_rank = 0);  // compared: 0x69f8e0
+    bool Function681d60() const;
 };
 
 static_assert(offsetof(TESObjectREFR, extraList) == 0x70, "TESObjectREFR::extraList offset");

@@ -1,8 +1,8 @@
 // Source exposure: mixed (community headers and the pinned image).
-// Code origin: existing unit plus original reconstruction of Functionf11850.
+// Code origin: existing unit plus original reconstruction of Functionf11850 and Functionf11870.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiFloatsExtraData, GetRTTI, size, value: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
-// Functionf11850, pad1C: GUESS(low)
+// Functionf11850, Functionf11870, pad1C: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -14,6 +14,7 @@ class NiFloatsExtraData : public NiExtraData
 public:
     virtual const NiRTTI* GetRTTI() const;  // compared: 0xf119b0
     bool Functionf11850(std::uint32_t a_index, float a_value);
+    float Functionf11870(std::uint32_t a_index) const;
 
     std::uint32_t size;  // 18
     std::uint32_t pad1C;  // 1C

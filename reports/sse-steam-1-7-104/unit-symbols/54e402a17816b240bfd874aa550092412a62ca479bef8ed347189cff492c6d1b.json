@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Invoke111c90@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 1121424,
+      "size": 23
+    },
+    "?Invokea848b0@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 11028656,
+      "size": 23
+    },
+    "?Invokeaa4140@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 11157824,
+      "size": 23
+    },
+    "?Invoke108e890@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 17361040,
+      "size": 23
+    },
+    "?Invoke140b940@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21018944,
+      "size": 23
+    },
+    "?Invoke140b960@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21018976,
+      "size": 23
+    },
+    "?Invoke140b980@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21019008,
+      "size": 23
+    },
+    "?Invoke140b9a0@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21019040,
+      "size": 23
+    },
+    "?Invoke140b9c0@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21019072,
+      "size": 23
+    },
+    "?Invoke140b9e0@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21019104,
+      "size": 23
+    },
+    "?Invoke1459790@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21338000,
+      "size": 23
+    },
+    "?Invoke14597b0@ReturnSecondWrappers@@SAPEAXPEAX0@Z": {
+      "rva": 21338032,
+      "size": 23
+    },
+    "ReturnSecondTarget1110d0": {
+      "rva": 1118416,
+      "size": null
+    },
+    "ReturnSecondTargeta851a0": {
+      "rva": 11030944,
+      "size": null
+    },
+    "ReturnSecondTargetaab210": {
+      "rva": 11186704,
+      "size": null
+    },
+    "ReturnSecondTarget108e7c0": {
+      "rva": 17360832,
+      "size": null
+    },
+    "ReturnSecondTarget14597d0": {
+      "rva": 21338064,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Invoke111c90@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x111c90",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invokea848b0@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0xa848b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invokeaa4140@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0xaa4140",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke108e890@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x108e890",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke140b940@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x140b940",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke140b960@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x140b960",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke140b980@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x140b980",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke140b9a0@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x140b9a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke140b9c0@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x140b9c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke140b9e0@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x140b9e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke1459790@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x1459790",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Invoke14597b0@ReturnSecondWrappers@@SAPEAXPEAX0@Z",
+        "rva": "0x14597b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "ReturnSecondTarget1110d0",
+        "rva": "0x1110d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "ReturnSecondTargeta851a0",
+        "rva": "0xa851a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "ReturnSecondTargetaab210",
+        "rva": "0xaab210",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "ReturnSecondTarget108e7c0",
+        "rva": "0x108e7c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "ReturnSecondTarget14597d0",
+        "rva": "0x14597d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

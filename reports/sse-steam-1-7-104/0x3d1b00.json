@@ -1,0 +1,196 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "712015c1a4b87716dc71d5a83433e6b14a2189fc3c6e281f4abe906816e4fea2",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/forms/TESForm.h",
+          "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+          "reconstruction/skyrim_shared/quest/TESQuest.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "007acb1a07e40089020ea297035327ea756fd4d8",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "285be32b26e9f73e983cc14969dcb6db5d30c24a",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "98a3199051caf8f44ba4b8a586b392fdacaae1df07943edfd7569fba8cdeaab4",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "690f00dd5685b9fc3ba762d3bbc1ae39c375fde2a00ccb365968f931e52159f6",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 45032198930,
+    "rva": "0x3d1b00",
+    "schema": 2,
+    "source_sha256": "8fd67ea4af981a34f2bba7e1a207b759ca36949e6af88014e59a62127f25b358",
+    "status": "pass",
+    "symbols": [
+      "?FindStage@TESQuest@@QEBAPEAVTESQuestStage@@G@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "98a3199051caf8f44ba4b8a586b392fdacaae1df07943edfd7569fba8cdeaab4",
+      "normalized_sha256": "690f00dd5685b9fc3ba762d3bbc1ae39c375fde2a00ccb365968f931e52159f6",
+      "rva": 4004608,
+      "size": 36
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "drafter_model": "not stated",
+  "function_id": "sse-steam-1-7-104-0x3d1b00",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "6046c26fe65cd601257ec4ac9af7f42367de2bf3052ee5fd5188f6eefa2c8a3a",
+          "code_sections": 1,
+          "object_sha256": "712015c1a4b87716dc71d5a83433e6b14a2189fc3c6e281f4abe906816e4fea2"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 0,
+          "code_bytes_exact": 36,
+          "code_bytes_total": 36,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {},
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 4004608,
+          "size": 36,
+          "symbol": "?FindStage@TESQuest@@QEBAPEAVTESQuestStage@@G@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+          "source_revision": "8fd67ea4af981a34f2bba7e1a207b759ca36949e6af88014e59a62127f25b358"
+        },
+        "symbol_map_sha256": "75e3c300d04ca36bf71739fee428b99a2eefa3d33190e9907ecf624f51fb7a83",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x3d1b00"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+    "digest": "8fd67ea4af981a34f2bba7e1a207b759ca36949e6af88014e59a62127f25b358",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/forms/TESForm.h",
+      "reconstruction/skyrim_shared/quest/TESQuest.cpp",
+      "reconstruction/skyrim_shared/quest/TESQuest.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/75e3c300d04ca36bf71739fee428b99a2eefa3d33190e9907ecf624f51fb7a83.json",
+    "sha256": "75e3c300d04ca36bf71739fee428b99a2eefa3d33190e9907ecf624f51fb7a83"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

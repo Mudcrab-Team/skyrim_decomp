@@ -1,9 +1,10 @@
 // Source exposure: mixed (community headers and the pinned image listing).
-// Code origin: existing unit plus original reconstruction of Functionf11850.
+// Code origin: existing unit plus original reconstruction of Functionf11850 and Functionf11870.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none
 // 0xf119b0 NiFloatsExtraData::GetRTTI
 // 0xf11850 NiFloatsExtraData::Functionf11850
+// 0xf11870 NiFloatsExtraData::Functionf11870
 #include "NiFloatsExtraData.h"
 
 // NiRTTI_NiFloatsExtraData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -21,4 +22,12 @@ bool NiFloatsExtraData::Functionf11850(std::uint32_t a_index, float a_value)
         return true;
     }
     return false;
+}
+
+float NiFloatsExtraData::Functionf11870(std::uint32_t a_index) const
+{
+    if (a_index < size) {
+        return value[a_index];
+    }
+    return 0.0f;
 }

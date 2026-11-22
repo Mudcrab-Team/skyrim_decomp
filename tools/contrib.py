@@ -72,6 +72,8 @@ for _p in (TOOLS, TOOLS / 'verifier', TOOLS / 'analysis', TOOLS / 'ghidra'):
 OK, FAILED, USAGE, COMPILE, UNIT, MISSING, CLAIMED, CONSENT, NETWORK = 0, 1, 2, 3, 4, 5, 6, 7, 8
 UPSTREAM = repo_slug.DEFAULT_SLUG
 COMPILE_TIMEOUT = 180
+# Below this many functions `submit` suggests a bigger batch.
+SMALL_PR_FUNCTIONS = 20
 # Contributor units are small; a cap keeps a pathological file away from the compiler and reviewers.
 MAX_UNIT_FILE_BYTES = 64 * 1024
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
@@ -820,6 +822,35 @@ def public_names(repo, data):
     return {k: list(dict.fromkeys(v)) for k, v in names.items()}
 
 
+def add_funclet_references(image_bytes, rva, refs, names, img=None):
+    """Add the call/jump targets of the function's EH funclets to `refs`; a note on failure, else None.
+
+    An unwind funclet that jumps to an out-of-line destructor (a scope guard, a local visitor) is
+    outside the function's own range, so without this the reference table never lists that target
+    and no bind hint can name it. Rows carry `in_funclet` and the offset from the function start.
+    """
+    try:
+        import export_pack
+        img = img or export_pack.ImageFacts(blob=image_bytes)
+        entry = img.pdata_at.get(rva)
+        if entry is None:
+            return None
+        end, parts, _split = export_pack.function_extent(img, rva, entry[0])
+        own = [(rva, entry[0], entry[1])] + parts
+        funclets = sorted((export_pack.eh_facts(img, {'by_rva': {}}, [], rva, own)).get('funclets', {}).items())
+        for row in export_pack.funclet_branch_refs(img, rva, funclets):
+            ref = refs.get(row['target'])
+            if ref is None:
+                ref = refs[row['target']] = {'target_rva': row['target'], 'kind': 'call-or-jump', 'at': [],
+                                             'in_funclet': True,
+                                             'community_names': [{'name': n, 'kind': 'name'}
+                                                                 for n in names.get(row['target'], [])]}
+            ref['at'].append(row['offset'] + 1)
+    except Exception as exc:  # a reading aid: the pack is still usable without the funclet rows
+        return f'funclet references not added: {type(exc).__name__}'
+    return None
+
+
 def build_pack(image_bytes, rva, size, identity, names):
     """Pack of one function from the image: its bytes, instruction boundaries and the targets of its
     calls, jumps and rip-relative references with any public name. Private (game-derived)."""
@@ -843,6 +874,7 @@ def build_pack(image_bytes, rva, size, identity, names):
             r = refs.setdefault(target, {'target_rva': target, 'kind': kind, 'at': [],
                                          'community_names': [{'name': n, 'kind': 'name'} for n in names.get(target, [])]})
             r['at'].append(off + field[0])
+    note = add_funclet_references(image_bytes, rva, refs, names) or note
     pdata = [e for e in image.runtime_functions() if rva <= e[0] < rva + size]
     return {'pack_schema': 1, 'source': 'local-exe', 'identity': dict(identity, name_how=None),
             'bytes_hex': code.hex(), 'instructions': rows, 'references': list(refs.values()),
@@ -866,6 +898,11 @@ def pack_listing(pack):
             names = ', '.join(c['name'] for c in ref['community_names'][:2]) or 'no public name'
             text += f' -> 0x{row["target"]:x} {names}'
         lines.append(text.rstrip())
+    for ref in pack['references']:
+        if ref.get('in_funclet'):
+            names = ', '.join(c['name'] for c in ref['community_names'][:2]) or 'no public name'
+            where = ', '.join(f'+0x{at:x}' for at in ref['at'])
+            lines.append(f'# EH funclet call/jump at {where} -> 0x{ref["target_rva"]:x} {names}')
     if pack.get('note'):
         lines.append(f'# {pack["note"]}')
     return '\n'.join(lines) + '\n'
@@ -2708,6 +2745,9 @@ def cmd_submit(ctx, args):
     for b in blockers:
         ctx.say(f'BLOCKED: {b}')
     drafted = args.drafted_by or load_config(ctx).get('drafted_by') or 'not stated'
+    if drafted == 'not stated':
+        ctx.say('warning: no drafter is stated, so the project charts this as human or unstated. To credit the model, '
+                f"give {ctx.cli} submit --drafted-by 'your name, assisted by <model>'.")
     data = {'title': title, 'body_file': str(tdir / 'pr-body.md'), 'files': unit, 'blockers': blockers,
             'warnings': warnings, 'project_reconfirmation': reconfirmation,
             'dry_run': bool(args.dry_run), 'base': base, 'preflight': preflight,
@@ -2717,6 +2757,11 @@ def cmd_submit(ctx, args):
     ctx.say(data['ci_hash']['advice'])
     ctx.say('A local pass is not acceptance: the project re-runs the comparison on two of its own hosts and a '
             'Reviewer checks the source before the function is recorded as matched.')
+    count = sum(len(t_['functions']) for _d, t_ in picked)
+    if count < SMALL_PR_FUNCTIONS:
+        ctx.say(f'Hint: this PR has {count} function(s). Bigger is welcome: 50 to 200 per PR, one PR per family. '
+                "Don't do it all in one go: split a family into batches of 10-15 and give each to a subagent "
+                '(recipe in docs/contributor-card.md), then submit them together with `--all-dirty`.')
     if args.dry_run:
         plan = [f'git push --dry-run {push or "<your fork remote>"} HEAD', f'git add {" ".join(unit)}', f'{ctx.cli} preflight --staged --base {base}',
                 f'git commit -m "{title}" -- {" ".join(unit)}',f'git push {push or "<your fork remote>"} HEAD',

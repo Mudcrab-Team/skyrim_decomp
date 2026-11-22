@@ -288,7 +288,7 @@ class AttemptTests(WorkDir):
         self.assertEqual(len(bot.comments), 1)
 
     def test_other_infrastructure_failures_back_off_without_a_comment(self):
-        bot = self.bot_failing_with(pr_bot.Stop('hash check has not finished'))
+        bot = self.bot_failing_with(pr_bot.Waiting('hash check has not finished'))
         for _ in range(3):
             with self.assertRaises(pr_bot.Stop):
                 bot.attempt(PR, now=5.0)
@@ -405,6 +405,29 @@ class VerifierHostTests(WorkDir):
         self.assertEqual(tags, ['base-pr7-' + HEAD[:12]])
         # Not matched by the glob that collects a PR's own tasks for the record.
         self.assertFalse(('prbot-' + tags[0] + '-0').startswith('prbot-7-' + HEAD[:8]))
+
+
+class RecordRebindTests(WorkDir):
+    def test_the_record_step_rebinds_the_unit_maps_before_it_runs_record_py(self):
+        bot = pr_bot.Bot(root=ROOT, work=self.work)
+        (bot.tree / 'builds').mkdir(parents=True)
+        (bot.tree / 'data').mkdir()
+        (bot.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        (bot.tree / 'data/progress.json').write_text(json.dumps({'functions': []}))
+        order = []
+        bot.rebind_unit_maps = lambda number, head, rvas: order.append(('rebind', number, list(rvas)))
+
+        def run(argv, **kw):
+            order.append((Path(str(argv[1])).name if argv[0] == sys.executable else argv[0],))
+            return subprocess.CompletedProcess(argv, 0, b'{"refused": {}}\n', b'')
+        bot.run = run
+        state = pr_bot.State(self.work / 'state', 7, 'a' * 40)
+        state.set('records', str(self.work / 'records'))
+        bot.record({'number': 7, 'headRefOid': 'a' * 40, 'author': {'login': 'alice'}}, state, [0x10])
+        names = [o[0] for o in order]
+        self.assertLess(names.index('rebind'), names.index('record.py'))
+        self.assertEqual(order[names.index('rebind')][1:], (7, [0x10]))
+        self.assertTrue(state.get('recorded'))
 
 
 class PoolTests(WorkDir):

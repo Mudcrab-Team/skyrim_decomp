@@ -50,6 +50,24 @@ class PollableTests(unittest.TestCase):
         opted = self.pr(owner, [pr_bot.OPT_IN_LABEL])
         self.assertEqual(pr_bot.pollable([opted]), [opted])
 
+    def test_an_owner_pr_of_reconstruction_files_only_is_polled_for_its_own_head(self):
+        owner = pr_bot.OWNER
+        calls = []
+
+        class Bot:
+            def changed_files(self, number):
+                calls.append(number)
+                return [{'filename': 'reconstruction/a/B.cpp'}] if number == 1 else [{'filename': 'tools/x.py'}]
+        mixed = dict(self.pr(owner), number=2, headRefOid='b' * 40)
+        recon = dict(self.pr(owner), headRefOid='a' * 40)
+        known = {}
+        pr_bot.mark_owner_reconstruction(Bot(), [recon, mixed], known)
+        pr_bot.mark_owner_reconstruction(Bot(), [recon, mixed], known)
+        self.assertEqual(calls, [1, 2])  # each head is listed once
+        self.assertEqual(pr_bot.pollable([recon, mixed]), [recon])
+        # a push moves the head; the tag does not follow it
+        self.assertEqual(pr_bot.pollable([dict(recon, headRefOid='c' * 40)]), [])
+
     def test_outside_pr_needs_no_label_but_drafts_and_other_bases_stay_out(self):
         outside = self.pr('alice')
         self.assertEqual(pr_bot.pollable([outside, self.pr('alice', draft=True), self.pr('alice', base='dev'),
@@ -196,6 +214,28 @@ class DropLandedTests(unittest.TestCase):
             files = [{'filename': 'reconstruction/low.cpp', 'status': 'added'},
                      {'filename': 'reconstruction/high.cpp', 'status': 'added'}]
             self.assertEqual([f['filename'] for f in bot.drop_landed(head, files)], ['reconstruction/high.cpp'])
+
+    def test_a_path_the_head_lacks_is_a_deletion_not_a_stop(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            def git(*a):
+                return subprocess.run(['git', '-C', tmp, *a], check=True, capture_output=True, text=True).stdout.strip()
+            git('init', '-q', '-b', 'main')
+            git('config', 'user.email', 't@example.invalid'); git('config', 'user.name', 't')
+            (repo / 'reconstruction').mkdir()
+            (repo / 'reconstruction/gone.cpp').write_text('1\n')
+            git('add', '.'); git('commit', '-qm', 'main'); git('update-ref', 'refs/remotes/origin/main', 'HEAD')
+            git('rm', '-q', 'reconstruction/gone.cpp'); git('commit', '-qm', 'head', '--allow-empty')
+            head = git('rev-parse', 'HEAD')
+            bot = pr_bot.Bot(root=repo, work=repo / 'w')
+            bot.tree = repo / 'tree'
+            (bot.tree / 'reconstruction').mkdir(parents=True)
+            (bot.tree / 'reconstruction/gone.cpp').write_text('1\n')
+            files = [{'filename': 'reconstruction/gone.cpp', 'status': 'modified'},
+                     {'filename': 'reconstruction/never.cpp', 'status': 'modified'}]
+            self.assertEqual([f['filename'] for f in bot.drop_landed(head, files)], ['reconstruction/gone.cpp'])
+            bot.overlay(head, files)
+            self.assertFalse((bot.tree / 'reconstruction/gone.cpp').exists())
 
 
 class RemovedAcceptedTests(unittest.TestCase):
@@ -1252,6 +1292,26 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(set(ci['rows']), {'16'})
         self.assertEqual(ci['report']['base_sha'], BASE)
 
+    def test_a_run_that_skipped_its_compile_has_an_empty_map_instead_of_a_reprobe(self):
+        self.files = {}
+        self.jobs_of_run = [{'name': 'hash', 'steps': [
+            {'name': 'Compile at base and head; block only on regressions', 'conclusion': 'skipped'}]}]
+        gh = self.gh
+        self.bot.gh_json = lambda *a: {'jobs': self.jobs_of_run} if a[1].endswith('/jobs?per_page=100') else gh(*a)
+        got, state = self.host1()
+        self.assertEqual(got, {0x10: 'fail', 0x20: 'fail'})
+        self.assertEqual(state.get('ci')['map'], {})
+        self.assertEqual(state.get('ci')['run']['run_id'], 555)
+
+    def test_a_run_with_no_artifact_and_a_compile_that_ran_is_still_no_result(self):
+        self.files = {}
+        gh = self.gh
+        self.bot.gh_json = lambda *a: ({'jobs': [{'name': 'hash', 'steps': [
+            {'name': 'Compile at base and head; block only on regressions', 'conclusion': 'success'}]}]}
+            if a[1].endswith('/jobs?per_page=100') else gh(*a))
+        with self.assertRaises(pr_bot.Stop):
+            self.host1()
+
     def test_a_run_of_another_head_is_not_this_pr(self):
         self.meta['head_sha'] = 'c' * 40
         with self.assertRaises(pr_bot.Stop):
@@ -2100,26 +2160,32 @@ class StickyCommentTests(unittest.TestCase):
         self.assertIn('2 functions, over the limit of 1', bot.comments[0]['body'])
         self.assertTrue(bot.comments[0]['body'].startswith(pr_bot.STICKY))
 
-    def test_the_default_cap_is_120_and_scales_the_step_timeouts_with_it(self):
+    def test_the_default_cap_is_200_and_scales_the_step_timeouts_with_it(self):
         bot = FakeBot(self.work)
-        self.assertEqual(bot.config['max_functions'], 120)
+        self.assertEqual(bot.config['max_functions'], 200)
         self.assertEqual((bot.config['model_timeout'], bot.config['compare_timeout'], bot.config['hash_wait']),
-                         (2250, 3600, 1800))
-        self.assertIn('20 to 120 functions', pr_bot.BATCH_LINE)
+                         (3000, 5400, 1800))
+        self.assertIn('50 to 200 functions', pr_bot.BATCH_LINE)
 
     def test_a_pr_at_the_default_cap_is_not_rejected_and_one_over_is(self):
         bot = FakeBot(self.work)
-        bot.new_functions = lambda base, units: set(range(121))
+        bot.new_functions = lambda base, units: set(range(201))
         with self.assertRaises(pr_bot.Rejected):
             bot.process(PR)
-        self.assertIn('121 functions, over the limit of 120', bot.comments[0]['body'])
+        self.assertIn('201 functions, over the limit of 200', bot.comments[0]['body'])
         bot = FakeBot(self.work)
-        bot.new_functions = lambda base, units: set(range(120))
+        bot.new_functions = lambda base, units: set(range(200))
         try:
             bot.process(PR)
         except pr_bot.Rejected as exc:
             self.assertNotIn('over the limit', str(exc))
         self.assertTrue(all('over the limit' not in c['body'] for c in bot.comments))
+
+    def test_a_merged_big_pr_is_thanked_and_a_small_one_is_not(self):
+        big = {i: 'matched' for i in range(pr_bot.BIG_PR_FUNCTIONS)}
+        self.assertIn(pr_bot.BIG_PR_THANKS, pr_bot.outcome_body('abcdef012345', dict(verdicts=big, blocked=None, merge=True)))
+        small = {i: 'matched' for i in range(3)}
+        self.assertNotIn(pr_bot.BIG_PR_THANKS, pr_bot.outcome_body('abcdef012345', dict(verdicts=small, blocked=None, merge=True)))
 
     def test_a_rejection_edits_the_existing_comment_in_place(self):
         bot = FakeBot(self.work)

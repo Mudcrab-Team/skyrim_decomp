@@ -13,7 +13,7 @@ MAX_MACROS = 128
 MAX_EXPANSION = 100000
 # These are pinned compiler headers, never searched on the maintainer's ordinary include path.
 STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath',
-                              'type_traits', 'utility', 'new', 'limits', 'stddef.h', 'stdint.h', 'intrin.h'))
+                              'type_traits', 'utility', 'new', 'limits', 'stddef.h', 'stdint.h', 'intrin.h', 'math.h'))
 PRAGMAS = re.compile(r'(?:once|pack\s*\([^\n]*\)|warning\s*\([^\n]*\))\s*\Z')
 TOKEN = re.compile(r'[A-Za-z_]\w*|[^\s]')
 MAX_MESSAGE_BYTES = 4096

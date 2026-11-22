@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// 0xfa1360 compared function
 // Adapted code: the NiBinaryStream ReadFn and WriteFn aliases and the read, write and put template bodies are adapted from NG b93280e include/RE/N/NiBinaryStream.h and src/RE/N/NiBinaryStream.cpp under its MIT licence: put is NG's body; read and write fold in NG's binary_read and binary_write and return true instead of comparing the byte count.
 // The bodies of LinkObject, RegisterStreamables and ProcessClone in NiPSysModifier.cpp closely parallel the same methods in momusdigital/fnv_decomp 91e1b6e8 (no licence; used by maintainer
 // decision, docs/authorizations.md); the Sibling source lines there name the files. Bodies

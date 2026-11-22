@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Code origin: original; names and declarations from CharmedBaryon/CommonLibSSE-NG (MIT)
 // TESReactionForm: EXE_RTTI; class name and base from the image RTTI
 #pragma once
 
@@ -34,9 +35,26 @@ public:
 	// TESReactionForm::CopyComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 3
 	void CopyComponent() override;  // 03
 
-	// reactions: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares BSSimpleList, the members are not recovered
-	// unk08: GUESS(low); members not recovered yet, sized so the static_assert holds
-	std::uint8_t unk08[0x10];  // 08
+	// reactions: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+	struct GROUP_REACTION
+	{
+		void* form;                   // 00
+		std::int32_t reaction;        // 08
+		std::uint32_t fightReaction;  // 0C
+	};
+	static_assert(sizeof(GROUP_REACTION) == 0x10, "layout");
+
+	template <class T>
+	struct BSSimpleList
+	{
+		T item;                 // 00
+		BSSimpleList<T>* next;  // 08
+	};
+	static_assert(sizeof(BSSimpleList<GROUP_REACTION*>) == 0x10, "layout");
+
+	std::uint32_t Function1f0370(const void* a_faction) const;
+
+	BSSimpleList<GROUP_REACTION*> reactions;  // 08
 	// groupFormType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares stl::enumeration<FormType, std::uint8_t>, a plain byte here
 	std::uint8_t groupFormType;  // 18
 	// unk19: GUESS(low); padding and unrecovered tail

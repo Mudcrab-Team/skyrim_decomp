@@ -1,0 +1,201 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "c67577685756cbe31a1b4ba7b2df8cf6ccb1972dfa32f4be6dd41387af515e18",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/unmapped/leaves/StaticDataReaders.cpp",
+          "reconstruction/unmapped/leaves/StaticDataReaders.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "007acb1a07e40089020ea297035327ea756fd4d8",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "285be32b26e9f73e983cc14969dcb6db5d30c24a",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "63ab019110c07558f3774520b9296af79b7f5fd46abefaa3764017e0ebb6ac25",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "7d24788df776638d286b3fb750ed5c7cf7e0e747f2c9e4fff531e911eefc8943",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 45032198930,
+    "rva": "0x159a090",
+    "schema": 2,
+    "source_sha256": "329d7cb15d6899abe3d8242f6985547b067bcf50d2325aff13e54342bcaa6659",
+    "status": "pass",
+    "symbols": [
+      "?ReadStatic1015560@StaticDataReaders@@SAIXZ",
+      "?ReadStatic1094490@StaticDataReaders@@SAIXZ",
+      "?ReadStatic153c8f0@StaticDataReaders@@SAIXZ",
+      "?ReadStatic159a090@StaticDataReaders@@SAIXZ",
+      "?ReadStatic24a670@StaticDataReaders@@SAIXZ",
+      "?ReadStatic55a420@StaticDataReaders@@SAIXZ",
+      "?ReadStatic55a430@StaticDataReaders@@SAIXZ",
+      "?ReadStaticccd650@StaticDataReaders@@SAIXZ"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "63ab019110c07558f3774520b9296af79b7f5fd46abefaa3764017e0ebb6ac25",
+      "normalized_sha256": "7d24788df776638d286b3fb750ed5c7cf7e0e747f2c9e4fff531e911eefc8943",
+      "rva": 22651024,
+      "size": 7
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/unmapped/leaves/StaticDataReaders.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "drafter_model": "not stated",
+  "function_id": "sse-steam-1-7-104-0x159a090",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "4a9e1fbfc215039cd0914e5131e5aede8dac2007e10a0f3925b9d608f3849ac5",
+          "code_sections": 1,
+          "object_sha256": "c67577685756cbe31a1b4ba7b2df8cf6ccb1972dfa32f4be6dd41387af515e18"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 3,
+          "code_bytes_total": 7,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 22651024,
+          "size": 7,
+          "symbol": "?ReadStatic159a090@StaticDataReaders@@SAIXZ"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/unmapped/leaves/StaticDataReaders.cpp",
+          "source_revision": "329d7cb15d6899abe3d8242f6985547b067bcf50d2325aff13e54342bcaa6659"
+        },
+        "symbol_map_sha256": "83646e9bff1512a301d8048a2982f2c247d0dbc575d3873f21168195e1b43f50",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x159a090"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/unmapped/leaves/StaticDataReaders.cpp",
+    "digest": "329d7cb15d6899abe3d8242f6985547b067bcf50d2325aff13e54342bcaa6659",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/unmapped/leaves/StaticDataReaders.cpp",
+      "reconstruction/unmapped/leaves/StaticDataReaders.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/83646e9bff1512a301d8048a2982f2c247d0dbc575d3873f21168195e1b43f50.json",
+    "sha256": "83646e9bff1512a301d8048a2982f2c247d0dbc575d3873f21168195e1b43f50"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

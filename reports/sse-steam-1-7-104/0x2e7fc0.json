@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "b398fbc64a244739fd68401fd5d8219b4eacaf0c1913ab639dd67a00c8a2da4b",
+        "object_sha256": "035228325965da7650320d33290ed4bee4e67b7a996a9b47976316db4e3404d4",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/actors/Actor.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
+    "base_sha": "f28a34bb61c4e3a5e58a0513a0b0ef623245fc9a",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
+    "head_sha": "43f06e587a50c7f9a6e7724f5453deb40c0bf864",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44954941715,
+    "run_id": 45052023083,
     "rva": "0x2e7fc0",
     "schema": 2,
-    "source_sha256": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38",
+    "source_sha256": "20567723fcb02bc86015bc9049f7dd148e39d885377ac2a0262625baab724956",
     "status": "pass",
     "symbols": [
       "?HasOutfitItems@Actor@@QEAA_NPEAVBGSOutfit@@@Z"
@@ -79,6 +79,7 @@
     "unit": "reconstruction/skyrim_shared/actors/Actor.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "not stated",
   "function_id": "sse-steam-1-7-104-0x2e7fc0",
   "match_record_schema": 2,
   "notes": [
@@ -98,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "c02c9396811fa92d9f69af202e1b6c748f2ae88e3a6cbee0a540d3648614cee3",
           "code_sections": 1,
-          "object_sha256": "b398fbc64a244739fd68401fd5d8219b4eacaf0c1913ab639dd67a00c8a2da4b"
+          "object_sha256": "035228325965da7650320d33290ed4bee4e67b7a996a9b47976316db4e3404d4"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,9 +162,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/actors/Actor.cpp",
-          "source_revision": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38"
+          "source_revision": "20567723fcb02bc86015bc9049f7dd148e39d885377ac2a0262625baab724956"
         },
-        "symbol_map_sha256": "b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4",
+        "symbol_map_sha256": "b10785f66c740128515c77832e2d93654322b4169d732f8d212c48556ca4ae64",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,17 +175,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/actors/Actor.cpp",
-    "digest": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38",
+    "digest": "20567723fcb02bc86015bc9049f7dd148e39d885377ac2a0262625baab724956",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/actors/Actor.cpp",
       "reconstruction/skyrim_shared/actors/Actor.h"
     ]
   },
-  "submitter": "ariizona",
+  "submitter": "samintanim",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4.json",
-    "sha256": "b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/b10785f66c740128515c77832e2d93654322b4169d732f8d212c48556ca4ae64.json",
+    "sha256": "b10785f66c740128515c77832e2d93654322b4169d732f8d212c48556ca4ae64"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

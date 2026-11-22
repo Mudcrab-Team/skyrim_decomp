@@ -9,6 +9,7 @@
 // Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
 // 0x1e71b0 IsSpellOrScrollForm
+// 0x1df590 TESBoundObject::Function1df590
 #include "TESBoundObject.h"
 
 bool IsSpellOrScrollForm(const TESForm* a_form)
@@ -99,5 +100,16 @@ bool TESBoundObject::Activate(TESObjectREFR* a_targetRef, TESObjectREFR* a_activ
         return true;
     }
     return false;
+}
+
+void* TESBoundObject::Function1df590()
+{
+    if (this == nullptr) {
+        return nullptr;
+    }
+    if (static_cast<std::uint8_t>(formType) == 0x1A) {
+        return reinterpret_cast<std::uint8_t*>(this) + 0xB0;
+    }
+    return nullptr;
 }
 

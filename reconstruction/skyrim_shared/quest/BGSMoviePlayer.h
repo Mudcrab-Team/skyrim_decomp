@@ -53,6 +53,7 @@ public:
     virtual std::uint32_t Unk_09();  // compared: 0x644910
     virtual std::uint8_t Unk_0B();  // compared: 0x644930
     virtual std::uint32_t Unk_0C();  // compared: 0x644940
+    void Function11b24e0(bool a_flag);
 
     // TODO members: replace part of the padding with the members the bodies read,
     // keeping every offset and the size check true.

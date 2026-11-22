@@ -385,6 +385,47 @@ class LabelOnlyTests(TwoTierFixture, unittest.TestCase):
         self.validate()
 
 
+class LabelOnlyGateStaysClosedTests(TwoTierFixture, unittest.TestCase):
+    """The faster label-only path (scoped digest memo) must refuse exactly what the slow one did."""
+
+    def test_family_approval_is_not_carried(self):
+        self.accept()
+        self.grow_unit()
+        record = dict(self.stored(), review_kind='family')
+        self.write(REVIEW, json.dumps(record))
+        self.assertRefused('family approval cannot be carried', lambda: af.label_only(self.root, when=WHEN))
+
+    def test_changed_code_section_is_refused_with_memo_active(self):
+        self.regenerate(OTHER_SECTION)
+        self.accept()
+        self.grow_unit()
+        with af.source_digest_cache():
+            self.assertRefused('compared code section changed', lambda: af.label_only(self.root, when=WHEN))
+
+    def test_memo_does_not_outlive_the_operation(self):
+        self.accept()
+        before = self.stored()['source_digest']
+        self.grow_unit()
+        af.label_only(self.root, when=WHEN)
+        # A second operation re-reads the tree: the digest memo from the first must be gone.
+        self.assertNotEqual(self.stored()['source_digest'], before)
+        self.assertEqual(self.stored()['source_digest'], validate_digest(self))
+
+    def test_label_only_never_starts_a_subprocess(self):
+        self.accept()
+        self.grow_unit()
+        with patch('subprocess.Popen', side_effect=AssertionError('spawned')), \
+                patch('subprocess.run', side_effect=AssertionError('spawned')), \
+                patch('os.system', side_effect=AssertionError('spawned')):
+            af.label_only(self.root, when=WHEN)
+
+
+def validate_digest(fixture):
+    from source_digest import include_closure, tu_digest
+    from test_match_gate import CPP as unit
+    return tu_digest(fixture.root, include_closure(fixture.root, unit))
+
+
 class SelectionTests(TwoTierFixture, unittest.TestCase):
     def blocks(self):
         return [self.block(), {'rva': 0x3000, 'size': 8, 'digest': 'e' * 64}]

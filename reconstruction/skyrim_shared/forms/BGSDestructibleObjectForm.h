@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Code origin: original; names and declarations from CharmedBaryon/CommonLibSSE-NG (MIT)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BaseFormComponent: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only class names, base chain,
 // slot order and sizes are claimed.
@@ -39,6 +40,7 @@ static_assert(sizeof(DestructibleObjectData) == 0x20, "layout");
 class BGSDestructibleObjectForm : public ::BaseFormComponent
 {
 public:
+	BGSDestructibleObjectForm();
 	// BGSDestructibleObjectForm::~BGSDestructibleObjectForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 0, target 0x1d67f0, inherited name
 	~BGSDestructibleObjectForm() override;  // 00
 	// BGSDestructibleObjectForm::InitializeDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 1, target 0x1d2750, inherited name

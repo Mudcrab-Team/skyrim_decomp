@@ -120,6 +120,9 @@ def unpack(bundle, dest):
     Path(bundle).unlink()
 
 
+UNIT_EXIT_FILE = 'unit-exit.txt'
+
+
 def cmd_run(a):
     root, name = run_paths(a.run)
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{1,39}', a.label):
@@ -143,6 +146,8 @@ def cmd_run(a):
         (work / 'agent-stderr.txt').write_text(proc.stderr)
         print(f'agent: unit_build wrote {len(proc.stderr.splitlines())} line(s) to stderr (agent-stderr.txt)')
     if work.is_dir():
+        # A Windows ssh shell can fold any non-zero exit into 1; the caller reads the real status here.
+        (work / UNIT_EXIT_FILE).write_text(f'{proc.returncode}\n')
         with tarfile.open(root / f'{name}.out.tar', 'w:xz', format=tarfile.PAX_FORMAT) as tar:
             for path in sorted(work.rglob('*')):
                 tar.add(str(path), arcname=path.relative_to(work).as_posix(), recursive=False)

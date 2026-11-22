@@ -68,6 +68,7 @@ public:
     bool IsBoundObject() const override;
     void LoadObjectBound(TESFile*) override;
     void* GetBipedObjectForm();  // compared: 0x1d21c0
+    void* Function1df590();
     void SendActorItemEquippedEvent(TESObjectREFR* a_actor);  // compared: 0x6b70f0
     virtual bool CalculateDoFavor(Actor* a_activator, bool a_arg2, TESObjectREFR* a_toActivate, float a_arg3);  // compared: 0x278f90
 };

@@ -21,6 +21,40 @@ class Attribution(unittest.TestCase):
             with self.subTest(claim=claim):
                 self.assertEqual(trend.model_claim(claim)[0], family)
 
+    def test_other_vendors_and_gpt_astra_are_named_not_lumped(self):
+        for claim, expected in [('gpt-6.2-astra', ('GPT / Codex', 'gpt-6.2-astra')),
+                                ('opencode-go/deepseek-v4.1-flash', ('Other models', 'deepseek-v4.1-flash')),
+                                ('DeepSeek V4.1 Flash', ('Other models', 'deepseek-v4.1-flash')),
+                                ('opencode/hy4-flash-free', ('Other models', 'hy4-flash-free')),
+                                ('gemini-4-neon', ('Other models', 'gemini-4-neon')),
+                                ('Claude Sonnet 5.5', ('Claude', 'claude-sonnet-5-5')),
+                                ('claude-sonnet-5-5', ('Claude', 'claude-sonnet-5-5'))]:
+            with self.subTest(claim=claim):
+                self.assertEqual(trend.model_claim(claim), expected)
+
+    def test_unstated_counts_only_for_a_contributor(self):
+        self.assertEqual(trend.model_claim('not stated')[0], 'Not reported')
+        self.assertEqual(trend.model_claim('not stated', True)[0], trend.CONTRIBUTORS)
+        self.assertEqual(trend.model_claim('by hand, no AI', True)[0], trend.CONTRIBUTORS)
+        self.assertEqual(trend.model_claim('somebody', True)[0], 'Not reported')
+        self.assertEqual(trend.model_claim('claude-opus-5-5', True)[0], 'Claude')
+
+    def test_tool_paths_are_scripts(self):
+        self.assertEqual(trend.model_claim('tools/deleting_leaf_template_v1.py (GPT-6.1 Sol)')[0], 'Scripts and tools')
+
+    def test_a_pr_summary_claim_and_a_tool_stamp_fill_gaps_in_order(self):
+        fid = 'b-0x1'
+        claims = {fid: {'claim': 'claude-sonnet-5-5', 'pr': 9}}
+        self.assertEqual(trend.attribution({'id': fid}, {'submitter': 'x'}, set(), None, claims)[0:3:2], ('Claude', 'PR summary'))
+        unstated = {fid: {'claim': 'not stated', 'pr': 9}}
+        self.assertEqual(trend.attribution({'id': fid}, {'submitter': 'x'}, set(), None, unstated)[0:3:2], (trend.CONTRIBUTORS, 'PR summary'))
+        stamped = b'// Code origin: Stamped as a twin of matched 0x1.\n// Origin: leaf v3\n#include "a.h"'
+        self.assertEqual(trend.attribution({'id': fid}, {}, set(), stamped)[0:3:2], ('Scripts and tools', 'Tool stamp'))
+        self.assertEqual(trend.attribution({'id': fid}, {}, set(), b'// Origin: original body\n#include "a.h"')[0], 'Not reported')
+        # An explicit record claim is the contributor's own word and outranks the stamp and the sidecar.
+        self.assertEqual(trend.attribution({'id': fid}, {'drafter_model': 'not stated', 'submitter': 'x'}, set(), stamped, claims)[0], trend.CONTRIBUTORS)
+        self.assertEqual(trend.attribution({'id': fid}, {'drafter_model': 'gpt-6.2-sol'}, set(), stamped, claims)[0], 'GPT / Codex')
+
     def test_only_supported_aliases_merge(self):
         for claim in ('gpt-6.1 sol', 'GPT 6.1 Sol', 'gpt-6.1-sol'):
             self.assertEqual(trend.model_claim(claim), ('GPT / Codex', 'gpt-6.1-sol'))

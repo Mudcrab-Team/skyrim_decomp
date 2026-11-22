@@ -112,13 +112,16 @@ def inventory_entry(repo, rva):
     return None
 
 
-def committed_facts(repo, rva, name=None):
+def committed_facts(repo, rva, name=None, tree=None, alignment=None):
+    """Facts from committed data. A caller doing many RVAs passes the loaded `tree` and `alignment`
+    once, since reading them dominates the cost of one lookup."""
     out = {}
     key = f'0x{rva:x}'
-    pdb_name = pdb_types.load_tree(repo)[0].get(rva)
+    tree = tree or pdb_types.load_tree(repo)
+    pdb_name = tree[0].get(rva)
     proto = pdb_types.lookup_prototype(rva, repo)
     bound = pdb_types.boundary_of(rva, repo)
-    hint = pdb_types.lookup_rva(rva, repo)
+    hint = pdb_types.lookup_rva(rva, repo, tree)
     version = pdb_types.tree_version(repo)
     if pdb_name or proto or bound:
         out['crashlogger'] = {
@@ -130,7 +133,9 @@ def committed_facts(repo, rva, name=None):
             'class': hint['class'] if hint else None,
             'label': pdb_types.label(version),
         }
-    aligned = (_load(Path(repo) / 'data/symbol-alignment.json').get('functions') or {}).get(key)
+    if alignment is None:
+        alignment = _load(Path(repo) / 'data/symbol-alignment.json')
+    aligned = (alignment.get('functions') or {}).get(key)
     if aligned:
         out['alignment'] = dict(aligned, label=f'SYMBOLS({aligned["source"]})')
     cls = (name or '').rpartition('::')[0]

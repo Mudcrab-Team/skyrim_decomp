@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "6d445543d85621b12622e1e8c47b364a21104e0a5e3d8f155a8f4667c7d6df78",
+        "object_sha256": "0b56b74e848ee9010bc8daf7c14be6d18aa5fde9d155c5e507b9fe9067a24d74",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/forms/TESBoundObject.cpp",
@@ -37,7 +37,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
+    "base_sha": "638a5c1e0cc53ad49e68e53aba106c8da8b34bba",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -48,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
+    "head_sha": "20297bef31a19f150719b5c438d74ac0f8f5cbcd",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -61,10 +61,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44954941715,
+    "run_id": 45054142314,
     "rva": "0x6b70f0",
     "schema": 2,
-    "source_sha256": "5d0275aa7a30b1e7cb890cbc2933c778bfdafeb9ab23876f13c4793a3cbf1803",
+    "source_sha256": "eb2f9fb6c242e3275ee890cfb034fce199c4a0f3826947aaceaea2a621b5e4bc",
     "status": "pass",
     "symbols": [
       "?SendActorItemEquippedEvent@TESBoundObject@@QEAAXPEAVTESObjectREFR@@@Z"
@@ -80,6 +80,7 @@
     "unit": "reconstruction/skyrim_shared/forms/TESBoundObject.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "not stated",
   "function_id": "sse-steam-1-7-104-0x6b70f0",
   "match_record_schema": 2,
   "notes": [
@@ -99,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "4fd46f5e57f48a923a866d477f0d1a080465d270e1dae1f00fab9103917f600b",
           "code_sections": 1,
-          "object_sha256": "6d445543d85621b12622e1e8c47b364a21104e0a5e3d8f155a8f4667c7d6df78"
+          "object_sha256": "0b56b74e848ee9010bc8daf7c14be6d18aa5fde9d155c5e507b9fe9067a24d74"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -162,9 +163,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/forms/TESBoundObject.cpp",
-          "source_revision": "5d0275aa7a30b1e7cb890cbc2933c778bfdafeb9ab23876f13c4793a3cbf1803"
+          "source_revision": "eb2f9fb6c242e3275ee890cfb034fce199c4a0f3826947aaceaea2a621b5e4bc"
         },
-        "symbol_map_sha256": "13efd6500602974fb4addfeacbd6b724bca6320c3d7c8d808a07d21a13e23a57",
+        "symbol_map_sha256": "752e650e44615b1f665a1d7240608056bd3149e2e5e2d6bf277a26f801896490",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -175,7 +176,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/forms/TESBoundObject.cpp",
-    "digest": "5d0275aa7a30b1e7cb890cbc2933c778bfdafeb9ab23876f13c4793a3cbf1803",
+    "digest": "eb2f9fb6c242e3275ee890cfb034fce199c4a0f3826947aaceaea2a621b5e4bc",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/forms/TESBoundObject.cpp",
@@ -183,10 +184,10 @@
       "reconstruction/skyrim_shared/forms/TESForm.h"
     ]
   },
-  "submitter": "ariizona",
+  "submitter": "samintanim",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/13efd6500602974fb4addfeacbd6b724bca6320c3d7c8d808a07d21a13e23a57.json",
-    "sha256": "13efd6500602974fb4addfeacbd6b724bca6320c3d7c8d808a07d21a13e23a57"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/752e650e44615b1f665a1d7240608056bd3149e2e5e2d6bf277a26f801896490.json",
+    "sha256": "752e650e44615b1f665a1d7240608056bd3149e2e5e2d6bf277a26f801896490"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

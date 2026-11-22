@@ -202,7 +202,7 @@ def _patch_index(root, fns):
     return True
 
 
-def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, records=None, when=None):
+def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, records=None, when=None, drafter=None):
     """Record what the validator accepts. Returns {'recorded': [rva], 'refused': {rva: reason}, 'files': [...]}."""
     root = Path(root)
     when = when or datetime.now(timezone.utc).replace(microsecond=0)
@@ -238,6 +238,10 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                 if not handle(author):
                     raise ValueError('author has no valid public handle')
                 record['submitter'] = handle(author)
+            # The contributor's own statement of who drafted it, kept with the record so the
+            # attribution chart never has to go back to the PR; an existing field is not overwritten.
+            if drafter and not record.get('drafter_model'):
+                record['drafter_model'] = drafter
             # A stacked PR re-confirms functions of a unit that grew; only the identical source is a repeat.
             previous = _json_or_none(review_path) if fn['status'] == 'matched' else None
             if previous and review_binds(previous.get('source_digest_method'), previous.get('source_digest'), record['source']):
@@ -248,7 +252,7 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                 if (held.get('digest_method'), held.get('digest')) == (record['source'].get('digest_method'),
                                                                        record['source'].get('digest')):
                     raise ValueError('already matched')
-            if records is not None or author:
+            if records is not None or author or drafter:
                 prior[root / report] = (root / report).read_bytes() if (root / report).is_file() else None
                 _write_json(root / report, record)
                 written.append(root / report)
@@ -339,12 +343,14 @@ def main(argv=None):
     p.add_argument('--model', default='gpt-6.1-terra')
     p.add_argument('--task-id', required=True)
     p.add_argument('--author')
+    p.add_argument('--drafter', help="the PR summary's drafter claim, stored in each record")
     p.add_argument('--records', type=Path)
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--message')
     p.add_argument('--push', action='store_true')
     a = p.parse_args(argv)
-    kwargs = dict(model=a.model, task_id=a.task_id, author=a.author, records=a.records)
+    kwargs = dict(model=a.model, task_id=a.task_id, author=a.author, records=a.records,
+                  drafter=a.drafter)
     blob = a.review.read_bytes()
     if a.push:
         message = a.message or ('Record ' + ', '.join(f'0x{r:x}' for r in a.rva) +

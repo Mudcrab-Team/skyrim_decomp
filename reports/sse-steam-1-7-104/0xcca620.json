@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "9ffbf544dd498dfb1e37107b688b93d06a8c49c4ec2811a35023e588e49846af",
+        "object_sha256": "a39f8941875e1821a85847c5cf245bede5a290843b7fc82b8715e84280556327",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsaudio/BSAudioManager.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "790aaeb65be00c5f5828f44ff0bf15ed7cc46dfa",
+    "base_sha": "c142e8ac00619b3776f619e24ccf776ff5086a65",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "aef0f99af9eaebc615028a3e48de1f5940300977",
+    "head_sha": "07dabcaf9e7e2415950132cdd935a0288e4a8465",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 45015814996,
+    "run_id": 45033163051,
     "rva": "0xcca620",
     "schema": 2,
-    "source_sha256": "33d815882f5367316c03154f299900b97c74385d6e46ca423b6cf1080377f0b1",
+    "source_sha256": "1ce7c1b06212241895784752803f6eb6453755afe25a529d7647ee2861e1d4c0",
     "status": "pass",
     "symbols": [
       "?QPlatformInstance@BSAudioManager@@SAAEAVBSAudio@@XZ"
@@ -79,6 +79,7 @@
     "unit": "reconstruction/bsaudio/BSAudioManager.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "not stated",
   "function_id": "sse-steam-1-7-104-0xcca620",
   "match_record_schema": 2,
   "notes": [
@@ -98,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "98407bd5c8d9f6b4ec45b53662ce56e8dee92a12cc2d04a934450ce8fce255c8",
           "code_sections": 1,
-          "object_sha256": "9ffbf544dd498dfb1e37107b688b93d06a8c49c4ec2811a35023e588e49846af"
+          "object_sha256": "a39f8941875e1821a85847c5cf245bede5a290843b7fc82b8715e84280556327"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -161,9 +162,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsaudio/BSAudioManager.cpp",
-          "source_revision": "33d815882f5367316c03154f299900b97c74385d6e46ca423b6cf1080377f0b1"
+          "source_revision": "1ce7c1b06212241895784752803f6eb6453755afe25a529d7647ee2861e1d4c0"
         },
-        "symbol_map_sha256": "329352a21d1d0a006749c03a80717c04bf11c62a31582ad2f41461665075cd11",
+        "symbol_map_sha256": "720e3f2427b00408351739e1e87b49cd35f91ae91c1cf85945e792839a64cf12",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -174,7 +175,7 @@
   ],
   "source": {
     "compiled": "reconstruction/bsaudio/BSAudioManager.cpp",
-    "digest": "33d815882f5367316c03154f299900b97c74385d6e46ca423b6cf1080377f0b1",
+    "digest": "1ce7c1b06212241895784752803f6eb6453755afe25a529d7647ee2861e1d4c0",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsaudio/BSAudioManager.cpp",
@@ -183,8 +184,8 @@
   },
   "submitter": "aivv73",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/329352a21d1d0a006749c03a80717c04bf11c62a31582ad2f41461665075cd11.json",
-    "sha256": "329352a21d1d0a006749c03a80717c04bf11c62a31582ad2f41461665075cd11"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/720e3f2427b00408351739e1e87b49cd35f91ae91c1cf85945e792839a64cf12.json",
+    "sha256": "720e3f2427b00408351739e1e87b49cd35f91ae91c1cf85945e792839a64cf12"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

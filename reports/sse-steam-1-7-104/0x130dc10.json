@@ -1,0 +1,241 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "2db7ebc1a89889ca0ee8760623d23eed3d29808bb1b610ffe9ce29e12fa3aa0d",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/unmapped/wrappers/SizedDeleteWrappers.cpp",
+          "reconstruction/unmapped/wrappers/SizedDeleteWrappers.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "c5f52fbbcdd775c3e45e96de69ce8e0684fda3d0",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "bdffbe4640e9be3d153658fc98e863bd6f4944da",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "14bd7e4ac75f4188f365ef82ca4b6ed9618a731758b735757ce43a8661072738",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "e2c0da2a1a81b3111790f36cfd03b36bbdf914b7871c4d9a038f3cb38643e5f8",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 45038951836,
+    "rva": "0x130dc10",
+    "schema": 2,
+    "source_sha256": "ed841e4eaca69a7786af5fcf007c54a814d39a80c1dbcf66e52d6edfd93fdfc1",
+    "status": "pass",
+    "symbols": [
+      "?Delete1259cb0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1259d10@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1283220@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1283280@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12addf0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12ade50@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12adee0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12bc5f0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12c9990@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12c99c0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fab20@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fab50@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fab80@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fabb0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fabe0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fac10@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fac40@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete12fac70@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13043e0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1304410@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete130dbe0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete130dc10@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete130dc40@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete130dc70@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1338ca0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1338cd0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13471e0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1347210@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1386d50@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1392ac0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1392af0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1392b20@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1392b50@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13a9080@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13a90b0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13a90e0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13a9110@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13b3e10@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete13b3e40@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete141dba0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete141dbd0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete14632b0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete14632e0@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1463310@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1463340@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1482900@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete1482930@SizedDeleteWrappers@@SAPEAXPEAXI@Z",
+      "?Delete159b960@SizedDeleteWrappers@@SAPEAXPEAXI@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "14bd7e4ac75f4188f365ef82ca4b6ed9618a731758b735757ce43a8661072738",
+      "normalized_sha256": "e2c0da2a1a81b3111790f36cfd03b36bbdf914b7871c4d9a038f3cb38643e5f8",
+      "rva": 19979280,
+      "size": 33
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/unmapped/wrappers/SizedDeleteWrappers.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "drafter_model": "gpt-6.2-sol",
+  "function_id": "sse-steam-1-7-104-0x130dc10",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "6fa69ca01d7d470d7c5b5446b00a5da68853bd650c18cd30dbd16d4ee4b75bb9",
+          "code_sections": 1,
+          "object_sha256": "2db7ebc1a89889ca0ee8760623d23eed3d29808bb1b610ffe9ce29e12fa3aa0d"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 29,
+          "code_bytes_total": 33,
+          "eh": {
+            "bytes": 8,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 8,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 19979280,
+          "size": 33,
+          "symbol": "?Delete130dc10@SizedDeleteWrappers@@SAPEAXPEAXI@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/unmapped/wrappers/SizedDeleteWrappers.cpp",
+          "source_revision": "ed841e4eaca69a7786af5fcf007c54a814d39a80c1dbcf66e52d6edfd93fdfc1"
+        },
+        "symbol_map_sha256": "a4752540a4a2ea577840c19ff86de240ccbf822014f375751f1f624f633fb3c4",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x130dc10"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/unmapped/wrappers/SizedDeleteWrappers.cpp",
+    "digest": "ed841e4eaca69a7786af5fcf007c54a814d39a80c1dbcf66e52d6edfd93fdfc1",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/unmapped/wrappers/SizedDeleteWrappers.cpp",
+      "reconstruction/unmapped/wrappers/SizedDeleteWrappers.h"
+    ]
+  },
+  "submitter": "aivv73",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/a4752540a4a2ea577840c19ff86de240ccbf822014f375751f1f624f633fb3c4.json",
+    "sha256": "a4752540a4a2ea577840c19ff86de240ccbf822014f375751f1f624f633fb3c4"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

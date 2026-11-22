@@ -51,6 +51,19 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.assertEqual((review['verdict'], review['review_kind'], review['reviewer_model']),
                          ('approve', 'full', 'gpt-6.1-terra'))
 
+    def test_the_prs_drafter_claim_is_kept_in_the_record_and_never_overwritten(self):
+        out = self.apply(drafter='claude-sonnet-5-5')
+        self.assertEqual(out['recorded'], [self.fn['rva']])
+        record_path = self.root / RECORD
+        self.assertEqual(json.loads(record_path.read_text())['drafter_model'], 'claude-sonnet-5-5')
+        validate(json.loads((self.root / 'data/progress.json').read_text()), self.target, self.root)
+        stored = json.loads(record_path.read_text())
+        stored['drafter_model'] = 'gpt-6.2-sol'
+        record_path.write_text(json.dumps(stored))
+        # A second claim on an already-held record is refused as a repeat before it could replace the first.
+        self.apply(drafter='claude-opus-5-5')
+        self.assertEqual(json.loads(record_path.read_text())['drafter_model'], 'gpt-6.2-sol')
+
     def test_index_patch_equals_full_render(self):
         self.apply()
         data = json.loads((self.root / 'data/progress.json').read_text())

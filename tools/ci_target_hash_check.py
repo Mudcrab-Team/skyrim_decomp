@@ -37,7 +37,7 @@ REQUEST = re.compile(r'^// CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S+)\s*$', re.M)
 SHA = re.compile(r'[0-9a-f]{40}')
 UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.
-MAX_CLAIMS_PER_UNIT = 128
+MAX_CLAIMS_PER_UNIT = 200
 CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
              'tools/target_hashes.py', 'tools/contrib.py', 'tools/contributor_standing.py',
              'tools/build_leaderboard.py', 'tools/build_model_trend.py', '.gitattributes',

@@ -286,7 +286,7 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
             self.assertEqual(family_check.call_count, 1)
             self.assertEqual(batch_check.call_count, 1)
             self.assertEqual(member_check.call_count, 2)
-        self.assertEqual(fr._public_family_batch.cache_info().maxsize, 8)
+        self.assertEqual(fr._public_family_batch.cache_info().maxsize, 256)
 
     def test_public_cache_rereads_same_size_same_mtime_changed_batch(self):
         fn, record, review = self.public_review_inputs()

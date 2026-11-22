@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "420bc97a1942fbe0a661a8bf527b9045a13ab4a4a0aed7c6a653e05ea74d5c4c",
+        "object_sha256": "c80e23d7771cd173dadd1b526cb4d2a3944ebc4b332965cbacba94aa8fb52e72",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/actors/Actor.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
+    "base_sha": "f28a34bb61c4e3a5e58a0513a0b0ef623245fc9a",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
+    "head_sha": "43f06e587a50c7f9a6e7724f5453deb40c0bf864",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44954941715,
+    "run_id": 45052023083,
     "rva": "0x687c20",
     "schema": 2,
-    "source_sha256": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38",
+    "source_sha256": "20567723fcb02bc86015bc9049f7dd148e39d885377ac2a0262625baab724956",
     "status": "pass",
     "symbols": [
       "?IsInRagdollState@Actor@@QEBA_NXZ"
@@ -79,6 +79,7 @@
     "unit": "reconstruction/skyrim_shared/actors/Actor.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "not stated",
   "function_id": "sse-steam-1-7-104-0x687c20",
   "match_record_schema": 2,
   "notes": [
@@ -98,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "329a21e3a3f39acb56d8adbcb9b2b535933cfbe72310a480d0f9aecfee954794",
           "code_sections": 1,
-          "object_sha256": "420bc97a1942fbe0a661a8bf527b9045a13ab4a4a0aed7c6a653e05ea74d5c4c"
+          "object_sha256": "c80e23d7771cd173dadd1b526cb4d2a3944ebc4b332965cbacba94aa8fb52e72"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +160,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/actors/Actor.cpp",
-          "source_revision": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38"
+          "source_revision": "20567723fcb02bc86015bc9049f7dd148e39d885377ac2a0262625baab724956"
         },
-        "symbol_map_sha256": "b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4",
+        "symbol_map_sha256": "b10785f66c740128515c77832e2d93654322b4169d732f8d212c48556ca4ae64",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +173,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/actors/Actor.cpp",
-    "digest": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38",
+    "digest": "20567723fcb02bc86015bc9049f7dd148e39d885377ac2a0262625baab724956",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/actors/Actor.cpp",
       "reconstruction/skyrim_shared/actors/Actor.h"
     ]
   },
-  "submitter": "ariizona",
+  "submitter": "samintanim",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4.json",
-    "sha256": "b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/b10785f66c740128515c77832e2d93654322b4169d732f8d212c48556ca4ae64.json",
+    "sha256": "b10785f66c740128515c77832e2d93654322b4169d732f8d212c48556ca4ae64"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",
