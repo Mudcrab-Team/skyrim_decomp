@@ -27,7 +27,7 @@ class BSLightingShaderMaterialLandscape : public BSLightingShaderMaterialBase
 public:
     static void* operator new(std::size_t a_size) throw();
     BSShaderMaterial* Create() override;  // compared: 0x1527560
-    // the image's Create calls the constructor at its own address, so it stays a separate function
+    // noinline: the image's Create calls the constructor at its own address, so it stays a separate function
     __declspec(noinline) BSLightingShaderMaterialLandscape();
     std::uint32_t GetTextures(NiSourceTexture** a_textures);  // compared: 0x15279b0
     virtual Feature GetFeature() const;  // compared: 0x1527a80

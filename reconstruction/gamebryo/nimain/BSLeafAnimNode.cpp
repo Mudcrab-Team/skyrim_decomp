@@ -14,7 +14,7 @@
 bool BSLeafAnimNode::RegisterStreamables(NiStream& stream) { return NiNode::RegisterStreamables(stream) != 0; }
 
 // noinline: its own body at its own RVA (0x14e5e90); the compared destructor at 0x14e89b0 reaches it
-// by a tail jump, so it must not be inlined here (cookbook rule 27).
+// noinline: by a tail jump, so it must not be inlined here (cookbook rule 27).
 __declspec(noinline) BSFadeNode::~BSFadeNode()
 {
 }

@@ -16,10 +16,10 @@ void TESNPC::SetObjectVoiceType(BGSVoiceType* a_voiceType)
 	voiceType = a_voiceType;
 }
 
-// noinline: GetScale, defined later in this file, calls IsFemale in the image instead of inlining it.
 // The two probably come from different original translation units (they lie about 0x16000 bytes
 // apart); grouping them in one unit here would let the compiler inline the call, so the attribute
 // stands in for that unit boundary.
+// noinline: GetScale, defined later in this file, calls IsFemale in the image instead of inlining it.
 __declspec(noinline) std::int32_t TESNPC::IsFemale()
 {
 	// form type 0x2b is the NPC form type; other forms report -1
