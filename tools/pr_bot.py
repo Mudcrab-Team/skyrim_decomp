@@ -205,6 +205,8 @@ def runbook_checklist(root):
 
 
 # Runs in the bot's tree so that the records are built with the tools and inventory of the reviewed base.
+# tools/verifier/attempt exit code for a unit whose include the recipe cannot resolve (not counted as an attempt).
+REFUSED_INCLUDE_EXIT = 4
 RECORD_CALL = """import json, sys
 sys.path.insert(0, sys.argv[1] + '/tools')
 import record
@@ -783,6 +785,10 @@ def function_text(blobs, name):
 UNBOUND_FIX = ('the compiled object had no symbol the compare could bind to that RVA (nothing was compared); check '
                'that the function name and signature match the mangled symbol, or add a '
                '`// CI hash: 0x<rva> <symbol>` line (see docs/contributor-card.md)')
+INCLUDE_FIX = ('the unit includes a repository header its recipe cannot resolve (nothing was compared); name a '
+               '`-root-includes` recipe in the unit (`reconstruction/recipes/<name>.json`) or include the header '
+               'relative to the including file')
+CATEGORY_FIX = {'unbound': UNBOUND_FIX, 'include': INCLUDE_FIX}
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -828,7 +834,7 @@ def other_failure_lines(decision, shown):
         if r in shown or not v.startswith('fail:'):
             continue
         row = why.get(r) or why.get(str(r)) or {}
-        hosts = [f'{HOST_NAMES[h]}: ' + (UNBOUND_FIX if row[h] == 'unbound' else row[h]) for h in ('host1', 'host2') if h in row]
+        hosts = [f'{HOST_NAMES[h]}: ' + CATEGORY_FIX.get(row[h], row[h]) for h in ('host1', 'host2') if h in row]
         lines.append(f'- 0x{r:x}: ' + ('; '.join(hosts) if hosts else reason_text(decision, r, v.split(':', 1)[1])))
     return lines
 
@@ -853,8 +859,8 @@ def reason_text(decision, rva, code):
     if code in ('host1', 'host2'):
         why = decision.get('host_why') or {}
         category = (why.get(rva) or why.get(str(rva)) or {}).get(code)
-        if category == 'unbound':
-            return f'{UNBOUND_FIX[0].upper()}{UNBOUND_FIX[1:]}'
+        if category in CATEGORY_FIX:
+            return f'{CATEGORY_FIX[category][0].upper()}{CATEGORY_FIX[category][1:]}'
         return f'{text} ({category})' if category else text
     if code != 'review':
         return text
@@ -2145,6 +2151,13 @@ class Bot:
             except subprocess.TimeoutExpired:
                 raise HostFailure(f'verifier host timed out ({tid_of(task)})')
             code = done.returncode
+            if code == REFUSED_INCLUDE_EXIT:
+                # The verifier refuses before compiling when a header cannot be found with the unit's recipe. That
+                # is a finding about the unit; reported as a host failure it was retried unchanged forever.
+                for fn in json.loads((task / 'task.json').read_text())['functions']:
+                    out[int(str(fn['rva']), 0)] = 'fail'
+                    why[int(str(fn['rva']), 0)] = 'include'
+                continue
             if code not in (0, 1, 3):
                 # The tool's own last line says why (a bad task row, a missing toolchain); without it every
                 # failure looks the same in the service log.

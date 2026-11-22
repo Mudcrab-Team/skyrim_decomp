@@ -1054,6 +1054,42 @@ class StaleRecordedHintTests(Replay):
         self.assertEqual(json.loads((task / 'bind-hints.json').read_text()), {self.OLD_NAME: '0x1000'})
 
 
+class IncludeRefusalTests(Replay):
+    """The verifier refuses a unit whose header its recipe cannot resolve; that is a finding, not a host failure."""
+
+    def compare(self, code):
+        cpp, tag = unit_path(0x1000), '7-abcdef12'
+        (self.bot.tree / cpp).parent.mkdir(parents=True, exist_ok=True)
+        (self.bot.tree / cpp).write_text(unit(0x1000))
+        (self.bot.tree / 'builds').mkdir(exist_ok=True)
+        (self.bot.tree / 'builds/target.json').write_text(json.dumps(dict(build_id=BUILD)))
+        task = self.bot.tree / '.local/tasks' / f'prbot-{tag}-0'
+
+        def run(argv, **kw):
+            name = str(argv[1])
+            if name.endswith('export_pack.py'):
+                task.mkdir(parents=True, exist_ok=True)
+                (task / 'task.json').write_text(json.dumps(dict(task_id=task.name, functions=[dict(rva='0x1000')])))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if name.endswith('attempt'):  # the refusal is printed on stdout, so stderr is empty
+                return subprocess.CompletedProcess(argv, code, b'REFUSED include (not counted)\n', b'')
+            raise AssertionError(argv)
+        with mock.patch.object(self.bot, 'run', run):
+            result = pr_bot.Bot.compare_on_host(self.bot, {cpp: [0x1000]}, tag)
+        return result, self.bot.host2_why[tag]
+
+    def test_a_refused_include_fails_the_function_with_its_own_category(self):
+        result, why = self.compare(pr_bot.REFUSED_INCLUDE_EXIT)
+        self.assertEqual(result, {0x1000: 'fail'})
+        self.assertEqual(why, {0x1000: 'include'})
+        decision = dict(verdicts={0x1000: 'fail:host2'}, host_why={0x1000: {'host2': 'include'}})
+        self.assertIn('-root-includes', pr_bot.reason_text(decision, 0x1000, 'host2'))
+
+    def test_any_other_unexpected_exit_is_still_a_host_failure(self):
+        with self.assertRaises(pr_bot.HostFailure):
+            self.compare(5)
+
+
 class OwnerAndScopeTests(Replay):
     def test_an_owner_pr_that_changes_only_reconstruction_is_processed_without_a_label(self):
         self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, author=pr_bot.OWNER)
