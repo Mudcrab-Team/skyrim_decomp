@@ -1,0 +1,294 @@
+{
+ "functions": {
+  "0x15271e0": {
+   "confidence": "high",
+   "name": "BSLightingShaderMaterialHairTint::QFeature",
+   "object": "BSLightingShaderMaterial.obj",
+   "prototype": "public: virtual unsigned int __thiscall BSLightingShaderMaterialHairTint::QFeature(void) const",
+   "source": "tesv-2013-map"
+  },
+  "0x152c400": {
+   "confidence": "high",
+   "name": "BSWaterShaderProperty::RegisterStreamables",
+   "object": "BSWaterShaderProperty.obj",
+   "prototype": "public: virtual bool __thiscall BSWaterShaderProperty::RegisterStreamables(class NiStream &)",
+   "source": "tesv-2013-map"
+  },
+  "0x152cd00": {
+   "confidence": "high",
+   "name": "BSWaterShaderProperty::GetRenderPasses_LocalMap",
+   "object": "BSWaterShaderProperty.obj",
+   "prototype": "public: virtual class BSShaderProperty::RenderPassArray * __thiscall BSWaterShaderProperty::GetRenderPasses_LocalMap(class NiGeometry *, unsigned int, class BSShaderAccumulator *)",
+   "source": "tesv-2013-map"
+  },
+  "0x1645d0": {
+   "confidence": "high",
+   "name": "ExtraDataList::GetGlobal",
+   "object": "ExtraDataList.obj",
+   "prototype": "public: class TESGlobal * __thiscall ExtraDataList::GetGlobal(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x1d9240": {
+   "confidence": "high",
+   "name": "BGSMessageIcon::LoadMessageIcon",
+   "object": "BGSMessageIcon.obj",
+   "prototype": "public: static void __cdecl BGSMessageIcon::LoadMessageIcon(class BGSMessageIcon *, class TESFile *)",
+   "source": "tesv-2013-map"
+  },
+  "0x1df480": {
+   "confidence": "high",
+   "name": "TESBipedModelForm::InitItem",
+   "object": "TESBipedModelForm.obj",
+   "prototype": "public: void __thiscall TESBipedModelForm::InitItem(class TESForm *)",
+   "source": "tesv-2013-map"
+  },
+  "0x1e5830": {
+   "confidence": "medium",
+   "name": "TESForm::LoadVMData",
+   "object": "TESForm.obj",
+   "prototype": "public: void __thiscall TESForm::LoadVMData(class TESFile *) const",
+   "source": "tesv-2013-map"
+  },
+  "0x1e5840": {
+   "confidence": "medium",
+   "name": "TESForm::IsDefaultForm",
+   "object": "TESForm.obj",
+   "prototype": "public: bool __thiscall TESForm::IsDefaultForm(void) const",
+   "source": "tesv-2013-map"
+  },
+  "0x1e5850": {
+   "confidence": "medium",
+   "name": "TESForm::GetFile",
+   "object": "TESForm.obj",
+   "prototype": "public: class TESFile * __thiscall TESForm::GetFile(int) const",
+   "source": "tesv-2013-map"
+  },
+  "0x1e5860": {
+   "confidence": "medium",
+   "name": "TESForm::GetOwnerMaster",
+   "object": "TESForm.obj",
+   "prototype": "public: class TESFile * __thiscall TESForm::GetOwnerMaster(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x1e8870": {
+   "confidence": "high",
+   "name": "TESLeveledList::ClearDataComponent",
+   "object": "TESLeveledList.obj",
+   "prototype": "public: virtual void __thiscall TESLeveledList::ClearDataComponent(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x270430": {
+   "confidence": "medium",
+   "name": "TESGrass::SetPositionRange",
+   "object": "TESGrass.obj",
+   "prototype": "public: virtual bool __thiscall TESGrass::SetPositionRange(float)",
+   "source": "tesv-2013-map"
+  },
+  "0x270460": {
+   "confidence": "medium",
+   "name": "TESGrass::SetHeightRange",
+   "object": "TESGrass.obj",
+   "prototype": "public: virtual bool __thiscall TESGrass::SetHeightRange(float)",
+   "source": "tesv-2013-map"
+  },
+  "0x270490": {
+   "confidence": "medium",
+   "name": "TESGrass::SetColorRange",
+   "object": "TESGrass.obj",
+   "prototype": "public: virtual bool __thiscall TESGrass::SetColorRange(float)",
+   "source": "tesv-2013-map"
+  },
+  "0x274bb0": {
+   "confidence": "high",
+   "name": "TESObjectLIGH::Update",
+   "object": "TESLight.obj",
+   "prototype": "public: bool __thiscall TESObjectLIGH::Update(struct REFR_LIGHT *, class TESObjectREFR *)",
+   "source": "tesv-2013-map"
+  },
+  "0x274bc0": {
+   "confidence": "high",
+   "name": "TESObjectLIGH::Update",
+   "object": "TESLight.obj",
+   "prototype": "public: bool __thiscall TESObjectLIGH::Update(class NiPointer<class NiLight> const &, class TESObjectREFR *)",
+   "source": "tesv-2013-map"
+  },
+  "0x4a0b40": {
+   "confidence": "high",
+   "name": "TESFollowPackageData::SaveGame",
+   "object": "PackageDataFollow.obj",
+   "prototype": "public: virtual void __thiscall TESFollowPackageData::SaveGame(class BGSSaveFormBuffer *)",
+   "source": "tesv-2013-map"
+  },
+  "0x4a1180": {
+   "confidence": "high",
+   "name": "TESPatrolPackageData::SaveGame",
+   "object": "PackageDataPatrol.obj",
+   "prototype": "public: virtual void __thiscall TESPatrolPackageData::SaveGame(class BGSSaveFormBuffer *)",
+   "source": "tesv-2013-map"
+  },
+  "0x535c40": {
+   "confidence": "high",
+   "name": "BGSStoryManagerEventNode::ClearData",
+   "object": "BGSStoryManagerEventNode.obj",
+   "prototype": "public: virtual void __thiscall BGSStoryManagerEventNode::ClearData(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x5cdb10": {
+   "confidence": "medium",
+   "name": "MagicCaster::PrepareSound",
+   "object": "MagicCaster.obj",
+   "prototype": "public: virtual void __thiscall MagicCaster::PrepareSound(enum EffectSetting::SoundID, class MagicItem *)",
+   "source": "tesv-2013-map"
+  },
+  "0x5cdc00": {
+   "confidence": "medium",
+   "name": "MagicCaster::ReleaseSound",
+   "object": "MagicCaster.obj",
+   "prototype": "public: void __thiscall MagicCaster::ReleaseSound(enum EffectSetting::SoundID)",
+   "source": "tesv-2013-map"
+  },
+  "0x667ff0": {
+   "confidence": "medium",
+   "name": "TaskQueueInterface::QueuePickedUpObjectRemoval",
+   "object": "TaskQueueInterface.obj",
+   "prototype": "public: void __thiscall TaskQueueInterface::QueuePickedUpObjectRemoval(class TESObjectREFR *, bool)",
+   "source": "tesv-2013-map"
+  },
+  "0x668140": {
+   "confidence": "medium",
+   "name": "TaskQueueInterface::QueueActorKill",
+   "object": "TaskQueueInterface.obj",
+   "prototype": "public: void __thiscall TaskQueueInterface::QueueActorKill(class Actor *, float, struct DISMEMBER_DATA *, bool, bool)",
+   "source": "tesv-2013-map"
+  },
+  "0x668170": {
+   "confidence": "medium",
+   "name": "TaskQueueInterface::QueueActorMeleeAttack",
+   "object": "TaskQueueInterface.obj",
+   "prototype": "public: void __thiscall TaskQueueInterface::QueueActorMeleeAttack(class Actor *, bool, bool)",
+   "source": "tesv-2013-map"
+  },
+  "0x668230": {
+   "confidence": "medium",
+   "name": "TaskQueueInterface::QueueActorKnockExplosion",
+   "object": "TaskQueueInterface.obj",
+   "prototype": "public: void __thiscall TaskQueueInterface::QueueActorKnockExplosion(class Actor *, float, float, float, float)",
+   "source": "tesv-2013-map"
+  },
+  "0x674890": {
+   "confidence": "medium",
+   "name": "Actor::CalculateCachedOwnerIsUndead",
+   "object": "Actor.obj",
+   "prototype": "public: virtual bool __thiscall Actor::CalculateCachedOwnerIsUndead(void) const",
+   "source": "tesv-2013-map"
+  },
+  "0x674b70": {
+   "confidence": "medium",
+   "name": "Actor::IsFalling",
+   "object": "Actor.obj",
+   "prototype": "public: bool __thiscall Actor::IsFalling(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x6e14f0": {
+   "confidence": "high",
+   "name": "ActorState::DoGetMoveMode",
+   "object": "ActorState.obj",
+   "prototype": "private: unsigned short __thiscall ActorState::DoGetMoveMode(void) const",
+   "source": "tesv-2013-map"
+  },
+  "0x6f2520": {
+   "confidence": "high",
+   "name": "PlayerCamera::QIsInAutoVanity",
+   "object": "AIProcess_High.obj",
+   "prototype": "public: bool __thiscall PlayerCamera::QIsInAutoVanity(void) const",
+   "source": "tesv-2013-map"
+  },
+  "0x6f2540": {
+   "confidence": "high",
+   "name": "AIProcess::GetActorsDetectionEvent",
+   "object": "AIProcess_High.obj",
+   "prototype": "public: struct DetectionEvent * __thiscall AIProcess::GetActorsDetectionEvent(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x751a30": {
+   "confidence": "medium",
+   "name": "PlayerCharacter::EndGrabObject",
+   "object": "PlayerCharacter.obj",
+   "prototype": "public: void __thiscall PlayerCharacter::EndGrabObject(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x752630": {
+   "confidence": "medium",
+   "name": "PlayerCharacter::CreateMouseSpring",
+   "object": "PlayerCharacter.obj",
+   "prototype": "public: class bhkMouseSpringAction * __thiscall PlayerCharacter::CreateMouseSpring(class TESObjectREFR *, enum PlayerCharacter::GrabbingType, float)",
+   "source": "tesv-2013-map"
+  },
+  "0x753580": {
+   "confidence": "medium",
+   "name": "PlayerCharacter::UpdateMouseSprings",
+   "object": "PlayerCharacter.obj",
+   "prototype": "public: void __thiscall PlayerCharacter::UpdateMouseSprings(void)",
+   "source": "tesv-2013-map"
+  },
+  "0x82e290": {
+   "confidence": "high",
+   "name": "CombatInventoryItemOneHandedBlock::Clone",
+   "object": "CombatInventoryItem.obj",
+   "prototype": "public: virtual class CombatInventoryItemOneHandedBlock * __thiscall CombatInventoryItemOneHandedBlock::Clone(void) const",
+   "source": "tesv-2013-map"
+  },
+  "0x833c90": {
+   "confidence": "high",
+   "name": "CombatMagicCaster::LoadGame",
+   "object": "CombatMagicCaster.obj",
+   "prototype": "public: virtual void __thiscall CombatMagicCaster::LoadGame(class BGSLoadGameBuffer *)",
+   "source": "tesv-2013-map"
+  },
+  "0xef3ee0": {
+   "confidence": "high",
+   "name": "NiSourceTexture::NiSourceTexture",
+   "object": "NiSourceTexture.obj",
+   "prototype": "protected: __thiscall NiSourceTexture::NiSourceTexture(void)",
+   "source": "tesv-2013-map"
+  },
+  "0xf7edc0": {
+   "confidence": "high",
+   "name": "NiLightColorController::RegisterStreamables",
+   "object": "NiLightColorController.obj",
+   "prototype": "public: virtual bool __thiscall NiLightColorController::RegisterStreamables(class NiStream &)",
+   "source": "tesv-2013-map"
+  },
+  "0xfce8b0": {
+   "confidence": "high",
+   "name": "BSMultiBoundAABB::LinkObject",
+   "object": "BSMultiBoundAABB.obj",
+   "prototype": "public: virtual void __thiscall BSMultiBoundAABB::LinkObject(class NiStream &)",
+   "source": "tesv-2013-map"
+  },
+  "0xfcf670": {
+   "confidence": "high",
+   "name": "BSMultiBoundOBB::LinkObject",
+   "object": "BSMultiBoundOBB.obj",
+   "prototype": "public: virtual void __thiscall BSMultiBoundOBB::LinkObject(class NiStream &)",
+   "source": "tesv-2013-map"
+  },
+  "0xff1800": {
+   "confidence": "high",
+   "name": "BSBound::LinkObject",
+   "object": "BSBound.obj",
+   "prototype": "public: virtual void __thiscall BSBound::LinkObject(class NiStream &)",
+   "source": "tesv-2013-map"
+  },
+  "0xffe530": {
+   "confidence": "high",
+   "name": "BSProceduralLightningController::SetShaderProperty",
+   "object": "BSProceduralLightningController.obj",
+   "prototype": "public: void __thiscall BSProceduralLightningController::SetShaderProperty(class NiPointer<class BSShaderProperty> const &)",
+   "source": "tesv-2013-map"
+  }
+ },
+ "note": "Names proposed by aligning the function order of a sibling-build linker map with the inventory. Hints labelled SYMBOLS(tesv-2013-map); not evidence of identity. See tools/symbol_align.py.",
+ "schema_version": 1,
+ "source": "tesv-2013-map"
+}

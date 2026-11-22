@@ -32,7 +32,7 @@ This includes Git history, LFS, issues, comments, screenshots, releases, logs an
 
 Do not acquire or use leaked/confidential source, unofficial proprietary debug symbols or
 unlawfully obtained development material (the community-generated CrashLogger PDBs and their generated output, and the five sibling-build
-symbol files used as name evidence only, both recorded below, are the two exceptions). Do not assume a public URL establishes authorization.
+symbol files, name evidence only except the widened 2013 map and Fallout 4 files, both recorded below, are the two exceptions). Do not assume a public URL establishes authorization.
 No copy-protection removal tools or instructions belong here. A reference link is not adoption
 of the linked project's practices or a license to reproduce its contents. The sibling-source
 exceptions below record the maintainer's decisions; they do not authorize this project to obtain
@@ -94,7 +94,11 @@ program databases, identified by SHA-256 and size in `docs/authorizations.md`, N
 that `tools/symbol_corroboration.py` read from them may stay in `data/name-corroboration.json`,
 `data/symbol-names.json` and `findings/sibling-symbol-files.md`, and a name a unit takes from them carries
 `SYMBOLS(<source-id>)`. The files themselves, dumps of them, and any address, type layout, decorated name or code
-from them are never committed or redistributed. They are not evidence about the pinned binary. It is a maintainer
+from them are never committed or redistributed. They are not evidence about the pinned binary. The 2013 map, the Fallout 4 database and
+`Fallout4Beta.pdb` were widened on 2026-11-22 to any use (decorated names, prototypes, map addresses and order,
+object-file grouping, type layouts, vtables, hierarchies); the files and any dump or excerpt are still never
+committed or redistributed, the bundled game executables stay out of scope, and the three Xbox 360 files keep
+the name-only scope (`docs/authorizations.md`, Notes). It is a maintainer
 policy decision, not a legal opinion, limited to these files: other debug symbols, leaked or Bethesda PDBs and
 MAP files stay excluded. This Fallout 4 file is a different source from the `fo4-private` sibling decompilation
 below.

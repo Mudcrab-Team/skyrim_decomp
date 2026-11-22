@@ -72,7 +72,7 @@ MAPPING_CHECKS = ('mapping', 'pr-check / mapping')
 REVIEW_MODEL = 'gpt-6.1-terra'
 # Fallback reviewer when codex fails for an account or capacity reason; read-only tools only.
 CLAUDE_BIN = shutil.which('claude') or str(Path.home() / '.local/bin/claude')
-CLAUDE_REVIEW_MODEL = 'sonnet'
+CLAUDE_REVIEW_MODEL = 'claude-sonnet-5-5'
 CODEX_PAUSE = 1800  # seconds codex is skipped after an out-of-credits style failure
 ACCOUNT_FAILURE = re.compile(r'credit|quota|rate.?limit|usage limit|insufficient|billing|capacity|overloaded|'
                              r'too many requests|\b429\b|unauthorized|\b401\b|log ?in|sign ?in|auth|token expired|'
@@ -858,6 +858,7 @@ def outcome_body(sha, decision, leak_codes=()):
             if verdicts.get(r) != 'matched':
                 code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
                 lines.append(f'- 0x{r:x}: {reason_text(decision, r, code)}')
+                lines += [f'  - {n}' for n in decision.get('notes', {}).get(r, [])]
         listed = {r for r in decision.get('companions', []) if verdicts.get(r) != 'matched'}
         more = other_failure_lines(decision, listed)
         if more:
@@ -1149,10 +1150,10 @@ class Bot:
                     raise Stop(f'codex failed ({why})' if why else 'codex failed')
             if text is None:
                 self.codex_paused_until[0] = self.clock() + CODEX_PAUSE
-                print(f'{stamp()} codex unavailable ({why}); reviewing with claude-sonnet, '
+                print(f'{stamp()} codex unavailable ({why}); reviewing with {CLAUDE_REVIEW_MODEL}, '
                       f'codex skipped for {CODEX_PAUSE // 60} min', file=sys.stderr, flush=True)
         if text is None:
-            reviewer = 'claude-sonnet'
+            reviewer = CLAUDE_REVIEW_MODEL
             result = self.run([CLAUDE_BIN, '-p', '--model', CLAUDE_REVIEW_MODEL, '--tools', 'Read,Grep,Glob',
                                '--permission-mode', 'dontAsk', '--no-session-persistence'], cwd=self.tree,
                               input=prompt.encode(), timeout=self.config['model_timeout'], check=False)
@@ -2325,7 +2326,8 @@ class Bot:
             raise Stop('the verifier results do not bind this machine\'s tree or pins: ' + '; '.join(bot_side[:3]))
         safe = {}
         for rva, lines in out.items():
-            shown = [l[:220] for l in dict.fromkeys(lines) if not check.naming_finding_problem(l[:220])]
+            # 220 cut the "fix:" half of a finding off, leaving the contributor the problem without the remedy.
+            shown = [l[:600] for l in dict.fromkeys(lines) if not check.naming_finding_problem(l[:600])]
             hidden = len(set(lines)) - len(shown)
             safe[rva] = shown + ([f'{hidden} more finding(s) not shown; run `python3 tools/prereview.py` locally']
                                  if hidden else [])

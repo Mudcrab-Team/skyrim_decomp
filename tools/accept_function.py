@@ -749,12 +749,13 @@ def apply(root, data, new, target, prepared, tolerated, when, *, rebuild_index=T
 OPUS_MODELS = frozenset(('opus', 'claude-opus-5-5'))
 ADMITTING_PHRASES = {'gpt-6.1-terra': 'Terra class as the Reviewer'}
 SOL_MODEL = 'gpt-6.1-sol'
+SONNET_MODEL = 'claude-sonnet-5-5'
 
 
 def reviewer_admitted(root, model, profile):
     if model in OPUS_MODELS:
         return True
-    if model == SOL_MODEL:
+    if model in (SOL_MODEL, SONNET_MODEL):
         return strong_reviewer_admitted(root, model, profile)
     phrase = ADMITTING_PHRASES.get(model)
     path = Path(root) / 'docs/verification.md'
@@ -770,8 +771,14 @@ def strong_reviewer_admitted(root, model, profile):
     if model in OPUS_MODELS:
         return True
     path = Path(root) / 'docs/verification.md'
-    return bool(model == SOL_MODEL and profile == 'claude-low' and path.is_file()
-                and 'Sol class as the strong Reviewer' in path.read_text())
+    if not path.is_file():
+        return False
+    text = path.read_text()
+    if model == SONNET_MODEL:
+        # Admitted under every profile; the rule text must still say so.
+        return 'Sonnet class as a Reviewer' in text
+    return bool(model == SOL_MODEL and profile == 'claude-low'
+                and 'Sol class as the strong Reviewer' in text)
 
 
 def active_flow_dir(root):

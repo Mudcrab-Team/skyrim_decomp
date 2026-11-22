@@ -143,6 +143,19 @@ reasons: synthetic
                   'approve', when=WHEN, profile='claude-low')
         self.assertEqual(json.loads((self.root / REVIEW).read_text())['reviewer_model'], 'gpt-6.1-sol')
 
+    def test_sonnet_is_admitted_exactly_under_every_profile(self):
+        self.write('docs/verification.md', (ROOT / 'docs/verification.md').read_text())
+        for profile in ('cheap', 'full', 'claude-low'):
+            for model, admitted in (('claude-sonnet-5-5', True), ('sonnet', False), ('claude-sonnet-5-4', False)):
+                with self.subTest(model=model, profile=profile):
+                    self.assertEqual(af.reviewer_admitted(self.root, model, profile), admitted)
+                    self.assertEqual(af.strong_reviewer_admitted(self.root, model, profile), admitted)
+        self.write('.local/flow/events.jsonl', json.dumps({'event': 'session-start', 'profile': 'cheap'}) + '\n')
+        self.write_review(model='claude-sonnet-5-5')
+        af.accept(self.root, 'synthetic-fixture', self.fn['rva'], self.root / REVIEW_FILE,
+                  'approve', when=WHEN, profile='cheap')
+        self.assertEqual(json.loads((self.root / REVIEW).read_text())['reviewer_model'], 'claude-sonnet-5-5')
+
     def test_profile_without_session_requires_configured_default(self):
         self.assertEqual(af.review_profile(self.root, 'new-task', None), 'cheap')
         self.assertEqual(af.review_profile(self.root, 'new-task', 'cheap'), 'cheap')

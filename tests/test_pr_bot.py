@@ -753,6 +753,14 @@ class CompanionProcessTests(unittest.TestCase):
                              {0x10: 'approve', 0x30: 'approve'}, companions=[0x30])
         self.assertEqual((debt['blocked'], debt['merge']), ('companion', False))
 
+    def test_companion_comment_carries_the_review_notes_of_the_blocking_function(self):
+        ok = {0x10: 'pass', 0x30: 'pass'}
+        done = pr_bot.decide([0x10, 0x30], ok, ok, {0x10: 'approve', 0x30: 'reject'}, companions=[0x30])
+        done['notes'] = {0x30: ['Header says no external code copied.']}
+        body = pr_bot.comment_body('abcdef123456', done)
+        self.assertIn('- 0x30: ', body)
+        self.assertIn('  - Header says no external code copied.', body)
+
     def test_decide_blocks_a_named_stale_function_that_is_not_matched_even_as_debt(self):
         h1 = {0x10: 'pass', 0x20: 'pass'}
         for h2_20 in ('fail', 'preexisting-fail'):

@@ -10,6 +10,8 @@ per class, since each PR costs a full verification and merge cycle. `submit <tas
 `submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
 `next --class REGEX` ranks only classes whose name matches, and `claim ... --skip-conflicts` claims
 the functions nobody holds and names the others with their claim issues.
+`next` offers callee-ready functions first (every callee already matched; `data/ready-queue.json`,
+regenerated with `tools/ready_queue.py`); the ordering is advisory.
 
 Read only the private pack named by the helper, after the owner has agreed to model exposure.
 Never post listings, pseudo-C, Ghidra projects, bytes, objects, raw diagnostics or paths. Keep the
@@ -118,8 +120,10 @@ from five sibling-build symbol files (a 2013 linker map of this game, a Fallout 
 Fallout: New Vegas program databases; `findings/sibling-symbol-files.md`). They are candidates for what a class's
 members are called, never which function is which. A name a unit takes from them carries `SYMBOLS(<source-id>)`
 with `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`, one label per line, naming the source that
-has the member. The files themselves are never committed, and no address, type or decorated name from them goes
-into a unit; `compare` still decides. `start` prints up to 12 of these names for the started class, each with its
+has the member. The files themselves are never committed; `compare` still decides. For the 2013 map and the Fallout 4 PDBs
+the maintainer widened use to any extent (prototypes, order, layouts, vtables; downloads and rules in
+`docs/contributing-agent.md`, "2013 map and Fallout 4 PDB"; only `.map`/`.pdb`, no bundled executables, never
+commit a dump or excerpt). The Xbox 360 files stay name-only, and no map address goes into a unit. `start` prints up to 12 of these names for the started class, each with its
 `<source-id>`, as candidates only.
 
 ## Mapping-only PRs

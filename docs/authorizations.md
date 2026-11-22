@@ -82,6 +82,8 @@ Terra Reviewer acceptance-rule change (maintainer confirmation by awarebayes, 20
 
 Sol strong Reviewer decision (maintainer decision by awarebayes, 2026-11-13, recorded by an Engineer; verbatim): "you can use sol instead of opus fyi" and, when a Sol calibration was started, "sol is goood enough dont waste time". Scope: exactly `gpt-6.1-sol` under `claude-low` for any review and the strong duties, including sampling second Reviewer passes, confirmation of non-Opus escalations, and reviews of comparator, validator, verifier and acceptance-rule changes. Sol is admitted by maintainer decision WITHOUT a calibration, unlike Terra; no Sol calibration pass or parity claim is made. Limits: Terra remains the default first function Reviewer, every second pass under `claude-low` uses a different model from the first review, and Reviewer independence is per run: fresh context, never the run that drafted, engineered, triaged or first-reviewed the function. Outside `claude-low`, Opus retains these strong review duties. This confirms the systemic escalation for this rule change, scoped to `gpt-6.1-sol` under `claude-low`: the change was reviewed by independent Opus Reviewers (saved reviews p48 and p52, no blocking findings after the p50 fixes) and the maintainer statements quoted above are the confirmation. This is a new acceptance-rule and strong-Reviewer-model version for the sampling safeguard. The deterministic two-host comparator evidence, validator, lint and definition of a match are unchanged.
 
+Sonnet Reviewer decision (maintainer decision by awarebayes, 2026-11-22, recorded by an Engineer; verbatim): "get sonnet admitted now, no eu council decision just edit md". Scope: exactly `claude-sonnet-5-5` under every profile, including `cheap` and `claude-low`, for any review (ordinary, delta and full) and for the strong duties (confirmation of a non-Opus `escalate`, reviews of comparator, validator, verifier and acceptance-rule changes). Sonnet is admitted by maintainer decision WITHOUT a calibration, as Sol was; no calibration pass or parity claim is made. It is also the pr-bot's fallback reviewer when Codex is unavailable and the default Reviewer in the profiles, so Opus is no longer chosen automatically. Limits: Reviewer independence is per run, and a second pass uses a different model from the first review. The deterministic two-host comparator evidence, validator, lint and definition of a match are unchanged.
+
 Terra and Sol Engineer work on local analysis output (maintainer authorization by awarebayes, 2026-11-13, recorded by an Engineer). Verbatim: "ok lets build the generator i think its easy to do? Lets do it with gpt terra subagent? I am running out of my claude sub so lets use gpt terra instead of opus here more?" and "in this session"; the Sol substitution was also authorized by "you can use sol instead of opus fyi". Scope: Terra and Sol, through the maintainer's Codex subscription, may perform Engineer work in this session, including reading local analysis output and reconstructed source for tooling, generator work and integration. This is an exposure and Engineer-role authorization, not a Reviewer calibration or evidence of a match. Limits: nothing game-derived goes into tracked files under this authorization; private analysis stays under `.local/`, no game bytes or raw listings are published, and there is no change to what counts as a match. No Reviewer may review work it drafted, engineered or triaged. This does not grant paid compute or cloud game-data placement.
 
 Engineer role allocation (maintainer statements by awarebayes, 2026-11-13, supplied to the planning orchestrator and recorded by an Engineer): "you can use sol instead of opus fyi" and "lets also use sonnet 5 more for example for merging etc does not need opus". Scope: Opus remains the default Engineer, Sol is the Engineer under `claude-low`, and Sonnet may perform routine merging and integration. This records role allocation only; it grants no additional data exposure, compute or match acceptance.
@@ -219,10 +221,10 @@ the map is a linker map of a 32-bit 2013 build of this game. The Fallout 4 progr
 source from the permitted Fallout 4 game-code sibling recorded in LEGAL.md and AGENTS.md; nothing about that
 sibling's anonymity or terms applies to it or changes because of it.
 
-- Scope: name evidence only. Public symbols read from these files give class-member names and the object file
-  names of a class's functions, as candidates and corroboration for names and for the original translation units.
-  They carry no address, type layout, decorated name or code, and they are not evidence about the pinned image: a
-  byte match remains the only acceptance.
+- Scope: `tesv-2013-map` and `fo4-pdb` are widened to full use by the 2026-11-22 decision below. The three
+  `fnv-x360-pdb` files keep the original scope: name evidence only, giving class-member names and the object file
+  names of a class's functions, with no address, type layout, decorated name or code. None of them is evidence about
+  the pinned image: a byte match remains the only acceptance.
 - Committed as they are: `tools/symbol_corroboration.py`, `data/name-corroboration.json`, `data/symbol-names.json`
   and `findings/sibling-symbol-files.md` may stay in the repository as submitted. Regenerating them uses the five
   files held locally.
@@ -236,8 +238,39 @@ sibling's anonymity or terms applies to it or changes because of it.
 - Exposing these names (the two data files and what the tool prints from them) to a cloud model is authorized under
   the same decision. The symbol files themselves are not uploaded to any service, and this note changes no other
   exposure scope.
-- Scope limit: these five files only. Leaked or Bethesda debug symbols, other MAP files and other PDBs stay forbidden
-  (`AGENTS.md`, `LEGAL.md`). Fixtures and tests use invented names.
+- Scope limit: these five files, plus `Fallout4Beta.pdb` from the 2026-11-22 decision. Leaked or Bethesda debug
+  symbols, other MAP files and other PDBs stay forbidden (`AGENTS.md`, `LEGAL.md`). Fixtures and tests use invented
+  names.
+
+#### Widened scope for the 2013 map and the Fallout 4 program databases (2026-11-22)
+
+Maintainer decision by awarebayes, 2026-11-22. It supersedes the "name evidence only" scope above for these files:
+
+- `tesv-2013-map` (the linker map above).
+- `fo4-pdb`, Fallout4.pdb dated 2019-10-23 (SHA-256 above).
+- `Fallout4Beta.pdb` from the same archive, 670,411,776 bytes, SHA-256 `9398b7f82aa08e0b-95cb88744af433e5-7303175f5085cf64-ec45f04e9081a099`
+  (same four-group convention). It is used under the source id `fo4-pdb`.
+
+These may be used to any extent: decorated names and prototypes, addresses and function order in the map,
+object-file grouping, and type layouts, vtables and class hierarchies from the program databases. Contributor docs
+may link the public download archives (`debugging.games`, the Fallout 4 2019-10-23 PDB archive and the Skyrim
+2013-07-17 MAP archive; links in `docs/contributing-agent.md`), and a contributor may unpack and use them to the
+same extent.
+
+Limits that stay:
+
+- The symbol files, and any dump, export or excerpt of them, are never committed, attached, quoted in a pull
+  request, issue, log or CI artifact, or redistributed by the project. Linking the external archive is fine;
+  mirroring it is not. Derived data (proposed names, prototypes, confidence) may be committed; map addresses,
+  raw symbol listings and excerpts may not.
+- A name taken from them carries `SYMBOLS(<source-id>)` (`tesv-2013-map` or `fo4-pdb`). It is never evidence of
+  identity; a byte match remains the only acceptance. Map and PDB addresses are for another build and are not
+  transferred to the pinned image.
+- The archives also bundle game executables (`TESV.exe`, `Fallout4.exe`, `Fallout4Beta.exe`). The project does not
+  use them. Only the `.map` and `.pdb` files are in scope; third-party game binaries stay out of scope.
+- The `fnv-x360-pdb` files keep the name-only scope. The anonymous `fo4-private` game-code sibling is a separate
+  source and is unaffected.
+- Internal copies live under `.local/inputs/symbols/` and are never added.
 
 ## Primary host and internal sampling directive (2026-11-17)
 

@@ -57,12 +57,12 @@ class FallbackTests(unittest.TestCase):
         state.once = lambda key, fn: state.data.setdefault(key, fn())
         text = self.bot.reviewed(state, 'review_text', lambda: self.bot.run_model('prompt', self.out))
         self.assertEqual(self.names(), ['codex', 'claude'])
-        self.assertEqual(state.data['reviewer'], 'claude-sonnet')
+        self.assertEqual(state.data['reviewer'], 'claude-sonnet-5-5')
         claude = self.calls[1]
         self.assertEqual(claude[2]['input'], b'prompt')
         self.assertEqual(claude[2]['cwd'], self.dir)
         self.assertEqual(claude[1][claude[1].index('--tools') + 1], 'Read,Grep,Glob')
-        self.assertIn('sonnet', claude[1])
+        self.assertIn('claude-sonnet-5-5', claude[1])
 
     def test_a_missing_codex_binary_falls_back(self):
         self.codex = (FileNotFoundError('codex'), b'', b'')

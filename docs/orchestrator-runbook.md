@@ -74,8 +74,8 @@ your harness does:
 | any other (two terminals) | open a second terminal in this repository, start the named model's CLI there (Claude Code, Codex) with the model and effort given, and paste the prompt line. Wait for its return table. |
 
 **Reviewer model.** The acceptance rule (`docs/verification.md`, "Admitted Reviewer classes")
-admits Opus by default and `gpt-6.1-terra` under `claude-low`; Sonnet is pending calibration and
-a Reviewer-checked rule change. Under `claude-low`, Sol is admitted for any review and Terra
+admits Opus by default and `gpt-6.1-terra` under `claude-low`; `claude-sonnet-5-5` is admitted for any review
+and the strong duties under every profile, without calibration. Under `claude-low`, Sol is admitted for any review and Terra
 is the default first Reviewer; exactly `gpt-6.1-sol` is the strong Reviewer
 for sampling second passes, confirmation of non-Opus escalations and reviews of comparator,
 validator, verifier and acceptance-rule changes. Sol was admitted by maintainer decision WITHOUT

@@ -157,6 +157,23 @@ the start of each session; push fixes to the same branch and never force-push ov
 symbol files (label `SYMBOLS(tesv-2013-map|fo4-pdb|fnv-x360-pdb)`; a name hint, never identity
 evidence); see `findings/sibling-symbol-files.md`. Contributed by lemiur (#572).
 
+## Optional: 2013 map and Fallout 4 PDB (full use)
+
+The maintainer authorized using the Skyrim 2013 linker map and the Fallout 4 PDBs to any extent: decorated names
+and prototypes, map order and object-file grouping, type layouts, vtables and class hierarchies
+(`docs/authorizations.md`, Notes).
+
+- Download, from `debugging.games` (the file names are given here, URL-encoded as the site lists them under
+  `https://debugging.games/_files/Windows/`): the Fallout 4 2019-10-23 PDB archive,
+  `[WIN]%20Fallout%204%20[2019-10-23]%20(PDB).7z`, and the Skyrim 2013-07-17 map archive,
+  `[WIN]%20The%20Elder%20Scrolls%20V%20Skyrim%20[2013-07-17]%20(MAP).7z`.
+- Extract only the `.map` and the `.pdb` files into `.local/`. The archives also hold game executables; the
+  project does not use them and third-party game binaries stay out of scope.
+- Label every name taken from them `SYMBOLS(tesv-2013-map)` or `SYMBOLS(fo4-pdb)`. A name is a hint, never identity;
+  only a byte match is acceptance. Addresses are from other builds.
+- Never commit, attach or quote the files, dumps, listings or excerpts anywhere (PR, issue, log, CI). Derived
+  names, prototypes and confidence may be committed. The Xbox 360 New Vegas PDBs stay name-only.
+
 ## Questions
 
 Ask in the project Discord: https://discord.gg/tbXD8gwgjJ. The publication rules apply there too:
