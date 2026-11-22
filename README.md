@@ -62,7 +62,7 @@ Regenerate from tracked first-parent history in a full checkout with
 
 On Windows, use `.\sr.cmd` in place of `./sr`.
 You need git, Python 3.11+, a GitHub account and your own Steam copy.
-`./sr next` suggests a function; claims appear as issues.
+`./sr next` suggests a function; claims appear as issues. Bigger PRs are welcome: 50 to 200 functions, one PR per family, and subagents for the drafting ([how](docs/contributor-card.md)).
 See the [agent guide](docs/contributing-agent.md) and [contribution guide](CONTRIBUTING.md).
 Tip: if cloning stalls, run `git -c http.version=HTTP/1.1 clone https://github.com/Mudcrab-Team/skyrim_decomp.git`.
 

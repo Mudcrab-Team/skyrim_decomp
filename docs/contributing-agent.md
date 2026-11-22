@@ -14,9 +14,26 @@ verifier hosts.
 
 A function counts as `matched` only after both host comparisons and one review; a local pass is a
 candidate. A function that fails stays a draft and the bot comment names a reason code. The bot keeps
-one comment per PR and edits it for each new push. Fix it and push to the same branch. Aim for about 20-120 functions per PR (120 is the per-PR cap), or fewer if they are large; one
-big function is a fine PR on its own. Classes can be mixed; open one PR per batch rather than one
-per class, since each PR costs a full verification and merge cycle.
+one comment per PR and edits it for each new push. Fix it and push to the same branch.
+Aim for 50 to 200 functions per PR (200 is the per-PR cap); more is fine, and one PR per family or
+class is ideal. A single large function is also a fine PR on its own. Classes can be mixed. Fewer,
+bigger PRs help most: each PR costs a full verification and merge cycle, and large batches have
+merged cleanly in about an hour. Thank you, don't be shy.
+
+## Big batches: use subagents
+
+Don't try to do it all in one go; spawn subagents (Claude Code's Agent tool, Codex subagents or any
+equivalent). Cheaper models are fine for drafting.
+
+1. The lead agent picks one family or class and runs `start` for 50 to 150 functions.
+2. It splits them into batches of 10 to 15 and gives each subagent one batch.
+3. Each subagent works in its own worktree and its own new unit files, one unit per function. It
+   never edits a shared header or an already matched unit, since that makes matched functions stale.
+4. Each subagent loops `compare` on its tasks until PASS and gives up on a function after a few tries.
+5. The lead merges the passing branches into one, runs `submit --dry-run`, and opens one PR with
+   `submit --all-dirty`.
+
+Worktree and storage setup for this is in [contributor-parallel.md](contributor-parallel.md).
 
 ## Skills
 

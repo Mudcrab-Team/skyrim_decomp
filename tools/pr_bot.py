@@ -68,6 +68,7 @@ import traceback
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import drafter_claim  # noqa: E402
 import header_check  # noqa: E402
+from contrib_publication import MAX_FUNCTIONS  # noqa: E402
 import lint_reconstruction  # noqa: E402
 import mapping_check  # noqa: E402
 import pr_autofix  # noqa: E402
@@ -116,8 +117,11 @@ STICKY = '<!-- pr-bot -->'
 STICKY_PREFIX = '<!-- pr-bot'
 # Small in both ways: a large single function must never be asked to batch, so an unknown size never asks.
 BATCH_MIN, BATCH_BYTES = 10, 2048
-BATCH_LINE = ('Small request: please batch 20 to 120 functions in one PR next time (mixing classes is fine); each PR '
-              'costs a full verification and merge cycle. This one is still processed.')
+BATCH_LINE = ('Small request: please batch 50 to 200 functions in one PR next time, one PR per family is ideal and '
+              'mixing classes is fine; each PR costs a full verification and merge cycle. This one is still processed.')
+# A merged PR this large gets a thank-you inside the one sticky comment.
+BIG_PR_FUNCTIONS = 50
+BIG_PR_THANKS = 'Thank you for a big batch. Send the next one whenever it is ready; more per PR is welcome.'
 RUNBOOK = 'docs/reviewer-runbook.md'
 # Generated from data/progress.json; a mapping PR omits them and the bot regenerates them on main.
 GENERATED = frozenset(('reconstruction/INDEX.md', 'docs/progress.svg', 'docs/progress-map.svg'))
@@ -953,6 +957,8 @@ def outcome_body(sha, decision, leak_codes=()):
     done = [r for r, v in decision['verdicts'].items() if v == 'matched']
     if done:
         lines.append('Merged and recorded: ' + ', '.join(f'0x{r:x}' for r in sorted(done)) + '.')
+        if len(done) >= BIG_PR_FUNCTIONS:
+            lines.append(BIG_PR_THANKS)
     failed = {r: v.split(':', 1)[1] for r, v in decision['verdicts'].items() if v.startswith('fail:')}
     if failed:
         lines.append('Not accepted yet (they stay drafted; push a fix and the bot re-checks the new head):')
@@ -1174,7 +1180,7 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = {**dict(model_timeout=2250, compare_timeout=3600, hash_wait=1800, max_functions=120),
+        self.config = {**dict(model_timeout=3000, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
         self.clock = time.time

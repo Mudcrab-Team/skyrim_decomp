@@ -72,6 +72,8 @@ for _p in (TOOLS, TOOLS / 'verifier', TOOLS / 'analysis', TOOLS / 'ghidra'):
 OK, FAILED, USAGE, COMPILE, UNIT, MISSING, CLAIMED, CONSENT, NETWORK = 0, 1, 2, 3, 4, 5, 6, 7, 8
 UPSTREAM = repo_slug.DEFAULT_SLUG
 COMPILE_TIMEOUT = 180
+# Below this many functions `submit` suggests a bigger batch.
+SMALL_PR_FUNCTIONS = 20
 # Contributor units are small; a cap keeps a pathological file away from the compiler and reviewers.
 MAX_UNIT_FILE_BYTES = 64 * 1024
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
@@ -2720,6 +2722,11 @@ def cmd_submit(ctx, args):
     ctx.say(data['ci_hash']['advice'])
     ctx.say('A local pass is not acceptance: the project re-runs the comparison on two of its own hosts and a '
             'Reviewer checks the source before the function is recorded as matched.')
+    count = sum(len(t_['functions']) for _d, t_ in picked)
+    if count < SMALL_PR_FUNCTIONS:
+        ctx.say(f'Hint: this PR has {count} function(s). Bigger is welcome: 50 to 200 per PR, one PR per family. '
+                "Don't do it all in one go: split a family into batches of 10-15 and give each to a subagent "
+                '(recipe in docs/contributor-card.md), then submit them together with `--all-dirty`.')
     if args.dry_run:
         plan = [f'git push --dry-run {push or "<your fork remote>"} HEAD', f'git add {" ".join(unit)}', f'{ctx.cli} preflight --staged --base {base}',
                 f'git commit -m "{title}" -- {" ".join(unit)}',f'git push {push or "<your fork remote>"} HEAD',

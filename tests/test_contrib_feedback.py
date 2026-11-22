@@ -32,7 +32,7 @@ def sticky(short, text, batch=False):
     """Synthetic body in the intake bot's sticky-comment layout."""
     lines = ['<!-- pr-bot -->', f'Bot status for head {short} (this comment is updated in place on each push).', '', text]
     if batch:
-        lines += ['', 'Small request: please batch 20 to 120 functions in one PR next time.']
+        lines += ['', 'Small request: please batch 50 to 200 functions in one PR next time.']
     return '\n'.join(lines)
 
 
