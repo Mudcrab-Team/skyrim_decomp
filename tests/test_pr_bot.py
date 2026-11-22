@@ -914,8 +914,10 @@ class CompanionProcessTests(unittest.TestCase):
         bot = FakeBot(self.work)
         bot.stale = [0x20]
         bot.refused = {0x20}
-        out = bot.process(PR)
-        self.assertEqual((out['blocked'], out['merge']), ('record', False))
+        with self.assertRaisesRegex(pr_bot.Stop, 'record could not be written'):  # retried by the poll
+            bot.process(PR)
+        self.assertEqual(pr_bot.State(self.work / 'state', 7, HEAD).get('summary')['blocked'], 'record')
+        self.assertFalse(pr_bot.State(self.work / 'state', 7, HEAD).get('done'))
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
         body = bot.seen('gh', 'pr', 'comment')[0][-1]
         self.assertIn('0x20', body)
@@ -934,8 +936,9 @@ class CompanionProcessTests(unittest.TestCase):
     def test_a_companion_whose_record_cannot_be_built_blocks_before_the_merge(self):
         bot = self.bot()
         bot.refused = {0x30}
-        out = bot.process(PR)
-        self.assertEqual((out['blocked'], out['merge']), ('record', False))
+        with self.assertRaisesRegex(pr_bot.Stop, 'record could not be written'):
+            bot.process(PR)
+        self.assertEqual(pr_bot.State(self.work / 'state', 7, HEAD).get('summary')['blocked'], 'record')
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
         self.assertEqual(bot.seen('record'), [])
 
@@ -1325,18 +1328,18 @@ class Host1Tests(unittest.TestCase):
         got, _ = self.host1()
         self.assertEqual(got, {0x10: 'regressed', 0x20: 'pass'})
 
-    def test_a_head_without_a_run_gets_a_probe_branch_and_draft_pr_once(self):
+    def test_a_head_without_a_run_is_cycled_draft_and_ready_once_and_never_gets_a_probe_pr(self):
         calls = []
         self.job['name'] = 'other'
         self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
-        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if '/check-runs' in a[1] else ([] if a[0] == 'pr' else {'workflow_runs': []})
+        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if '/check-runs' in a[1] else (
+            {'state': 'OPEN', 'isDraft': False} if a[0] == 'pr' else {'workflow_runs': []})
         with self.assertRaises(pr_bot.Stop):
             self.host1()
-        branch = [c for c in calls if c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c]
-        self.assertEqual(len(branch), 1)
-        self.assertIn('ref=refs/heads/probe/pr-7', branch[0])
-        self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
-        self.assertIn('--draft', [c for c in calls if c[:3] == ['gh', 'pr', 'create']][0])
+        ready = ['gh', 'pr', 'ready', '7', '-R', pr_bot.REPOSITORY]
+        self.assertEqual(calls.count([*ready, '--undo']), 1)
+        self.assertEqual(calls.count(ready), 1)
+        self.assertFalse([c for c in calls if c[:3] == ['gh', 'pr', 'create'] or c[:4] == ['gh', 'api', '-X', 'POST']])
 
     def sweep(self, probes, targets, run_status='in_progress', done=False):
         calls = []
@@ -1399,17 +1402,18 @@ class Host1Tests(unittest.TestCase):
         self.bot.warm(pr)
         self.assertEqual(probed, [7])
 
-    def test_a_finished_run_without_a_result_triggers_one_probe_then_stops(self):
+    def test_a_finished_run_without_a_result_triggers_one_request_then_stops(self):
         calls = []
         self.files.pop('hash-result.json')
         self.job['id'] = 1
         base_run = self.bot.run
         self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or base_run(argv, **kw)
         orig = self.bot.gh_json
-        self.bot.gh_json = lambda *a: [] if a[0] == 'pr' else orig(*a)
+        self.bot.gh_json = lambda *a: {'state': 'OPEN', 'isDraft': False} if a[0] == 'pr' else orig(*a)
         with self.assertRaises(pr_bot.Stop):
             self.host1()
-        self.assertEqual(len([c for c in calls if c[:3] == ['gh', 'pr', 'create']]), 1)
+        self.assertEqual(len([c for c in calls if c[:4] == ['gh', 'pr', 'ready', '7'] and '--undo' in c]), 1)
+        self.assertFalse([c for c in calls if c[:3] == ['gh', 'pr', 'create']])
 
     def test_a_missing_artifact_is_retried_not_trusted(self):
         self.files.pop('hash-result.json')
@@ -1425,7 +1429,7 @@ class Host1Tests(unittest.TestCase):
     def test_a_stale_run_ahead_of_the_probe_does_not_end_the_wait(self):
         # The fork's own run (stale base, no artifact) finishes before the probe's run has appeared.
         probed = []
-        self.bot.probe_hash_run = lambda number, head: probed.append(number)
+        self.bot.probe_hash_run = lambda number, head, force=False: probed.append(number) or True
         self.bot.approve_pending = lambda head: None
         self.job.update(id=1, conclusion='failure', started_at='2000-01-01T00:00:00Z')
         self.files.pop('hash-result.json')
@@ -1441,7 +1445,7 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(probed, [7])
 
     def test_a_probe_run_without_a_result_is_a_real_stop(self):
-        self.bot.probe_hash_run = lambda number, head: None
+        self.bot.probe_hash_run = lambda number, head, force=False: True
         self.bot.approve_pending = lambda head: None
         self.job.update(id=1, started_at='2000-01-01T00:00:00Z')
         self.files.pop('hash-result.json')

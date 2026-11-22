@@ -147,7 +147,7 @@ class BotRowsTests(unittest.TestCase):
 class Host1FreshRunTests(unittest.TestCase):
     """After rows are published, the head's earlier hash run (against the old base) is not used."""
 
-    def test_an_older_run_is_set_aside_and_a_new_probe_is_requested(self):
+    def test_an_older_run_is_set_aside_and_a_new_run_is_requested(self):
         with tempfile.TemporaryDirectory() as tmp:
             bot = pr_bot.Bot(root=ROOT, work=Path(tmp))
             bot.config['hash_wait'] = 0
@@ -155,14 +155,13 @@ class Host1FreshRunTests(unittest.TestCase):
                    'started_at': '2026-01-01T00:00:00Z', 'details_url': 'https://github.com/o/r/actions/runs/1/job/9'}
             calls = []
             bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
-            bot.gh_json = lambda *a: {'check_runs': [old]} if '/check-runs' in a[1] else ([] if a[0] == 'pr' else {'workflow_runs': []})
+            bot.gh_json = lambda *a: {'check_runs': [old]} if '/check-runs' in a[1] else ({'state': 'OPEN', 'isDraft': False} if a[0] == 'pr' else {'workflow_runs': []})
             state = pr_bot.State(Path(tmp) / 's', 7, HEAD)
             state.set('rows_at', '2026-01-02T00:00:00Z')
             with self.assertRaises(pr_bot.Stop):
                 bot.host1(7, HEAD, [0x10], state, {})
-            self.assertTrue(any(c[:5] == ['gh', 'api', '-X', 'DELETE', f'repos/{pr_bot.REPOSITORY}/git/refs/heads/probe/pr-7']
-                                for c in calls))
-            self.assertTrue(any(c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c for c in calls))
+            self.assertIn(['gh', 'pr', 'ready', '7', '-R', pr_bot.REPOSITORY, '--undo'], calls)
+            self.assertFalse(any(c[:4] == ['gh', 'api', '-X', 'POST'] for c in calls))
             self.assertFalse(any(c[:3] == ['gh', 'run', 'download'] for c in calls))
 
 
@@ -195,7 +194,7 @@ class Host1LateRowTests(unittest.TestCase):
         if '/artifacts' in args[1]:
             return {'artifacts': [{'name': 'hash-result'}]}
         if args[0] == 'pr':
-            return []
+            return {'state': 'OPEN', 'isDraft': False}
         return {'id': 555, 'head_sha': HEAD}
 
     def fake_run(self, argv, **kw):
@@ -220,7 +219,7 @@ class Host1LateRowTests(unittest.TestCase):
             self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
         self.assertEqual(self.state.get('rows_rerun'), [0x20])
         self.assertIsNotNone(self.state.get('rows_at'))
-        self.assertTrue(any(c[:4] == ['gh', 'api', '-X', 'POST'] and f'sha={HEAD}' in c for c in self.calls))
+        self.assertIn(['gh', 'pr', 'ready', '7', '-R', pr_bot.REPOSITORY, '--undo'], self.calls)
 
     def test_a_no_target_without_a_published_row_is_taken_as_it_is(self):
         got = self.bot.host1(7, HEAD, [0x10, 0x30], self.state, {})
