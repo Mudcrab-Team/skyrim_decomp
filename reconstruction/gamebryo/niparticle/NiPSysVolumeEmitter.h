@@ -1,4 +1,7 @@
 // Source exposure: mixed (pinned image and cited public declarations).
+// 0xfc0390 compared function
+// 0xfc0340 compared function
+// 0xfc0310 compared function
 // Code origin: original reconstruction using the cited names and partial base declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiPSysVolumeEmitter: GUESS(low)
