@@ -289,6 +289,34 @@ class LandWithRecordsTests(WorkDir):
         self.assertFalse(self.land())
         self.assertEqual(git(self.origin, 'rev-parse', 'main'), self.base)
 
+    def test_unit_symbol_maps_removed_by_the_tree_clean_are_bound_again_before_the_records_are_written(self):
+        # The records name an untracked, content-addressed map that the clean of reports/ deletes; record.py
+        # refuses every function without it, and the fallback squash then leaves each accepted record stale on main.
+        task = self.tree / '.local/tasks' / f'prbot-{PR["number"]}-{self.head[:8]}-0'
+        task.mkdir(parents=True)
+        (task / 'task.json').write_text(json.dumps(dict(task_id='t', symbols='reports/unit-symbols/m.json',
+                                                        functions=[dict(rva='0x1000')])))
+        stray = self.tree / 'reports/unit-symbols'
+        stray.mkdir(parents=True)
+        (stray / 'm.json').write_text('{}')
+        bound = []
+
+        def run(argv, cwd=None, input=None, timeout=None, check=True):
+            names = [str(a) for a in argv]
+            if any(n.endswith('bind.py') for n in names):
+                bound.append(True)
+                (self.tree / 'reports/unit-symbols').mkdir(parents=True, exist_ok=True)
+                (self.tree / 'reports/unit-symbols/m.json').write_text('{}')
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if any(n.endswith('record.py') for n in names) and not (self.tree / 'reports/unit-symbols/m.json').is_file():
+                out = json.dumps({'recorded': [], 'refused': {'0x1000': 'symbol map does not exist'}, 'files': []})
+                return subprocess.CompletedProcess(argv, 1, out.encode(), b'')
+            return self.sh(argv, cwd, check)
+        self.bot.run = run
+        self.bot.config = dict(compare_timeout=5)
+        self.assertTrue(self.land())
+        self.assertEqual(bound, [True])
+
     def test_a_head_that_moved_is_not_landed(self):
         self.bot.gh_json = lambda *a: {'headRefOid': 'd' * 40, 'state': 'OPEN'}
         self.assertFalse(self.land())

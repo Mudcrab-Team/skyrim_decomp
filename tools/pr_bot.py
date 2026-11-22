@@ -3204,6 +3204,12 @@ class Bot:
             names = git('diff', '--cached', '--name-only', '-z').stdout.decode(errors='replace').split('\0')
             if any(n and not n.startswith(SCOPE_PREFIX) for n in names):
                 return abandon()
+            # The clean above drops the untracked unit symbol maps the records point at; without them
+            # record.py refuses every function and the plain squash lands with all records still stale.
+            try:
+                self.rebind_unit_maps(number, head, rvas)
+            except Stop:
+                return abandon()
             build = json.loads((tree / 'builds/target.json').read_text())['build_id']
             inventory = json.loads((tree / 'data/progress.json').read_text())
             matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
@@ -3250,6 +3256,8 @@ class Bot:
         if not rvas:
             state.set('recorded', True)
             return
+        # Checking out main again cleaned the untracked unit symbol maps the records name.
+        self.rebind_unit_maps(pr['number'], pr['headRefOid'], rvas)
         review = Path(self.work / 'reviews' / f'pr{pr["number"]}-{pr["headRefOid"][:12]}.txt')
         argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--push',
                 '--task-id', task_id, '--author', pr['author']['login'],
