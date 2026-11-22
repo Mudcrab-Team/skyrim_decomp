@@ -530,6 +530,26 @@ class Replay(unittest.TestCase):
 
 
 class ConcurrentPrTests(Replay):
+    def test_the_pack_export_gets_a_timeout_that_grows_with_the_rows_and_its_own_process_group(self):
+        tree = self.bot.tree
+        (tree / 'builds').mkdir(parents=True, exist_ok=True)
+        (tree / 'builds/target.json').write_text(json.dumps({'build_id': BUILD}))
+        rvas = list(range(0x1000, 0x1000 + 0x10 * 150, 0x10))
+        cpp = unit_path(0x1000)
+        (tree / cpp).parent.mkdir(parents=True, exist_ok=True)
+        (tree / cpp).write_text(unit(0x1000))
+        seen = []
+
+        def run(argv, **kw):
+            seen.append(kw)
+            raise subprocess.TimeoutExpired(argv, kw.get('timeout'))
+        self.bot.run = run
+        with self.assertRaises(pr_bot.HostFailure):
+            pr_bot.Bot.compare_on_host(self.bot, {cpp: rvas}, '7-abcdef01')
+        self.assertEqual(seen[0]['timeout'], pr_bot.pack_export_timeout(150))
+        self.assertGreater(seen[0]['timeout'], 900 + 150)
+        self.assertTrue(seen[0]['own_group'])
+
     def test_two_prs_are_worked_at_once_on_their_own_trees_and_both_land_in_one_commit_each(self):
         self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
         self.w.make_pr(8, {unit_path(0x2000): unit(0x2000)}, author='bob')
