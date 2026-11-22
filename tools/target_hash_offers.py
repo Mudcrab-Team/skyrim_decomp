@@ -203,12 +203,16 @@ def select_on_demand(metadata, known, extra, retained=()):
             refused[rva] = 'locally-unsupported'
         else:
             accepted.add(rva)
+    # The cap bounds what one run newly publishes. A retained row belongs to a claim already published, and
+    # cutting it by RVA order would drop the rows of a PR that is still being checked or has merged unrecorded.
+    fresh = sorted(accepted)[:ON_DEMAND_MAX]
+    kept = set()
     for rva in retained:
         fn = metadata.get(rva)
         if rva not in known and fn and fn.get('kind') == 'ordinary' and fn.get('size') \
                 and (fn.get('v2') or {}).get('verdict') in VERDICT_RANK:
-            accepted.add(rva)
-    return sorted(accepted)[:ON_DEMAND_MAX], refused
+            kept.add(rva)
+    return sorted(set(fresh) | kept), refused
 
 
 def retained_on_demand(root):

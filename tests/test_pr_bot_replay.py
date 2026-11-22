@@ -258,6 +258,8 @@ class World:
         self.compile_error = None
         self.bound = []
         self.bind_fails = False
+        self.stale = []  # accepted functions the PR's units outdate
+        self.refused_records = set()  # functions the record builder refuses
         self.stale_hints = set()  # hint names bind ignores: not defined in the compiled object
         self.recorded = []
         self.wipe_maps_on_merge = False
@@ -488,7 +490,7 @@ class ReplayBot(pr_bot.Bot):
         return {}
 
     def stale_accepted(self, units, files):
-        return []
+        return list(self.world.stale)
 
     def removed_accepted(self, units, files, named):
         return []
@@ -526,7 +528,7 @@ class ReplayBot(pr_bot.Bot):
     def build_records(self, tag, units, rvas, state):
         records = self.work / 'records' / tag.replace('/', '-')
         records.mkdir(parents=True, exist_ok=True)
-        return records, set()
+        return records, set(self.world.refused_records) & set(rvas)
 
     def compare_on_host(self, units, tag):
         """The compile host: leaves the comparator reports and the task's unit symbol map where the real one does."""
@@ -1319,6 +1321,52 @@ class CircuitBreakerTests(Replay):
         state = self.w.state(self.bot, 7)
         self.assertIsNone(state.get('bot_error'))
         self.assertTrue(self.merged(7))
+
+
+class RecordBlockRetryTests(Replay):
+    """A head blocked on `record` is a bot or host fault: it is tried again, bounded by the breaker."""
+
+    def setUp(self):
+        super().setUp()
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        self.w.stale = [0x1000]
+        self.w.refused_records = {0x1000}
+
+    def test_the_head_is_retried_and_merges_once_the_record_can_be_written(self):
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertFalse(self.w.state(self.bot, 7).get('done'))
+        self.w.refused_records = set()
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+
+    def test_three_identical_refusals_open_the_breaker_and_stop_the_retries(self):
+        log = self.w.poll(self.bot, times=3)
+        state = self.w.state(self.bot, 7)
+        self.assertEqual(state.get('blocked'), 'bot-error')
+        self.assertEqual(log.count('BLOCKED bot-error'), 1)
+        seen = len(self.w.compiled)
+        quiet = self.w.poll(self.bot, times=2)
+        self.assertEqual(len(self.w.compiled), seen)
+        self.assertNotIn('BLOCKED', quiet)
+        self.assertFalse(self.merged(7))
+
+    def test_a_head_left_done_by_an_older_run_is_looked_at_again(self):
+        self.w.poll(self.bot)
+        state = self.w.state(self.bot, 7)
+        state.set('done', True)  # what the previous code wrote for a blocked=record head
+        state.drop('failure')
+        state.drop('bot_error')
+        self.w.refused_records = set()
+        self.w.poll(self.bot)
+        self.assertTrue(self.merged(7))
+
+    def test_a_merged_head_with_blocked_record_summary_stays_settled(self):
+        state = self.w.state(self.bot, 7)
+        state.set('summary', dict(blocked='record'))
+        state.set('done', True)
+        state.set('merged', True)
+        self.assertTrue(pr_bot.settled(state))
 
 
 class SignatureTests(unittest.TestCase):

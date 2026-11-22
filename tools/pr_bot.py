@@ -455,6 +455,18 @@ HOST_FAILURE_COMMENT = ('A verifier host did not complete the comparison of this
                         'The bot retries with a growing delay, and re-checks at once on a new push.')
 
 
+def settled(state):
+    """True when a head needs no further look from the poll.
+
+    A head that ended blocked on `record` (the bot or its host could not write a record for an accepted
+    function) is not settled: that is a fault on our side, not a verdict on the PR, so it is tried again
+    and the circuit breaker bounds the tries.
+    """
+    if not state.get('done'):
+        return False
+    return state.get('merged') or (state.get('summary') or {}).get('blocked') != 'record'
+
+
 def failure_record(previous, signature, now, post=False):
     """The failure ledger for one head after one more failure with `signature`.
 
@@ -2354,7 +2366,7 @@ class Bot:
     def warm(self, pr):
         """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
         number, head = pr['number'], pr['headRefOid']
-        if State(self.work / 'state', number, head).get('done') or pr.get('mergeable') == 'CONFLICTING':
+        if settled(State(self.work / 'state', number, head)) or pr.get('mergeable') == 'CONFLICTING':
             return
         if self.latest_hash_run(head):
             return
@@ -2610,7 +2622,7 @@ class Bot:
     def _process(self, pr, base=None):
         number, head = pr['number'], pr['headRefOid']
         state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
-        if state.get('done'):
+        if settled(state):
             return state.data
         if pr.get('mergeable') == 'CONFLICTING' and not state.get('merged'):
             return self.conflicting(pr, state)
@@ -3293,6 +3305,11 @@ class Bot:
             pr = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
             pr['headRefOid'] = head
             slot = self.task_slot(number, head)
+            try:
+                self.republish_rows(rvas)
+            except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
+                print(f'{stamp()} pr {number}: row republish: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+                continue
             with self.land_lock:
                 try:
                     slot.rebind_unit_maps(number, head, rvas)
@@ -3302,6 +3319,35 @@ class Bot:
                     continue
             recorded.append(number)
         return recorded
+
+    def republish_rows(self, rvas):
+        """Publish again the target rows a merged PR's record step needs and main no longer carries.
+
+        The record step resolves a function that has no inventory row from its published target row; a row
+        dropped after the PR was checked leaves every such function refused as "not in inventory". The rows
+        go through the same publisher as for an open PR's claims. Returns the RVAs published.
+        """
+        import claimable
+        import target_hash_offers
+        with self.root_lock:
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+            self.run(['git', 'checkout', '--quiet', '--force', '-B', 'record', 'origin/main'], cwd=self.tree)
+        inventory = {f['rva'] for f in json.loads((self.tree / 'data/progress.json').read_text())['functions']}
+        missing = sorted(set(rvas) - self.target_rvas() - inventory)
+        if not missing:
+            return []
+        table = claimable.load_table(os.environ.get('SR_FUNCTION_TABLE') or self.root / '.local/analysis/functions.jsonl')
+        if table is None:
+            raise Stop('no function table here, so the dropped target rows cannot be published again')
+        wanted, _refused = target_hash_offers.select_on_demand(table, inventory, missing)
+        wanted = sorted(set(wanted) & set(missing))
+        if not wanted:
+            return []
+        with self.land_lock:
+            self.regenerate(None, extra=wanted)
+        got = sorted(set(wanted) & self.target_rvas())
+        print(f'{stamp()} published again the target rows for {", ".join(hex(r) for r in got)}', flush=True)
+        return got
 
     def close_done_claims(self):
         """Close claim issues whose functions are all matched on origin/main. Returns the issue numbers."""
@@ -3518,6 +3564,11 @@ class Bot:
             self.say(number, sticky_body(head, text, state.get('batch')), create=create)
             state.set('commented', True)
         self.drop_probe(number)
+        if decision['blocked'] == 'record' and not state.get('merged'):
+            # Not done: the next tick runs the record step again. Raising makes `attempt` count the error, so
+            # the same refusal on this head three times opens the circuit breaker instead of looping.
+            state.drop('done')  # a head left done by an older run is looked at again
+            raise Stop('record could not be written for accepted functions; merge blocked, retrying')
         state.set('done', True)
         return summary
 
@@ -4177,7 +4228,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 ledger = state.get('failure') or {}
                 # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
                 # bot will not look at, and queueing it costs a `gh pr view` per tick.
-                if (pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now
+                if (pr['number'] in inflight or settled(state) or ledger.get('next', 0) > now
                         or bot.already_rejected(pr) or bot.bot_error_blocked(pr)):
                     continue
                 try:

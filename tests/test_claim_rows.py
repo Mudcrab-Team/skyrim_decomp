@@ -44,6 +44,13 @@ class OnDemandSelectionTests(unittest.TestCase):
         got, _ = offers.select_on_demand(table, set(), list(table))
         self.assertEqual(len(got), offers.ON_DEMAND_MAX)
 
+    def test_the_cap_never_cuts_rows_already_published(self):
+        table = {0x2000 + 0x10 * i: row() for i in range(offers.ON_DEMAND_MAX + 30)}
+        retained = sorted(table)[-40:]  # the highest RVAs are what an RVA-ordered cut drops first
+        got, _ = offers.select_on_demand(table, set(), sorted(table)[:10], retained=retained)
+        self.assertTrue(set(retained) <= set(got))
+        self.assertEqual(len(got), 50)
+
     def test_retained_rows_come_from_the_published_list(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / offers.hashes.OFFERED
@@ -295,3 +302,40 @@ class OutsideFirstTests(unittest.TestCase):
         listed = [pr(582, pr_bot.OWNER), pr(579, pr_bot.OWNER.upper()), pr(574, 'aivv73'), pr(570, pr_bot.OWNER),
                   pr(550, 'eclepso')]
         self.assertEqual([p['number'] for p in pr_bot.outside_first(listed)], [574, 550, 582, 579, 570])
+
+
+class RepublishRowsTests(unittest.TestCase):
+    """A merged PR whose rows main lost gets them published again before its record step."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        work = Path(self.tmp.name)
+        self.bot = pr_bot.Bot(root=ROOT, work=work)
+        shards = self.bot.tree / 'data/target-hashes'
+        shards.mkdir(parents=True)
+        (shards / 'sse-steam-1-7-104-part-000.json').write_text(json.dumps({'functions': [{'rva': 0x2010}]}))
+        (self.bot.tree / 'data/progress.json').write_text(json.dumps({'functions': [{'rva': 0x2040}]}))
+        table = work / 'functions.jsonl'
+        table.write_text('\n'.join(json.dumps(dict(rva=r, **row())) for r in (0x2010, 0x2020, 0x2030, 0x2040)) + '\n')
+        patch = mock.patch.dict('os.environ', {'SR_FUNCTION_TABLE': str(table)})
+        patch.start()
+        self.addCleanup(patch.stop)
+        self.bot.run = lambda argv, **kw: subprocess.CompletedProcess(argv, 0, b'', b'')
+        self.asked = []
+
+    def regenerate(self, number, extra=()):
+        self.asked.append(sorted(extra))
+        self.bot.tree.joinpath('data/target-hashes/sse-steam-1-7-104-part-001.json').write_text(
+            json.dumps({'functions': [{'rva': r} for r in extra]}))
+
+    def test_only_the_rows_main_lacks_are_published_again(self):
+        self.bot.regenerate = self.regenerate
+        got = self.bot.republish_rows([0x2010, 0x2020, 0x2030, 0x2040])
+        self.assertEqual(self.asked, [[0x2020, 0x2030]])
+        self.assertEqual(got, [0x2020, 0x2030])
+
+    def test_nothing_is_published_when_every_row_is_there(self):
+        self.bot.regenerate = self.regenerate
+        self.assertEqual(self.bot.republish_rows([0x2010, 0x2040]), [])
+        self.assertEqual(self.asked, [])

@@ -552,6 +552,7 @@ class PoolTests(WorkDir):
         self.assertEqual(pr_bot.merged_unrecorded(state, time.time() + 10 * 86400), [])
         bot = FakeBot(self.work)
         bot.gh_json = lambda *a: dict(number=7, headRefOid='z', author=dict(login='x'))
+        bot.republish_rows = lambda rvas: []
         seen = []
         bot.record = lambda pr, st, rvas: (seen.append((pr['headRefOid'], rvas, bot.land_lock.locked())),
                                            st.set('recorded', True))
