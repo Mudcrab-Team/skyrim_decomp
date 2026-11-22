@@ -2,7 +2,6 @@
 // Code origin: original implementations from the pinned listings and partial declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x325b90 BGSMusicSilenceTrack::GetType
-// 0x325bd0 BGSMusicSilenceTrack::~BGSMusicSilenceTrack
 // Adapted bodies: none
 #include "BGSMusicSilenceTrack_325a90.h"
 

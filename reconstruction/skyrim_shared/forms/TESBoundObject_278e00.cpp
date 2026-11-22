@@ -7,7 +7,6 @@
 // Sibling source: fo4-private@1b765c70 src/Shared/TESForms/Objects/TESObject.cpp:105
 // TESObject and TESBoundObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// 0x277e00 TESBoundObject::Clone3D
 // 0x278e00 TESBoundObject::ReplaceModel
 #include "TESBoundObject_278e00.h"
 bool TESBoundObject::ReplaceModel() { return ReplaceModel(TESModel::GetModel(this)); }

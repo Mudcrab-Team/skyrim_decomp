@@ -5,7 +5,6 @@
 // 0x329970 BGSSoundCategory::SetCategoryFrequency
 // 0x329790 BGSSoundCategory::InitializeData
 // 0x329820 BGSSoundCategory::Matches
-// 0x329920 BGSSoundCategory::GetCategoryFrequency
 // 0x3298d0 BGSSoundCategory::SetCategoryVolume
 #include "BGSSoundCategory.h"
 
