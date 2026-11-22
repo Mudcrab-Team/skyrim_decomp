@@ -1,4 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// 0x1dee90 compared function
+// 0x1dee20 compared function
 // Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BaseFormComponent: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only class names, base chain,
@@ -76,6 +78,9 @@ struct PackageList
 	// Clear: GUESS(low); helper ClearDataComponent tail-calls on the list, target 0x4a2c50
 	void Clear();
 
+	// Function4a2670: GUESS(low); helper tail-called on the package list
+	void Function4a2670();
+
 	// CopyPackages: GUESS(low); CopyComponent passes the other list here, target 0x4a2f10
 	void CopyPackages(const PackageList& a_rhs);
 
@@ -100,6 +105,10 @@ public:
 	void ClearDataComponent() override;  // 02
 	// TESAIForm::CopyComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 3, target 0x1de830, inherited name
 	void CopyComponent(BaseFormComponent* a_rhs) override;  // 03
+	// TESAIForm::Function1dee20: GUESS(low); reads one aggro-radius word by index
+	std::uint16_t Function1dee20(std::uint32_t a_index) const;
+	// TESAIForm::Function1dee90: GUESS(low); tail-calls a helper on the package list
+	void Function1dee90();
 
 	// aiData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 	AIDATA_GAME aiData;  // 08

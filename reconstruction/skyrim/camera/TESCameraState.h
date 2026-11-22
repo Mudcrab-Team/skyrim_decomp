@@ -1,11 +1,28 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// 0x24a090 compared function
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESCameraState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESCameraState::GetRotation, TESCameraState::GetTranslation: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESCameraState::Update: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// RefCountedState, refCount, NextStateHandle, ptr: GUESS(low) STANDIN
 // unknown08: GUESS(low)
 #pragma once
 
 #include <cstdint>
+
+// RefCountedState: GUESS(low) STANDIN; intrusive-counted state with its counter at +8
+class RefCountedState
+{
+public:
+    virtual ~RefCountedState();
+    volatile long refCount;  // 08
+};
+
+// NextStateHandle: GUESS(low) STANDIN; the smart-pointer reference Update releases
+struct NextStateHandle
+{
+    RefCountedState* ptr;  // 00
+};
 
 // NiPoint3, NiQuaternion: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiPoint3::x, ::y, ::z, NiQuaternion::w, ::x, ::y, ::z: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -44,6 +61,7 @@ public:
     virtual void Begin();  // compared: 0x24a000
     virtual void End();  // compared: 0x24a010
     virtual void LoadGame(BGSLoadFormBuffer* a_buf);  // compared: 0x24a060
+    virtual void Update(NextStateHandle& a_nextState);  // compared: 0x24a090
 
     std::uint8_t unknown08[0x18];  // 08
 };
