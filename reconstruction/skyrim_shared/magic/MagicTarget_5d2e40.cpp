@@ -1,6 +1,7 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
+// Code origin: original reconstruction from the pinned image listing; names as labelled below.
 // SPDX-License-Identifier: CC0-1.0
 // 0x5d2e40 MagicTarget::GetMagicTargetFormID
 #include "MagicTarget_5d2e40.h"

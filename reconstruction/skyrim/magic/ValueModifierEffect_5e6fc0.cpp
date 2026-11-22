@@ -1,4 +1,5 @@
 // Source exposure: mixed (pinned image listing and authorized sibling hints).
+// Code origin: original reconstruction from the pinned image listing; names as labelled below.
 // SPDX-License-Identifier: CC0-1.0
 // ValueModifierEffect, SetActorValue: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/Magic/StimpakEffect.cpp:6
