@@ -1,9 +1,17 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings and
-// Code origin: original reconstruction from binary analysis; no external implementation code copied.
 // decompiler output of the pinned image, with types from the header beside this file.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/niparticle/nipsysmodifier.cpp:53
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/niparticle/nipsysmodifier.cpp:86
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/niparticle/nipsysmodifier.cpp:42
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/niparticle/nipsysmodifier.cpp:52 (LinkObject, CC0-1.0)
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/niparticle/nipsysmodifier.cpp:41 (ProcessClone, CC0-1.0)
+// 0xfa11c0 NiPSysModifier::SetSystemPointer
+// 0xfa1010 NiPSysModifier::LinkObject
+// 0xfa1040 NiPSysModifier::RegisterStreamables
+// 0xfa1140 NiPSysModifier::IsEqual
+// 0xfa1090 NiPSysModifier::SaveBinary
+// 0xfa0f40 NiPSysModifier::LoadBinary
+// 0xfa11d0 NiPSysModifier::ProcessClone
 // 0xfa1360 NiPSysModifier::Functionfa1360
 // CI hash: 0xfa1360 ?Functionfa1360@@YAXPEAVCtorFa1360@@@Z
 #include "NiPSysModifier.h"
