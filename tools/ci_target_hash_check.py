@@ -177,7 +177,14 @@ def requests(tree, changed, known):
         units.update(index.get(name, []))
     result = []
     for unit in sorted(units):
+        unit_text = (tree / unit).read_text(encoding='utf-8-sig')
+        declared = UNIT_RECIPE.search(unit_text)
         entries = {r['rva']: dict(r) for r in known.get(unit, [])}
+        # The first host compiles the whole unit with the recipe the unit declares; an accepted function's
+        # older recorded recipe would give a second-host row whose recipe the record cannot bind.
+        if declared:
+            for entry in entries.values():
+                entry['recipe'] = declared[0]
         # New source may request an RVA/symbol, but cannot select the target mask, size or recipe.
         for rva, symbol in REQUEST.findall((tree / unit).read_text(encoding='utf-8-sig')[:8192]):
             value = int(rva, 16)
