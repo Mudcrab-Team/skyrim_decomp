@@ -1,6 +1,5 @@
 // Source exposure: mixed. Existing bodies were drafted by claude-sonnet-5-5 from the pinned image.
 // Code origin: original reconstruction from the pinned image and community declarations; GetMountInteraction from the listing and the CrashLogger PDB name.; the seven added Actor functions from the listings and the CrashLogger and FO4 names
-// Consulted (private, not in repo): decompiler control-flow hints.
 // Adapted bodies: none in this change.
 // FindOutfitExtra: GUESS(low); callee of HasOutfitItems.
 // TESRace::GetBodyPartData: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); callee at RVA 0x3e6250 compared in another unit
@@ -13,6 +12,7 @@
 // 0x677330 Actor::OnAddCellPerformQueueReference
 // 0x6b1620 Actor::UpdateFadeSettings
 // 0x67f620 Actor::CheckForCurrentAliasPackage
+// 0x31e0180
 #include "Actor_671af0.h"
 
 // RACE_DATA, RACE_DATA::Flag, kFlies, TESRace::data, RACE_DATA::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

@@ -6,7 +6,6 @@
 // Copy, TESParameters, TESForm: GUESS(low); names and signature remain unverified.
 // TestBit: GUESS(low); flag bit test by bit index taking the word by value
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Unit-local view of TESConditionItem: carries the members and declarations the functions of this unit need, so the shared TESConditionItem.h stays as it is.
 #pragma once
 #include <cstdint>
 class TESForm;

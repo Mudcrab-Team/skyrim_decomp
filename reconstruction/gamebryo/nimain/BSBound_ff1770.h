@@ -6,7 +6,6 @@
 // BSBoundLoader, BSBoundLoader::Load, loaderA, loaderB: GUESS(low); names invented, Load is bound by address through bind-hints.json
 // NiExtraData::LoadBinary: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); bound by address through bind-hints.json
 // NiRTTI_BSBound: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); bound by address through bind-hints.json
-// Unit-local view of BSBound: carries the members and declarations the functions of this unit need, so the shared BSBound.h stays as it is.
 #pragma once
 
 #include <cstdint>

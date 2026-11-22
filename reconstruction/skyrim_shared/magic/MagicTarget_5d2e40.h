@@ -6,7 +6,6 @@
 // unknown08: GUESS(low)
 // MagicTarget::GetMagicTargetFormID: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(fo4-pdb)
 // MagicTarget::unk00, ::unk01: GUESS(low); placeholder slots so the declared slots land at 02 and 03, never defined
-// Unit-local view of MagicTarget: carries the members and declarations the functions of this unit need, so the shared MagicTarget.h stays as it is.
 #pragma once
 
 #include <cstdint>

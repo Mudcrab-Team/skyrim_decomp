@@ -6,9 +6,7 @@
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: GetType from the bounded leaf template; GetEquipType reconstructed from the pinned image listing.
-// Drafted by claude-sonnet-5-5. Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json; GetEquipType is compared.
 // 0x82e840 CombatInventoryItemMagic::GetEquipType
-// RVA 0x82e840, 55 bytes
 #include "CombatInventoryItemMagic_82e840.h"
 
 std::uint32_t CombatInventoryItemMagic::GetEquipType(BGSEquipSlot* a_slot) const

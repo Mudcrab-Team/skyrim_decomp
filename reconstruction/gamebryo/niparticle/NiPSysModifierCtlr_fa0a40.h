@@ -12,8 +12,6 @@
 // IsEqualBase: GUESS(low); address 0xf62f60, the base controller comparison the image calls first, bound by hint
 // unk01..unk0B: GUESS(low); stream slots kept only to place SaveLinkID
 // SaveFixedString: GUESS(low); the non-virtual callee that writes the interned name held in member
-// This header is a unit-local view of NiPSysModifierCtlr: it adds the modifier member and the NiObject slots up to IsEqual,
-// which would move members the shared NiPSysModifierCtlr.h users are compared against.
 #pragma once
 #include <cstdint>
 

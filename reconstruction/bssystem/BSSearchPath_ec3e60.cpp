@@ -5,10 +5,8 @@
 // Slot3: GUESS(low)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // Code origin: Slot3 from the bounded leaf template; GetNextSearchPath reconstructed from the pinned image listing.
-// Drafted by claude-sonnet-5-5. Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json; GetNextSearchPath is compared.
 // SPDX-License-Identifier: CC0-1.0
 // 0xec3e60 BSSearchPath::GetNextSearchPath
-// RVA 0xec3e60, 55 bytes
 #include "BSSearchPath_ec3e60.h"
 
 #include <cstring>

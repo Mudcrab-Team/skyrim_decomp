@@ -1,6 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // TESReactionForm: EXE_RTTI; class name and base from the image RTTI
-// Unit-local view of TESReactionForm: carries the members and declarations the functions of this unit need, so the shared TESReactionForm.h stays as it is.
 #pragma once
 
 #include <cstdint>

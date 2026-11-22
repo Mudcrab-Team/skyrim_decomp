@@ -1,7 +1,5 @@
 // Build sse-steam-1-7-104. Source exposure: mixed (community headers; compared functions from the pinned image).
-// Labels: v2
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Stand-ins: NiPoint3, NiAVObject, TESCameraState, PlayerInputHandler and BGSLoadFormBuffer carry only what the three functions use.
 // FirstPersonState, FirstPersonState::GetTranslation, ::LoadGame, ::Revert: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // FirstPersonState::lastPosition, ::lastFrameSpringVelocity, ::sittingRotation, ::unk6C, ::unk70, ::currentPitchOffset, ::targetPitchOffset, ::unk7C, ::unk80, ::firstPersonCameraObj: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares unk80 as uint32, read here as a float
 // FirstPersonState::unk88: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares one 8-byte unk88, the listing shows single bytes at +0x88, +0x89 and +0x8a

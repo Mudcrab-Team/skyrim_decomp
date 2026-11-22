@@ -1,9 +1,7 @@
 // Source exposure: mixed (local binary analysis and public names). Build sse-steam-1-7-104.
-// Labels: v2
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
 // Adapted bodies: none. GetType is synthesized from the bounded leaf template; GetEquipType is read from the listing.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Stand-ins: BSTArray, BGSEquipSlot, CombatInventoryItemSlot and CombatInventoryItem carry only the members and virtual slots the compared code uses.
 // CombatInventoryItemMagic: EXE_RTTI
 // CombatInventoryItemMagic::GetType, ::GetEquipType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG returns the TYPE enumeration, kept as a 32-bit integer here
 // CombatInventoryItemMagic::GetEquipType: SYMBOLS(fo4-pdb) CRASHLOGGER_PDB(59818@2026.10.24)
@@ -14,7 +12,6 @@
 // BSTArray::_data, ::operator[]: GUESS(low); the data pointer at +0
 // BGSEquipSlot::kUseAllParents: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // padding, reserved slots, unknown: GUESS(low); placeholders for slots and members the compared code does not use
-// Unit-local view of CombatInventoryItemMagic: carries the members and declarations the functions of this unit need, so the shared CombatInventoryItemMagic.h stays as it is.
 #pragma once
 #include <cstdint>
 

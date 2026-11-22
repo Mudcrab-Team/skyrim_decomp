@@ -1,7 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Code origin: original reconstruction from the pinned image and community declarations.
 // Adapted bodies: ActorState::IsUnconscious, from CharmedBaryon/CommonLibSSE-NG at b93280e (MIT), include/RE/A/ActorState.h.
-// Consulted (private, not in repo): decompiler control-flow hints.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Actor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the bases, members and virtual slots the functions use
 // TESObjectREFR MagicTarget ActorValueOwner: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); base subobjects at 0x00, 0xa0, 0xb8, sized only
@@ -45,7 +44,6 @@
 // AIProcess::GetVoiceRecoveryTime: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) GUESS(medium); NG declares it with an inline body and no address; that the callee at RVA 0x700100 is it is the guess
 // ActorValueStorage::GetModifiers: GUESS; callee at RVA 0x6e3500 that looks up the modifier block of one actor value
 // Licence: three member names come from powerof3/CommonLibSSE (GPL-3.0), so this file is GPL-3.0.
-// Unit-local view of Actor: carries the members and declarations the functions of this unit need, so the shared Actor.h stays as it is.
 #pragma once
 
 #include <cstddef>

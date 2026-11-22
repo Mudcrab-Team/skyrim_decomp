@@ -18,7 +18,6 @@
 // ActiveEffectReferenceEffectController::EffectShouldFaceTarget: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(fo4-pdb)
 // ActiveEffectOwner::target: GUESS(low); the effect's target pointer at 0x50, NG has it as ActiveEffect::target
 // ReferenceEffectRefData::art, EffectArtData, EffectArtData::flags: GUESS(low); pointer at 0x120 and its flag byte at 0x30
-// Unit-local view of ActiveEffectReferenceEffectController: carries the members and declarations the functions of this unit need, so the shared ActiveEffectReferenceEffectController.h stays as it is.
 #pragma once
 
 #include <cstdint>

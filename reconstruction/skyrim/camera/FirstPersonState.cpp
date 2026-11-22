@@ -1,12 +1,9 @@
 // Build sse-steam-1-7-104. Source exposure: mixed (community headers; the pinned image listing).
-// Labels: v2
 // Code origin: reconstructed from local instruction listings of the pinned image; bodies adapted from community sources are listed above (none).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// RVA 0x8f5310 FirstPersonState::GetTranslation, 78 bytes
-// RVA 0x8f56a0 FirstPersonState::LoadGame, 151 bytes
-// Evidence: findings/movement-unit-supply-selection.md
-// Drafted by claude-sonnet-5-5
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json; GetTranslation and LoadGame are compared.
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2.json
+// 0x8f5310 FirstPersonState::GetTranslation
+// 0x8f56a0 FirstPersonState::LoadGame
 #include "FirstPersonState.h"
 
 void FirstPersonState::GetTranslation(NiPoint3& a_translation)

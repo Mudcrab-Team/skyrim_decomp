@@ -6,7 +6,6 @@
 // BSMultiBoundNode::CheckBound1, BSMultiBoundNode::CheckBound2, BSMultiBoundShape::CheckBound, NiBound: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // GetMultiBoundRoom, IsEqual, ~BSMultiBoundNode, GetRTTI, AsMultiBoundNode, CreateClone, LoadBinary, LinkObject, RegisterStreamables, SaveBinary, UpdateDownwardPass, UpdateWorldBound, OnVisible, UpdateUpwardPass: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSMultiBoundShape::unknown10: GUESS(low)
-// Unit-local view of BSMultiBoundNode: carries the members and declarations the functions of this unit need, so the shared BSMultiBoundNode.h stays as it is.
 #pragma once
 
 #include <cstdint>

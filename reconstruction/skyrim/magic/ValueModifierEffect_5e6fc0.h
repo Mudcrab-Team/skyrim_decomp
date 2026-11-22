@@ -4,7 +4,6 @@
 // SetActorValue: Sibling source: fo4-private@1b765c70 src/Game/Magic/StimpakEffect.cpp:6
 // ValueModifierEffect, ValueModifierEffect::SetActorValue: SIBLING(fo4-private@1b765c70, author-permission)
 // unknown00, actorValue, maxDistance: STANDIN GUESS(low)
-// Unit-local view of ValueModifierEffect: carries the members and declarations the functions of this unit need, so the shared ValueModifierEffect.h stays as it is.
 #pragma once
 #include <cstdint>
 

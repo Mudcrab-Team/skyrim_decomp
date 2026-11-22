@@ -14,7 +14,6 @@
 // ?__global_delete: GUESS(low); the global sized operator delete the deleting destructor calls
 // g_missingInterpolatorIndex: GUESS(low); the default index the lookup returns on a miss, bound by the unit's bind-hints.json
 // TimeFlags, ExtremaBegin, ExtremaEnd, TestBit: GUESS(low); accessors for the base's unnamed padding and bit test
-// Unit-local view of NiMultiTargetTransformController: carries the members and declarations the functions of this unit need, so the shared NiMultiTargetTransformController.h stays as it is.
 #pragma once
 
 #include <cstdint>

@@ -5,7 +5,6 @@
 // BSReadWriteLock, BSReadWriteLock::_writerThread, ::_lock, ::UnlockForRead, ::UnlockForWrite: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSReadWriteLock::LockForRead, ::LockForWrite, ::TryLockForRead, ::TryLockForWrite: SYMBOLS(tesv-2013-map) SYMBOLS(fo4-pdb)
 // BSReadWriteLock::kLockWrite, ::kLockCountMask: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Unit-local view of BSReadWriteLock: carries the members and declarations the functions of this unit need, so the shared BSReadWriteLock.h stays as it is.
 #pragma once
 
 #include <cstdint>

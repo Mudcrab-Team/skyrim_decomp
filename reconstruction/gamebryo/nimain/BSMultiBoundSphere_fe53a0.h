@@ -5,7 +5,6 @@
 // GetType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Unit-local view of BSMultiBoundSphere: carries the members and declarations the functions of this unit need, so the shared BSMultiBoundSphere.h stays as it is.
 #pragma once
 #include <cstdint>
 // GetType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

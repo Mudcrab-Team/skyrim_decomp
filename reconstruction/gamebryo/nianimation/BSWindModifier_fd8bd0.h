@@ -5,7 +5,6 @@
 // BSWindModifier::GetRTTI, BSWindModifier::~BSWindModifier: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiRTTI: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // unknown30: GUESS(low)
-// Unit-local view of BSWindModifier: carries the members and declarations the functions of this unit need, so the shared BSWindModifier.h stays as it is.
 #pragma once
 
 #include <cstdint>

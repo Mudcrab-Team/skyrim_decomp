@@ -4,7 +4,6 @@
 // NiExtraDataController: EXE_RTTI
 // GetCtlrID: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
-// Unit-local view of NiExtraDataController: carries the members and declarations the functions of this unit need, so the shared NiExtraDataController.h stays as it is.
 #pragma once
 #include <cstdint>
 // GetCtlrID: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)

@@ -1,5 +1,5 @@
 // Source exposure: mixed (target listing, anonymous sibling and unverified names). Build sse-steam-1-7-104.
-// Labels: v2
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:61 (CombatBehaviorTreeNode::Update)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:67 (CombatBehaviorTreeNode::Abort)
@@ -9,7 +9,6 @@
 // CombatBehaviorTreeNode::vftable, ::name, ::parent, ::children, ::childCount: GUESS(low); layout from the 40-byte size in the FO4 program database and the listing
 // BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSFixedString::data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; the interned string pointer compared by identity
-// Unit-local view of CombatBehaviorTreeNode: carries the members and declarations the functions of this unit need, so the shared CombatBehaviorTreeNode.h stays as it is.
 #pragma once
 
 #include <cstdint>

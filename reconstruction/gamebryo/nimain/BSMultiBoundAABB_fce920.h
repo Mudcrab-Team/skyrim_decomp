@@ -8,7 +8,6 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSMultiBoundAABB::RegisterStreamables, BSMultiBoundAABB::SetCenter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); names only, the bodies are written from the target listing
 // RegisterStreamablesBase: GUESS(low); address 0xfe4f30, takes the object and the stream and returns a byte that RegisterStreamables turns into a bool
-// Unit-local view of BSMultiBoundAABB: carries the members and declarations the functions of this unit need, so the shared BSMultiBoundAABB.h stays as it is.
 #pragma once
 
 #include <intrin.h>

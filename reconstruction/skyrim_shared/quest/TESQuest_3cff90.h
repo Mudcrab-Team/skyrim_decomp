@@ -21,7 +21,6 @@
 // TESQuest::stages, ::objectives: GUESS(low); list heads read at E8 and F8
 // TESQuest::GetObjective: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(fo4-pdb)
 // TESCondition, TESCondition::head: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); one pointer
-// Unit-local view of TESQuest: carries the members and declarations the functions of this unit need, so the shared TESQuest.h stays as it is.
 #pragma once
 
 #include <cstdint>

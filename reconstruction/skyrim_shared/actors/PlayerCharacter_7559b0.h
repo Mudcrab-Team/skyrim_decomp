@@ -1,4 +1,5 @@
 // Source exposure: mixed (local binary analysis and public names).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"PlayerCharacter","rationale":"vtable owner and slot; method spelling invented","slot":8},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
 // Adapted bodies: none. Body synthesized from the bounded leaf template.
 // PlayerCharacter: EXE_RTTI
@@ -10,7 +11,6 @@
 // PlayerActionEntry actionList actionListEntryWord: GUESS(low); the 12-byte entries at 0x7f4 as NG's PlayerActionObject, first word compared
 // busyUntil: GUESS(low); the float at 0x6e8 written and read by the two teleport door functions
 // teleportDoorBusyTime teleportClock: GUESS(low); globals at RVA 0x209eb28 and 0x324430c
-// Unit-local view of PlayerCharacter: carries the members and declarations the functions of this unit need, so the shared PlayerCharacter.h stays as it is.
 #pragma once
 #include <cstddef>
 #include <cstdint>

@@ -50,7 +50,6 @@
 // kBoneMapName: GUESS; fixed string at 0x332e3e0 used to look up the bone-map extra data
 // PerformOpFunc: GUESS(low); the visitor PerformOp forwards its object to, complete only in the .cpp
 // PostAttachUpdate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the image's vtable slot 0x33, declared here without virtual so the shared class keeps its vtable order
-// Unit-local view of NiAVObject: carries the members and declarations the functions of this unit need, so the shared NiAVObject.h stays as it is.
 #pragma once
 
 #include "NiObject.h"

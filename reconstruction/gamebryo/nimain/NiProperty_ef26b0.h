@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // NiProperty::~NiProperty: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Unit-local view of NiProperty: carries the members and declarations the functions of this unit need, so the shared NiProperty.h stays as it is.
 #pragma once
 
 #include <cstdint>
