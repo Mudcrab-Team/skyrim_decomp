@@ -858,6 +858,7 @@ def outcome_body(sha, decision, leak_codes=()):
             if verdicts.get(r) != 'matched':
                 code = verdicts.get(r, 'fail:missing').split(':', 1)[-1]
                 lines.append(f'- 0x{r:x}: {reason_text(decision, r, code)}')
+                lines += [f'  - {n}' for n in decision.get('notes', {}).get(r, [])]
         listed = {r for r in decision.get('companions', []) if verdicts.get(r) != 'matched'}
         more = other_failure_lines(decision, listed)
         if more:
@@ -2325,7 +2326,8 @@ class Bot:
             raise Stop('the verifier results do not bind this machine\'s tree or pins: ' + '; '.join(bot_side[:3]))
         safe = {}
         for rva, lines in out.items():
-            shown = [l[:220] for l in dict.fromkeys(lines) if not check.naming_finding_problem(l[:220])]
+            # 220 cut the "fix:" half of a finding off, leaving the contributor the problem without the remedy.
+            shown = [l[:600] for l in dict.fromkeys(lines) if not check.naming_finding_problem(l[:600])]
             hidden = len(set(lines)) - len(shown)
             safe[rva] = shown + ([f'{hidden} more finding(s) not shown; run `python3 tools/prereview.py` locally']
                                  if hidden else [])
