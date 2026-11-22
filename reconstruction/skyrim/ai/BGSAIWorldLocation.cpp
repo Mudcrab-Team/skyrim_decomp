@@ -1,12 +1,18 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSAIWorldLocation","rationale":"vtable owner and slot; method spelling invented","slot":16},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original reconstruction from the pinned image listing; global at the symbol-map RVA.
+// SPDX-License-Identifier: CC0-1.0
+// 0x447ad0 BGSAIWorldLocation::Function447ad0
+// Adapted bodies: none
+// Function447ad0: GUESS(low)
+// kNullHandle: GUESS(low)
 // BGSAIWorldLocation: EXE_RTTI
 // Slot16: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
-// 0x447ac0 BGSAIWorldLocation::Slot16
 #include "BGSAIWorldLocation.h"
-// Slot16: GUESS(low); method name inferred from vtable owner and slot
+unsigned int* BGSAIWorldLocation::Function447ad0(unsigned int* out) const
+{
+    *out = kNullHandle;
+    return out;
+}
 std::uint8_t BGSAIWorldLocation::Slot16() const
 {
     return 0x1;

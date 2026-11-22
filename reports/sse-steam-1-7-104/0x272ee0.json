@@ -27,7 +27,7 @@
           "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "6be477fa93cb068ae9f5e930806d2a8c43b06ba00b72689a3636e1c4c607a4e0",
+        "object_sha256": "e804988ff9409c09a5ab65c5b5de75be1afd43c92398bdd427ba4997a5ef658d",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/declarations/BaseFormComponent.h",
@@ -39,7 +39,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "875d87a7c84c224994ac765672edbf4b52a27da5",
+    "base_sha": "c976958bce98f2f8873062ab7170901eaf617ecd",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -50,7 +50,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "79bc0df2873d3f0084241dac68744c6a99d31c65",
+    "head_sha": "2c555faa402b16a876e02888d2d626219cb06f67",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -63,14 +63,12 @@
     "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44306358757,
+    "run_id": 44947936570,
     "rva": "0x272ee0",
     "schema": 2,
-    "source_sha256": "3488ec045f1deb1f8b7945dcb540cf345024ae4d7291665d8ead3b83328789c5",
+    "source_sha256": "02f3b6594db16441ba78ce889ca346212c6640499529c1e342fa42dc956bc7b6",
     "status": "pass",
     "symbols": [
-      "?LoadGame@TESLevSpell@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
-      "?Revert@TESLevSpell@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
       "?SaveGame@TESLevSpell@@UEAAXPEAVBGSSaveFormBuffer@@@Z"
     ],
     "target": {
@@ -81,7 +79,7 @@
       "size": 43
     },
     "toolset": "MATCH",
-    "unit": "reconstruction/forms/TESLevSpell.cpp",
+    "unit": "reconstruction/skyrim_shared/magic/TESLevSpell.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0x272ee0",
@@ -103,7 +101,7 @@
         "candidate": {
           "code_section_sha256": "d80f331e7fd089319463572fe4c22cdb26f9127f6dc499db368a882899b8aa41",
           "code_sections": 1,
-          "object_sha256": "6be477fa93cb068ae9f5e930806d2a8c43b06ba00b72689a3636e1c4c607a4e0"
+          "object_sha256": "e804988ff9409c09a5ab65c5b5de75be1afd43c92398bdd427ba4997a5ef658d"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -166,10 +164,10 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/forms/TESLevSpell.cpp",
-          "source_revision": "3488ec045f1deb1f8b7945dcb540cf345024ae4d7291665d8ead3b83328789c5"
+          "path": "reconstruction/skyrim_shared/magic/TESLevSpell.cpp",
+          "source_revision": "02f3b6594db16441ba78ce889ca346212c6640499529c1e342fa42dc956bc7b6"
         },
-        "symbol_map_sha256": "3197e4a5c1457d0efe0ba21eb15c3c49d798050046e4fb05350cd0d9ecd6c249",
+        "symbol_map_sha256": "7a4cb9538cf2cd9dfe56eeadaf0452167f4bda920ba94c5c0b061a8c482fd41c",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -180,10 +178,8 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/magic/TESLevSpell.cpp",
-    "digest": "f1b2ccaf162056ee1f32fa791d07e1b0031ef22f31726447239896b81c089892",
+    "digest": "02f3b6594db16441ba78ce889ca346212c6640499529c1e342fa42dc956bc7b6",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "3488ec045f1deb1f8b7945dcb540cf345024ae4d7291665d8ead3b83328789c5",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/declarations/BaseFormComponent.h",
       "reconstruction/declarations/TESForm.h",
@@ -191,10 +187,10 @@
       "reconstruction/skyrim_shared/magic/TESLevSpell.h"
     ]
   },
-  "submitter": "hinkiii",
+  "submitter": "wardboumans",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/3197e4a5c1457d0efe0ba21eb15c3c49d798050046e4fb05350cd0d9ecd6c249.json",
-    "sha256": "3197e4a5c1457d0efe0ba21eb15c3c49d798050046e4fb05350cd0d9ecd6c249"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/7a4cb9538cf2cd9dfe56eeadaf0452167f4bda920ba94c5c0b061a8c482fd41c.json",
+    "sha256": "7a4cb9538cf2cd9dfe56eeadaf0452167f4bda920ba94c5c0b061a8c482fd41c"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

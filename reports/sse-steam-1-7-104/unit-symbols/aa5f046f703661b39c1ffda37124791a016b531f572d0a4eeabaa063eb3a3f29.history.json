@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/aa5f046f703661b39c1ffda37124791a016b531f572d0a4eeabaa063eb3a3f29.json",
+  "versions": [
+    {
+      "sha256": "aa5f046f703661b39c1ffda37124791a016b531f572d0a4eeabaa063eb3a3f29",
+      "base": null,
+      "added": [
+        "?Shutdown@BSAudio@@UEAAXXZ",
+        "?Init@BSAudio@@UEAA_NPEAUHWND@W32@REX@@@Z",
+        "?GetReceiver@BSAudio@@UEAA?AVReceiver@BSAudioMonitor@@I@Z",
+        "?g_bsAudioDefaultReceiver@@3VReceiver@BSAudioMonitor@@A",
+        "?ApplyReverbType@BSAudio@@UEAAXPEBVBSIReverbType@@I@Z",
+        "?CreateMonitor@BSAudio@@UEAAIXZ",
+        "?PostGameSoundUpdates@BSAudio@@UEAAXXZ",
+        "?Functioncd4b80@BSAudio@@QEBAPEBUBSAudioVec3@@XZ",
+        "??0BSAudio@@QEAA@XZ",
+        "?g_bsAudioDefaultFront@@3UBSAudioVec3@@A",
+        "??_7BSAudio@@6B@"
+      ]
+    }
+  ]
+}

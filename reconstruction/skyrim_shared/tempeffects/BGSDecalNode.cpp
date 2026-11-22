@@ -7,6 +7,7 @@
 // Adapted bodies: none.
 // 0x2030b0 BGSDecalNode::CreateClone
 // 0x203360 BGSDecalNode::AttachDecal
+// 0x2033b0 BGSDecalNode::Function2033b0
 #include "BGSDecalNode.h"
 
 NiObject* BGSDecalNode::CreateClone(NiCloningProcess& a_cloning)
@@ -17,4 +18,10 @@ NiObject* BGSDecalNode::CreateClone(NiCloningProcess& a_cloning)
 void BGSDecalNode::AttachDecal(BSTempEffect* a_decal, bool a_firstAvail)
 {
     NiNode::AttachChild(a_decal->Get3D(), a_firstAvail);
+}
+
+void BGSDecalNode::Function2033b0(BSTempEffect* a_decal)
+{
+    const NiPointer<BSTempEffect> decal{ a_decal };
+    decals.Function203750(decal, true);
 }

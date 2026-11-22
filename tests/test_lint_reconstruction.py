@@ -435,6 +435,13 @@ class CompactHeaderTests(LintTests):
         self.write(header=HEADER.replace('// Widget', f'// {lint.SPDX_CC0}\n// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
         self.assertTrue(any('keeps that licence' in p for p in self.problems()))
 
+    def test_cc0_line_conflicts_with_a_prose_gpl_licence_line(self):
+        gpl = '// Licence: uses names from powerof3/CommonLibSSE, so this file is GPL-3.0.\n'
+        self.write(header=HEADER.replace('// Widget', f'{gpl}// {lint.SPDX_CC0}\n// Widget'))
+        self.assertTrue(any('header states GPL' in p for p in self.problems()))
+        self.write(header=HEADER.replace('// Widget', f'{gpl}// Widget'))
+        self.assertFalse(any('header states GPL' in p for p in self.problems()))
+
     def test_gpl_spdx_line_is_not_flagged(self):
         self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
         self.assertFalse(any('SPDX' in p or 'write the' in p for p in self.problems()))

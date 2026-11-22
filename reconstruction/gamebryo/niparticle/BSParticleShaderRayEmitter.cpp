@@ -5,9 +5,17 @@
 // Slot6: GUESS(low)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // 0x15362a0 BSParticleShaderRayEmitter::Slot6
+// 0x1536280 BSParticleShaderRayEmitter::HasMember
+// HasMember: GUESS(low)
 #include "BSParticleShaderRayEmitter.h"
 // Slot6: GUESS(low); method name inferred from vtable owner and slot
 void* BSParticleShaderRayEmitter::Slot6() const
 {
     return member;
+}
+
+
+int BSParticleShaderRayEmitter::HasMember() const
+{
+    return member != nullptr;
 }

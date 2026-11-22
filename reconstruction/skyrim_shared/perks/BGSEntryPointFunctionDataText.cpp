@@ -1,10 +1,8 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BGSEntryPointFunctionDataText: EXE_RTTI
-// GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (the pinned image and community declarations).
+// Code origin: the existing GetType leaf and original reconstruction of LoadFunctionData.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x38eed0 BGSEntryPointFunctionDataText::GetType
+// 0x38e7b0 BGSEntryPointFunctionDataText::LoadFunctionData
 #include "BGSEntryPointFunctionDataText.h"
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 std::uint32_t BGSEntryPointFunctionDataText::GetType() const
@@ -12,5 +10,32 @@ std::uint32_t BGSEntryPointFunctionDataText::GetType() const
     return 0x7;
 }
 
-// Engineer p105: correct base slots and owned string. Adapted bodies: none.
+// Provide the constructor for the class vtable and owned text.
 BGSEntryPointFunctionDataText::BGSEntryPointFunctionDataText() {}
+
+namespace
+{
+// FileMemoryContext: GUESS(low); select the memory context while reading a record.
+class FileMemoryContext
+{
+public:
+    FileMemoryContext() : previous(g_memoryContext_tls_0x768)
+    {
+        constexpr std::uint32_t kFileMemoryContext = 0x65;
+        g_memoryContext_tls_0x768 = kFileMemoryContext;
+    }
+
+    ~FileMemoryContext() { g_memoryContext_tls_0x768 = previous; }
+
+private:
+    std::uint32_t previous;
+};
+}
+
+// Load the text payload using the file's allocation context.
+bool BGSEntryPointFunctionDataText::LoadFunctionData(TESFile* a_file)
+{
+    FileMemoryContext context;
+    text.LoadFromFile(a_file);
+    return true;
+}

@@ -95,6 +95,7 @@ class SiblingPolicy(unittest.TestCase):
             siblings = check_labels.configured_siblings(root)
             self.assertIn('fo4-private', siblings)
             self.assertEqual(siblings['momusdigital/fnv_decomp'], 'custom')
+            self.assertEqual(siblings['momusdigital/f3_decomp'], '.local/sources/f3_decomp')
             checker = check_labels.Checker({}, siblings={'fo4-private': str(root)})
             with patch('check_labels.checkout_head', return_value='0' * 40), patch.object(
                     Path, 'read_text', side_effect=AssertionError('unapproved source opened')):

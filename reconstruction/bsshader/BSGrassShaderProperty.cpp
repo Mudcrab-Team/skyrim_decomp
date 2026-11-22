@@ -1,13 +1,17 @@
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x151db90 BSGrassShaderProperty::GetRenderPasses_ShadowMapOrMask
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
 // Code origin: original bodies written from the local listing; declarations from powerof3/CommonLibSSE and CommonLibSSE-NG.
 // Adapted bodies: none.
-// 0x151de70 BSGrassShaderProperty::Function151de70
-// 0x151de80 BSGrassShaderProperty::Function151de80
-// 0x151d6d0 BSGrassShaderProperty::IsEqual
 #include "BSGrassShaderProperty.h"
+
+void BSGrassShaderProperty::GetRenderPasses_ShadowMapOrMask()
+{
+    GetRenderPasses();
+}
 
 bool BSGrassShaderProperty::IsEqual(NiObject* a_object)
 {

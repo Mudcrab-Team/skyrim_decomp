@@ -27,7 +27,7 @@
           "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "6fecb06e1e8d34f365307c6da18d4278b614be6d5a059a978fd5c8b173a89d14",
+        "object_sha256": "eb0563076546aa168e7d99e2c23e7229bfc846b28b538b10aa4a3bb02a6003c5",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bscore/BSTaskletData.h",
@@ -38,7 +38,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "bd79d99ec373a333cc655f47e8b1b50ef895c165",
+    "base_sha": "abed46e060af0cb7efb4fb8a13ee54bfca6f54fd",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -49,7 +49,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "b11ba49c8c7dd22847eeab097674c59318dbdac9",
+    "head_sha": "25b3f056306fad1ea84600e0d31fbe8748aa35ea",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -62,10 +62,10 @@
     "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44540751998,
+    "run_id": 44975574751,
     "rva": "0x3fb6b0",
     "schema": 2,
-    "source_sha256": "6f9508fbbf7b5b6acdbc4d0cc233e11038c7c2a11121a6fff5293ad2c469348f",
+    "source_sha256": "1bae8983f9f7bab42b9a2174dd9e8a518c2e4e634db7e7a42c386eb292b3e393",
     "status": "pass",
     "symbols": [
       "??_GBSWin32TaskletData@@UEAAPEAXI@Z"
@@ -100,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "f7d1aebb89d0f8c96c4aeb141a5f9a08a4e71f1d195aac96cb01e277edcc8fdd",
           "code_sections": 1,
-          "object_sha256": "6fecb06e1e8d34f365307c6da18d4278b614be6d5a059a978fd5c8b173a89d14"
+          "object_sha256": "eb0563076546aa168e7d99e2c23e7229bfc846b28b538b10aa4a3bb02a6003c5"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -164,7 +164,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsinput/BSWin32TaskletData.cpp",
-          "source_revision": "6f9508fbbf7b5b6acdbc4d0cc233e11038c7c2a11121a6fff5293ad2c469348f"
+          "source_revision": "1bae8983f9f7bab42b9a2174dd9e8a518c2e4e634db7e7a42c386eb292b3e393"
         },
         "symbol_map_sha256": "f152ad1a7fb4f3abb4113c7a8f18a3f3c01fed72519f50fd665669728a845b0b",
         "target": {
@@ -177,7 +177,7 @@
   ],
   "source": {
     "compiled": "reconstruction/bsinput/BSWin32TaskletData.cpp",
-    "digest": "6f9508fbbf7b5b6acdbc4d0cc233e11038c7c2a11121a6fff5293ad2c469348f",
+    "digest": "1bae8983f9f7bab42b9a2174dd9e8a518c2e4e634db7e7a42c386eb292b3e393",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bscore/BSTaskletData.h",
@@ -185,7 +185,7 @@
       "reconstruction/bsinput/BSWin32TaskletData.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "v0id-array",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/f152ad1a7fb4f3abb4113c7a8f18a3f3c01fed72519f50fd665669728a845b0b.json",
     "sha256": "f152ad1a7fb4f3abb4113c7a8f18a3f3c01fed72519f50fd665669728a845b0b"

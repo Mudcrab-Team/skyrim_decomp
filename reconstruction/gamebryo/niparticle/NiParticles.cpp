@@ -6,7 +6,11 @@
 // Adapted bodies: none
 // 0xf055a0 NiParticles::AsParticlesGeom
 // 0xf05220 NiParticles::RegisterStreamables
+// 0xf05630 NiParticles::AdjustParticleTotal
+// 0xf05720 NiParticles::NiParticles
 #include "NiParticles.h"
+
+#include <intrin.h>
 
 NiParticles* NiParticles::AsParticlesGeom()
 {
@@ -17,4 +21,24 @@ bool NiParticles::RegisterStreamables(NiStream& a_stream)
 {
     particleData->RegisterStreamables(a_stream);
     return BSGeometry::RegisterStreamables(a_stream);
+}
+
+void NiParticles::AdjustParticleTotal(std::int32_t a_count)
+{
+    if (a_count) {
+        long previous;
+        do {
+            previous = particleTotal;
+            // retry until no other thread changed the total in between
+        } while (_InterlockedCompareExchange(&particleTotal, previous + a_count, previous) != previous);
+    }
+}
+
+NiParticles::NiParticles()
+{
+    particleData = nullptr;
+    flags02() |= 0x8;
+    unk160 = 0;
+    vertexDesc = 0x0840200004000051;  // the vertex layout particles are drawn with
+    type = 1;                         // particles
 }

@@ -1,5 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original; the listing and community declarations only
 // TESObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject::IsOcclusionMarker: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // g_occlusionMarkerA, g_occlusionMarkerB, g_occlusionMarkerC: GUESS(low)
@@ -14,6 +15,7 @@ class TESWaterForm;
 class TESObject : public TESForm
 {
 public:
+    ~TESObject() override;  // 00
     virtual bool IsOcclusionMarker();  // compared: 0x275ee0
     virtual std::uint32_t DecRef();  // compared: 0x146640
     virtual std::uint32_t GetRefCount() const;  // compared: 0x146810

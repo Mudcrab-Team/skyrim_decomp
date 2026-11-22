@@ -1,0 +1,195 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "64e86aaef7fa3da5bb1c4393f9c8c073e5ac91ce0b398c68102c283756131924",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.cpp",
+          "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.h",
+          "reconstruction/gamebryo/niparticle/NiPSysModifierCtlr.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "c1606d6d40c3bdaa5a0c89c741fdd7f3ffd159b6",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "479f3fccb7fa140752805a499473d2cf7f768ca0",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "d3e29d38681ed0b8e92015d86704d4bc37ae46b6734e3c544c0ad1cf594ce869",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "6f7253a3a4aaecb6fdc9eed4372a5c64fe5765176d8dda7fcbabaca96cbf4616",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44843817114,
+    "rva": "0xf9a8d0",
+    "schema": 2,
+    "source_sha256": "f8d27153b547681d25c98a52066373579d104991523b81af56e7cc73cf9ffd78",
+    "status": "pass",
+    "symbols": [
+      "?SaveBinary@NiPSysEmitterCtlr@@UEAAXAEAVNiStream@@@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "d3e29d38681ed0b8e92015d86704d4bc37ae46b6734e3c544c0ad1cf594ce869",
+      "normalized_sha256": "6f7253a3a4aaecb6fdc9eed4372a5c64fe5765176d8dda7fcbabaca96cbf4616",
+      "rva": 16361680,
+      "size": 45
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xf9a8d0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "f7d3483967123f985a22e5bcd97fe140773379173385b9f3922ac9caf6b3c0bd",
+          "code_sections": 1,
+          "object_sha256": "64e86aaef7fa3da5bb1c4393f9c8c073e5ac91ce0b398c68102c283756131924"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 41,
+          "code_bytes_total": 45,
+          "eh": {
+            "bytes": 12,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 12,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16361680,
+          "size": 45,
+          "symbol": "?SaveBinary@NiPSysEmitterCtlr@@UEAAXAEAVNiStream@@@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.cpp",
+          "source_revision": "f8d27153b547681d25c98a52066373579d104991523b81af56e7cc73cf9ffd78"
+        },
+        "symbol_map_sha256": "c3c23607567574149bfa578aeb1c1c63656ec478d09233cdfd03595ecf29ed57",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xf9a8d0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.cpp",
+    "digest": "f8d27153b547681d25c98a52066373579d104991523b81af56e7cc73cf9ffd78",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.cpp",
+      "reconstruction/gamebryo/niparticle/NiPSysEmitterCtlr.h",
+      "reconstruction/gamebryo/niparticle/NiPSysModifierCtlr.h"
+    ]
+  },
+  "submitter": "redwatchwanderer",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/c3c23607567574149bfa578aeb1c1c63656ec478d09233cdfd03595ecf29ed57.json",
+    "sha256": "c3c23607567574149bfa578aeb1c1c63656ec478d09233cdfd03595ecf29ed57"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

@@ -1,4 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// 0x5dc660 compared function
+// Code origin: original reconstruction from binary analysis; no external implementation code copied.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ActiveEffectReferenceEffectController: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // ReferenceEffectController: STANDIN EXE_RTTI

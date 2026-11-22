@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?InitializeData@TESObjectCONT@@UEAAXXZ": {
+      "rva": 2626864,
+      "size": 24
+    },
+    "?InitItemImpl@TESObjectCONT@@UEAAXXZ": {
+      "rva": 2628144,
+      "size": 190
+    },
+    "?TESObjectCONTInitSub30@@YAXPEAXPEAVTESObjectCONT@@@Z": {
+      "rva": 1966544,
+      "size": null
+    },
+    "?TESObjectCONTInitSubA0@@YAXPEAXPEAVTESObjectCONT@@@Z": {
+      "rva": 1912256,
+      "size": null
+    },
+    "?TESObjectCONTInitSub58@@YAXPEAXPEAVTESObjectCONT@@@Z": {
+      "rva": 2019600,
+      "size": null
+    },
+    "?TESObjectCONTGetFile@@YAPEAVTESFile@@PEAVTESObjectCONT@@H@Z": {
+      "rva": 1989344,
+      "size": null
+    },
+    "?TESObjectCONTAddCompileIndex@@YAXAEAIPEAVTESFile@@@Z": {
+      "rva": 1993984,
+      "size": null
+    },
+    "?LookupFormByID@@YAPEAVTESForm@@I@Z": {
+      "rva": 5610000,
+      "size": null
+    },
+    "?FinishInitItem@@YAXPEAVTESForm@@_N@Z": {
+      "rva": 1990832,
+      "size": null
+    },
+    "?OpenForActivator@TESObjectCONT@@QEAAXPEAVTESObjectREFR@@0@Z": {
+      "rva": 2629936,
+      "size": 33
+    },
+    "?g_containerOpener@@3PEAVTESObjectREFR@@EA": {
+      "rva": 52294400,
+      "size": null
+    },
+    "?OpenContainer@TESObjectREFR@@QEBAXH@Z": {
+      "rva": 9510832,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?InitializeData@TESObjectCONT@@UEAAXXZ",
+        "rva": "0x281530",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitItemImpl@TESObjectCONT@@UEAAXXZ",
+        "rva": "0x281a30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TESObjectCONTInitSub30@@YAXPEAXPEAVTESObjectCONT@@@Z",
+        "rva": "0x1e01d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TESObjectCONTInitSubA0@@YAXPEAXPEAVTESObjectCONT@@@Z",
+        "rva": "0x1d2dc0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TESObjectCONTInitSub58@@YAXPEAXPEAVTESObjectCONT@@@Z",
+        "rva": "0x1ed110",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TESObjectCONTGetFile@@YAPEAVTESFile@@PEAVTESObjectCONT@@H@Z",
+        "rva": "0x1e5ae0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?TESObjectCONTAddCompileIndex@@YAXAEAIPEAVTESFile@@@Z",
+        "rva": "0x1e6d00",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LookupFormByID@@YAPEAVTESForm@@I@Z",
+        "rva": "0x559a10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?FinishInitItem@@YAXPEAVTESForm@@_N@Z",
+        "rva": "0x1e60b0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?OpenForActivator@TESObjectCONT@@QEAAXPEAVTESObjectREFR@@0@Z",
+        "rva": "0x282130",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_containerOpener@@3PEAVTESObjectREFR@@EA",
+        "rva": "0x31df300",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?OpenContainer@TESObjectREFR@@QEBAXH@Z",
+        "rva": "0x911fb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

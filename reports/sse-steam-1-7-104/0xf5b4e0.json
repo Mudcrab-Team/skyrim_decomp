@@ -1,0 +1,199 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/Ireconstruction",
+          "/showIncludes"
+        ],
+        "object_sha256": "334bcb7002e4df06b5e843f62a29063249cbd234cb892d5e66dd5b436cb3300e",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/declarations/NiObject.h",
+          "reconstruction/declarations/NiRefObject.h",
+          "reconstruction/gamebryo/nianimation/NiControllerSequence.cpp",
+          "reconstruction/gamebryo/nianimation/NiControllerSequence.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "97347ee7c897b8cb850b77b96c858c2e1b7c3210",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "76458ec5f64f9efd9685328f24f119059aa48c76",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "89dbd459f9d3648514a3bd50548f4c9f1416ff7c4f66acf42845628f3094af51",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "0d717b3d0bf94bece1980ec8de679ae6377088cbe319225df5780e8176df80f5",
+    "os": "windows",
+    "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44942825564,
+    "rva": "0xf5b4e0",
+    "schema": 2,
+    "source_sha256": "89a15706fa58f2a25fad889752c57ef8d260780edede9fd7736eb8fae9e0eda1",
+    "status": "pass",
+    "symbols": [
+      "??_GNiControllerSequence@@UEAAPEAXI@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "89dbd459f9d3648514a3bd50548f4c9f1416ff7c4f66acf42845628f3094af51",
+      "normalized_sha256": "0d717b3d0bf94bece1980ec8de679ae6377088cbe319225df5780e8176df80f5",
+      "rva": 16102624,
+      "size": 52
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/nianimation/NiControllerSequence.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xf5b4e0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json",
+    "sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "bae908016bf0aa178bd912135b3f4f60d835e567be2d34bbb8ef89f0b54dabac",
+          "code_sections": 1,
+          "object_sha256": "334bcb7002e4df06b5e843f62a29063249cbd234cb892d5e66dd5b436cb3300e"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 8,
+          "code_bytes_exact": 44,
+          "code_bytes_total": 52,
+          "eh": {
+            "bytes": 12,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 2
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 12,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 1
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16102624,
+          "size": 52,
+          "symbol": "??_GNiControllerSequence@@UEAAPEAXI@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy",
+            "/Ireconstruction"
+          ],
+          "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/nianimation/NiControllerSequence.cpp",
+          "source_revision": "89a15706fa58f2a25fad889752c57ef8d260780edede9fd7736eb8fae9e0eda1"
+        },
+        "symbol_map_sha256": "831e47bc8cfce16375c2712db1e37afc77aaf42de43f44da2a54ec75eb462b0e",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xf5b4e0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/nianimation/NiControllerSequence.cpp",
+    "digest": "89a15706fa58f2a25fad889752c57ef8d260780edede9fd7736eb8fae9e0eda1",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/declarations/NiObject.h",
+      "reconstruction/declarations/NiRefObject.h",
+      "reconstruction/gamebryo/nianimation/NiControllerSequence.cpp",
+      "reconstruction/gamebryo/nianimation/NiControllerSequence.h"
+    ]
+  },
+  "submitter": "v0id-array",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/831e47bc8cfce16375c2712db1e37afc77aaf42de43f44da2a54ec75eb462b0e.json",
+    "sha256": "831e47bc8cfce16375c2712db1e37afc77aaf42de43f44da2a54ec75eb462b0e"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

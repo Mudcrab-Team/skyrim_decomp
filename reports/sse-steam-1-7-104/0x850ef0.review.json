@@ -3,21 +3,19 @@
   "code_section_sha256": "10a0a642ca680a4e3a96f910294c99bb4ebae0810858b46bf011917fcb0897b6",
   "escalation_category": "none",
   "function_id": "sse-steam-1-7-104-0x850ef0",
-  "naming_findings": [
-    "Helper declarations lack explicit origin labels."
-  ],
+  "naming_findings": [],
   "previous_code_section_sha256": null,
   "previous_review_sha256": null,
   "previous_source_digest": null,
-  "review_date": "2026-11-16",
+  "review_date": "2026-11-22",
   "review_kind": "full",
   "review_record_schema": 3,
-  "review_sha256": "94033ec844de3406ce1b3736cb221f838d779f84574763c72b58eaf769dd327a",
-  "review_task_id": "review-flow-g169",
+  "review_sha256": "ec9b9929d4e1f718b617da1d1c5f54cba3a1f89199175b7d8fc49934e1514da0",
+  "review_task_id": "pr-bot-819-aef0f99a",
   "reviewer_model": "gpt-6.1-terra",
   "rva": 8720112,
   "size": 121,
-  "source_digest": "c9803760e04d0e876c6dfbbcdb48bd22b76ed9c41ae7118bc857188231cba868",
-  "source_digest_method": "tu-sha256-v1",
+  "source_digest": "f51949eef42f7eb4e7777d051c838e8619cac4533bd4c61b65307db951c182ee",
+  "source_digest_method": "tu-sha256-v2",
   "verdict": "approve"
 }

@@ -4,6 +4,7 @@
 // BSParticleShaderRayEmitter: EXE_RTTI
 // Slot6: GUESS(low)
 // member, padding: GUESS(low); storage names invented for the measured member offset
+// HasMember: GUESS(low)
 #pragma once
 #include <cstdint>
 // Slot6: GUESS(low); method name inferred from vtable owner and slot
@@ -11,6 +12,7 @@ class BSParticleShaderRayEmitter
 {
 public:
     virtual void* Slot6() const;
+    int HasMember() const;
     std::uint8_t padding[0xed8];
     void* member;
 };

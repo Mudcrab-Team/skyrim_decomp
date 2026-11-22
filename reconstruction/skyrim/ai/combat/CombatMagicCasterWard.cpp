@@ -1,16 +1,18 @@
-// Source exposure: mixed (authorized target analysis and anonymous permitted sibling source).
-// Origin: adapted from the cited game-code body under anonymous author permission.
-// Licence: fo4-private reused with author permission conditional on anonymity.
-// BSFixedString: STANDIN GUESS(low)
-// data: GUESS(low)
+// Source exposure: mixed (pinned image listing and authorized sibling source).
+// Code origin: existing sibling-adapted method plus original reconstruction of Function834190.
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatMagicCaster.cpp:118
-// CombatMagicCasterWard, GetObjectType: SIBLING(fo4-private@1b765c70, author-permission)
+// Adapted bodies: GetObjectType from fo4-private@1b765c70; Function834190 original.
 // 0x850ef0 CombatMagicCasterWard::GetObjectType
+// 0x834190 CombatMagicCasterWard::Function834190
 #include "CombatMagicCasterWard.h"
+
 unsigned int CombatMagicCasterWard::GetObjectType() const
 {
-    // Use C++ dynamic local-static initialization: the Skyrim target uses thread-safe CRT initialization.
-    // This replaces upstream's manually reconstructed guard; it is a game/compiler API adaptation.
     static unsigned int classType = CombatObjectBase::GenerateClassType("CombatMagicCasterWard");
     return classType;
+}
+
+std::uint32_t CombatMagicCasterWard::Function834190() const
+{
+    return (wardTarget->value38 < 30.0f) ? 3u : 2u;
 }

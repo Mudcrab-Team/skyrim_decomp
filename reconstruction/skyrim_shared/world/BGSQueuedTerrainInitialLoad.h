@@ -1,14 +1,19 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSQueuedTerrainInitialLoad","rationale":"vtable owner and slot; method spelling invented","slot":5},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Source exposure: mixed (pinned image listing and public names).
+// Code origin: existing leaf plus original reconstruction of Function51c570.
 // BGSQueuedTerrainInitialLoad: EXE_RTTI
-// Slot5: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Slot5, Function51c570, ReleaseQueuedTerrain, unknown08, unknown10, target: GUESS(low)
 #pragma once
 #include <cstdint>
-// Slot5: GUESS(low); method name inferred from vtable owner and slot
+
+void ReleaseQueuedTerrain(void* a_target);
+
 class BGSQueuedTerrainInitialLoad
 {
 public:
     virtual std::uint32_t Slot5() const;
+    void Function51c570();
+
+    std::uint64_t unknown08;
+    std::uint64_t unknown10;
+    void* target;
 };

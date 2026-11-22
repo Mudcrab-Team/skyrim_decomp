@@ -4,7 +4,6 @@
 // ChangeActor: STANDIN GUESS(medium); partial target-bound view, not an original complete declaration.
 // Origin: original declarations adapted from pinned community headers.
 // Source exposure: mixed (independent target accesses and public type hypotheses).
-// Drafted by gpt-6.1-terra; adapted from P206 prefix.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once

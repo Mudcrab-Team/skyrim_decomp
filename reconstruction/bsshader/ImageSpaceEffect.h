@@ -1,4 +1,5 @@
 // Source exposure: mixed (community headers and the helper-generated skeleton).
+// 0x1565300 compared function
 // Code origin: partial class declaration adapted from CommonLibSSE-NG.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ImageSpaceEffect, ImageSpaceEffect::IsActive, ImageSpaceEffect::~ImageSpaceEffect, ImageSpaceEffect::Render, ImageSpaceEffect::Setup, ImageSpaceEffect::ShutDown, ImageSpaceEffect::BorrowTextures, ImageSpaceEffect::ReturnTextures, ImageSpaceEffect::UpdateParams, ImageSpaceEffect::SetRenderStates, ImageSpaceEffect::RestoreRenderStates: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

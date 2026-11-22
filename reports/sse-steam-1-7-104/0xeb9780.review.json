@@ -3,21 +3,19 @@
   "code_section_sha256": "bc2ba9cfe506f9e79ffc9b2501eaf5eae8bcac6a9b15158c56ec893d0343e273",
   "escalation_category": "none",
   "function_id": "sse-steam-1-7-104-0xeb9780",
-  "naming_findings": [
-    "The cited community method name could not be located in the packet."
-  ],
+  "naming_findings": [],
   "previous_code_section_sha256": null,
   "previous_review_sha256": null,
   "previous_source_digest": null,
-  "review_date": "2026-11-13",
+  "review_date": "2026-11-21",
   "review_kind": "full",
   "review_record_schema": 3,
-  "review_sha256": "1cdb392f9cd0f09bb67e2f3189cb80d31f2019508a8f6e33150d7794005739ae",
-  "review_task_id": "review-flow-g001",
+  "review_sha256": "e3f994a298c10d0ef71f4494d7528ce275f79a7bc12f204e6503f6b280b8aad2",
+  "review_task_id": "pr-bot-630-f86aeda7",
   "reviewer_model": "gpt-6.1-terra",
   "rva": 15439744,
   "size": 7,
-  "source_digest": "9ac5d31a0875063c213d733384de7ecc89f8389c9d5a1e8ec00d251d7ece163e",
-  "source_digest_method": "tu-sha256-v1",
+  "source_digest": "a6a0a090d0e4a0d9423c59d34b3594018dc00281f785058f20e7be360165fecb",
+  "source_digest_method": "tu-sha256-v2",
   "verdict": "approve"
 }

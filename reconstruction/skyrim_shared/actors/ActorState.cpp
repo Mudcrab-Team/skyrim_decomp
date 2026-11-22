@@ -1,13 +1,10 @@
-// ActorState: STANDIN GUESS(low); partial target-bound receiver/callee view; no full layout or ownership claim.
-// Origin: original reconstruction with cited adapted declarations and complete notices.
+// Source exposure: mixed (pinned image listing and community declarations).
+// Code origin: original reconstruction; existing Transition preserved.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// Source exposure: mixed; Drafted by gpt-6.1-terra.
-// Origin: original implementation informed by pinned community declarations.
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
-// ActorState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
-// PlayerReceiver, SetValue, Transition, stateWord, Unknown00: STANDIN GUESS(medium); names and states inferred; omitted virtual identities unknown.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Adapted bodies: none
 // 0x75e4a0 Transition
+// 0x6e1ab0 P2073::ActorState::Function6e1ab0
 #include "ActorState.h"
 namespace P2073 {
 bool ActorState::Transition(std::uint32_t state) {
@@ -16,5 +13,21 @@ bool ActorState::Transition(std::uint32_t state) {
         PlayerReceiver::FromActorState(this)->SetValue(0.0f);
     }
     return true;
+}
+
+void ActorState::Function6e1ab0() {
+    stateWord = 0u;
+    stateWord2.talkingToPlayer = 0;
+    stateWord2.forceRun = 0;
+    stateWord2.forceSneak = 0;
+    stateWord2.headTracking = 1;
+    stateWord2.reanimating = 0;
+    stateWord2.weaponState = 0;
+    stateWord2.wantBlocking = 0;
+    stateWord2.flightBlocked = 0;
+    stateWord2.recoil = 0;
+    stateWord2.allowFlying = 1;
+    stateWord2.staggered = 0;
+    stateWord2.unk14 = 0;
 }
 }

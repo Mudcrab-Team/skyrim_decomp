@@ -5,10 +5,19 @@
 // Unk_0A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// SEEK_CUR: GUESS(low); the relative-seek origin passed as 1
 // 0xeb9780 ArchiveFile::Unk_0A
+// 0xeb96e0 ArchiveFile::seek(std::int32_t)
+// NiBinaryStream::seek: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); this override forwards to NiFile::seek
 #include "ArchiveFile.h"
 // Unk_0A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 std::uint32_t ArchiveFile::Unk_0A() const
 {
     return member;
+}
+
+
+void ArchiveFile::seek(std::int32_t a_numBytes)
+{
+    seek(a_numBytes, 1);
 }

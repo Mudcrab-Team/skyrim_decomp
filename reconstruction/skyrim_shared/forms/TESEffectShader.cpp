@@ -1,7 +1,12 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
+// Source exposure: mixed. Drafted from local instruction listings of the pinned image.
+// Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// Adapted bodies: none
 // 0x26b3e0 TESEffectShader::InitializeData
 // 0x26b760 TESEffectShader::InitItemImpl
+// 0x26cfd0 TESEffectShader::GetTotalDuration
+// 0x26d000 TESEffectShader::GetFadeInAndFullDuration
 #include "TESEffectShader.h"
 
 void TESEffectShader::InitializeData()
@@ -36,4 +41,18 @@ void TESEffectShader::InitItemImpl()
         }
         FinishInitItem(this, true);
     }
+}
+
+float TESEffectShader::GetTotalDuration() const
+{
+    const float edge = data.edgeEffectAlphaFadeInTime + data.edgeEffectFullAlphaTime + data.edgeEffectAlphaFadeOutTime;
+    const float fill = data.fillTextureEffectAlphaFadeInTime + data.fillTextureEffectFullAlphaTime + data.fillTextureEffectAlphaFadeOutTime;
+    return edge > fill ? edge : fill;
+}
+
+float TESEffectShader::GetFadeInAndFullDuration() const
+{
+    const float edge = data.edgeEffectAlphaFadeInTime + data.edgeEffectFullAlphaTime;
+    const float fill = data.fillTextureEffectAlphaFadeInTime + data.fillTextureEffectFullAlphaTime;
+    return edge > fill ? edge : fill;
 }

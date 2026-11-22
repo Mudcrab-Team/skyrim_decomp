@@ -28,7 +28,7 @@
           "reconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "d8e76a64b9e310f81de3038e53b8fc5ace87ee0dd0b5b003f3868adaaa9a2774",
+        "object_sha256": "2a3f471a858de497a8aebe87470862f18c5afc0f6ea47a862e1da4c6a17fd2bb",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/actors/ActorState.cpp",
@@ -40,43 +40,38 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "59479c2f38538f9cf1016004f95ddee110312fab",
+    "base_sha": "790aaeb65be00c5f5828f44ff0bf15ed7cc46dfa",
     "build_id": "sse-steam-1-7-104",
-    "cache_verified": true,
-    "candidate_sha": "ebd108432b097f7e0a5701e722a842a9306cb989",
-    "compiler_sha256": {
-      "c1xx.dll": "4d5f2f8c1ed3384ae15be5b31e2918e4a200913cb58374543b7a05762de234be",
-      "c2.dll": "03627abf4cde10390bc086ba1a85625ed61c2708838db9fff0dc9830040bbf2b",
-      "cl.exe": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
-      "link.exe": "70e987473cc4c67f65cdcabb82b3dc4827cb9d224d6016843051363b4cacb099"
-    },
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
-    "content_sha256": "db65c394cf92d2b786966c8b3ad0287e08a356e7817280b7da684ea6c69038eb",
-    "deterministic": true,
-    "first_content_sha256": "db65c394cf92d2b786966c8b3ad0287e08a356e7817280b7da684ea6c69038eb",
+    "event": "pull_request",
     "first_host": {
       "host_id": "mac-wine",
       "loader": "wine",
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "first_object_sha256": "d8e76a64b9e310f81de3038e53b8fc5ace87ee0dd0b5b003f3868adaaa9a2774",
+    "head_sha": "aef0f99af9eaebc615028a3e48de1f5940300977",
     "host_id": "github-windows-native",
-    "kind": "ci-hash",
+    "job": "hash",
+    "kind": "pr-check-hash",
     "layout_sha256": "22a694473d1cf9bce6692fd2588745352f9d37bcda624c866fd5915119062ce5",
     "loader": "native",
     "machine": "github-hosted-windows",
+    "map_status": "pass",
     "normalized_sha256": "86c9e90718b66ab943adc2bcfde50d7443f1c0ffa3b627599c9f0c49be9b5612",
-    "object_sha256": "3f4e464d0348b2b39f036b018a3ecdc7f0892fad1c3cc1b2fb61fc719bd3c5d1",
     "os": "windows",
     "recipe_sha256": "1698d9007b615136ca0b49cc9429352698c68e3ff6b29a322f01b867d3d843d2",
-    "request_sha256": "f1de3fd5cf5dd7dae206b9d2c62496f9ce698e59c3ea649bc5e4e5a495e54f9d",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44134458551,
-    "rva": 7726240,
-    "schema": 1,
-    "source_sha256": "d8b54b8acaf6b190c9d38b715206cf11064eea3b3b82fc698950160c15a0dcdd",
+    "run_id": 45015814996,
+    "rva": "0x75e4a0",
+    "schema": 2,
+    "source_sha256": "dc731820c5a5ed2005c55ce89cf01afcfb4cd53050b359546246966b0b298407",
+    "status": "pass",
+    "symbols": [
+      "?Transition@ActorState@P2073@@UEAA_NI@Z"
+    ],
     "target": {
       "extraction": "linked-reference-inference",
       "layout_sha256": "22a694473d1cf9bce6692fd2588745352f9d37bcda624c866fd5915119062ce5",
@@ -84,23 +79,20 @@
       "rva": 7726240,
       "size": 59
     },
-    "task_id": "r246-receivers-01",
-    "toolchain_manifest_sha256": "3d358035ccde903aeed022b7dc6ea2b7e91a33922b0f9eda2bc7655749690337",
-    "tools_sha256": "e287e1ae34e16b19a23292b974e98ccc19c441e2804835520d974d2d18748101",
     "toolset": "MATCH",
-    "unit": "reconstruction/actor207_3/ActorState.cpp",
-    "workflow": ".github/workflows/ci-confirm.yml"
+    "unit": "reconstruction/skyrim_shared/actors/ActorState.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
   },
   "function_id": "sse-steam-1-7-104-0x75e4a0",
   "match_record_schema": 2,
   "notes": [
-    "CI second-host exception authorized by awarebayes 2026-11-15. Full local comparator report is verbatim; CI independently verifies published target hashes and whole non-debug object content. No game bytes enter CI."
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json",
     "sha256": "1698d9007b615136ca0b49cc9429352698c68e3ff6b29a322f01b867d3d843d2"
   },
-  "reproduction": "Run tools/verifier/confirm with a registered primary runner and the ci-hash confirmation runner; tools/ci_confirm_batch.py compiles twice with the pinned recipe and checks published hashes.",
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -110,7 +102,7 @@
         "candidate": {
           "code_section_sha256": "53d78b7530b180870c976d5bdbc616d600887f51bb31570e57d4e9224d60484a",
           "code_sections": 1,
-          "object_sha256": "d8e76a64b9e310f81de3038e53b8fc5ace87ee0dd0b5b003f3868adaaa9a2774"
+          "object_sha256": "2a3f471a858de497a8aebe87470862f18c5afc0f6ea47a862e1da4c6a17fd2bb"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -174,10 +166,10 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/actor207_3/ActorState.cpp",
-          "source_revision": "d8b54b8acaf6b190c9d38b715206cf11064eea3b3b82fc698950160c15a0dcdd"
+          "path": "reconstruction/skyrim_shared/actors/ActorState.cpp",
+          "source_revision": "dc731820c5a5ed2005c55ce89cf01afcfb4cd53050b359546246966b0b298407"
         },
-        "symbol_map_sha256": "34755ec3b1cb4ce0e4618fc1e595d432bceb211390a1dfd730c1513858a76552",
+        "symbol_map_sha256": "2d5dae66272a364a7e62848fece246440bd773490642187114250c5a589f8d83",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -188,10 +180,8 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/actors/ActorState.cpp",
-    "digest": "ce2ebb1798958bc2691a50857340b3ec4f55fe9f6bdfcef0ce5c78e25edb85db",
+    "digest": "dc731820c5a5ed2005c55ce89cf01afcfb4cd53050b359546246966b0b298407",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "d8b54b8acaf6b190c9d38b715206cf11064eea3b3b82fc698950160c15a0dcdd",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/skyrim_shared/actors/ActorState.cpp",
       "reconstruction/skyrim_shared/actors/ActorState.h",
@@ -199,9 +189,10 @@
       "reconstruction/skyrim_shared/actors/ActorTargetPrefix.h"
     ]
   },
+  "submitter": "aivv73",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/34755ec3b1cb4ce0e4618fc1e595d432bceb211390a1dfd730c1513858a76552.json",
-    "sha256": "34755ec3b1cb4ce0e4618fc1e595d432bceb211390a1dfd730c1513858a76552"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/2d5dae66272a364a7e62848fece246440bd773490642187114250c5a589f8d83.json",
+    "sha256": "2d5dae66272a364a7e62848fece246440bd773490642187114250c5a589f8d83"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",
