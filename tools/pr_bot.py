@@ -1182,8 +1182,9 @@ class Bot:
 
     def reviewed(self, state, key, fn):
         """state.once for a review text, also recording which reviewer produced it."""
-        if key not in state.data:
-            self.used.reviewer = None
+        # Reset on every call: a review cached by an earlier process is not run here, and `used` is thread-local,
+        # so a worker that never ran a review has no attribute to read.
+        self.used.reviewer = None
         text = state.once(key, fn)
         if self.used.reviewer:
             state.set('reviewer', self.used.reviewer)

@@ -1,4 +1,5 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// 0x26164c compared function
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESImageSpaceModifiableForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BaseFormComponent: STANDIN EXE_RTTI
