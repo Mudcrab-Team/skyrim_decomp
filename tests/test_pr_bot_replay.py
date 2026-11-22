@@ -1265,6 +1265,23 @@ class CarriedRecordsTests(Replay):
         self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'scope')
 
 
+class CarriedDeletionTests(Replay):
+    """Only the removed files of a carried-records PR are checked as deletions."""
+
+    def test_modified_units_and_records_are_not_treated_as_deleted(self):
+        seen = []
+
+        def problems(root, deleted, read_base, exists):
+            seen.append(list(deleted))
+            return []
+        files = [dict(filename=unit_path(0x1000), status='modified'),
+                 dict(filename=unit_path(0x2000), status='removed'),
+                 dict(filename=f'reports/{BUILD}/0x1000.json', status='modified')]
+        with mock.patch('unit_deletion.problems', problems):
+            self.bot.deletion_problems('HEAD', files)
+        self.assertEqual(seen, [[unit_path(0x2000)]])
+
+
 class CircuitBreakerTests(Replay):
     def setUp(self):
         super().setUp()

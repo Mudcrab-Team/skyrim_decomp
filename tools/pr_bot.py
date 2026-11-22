@@ -2934,7 +2934,9 @@ class Bot:
     def deletion_problems(self, base, files):
         """Messages for deleted units that orphan an accepted function or that a remaining file still includes."""
         import unit_deletion
-        names = [f['filename'] for f in files]
+        # A carried-records PR lists modified units and records too; only the removed files are deletions, and
+        # treating the rest as deleted would call every unit the PR rebinds records to an orphaning deletion.
+        names = [f['filename'] for f in files if f.get('status') == 'removed']
 
         def read_base(name):
             shown = self.run(['git', 'show', f'{base}:{name}'], check=False, cwd=self.root)
