@@ -9,8 +9,15 @@ apply here too. No authorization gate or acceptance requirement is changed by th
 Function work goes through a pull request. A Drafter or generator works in a plain git worktree
 on a branch, touches only `reconstruction/**` and opens a PR (`gh pr create`). `pr-check.yml`
 runs the scope and leak scan and the Windows CI-hash job (host 1); the PR bot compares on the Mac
-or PC (host 2), makes one review call with an admitted model and squash-merges with
-`--match-head-commit`, then records the rows. The acceptance rule is the summary at the top of
+or PC (host 2), makes one review call with an admitted model and lands one squash commit that
+already holds the records (it builds the squash itself, applies the records, pushes, then merges
+the PR head with `-s ours` so the PR shows as merged; any doubt falls back to
+`gh pr merge --squash --match-head-commit` and a record commit right after). Before any compare it
+repairs mechanical unit problems on the contributor's branch with a `Co-authored-by` commit: an
+over-budget header is trimmed (free text only), the CommonLibSSE-NG SPDX line is added, and a
+function already accepted on main goes back to main's copy. PR numbers in
+`.local/pr-bot/no-autofix.txt` are left to whoever is fixing them by hand. A head that was rejected
+is not looked at again until it changes. The acceptance rule is the summary at the top of
 "Acceptance rule" in `docs/verification.md`; the threat model is `docs/threat-model.md`. An open
 draft PR is the claim. Tooling PRs (`tools/**`, `tests/**`) take the normal route: branch CI green,
 then merge.

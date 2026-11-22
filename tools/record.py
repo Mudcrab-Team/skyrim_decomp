@@ -353,7 +353,8 @@ def main(argv=None):
     else:
         result = apply(a.root, a.build, a.rva, blob, **kwargs)
     print(json.dumps({'recorded': [f'0x{r:x}' for r in result['recorded']],
-                      'refused': {f'0x{r:x}': why for r, why in result['refused'].items()}}))
+                      'refused': {f'0x{r:x}': why for r, why in result['refused'].items()},
+                      'files': result['files']}))
     return 0 if result['recorded'] else 1
 
 

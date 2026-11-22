@@ -54,7 +54,9 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import header_check  # noqa: E402
+import lint_reconstruction  # noqa: E402
 import mapping_check  # noqa: E402
+import pr_autofix  # noqa: E402
 import rva_headers  # noqa: E402
 import repo_slug  # noqa: E402
 
@@ -335,6 +337,16 @@ MAIN_MERGE_MESSAGE = 'Merge main into {branch}'
 
 def branch_url(owner, name):
     return f'https://github.com/{owner}/{name}.git'
+
+AUTOFIX_COMMENT = ('The bot fixed mechanical problems in your units and pushed one commit to your branch '
+                   '(your authorship is credited in it): {what}. The new head is checked from the start; nothing '
+                   'is needed from you.')
+AUTOFIX_WHAT = {'header': 'a unit header over the line budget was trimmed (free-text lines only; labels and '
+                          'provenance lines are untouched)',
+                'spdx': 'the one-line CommonLibSSE-NG licence notice was added',
+                'accepted': "functions already accepted on main were restored to main's copy"}
+AUTOFIX_MESSAGE = ('Fix mechanical unit problems\n\n{lines}\n\n'
+                   'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>\n')
 
 MAIN_MERGED_COMMENT = ('Main conflicted with your branch only in a unit header comment block, so the bot merged main '
                        'into your branch (a merge commit, nothing rewritten) and pushed it. Checks are running again '
@@ -2043,9 +2055,17 @@ class Bot:
         try:
             return self._process(pr, base)
         except Rejected as exc:
-            if exc.text and not self.dry_run:
-                self.tell_rejection(pr, exc.text)
+            if not self.dry_run:
+                if exc.text:
+                    self.tell_rejection(pr, exc.text)
+                # The head is the only input a rejection depends on; remembering it lets the poll skip the head
+                # instead of rediscovering the same finding every tick.
+                State(self.work / 'state', pr['number'], pr['headRefOid']).set('rejected', str(exc))
             raise
+
+    def already_rejected(self, pr):
+        """True when this head was rejected before; only a push (a new head) gets another look."""
+        return not self.dry_run and bool(State(self.work / 'state', pr['number'], pr['headRefOid']).get('rejected'))
 
     def attempt(self, pr, now=None):
         """`process` under the per-PR lock and the head's failure ledger; None when the PR is not due.
@@ -2058,6 +2078,8 @@ class Bot:
         directory = self.work / ('dry' if self.dry_run else 'state')
         with self.pr_lock(number) as mine:
             if not mine:
+                return None
+            if self.already_rejected(pr):
                 return None
             ledger = State(directory, number, head).get('failure')
             if ledger and ledger.get('next', 0) > (now if now is not None else time.time()):
@@ -2129,6 +2151,13 @@ class Bot:
         self.overlay(head, files)
         if deletion_lane(files):
             return self.process_deletion(pr, state, files, base, started)
+        if state.once('autofix_tried', lambda: self.autofix(pr, state, files)):
+            # The branch has a new head; this one is finished and the next tick starts the new one.
+            summary = dict(pr=number, head=head, blocked=None, merge=False, verdicts={},
+                           autofix=state.get('autofix'))
+            state.set('summary', summary)
+            state.set('done', True)
+            return summary
         self.ensure_rows(number, head, files, state)
         units = state.once('units', lambda: self.units(files))
         state.once('dropped_claims', lambda: self.dropped_claims(files))
@@ -2821,11 +2850,16 @@ class Bot:
             matched = [int(r) for r, v in verdicts.items() if v == 'matched' and int(r) not in again]
             login = pr['author']['login']
             uid = self.gh_json('api', f'users/{login}')['id']
-            merged = self.run(merge_command(number, head, *squash_message(number, login, uid, matched, again)),
-                              check=False)
-            if merged.returncode:
-                return self.merge_refused(pr, state, summary)
-            state.set('merged', True)
+            subject, body = squash_message(number, login, uid, matched, again)
+            if self.land_with_records(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'],
+                                      subject, body):
+                state.set('merged', True)
+                state.set('recorded', True)
+            else:
+                merged = self.run(merge_command(number, head, subject, body), check=False)
+                if merged.returncode:
+                    return self.merge_refused(pr, state, summary)
+                state.set('merged', True)
         if land and not state.get('merged'):
             outcome = self.merge_landed(pr, land)
             if outcome == 'head-changed':
@@ -2964,6 +2998,117 @@ class Bot:
                 shutil.rmtree(scratch, ignore_errors=True)
                 self.run(['git', 'worktree', 'prune'], check=False)
 
+    def autofix_skipped(self, number):
+        """True for a PR someone is repairing by hand; `.local/pr-bot/no-autofix.txt` lists their numbers."""
+        try:
+            listed = (self.work / 'no-autofix.txt').read_text().split()
+        except OSError:
+            return False
+        return str(number) in listed
+
+    def autofix_edits(self, files, accepted):
+        """{path: (new text, [kinds])} for the PR's changed unit files that a mechanical repair applies to."""
+        build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+        edits = {}
+        for item in files:
+            name = item['filename']
+            if item.get('status') == 'removed' or not name.startswith(SCOPE_PREFIX) or not name.endswith(('.h', '.cpp')):
+                continue
+            path = self.tree / name
+            try:
+                text = path.read_bytes().decode('utf-8')
+            except (OSError, UnicodeDecodeError):
+                continue
+            there = self.run(['git', 'show', f'origin/main:{name}'], check=False)
+            main_text = there.stdout.decode('utf-8', 'replace') if there.returncode == 0 else None
+            new, kinds = pr_autofix.fix_unit(name, text, main_text, accepted)
+            if new == text:
+                continue
+
+            def findings(source):
+                path.write_text(source, encoding='utf-8')
+                return {re.sub(r':\d+', '', line) for line in lint_reconstruction.lint_file(self.tree, name, build)}
+            # A repair must not add a lint finding the file did not already have; line numbers move, so compare text.
+            before, after = findings(text), findings(new)
+            path.write_text(text, encoding='utf-8')
+            if after <= before:
+                edits[name] = (new, kinds)
+        return edits
+
+    def autofix(self, pr, state, files):
+        """Push the mechanical repairs of the PR's unit files to the contributor's branch; True when pushed.
+
+        Over-budget unit headers are trimmed, a missing CommonLibSSE-NG SPDX line is added, and a function
+        already accepted on main goes back to main's copy. Anything else is left for the normal rejection.
+        The branch needs maintainer edits enabled; without them nothing is pushed.
+        """
+        if self.dry_run or self.autofix_skipped(pr['number']):
+            return False
+        try:
+            build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
+            inventory = json.loads((self.tree / 'data/progress.json').read_text())
+        except (OSError, ValueError, KeyError):
+            return False  # no inventory to tell what is accepted: repair nothing rather than guess
+        accepted = {fn['rva']: fn['name'] for fn in inventory['functions']
+                    if fn['build_id'] == build and fn['status'] == 'matched' and fn.get('name')}
+        edits = self.autofix_edits(files, accepted)
+        if not edits:
+            return False
+        kinds = sorted({k for _, ks in edits.values() for k in ks})
+        number, head = pr['number'], pr['headRefOid']
+        login = pr['author']['login']
+        uid = self.gh_json('api', f'users/{login}')['id']
+        lines = '\n'.join(f'- {name}: {", ".join(ks)}' for name, (_, ks) in sorted(edits.items()))
+        sha = self.push_to_branch(pr, {n: t for n, (t, _) in edits.items()},
+                                  AUTOFIX_MESSAGE.format(lines=lines, login=login, uid=uid))
+        if not sha:
+            return False
+        state.set('autofix', dict(pushed=sha, files=sorted(edits), kinds=kinds))
+        self.say(number, sticky_body(head, AUTOFIX_COMMENT.format(what='; '.join(AUTOFIX_WHAT[k] for k in kinds))))
+        state.set('commented', True)
+        return True
+
+    def push_to_branch(self, pr, edits, message):
+        """Commit `edits` ({path: text}) on top of the PR head in the contributor's branch; the new SHA, else None.
+
+        Never forces: a branch that moved since the head was read refuses the push and the new head is looked
+        at on the next tick. gh's credentials are used because the branch may live in a fork.
+        """
+        number, head = pr['number'], pr['headRefOid']
+        info = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json',
+                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,state')
+        repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
+        if (info.get('headRefOid') != head or info.get('state') != 'OPEN' or not info.get('maintainerCanModify')
+                or not repo.get('name') or not owner.get('login') or not info.get('headRefName')):
+            return None
+        url = branch_url(owner['login'], repo['name'])
+        scratch = self.work / 'merge-scratch' / f'fix{number}'
+        git = ['git', '-c', 'core.hooksPath=/dev/null']
+        with self.root_lock:
+            self.run(['git', 'worktree', 'prune'], check=False)
+            if scratch.exists():
+                shutil.rmtree(scratch, ignore_errors=True)
+                self.run(['git', 'worktree', 'prune'], check=False)
+            scratch.parent.mkdir(parents=True, exist_ok=True)
+            self.run(['git', 'worktree', 'add', '--quiet', '--detach', scratch, head])
+        try:
+            for name, text in edits.items():
+                if not name.startswith(SCOPE_PREFIX) or '..' in name.split('/'):
+                    return None
+                (scratch / name).write_bytes(text.encode('utf-8'))
+            self.run([*git, 'add', '--', *edits], cwd=scratch)
+            self.run([*git, 'commit', '--quiet', '-m', message], cwd=scratch)
+            sha = self.run([*git, 'rev-parse', 'HEAD'], cwd=scratch).stdout.decode().strip()
+            pushed = self.run([*git, '-c', 'credential.helper=', '-c', 'credential.helper=!gh auth git-credential',
+                               'push', '--quiet', url, f'HEAD:refs/heads/{info["headRefName"]}'], cwd=scratch,
+                              check=False)
+            return sha if pushed.returncode == 0 else None
+        finally:
+            with self.root_lock:
+                self.run(['git', 'worktree', 'remove', '--force', scratch], check=False)
+                shutil.rmtree(scratch, ignore_errors=True)
+                self.run(['git', 'worktree', 'prune'], check=False)
+
     def merge_refused(self, pr, state, summary):
         """`gh pr merge --match-head-commit` failed: say why, and keep the paid results unless the head moved."""
         number, head = pr['number'], pr['headRefOid']
@@ -2983,6 +3128,77 @@ class Bot:
             return json.loads(path.read_text()).get('review_task_id') == task_id
         except (OSError, ValueError):
             return False
+
+    def land_with_records(self, pr, state, rvas, subject, body):
+        """Squash the PR and write its records in one commit on main; False when the usual merge must be used.
+
+        GitHub's own squash can only carry the PR's tree, so a record written afterwards leaves main
+        briefly holding units whose accepted records are stale (check.py is red for that window). Here the
+        bot builds the same squash locally, applies the records on top of it and pushes one commit, then
+        merges the PR head into main with `-s ours` (tree unchanged) so GitHub shows the PR as merged.
+        Nothing here is final until that push; every failure before it resets the scratch tree and returns
+        False, and the caller falls back to the plain squash plus the later record step.
+        """
+        number, head = pr['number'], pr['headRefOid']
+        records, review = state.get('records'), self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
+        base = state.get('base_sha')
+        if not records or not Path(records).is_dir() or not review.is_file() or not base:
+            return False
+        live = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
+        # The contributor's commits enter main's history with the merge, so they are vetted like a landed PR's.
+        if live.get('headRefOid') != head or live.get('state') != 'OPEN' or self.history_problem(base, head):
+            return False
+        tree = self.tree
+
+        def git(*args, check=True):
+            return self.run(['git', *args], cwd=tree, check=check)
+
+        def abandon():
+            git('reset', '--quiet', '--hard', check=False)
+            git('clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes', check=False)
+            return False
+        task_id = f'pr-bot-{number}-{head[:8]}'
+        for _ in range(3):
+            git('fetch', '--quiet', 'origin', 'main')
+            git('checkout', '--quiet', '--force', '-B', 'land', 'origin/main')
+            git('clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes', check=False)
+            if git('merge', '--squash', head, check=False).returncode:
+                return abandon()
+            names = git('diff', '--cached', '--name-only', '-z').stdout.decode(errors='replace').split('\0')
+            if any(n and not n.startswith(SCOPE_PREFIX) for n in names):
+                return abandon()
+            build = json.loads((tree / 'builds/target.json').read_text())['build_id']
+            inventory = json.loads((tree / 'data/progress.json').read_text())
+            matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
+            todo = [r for r in rvas if r not in matched or not self.recorded_by(build, r, task_id)]
+            files = []
+            if todo:
+                argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--task-id', task_id,
+                        '--author', pr['author']['login'], '--records', records, '--root', tree]
+                for r in todo:
+                    argv += ['--rva', hex(r)]
+                done = self.run(argv, cwd=tree, timeout=1800, check=False)
+                if done.returncode or refused_by_record(done.stdout):
+                    return abandon()
+                try:
+                    files = json.loads((done.stdout or b'').decode(errors='replace').strip().splitlines()[-1])['files']
+                except (ValueError, KeyError, IndexError):
+                    return abandon()
+            if files:
+                git('add', '--', *files)
+            if git('commit', '--quiet', '-m', f'{subject}\n\n{body}', check=False).returncode:
+                return abandon()
+            now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
+            if now.get('headRefOid') != head or now.get('state') != 'OPEN':
+                return abandon()
+            git('merge', '-s', 'ours', '--no-ff', '-m',
+                f'Merge contributor PR #{number} from {pr["author"]["login"]}\n\n'
+                f'The squash above already holds this PR\'s changes and records; this merge marks the PR '
+                f'merged and leaves the tree as it is.', head)
+            if git('push', '--quiet', 'origin', 'HEAD:main', check=False).returncode == 0:
+                return True
+            # Lost the race to another push: rebuild on the new main rather than rebasing a record.
+        return abandon()
 
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
