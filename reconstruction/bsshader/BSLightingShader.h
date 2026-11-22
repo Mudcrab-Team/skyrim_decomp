@@ -16,7 +16,6 @@ class BSRenderPass;
 class ShaderPartnerManager;
 
 extern ShaderPartnerManager* g_shaderPartnerManager;
-extern __declspec(thread) bool shaderStateChanged_tls_0x9ec;
 void SetShaderPartnerParameters(ShaderPartnerManager* a_partner, void* a_arg, void* a_first, void* a_second);
 
 class BSShader : public NiRefObject
@@ -42,7 +41,6 @@ class BSLightingShader : public BSShader
 public:
     static std::uint32_t GetVertexTechnique(std::uint32_t a_technique);  // compared: 0x15896a0
     void Function154af70();  // compared: 0x154af70
-    void Function154af80();
     bool Function1547660(void* a_arg);
 
     std::uint8_t unknown90[0x38];  // 90

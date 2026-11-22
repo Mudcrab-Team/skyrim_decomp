@@ -4,10 +4,9 @@
 // 0x15896a0 BSLightingShader::GetVertexTechnique
 // 0x154af70 BSLightingShader::Function154af70
 // SPDX-License-Identifier: CC0-1.0
-// 0x154af80 BSLightingShader::Function154af80
 // 0x1547660 BSLightingShader::Function1547660
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
-// shaderStateChanged, shader parameter groups and partner call: GUESS(low)
+// SetShaderPartnerParameters, firstParameterGroup, secondParameterGroup: GUESS(low)
 #include "BSLightingShader.h"
 
 std::uint32_t BSLightingShader::GetVertexTechnique(std::uint32_t a_technique)
@@ -22,12 +21,6 @@ std::uint32_t BSLightingShader::GetVertexTechnique(std::uint32_t a_technique)
 void BSLightingShader::Function154af70()
 {
     ++counterC8;
-}
-
-// Mark the current thread's shader state as changed.
-void BSLightingShader::Function154af80()
-{
-    shaderStateChanged_tls_0x9ec = true;
 }
 
 // Register this shader's two parameter groups with the render partner.

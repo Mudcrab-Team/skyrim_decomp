@@ -5,6 +5,8 @@
 // Adapted bodies: none
 // 0xbafb10 RouterCleanupDeallocators3::Deletebafb10
 // 0xbb54b0 RouterCleanupDeallocators3::Deletebb54b0
+// CI hash: 0xbafb10 ?Deletebafb10@RouterCleanupDeallocators3@@SAPEAXPEAURouterCleanupDeallocators3TaggedObject@@I@Z
+// CI hash: 0xbb54b0 ?Deletebb54b0@RouterCleanupDeallocators3@@SAPEAXPEAURouterCleanupDeallocators3TaggedObject@@I@Z
 #include "RouterCleanupDeallocators3.h"
 
 void* RouterCleanupDeallocators3::Deletebafb10(RouterCleanupDeallocators3TaggedObject* object, unsigned int flags)

@@ -6,6 +6,9 @@
 // 0xb98560 RouterCleanupDeallocators2::Deleteb98560
 // 0xb99940 RouterCleanupDeallocators2::Deleteb99940
 // 0xba15c0 RouterCleanupDeallocators2::Deleteba15c0
+// CI hash: 0xb98560 ?Deleteb98560@RouterCleanupDeallocators2@@SAPEAXPEAURouterCleanupDeallocators2TaggedObject@@I@Z
+// CI hash: 0xb99940 ?Deleteb99940@RouterCleanupDeallocators2@@SAPEAXPEAURouterCleanupDeallocators2TaggedObject@@I@Z
+// CI hash: 0xba15c0 ?Deleteba15c0@RouterCleanupDeallocators2@@SAPEAXPEAURouterCleanupDeallocators2TaggedObject@@I@Z
 #include "RouterCleanupDeallocators2.h"
 
 void* RouterCleanupDeallocators2::Deleteb98560(RouterCleanupDeallocators2TaggedObject* object, unsigned int flags)
