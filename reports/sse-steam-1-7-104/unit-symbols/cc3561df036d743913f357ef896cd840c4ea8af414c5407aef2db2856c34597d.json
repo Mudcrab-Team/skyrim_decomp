@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetLandMaterialType@TES@@QEAAIAEBVNiPoint3@@@Z": {
+      "rva": 1726928,
+      "size": 31
+    },
+    "?GetLandTexture@TES@@QEAAPEAVTESLandTexture@@AEBVNiPoint3@@@Z": {
+      "rva": 1726560,
+      "size": null
+    },
+    "?GetHavokMaterialType@TESLandTexture@@QEAAIXZ": {
+      "rva": 2847328,
+      "size": null
+    },
+    "?ResumeMasterFileLoads@TES@@QEAAXXZ": {
+      "rva": 1722016,
+      "size": 12
+    },
+    "?CancelMasterFileLoads@TES@@QEAAXXZ": {
+      "rva": 1721968,
+      "size": 32
+    },
+    "?instance@BGSDynamicPersistenceManager@@2PEAV1@EA": {
+      "rva": 35251640,
+      "size": null
+    },
+    "?Resume@BGSDynamicPersistenceManager@@QEAAXXZ": {
+      "rva": 2118672,
+      "size": null
+    },
+    "?loader@@3PEAVExteriorCellLoader@@EA": {
+      "rva": 52058040,
+      "size": null
+    },
+    "?CancelAllCellLoads@ExteriorCellLoader@@QEAAXXZ": {
+      "rva": 2760736,
+      "size": null
+    },
+    "?Pause@BGSDynamicPersistenceManager@@QEAAXXZ": {
+      "rva": 2117856,
+      "size": null
+    },
+    "?Function1a2200@TES@@QEBA_NPEBUFunction1a2200Arg@@_N@Z": {
+      "rva": 1712640,
+      "size": 36
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetLandMaterialType@TES@@QEAAIAEBVNiPoint3@@@Z",
+        "rva": "0x1a59d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetLandTexture@TES@@QEAAPEAVTESLandTexture@@AEBVNiPoint3@@@Z",
+        "rva": "0x1a5860",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetHavokMaterialType@TESLandTexture@@QEAAIXZ",
+        "rva": "0x2b7260",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ResumeMasterFileLoads@TES@@QEAAXXZ",
+        "rva": "0x1a46a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CancelMasterFileLoads@TES@@QEAAXXZ",
+        "rva": "0x1a4670",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?instance@BGSDynamicPersistenceManager@@2PEAV1@EA",
+        "rva": "0x219e5b8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Resume@BGSDynamicPersistenceManager@@QEAAXXZ",
+        "rva": "0x205410",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?loader@@3PEAVExteriorCellLoader@@EA",
+        "rva": "0x31a57b8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CancelAllCellLoads@ExteriorCellLoader@@QEAAXXZ",
+        "rva": "0x2a2020",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Pause@BGSDynamicPersistenceManager@@QEAAXXZ",
+        "rva": "0x2050e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1a2200@TES@@QEBA_NPEBUFunction1a2200Arg@@_N@Z",
+        "rva": "0x1a2200",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

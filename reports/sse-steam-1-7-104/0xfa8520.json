@@ -1,0 +1,193 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "8527eb609e9c75b57e55eee5e74b0978ab0708e50f385c1a56cf8bd4b109e322",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.cpp",
+          "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "292c2347a33dd52eef8011df171df96583d09476",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "510b68b0625dd95757fb48f1eecad9e93e60bb88",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "8d1f254feca6a7f7547e6301631e9ff65f242004af0d4cfd6acaf694fb421000",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "fde3d4b20add9987a7baf7e10a4419c7bb19acd5870051ad454a48116828528b",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44953704899,
+    "rva": "0xfa8520",
+    "schema": 2,
+    "source_sha256": "459c94dadb30da6b22e3736a09b757b3dbfd00052ab00e396d9bbf4d6a45a474",
+    "status": "pass",
+    "symbols": [
+      "?Functionfa8520@NiPSysBoundUpdateModifier@@QEAAXPEAE@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "8d1f254feca6a7f7547e6301631e9ff65f242004af0d4cfd6acaf694fb421000",
+      "normalized_sha256": "fde3d4b20add9987a7baf7e10a4419c7bb19acd5870051ad454a48116828528b",
+      "rva": 16418080,
+      "size": 33
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0xfa8520",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "2a6f813f858d44224da84e2e95658095559cd2544f78f75d0013be1a85994962",
+          "code_sections": 1,
+          "object_sha256": "8527eb609e9c75b57e55eee5e74b0978ab0708e50f385c1a56cf8bd4b109e322"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 4,
+          "code_bytes_exact": 29,
+          "code_bytes_total": 33,
+          "eh": {
+            "bytes": 0,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 0,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 1
+          },
+          "self_rva_fields": 0,
+          "unwind": "none-in-range",
+          "unwind_bytes_exact": 0,
+          "unwind_chained_entries": 0,
+          "unwind_entries": 0
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 16418080,
+          "size": 33,
+          "symbol": "?Functionfa8520@NiPSysBoundUpdateModifier@@QEAAXPEAE@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.cpp",
+          "source_revision": "459c94dadb30da6b22e3736a09b757b3dbfd00052ab00e396d9bbf4d6a45a474"
+        },
+        "symbol_map_sha256": "61c04d4a029633ed2f8a9dbc7b34f7beb469e4e691e781827dd7877cd9e69f0f",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0xfa8520"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.cpp",
+    "digest": "459c94dadb30da6b22e3736a09b757b3dbfd00052ab00e396d9bbf4d6a45a474",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.cpp",
+      "reconstruction/gamebryo/niparticle/NiPSysBoundUpdateModifier.h"
+    ]
+  },
+  "submitter": "v0id-array",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/61c04d4a029633ed2f8a9dbc7b34f7beb469e4e691e781827dd7877cd9e69f0f.json",
+    "sha256": "61c04d4a029633ed2f8a9dbc7b34f7beb469e4e691e781827dd7877cd9e69f0f"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/cc3561df036d743913f357ef896cd840c4ea8af414c5407aef2db2856c34597d.json",
+  "versions": [
+    {
+      "sha256": "cc3561df036d743913f357ef896cd840c4ea8af414c5407aef2db2856c34597d",
+      "base": null,
+      "added": [
+        "?GetLandMaterialType@TES@@QEAAIAEBVNiPoint3@@@Z",
+        "?GetLandTexture@TES@@QEAAPEAVTESLandTexture@@AEBVNiPoint3@@@Z",
+        "?GetHavokMaterialType@TESLandTexture@@QEAAIXZ",
+        "?ResumeMasterFileLoads@TES@@QEAAXXZ",
+        "?CancelMasterFileLoads@TES@@QEAAXXZ",
+        "?instance@BGSDynamicPersistenceManager@@2PEAV1@EA",
+        "?Resume@BGSDynamicPersistenceManager@@QEAAXXZ",
+        "?loader@@3PEAVExteriorCellLoader@@EA",
+        "?CancelAllCellLoads@ExteriorCellLoader@@QEAAXXZ",
+        "?Pause@BGSDynamicPersistenceManager@@QEAAXXZ",
+        "?Function1a2200@TES@@QEBA_NPEBUFunction1a2200Arg@@_N@Z"
+      ]
+    }
+  ]
+}

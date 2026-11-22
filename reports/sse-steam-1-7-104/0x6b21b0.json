@@ -1,0 +1,193 @@
+{
+  "build": {
+    "added_flags": [
+      "/showIncludes"
+    ],
+    "claim": "Build facts are self-reported by each compile host (tools/verifier/unit_build.py build record). tools/check.py verifies only that they are present and consistent with the runs and the translation unit.",
+    "cleared_environment": [
+      "CL",
+      "EXTERNAL_INCLUDE",
+      "INCLUDE",
+      "LIB",
+      "LIBPATH",
+      "_CL_"
+    ],
+    "hosts": {
+      "mac-wine": {
+        "command_flags": [
+          "/nologo",
+          "/c",
+          "/O2",
+          "/MD",
+          "/GS-",
+          "/EHsc",
+          "/GR",
+          "/fp:precise",
+          "/Gy",
+          "/showIncludes"
+        ],
+        "object_sha256": "4a0797de5bdd2333bbef27a72b0a80bf80e31a5fcc8ae0dd3dd432d3a4f775fc",
+        "opened_equals_closure": true,
+        "repository_files_opened": [
+          "reconstruction/skyrim_shared/actors/Actor.cpp",
+          "reconstruction/skyrim_shared/actors/Actor.h"
+        ]
+      }
+    }
+  },
+  "ci_confirmation": {
+    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
+    "build_id": "sse-steam-1-7-104",
+    "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
+    "conclusion": "success",
+    "event": "pull_request",
+    "first_host": {
+      "host_id": "mac-wine",
+      "loader": "wine",
+      "machine": "maintainer-mac",
+      "os": "macos"
+    },
+    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
+    "host_id": "github-windows-native",
+    "job": "hash",
+    "kind": "pr-check-hash",
+    "layout_sha256": "25a1d9c144d5f407f1c4d2c32037f6b60a182a55eda4e4c36b2710d77638a102",
+    "loader": "native",
+    "machine": "github-hosted-windows",
+    "map_status": "pass",
+    "normalized_sha256": "d5bbe00e8fbebe5811724a230b97dc73320c265df251f542d52f456f8388d2f5",
+    "os": "windows",
+    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "result": "hash-match",
+    "run_attempt": 1,
+    "run_id": 44954941715,
+    "rva": "0x6b21b0",
+    "schema": 2,
+    "source_sha256": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38",
+    "status": "pass",
+    "symbols": [
+      "?ProcessEvent@Actor@@SAHPEAUMoveFinishSink@1@PEBUbhkCharacterMoveFinishEvent@@@Z"
+    ],
+    "target": {
+      "extraction": "linked-reference-inference",
+      "layout_sha256": "25a1d9c144d5f407f1c4d2c32037f6b60a182a55eda4e4c36b2710d77638a102",
+      "normalized_sha256": "d5bbe00e8fbebe5811724a230b97dc73320c265df251f542d52f456f8388d2f5",
+      "rva": 7020976,
+      "size": 356
+    },
+    "toolset": "MATCH",
+    "unit": "reconstruction/skyrim_shared/actors/Actor.cpp",
+    "workflow": ".github/workflows/pr-check.yml"
+  },
+  "function_id": "sse-steam-1-7-104-0x6b21b0",
+  "match_record_schema": 2,
+  "notes": [
+    "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
+  ],
+  "recipe": {
+    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
+    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+  },
+  "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
+  "runs": [
+    {
+      "compared_on": "mac-wine",
+      "compiled_on": "mac-wine",
+      "report": {
+        "acceptance": "not-evaluated",
+        "candidate": {
+          "code_section_sha256": "734cc48bf58027278ffac07e62920450b6f51d2175831f669f8b7f22c81ca5c7",
+          "code_sections": 1,
+          "object_sha256": "4a0797de5bdd2333bbef27a72b0a80bf80e31a5fcc8ae0dd3dd432d3a4f775fc"
+        },
+        "comparator": {
+          "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
+          "version": "0.6.1-runtime"
+        },
+        "contract_version": 2,
+        "coverage": {
+          "aliases_declared": [],
+          "code_bytes_by_reference": 56,
+          "code_bytes_exact": 300,
+          "code_bytes_total": 356,
+          "eh": {
+            "bytes": 52,
+            "handlers": {},
+            "int_fields": 0,
+            "ref_fields": 6,
+            "structures": {},
+            "type_names_compared": 0
+          },
+          "funclet_bytes_by_reference": 0,
+          "funclet_bytes_exact": 0,
+          "funclet_bytes_total": 0,
+          "funclet_end_evidence": {},
+          "funclet_ranges": [],
+          "funclet_sections": 0,
+          "relocations_by_type": {
+            "REL32": 14
+          },
+          "self_rva_fields": 0,
+          "unwind": "covered",
+          "unwind_bytes_exact": 28,
+          "unwind_chained_entries": 2,
+          "unwind_entries": 3
+        },
+        "detail": "all contract v2 checks passed",
+        "function": {
+          "build_id": "sse-steam-1-7-104",
+          "rva": 7020976,
+          "size": 356,
+          "symbol": "?ProcessEvent@Actor@@SAHPEAUMoveFinishSink@1@PEBUbhkCharacterMoveFinishEvent@@@Z"
+        },
+        "reason": "all-checks-passed",
+        "recipe": {
+          "compiler_binary_sha256": "5d118b3d66dd574616ea5be3b74d20793a4f37a0fa067cf09c52388a8c492e7e",
+          "compiler_version": "19.16.27054 for x64 (toolset dir 14.16.27023, VS 2017 15.9.85 manifest)",
+          "flags": [
+            "/nologo",
+            "/c",
+            "/O2",
+            "/MD",
+            "/GS-",
+            "/EHsc",
+            "/GR",
+            "/fp:precise",
+            "/Gy"
+          ],
+          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+        },
+        "report_schema": 1,
+        "result": "pass",
+        "source": {
+          "path": "reconstruction/skyrim_shared/actors/Actor.cpp",
+          "source_revision": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38"
+        },
+        "symbol_map_sha256": "b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4",
+        "target": {
+          "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
+          "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
+        },
+        "task_id": "sse-steam-1-7-104-0x6b21b0"
+      }
+    }
+  ],
+  "source": {
+    "compiled": "reconstruction/skyrim_shared/actors/Actor.cpp",
+    "digest": "7c863ff58511e20371b56fbaee968f2e0c822f891090f92b37881b2e1e301d38",
+    "digest_method": "tu-sha256-v2",
+    "translation_unit": [
+      "reconstruction/skyrim_shared/actors/Actor.cpp",
+      "reconstruction/skyrim_shared/actors/Actor.h"
+    ]
+  },
+  "submitter": "ariizona",
+  "symbol_map": {
+    "path": "reports/sse-steam-1-7-104/unit-symbols/b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4.json",
+    "sha256": "b103f77ca883485e76c9a48789b3dfb029d1de2cf1b4ac1f246a8c54a25399c4"
+  },
+  "toolchain_pin": {
+    "path": "tools/verifier/pinned.sha256",
+    "sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf"
+  }
+}

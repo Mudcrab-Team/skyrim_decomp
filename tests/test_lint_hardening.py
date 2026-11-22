@@ -113,6 +113,17 @@ class LintSiblingTests(unittest.TestCase):
         ok = f'struct Thing {{\n    // Get: SIBLING(momusdigital/fnv_decomp@{PIN}, no-licence)\n    int Get();\n}};\n'
         self.assertEqual(self.lint(HEAD + ok), [])
 
+    def test_f3_sibling_label_needs_its_pin_and_cc0_word(self):
+        for label, want in (('SIBLING(momusdigital/f3_decomp@abcdef12, CC0-1.0)', 'pinned at f5bac1b5'),
+                            ('SIBLING(momusdigital/f3_decomp@f5bac1b5, no-licence)', 'licence word "CC0-1.0"')):
+            with self.subTest(label=label):
+                problems = self.lint(HEAD + f'struct Thing {{\n    // Get: {label}\n    int Get();\n}};\n')
+                self.assertTrue(any(want in p for p in problems), problems)
+        ok = 'struct Thing {\n    // Get: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)\n    int Get();\n};\n'
+        self.assertEqual(self.lint(HEAD + ok), [])
+        header = '// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/core/a.cpp:3\n'
+        self.assertEqual([p for p in self.lint(header + HEAD + 'struct Thing {};\n') if 'sibling' in p.lower()], [])
+
     def test_sibling_label_reported_once_in_a_v2_file(self):
         head = HEAD + '// Labels: v2\n// Thing: GUESS\n'
         problems = self.lint(head + 'struct Thing {\n    // Get: SIBLING(momusdigital/fnv_decomp@abcdef12, no-licence)\n'

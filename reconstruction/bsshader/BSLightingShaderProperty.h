@@ -4,8 +4,9 @@
 // BSLightingShaderProperty: EXE_RTTI
 // QShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; offset measured
-// pad08, pad40, pad78: GUESS(low); storage names invented for the measured member offsets
+// pad08, pad40: GUESS(low); storage names invented for the measured member offsets
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// QMaterialAlpha, material, unk80, materialAlpha: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 #include <cstdint>
 
@@ -16,6 +17,14 @@ struct PropertyFlagHolder
     std::uint8_t unk61;
 };
 
+// BSLightingShaderMaterialBase: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to materialAlpha at 0x80
+class BSLightingShaderMaterialBase
+{
+public:
+    std::uint8_t pad00[0x80];  // 00
+    float materialAlpha;  // 80
+};
+
 class BSLightingShaderProperty
 {
 public:
@@ -24,9 +33,11 @@ public:
     virtual bool IsEqual(void* a_object);  // compared: 0x1518d60
     // Function14e8350: GUESS(low); purpose unrecovered
     bool Function14e8350(const PropertyFlagHolder* a_other) const;
+    virtual float QMaterialAlpha();  // NG slot 32
 
     std::uint8_t    pad08[0x30];  // 08
     std::uint64_t   flags;        // 38
     std::uint8_t    pad40[0x38];  // 40
-    std::uint8_t    pad78[0x10];  // 78
+    BSLightingShaderMaterialBase* material;  // 78
+    std::uint64_t   unk80;        // 80
 };

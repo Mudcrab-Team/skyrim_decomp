@@ -1,5 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original; the listing and community declarations only
 // Names and slot order follow CharmedBaryon/CommonLibSSE-NG b93280e (MIT): include/RE/T/TESGrass.h and the vftables of the pinned image; the powerof3 fork (GPL-3.0) declares the same names.
 // BaseFormComponent, TESForm, TESObject, TESBoundObject, TESModel: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT);
 #pragma once
@@ -402,10 +403,10 @@ public:
 	virtual void SetMaxSlopeDegrees();  // 58
 	// TESGrass::GetMinSlope: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 89, target 0x270970
 	// community declaration: virtual float GetMinSlope() const;
-	virtual void GetMinSlope();  // 59
+	virtual float GetMinSlope() const;  // 59
 	// TESGrass::GetMaxSlope: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 90, target 0x270940
 	// community declaration: virtual float GetMaxSlope() const;
-	virtual void GetMaxSlope();  // 5A
+	virtual float GetMaxSlope() const;  // 5A
 	// TESGrass::GetDistanceFromWaterLevel: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 91, target 0x270910
 	// community declaration: virtual std::uint16_t GetDistanceFromWaterLevel() const;
 	virtual std::uint16_t GetDistanceFromWaterLevel() const;  // 5B
@@ -465,8 +466,8 @@ public:
 	struct GRASS_DATA
 	{
 		std::int8_t   density;                 // 00
-		std::int8_t   minSlopeDegrees;         // 01
-		std::int8_t   maxSlopeDegrees;         // 02
+		std::uint8_t  minSlopeDegrees;         // 01
+		std::uint8_t  maxSlopeDegrees;         // 02
 		std::uint8_t  pad03;                   // 03
 		std::uint16_t distanceFromWaterLevel;  // 04
 		std::uint16_t pad06;                   // 06

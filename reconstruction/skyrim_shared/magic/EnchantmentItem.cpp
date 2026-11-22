@@ -2,7 +2,6 @@
 // Code origin: original; the ModifyWeaponValue body is written from the pinned image listing
 // SPDX-License-Identifier: CC0-1.0
 // 0x420c40 EnchantmentItem::ModifyWeaponValue
-// Adapted bodies: none
 // Recipe: reconstruction/recipes/o2-fpfast.json
 // Source exposure: mixed (local binary analysis and public names).
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}

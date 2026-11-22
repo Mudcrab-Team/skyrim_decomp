@@ -5,7 +5,14 @@
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // Adapted bodies: none
 // 0x282a30 TESObjectDOOR::InitializeData
+// 0x2831c0 TESObjectDOOR::IsSliding
+// TESObjectDOOR::IsSliding: GUESS(low)
 #include "TESObjectDOOR.h"
+
+bool TESObjectDOOR::IsSliding() const
+{
+    return (flags & kSliding) != 0;
+}
 
 void TESObjectDOOR::InitializeData()
 {

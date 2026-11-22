@@ -156,6 +156,17 @@ class BindTests(unittest.TestCase):
         self.assertNotIn(old, symbols)
         self.assertIn('decorated name changed', '\n'.join(bind.describe(report, self.task_dir)))
 
+    def test_old_decoration_from_an_accepted_record_is_dropped_when_the_function_is_rebound(self):
+        old = '?SyntheticSum@Synthetic@@QEAAHXZ'
+        self.write_task('unbound:x', {old: {'rva': fx.LAYOUT[fx.FUNCTION], 'size': len(fx.CODE)}})
+        task = json.loads((self.task_dir / 'task.json').read_text())
+        task['export'] = {'unit_already_records': [{'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'symbol': old}]}
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
+        report, symbols = self.run_bind()
+        self.assertNotIn(old, symbols)
+        self.assertEqual(symbols[fx.FUNCTION]['rva'], fx.LAYOUT[fx.FUNCTION])
+        self.assertEqual(report['renamed'], [{'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'old': old, 'new': fx.FUNCTION}])
+
     def test_function_hint_by_rva(self):
         task = json.loads((self.task_dir / 'task.json').read_text())
         task['functions'][0]['community_name'] = 'Unrelated::Name'

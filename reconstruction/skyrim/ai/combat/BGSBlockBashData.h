@@ -1,3 +1,4 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BaseFormComponent: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only class names, base chain,
@@ -49,3 +50,39 @@ public:
 	BGSMaterialType* altBlockMaterialType;  // 10
 };
 static_assert(sizeof(BGSBlockBashData) == 0x18, "layout");
+
+// TESForm, TESObjectARMO, TESObjectWEAP: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only formType and the
+// BGSBlockBashData base offset are declared, as members
+class TESForm
+{
+public:
+	enum FormType : std::uint8_t
+	{
+		kArmor = 0x1A,
+		kWeapon = 0x29
+	};
+
+	void*         vtable;      // 00
+	std::uint8_t  unk08[0x12]; // 08
+	std::uint8_t  formType;    // 1A
+	std::uint8_t  pad1B;       // 1B
+	std::uint32_t pad1C;       // 1C
+};
+static_assert(sizeof(TESForm) == 0x20, "layout");
+
+class TESObjectARMO : public TESForm
+{
+public:
+	std::uint8_t     unk20[0x1C0 - 0x20];  // 20
+	BGSBlockBashData blockBashData;        // 1C0
+};
+
+class TESObjectWEAP : public TESForm
+{
+public:
+	std::uint8_t     unk20[0x128 - 0x20];  // 20
+	BGSBlockBashData blockBashData;        // 128
+};
+
+// GetBlockBashData: GUESS(low); returns the block-bash component of an armor or weapon form
+BGSBlockBashData* GetBlockBashData(TESForm* a_form);

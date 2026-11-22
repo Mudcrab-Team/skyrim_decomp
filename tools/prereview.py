@@ -149,6 +149,12 @@ def origin_problems(hits, headers):
     for hit in hits:
         if hit.get('trivial') or hit.get('fork_of') or hit.get('declared'):
             continue
+        if str(hit['repo']).startswith('fo4-private'):
+            # Private sibling: its file layout is not public and outside contributors cannot read it.
+            out.append((hit['file'], f'{hit["function"]} is close to a body in a private sibling source '
+                        'that the unit header does not declare; fix: rewrite the body in your own words '
+                        '(this source is not public, so it cannot be declared from a contributor clone)'))
+            continue
         out.append((hit['file'], f'{hit["function"]} is close to a body in {hit["repo"]} '
                     f'({hit["path"]}) but the unit header does not name it with that file; '
                     'fix: declare the adapted body, its upstream file, revision and licence in the leading '

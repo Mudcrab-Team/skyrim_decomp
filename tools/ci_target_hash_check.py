@@ -70,6 +70,14 @@ def comment_only_change(root, base, name, blob):
         return False
 
 
+class LintFailure(ValueError):
+    """The changed units fail the source lint; `findings` are the lint's own file:line messages."""
+
+    def __init__(self, findings):
+        super().__init__('contributor source lint failed')
+        self.findings = findings
+
+
 def prepare(root, base, head, work):
     if not SHA.fullmatch(base) or not SHA.fullmatch(head):
         raise ValueError('revision must be a full SHA')
@@ -119,9 +127,9 @@ def prepare(root, base, head, work):
         path = tree / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(blob)
-    for name, _blob in rows:
-        if lint.lint_file(tree, name, target):
-            raise ValueError('contributor source lint failed')
+    found = [line for name, _blob in rows for line in lint.lint_file(tree, name, target)]
+    if found:
+        raise LintFailure(found)
     # A file whose text differs from base only in comments (digest_v2.strip_comments) compiles to the
     # same code, so it asks for no compile of its own; it is still linted and still in the tree above.
     return tree, [name for name, _ in rows if name not in comment_only]
@@ -169,7 +177,14 @@ def requests(tree, changed, known):
         units.update(index.get(name, []))
     result = []
     for unit in sorted(units):
+        unit_text = (tree / unit).read_text(encoding='utf-8-sig')
+        declared = UNIT_RECIPE.search(unit_text)
         entries = {r['rva']: dict(r) for r in known.get(unit, [])}
+        # The first host compiles the whole unit with the recipe the unit declares, or the default one when
+        # it declares none; an accepted function's older recorded recipe would give a second-host row whose
+        # recipe the record cannot bind.
+        for entry in entries.values():
+            entry['recipe'] = declared[0] if declared else DEFAULT_RECIPE
         # New source may request an RVA/symbol, but cannot select the target mask, size or recipe.
         for rva, symbol in REQUEST.findall((tree / unit).read_text(encoding='utf-8-sig')[:8192]):
             value = int(rva, 16)
@@ -327,6 +342,8 @@ def summary_text(report):
         lines.append(f'| {row["rva"] or "unbound"} | {row["unit"]} | {result} |')
     if report.get('error'):
         lines += ['', 'Check could not complete: ' + report['error'] + '. No strike.']
+        # The contributor reads this summary; without the lint's own words a bare error name gives no fix.
+        lines += [f'- {finding}' for finding in report.get('findings', [])]
     return '\n'.join(lines) + '\n'
 
 
@@ -375,6 +392,8 @@ def main(argv=None):
     except (ValueError, OSError, KeyError, StopIteration, Reject, contrib.Stop,
             subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         report['error'] = type(exc).__name__
+        if isinstance(exc, LintFailure):
+            report['findings'] = exc.findings
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))

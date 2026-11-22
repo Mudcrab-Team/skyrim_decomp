@@ -1,14 +1,6 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
-// 0x190bd0 compared function
-// 0x190bc0 compared function
-// 0x190b80 compared function
-// 0x190b50 compared function
-// 0x190b40 compared function
-// 0x190b10 compared function
-// 0x190b00 compared function
-// 0x190a90 compared function
 // TESFullName: EXE_RTTI; class name and base from the image RTTI
-// Function190a90..190bd0, flags10, word12: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -62,18 +54,28 @@ public:
 	// TESFullName::GetFullName: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 5
 	virtual const char* GetFullName() const;  // 05
 
-	const char* Function190a90() const;  // compared: 0x190a90
-	std::uint8_t Function190b00() const;  // compared: 0x190b00
-	void Function190b10(bool a_flag);  // compared: 0x190b10
-	void Function190b50(bool a_flag);  // compared: 0x190b50
-	std::uint8_t Function190b40() const;  // compared: 0x190b40
-	std::uint8_t Function190b80() const;  // compared: 0x190b80
-	std::uint16_t Function190bc0() const;  // compared: 0x190bc0
-	void Function190bd0(std::uint8_t a_value);  // compared: 0x190bd0
-
 	// fullName: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 	BSFixedString fullName;  // 08
-	std::uint8_t flags10;  // 10
-	std::uint16_t word12;  // 12
 };
-static_assert(sizeof(TESFullName) == 0x18, "layout");
+static_assert(sizeof(TESFullName) == 0x10, "layout");
+
+// MapMarkerData, locationName, flags, type, Flag, kVisible, kCanTravelTo: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+class MapMarkerData
+{
+public:
+	enum Flag : std::uint8_t
+	{
+		kVisible = 1 << 0,
+		kCanTravelTo = 1 << 1
+	};
+
+	void SetVisible(bool a_value);
+	void SetCanTravelTo(bool a_value);
+
+	TESFullName   locationName;  // 00
+	std::uint8_t  flags;         // 10
+	std::uint8_t  pad11;         // 11
+	std::uint16_t type;          // 12
+	std::uint32_t pad14;         // 14
+};
+static_assert(sizeof(MapMarkerData) == 0x18, "layout");

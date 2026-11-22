@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "a4fe5c9bd072d70582bcc6f61af15499c2ab6cd6f9007d716a2cd041e223e124",
+        "object_sha256": "d2b62aacfb58bfba3736064dcaee3a8c20a71ad6d58c86808cf3ee0ac3a5f02d",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/ai/ActorProcess.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "aad3d86f9ff197bd8547d4406d0a8b1c01ea6ca9",
+    "base_sha": "62dfea0de9419115eda945a0ddd0eac23c0c6814",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "8b2376a00ae8d35bd3a76309a2d0480d6473d49b",
+    "head_sha": "a421e325d66f7d6dc1b4d1b2ba9d9c739a597acb",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44601265377,
+    "run_id": 44870857595,
     "rva": "0x7271e0",
     "schema": 2,
-    "source_sha256": "4348417a16c1af1e09a5f2429077db1d66ad38f5a5bd5cdad162099482d88cf6",
+    "source_sha256": "629556f40c8054527c92a79f45efd650aa4877cf63097e8e297e4a387127c838",
     "status": "pass",
     "symbols": [
       "?Function7271e0@ActorProcess@@QEAAXXZ"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "ccadca39c9bcd887f5adad7d14e5fcacf692c4c8dd81d243b44e032cbb2034de",
           "code_sections": 1,
-          "object_sha256": "a4fe5c9bd072d70582bcc6f61af15499c2ab6cd6f9007d716a2cd041e223e124"
+          "object_sha256": "d2b62aacfb58bfba3736064dcaee3a8c20a71ad6d58c86808cf3ee0ac3a5f02d"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +159,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim/ai/ActorProcess.cpp",
-          "source_revision": "4348417a16c1af1e09a5f2429077db1d66ad38f5a5bd5cdad162099482d88cf6"
+          "source_revision": "629556f40c8054527c92a79f45efd650aa4877cf63097e8e297e4a387127c838"
         },
-        "symbol_map_sha256": "dfd8fceff6a6a5b33a1c4bebcf5fd25ac252f15ab2d17d994dd4fdbd1748478c",
+        "symbol_map_sha256": "eb81cef3716515b7e7dc438b8224972198f609cff65263a05fdd472478a0f441",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/ai/ActorProcess.cpp",
-    "digest": "4348417a16c1af1e09a5f2429077db1d66ad38f5a5bd5cdad162099482d88cf6",
+    "digest": "629556f40c8054527c92a79f45efd650aa4877cf63097e8e297e4a387127c838",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim/ai/ActorProcess.cpp",
       "reconstruction/skyrim/ai/ActorProcess.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "redwatchwanderer",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/dfd8fceff6a6a5b33a1c4bebcf5fd25ac252f15ab2d17d994dd4fdbd1748478c.json",
-    "sha256": "dfd8fceff6a6a5b33a1c4bebcf5fd25ac252f15ab2d17d994dd4fdbd1748478c"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/eb81cef3716515b7e7dc438b8224972198f609cff65263a05fdd472478a0f441.json",
+    "sha256": "eb81cef3716515b7e7dc438b8224972198f609cff65263a05fdd472478a0f441"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

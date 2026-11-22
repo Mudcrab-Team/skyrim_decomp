@@ -3,11 +3,13 @@
 // Adapted bodies: none. QShader is synthesized from the bounded leaf template; the other bodies are written from the local listing.
 // BSLightingShaderProperty: EXE_RTTI
 // QShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// pad08, pad40, pad78: GUESS(low); storage names invented for the measured offsets
+// pad08, pad40: GUESS(low); storage names invented for the measured offsets
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x14e8350 BSLightingShaderProperty::Function14e8350
 // 0x1518d60 BSLightingShaderProperty::IsEqual
 // 0x1519130 BSLightingShaderProperty::QShader
+// 0x151d550 BSLightingShaderProperty::QMaterialAlpha
+// QMaterialAlpha: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #include "BSLightingShaderProperty.h"
 // QShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 std::uint32_t BSLightingShaderProperty::QShader() const
@@ -32,4 +34,9 @@ bool BSLightingShaderProperty::Function14e8350(const PropertyFlagHolder* a_other
         }
     }
     return true;
+}
+
+float BSLightingShaderProperty::QMaterialAlpha()
+{
+    return material->materialAlpha;
 }

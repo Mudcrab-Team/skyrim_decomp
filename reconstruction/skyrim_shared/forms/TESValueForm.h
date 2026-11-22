@@ -1,6 +1,5 @@
+// Code origin: original; the listing and community declarations only
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
-// 0x1f36a0 compared function
-// 0x1f3480 compared function
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESValueForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BaseFormComponent: STANDIN EXE_RTTI
@@ -19,29 +18,26 @@ public:
 };
 static_assert(sizeof(BaseFormComponent) == 0x8, "BaseFormComponent size");
 
-// BGSLoadGameBuffer: GUESS(low) STANDIN; the buffer the compared body reads and calls.
+// BGSLoadGameBuffer, BGSLoadFormBuffer, BGSLoadFormBuffer::changeFlags, BGSLoadGameBuffer::LoadDataEndian: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// unk00: GUESS(low); the bytes before the change flags the compared code reads
 class BGSLoadGameBuffer
 {
 public:
-    void LoadDataEndian(void* a_data, std::uint32_t a_offset, std::uint32_t a_size);
-    std::uint8_t pad00[0x40];  // 00
-    std::uint32_t flags40;  // 40
+    void LoadDataEndian(void* a_data, std::uint32_t a_size, std::uint32_t a_count);
 };
 
-// TestBit: GUESS(low); a flag-word bit test by index, taking the word by value.
-inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
+class BGSLoadFormBuffer : public BGSLoadGameBuffer
 {
-    return ((a_flags >> a_bit) & 1) != 0;
-}
+public:
+    std::uint8_t  unk00[0x40];  // 00
+    std::uint32_t changeFlags;  // 40
+};
 
 class TESValueForm : public BaseFormComponent
 {
 public:
-    // TESValueForm::Function1f3480: GUESS(low); placement-new factory, compared at RVA 0x1f3480
-    TESValueForm* Function1f3480();
-    // TESValueForm::Function1f36a0: GUESS(low); compared at RVA 0x1f36a0
-    void Function1f36a0(BGSLoadGameBuffer* a_buf);
-    TESValueForm() : unk08(0) {}
+    TESValueForm();
+    void LoadGame(BGSLoadFormBuffer* a_buf);
     virtual void ClearDataComponent();  // compared: 0x1f34d0
     virtual void InitializeDataComponent();  // compared: 0x1f34c0
     virtual ~TESValueForm();  // compared: 0x1f36d0 (scalar deleting destructor)

@@ -1,7 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // SPDX-License-Identifier: GPL-3.0-or-later (powerof3/CommonLibSSE declarations; full text: licenses/CommonLibSSE-GPL-3.0.txt)
-// Code origin: original; the listing and community declarations only
+// Code origin: original; the listing, community declarations and the CrashLogger PDB names and layout only
 // AIProcess, AIProcess::middleHigh, AIProcess::high, AIProcess::ClearMuzzleFlashes, AIProcess::SetHeadtrackTarget, MiddleHighProcessData, MiddleHighProcessData::runOncePackage, MiddleHighProcessData::leftHand, MiddleHighProcessData::rightHand, MiddleHighProcessData::unk326, InventoryEntryData, InventoryEntryData::object, ActorPackage, ActorPackage::package, HighProcessData, HighProcessData::muzzleFlash, HighProcessData::MuzzleFlash, TESForm, TESForm::formType, FormType, FormType::Weapon, NiPoint3: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); SetHeadtrackTarget takes an ActorPrefix* here where NG has an Actor*, a guess
 // AIProcess::GetCurrentWeapon, AIProcess::SetRunOncePackage: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // TESForm, InventoryEntryData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); main's TESForm.h and InventoryChanges.h do not declare the fields read here (formType, object as a TESForm), so partial views are repeated
@@ -9,6 +9,10 @@
 // GetHeadtrackData, ReleaseRunOncePackage, ClearRunOncePackageData, UpdateRunOncePackage, ActorPackage::SetPackage, ActorPackage::ClearPackage, ActorTargetSlot::SetTarget, CreateActorPackageData: GUESS(low)
 // HeadtrackTargetData, ActorTargetSlot, ActorPrefix: STANDIN GUESS(low); partial views with no full layout or ownership claim
 // every member named unknownNN: GUESS(low); the compared bodies read none of them
+// AIProcess::GetLastSeenLocation, MiddleHighProcessData::lastSeenPosition, HighProcessData::deathForceDirection, HighProcessData::deathForce, HighProcessData::actorsGeneratedDetectionEvent, HighProcessData::unk298, HighProcessData::unk465, HighProcessData::unk46A: CRASHLOGGER_PDB(59818@2026.10.24)
+// HighProcessData::unk278, HighProcessData::unk28C, HighProcessData::unk463, HighProcessData::unk464, HighProcessData::unk466, HighProcessData::unk467, HighProcessData::unk469: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// HighProcessData::unk460, HighProcessData::unk461, HighProcessData::unk462, HighProcessData::unk468, HighProcessData::unk46B: GUESS(low); the bytes around the two read bools are split out as single members
+// defaultDeathForce, defaultDeathForceDirection, DetectionEvent: GUESS(low); the globals are the fallbacks the compared bodies read, named for their use
 #pragma once
 
 #include <cstdint>
@@ -59,6 +63,17 @@ struct ActorPackage
 };
 static_assert(sizeof(ActorPackage) == 0x30, "ActorPackage size");
 
+class NiPoint3
+{
+public:
+    float x;  // 0
+    float y;  // 4
+    float z;  // 8
+};
+static_assert(sizeof(NiPoint3) == 0xC, "NiPoint3 size");
+
+struct DetectionEvent;
+
 struct MiddleHighProcessData
 {
 public:
@@ -85,8 +100,8 @@ public:
     std::uint64_t unknown0C8;  // 0C8
     std::uint64_t unknown0D0;  // 0D0
     std::uint64_t unknown0D8;  // 0D8
-    std::uint64_t unknown0E0;  // 0E0
-    std::uint64_t unknown0E8;  // 0E8
+    NiPoint3 lastSeenPosition;  // 0E0
+    std::uint32_t unknown0EC;  // 0EC
     std::uint64_t unknown0F0;  // 0F0
     std::uint64_t unknown0F8;  // 0F8
     std::uint64_t unknown100;  // 100
@@ -262,11 +277,13 @@ struct HighProcessData
     std::uint64_t unknown260;  // 260
     std::uint64_t unknown268;  // 268
     std::uint64_t unknown270;  // 270
-    std::uint64_t unknown278;  // 278
-    std::uint64_t unknown280;  // 280
-    std::uint64_t unknown288;  // 288
+    float unk278;  // 278
+    NiPoint3 deathForceDirection;  // 27C
+    float deathForce;  // 288
+    float unk28C;  // 28C
     std::uint64_t unknown290;  // 290
-    std::uint64_t unknown298;  // 298
+    float unk298;  // 298
+    std::uint32_t unknown29C;  // 29C
     std::uint64_t unknown2A0;  // 2A0
     std::uint64_t unknown2A8;  // 2A8
     std::uint64_t unknown2B0;  // 2B0
@@ -306,7 +323,7 @@ struct HighProcessData
     std::uint64_t unknown3C0;  // 3C0
     MuzzleFlash* muzzleFlash;  // 3C8
     std::uint64_t unknown3D0;  // 3D0
-    std::uint64_t unknown3D8;  // 3D8
+    DetectionEvent* actorsGeneratedDetectionEvent;  // 3D8
     std::uint64_t unknown3E0;  // 3E0
     std::uint64_t unknown3E8;  // 3E8
     std::uint64_t unknown3F0;  // 3F0
@@ -323,13 +340,22 @@ struct HighProcessData
     std::uint64_t unknown448;  // 448
     std::uint64_t unknown450;  // 450
     std::uint64_t unknown458;  // 458
-    std::uint64_t unknown460;  // 460
-    std::uint64_t unknown468;  // 468
+    bool unk460;  // 460
+    bool unk461;  // 461
+    bool unk462;  // 462
+    bool unk463;  // 463
+    bool unk464;  // 464
+    bool unk465;  // 465
+    bool unk466;  // 466
+    bool unk467;  // 467
+    bool unk468;  // 468
+    bool unk469;  // 469
+    bool unk46A;  // 46A
+    bool unk46B;  // 46B
+    std::uint32_t unknown46C;  // 46C
     std::uint64_t unknown470;  // 470
 };
 static_assert(sizeof(HighProcessData) == 0x478, "HighProcessData size");
-
-class NiPoint3;
 
 struct HeadtrackTargetData
 {
@@ -501,14 +527,27 @@ struct ActorPrefix
     ActorTargetSlot unknown038;  // 038
 };
 
+extern float defaultDeathForce;
+extern NiPoint3 defaultDeathForceDirection;
+
 class AIProcess
 {
 public:
     void ClearMuzzleFlashes();
     InventoryEntryData* GetCurrentWeapon(bool a_leftHand) const;
+    NiPoint3* GetLastSeenLocation();
     HeadtrackTargetData* GetHeadtrackData();
     void SetHeadtrackTarget(ActorPrefix* a_owner, NiPoint3& a_targetPosition);
     void SetRunOncePackage(TESPackage* a_package, Actor* a_actor);
+    void Function6f1bd0(bool a_value);
+    void Function6f2520();
+    DetectionEvent* Function6f2540();
+    bool Function6ff190();
+    float Function6ff1e0();
+    void Function6ff210(float a_value);
+    void Function6ff230();
+    NiPoint3* Function6ff250();
+    HighProcessData::MuzzleFlash* Function6ff360();
 
     std::uint64_t unknown000;  // 000
     MiddleHighProcessData* middleHigh;  // 008

@@ -1,12 +1,14 @@
 // Code origin: hand-written class layouts and declarations adapted from the CharmedBaryon/CommonLibSSE-NG headers named below; the compared bodies are written from the local listings.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
-// 0xf05630 compared function
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiParticles, NiParticles::AsParticlesGeom, NiParticles::RegisterStreamables, NiParticles::~NiParticles, NiParticles::GetRTTI, NiParticles::CreateClone, NiParticles::LoadBinary, NiParticles::LinkObject, NiParticles::SaveBinary, NiParticles::IsEqual, BSGeometry::~BSGeometry, BSGeometry::GetRTTI, BSGeometry::AsGeometry, BSGeometry::LoadBinary, BSGeometry::LinkObject, BSGeometry::RegisterStreamables, BSGeometry::SaveBinary, BSGeometry::IsEqual, BSGeometry::ProcessClone, BSGeometry::PostLinkObject, BSGeometry::AttachProperty, BSGeometry::SetSelectiveUpdateFlags, BSGeometry::UpdateDownwardPass, BSGeometry::UpdateSelectedDownwardPass, BSGeometry::UpdateRigidDownwardPass, BSGeometry::UpdateWorldBound, BSGeometry::OnVisible, BSGeometry::AsMultiIndexTriShape, BSGeometry::AsSkinnedDecalTriShape, BSGeometry::Unk_37: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSGeometry, BSMultiIndexTriShape, BSSkinnedDecalTriShape: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiParticlesData, NiBound, NiPoint3, NiProperty, NiSkinInstance: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSGeometry::modelBound, properties, skinInstance, rendererData, unk20, vertexDesc, type, pad31, pad32, pad34, NiParticles::particleData, NiParticles::unk160: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiParticles::NiParticles, BSGeometry::BSGeometry: EXE_RTTI; the constructors, named for their classes
+// flags02: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NiAVObject's byte at 0x109
+// AdjustParticleTotal, particleTotal: GUESS(low); a shared particle count adjusted atomically
 #pragma once
 
 #include <cstdint>
@@ -41,6 +43,7 @@ public:
 class BSGeometry : public NiAVObject
 {
 public:
+    BSGeometry();
     ~BSGeometry() override;  // 00
     const NiRTTI* GetRTTI() const override;  // 02
     BSGeometry* AsGeometry() override;  // 07
@@ -77,6 +80,7 @@ static_assert(sizeof(BSGeometry) == 0x158, "BSGeometry size");
 class NiParticles : public BSGeometry
 {
 public:
+    NiParticles();
     ~NiParticles() override;  // 00
     const NiRTTI* GetRTTI() const override;  // 02
     virtual NiParticles* AsParticlesGeom();  // compared: 0xf055a0  // slot 10
@@ -87,7 +91,13 @@ public:
     void SaveBinary(NiStream& a_stream) override;  // 1B
     bool IsEqual(NiObject* a_object) override;  // 1C
 
-    static void Functionf05630(std::uint32_t a_delta);  // compared: 0xf05630; STANDIN GUESS(low)
+    static void AdjustParticleTotal(std::int32_t a_count);
+
+    // The shared NiAVObject declaration keeps 0x30..0x110 opaque; this names NG's byte at 0x109.
+    std::uint8_t& flags02() { return unknown30[0x109 - 0x30]; }
+
+    static volatile long particleTotal;
+
     NiParticlesData* particleData;  // 158
     std::uint64_t unk160;  // 160
 };

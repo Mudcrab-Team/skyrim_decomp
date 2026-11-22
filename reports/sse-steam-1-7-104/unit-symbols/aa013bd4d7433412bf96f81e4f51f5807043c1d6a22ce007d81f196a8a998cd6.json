@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?ClearData@TESFurniture@@QEAAXXZ": {
+      "rva": 2548016,
+      "size": 52
+    },
+    "?ClearData@TESObjectACTI@@QEAAXXZ": {
+      "rva": 2594688,
+      "size": null
+    },
+    "?Deallocate@?$Array@UEntryPointData@TESFurniture@@@@QEAAXXZ": {
+      "rva": 13504208,
+      "size": null
+    },
+    "?CanSit@TESFurniture@@QEBA_NXZ": {
+      "rva": 2549376,
+      "size": 14
+    },
+    "?CanSleep@TESFurniture@@QEBA_NXZ": {
+      "rva": 2549408,
+      "size": 14
+    },
+    "?HasSit28@TESFurniture@@QEBA_NXZ": {
+      "rva": 2549440,
+      "size": 14
+    },
+    "?MustExitToTalk@TESFurniture@@QEBA_NXZ": {
+      "rva": 2549472,
+      "size": 14
+    },
+    "?CanLean@TESFurniture@@QEBA_NXZ": {
+      "rva": 2549504,
+      "size": 14
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?ClearData@TESFurniture@@QEAAXXZ",
+        "rva": "0x26e130",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ClearData@TESObjectACTI@@QEAAXXZ",
+        "rva": "0x279780",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Deallocate@?$Array@UEntryPointData@TESFurniture@@@@QEAAXXZ",
+        "rva": "0xce0ed0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CanSit@TESFurniture@@QEBA_NXZ",
+        "rva": "0x26e680",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CanSleep@TESFurniture@@QEBA_NXZ",
+        "rva": "0x26e6a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?HasSit28@TESFurniture@@QEBA_NXZ",
+        "rva": "0x26e6c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?MustExitToTalk@TESFurniture@@QEBA_NXZ",
+        "rva": "0x26e6e0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CanLean@TESFurniture@@QEBA_NXZ",
+        "rva": "0x26e700",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

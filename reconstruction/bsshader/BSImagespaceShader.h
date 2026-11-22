@@ -62,7 +62,8 @@ public:
     virtual void Slot06();
     virtual void Slot07();
     virtual void Slot08();
-    virtual void Slot09();
+    // Slot09: GUESS(low); takes one 32-bit argument (0x15411e0 passes 0)
+    virtual void Slot09(std::uint32_t a_arg);
     virtual void Slot10();
     virtual void Slot11();
     virtual void Dispatch(std::uint32_t a_groupsX, std::uint32_t a_groupsY, std::uint32_t a_groupsZ);
@@ -119,6 +120,8 @@ public:
 
     // The first qword of the request is a target object, not a vtable, so this stays a static function.
     static std::uint32_t DispatchCopySubRegion(struct CopySubRegionRequest* a_request);  // compared: 0x1540db0
+    // ResetSubRegionTarget: GUESS(low); calls slot 9 of the request's target with 0
+    static void ResetSubRegionTarget(struct CopySubRegionRequest* a_request);
 
     std::uint8_t unknown90[0x48];  // 90
     // m_slots: GUESS(low)

@@ -1,7 +1,6 @@
 // Code origin: original drafting by Hinkiii with claude-sonnet-5-5 from a local listing of the pinned image; names, members and declarations
 // from CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT); no body is copied from any source.
 // Source exposure: mixed (community declarations and the contributor-owned pack;
-// 0x2033b0 compared function
 // bases, sizes and slots are community hypotheses).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSDecalNode, BGSDecalNode::CreateClone, BGSDecalNode::AttachDecal, BGSDecalNode::~BGSDecalNode, BGSDecalNode::GetRTTI, BGSDecalNode::ProcessClone, BGSDecalNode::OnVisible, BGSDecalNode::Unk_3E: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
@@ -34,6 +33,9 @@ public:
     std::uint32_t _pad0C;  // 0C
     std::uint32_t _size;  // 10
     std::uint32_t _pad14;  // 14
+
+    // Function203750: GUESS(low); callee of BGSDecalNode::Function2033b0 at 0x203750
+    void Function203750(const T& a_item, bool a_arg2);
 };
 
 // Only the slots up to Get3D are declared; the decal reads the node through it.
@@ -57,7 +59,8 @@ public:
     void OnVisible(NiCullingProcess& a_process) override;  // 34
     virtual std::uint8_t Unk_3E();  // 3E
     virtual void AttachDecal(BSTempEffect* a_decal, bool a_firstAvail);  // 3F, compared: 0x203360
-    // BGSDecalNode::Function2033b0: GUESS(low); compared at RVA 0x2033b0
+
+    // Function2033b0: GUESS(low); forwards to the decal array with a true flag
     void Function2033b0(BSTempEffect* a_decal);
 
     BSTArray<NiPointer<BSTempEffect>> decals;  // 128
@@ -69,5 +72,3 @@ static_assert(offsetof(BGSDecalNode, isSkinned) == 0x140, "isSkinned offset");
 // address 0x1ff7e0: routine CreateClone tail-calls with the global below (names and argument meaning are guesses)
 NiObject* CreateNodeInstance(void* a_owner, void* a_arg1, void* a_arg2);
 extern void* g_nodeInstanceOwner;  // address 0x21a3df8
-// PushDecal: GUESS(low); helper at RVA 0x203750 taking the array, an element and a flag.
-void PushDecal(void* a_array, NiPointer<BSTempEffect>* a_element, bool a_flag);

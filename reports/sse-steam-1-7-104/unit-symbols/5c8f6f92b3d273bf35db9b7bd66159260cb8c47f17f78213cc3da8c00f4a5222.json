@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?CalcContentStatistics@hkReferencedObject@@UEBAXPEAVhkStatisticsCollector@@PEBVhkClass@@@Z": {
+      "rva": 11152448,
+      "size": 89
+    },
+    "?g_specialClass@@3VhkClass@@A": {
+      "rva": 52800720,
+      "size": null
+    },
+    "?GetStatFlag@@YAPEA_NPEAUStatBuf@@PEBVhkClass@@@Z": {
+      "rva": 11177760,
+      "size": null
+    },
+    "?CollectStat@@YAXPEBVhkReferencedObject@@PEBVhkClass@@PEAVhkStatisticsCollector@@@Z": {
+      "rva": 11177600,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?CalcContentStatistics@hkReferencedObject@@UEBAXPEAVhkStatisticsCollector@@PEBVhkClass@@@Z",
+        "rva": "0xaa2c40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_specialClass@@3VhkClass@@A",
+        "rva": "0x325acd0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?GetStatFlag@@YAPEA_NPEAUStatBuf@@PEBVhkClass@@@Z",
+        "rva": "0xaa8f20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?CollectStat@@YAXPEBVhkReferencedObject@@PEBVhkClass@@PEAVhkStatisticsCollector@@@Z",
+        "rva": "0xaa8e80",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "64f1605f4f021491cb5b0a2633f99d12e306966f6454f29db0d8826133cc1484",
+        "object_sha256": "7b1d39eea7009f445d4bd580b3f1ecbb5f877220cd4a4aadd42a323bbace58cc",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/bsshader/BSShaderResourceManager.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "0f63b95fd903e6d604103e16a6587dc3646e33e5",
+    "base_sha": "471fc36c91a5bc64496e22e894c847db7374e7a0",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "e59f40f2209dda1b4f94ce87ccd0ca9dcf0aa652",
+    "head_sha": "9a074deffd84ac9119b8b87ef21e082017717bc8",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,30 +60,13 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44604272003,
+    "run_id": 44966087753,
     "rva": "0x1582710",
     "schema": 2,
-    "source_sha256": "b237c0b117303870bfcd82a858f4f801819c723280f8a3185381bd886a792797",
+    "source_sha256": "3a6a355b1304f00ca8e1433caef643ad774997370052240cbf27f3b785f624de",
     "status": "pass",
     "symbols": [
-      "?Function1582070@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582100@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582120@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582140@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582160@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582180@BSShaderResourceManager@@QEAAXXZ",
-      "?Function15821a0@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582250@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582270@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582550@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582600@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582620@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582640@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582660@BSShaderResourceManager@@QEAAXXZ",
-      "?Function15826f0@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582710@BSShaderResourceManager@@QEAAXXZ",
-      "?Function15827a0@BSShaderResourceManager@@QEAAXXZ",
-      "?Function1582870@BSShaderResourceManager@@QEAAXXZ"
+      "?Function1582710@BSShaderResourceManager@@QEAAXXZ"
     ],
     "target": {
       "extraction": "linked-reference-inference",
@@ -115,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "e383da401b15c95d6d946797575b7d41518b6085476b7c2f01a1aa45138e11d9",
           "code_sections": 1,
-          "object_sha256": "64f1605f4f021491cb5b0a2633f99d12e306966f6454f29db0d8826133cc1484"
+          "object_sha256": "7b1d39eea7009f445d4bd580b3f1ecbb5f877220cd4a4aadd42a323bbace58cc"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -178,9 +161,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/bsshader/BSShaderResourceManager.cpp",
-          "source_revision": "b237c0b117303870bfcd82a858f4f801819c723280f8a3185381bd886a792797"
+          "source_revision": "3a6a355b1304f00ca8e1433caef643ad774997370052240cbf27f3b785f624de"
         },
-        "symbol_map_sha256": "57dee29e974e5a1a1f07d48412fa7a164a87e5152917ab06f2a9ed30f8eb88ae",
+        "symbol_map_sha256": "d738cd0f1e2f109caf0598621f6af1b74ad7164de1f66bc64853ed7e93cbd182",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -191,17 +174,17 @@
   ],
   "source": {
     "compiled": "reconstruction/bsshader/BSShaderResourceManager.cpp",
-    "digest": "b237c0b117303870bfcd82a858f4f801819c723280f8a3185381bd886a792797",
+    "digest": "3a6a355b1304f00ca8e1433caef643ad774997370052240cbf27f3b785f624de",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/bsshader/BSShaderResourceManager.cpp",
       "reconstruction/bsshader/BSShaderResourceManager.h"
     ]
   },
-  "submitter": "aivv73",
+  "submitter": "v-macrev",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/57dee29e974e5a1a1f07d48412fa7a164a87e5152917ab06f2a9ed30f8eb88ae.json",
-    "sha256": "57dee29e974e5a1a1f07d48412fa7a164a87e5152917ab06f2a9ed30f8eb88ae"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/d738cd0f1e2f109caf0598621f6af1b74ad7164de1f66bc64853ed7e93cbd182.json",
+    "sha256": "d738cd0f1e2f109caf0598621f6af1b74ad7164de1f66bc64853ed7e93cbd182"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

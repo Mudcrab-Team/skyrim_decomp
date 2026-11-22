@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Code origin: original reconstruction from binary analysis; names from CommonLibSSE-NG (MIT) and powerof3/CommonLibSSE (GPL-3.0); no external implementation body is copied
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // The names CreateDuplicateForm and IsParentForm come from powerof3/CommonLibSSE 654e55f, which is GPL-3.0; that licence applies to those declarations.
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
@@ -68,7 +69,7 @@ public:
     virtual void Unk_07();
     virtual void Unk_08();
     virtual void Unk_09();
-    virtual void Unk_0A();
+    virtual void Unk_0A(std::uint32_t a_arg);
     virtual void RemoveChange(std::uint32_t a_changeFlags);  // 0B
     virtual void Unk_0C();
     virtual void Unk_0D();
@@ -252,6 +253,14 @@ public:
     bool               IsParentForm();
     // GetWorldSpaceOfExteriorCell: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); returns the cell's world space
     TESWorldSpace*     GetWorldSpaceOfExteriorCell();
+    // Function2bb150, Function2bf550, Function2c5c70, Function2bf600, Function224a90, Function2bf580, Function2bf5c0: GUESS(low); placeholder names
+    void               Function2bb150(bool a_set);
+    bool               Function2bf600() const;
+    void               Function2bf550(bool a_set);
+    void               Function2c5c70(bool a_set);
+    static bool        Function224a90(TESForm* a_form, TESForm*& a_outA, TESForm*& a_outB);
+    void               Function2bf580(bool a_set);
+    void               Function2bf5c0(bool a_set);
 
     std::uint8_t       unk20[0x20];        // 20 - TESFullName base
     std::uint16_t      cellFlags;          // 40

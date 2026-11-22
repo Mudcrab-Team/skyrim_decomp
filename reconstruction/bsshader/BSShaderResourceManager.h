@@ -1,6 +1,4 @@
 // Source exposure: mixed (published inventory and listings from the pinned image).
-// 0x15828c0 compared function
-// 0x15828b0 compared function
 // 0x1582890 compared function
 // 0x1582760 compared function
 // 0x1582730 compared function
@@ -11,6 +9,7 @@
 // Function1582600, Function1582620, Function1582640, Function1582660: GUESS(low)
 // Function15826f0, Function1582710, Function15827a0, Function1582870: GUESS(low)
 // Function15829a0, Function15829c0: GUESS(low)
+// Function15828b0, Function15828c0: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -20,6 +19,8 @@ struct LookupSource;
 class BSShaderResourceManager
 {
 public:
+    std::uint32_t Function15828b0();
+    float Function15828c0();
     void Function1582070();
     void Function1582100();
     void Function1582120();
@@ -44,15 +45,11 @@ public:
     void Function1582730(LookupSource* a_source, unsigned* a_out1, unsigned* a_out2);
     void Function1582760(void* a_arg1, void* a_arg2, std::uint64_t a_arg3);
     void Function1582890(void* a1, void* a2, void* a3, void* a4);
-    unsigned Function15828b0();
-    float Function15828c0();
 };
 
-// LookupSource, gLookupGlobal, gResourceCount, gResourceScale, and the forwarded calls: GUESS(low)
+// LookupSource, gLookupGlobal, and the forwarded calls: GUESS(low)
 struct LookupSource { std::uint8_t pad00[0x48]; void* data48; };
 extern std::uint8_t gLookupGlobal[];
-extern unsigned gResourceCount;
-extern float gResourceScale;
 void Function100d6f0(void* a0, void* a1, void* a2, unsigned a3, std::uint64_t a4, bool a5);
 void Function100f230(void* a0, void* a1);
 void Function1019c00(void* a0, void* a1, void* a2, void* a3);
