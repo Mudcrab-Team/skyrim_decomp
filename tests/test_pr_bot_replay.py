@@ -77,6 +77,7 @@ class FakeGitHub:
         self.calls = []
         self.merges = []
         self.merge_failures = 0
+        self.close_on_merge = False  # the PR is closed by someone while the merge request is in flight
         self.labels = {}
         self.lock = threading.Lock()
 
@@ -124,6 +125,9 @@ class FakeGitHub:
         if a[:2] == ['pr', 'merge']:
             n = int(a[2])
             self.merges.append(n)
+            if self.close_on_merge:
+                self.prs[n]['state'] = 'CLOSED'
+                return subprocess.CompletedProcess([], 1, b'', b'PR is closed')
             if self.merge_failures:
                 self.merge_failures -= 1
                 return subprocess.CompletedProcess([], 1, b'', b'merge refused')
@@ -236,6 +240,7 @@ class World:
         self.compile_error = None
         self.bound = []
         self.bind_fails = False
+        self.stale_hints = set()  # hint names bind ignores: not defined in the compiled object
         self.recorded = []
         self.wipe_maps_on_merge = False
         self.bots = []
@@ -378,6 +383,12 @@ class World:
         list_file = Path(names[names.index('--list') + 1])
         task = Path(list_file.parent)
         info = json.loads((task / 'task.json').read_text())
+        hints = json.loads((task / 'bind-hints.json').read_text()) if (task / 'bind-hints.json').is_file() else {}
+        ignored = sorted(set(hints) & self.stale_hints)
+        if ignored:
+            out = ''.join(f'  WARNING bind hint {h} -> {hints[h]} ignored: not defined in the compiled object\n'
+                          for h in ignored)
+            return subprocess.CompletedProcess(names, 1, out.encode(), b'')
         symbols = Path(kw['cwd']) / info['symbols']
         symbols.parent.mkdir(parents=True, exist_ok=True)
         symbols.write_text('{}')
@@ -953,6 +964,94 @@ class SquashWithRecordsTests(Replay):
         self.w.bind_fails = False
         self.assertTrue(self.merged(7) or self.w.poll(self.bot) is not None)
         self.assertTrue(self.merged(7))
+
+
+class ClosedPrTests(Replay):
+    """A PR closed while the bot works on it is skipped and forgotten, never merged or retried."""
+
+    def state_files(self, number):
+        return sorted((self.bot.work / 'state').glob(f'pr{number}-*.json'))
+
+    def test_a_pr_closed_during_the_review_is_not_merged_and_leaves_no_state(self):
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        handle = self.w.reviewers.handle
+
+        def close_then_review(names, data):
+            self.w.github.prs[7]['state'] = 'CLOSED'
+            return handle(names, data)
+        with mock.patch.object(self.w.reviewers, 'handle', close_then_review):
+            first = self.w.poll(self.bot)
+        self.assertIn('no longer open', first)
+        self.assertEqual(self.w.github.merges, [])
+        self.assertEqual(self.state_files(7), [])
+        main = git(self.w.origin, 'rev-parse', 'main')
+        calls = len(self.w.github.calls)
+        self.w.poll(self.bot, times=2)
+        self.assertEqual(self.w.github.merges, [])
+        self.assertEqual(git(self.w.origin, 'rev-parse', 'main'), main)
+        self.assertEqual(self.state_files(7), [])
+        self.assertFalse([c for c in self.w.github.calls[calls:] if c[:2] == ['pr', 'view']])
+
+    def test_a_pr_closed_while_the_merge_request_is_in_flight_is_forgotten_not_retried(self):
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        self.w.github.close_on_merge = True
+        with mock.patch.object(pr_bot.Bot, 'land_with_records', lambda *a: False):
+            first = self.w.poll(self.bot)
+        self.assertEqual(self.w.github.merges, [7], first)
+        self.assertIn('no longer open', first)
+        self.assertNotIn('retrying next tick', first)
+        self.assertEqual(self.state_files(7), [])
+        self.w.poll(self.bot, times=2)
+        self.assertEqual(self.w.github.merges, [7])  # no second attempt on a closed PR
+
+    def test_a_pr_the_bot_merged_keeps_its_state_for_the_record_retry(self):
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        self.w.poll(self.bot)
+        self.assertTrue(self.merged(7))
+        state = self.state_files(7)
+        self.assertTrue(state)
+        pr = dict(number=7, headRefOid=self.w.github.prs[7]['head'])
+        self.bot.closed(pr, self.w.state(self.bot, 7))
+        self.assertEqual(self.state_files(7), state)
+
+
+class StaleRecordedHintTests(Replay):
+    """A recorded symbol hint that the unit's new text outgrew must not stop the record of a function that bound."""
+    OLD_NAME, STATED_NAME = '?Func@C@@QEAAXXZ', '?Stated@C@@QEAAXXZ'
+
+    def task(self, hints, unit_text):
+        cpp = 'reconstruction/fx/U1000.cpp'
+        (self.bot.tree / cpp).parent.mkdir(parents=True, exist_ok=True)
+        (self.bot.tree / cpp).write_text(unit_text)
+        task = self.bot.tree / '.local/tasks/prbot-7-abcdef12-0'
+        task.mkdir(parents=True, exist_ok=True)
+        info = dict(task_id=task.name, symbols='reports/unit-symbols/x.json', compiled=cpp,
+                    functions=[dict(rva='0x1000')])
+        (task / 'task.json').write_text(json.dumps(info))
+        (task / 'bind-hints.json').write_text(json.dumps(hints))
+        return task, info
+
+    def test_a_recorded_hint_bind_ignores_is_dropped_and_the_map_is_bound(self):
+        self.w.stale_hints = {self.OLD_NAME}
+        task, info = self.task({self.OLD_NAME: '0x1000'}, unit(0x1000))
+        bound = self.bot.bind_unit_map(task, info, {0x1000})
+        self.assertIsNotNone(bound)
+        self.assertEqual(self.w.bound, [self.bot.tree.name] * 2)
+        self.assertEqual(json.loads((task / 'bind-hints.json').read_text()), {})
+        self.assertEqual([f['rva'] for f in json.loads((task / 'task.json').read_text())['functions']], ['0x1000'])
+
+    def test_a_hint_the_unit_itself_states_stays_fatal(self):
+        self.w.stale_hints = {self.STATED_NAME}
+        task, info = self.task({self.STATED_NAME: '0x1000'},
+                               f'// CI hash: 0x1000 {self.STATED_NAME}\n' + unit(0x1000))
+        self.assertIsNone(self.bot.bind_unit_map(task, info, {0x1000}))
+        self.assertEqual(json.loads((task / 'bind-hints.json').read_text()), {self.STATED_NAME: '0x1000'})
+
+    def test_a_recorded_hint_that_still_binds_is_kept(self):
+        task, info = self.task({self.OLD_NAME: '0x1000'}, unit(0x1000))
+        self.assertIsNotNone(self.bot.bind_unit_map(task, info, {0x1000}))
+        self.assertEqual(self.w.bound, [self.bot.tree.name])
+        self.assertEqual(json.loads((task / 'bind-hints.json').read_text()), {self.OLD_NAME: '0x1000'})
 
 
 class OwnerAndScopeTests(Replay):

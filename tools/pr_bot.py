@@ -2382,11 +2382,37 @@ class Bot:
         full = info['functions']
         narrowed = [fn for fn in full if int(str(fn['rva']), 0) in wanted]
         (task / 'task.json').write_text(json.dumps(dict(info, functions=narrowed), indent=2) + '\n')
-        bound = self.run([sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt',
-                          '--unit-maps'], cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+        bind = [sys.executable, 'tools/verifier/bind.py', '--list', task / 'bind-list.txt', '--unit-maps']
+        bound = self.run(bind, cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+        if bound.returncode:
+            bound = self.rebind_without_stale_hints(task, info, wanted, bind, bound)
         info = json.loads((task / 'task.json').read_text())
         (task / 'task.json').write_text(json.dumps(dict(info, functions=full), indent=2) + '\n')
         return None if bound.returncode else dict(info, functions=full)
+
+    def rebind_without_stale_hints(self, task, info, wanted, bind, bound):
+        """Bind again without the recorded-symbol hints that the unit's own text has outgrown; else `bound` as it was.
+
+        A hint taken from the function's accepted record names the old decoration, so a unit that makes the
+        method virtual leaves it pointing at nothing, and bind refuses a task with an ignored hint even though
+        every function bound. Only a hint that bind reported as ignored and that the unit does not itself state
+        is dropped, so a wrong hint written in the unit still fails.
+        """
+        path, unit = task / 'bind-hints.json', self.tree / str(info.get('compiled', ''))
+        if not path.is_file() or not unit.is_file():
+            return bound
+        ignored = set(re.findall(r'bind hint (\S+) -> 0x[0-9a-fA-F]+ ignored',
+                                 (bound.stdout + bound.stderr).decode(errors='replace')))
+        merged, stated = json.loads(path.read_text()), ci_hash_hints(unit.read_text(), wanted)
+        stale = {name for name in ignored if name in merged and name not in stated}
+        if not stale:
+            return bound
+        path.write_text(json.dumps({k: v for k, v in merged.items() if k not in stale}, indent=1) + '\n')
+        again = self.run(bind, cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+        if again.returncode:
+            path.write_text(json.dumps(merged, indent=1) + '\n')
+            return bound
+        return again
 
     def build_records(self, tag, units, rvas, state):
         """Match records for the accepted functions: the Mac's fresh comparator output plus the CI map.
@@ -3415,6 +3441,8 @@ class Bot:
     def _finish(self, pr, state, decision, summary, comment, leak_codes, land):
         number, head = pr['number'], pr['headRefOid']
         verdicts = decision['verdicts']
+        if decision['merge'] and not state.get('merged') and not self.still_open(number):
+            return self.closed(pr, state)
         if decision['merge'] and not state.get('merged'):
             again = {int(r) for r in decision.get('companions') or ()}
             matched = [int(r) for r, v in verdicts.items() if v == 'matched' and int(r) not in again]
@@ -3690,10 +3718,33 @@ class Bot:
                 shutil.rmtree(scratch, ignore_errors=True)
                 self.run(['git', 'worktree', 'prune'], check=False)
 
+    def still_open(self, number):
+        return self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'state').get('state') == 'OPEN'
+
+    def closed(self, pr, state):
+        """A PR that stopped being open while the bot worked on it: nothing is merged or retried, and its state goes.
+
+        The poll lists open PRs only, so state kept for a closed one would never be read again and a failure
+        ledger in it would only keep the merge step looking pending. A state that records a merge by the bot is
+        kept, because the record retry reads it.
+        """
+        number = pr['number']
+        state.data.clear()
+        for path in (self.work / 'state').glob(f'pr{number}-*.json'):
+            try:
+                if not json.loads(path.read_text()).get('merged'):
+                    path.unlink()
+            except (OSError, ValueError):
+                pass
+        print(f'{stamp()} pr {number}: no longer open; skipped and forgotten', file=sys.stderr, flush=True)
+        return dict(pr=number, head=pr['headRefOid'], blocked='closed', merge=False)
+
     def merge_refused(self, pr, state, summary):
         """`gh pr merge --match-head-commit` failed: say why, and keep the paid results unless the head moved."""
         number, head = pr['number'], pr['headRefOid']
         now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,mergeable,state')
+        if now.get('state') != 'OPEN':
+            return self.closed(pr, state)
         if now.get('headRefOid') != head:
             state.data.clear()
             raise Stop('merge refused (the head moved); starting over on the next tick')
