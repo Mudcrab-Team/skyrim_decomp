@@ -27,6 +27,10 @@ The bot keeps one sticky comment per PR head and edits it in place.
   inline helper). Both hosts failing on an accepted function is usually genuine: contributor fixes.
 - **companion**: accepted functions of a changed unit that the PR does not name are re-confirmed with
   it; one failing blocks the PR. Same reading as regression.
+- **record**: an already accepted function of a changed unit matched but its record could not be
+  written (the comment names it and says so); the merge is blocked as a bot or host fault, not the
+  contributor's. Operators fix the record path, then re-confirm through a bot-process PR. A new function
+  that fails to record is just not credited and does not block.
 - **leak**: leakgrep hit or a review that names concrete evidence (copied text, decompiler artifact,
   secret, host path, steering, origin similarity). Blocks the whole PR. For similarity to a private
   sibling the contributor cannot see the source: ask them to rewrite the body, never to "remove the

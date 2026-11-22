@@ -765,6 +765,11 @@ def outcome_body(sha, decision, leak_codes=()):
         lines.append('Please keep the shared code (headers, layouts, inline helpers) compatible with those '
                      'functions or touch only your own unit, and push again; the bot re-checks the new head.')
         return '\n'.join(lines)
+    if decision['blocked'] == 'record':
+        names = ', '.join(f'0x{r:x}' for r in decision.get('record_refused', []))
+        return (f'This PR changes a unit with already accepted function(s) {names}, and their '
+                f'record could not be written. That is a bot or host issue, not a problem in your change; '
+                f'nothing was merged and the maintainer re-runs it.')
     if decision['blocked'] == 'stale':
         verdicts = decision['verdicts']
         lines = ['This PR changes a unit whose already accepted functions would go stale: their recorded '
@@ -2185,8 +2190,14 @@ class Bot:
                 for rva in refused:
                     decision['verdicts'][rva] = 'fail:record'
                 decision['merge'] = 'matched' in [v for r, v in decision['verdicts'].items() if r not in extra]
-                if refused & set(extra):
-                    decision.update(blocked='companion', merge=False)
+                # An accepted function whose record is not rewritten stays bound to the old unit text on main,
+                # so it blocks the merge whatever else matched; a function new in this PR just isn't credited.
+                accepted = sorted(refused & (set(extra) | set(stale)))
+                if accepted:
+                    decision.update(blocked='record', merge=False, record_refused=accepted)
+                    print(f'{stamp()} pr {number}: BOT/HOST FAULT: record could not be written for accepted '
+                          f'function(s) {", ".join(f"0x{r:x}" for r in accepted)}; merge blocked',
+                          file=sys.stderr, flush=True)
                 state.set('decision', decision)
             state.set('records', str(records))
         return self.finish(pr, state, decision, started)

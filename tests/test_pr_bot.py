@@ -862,11 +862,32 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertEqual(out['blocked'], 'companion')
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
 
+    def test_a_named_accepted_function_whose_record_cannot_be_written_blocks_the_merge(self):
+        bot = FakeBot(self.work)
+        bot.stale = [0x20]
+        bot.refused = {0x20}
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), ('record', False))
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        body = bot.seen('gh', 'pr', 'comment')[0][-1]
+        self.assertIn('0x20', body)
+        self.assertNotIn('0x10', body)
+        self.assertIn('record could not be written', body)
+        self.assertIn('bot or host issue', body)
+
+    def test_a_new_function_whose_record_cannot_be_written_still_lets_the_rest_merge(self):
+        bot = FakeBot(self.work)
+        bot.stale = [0x10]
+        bot.refused = {0x20}
+        out = bot.process(PR)
+        self.assertEqual((out['blocked'], out['merge']), (None, True))
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'fail:record'})
+
     def test_a_companion_whose_record_cannot_be_built_blocks_before_the_merge(self):
         bot = self.bot()
         bot.refused = {0x30}
         out = bot.process(PR)
-        self.assertEqual((out['blocked'], out['merge']), ('companion', False))
+        self.assertEqual((out['blocked'], out['merge']), ('record', False))
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
         self.assertEqual(bot.seen('record'), [])
 
