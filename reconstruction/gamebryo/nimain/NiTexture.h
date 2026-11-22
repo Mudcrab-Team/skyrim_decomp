@@ -14,7 +14,7 @@ class NiTexture : public NiObject
 public:
     NiTexture();
     virtual void Unk_28(std::uint32_t& a_arg1, std::uint32_t& a_arg2, std::uint32_t& a_arg3, std::uint32_t& a_arg4);  // compared: 0xf05970
-    // noinline: Keep the complete destructor as a separate call, matching the engine's out-of-line cleanup.
+    // Keep the complete destructor as a separate call, matching the engine's out-of-line cleanup.
     __declspec(noinline) virtual ~NiTexture();  // compared: 0xef3ea0 (scalar deleting destructor)
 
     // TODO members: replace part of the padding with the members the bodies read,

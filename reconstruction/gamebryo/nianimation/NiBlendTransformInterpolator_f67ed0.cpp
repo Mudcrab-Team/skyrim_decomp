@@ -9,5 +9,5 @@
 
 NiBlendTransformInterpolator::NiBlendTransformInterpolator() = default;
 
-// noinline: The image's deleting wrapper calls the complete destructor out of line.
+// The image's deleting wrapper calls the complete destructor out of line.
 __declspec(noinline) NiBlendTransformInterpolator::~NiBlendTransformInterpolator() = default;
