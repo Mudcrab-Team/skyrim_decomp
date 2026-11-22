@@ -167,6 +167,13 @@ and prototypes, map order and object-file grouping, type layouts, vtables and cl
   `https://debugging.games/_files/Windows/`): the Fallout 4 2019-10-23 PDB archive,
   `[WIN]%20Fallout%204%20[2019-10-23]%20(PDB).7z`, and the Skyrim 2013-07-17 map archive,
   `[WIN]%20The%20Elder%20Scrolls%20V%20Skyrim%20[2013-07-17]%20(MAP).7z`.
+- Put them under `.local/inputs/symbols/` (`tesv-2013-07-17/TESV.map`, `fo4-2019-10-23/Fallout4.pdb`) or point
+  `SR_SYMBOLS_DIR` at the folder. `./sr setup` checks the SHA-256 values and `./sr doctor` warns when they are missing.
+- **Step 1 of every function:** read `./sr facts 0x<rva>` (`./sr start` prints the same). It gives the CrashLogger
+  prototype and size, the map's aligned name, prototype, object file and neighbouring members, the Fallout 4 layout
+  and prototype where the class is shared, and the label lines to paste. `./sr compare` warns, before compiling,
+  when your name or signature disagrees with a known PDB prototype; the warning is advisory, a byte match decides.
+  Without the files, the committed `data/symbol-alignment.json` and CrashLogger output still give the first part.
 - Extract only the `.map` and the `.pdb` files into `.local/`. The archives also hold game executables; the
   project does not use them and third-party game binaries stay out of scope.
 - Label every name taken from them `SYMBOLS(tesv-2013-map)` or `SYMBOLS(fo4-pdb)`. A name is a hint, never identity;

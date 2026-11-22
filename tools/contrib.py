@@ -1246,6 +1246,11 @@ def cmd_doctor(ctx, args):
     add('sibling source (FNV decompilation, optional)', index.is_file(),
         f'index at {index}' if index.is_file() else 'not fetched; packs carry no sibling pointers',
         f'{ctx.cli} setup --yes', required=False)
+    import pdb_facts
+    sym_ok, sym_lines = pdb_facts.setup_lines(ctx.repo, ctx.env)
+    add('symbol files (2013 map, Fallout 4 PDB)', sym_ok,
+        'present, sizes match' if sym_ok else '; '.join(sym_lines),
+        f'{ctx.cli} setup (it says what to download), or set SR_SYMBOLS_DIR', required=False)
     ok = all(c['ok'] for c in checks if c['required'])
     if ok and nxt is None:
         tasks = [p for p in task_files(ctx) if p.parent.name.startswith('contrib-')]
@@ -1645,6 +1650,12 @@ def cmd_setup(ctx, args):
             raise Stop(MISSING, f'toolchain after install: {tool["status"]} {tool.get("differing", "")}',
                        f'{ctx.cli} doctor', steps=steps)
         step('compiler', 'installed', tool['bin'])
+    import pdb_facts
+    sym_ok, sym_lines = pdb_facts.setup_lines(ctx.repo, ctx.env, full=True)
+    step('symbol files', 'ok' if sym_ok else 'needs-person',
+         'map and Fallout 4 PDB present, SHA-256 verified' if sym_ok else
+         '; '.join(sym_lines) + '. Optional but strongly recommended: they give the names, prototypes and layouts '
+         '`start` prints. Extract only the .map and .pdb; label names SYMBOLS(<source-id>); never commit them')
     # 5. Self-test: a function the project already matched must pass here too.
     if not args.no_self_test:
         try:
@@ -1720,12 +1731,14 @@ def cmd_next(ctx, args):
               'callee_ready': sum(c['callee_ready'] for c in ready)}
     rows = ready[:args.count]
     pdb = pdb_names(ctx)
+    import pdb_facts
     ctx.say('claimable now: ' + ', '.join(f'{v} {k.replace("_", " ")}' for k, v in counts.items()))
     for c in rows:
         ctx.say(f'{c["rva"]:>10}  {c["size"]:>5} B  {c["name"]}  -> {c["unit"]}' + ('' if not c['unit_exists']
                                                                                    else '  (existing unit)')
                 + f'  — {c["reason"]}'
-                + (f'  [pdb: {hint.name[:80]}]' if (hint := pdb and pdb.suggest(parse_rva(c['rva']))) else ''))
+                + (f'  [pdb: {hint.name[:80]}]' if (hint := pdb and pdb.suggest(parse_rva(c['rva']))) else '')
+                + (f'  [{brief}]' if (brief := pdb_facts.brief(ctx.repo, parse_rva(c['rva']), c.get('name'))) else ''))
     if not online:
         ctx.say('note: GitHub not reachable; claims by others are not excluded')
     if not rows:
@@ -2046,6 +2059,38 @@ def symbol_name_hints(repo, cls, fns=(), cap=SYMBOL_NAME_CAP):
         return []
 
 
+def pdb_fact_lines(ctx, fns):
+    """The full pdb_facts text for each function, local files included; never stops the caller."""
+    import pdb_facts
+    lines = []
+    for fn in fns:
+        try:
+            lines += pdb_facts.render(pdb_facts.collect(ctx.repo, fn['rva'], env=ctx.env)).split('\n')
+        except Exception as exc:  # optional facts must never stop `start`
+            lines.append(f'PDB facts for 0x{fn["rva"]:x} unavailable: {exc}')
+    return lines
+
+
+def pdb_warnings(ctx, task, root):
+    """Advisory findings where the draft's name, signature or size disagrees with a known PDB fact."""
+    import pdb_facts
+    source = ''
+    for rel in task.get('contrib', {}).get('unit', []) or [task['compiled']]:
+        try:
+            source += (Path(root) / rel).read_text(encoding='utf-8', errors='replace') + '\n'
+        except OSError:
+            pass
+    out = []
+    for fn in task['functions']:
+        try:
+            rva = parse_rva(fn['rva'])
+            name = (fn.get('name') or '') or fn.get('symbol', '')
+            out += [f'0x{rva:x}: {w}' for w in pdb_facts.agreement(Path(root), rva, name, source, fn.get('size'))]
+        except Exception:  # an advisory check must never stop `compare`
+            pass
+    return out
+
+
 def start(ctx, args, quiet=False):
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
@@ -2186,6 +2231,8 @@ def start(ctx, args, quiet=False):
             ctx.say(line)
         for line in symbol_name_hints(ctx.repo, cls, fns):
             ctx.say(line)
+        for line in pdb_fact_lines(ctx, fns):
+            ctx.say(line)
         ctx.say(f'unit: {header} and {cpp}' + (' (skeleton created)' if created else ''))
         ctx.say(f'profile {prof["name"]}: read {"; ".join(prof["contrib_docs"])}; '
                 + attempt_progress.guidance(prof['stuck_after'])
@@ -2193,6 +2240,7 @@ def start(ctx, args, quiet=False):
     return OK, {'task': tdir.name, 'unit': [header, cpp], 'created': created, 'packs': packs, 'branch': branch,
                 'practice': bool(args.practice), 'declarations': declaration_advice,
                 'sibling': str(tdir / 'sibling.md') if sibling else None, 'pdb': pdb_hints(ctx.repo, fns),
+                'pdb_facts': pdb_fact_lines(ctx, fns),
                 'profile': prof['name'], 'read': prof['contrib_docs'], 'max_tries': prof['contrib_max_tries'],
                 'cost': prof['cost'], **({'pdb_names': suggestions} if suggestions else {})}, \
         f'edit {cpp}, then {ctx.cli} compare'
@@ -2207,6 +2255,14 @@ def cmd_decomp(ctx, args):
     output = contrib_decompiler.decompile(ctx, rva, dest)
     ctx.say(f'private untrusted hint, never paste publicly: {output}')
     return OK, {'decomp': str(output)}, f'read the private hint locally; use {ctx.cli} compare for evidence'
+
+
+def cmd_facts(ctx, args):
+    rva = parse_rva(args.rva)
+    lines = pdb_fact_lines(ctx, [{'rva': rva}])
+    for line in lines:
+        ctx.say(line)
+    return OK, {'rva': f'0x{rva:x}', 'pdb_facts': lines}, f'{ctx.cli} start 0x{rva:x}'
 
 
 def cmd_start(ctx, args):
@@ -2289,6 +2345,9 @@ def run_compare(ctx, ident=None, root=None):
     number = len([p for p in runs.glob('[0-9][0-9][0-9]')]) + 1 if runs.is_dir() else 1
     out = runs / f'{number:03d}'
     refresh_symbols(ctx, tdir, task['build_id'])
+    warnings = pdb_warnings(ctx, task, root)
+    for w in warnings:
+        ctx.say(f'PDB warning (advisory; a byte match decides): {w}')
     recipe = unit_recipe(root, task['compiled'], task['recipe'])
     if recipe != task['recipe']:
         ctx.say(f'recipe: {recipe} (named by the unit; the task had {task["recipe"]})')
@@ -2801,6 +2860,8 @@ def parser():
     sub = p.add_subparsers(dest='command', required=True)
     s = sub.add_parser('doctor')
     s.add_argument('--exe')
+    s = sub.add_parser('facts')
+    s.add_argument('rva')
     s = sub.add_parser('decomp')
     s.add_argument('rva')
     s = sub.add_parser('feedback')
@@ -2893,7 +2954,7 @@ def parser():
 
 
 COMMANDS = {'doctor': cmd_doctor, 'setup': cmd_setup, 'next': cmd_next, 'claim': cmd_claim, 'release': cmd_release,
-            'start': cmd_start, 'decomp': cmd_decomp, 'compare': cmd_compare, 'submit': cmd_submit,
+            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'submit': cmd_submit,
             'preflight': cmd_preflight, 'intake': cmd_intake, 'go': cmd_go, 'feedback': cmd_feedback}
 
 

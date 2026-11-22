@@ -123,7 +123,9 @@ with `<source-id>` one of `tesv-2013-map`, `fo4-pdb`, `fnv-x360-pdb`, one label 
 has the member. The files themselves are never committed; `compare` still decides. For the 2013 map and the Fallout 4 PDBs
 the maintainer widened use to any extent (prototypes, order, layouts, vtables; downloads and rules in
 `docs/contributing-agent.md`, "2013 map and Fallout 4 PDB"; only `.map`/`.pdb`, no bundled executables, never
-commit a dump or excerpt). The Xbox 360 files stay name-only, and no map address goes into a unit. `start` prints up to 12 of these names for the started class, each with its
+commit a dump or excerpt). The Xbox 360 files stay name-only, and no map address goes into a unit.
+`./sr facts 0x<rva>` is step 1 of every function: it prints every PDB fact held for it (CrashLogger prototype and
+size, map name, prototype and object file, Fallout 4 layout) with the label lines; `./sr setup` checks the downloads. `start` prints up to 12 of these names for the started class, each with its
 `<source-id>`, as candidates only.
 
 ## Mapping-only PRs
