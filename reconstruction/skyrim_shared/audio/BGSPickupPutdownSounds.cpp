@@ -1,10 +1,24 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original reconstruction from the pinned image listing; names from the cited community declarations.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x1db6b0 BGSPickupPutdownSounds::Function1db6b0
+// Adapted bodies: none
+// Function1db6b0, pickupVftable: GUESS(low)
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
-// 0x1db710 Leaf1db710::Invoke
-// 0x1db6f0 BGSPickupPutdownSounds::InitializeDataComponent
-// 0x1db880 BGSPickupPutdownSounds::~BGSPickupPutdownSounds
 #include "BGSPickupPutdownSounds.h"
+
+// GUESS(low): the vftable the initializer installs, bound by position from the pack.
+extern char pickupVftable[];
+
+BGSPickupPutdownSounds* BGSPickupPutdownSounds::Function1db6b0()
+{
+    *reinterpret_cast<const void**>(this) = pickupVftable;
+    field08 = 0;
+    field10 = 0;
+    return this;
+}
 
 // Not compared: defined so that the compiler emits the vftable and, beside it, the
 // deleting destructor that is compared (cookbook rule 14).

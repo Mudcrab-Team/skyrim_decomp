@@ -21,6 +21,8 @@ class BGSPickupPutdownSounds : public BaseFormComponent
 {
 public:
     BGSPickupPutdownSounds();
+    // Function1db6b0: GUESS(low); installs the vftable and zeroes both fields.
+    BGSPickupPutdownSounds* Function1db6b0();
     virtual void ClearDataComponent();  // compared: 0x1db710
     virtual void InitializeDataComponent();  // compared: 0x1db6f0
     virtual ~BGSPickupPutdownSounds();  // compared: 0x1db880 (scalar deleting destructor)

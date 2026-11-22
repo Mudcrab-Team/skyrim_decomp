@@ -16,7 +16,12 @@ public:
     TESIdleForm();
     ~TESIdleForm() override;  // 00
     void InitItemImpl() override;  // 13
+    // TESIdleForm::GetFormEditorID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+    const char* GetFormEditorID() const override;  // 32
 
-    std::uint8_t unk20[0x48];  // 20
+    std::uint8_t unk20[0x38];  // 20
+    // editorID: GUESS(low); the editor-id string pointer read by GetFormEditorID
+    const char* editorID;  // 58
+    std::uint8_t unk60[0x8];  // 60
 };
 static_assert(sizeof(TESIdleForm) == 0x68, "layout");

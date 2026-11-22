@@ -12,6 +12,7 @@ class BGSLoadFormBuffer : public BGSLoadGameBuffer
 {
 public:
     virtual std::uint8_t GetVersion();  // compared: 0x637580
+    void Function6379f0(const void* a_data, std::uint32_t a, std::uint32_t b);  // GUESS(low)
 
     std::uint8_t unknown28[0x23];  // 28
     // version: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

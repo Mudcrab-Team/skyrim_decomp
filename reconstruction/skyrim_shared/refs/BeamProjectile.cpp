@@ -1,10 +1,18 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x7e0410 BeamProjectile::GetKillOnCollision
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none
-// 0x7e03e0 BeamProjectile::Revert
-// 0x7e0320 BeamProjectile::SaveGame
 #include "BeamProjectile.h"
+
+bool BeamProjectile::GetKillOnCollision()
+{
+    return false;
+}
 
 void BeamProjectile::Revert(BGSLoadFormBuffer* a_buf)
 {

@@ -12,4 +12,12 @@ class CombatInventoryItemMagic
 {
 public:
     virtual std::uint32_t GetType() const;
+    // CombatInventoryItemMagic::Function82ed80: GUESS(low); true when both pointers are set
+    bool Function82ed80() const;
+
+    // members: GUESS(low); storage at the offsets the compared test reads
+    std::uint8_t pad08[0x8];  // 08
+    void* member10;           // 10
+    std::uint8_t pad18[0x30]; // 18
+    void* member48;           // 48
 };

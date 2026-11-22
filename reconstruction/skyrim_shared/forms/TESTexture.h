@@ -4,6 +4,7 @@
 // BaseFormComponent: STANDIN EXE_RTTI
 // TESTexture::GetMaxAllowedSize, TESTexture::ClearDataComponent, TESTexture::GetDefaultPath: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BaseFormComponent::~BaseFormComponent, unknown08: GUESS(low)
+// TESTexture::Function1f30f0: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -22,6 +23,8 @@ public:
     virtual std::uint32_t GetMaxAllowedSize();  // compared: 0x146760
     virtual void ClearDataComponent();  // compared: 0x1f2b20
     virtual const char* GetDefaultPath() const;  // compared: 0x1f3320
+
+    bool Function1f30f0();
 
     // TODO members: replace part of the padding with the members the bodies read,
     // keeping every offset and the size check true.

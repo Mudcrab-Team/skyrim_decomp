@@ -11,4 +11,10 @@ class NiUnionBV
 {
 public:
     virtual std::uint32_t Slot3() const;
+    // NiUnionBV::Functionf3e470: GUESS(low); reads the word at 0x20
+    std::uint32_t Functionf3e470() const;
+
+    // member: GUESS(low); storage at the offset the compared getter reads
+    std::uint8_t pad08[0x18];  // 08
+    std::uint32_t member20;    // 20
 };

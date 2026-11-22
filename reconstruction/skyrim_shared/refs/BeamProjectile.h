@@ -28,6 +28,8 @@ class BeamProjectile : public Projectile
 {
 public:
     virtual std::uint8_t Slot165() const;
+    // BeamProjectile::GetKillOnCollision: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot B8
+    bool GetKillOnCollision();
     virtual void Revert(BGSLoadFormBuffer* a_buf);  // compared: 0x7e03e0
     virtual void SaveGame(BGSSaveFormBuffer* a_buf);  // compared: 0x7e0320
 

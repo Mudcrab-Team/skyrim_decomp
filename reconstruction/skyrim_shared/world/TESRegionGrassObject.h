@@ -11,4 +11,10 @@ class TESRegionGrassObject
 {
 public:
     virtual std::uint32_t Slot1() const;
+    // TESRegionGrassObject::Function2545a0: GUESS(low); pointer at offset 0x10
+    void Function2545a0(void* a_value);
+
+private:
+    std::uint64_t pad[1];  // 08 .. 10
+    void* field10;  // 10
 };

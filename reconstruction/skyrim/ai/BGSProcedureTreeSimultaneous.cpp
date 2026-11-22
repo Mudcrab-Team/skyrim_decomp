@@ -1,3 +1,8 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; written from the local pinned-image listing and the community declarations.
+// SPDX-License-Identifier: CC0-1.0
+// 0x45acc0 BGSProcedureTreeSimultaneous::Function45acc0
+// Adapted bodies: none
 // Source exposure: mixed (local binary analysis and public names).
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
 // Adapted bodies: none. Body synthesized from the bounded leaf template.
@@ -5,10 +10,15 @@
 // Unk_0F: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// 0x4594d0 BGSProcedureTreeSimultaneous::Unk_0F
 #include "BGSProcedureTreeSimultaneous.h"
 // Unk_0F: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 std::uint8_t BGSProcedureTreeSimultaneous::Unk_0F() const
 {
     return 0x1;
+}
+
+// BGSProcedureTreeSimultaneous::Function45acc0: GUESS(low); the loaded offset comes from the listing
+void* BGSProcedureTreeSimultaneous::Function45acc0() const
+{
+    return field30;
 }

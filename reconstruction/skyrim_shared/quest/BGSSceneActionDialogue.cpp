@@ -1,12 +1,11 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original; the listing and community declarations only
+// SPDX-License-Identifier: CC0-1.0
+// 0x3ab500 BGSSceneActionDialogue::Function3ab500
+// Adapted bodies: none
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
-// 0x3ab280 BGSSceneActionDialogue::GetEmotionType
-// 0x3ab290 BGSSceneActionDialogue::GetEmotionValue
-// 0x3ab530 BGSSceneActionDialogue::Loops
-// 0x3ab2a0 BGSSceneActionDialogue::FacesTarget
-// 0x3abcf0 BGSSceneActionDialogue::Unk_0B
-// 0x3ab1c0 BGSSceneActionDialogue::~BGSSceneActionDialogue
 #include "BGSSceneActionDialogue.h"
 
 template <class T>
@@ -51,4 +50,11 @@ void BGSSceneActionDialogue::Unk_0B()
     flags10 &= 0xFFFFBFFF;
     RawAt<std::uint32_t>(this, 0x34) = 0;
     BGSSceneActionBase::Unk_0B();
+}
+
+void BGSSceneActionDialogue::Function3ab500()
+{
+    if (target != nullptr) {
+        target->TargetMethod(true);
+    }
 }

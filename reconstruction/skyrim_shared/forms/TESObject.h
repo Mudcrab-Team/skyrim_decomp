@@ -11,6 +11,7 @@
 class TESWaterForm;
 
 // TESObject::DecRef, TESObject::GetRefCount, TESObject::GetWaterType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); compared at RVA 0x146640, 0x146810, 0x146840
+// Function275b20: GUESS(low); the plain destructor that sets the vftable and tail-calls the base destructor
 class TESObject : public TESForm
 {
 public:
@@ -18,6 +19,7 @@ public:
     virtual std::uint32_t DecRef();  // compared: 0x146640
     virtual std::uint32_t GetRefCount() const;  // compared: 0x146810
     virtual TESWaterForm* GetWaterType() const;  // compared: 0x146840
+    ~TESObject();  // compared: 0x275b20
 };
 
 extern TESObject* g_occlusionMarkerA;

@@ -22,9 +22,20 @@ static_assert(sizeof(BaseFormComponent) == 0x8, "layout");
 
 // TESReactionForm: EXE_RTTI; class name and base from the image RTTI, 4 primary vftable slots
 // sizeof TESReactionForm 0x20: OBSERVED; size argument of operator delete in the deleting destructor (slot 0)
+// ReactionList: GUESS(low); 0x10-byte member at offset 8, destructor out of line.
+class ReactionList
+{
+public:
+	~ReactionList();
+	std::uint8_t unk00[0x10];
+};
+static_assert(sizeof(ReactionList) == 0x10, "layout");
+
 class TESReactionForm : public BaseFormComponent
 {
 public:
+	// TESReactionForm::TESReactionForm: GUESS(low); defined to emit the vftable and the deleting destructor.
+	TESReactionForm();
 	// TESReactionForm::~TESReactionForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 0
 	~TESReactionForm() override;  // 00
 	// TESReactionForm::InitializeDataComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 1
@@ -35,8 +46,8 @@ public:
 	void CopyComponent() override;  // 03
 
 	// reactions: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares BSSimpleList, the members are not recovered
-	// unk08: GUESS(low); members not recovered yet, sized so the static_assert holds
-	std::uint8_t unk08[0x10];  // 08
+	// reactions: GUESS(low); the member whose destructor the compared destructor calls.
+	ReactionList reactions;  // 08
 	// groupFormType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares stl::enumeration<FormType, std::uint8_t>, a plain byte here
 	std::uint8_t groupFormType;  // 18
 	// unk19: GUESS(low); padding and unrecovered tail

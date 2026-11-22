@@ -12,4 +12,8 @@ class BGSProcedureTreeSimultaneous
 {
 public:
     virtual std::uint8_t Unk_0F() const;
+    void* Function45acc0() const;  // compared: 0x45acc0
+private:
+    std::uint8_t pad08[0x28];  // 08
+    void*         field30;     // 30
 };

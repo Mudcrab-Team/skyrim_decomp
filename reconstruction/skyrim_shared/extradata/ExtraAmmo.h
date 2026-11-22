@@ -11,4 +11,11 @@ class ExtraAmmo
 {
 public:
     virtual std::uint32_t GetType() const;
+    // Function185fe0: GUESS(low); true when either compared field differs.
+    bool Function185fe0(const ExtraAmmo* a_other) const;
+
+    // ammoSource, ammoCount: GUESS(low); the pointer and dword the compared routine compares.
+    std::uint8_t  pad08[0x8];      // 08
+    void*         ammoSource;      // 10
+    std::uint32_t ammoCount;       // 18
 };

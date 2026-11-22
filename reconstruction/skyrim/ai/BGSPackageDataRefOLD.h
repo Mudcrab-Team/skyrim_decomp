@@ -11,4 +11,10 @@ class BGSPackageDataRefOLD
 {
 public:
     virtual std::uint32_t Slot6() const;
+    // BGSPackageDataRefOLD::Function44dc60: GUESS(low); copies the stored dword to the out pointer
+    std::uint32_t* Function44dc60(std::uint32_t* a_out) const;
+
+    std::uint8_t pad08[0x10];  // 08
+    // value: GUESS(low); the dword copied out by Function44dc60
+    std::uint32_t value;  // 18
 };

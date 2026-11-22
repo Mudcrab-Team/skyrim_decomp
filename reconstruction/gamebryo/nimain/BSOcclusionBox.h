@@ -17,6 +17,7 @@ extern NiRTTI NiRTTI_BSOcclusionBox;
 class BSOcclusionBox
 {
 public:
+    virtual ~BSOcclusionBox();
     virtual std::uint8_t Slot38() const;
     virtual bool IsOcclusionPlane() const;  // compared: 0xfe8100
     virtual const NiRTTI* GetRTTI() const;  // compared: 0xfe8320
