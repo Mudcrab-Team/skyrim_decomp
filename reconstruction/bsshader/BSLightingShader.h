@@ -1,4 +1,5 @@
-// Source exposure: community-headers (declarations); compared bodies written from the local listing.
+// Source exposure: mixed (pinned image listing and labelled declarations).
+// Code origin: original declarations reconstructed from the pinned image and labelled community types.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // BSLightingShader, BSLightingShader::GetVertexTechnique: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); signature from the community header
@@ -8,10 +9,15 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../gamebryo/nimain/NiRefObject.h"
+#include "gamebryo/nimain/NiRefObject.h"
 
 class BSShaderMaterial;
 class BSRenderPass;
+class ShaderPartnerManager;
+
+extern ShaderPartnerManager* g_shaderPartnerManager;
+extern __declspec(thread) bool shaderStateChanged_tls_0x9ec;
+void SetShaderPartnerParameters(ShaderPartnerManager* a_partner, void* a_arg, void* a_first, void* a_second);
 
 class BSShader : public NiRefObject
 {
@@ -25,7 +31,9 @@ public:
     virtual void RestoreGeometry(BSRenderPass* a_currentPass, std::uint32_t a_renderFlags) = 0;  // 07
     virtual void GetTechniqueName(std::uint32_t a_techniqueID, char* a_buffer, std::uint32_t a_bufferSize);  // 08
     virtual void ReloadShaders(bool a_clear);  // 09
-    std::uint8_t unknown10[0x80];  // 10
+    std::uint8_t unknown10[0x18];  // 10
+    std::uint8_t firstParameterGroup[0x30];  // 28
+    std::uint8_t secondParameterGroup[0x38];  // 58
 };
 static_assert(sizeof(BSShader) == 0x90, "BSShader size");
 
@@ -34,6 +42,8 @@ class BSLightingShader : public BSShader
 public:
     static std::uint32_t GetVertexTechnique(std::uint32_t a_technique);  // compared: 0x15896a0
     void Function154af70();  // compared: 0x154af70
+    void Function154af80();
+    bool Function1547660(void* a_arg);
 
     std::uint8_t unknown90[0x38];  // 90
     std::uint32_t counterC8;  // C8

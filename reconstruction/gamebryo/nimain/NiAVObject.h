@@ -1,7 +1,10 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Code origin: original; the listing and community declarations only
-// Adapted code: no body in this file is copied from a community source; the only inline bodies are the NiPointer assignment (the usual smart-pointer shape, as in NiObjectNET.h), the NiCloningProcess constructor and destructor (members and order read from the listing) and TestBit. Bodies adapted from community sources are listed above (none);
+// Code origin: original reconstruction with the cited Fallout 3 sibling helpers.
+// Adapted bodies: TestBit, NiPoint3::operator=.
+// TestBit, NiPoint3::operator=: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_008e0000_o2.cpp:22380
 // bhkCollisionObject: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); opaque
 // COL_LAYER: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); 32-bit enum
 // SetCollisionLayer, SetCollisionLayerAndGroup, GetCollisionObject, UpdateRigidConstraints: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -49,7 +52,9 @@
 // NiRTTI_BSFlattenedBoneTree, NiRTTI_bhkCollisionObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); NiRTTI tables
 // kBoneMapName: GUESS; fixed string at 0x332e3e0 used to look up the bone-map extra data
 // PerformOpFunc: GUESS(low); the visitor PerformOp forwards its object to, complete only in the .cpp
-// PostAttachUpdate: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the image's vtable slot 0x33, declared here without virtual so the shared class keeps its vtable order
+// SetSelectiveUpdateFlags, UpdateDownwardPass, UpdateSelectedDownwardPass, UpdateRigidDownwardPass, UpdateWorldBound, UpdateWorldData, UpdateTransformAndBounds, PreAttachUpdate, PostAttachUpdate, OnVisible: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiNode::AttachChild, NiNode::InsertChildAt, NiNode::DetachChild1, NiNode::DetachChild2, NiNode::DetachChildAt1, NiNode::DetachChildAt2, NiNode::SetAt1, NiNode::SetAt2: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiAVObject::UpdateObjectUpwards, NiAVObject::SetParent: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once
 
 #include "NiObject.h"
@@ -61,6 +66,8 @@ class bhkCollisionObject;
 class NiNode;
 class NiExtraData;
 class NiTimeController;
+class NiUpdateData;
+class NiCullingProcess;
 class TESObjectREFR;
 class NiAVObject;
 class PerformOpFunc;
@@ -191,17 +198,29 @@ public:
 	virtual void SetDefaultMaterialNeedsUpdateFlag();                   // 29
 	virtual NiAVObject* GetObjectByName(const BSFixedString& a_name);   // 2A
 
+    virtual void SetSelectiveUpdateFlags(bool& a_update, bool a_transforms, bool& a_rigid);  // 2B
+    virtual void UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_flags);  // 2C
+    virtual void UpdateSelectedDownwardPass(NiUpdateData& a_data, std::uint32_t a_flags);  // 2D
+    virtual void UpdateRigidDownwardPass(NiUpdateData& a_data, std::uint32_t a_flags);  // 2E
+    virtual void UpdateWorldBound();  // 2F
+    virtual void UpdateWorldData(NiUpdateData* a_data);  // 30
+    virtual void UpdateTransformAndBounds(NiUpdateData& a_data);  // 31
+    virtual void PreAttachUpdate(NiNode* a_parent, NiUpdateData& a_data);  // 32
+    virtual void PostAttachUpdate();  // 33
+    virtual void OnVisible(NiCullingProcess& a_process);  // 34
+
 	void SetName(const BSFixedString& a_name);
 	NiAVObject* Clone();
 	void RecalculateWorldTransform();
-	// out of line in the image: a body of its own at 0xee0ed0; a vtable slot there, non-virtual here so the shared class keeps its vtable order
-	void PostAttachUpdate();
+	void UpdateObjectUpwards(NiUpdateData& a_data);
+	void UpdateSelectedObjectUpwards(NiUpdateData& a_data);
+	void SetParent(NiNode* a_parent);
 	static NiAVObject* GetBoneFromName(NiAVObject* a_root, const BSFixedString& a_name, bool a_flag);
 
 	void SetCollisionLayer(COL_LAYER a_collisionLayer);
 	void SetCollisionLayerAndGroup(COL_LAYER a_collisionLayer, std::uint32_t a_group);
 	bhkCollisionObject* GetCollisionObject() const;
-	// out of line: the engine calls this from other translation units, it is not inlined at its users
+	// noinline: the pinned image calls this method out of line at its call sites.
 	__declspec(noinline) bhkCollisionObject* GetCollisionObject();
 	void UpdateRigidConstraints(bool a_enable, std::uint8_t a_arg2 = 1, std::uint32_t a_arg3 = 1);
 
@@ -226,6 +245,17 @@ static_assert(sizeof(NiAVObject) == 0x110, "NiAVObject size");
 
 // Only the parent link the unit reads; members after NiAVObject are not modelled.
 class NiNode : public NiAVObject {
+public:
+    virtual void AttachChild(NiAVObject* a_child, bool a_firstAvailable);  // 35
+    virtual void InsertChildAt(std::uint32_t a_index, NiAVObject* a_child);  // 36
+    virtual void DetachChild1(NiAVObject* a_child, NiPointer<NiAVObject>& a_out);  // 37
+    virtual void DetachChild2(NiAVObject* a_child);  // 38
+    virtual void DetachChildAt1(std::uint32_t a_index, NiPointer<NiAVObject>& a_out);  // 39
+    virtual void DetachChildAt2(std::uint32_t a_index);  // 3A
+    virtual void SetAt1(std::uint32_t a_index, NiAVObject* a_child, NiPointer<NiAVObject>& a_out);  // 3B
+    virtual void SetAt2(std::uint32_t a_index, NiAVObject* a_child);  // 3C
+    // Parent update dispatch. The pinned callers supply only the receiver.
+    virtual void Unk_1E8();  // 3D
 };
 
 void ApplyCollisionLayer(NiAVObject* a_object, const COL_LAYER& a_layer);

@@ -1,6 +1,5 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names from the community header; a byte match does not verify names.
-// Code origin: original; the listing and community declarations only
+// Source exposure: mixed (pinned image listing and labelled community declarations).
+// Code origin: original reconstruction from the pinned image listing and labelled declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ApplyCollisionLayer, ApplyCollisionLayerAndGroup, FindCollisionObject: GUESS; unnamed callees, see the header
 // EnableRigidConstraints, DisableRigidConstraints: GUESS; unnamed callees, see the header
@@ -15,11 +14,15 @@
 // 0xfddac0 NiAVObject::GetBoneFromName
 // 0xeec1a0 NiAVObject::RecalculateWorldTransform
 // 0xee0700 NiAVObject::RegisterStreamables
-// Adapted bodies: none
+// Adapted bodies: none.
 // PerformOpFunc: GUESS(low); the visitor the image forwards the object to, slot 1 is its call operator
-// PostAttachParent: GUESS(low); file-local standin for the parent's vtable padding up to byte offset 0x1E8
 // 0xee0ed0 NiAVObject::PostAttachUpdate
 // 0xee0a00 NiAVObject::PerformOp(PerformOpFunc&)
+// 0xee0930 NiAVObject::UpdateObjectUpwards
+// 0xee0970 NiAVObject::UpdateSelectedObjectUpwards
+// 0xee0ef0 NiAVObject::SetParent
+// NiAVObject::UpdateObjectUpwards, NiAVObject::SetParent: CRASHLOGGER_PDB(59818@2026.10.24)
+// NiAVObject::UpdateSelectedObjectUpwards: GUESS(low)
 #include "NiAVObject.h"
 
 // PerformOpFunc: GUESS(low); declared complete only here so the shared class keeps its vtable order.
@@ -30,32 +33,7 @@ public:
     virtual void operator()(NiAVObject* a_object) = 0;
 };
 
-// PostAttachParent: GUESS(low); a file-local standin for the parent object. It carries the padding
-// virtuals up to the slot at byte offset 0x1E8 that PostAttachUpdate calls. These must not live on
-// the shared NiNode stand-in, or every class deriving from it would have its vtable shifted.
-class PostAttachParent : public NiAVObject
-{
-public:
-    virtual void Unk_158();  // 158
-    virtual void Unk_160();  // 160
-    virtual void Unk_168();  // 168
-    virtual void Unk_170();  // 170
-    virtual void Unk_178();  // 178
-    virtual void Unk_180();  // 180
-    virtual void Unk_188();  // 188
-    virtual void Unk_190();  // 190
-    virtual void Unk_198();  // 198
-    virtual void Unk_1A0();  // 1A0
-    virtual void Unk_1A8();  // 1A8
-    virtual void Unk_1B0();  // 1B0
-    virtual void Unk_1B8();  // 1B8
-    virtual void Unk_1C0();  // 1C0
-    virtual void Unk_1C8();  // 1C8
-    virtual void Unk_1D0();  // 1D0
-    virtual void Unk_1D8();  // 1D8
-    virtual void Unk_1E0();  // 1E0
-    virtual void Unk_1E8();  // 1E8
-};
+using PostAttachParent = NiNode;
 
 void NiAVObject::SetCollisionLayer(COL_LAYER a_collisionLayer)
 {
@@ -176,4 +154,31 @@ void NiAVObject::PerformOp(PerformOpFunc& a_func)
 void NiAVObject::PostAttachUpdate()
 {
     static_cast<PostAttachParent*>(static_cast<NiAVObject*>(parent))->Unk_1E8();
+}
+
+// Update this object and then propagate the update through its parent.
+void NiAVObject::UpdateObjectUpwards(NiUpdateData& a_data)
+{
+    UpdateDownwardPass(a_data, 0);
+    if (parent) {
+        parent->Unk_1E8();
+    }
+}
+
+// Update the selected branch and then propagate the update through its parent.
+void NiAVObject::UpdateSelectedObjectUpwards(NiUpdateData& a_data)
+{
+    UpdateSelectedDownwardPass(a_data, 0);
+    if (parent) {
+        parent->Unk_1E8();
+    }
+}
+
+// Detach from the old parent before assigning the new parent link.
+void NiAVObject::SetParent(NiNode* a_parent)
+{
+    if (parent) {
+        parent->DetachChild2(this);
+    }
+    parent = a_parent;
 }
