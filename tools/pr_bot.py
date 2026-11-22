@@ -89,6 +89,10 @@ REVIEW_MODEL = 'gpt-6.1-terra'
 # Fallback reviewer when codex fails for an account or capacity reason; read-only tools only.
 CLAUDE_BIN = shutil.which('claude') or str(Path.home() / '.local/bin/claude')
 CLAUDE_REVIEW_MODEL = 'claude-sonnet-5-5'
+# One review call is bounded by the model's context and the call timeout, so a big PR is reviewed in
+# chunks of whole units; every function still gets exactly one verdict from exactly one chunk.
+REVIEW_CHUNK_FUNCTIONS = 40
+REVIEW_CHUNK_WORKERS = 3
 CODEX_PAUSE = 1800  # seconds codex is skipped after an out-of-credits style failure
 ACCOUNT_FAILURE = re.compile(r'credit|quota|rate.?limit|usage limit|insufficient|billing|capacity|overloaded|'
                              r'too many requests|\b429\b|unauthorized|\b401\b|log ?in|sign ?in|auth|token expired|'
@@ -1171,6 +1175,57 @@ def ci_rows(report, unit_of):
     return rows
 
 
+def review_chunks(functions, units, size):
+    """[[rva]]: `functions` grouped by unit, in unit order, into chunks of at most `size`.
+
+    A unit is kept whole when it fits and shares a chunk with its neighbours (family-sorted names sit
+    together); a unit larger than `size` is cut. A function in no unit file goes last.
+    """
+    wanted, groups, placed = set(functions), [], set()
+    for cpp in sorted(units or {}):
+        rvas = sorted(r for r in units[cpp] if r in wanted and r not in placed)
+        placed.update(rvas)
+        if rvas:
+            groups.append(rvas)
+    rest = sorted(wanted - placed)
+    if rest:
+        groups.append(rest)
+    chunks, current = [], []
+    for rvas in groups:
+        if current and len(current) + len(rvas) > size:
+            chunks.append(current)
+            current = []
+        while len(rvas) > size:
+            chunks.append(rvas[:size])
+            rvas = rvas[size:]
+        current += rvas
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def merge_review_texts(texts):
+    """One review answer in the single-call shape from the answers of several chunks.
+
+    A chunk's rows are copied as they are. The leak field takes the worst reading: a recognised `yes`
+    beats an unreadable answer, which beats `no`; an unreadable chunk contributes no rows, so its
+    functions reject exactly as an unreadable single answer would.
+    """
+    rows, kinds, leaks = {}, set(), []
+    for text in texts:
+        leak, _ = parse_review(text, [])
+        leaks.append(leak)
+        kinds.update(review_leak_evidence(text))
+        try:
+            chunk_rows = json.JSONDecoder().raw_decode(text[text.index('{'):])[0]['functions']
+            if isinstance(chunk_rows, dict):
+                rows.update(chunk_rows)
+        except (ValueError, KeyError, TypeError, AttributeError):
+            pass
+    leak = 'yes' if 'yes' in leaks else 'unreadable' if 'unreadable' in leaks else 'no'
+    return json.dumps({'leak': leak, 'leak_evidence': sorted(kinds), 'functions': rows}, indent=1)
+
+
 # ---- state ----------------------------------------------------------------------------------
 
 class State:
@@ -1243,7 +1298,8 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = {**dict(model_timeout=3000, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
+        self.config = {**dict(model_timeout=3000, review_chunk=REVIEW_CHUNK_FUNCTIONS,
+                            review_workers=REVIEW_CHUNK_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
         self.clock = time.time
@@ -1774,17 +1830,59 @@ class Bot:
             return [f'no same-named community/sibling body found (clone revisions: {pins}){skipped}']
         return [f'  {check_origin.describe(h)}' for h in hits] + [f'(clone revisions: {pins}){skipped}']
 
-    def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=()):
-        diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction'], cwd=self.root).stdout.decode(errors='replace')
+    def review(self, number, head, base, functions, grep, units=None, evidence=None, changed=None, companions=(),
+               state=None, sfx=''):
+        """The review text for `functions`: one model call, or one per chunk of whole units merged into one answer.
+
+        With a `state`, every chunk's answer is cached under its own key, so a retry after one chunk failed
+        runs only the chunks without an answer.
+        """
         old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
+        chunks = review_chunks(functions, units, self.config['review_chunk']) if units else [sorted(functions)]
+        out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
+        out.parent.mkdir(parents=True, exist_ok=True)
+        if len(chunks) <= 1:
+            return self.review_chunk(number, head, base, sorted(functions), grep, units, evidence, changed,
+                                     companions, old_flags, out, [])
+        owner = {r: cpp for cpp, rvas in units.items() for r in rvas}
+        keys = [f'review_chunk{sfx}:' + hashlib.sha256(','.join(map(str, c)).encode()).hexdigest()[:16]
+                for c in chunks]
+
+        def one(i):
+            self.used.reviewer = None
+            mine = {owner.get(r) for r in chunks[i]}
+            others = [f for cpp in units if cpp not in mine for f in (cpp, cpp[:-4] + '.h')]
+            path = out.with_name(f'{out.stem}-c{i}.txt')
+            run = lambda: self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
+                                            companions, old_flags, path, others)
+            text = state.once(keys[i], run) if state is not None else run()
+            return text, self.used.reviewer
+
+        with ThreadPoolExecutor(max_workers=max(1, min(self.config['review_workers'], len(chunks)))) as pool:
+            futures = [pool.submit(one, i) for i in range(len(chunks))]
+            # Every chunk is waited for, so the answers of the chunks that did finish are cached before the
+            # first failure is raised; WouldSpend and Stop both come out of here unchanged.
+            outcomes = [(f.exception(), None if f.exception() else f.result()) for f in futures]
+        failed = [exc for exc, _ in outcomes if exc is not None]
+        if failed:
+            raise next((e for e in failed if not isinstance(e, Stop)), failed[0])
+        reviewers = [r for _, (_, r) in outcomes if r]
+        self.used.reviewer = reviewers[-1] if reviewers else None
+        merged = merge_review_texts([t for _, (t, _) in outcomes])
+        out.write_text(merged)
+        return merged
+
+    def review_chunk(self, number, head, base, functions, grep, units, evidence, changed, companions, old_flags,
+                     out, excluded):
+        """One model call for `functions`; `excluded` are unit files of other chunks, left out of the diff."""
+        diff = self.run(['git', 'diff', f'{base}', head, '--', 'reconstruction',
+                         *(f':(exclude){f}' for f in excluded)], cwd=self.root).stdout.decode(errors='replace')
         context = self.review_context(units, set(functions), evidence, changed, old_flags) if units else ''
         prompt = (PREAMBLE + '\n' + runbook_checklist(self.tree) + f'\n\nFunctions under review: '
                   f'{", ".join(f"0x{r:x}" for r in sorted(functions))}\n'
-                  f'{self.companion_note(companions)}'
+                  f'{self.companion_note([c for c in companions if c in set(functions)])}'
                   f'leakgrep: {"HIT " + ",".join(grep[1]) if grep[0] else "clean"}\n\n{context}\n\n'
                   f'UNTRUSTED DIFF DATA:\n{diff}')
-        out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
-        out.parent.mkdir(parents=True, exist_ok=True)
         return self.run_model(prompt, out)
 
     @staticmethod
@@ -2542,7 +2640,8 @@ class Bot:
         if passed and 'regressed' not in list(host1.values()) + list(host2.values()):
             evidence = self.review_evidence(tag, passed, host1, host2, state)
             text = self.reviewed(state, 'review_text' + sfx, lambda: self.review(
-                number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra))
+                number, head, base, passed, grep, check_units, evidence, {f['filename'] for f in files}, extra,
+                state, sfx))
             leak, verdict = parse_review(text, passed)
             notes = review_notes(text, passed)
             grounds = review_grounds(text, passed)

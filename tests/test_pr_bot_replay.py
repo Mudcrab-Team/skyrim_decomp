@@ -617,6 +617,116 @@ class ReviewerTests(Replay):
         self.assertEqual(self.w.state(self.bot, 7).get('reviewer'), 'codex')
 
 
+class ChunkedReviewTests(Replay):
+    """A big PR is reviewed in chunks of whole units, three at a time, and merged into one verdict per function."""
+
+    RVAS = list(range(0x1000, 0x1000 + 0x10 * 150, 0x10))
+
+    def big_pr(self):
+        self.w.make_pr(7, {unit_path(r): unit(r) for r in self.RVAS})
+
+    def listed(self, prompt):
+        return [int(x, 16) for x in re.search(r'Functions under review: ([0-9a-fx, ]+)', prompt)[1].split(', ')]
+
+    def watch(self, fail_when=lambda rvas: False):
+        """Record each model call's functions and the most calls in flight at once; fail the calls `fail_when` picks."""
+        seen, lock = [], threading.Lock()
+        live = dict(now=0, peak=0)
+        real = self.w.reviewers.handle
+
+        def handle(argv, input):
+            rvas = self.listed(input.decode())
+            with lock:
+                seen.append(rvas)
+                live['now'] += 1
+                live['peak'] = max(live['peak'], live['now'])
+            try:
+                if fail_when(rvas):
+                    return subprocess.CompletedProcess(argv, 1, b'', b'ERROR: the model crashed')
+                return real(argv, input)
+            finally:
+                with lock:
+                    live['now'] -= 1
+        self.w.reviewers.handle = handle
+        return seen, live
+
+    def test_chunks_hold_whole_units_up_to_the_size_and_cover_every_function_once(self):
+        units = {unit_path(r): [r] for r in self.RVAS}
+        units['reconstruction/fx/Big.cpp'] = list(range(0x9000, 0x9000 + 0x10 * 95, 0x10))
+        everything = self.RVAS + units['reconstruction/fx/Big.cpp'] + [0xf0000]
+        chunks = pr_bot.review_chunks(everything, units, 40)
+        self.assertTrue(all(0 < len(c) <= 40 for c in chunks))
+        self.assertEqual(sorted(r for c in chunks for r in c), sorted(everything))
+        self.assertEqual(len(chunks), 7)
+        small = pr_bot.review_chunks([1, 2, 3], {'a.cpp': [1, 2], 'b.cpp': [3]}, 40)
+        self.assertEqual(small, [[1, 2, 3]])
+
+    def test_a_150_function_pr_is_reviewed_in_four_chunks_at_most_three_at_a_time_and_lands(self):
+        self.big_pr()
+        seen, live = self.watch()
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual(len(seen), 4)
+        self.assertTrue(all(len(c) <= 40 for c in seen))
+        self.assertEqual(sorted(r for c in seen for r in c), self.RVAS)  # one verdict from one chunk each
+        self.assertLessEqual(live['peak'], 3)
+        names = self.w.main_files()
+        self.assertTrue(all(f'reports/{BUILD}/0x{r:x}.json' in names for r in self.RVAS))
+
+    def test_a_failed_chunk_is_retried_alone_and_the_finished_chunks_are_not_paid_for_again(self):
+        self.big_pr()
+        doomed = {}
+        seen, _ = self.watch(lambda rvas: self.RVAS[0] in rvas and doomed.get('on', True))
+        first = self.w.poll(self.bot)
+        self.assertFalse(self.merged(7), first)
+        self.assertEqual(self.w.sticky(7), [])  # a model failure is a bot fault, not a finding
+        self.assertEqual(len(seen), 4)
+        state = self.w.state(self.bot, 7)
+        self.assertEqual(len([k for k in state.data if k.startswith('review_chunk')]), 3)
+        self.assertIsNone(state.get('review_text'))
+        doomed['on'] = False
+        seen.clear()
+        second = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), second)
+        self.assertEqual(len(seen), 1)
+        self.assertIn(self.RVAS[0], seen[0])
+
+    def test_the_merged_verdicts_keep_one_decision_per_function_and_a_leak_in_any_chunk_blocks_the_pr(self):
+        self.big_pr()
+        target = self.RVAS[100]
+        real = self.w.reviewers.text
+
+        def text(prompt):
+            rvas = self.listed(prompt)
+            if target not in rvas:
+                return real(prompt)
+            rows = {f'0x{r:x}': {'verdict': 'reject' if r == target else 'approve', 'ground': 'plausibility',
+                                 'why': 'invented'} for r in rvas}
+            return json.dumps({'leak': 'yes', 'leak_evidence': ['steering'], 'functions': rows})
+        self.w.reviewers.text = text
+        log = self.w.poll(self.bot)
+        self.assertFalse(self.merged(7), log)
+        decision = self.w.state(self.bot, 7).get('decision')
+        self.assertEqual(set(map(int, decision['verdicts'])), set(self.RVAS))
+        whole = [p for p in (self.bot.work / 'reviews').glob('pr7-*.txt') if '-c' not in p.stem]
+        self.assertEqual(len(whole), 1)
+        merged = json.loads(whole[0].read_text())
+        self.assertEqual(merged['leak'], 'yes')
+        self.assertEqual(merged['leak_evidence'], ['steering'])
+        self.assertEqual(merged['functions'][f'0x{target:x}']['verdict'], 'reject')
+        self.assertEqual(len(merged['functions']), 150)
+
+    def test_merge_takes_the_worst_leak_reading_and_an_unreadable_chunk_rejects_its_functions(self):
+        good = json.dumps({'leak': 'no', 'functions': {'0x10': {'verdict': 'approve'}}})
+        junk = 'no json here'
+        merged = pr_bot.merge_review_texts([good, junk])
+        self.assertEqual(pr_bot.parse_review(merged, [0x10, 0x20]), ('unreadable', {0x10: 'approve', 0x20: 'reject'}))
+        steer = json.dumps({'leak': 'yes', 'leak_evidence': ['host-path'], 'functions': {'0x20': {'verdict': 'approve'}}})
+        self.assertEqual(pr_bot.parse_review(pr_bot.merge_review_texts([good, junk, steer]), [0x10, 0x20])[0], 'yes')
+        opinion = json.dumps({'leak': 'yes', 'functions': {'0x20': {'verdict': 'approve'}}})
+        self.assertEqual(pr_bot.parse_review(pr_bot.merge_review_texts([good, opinion]), [0x10, 0x20])[0], 'no')
+
+
 class HashJobTests(Replay):
     def test_a_job_that_leaves_no_result_is_retried_three_times_then_blocked_not_looped(self):
         head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, ci='none')

@@ -45,6 +45,7 @@ equivalent). Cheaper models are fine for drafting.
 2. It splits them into batches of 10 to 15 and gives each subagent one batch.
 3. Each subagent works in its own worktree and its own new unit files, one unit per function. It
    never edits a shared header or an already matched unit, since that makes matched functions stale.
+   Name each new unit `<Class>_<rva>.h` and `<Class>_<rva>.cpp` (RVA in lowercase hex, no `0x`).
 4. Each subagent loops `compare` on its tasks until PASS and gives up on a function after a few tries.
 5. The lead merges the passing branches into one, runs `submit --dry-run`, and opens one PR with
    `submit --all-dirty`.
