@@ -3454,7 +3454,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
-                if pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now:
+                # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
+                # bot will not look at, and queueing it costs a `gh pr view` per tick.
+                if (pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now
+                        or bot.already_rejected(pr)):
                     continue
                 try:
                     bot.warm(pr)
