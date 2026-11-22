@@ -2,7 +2,7 @@
 // image).
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
-// 0x154d10 Leaf154d10::Invoke
+// 0x154d10 SpellItem::GetDataSize
 // 0x155cf0 SpellItem::GetCastingType
 // 0x155d00 SpellItem::GetSpellType
 #include "SpellItem_155cf0.h"

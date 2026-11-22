@@ -4,7 +4,7 @@
 // otherwise name each adapted body, its upstream file, revision and licence).
 // 0x146770 MagicItem::GetMaxEffectCount
 // 0x14e7c0 MagicItem::IsMedicine
-// 0x14e830 Leaf14e830::Invoke
+// 0x14e830 MagicItem::LoadMagicItemChunk
 #include "MagicItem_146770.h"
 
 std::uint32_t MagicItem::GetMaxEffectCount() const

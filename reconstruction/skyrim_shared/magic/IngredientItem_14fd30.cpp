@@ -3,8 +3,8 @@
 // Adapted bodies: none (write "none" when attempt prints no "origin advice" line;
 // otherwise name each adapted body, its upstream file, revision and licence).
 // 0x14fd30 IngredientItem::GetDelivery
-// 0x14fce0 Leaf14fce0::Invoke
-// 0x14fcf0 Leaf14fcf0::Invoke
+// 0x14fce0 IngredientItem::GetCastingType
+// 0x14fcf0 IngredientItem::GetChunkID
 #include "IngredientItem_14fd30.h"
 
 MagicSystem::Delivery IngredientItem::GetDelivery() const

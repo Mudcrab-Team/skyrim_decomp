@@ -1,8 +1,8 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // Adapted bodies: none
-// 0x14e760 Leaf14e760::Invoke
-// 0x14e790 Leaf14e790::Invoke
+// 0x14e760 EnchantmentItem::GetChunkID
+// 0x14e790 EnchantmentItem::GetDataSize
 // 0x14e780 EnchantmentItem::GetData1
 #include "EnchantmentItem_14e780.h"
 

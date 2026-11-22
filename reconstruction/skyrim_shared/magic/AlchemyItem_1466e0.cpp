@@ -2,8 +2,8 @@
 // image).
 // Adapted bodies: none
 // 0x1466e0 AlchemyItem::GetDelivery
-// 0x146670 Leaf146670::Invoke
-// 0x1466d0 Leaf1466d0::Invoke
+// 0x146670 AlchemyItem::GetCastingType
+// 0x1466d0 AlchemyItem::GetDataSize
 #include "AlchemyItem_1466e0.h"
 
 // RVA 0x1466e0, 3 bytes: returns delivery 0.

@@ -2,7 +2,7 @@
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none
-// 0x956d90 Leaf956d90::Invoke
+// 0x956d90 MagicItemData::GetCount
 // 0x951e80 MagicItemData::GetEnabled
 #include "MagicItemData.h"
 
