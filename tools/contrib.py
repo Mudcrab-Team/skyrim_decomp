@@ -59,6 +59,7 @@ import agent_advice
 import agent_identity
 import repo_slug
 import attempt_progress
+import ready_queue
 import crashlogger_pdb
 from local_paths import local_dir, local_path, main_checkout_local, main_worktree_local, no_sibling_names
 
@@ -388,8 +389,8 @@ def unit_files(repo, cls, area=None, index=None):
     return area, f'reconstruction/{area}/{cls}.h', f'reconstruction/{area}/{cls}.cpp'
 
 
-def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None):
-    """Unclaimed targets: small functions first (under 64 bytes, then 64-255), classes that already have
+def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None, ready=None):
+    """Unclaimed targets: callee-ready functions first (`ready`, from tools/ready_queue.py), then small functions first (under 64 bytes, then 64-255), classes that already have
     a layout before those that do not, then advisory declaration/draft readiness, size and RVA.
 
     With `published`, functions of the target-hash list that have no inventory entry are included when
@@ -428,8 +429,10 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
                     'startable': bool(m and area), 'readiness_rank': rank, 'reason': reason,
                     'cautions': cautions, 'in_inventory': fn.get('owner') != 'claim-time',
                     'size_band': claimable.band(fn['size']), 'has_layout': bool(headers[header]),
-                    '_key': (not m or area is None, claimable.band(fn['size']), not headers[header],
-                             rank, fn['size'], fn['rva'])})
+                    'callee_ready': fn['rva'] in (ready or {}),
+                    '_key': (not m or area is None, fn['rva'] not in (ready or {}),
+                             claimable.band(fn['size']), not headers[header], rank,
+                             -(ready or {}).get(fn['rva'], {}).get('blocks', 0), fn['size'], fn['rva'])})
     out.sort(key=lambda c: c.pop('_key'))
     return out
 
@@ -1708,11 +1711,13 @@ def cmd_next(ctx, args):
         except re.error as exc:
             raise Stop(USAGE, f'--class is not a regular expression: {exc}') from None
     ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True,
-                                   class_filter=class_filter) if c['startable']]
+                                   class_filter=class_filter, ready=ready_queue.load_queue(ctx.repo))
+             if c['startable']]
     counts = {'claimable': len(ready), 'without_inventory_entry': sum(not c['in_inventory'] for c in ready),
               'under_64_bytes': sum(c['size_band'] == 0 for c in ready),
               '64_to_255_bytes': sum(c['size_band'] == 1 for c in ready),
-              'with_existing_layout': sum(c['has_layout'] for c in ready)}
+              'with_existing_layout': sum(c['has_layout'] for c in ready),
+              'callee_ready': sum(c['callee_ready'] for c in ready)}
     rows = ready[:args.count]
     pdb = pdb_names(ctx)
     ctx.say('claimable now: ' + ', '.join(f'{v} {k.replace("_", " ")}' for k, v in counts.items()))
