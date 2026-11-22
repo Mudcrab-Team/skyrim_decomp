@@ -22,7 +22,7 @@ void TESTopicInfo::LoadGame(BGSLoadFormBuffer* a_buf)
 {
     TESForm::LoadGame(a_buf);
     if (static_cast<std::int32_t>(a_buf->changeFlags) < 0) {
-        SetSaidOnceState(true);
+        saidOnce = true;
     }
 }
 
@@ -30,7 +30,7 @@ void TESTopicInfo::Revert(BGSLoadFormBuffer* a_buf)
 {
     TESForm::Revert(a_buf);
     if (static_cast<std::int32_t>(a_buf->oldChangeFlags) < 0) {
-        SetSaidOnceState(false);
+        saidOnce = false;
     }
 }
 // Assign the response's index in the topic.
