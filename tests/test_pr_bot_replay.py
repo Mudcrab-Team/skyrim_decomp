@@ -77,6 +77,8 @@ class FakeGitHub:
         self.calls = []
         self.merges = []
         self.merge_failures = 0
+        self.created = []  # every `gh pr create` the bot issued
+        self.ready_fails = self.rerun_fails = False
         self.close_on_merge = False  # the PR is closed by someone while the merge request is in flight
         self.labels = {}
         self.lock = threading.Lock()
@@ -145,14 +147,30 @@ class FakeGitHub:
         if a[:2] == ['pr', 'view']:
             return self.ok(self.view(int(a[2])))
         if a[:2] == ['pr', 'create']:
+            self.created.append(a)
+            return self.ok()
+        if a[:2] == ['pr', 'ready']:
+            pr = self.prs[int(a[2])]
+            if self.ready_fails:
+                return subprocess.CompletedProcess([], 1, b'', b'cannot change draft state')
+            pr['draft'] = '--undo' in a
+            if not pr['draft'] and pr['head'] in ci.policy:
+                ci.policy[pr['head']]()
+            return self.ok()
+        if a[:2] == ['run', 'rerun']:
+            if self.rerun_fails:
+                return subprocess.CompletedProcess([], 1, b'', b'cannot rerun')
+            head = next(h for h, rs in ci.runs.items() if any(r['id'] == int(a[2]) for r in rs))
+            if head in ci.policy:
+                ci.policy[head]()
             return self.ok()
         m = re.search(r'users/(\w+)', line)
         if m:
             return self.ok({'id': 4242})
         if 'git/refs' in line:
             sha = next((x[4:] for x in a if x.startswith('sha=')), None)
-            if sha and sha in ci.policy:
-                ci.policy[sha]()
+            if 'DELETE' not in a:  # clearing a branch left by an earlier bot is fine; making one is not
+                raise AssertionError(f'the bot must not create refs for probe branches: {line}')
             return self.ok()
         if 'check-runs' in line:
             head = re.search(r'commits/(\w+)/check-runs', line)[1]
@@ -816,6 +834,46 @@ class ChunkedReviewTests(Replay):
         self.assertEqual(pr_bot.parse_review(pr_bot.merge_review_texts([good, opinion]), [0x10, 0x20])[0], 'no')
 
 
+class NoProbePrTests(Replay):
+    """The hash run of a head with none is requested on the PR itself; no helper PR or branch is ever created."""
+
+    def test_a_head_without_a_run_gets_one_from_a_ready_for_review_cycle_on_the_real_pr(self):
+        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, ci='none')
+        self.w.ci.policy[head] = lambda: self.w.ci.add(head, {0x1000: 'pass'})
+        log = self.w.poll(self.bot)
+        self.assertEqual(self.w.github.created, [], log)
+        ready = [c for c in self.w.github.calls if c[:2] == ['pr', 'ready']]
+        self.assertEqual([('--undo' in c) for c in ready], [True, False])
+        self.assertTrue(self.merged(7), log)
+        self.assertFalse(self.w.github.prs[7].get('draft'))
+
+    def test_it_falls_back_to_re_running_the_latest_run_when_the_cycle_is_refused(self):
+        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, ci='none')
+        self.w.ci.add(head, None)
+        self.w.ci.policy[head] = lambda: self.w.ci.add(head, {0x1000: 'pass'}, started=FUTURE)
+        self.w.github.ready_fails = True
+        log = self.w.poll(self.bot)
+        self.assertEqual(self.w.github.created, [], log)
+        self.assertTrue([c for c in self.w.github.calls if c[:2] == ['run', 'rerun']])
+        self.assertTrue(self.merged(7), log)
+
+    def test_when_nothing_works_the_probe_is_skipped_with_a_recorded_reason_and_no_pr(self):
+        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, ci='none')
+        self.w.github.ready_fails = True
+        log = self.w.poll(self.bot)
+        self.assertEqual(self.w.github.created, [], log)
+        self.assertIn('hash run not requested', log)
+        self.assertIn('no finished run to re-run', self.w.state(self.bot, 7).get('probe_blocked'))
+        self.assertFalse(self.merged(7))
+
+    def test_a_head_is_not_asked_again_within_the_cooldown(self):
+        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, ci='none')
+        self.w.poll(self.bot, times=3)
+        cycles = [c for c in self.w.github.calls if c[:2] == ['pr', 'ready'] and '--undo' in c]
+        self.assertEqual(len(cycles), 1)
+        self.assertEqual(self.w.github.created, [])
+
+
 class HashJobTests(Replay):
     def test_a_job_that_leaves_no_result_is_retried_three_times_then_blocked_not_looped(self):
         head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, ci='none')
@@ -1325,6 +1383,7 @@ class DryRunTests(Replay):
         with self.assertRaises(pr_bot.WouldSpend):
             bot.host1(7, head, [0x1000])
         self.assertEqual([c for c in self.w.github.calls if 'POST' in c and any('git/refs' in x for x in c)], [])
+        self.assertEqual(self.w.github.created, [])
         self.assertTrue(bot.blocked_writes)
 
     def test_the_write_filter_lets_reads_through_and_refuses_everything_that_changes_state(self):

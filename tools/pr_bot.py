@@ -140,6 +140,7 @@ WINDOW_SLICE = int(os.environ.get('SR_WINDOW_SLICE') or 2000)
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
+PROBE_COOLDOWN = 1800  # seconds before the same head's hash run is requested again
 PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
 PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
@@ -2223,14 +2224,14 @@ class Bot:
                     raise Stop('hash check left no result')
                 elif probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-                    self.probe_hash_run(number, head)
+                    if not self.probe_hash_run(number, head, force=True):
+                        raise Waiting(f'hash run not requested: {state.get("probe_blocked") if state else "unknown"}')
             elif run is None:
                 self.approve_pending(head)
                 if probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-                    if since:
-                        self.drop_probe(number)  # a probe branch left at this commit would not run again
-                    self.probe_hash_run(number, head)
+                    if not self.probe_hash_run(number, head):
+                        raise Waiting(f'hash run not requested: {state.get("probe_blocked") if state else "unknown"}')
             if self.dry_run:
                 raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
@@ -2308,26 +2309,47 @@ class Bot:
             raise Stop('hash artifact is listed but did not download')
         return []
 
-    def probe_hash_run(self, number, head):
-        """Get pr-check onto a head that has no run, from a draft PR in this repository on the same commit.
+    def probe_hash_run(self, number, head, force=False):
+        """Ask CI for a fresh pr-check run on the PR itself; True when one was requested. Never opens a PR.
 
-        A PR opened before pr-check existed is tested against a stale merge ref that lacks the workflow,
-        and a fork head cannot be re-run without a push. The commit is already in this repository through
-        refs/pull/N/head, so a branch at it runs the workflow from the current base with no fork approval;
-        check runs belong to the commit, so the PR's own head then carries the `hash` run.
+        Marking the PR draft and ready again fires `ready_for_review`, which the workflow listens for, so the run
+        starts from the current base and the PR's own merge ref even for a head that predates the workflow or a
+        fork head that cannot be pushed to. Failing that, the head's latest run is re-run. When neither works the
+        reason is kept in the head's state as `probe_blocked` and the caller waits instead of retrying blindly.
+        A request is not repeated within PROBE_COOLDOWN unless `force`: every tick asks again for a head that
+        has no run yet, and each request restarts the workflow.
         """
-        branch = f'probe/pr-{number}'
-        refs = f'repos/{REPOSITORY}/git/refs'
-        made = self.run(['gh', 'api', '-X', 'POST', refs, '-f', f'ref=refs/heads/{branch}', '-f', f'sha={head}'],
-                        check=False)
-        if made.returncode:
-            self.run(['gh', 'api', '-X', 'PATCH', f'{refs}/heads/{branch}', '-f', f'sha={head}', '-F', 'force=true'],
-                     check=False)
-        if not self.gh_json('pr', 'list', '-R', REPOSITORY, '--head', branch, '--state', 'open', '--json', 'number'):
-            self.run(['gh', 'pr', 'create', '-R', REPOSITORY, '--draft', '--base', 'main', '--head', branch,
-                      '--title', f'pr-check run for the head of #{number}',
-                      '--body', f'Runs pr-check on the same commit as #{number}. Closed by the bot when it is done.'],
-                     check=False)
+        state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
+        if not force and time.time() - (state.get('probe_at') or 0) < PROBE_COOLDOWN:
+            return not state.get('probe_blocked')
+        if not self.dry_run:
+            state.set('probe_at', time.time())
+        reasons = []
+        live = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'isDraft,state')
+        if live.get('state') == 'OPEN' and not live.get('isDraft'):
+            ready = ['gh', 'pr', 'ready', str(number), '-R', REPOSITORY]
+            if self.run([*ready, '--undo'], check=False).returncode == 0:
+                # A PR left as a draft would be skipped by the poll, so the second call is retried.
+                for _ in range(3):
+                    if self.run(ready, check=False).returncode == 0:
+                        state.drop('probe_blocked')
+                        return True
+                reasons.append('the PR could not be marked ready again after the re-run request')
+            else:
+                reasons.append('the PR could not be marked draft to request a run')
+        run = self.latest_hash_run(head)
+        run_id = re.search(r'/runs/(\d+)', (run or {}).get('details_url', ''))
+        if run_id and run.get('status') == 'completed':
+            if self.run(['gh', 'run', 'rerun', run_id.group(1), '-R', REPOSITORY], check=False).returncode == 0:
+                state.drop('probe_blocked')
+                return True
+            reasons.append('the latest run could not be re-run')
+        else:
+            reasons.append('the head has no finished run to re-run')
+        reason = '; '.join(reasons)
+        state.set('probe_blocked', reason)
+        print(f'{stamp()} pr {number}: hash run not requested: {reason}', file=sys.stderr, flush=True)
+        return False
 
     def warm(self, pr):
         """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
