@@ -58,6 +58,7 @@ from pathlib import Path
 import queue
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -1141,6 +1142,32 @@ class State:
 
 # ---- the bot --------------------------------------------------------------------------------
 
+def pack_export_timeout(functions):
+    """Seconds allowed for one pack export of `functions` rows.
+
+    The Python phase after the Ghidra run is the long part and swells under host load (the verifier
+    host also compiles and reviews), so the allowance has a generous floor and grows per function.
+    """
+    return 1800 + 20 * functions
+
+
+def run_in_group(argv, cwd, input, timeout):
+    """subprocess.run that kills the whole process group on timeout.
+
+    The exporter starts headless Ghidra as a child; killing only the exporter would leave Ghidra
+    holding the project lock and fail every later export.
+    """
+    proc = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, start_new_session=True)
+    try:
+        out, err = proc.communicate(input, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(proc.pid, signal.SIGKILL)
+        proc.communicate()
+        raise
+    return subprocess.CompletedProcess(argv, proc.returncode, out, err)
+
+
 class Bot:
     def __init__(self, root=ROOT, work=None, dry_run=False, host1='check-run', config=None):
         self.root = Path(root)
@@ -1200,14 +1227,17 @@ class Bot:
             finally:
                 fcntl.flock(handle, fcntl.LOCK_UN)
 
-    def run(self, argv, cwd=None, input=None, timeout=None, check=True):
+    def run(self, argv, cwd=None, input=None, timeout=None, check=True, own_group=False):
         name = Path(str(argv[0])).name
         if self.dry_run and is_write(argv):
             self.blocked_writes.append(' '.join(str(a) for a in argv[:4]))
             return subprocess.CompletedProcess([str(a) for a in argv], 0, b'', b'')
         try:
-            result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
-                                    capture_output=True, timeout=timeout)
+            if own_group:
+                result = run_in_group([str(a) for a in argv], cwd or self.root, input, timeout)
+            else:
+                result = subprocess.run([str(a) for a in argv], cwd=cwd or self.root, input=input,
+                                        capture_output=True, timeout=timeout)
         except subprocess.TimeoutExpired:
             if name == 'gh':
                 raise GhFailure('gh timed out')
@@ -1860,7 +1890,7 @@ class Bot:
         try:
             with self.ghidra_lock:
                 self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree,
-                         timeout=900)
+                         timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
             raise HostFailure(f'pack export did not complete ({type(exc).__name__})')
         out, why = {}, {}
