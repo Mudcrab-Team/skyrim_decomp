@@ -1,10 +1,34 @@
 // Source exposure: mixed (pinned image listing and community names).
-// Code origin: existing leaf plus original reconstruction of Function1002760.
+// Code origin: existing unit plus original reconstruction of constructor, destructor, and radius getter.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// BSMultiBoundCapsule: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
-// GetType, BoundCapsuleTarget, BoundCapsuleArg, Function1002760, unknown00, target: GUESS(low)
+// BSMultiBoundCapsule, BSMultiBoundShape, NiRefObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// GetType, BoundCapsuleTarget, BoundCapsuleArg, Function1002760, Function1002880, g_niRefObjectCount, unk08, shapeData, centerData, radius, pad34, unknown00, target: GUESS(low)
 #pragma once
 #include <cstdint>
+#include <intrin.h>
+
+extern volatile long g_niRefObjectCount;
+
+class NiRefObject
+{
+public:
+    virtual ~NiRefObject()
+    {
+        // Reference-counted engine objects track live instance counts atomically.
+        _InterlockedDecrement(&g_niRefObjectCount);
+    }
+    std::uint8_t unk08[0x8];  // 08
+};
+static_assert(sizeof(NiRefObject) == 0x10, "NiRefObject size");
+
+class BSMultiBoundShape : public NiRefObject
+{
+public:
+    BSMultiBoundShape();
+    ~BSMultiBoundShape() override = default;
+    std::uint8_t shapeData[0x8];  // 10
+};
+static_assert(sizeof(BSMultiBoundShape) == 0x18, "BSMultiBoundShape size");
 
 class BoundCapsuleTarget
 {
@@ -55,9 +79,17 @@ struct BoundCapsuleArg
     BoundCapsuleTarget* target;
 };
 
-class BSMultiBoundCapsule
+class BSMultiBoundCapsule : public BSMultiBoundShape
 {
 public:
+    BSMultiBoundCapsule();
+    ~BSMultiBoundCapsule() override = default;
     virtual std::uint32_t GetType() const;
     std::uint32_t Function1002760(BoundCapsuleArg* a_arg);
+    float Function1002880() const;
+
+    std::uint64_t centerData[3];  // 18
+    float radius;  // 30
+    std::uint32_t pad34;  // 34
 };
+static_assert(sizeof(BSMultiBoundCapsule) == 0x38, "BSMultiBoundCapsule size");

@@ -1,7 +1,8 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT).
+// Source exposure: mixed. Existing unit plus original reconstruction of GetFormEditorID from local listings.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x3b8200 TESIdleForm::~TESIdleForm
 // 0x3b7240 TESIdleForm::InitItemImpl
+// 0x3b82d0 TESIdleForm::GetFormEditorID
 #include "TESIdleForm.h"
 
 // The constructor is not compared: it is defined so that this unit emits the vftable and with it
@@ -20,7 +21,8 @@ void              FinishInitItem(TESIdleForm* a_owner, bool a_flag);            
 // TestBit: GUESS(low); tests one bit of a word by value.
 static bool TestBit(std::uint32_t a_word, std::uint32_t a_bit)
 {
-    return ((a_word >> a_bit) & 1) != 0;
+    const std::uint32_t shifted = a_word >> a_bit;
+    return (shifted & 1u) != 0u;
 }
 
 // TESIdleForm::InitItemImpl, RVA 0x3b7240, 319 bytes. Initializes an embedded base, then resolves the two
@@ -55,4 +57,9 @@ void TESIdleForm::InitItemImpl()
 
         FinishInitItem(this, true);
     }
+}
+
+const char* TESIdleForm::GetFormEditorID() const
+{
+    return formEditorID ? formEditorID : "";
 }
