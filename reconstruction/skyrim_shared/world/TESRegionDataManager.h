@@ -1,15 +1,18 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// 0x251ca0 compared function
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESRegionDataManager: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESRegionDataManager::AsRegionDataObjects, TESRegionDataManager::AsRegionDataWeather, TESRegionDataManager::AsRegionDataMap, TESRegionDataManager::AsRegionDataLandscape, TESRegionDataManager::AsRegionDataGrass, TESRegionDataManager::AsRegionDataSound: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRegionDataObjects, TESRegionDataWeather, TESRegionDataMap, TESRegionDataLandscape, TESRegionDataGrass, TESRegionDataSound: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRegionData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRegionData::unk01, TESRegionData::unk02, TESRegionData::GetRegionType: GUESS(low)
-// unknown08: GUESS(low)
+// GetLastLoadedRegion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// lastLoadedRegion: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once
 
 #include <cstdint>
 
+class TESRegion;
 class TESRegionDataObjects;
 class TESRegionDataWeather;
 class TESRegionDataMap;
@@ -36,6 +39,8 @@ public:
     virtual TESRegionDataGrass* AsRegionDataGrass(TESRegionData* a_data) const;  // compared: 0x251970
     virtual TESRegionDataSound* AsRegionDataSound(TESRegionData* a_data) const;  // compared: 0x2519b0
 
-    std::uint8_t unknown08[0x8];  // 08
+    TESRegion* GetLastLoadedRegion() const;
+
+    TESRegion* lastLoadedRegion;  // 08
 };
 static_assert(sizeof(TESRegionDataManager) == 0x10, "TESRegionDataManager size");
