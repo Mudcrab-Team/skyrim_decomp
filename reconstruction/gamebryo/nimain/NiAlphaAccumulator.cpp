@@ -1,11 +1,7 @@
-// Source exposure: mixed (community headers; the pinned image listing).
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
 // Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
 // 0xf0f3b0 NiAlphaAccumulator::Functionf0f3b0
-// Adapted bodies: SKELETON_TODO_ORIGIN (write "none" when attempt prints no "origin advice" line;
-// otherwise name each adapted body, its upstream file, revision and licence).
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none
 #include "NiAlphaAccumulator.h"
