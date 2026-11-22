@@ -73,17 +73,17 @@ class HeaderClaims(Fixture):
         self.write(HEADER, '// 0x1010 f\n// 0x1020 g\nint f();\n')
         known = {UNIT: [dict(rva=0x1010, symbol='Known', recipe=RECIPE)]}
         got = {r['rva']: r for r in ci.requests(self.root, [HEADER], known)}
-        self.assertEqual((got[0x1010]['symbol'], got[0x1010]['recipe']), ('Known', RECIPE))
+        self.assertEqual((got[0x1010]['symbol'], got[0x1010]['recipe']), ('Known', ci.DEFAULT_RECIPE))
         self.assertIsNone(got[0x1020]['symbol'])
 
-    def test_an_accepted_function_follows_the_recipe_the_unit_now_declares(self):
+    def test_an_accepted_function_follows_the_recipe_the_unit_declares_or_the_default(self):
         other = 'reconstruction/recipes/older.json'
         self.write(UNIT, f'// recipe {RECIPE}\n#include "Fixture.h"\nint f() {{ return 1; }}\n')
         known = {UNIT: [dict(rva=0x1010, symbol='Known', recipe=other)]}
         got = ci.requests(self.root, [HEADER], known)
         self.assertEqual((got[0]['symbol'], got[0]['recipe']), ('Known', RECIPE))
         self.write(UNIT, '#include "Fixture.h"\nint f() { return 1; }\n')
-        self.assertEqual(ci.requests(self.root, [HEADER], known)[0]['recipe'], other)
+        self.assertEqual(ci.requests(self.root, [HEADER], known)[0]['recipe'], ci.DEFAULT_RECIPE)
 
     def test_claims_per_unit_are_capped(self):
         self.write(HEADER, ''.join(f'// 0x{0x2000 + i:x} F{i}\n' for i in range(ci.MAX_CLAIMS_PER_UNIT + 20)))
