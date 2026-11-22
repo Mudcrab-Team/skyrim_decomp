@@ -3210,6 +3210,9 @@ class Bot:
             todo = [r for r in rvas if r not in matched or not self.recorded_by(build, r, task_id)]
             files = []
             if todo:
+                # The clean above removed the untracked unit symbol maps the records name; without them every
+                # function is refused, this path gives up and the plain merge leaves main red until a retry.
+                self.rebind_unit_maps(number, head, todo)
                 argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--task-id', task_id,
                         '--author', pr['author']['login'], '--records', records, '--root', tree]
                 for r in todo:
@@ -3251,6 +3254,8 @@ class Bot:
             state.set('recorded', True)
             return
         review = Path(self.work / 'reviews' / f'pr{pr["number"]}-{pr["headRefOid"][:12]}.txt')
+        # The checkout above may have followed a tree clean that dropped the untracked symbol maps.
+        self.rebind_unit_maps(pr['number'], pr['headRefOid'], rvas)
         argv = [sys.executable, 'tools/record.py', '--build', build, '--review', review, '--push',
                 '--task-id', task_id, '--author', pr['author']['login'],
                 '--records', state.get('records')]
