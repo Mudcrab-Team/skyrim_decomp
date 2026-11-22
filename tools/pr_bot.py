@@ -57,6 +57,7 @@ import json
 import os
 from pathlib import Path
 import queue
+import posixpath
 import re
 import shutil
 import signal
@@ -745,8 +746,12 @@ def review_grounds(text, functions):
 # comments the Mac compare of the new text stands in for it (docs/verification.md, comment-only changes).
 CARRY_REASON = 'host1: carried (comment-only, no-target at base)'
 CARRY_REASON_TEXT = 'host1: carried (own function text unchanged, no-target at base)'
+CARRY_REASON_DIGEST = 'host1: carried (hash job skipped the comment-only compile, unit digest equals the accepted record)'
 CARRY_NOTE = ('Carried to new source: the unit differs from the text its runs compared only in comments, and the '
               'function has no published target hash, so the runs are unchanged.')
+CARRY_NOTE_DIGEST = ('Carried to new source: the unit differs from the text its runs compared only in comments, its '
+                     'digest equals the record\'s, and the hash job skipped its compile for that reason, so the runs '
+                     'are unchanged.')
 CARRY_NOTE_TEXT = ('Carried to new source: the function\'s own definition is unchanged from the text its runs '
                    'compared, the function has no published target hash, and the standing host\'s compare of the '
                    'new text passes, so the earlier second-host result is kept.')
@@ -2086,6 +2091,12 @@ class Bot:
             if rva not in no_target:
                 published = self.targets_at(base) | self.targets_at() if published is None else published
                 if rva in published:
+                    # The job skipped its compile only because every changed unit differs in comments; when the
+                    # unit's digest still equals the accepted record's, the bytes are those of a build already
+                    # matched on two hosts, so the skipped hash run cannot differ.
+                    if ci.get('skipped') and self.digest_equals_record(rva, unit, inventory):
+                        out[str(rva)] = CARRY_REASON_DIGEST
+                        print(f'{stamp()} 0x{rva:x}: {CARRY_REASON_DIGEST}', file=sys.stderr, flush=True)
                     continue
             closure = sorted(include_closure(self.tree, unit))
             same, olds = True, {}
@@ -2106,6 +2117,20 @@ class Bot:
                 print(f'{stamp()} 0x{rva:x}: {reason}', file=sys.stderr, flush=True)
         return out
 
+    def digest_equals_record(self, rva, unit, inventory):
+        """True when the unit's current digest (v2) and translation unit equal those of the function's accepted record."""
+        from digest_v2 import tu_digest
+        from source_digest import include_closure
+        row = next((fn for fn in inventory['functions'] if fn['rva'] == rva and fn.get('report')), None)
+        try:
+            source = json.loads((self.tree / row['report']).read_text()).get('source') or {}
+            closure = sorted(include_closure(self.tree, unit))
+            return (source.get('digest_method') == 'tu-sha256-v2' and source.get('compiled') == unit
+                    and sorted(source.get('translation_unit') or ()) == closure
+                    and tu_digest(self.tree, closure) == source.get('digest'))
+        except (OSError, ValueError, KeyError, TypeError, AttributeError):
+            return False
+
     def carried_records(self, tag, rvas, build_id, reasons=None):
         """Records for carried functions, from the accepted record of each; {rva} that could not be carried."""
         out, failed, reasons = self.work / 'records' / tag, set(), reasons or {}
@@ -2114,7 +2139,8 @@ class Bot:
             made.unlink(missing_ok=True)
             call = ("import sys\nsys.path.insert(0, sys.argv[1] + '/tools')\nimport record\n"
                     "record.build_carried_record(sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])\n")
-            note = CARRY_NOTE_TEXT if reasons.get(str(rva)) == CARRY_REASON_TEXT else CARRY_NOTE
+            note = {CARRY_REASON_TEXT: CARRY_NOTE_TEXT, CARRY_REASON_DIGEST: CARRY_NOTE_DIGEST}.get(
+                reasons.get(str(rva)), CARRY_NOTE)
             done = self.run([sys.executable, '-c', call, self.tree, build_id, rva, out, note], cwd=self.tree,
                             check=False, timeout=self.config['compare_timeout'])
             if done.returncode or not made.is_file():
@@ -2195,6 +2221,7 @@ class Bot:
         """{rva: status} from the head's `hash` run; the run's facts are kept in state for the record."""
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
+        skipped = False
         deadline = time.time() + self.config['hash_wait']
         since = state.get('rows_at') if state is not None else None  # rows published after the head's earlier runs began
         probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
@@ -2214,6 +2241,7 @@ class Bot:
                     raise Stop('hash run belongs to another revision')
                 found = self.download_hash_result(run_id.group(1), target)
                 if not found and run.get('conclusion') == 'success' and self.compile_skipped(run_id.group(1)):
+                    skipped = True
                     # The job requested no function (a comment-only change to units of accepted functions), so it
                     # skipped the compile and uploaded nothing. Waiting for an artifact would re-probe forever; the
                     # empty map lets the carry rule judge each function.
@@ -2263,6 +2291,7 @@ class Bot:
                         if report.get(k) is not None},
                 rows={str(r): row for r, row in ci_rows(report, unit_of).items()},
                 map={str(r): v for r, v in table.items()},
+                skipped=skipped,
                 **row_facts(report)))
         got = {r: table.get(r, 'fail') for r in functions}
         got.update({r: v for r, v in table.items() if v == 'regressed'})
@@ -2942,14 +2971,19 @@ class Bot:
             shown = self.run(['git', 'show', f'{base}:{name}'], check=False, cwd=self.root)
             return shown.stdout.decode('utf-8-sig', 'replace') if shown.returncode == 0 else None
         found = unit_deletion.problems(self.tree, names, read_base, lambda n: (self.tree / n).is_file())
-        headers = {Path(n).name for n in names if n.endswith('.h')}
+        gone = {n for n in names if n.endswith('.h')}
+        include = re.compile(r'#\s*include\s*"([^"]+)"')
         for path in sorted((self.tree / 'reconstruction').rglob('*')):
             if path.suffix not in ('.h', '.cpp') or not path.is_file():
                 continue
-            text = path.read_text(errors='replace')
-            for header in sorted(headers):
-                if re.search(r'#\s*include\s*[<"][^>"]*' + re.escape(header) + r'[>"]', text):
-                    found.append(f'{path.relative_to(self.tree).as_posix()} still includes the deleted {header}')
+            here = path.relative_to(self.tree)
+            for token in include.findall(path.read_text(errors='replace')):
+                # The compiler tries the including file's directory, then the reconstruction include root; a header
+                # of the same name elsewhere is not the deleted one.
+                hit = {posixpath.normpath((here.parent / token).as_posix()),
+                       posixpath.normpath(f'reconstruction/{token}')} & gone
+                if hit:
+                    found.append(f'{here.as_posix()} still includes the deleted {Path(sorted(hit)[0]).name}')
         return found
 
     def deletion_review(self, number, head, base, names):

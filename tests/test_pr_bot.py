@@ -2376,6 +2376,35 @@ class CarryHost1Tests(unittest.TestCase):
         self.assertEqual(list(self.carry(rvas=(0x50,), host1={0x50: 'fail'})), ['80'])  # unmasked-unsupported row
         self.assertEqual(self.carry(rvas=(0x40,), host1={0x40: 'fail'}), {})  # a target was published at base
 
+    def digest_record(self, text=None):
+        """An accepted record for 0x40 (a function with a published target) bound to the unit's digest."""
+        import digest_v2
+        if text is not None:
+            self.write(self.tree, self.UNIT, text)
+        digest = digest_v2.tu_digest(self.tree, [self.UNIT])
+        self.write(self.tree, 'r64.json', json.dumps({'source': dict(
+            compiled=self.UNIT, translation_unit=[self.UNIT], digest=digest, digest_method='tu-sha256-v2')}))
+        self.write(self.tree, 'data/progress.json', json.dumps({'functions': [
+            {'build_id': 'b', 'rva': 0x40, 'status': 'matched', 'report': 'r64.json'}]}))
+
+    def skipped_run(self):
+        self.state.data['ci'] = dict(report={}, rows={}, map={}, seen=[], no_target_base=[], skipped=True)
+
+    def test_a_skipped_comment_only_compile_carries_a_published_target_when_the_digest_is_the_records(self):
+        self.skipped_run()
+        self.digest_record()  # the record binds the head text: the digest is unchanged
+        got = self.carry(rvas=(0x40,), host1={0x40: 'fail'})
+        self.assertEqual(got, {'64': pr_bot.CARRY_REASON_DIGEST})
+
+    def test_a_changed_digest_or_a_compile_that_was_not_skipped_gets_no_carry(self):
+        self.skipped_run()
+        self.digest_record(self.OLD)  # the record's digest is that of the old text
+        self.set_head(b'// U: GUESS(low)\nint f() { return 1; }\nconst int k = 2;\n')
+        self.assertEqual(self.carry(rvas=(0x40,), host1={0x40: 'fail'}), {})
+        self.digest_record(b'// U: GUESS(low)\nint f() { return 1; }\n')
+        self.state.data['ci']['skipped'] = False
+        self.assertEqual(self.carry(rvas=(0x40,), host1={0x40: 'fail'}), {})
+
     def test_a_target_published_after_base_blocks_the_carry_for_a_skipped_unit(self):
         self.no_run()
         self.write(self.tree, 'data/target-hashes/sse-steam-1-7-104-part-000.json',

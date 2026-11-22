@@ -766,6 +766,11 @@ at base)`; the function's accepted record then moves to the new digest with its 
 Any code, string or include change, a function that had a target result at base, a failed Mac compare or
 a function with no accepted record gets no carry, and the review and every other rule still apply.
 
+Clarification, not a change to the match floor: for a function that does have a published target, host 1 is carried
+only when the hash job skipped its compile because every changed unit differs from base in comments alone, and the
+unit's translation unit and digest (v2) equal those of the function's accepted record, so the bytes are those of an
+already two-host-matched build; any digest change gets no carry.
+
 The same carry applies when the unit changed in code elsewhere but the function's own definition (its body as
 extracted from the unit's files, comments and layout ignored) is identical at base and head, the function was
 accepted at base and has no target hash, and the Mac compare at head passes; the bot then logs and records

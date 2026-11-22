@@ -15,23 +15,28 @@ def stem_of(name):
     return name.rsplit('.', 1)[0]
 
 
-def problems(root, deleted, read_base, exists):
+def problems(root, deleted, read_base, exists, read_file=None):
     """[message] for deleted unit files (repo paths) that would orphan an accepted function; [] when safe.
 
     `root` holds data/progress.json and the records as on the trusted base. `read_base(path)` returns the
     base text of a unit file or None; `exists(path)` says whether a path is still present after the PR.
+    `read_file(path)` returns the text of the inventory or a record, or None to read it from `root`; a PR that
+    carries its own records passes its head's, so records rebound to a unit that stays are not orphans.
     """
     root = Path(root)
     stems = sorted({stem_of(n) for n in deleted})
     if not stems:
         return []
-    inventory = json.loads((root / 'data/progress.json').read_text())['functions']
+    def load(path):
+        text = read_file(path) if read_file else None
+        return text if text is not None else (root / path).read_text()
+    inventory = json.loads(load('data/progress.json'))['functions']
     accepted = {}
     for fn in inventory:
         if fn.get('status') != 'matched' or not fn.get('report'):
             continue
         try:
-            source = json.loads((root / fn['report']).read_text()).get('source') or {}
+            source = json.loads(load(fn['report'])).get('source') or {}
         except (OSError, ValueError):
             continue
         accepted[fn['rva']] = source.get('compiled')

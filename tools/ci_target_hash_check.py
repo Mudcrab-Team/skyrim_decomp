@@ -44,6 +44,12 @@ CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
              '.github/workflows/ci-target-hash.yml')
 
 
+# Files an owner PR carries beside its units (match records, inventory, generated images and index). The hash job
+# reads none of them as source: it neither compiles nor trusts them, and the scope job judges their presence.
+CARRIED = re.compile(r'reports/[^/]+/0x[0-9a-f]+(?:\.review)?\.json|data/progress\.json|docs/progress(?:-map)?\.svg'
+                     r'|reconstruction/INDEX\.md')
+
+
 def git(root, *args):
     return subprocess.run(['git', *args], cwd=root, capture_output=True, check=True).stdout
 
@@ -91,9 +97,10 @@ def prepare(root, base, head, work):
         raise ValueError('tools must be from the trusted base revision')
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
-    rows, comment_only, deleted = [], set(), []
+    rows, comment_only, deleted, carried = [], set(), [], []
     # Generated CrashLogger PDB output is neither a unit nor read by this job: it is never compiled.
-    names = [n for i in range(0, len(diff) - 1, 2) if not pdb_types.is_generated(n := diff[i + 1].decode('utf-8'))]
+    names = [n for i in range(0, len(diff) - 1, 2)
+             if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
@@ -101,6 +108,9 @@ def prepare(root, base, head, work):
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
         if pdb_types.is_generated(name):
+            continue
+        if CARRIED.fullmatch(name):
+            carried.append(name)
             continue
         if not contrib.UNIT_PATH.fullmatch(name):
             if name.startswith(CI_INPUTS):
@@ -126,8 +136,14 @@ def prepare(root, base, head, work):
         if status == 'M' and comment_only_change(root, merge_base, name, blob):
             comment_only.add(name)
     if deleted:
+        def head_file(path):
+            # Only what the PR itself carries is read from its head; everything else is the trusted base's.
+            if path not in carried:
+                return None
+            shown = subprocess.run(['git', '-C', str(root), 'show', f'{head}:{path}'], capture_output=True)
+            return shown.stdout.decode('utf-8-sig', 'replace') if shown.returncode == 0 else None
         found = unit_deletion.problems(root, deleted, lambda n: base_text(root, merge_base, n),
-                                       lambda n: bool(git(root, 'ls-tree', head, '--', n).strip()))
+                                       lambda n: bool(git(root, 'ls-tree', head, '--', n).strip()), head_file)
         if found:
             raise ValueError('unit deletion would orphan an accepted function: ' + '; '.join(found))
     if not rows:
