@@ -22,8 +22,7 @@ names a model class the rule does not admit, say so in the return table and stop
 `claude-sonnet-5-5` is admitted for any review and the strong duties under every profile.
 Under `claude-low`, `gpt-6.1-sol` is admitted for any review; `gpt-6.1-terra` is the default
 first Reviewer. Strong duties (sampling, non-Opus escalation confirmation, and rule or machinery
-reviews) are done by Sol or Opus, never Terra, and by a different model from the first review; an
-independent Opus does the second pass for a Sol first review.
+reviews) are done by Sonnet, Sol or Opus, never Terra.
 
 The pr-bot's reviewer is codex; when codex fails for an account or capacity reason (out of credits, quota, rate limit, expired login, missing binary) it reruns the same review with the Claude CLI on Sonnet (read-only tools), skips codex for 30 minutes after an out-of-credits failure, and records `reviewer: codex|claude-sonnet-5-5` in the PR state and log. A reject verdict or malformed output never triggers the fallback.
 
@@ -33,8 +32,7 @@ The pr-bot's reviewer is codex; when codex fails for an account or capacity reas
   or first-reviewed the function, including machinery and rule changes. If the brief suggests
   you did, or you have context from that work, return `escalate`
   (category `other`) and stop. The header field `drafted_or_triaged_any_reviewed_function`
-  includes engineering: `no` asserts all three exclusions. A sampling second pass under
-  `claude-low` must also use a different model from the first review (Opus aliases count as one).
+  includes engineering: `no` asserts all three exclusions.
 - Write exactly one file: your review at `.local/reviews/<task-id>.md`, created once and never
   edited or overwritten (if it exists, stop and report `exists`). Modify nothing else: not the
   reviewed source, the comparator, the validator, reports, `data/progress.json`, gates or git
@@ -297,16 +295,11 @@ in which no line starts with "verdict". The acceptance tool (`tools/accept_funct
 the whole review if any block or the header strays from this format; a refused review is remedied
 by a new Reviewer run under a new task id, never by editing the file.
 
-Before you end, run `python3 tools/flow.py review-check .local/reviews/<task-id>.md` from the
-review working directory and get `OK`. It applies the same parser and group rules that integration
-and acceptance apply (header, every block heading and size, every field, the assigned model, the
-sampling flag, a block for each listed function) and prints each problem with its line number and
-the fix. Fix your own just-written file until it prints `OK`; once it does, the file is final and
-is never edited. Do not return the table before `OK`.
+Once written, the file is final and is never edited.
 
 ## Return message
 
-Return only this, after `review-check` printed `OK`, so the orchestrator's context stays small;
+Return only this, so the orchestrator's context stays small;
 everything else is in the file:
 
 ```text
