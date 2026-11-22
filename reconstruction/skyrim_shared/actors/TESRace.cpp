@@ -1,9 +1,10 @@
-// Source exposure: mixed (pinned image listing and labelled declarations).
+// Source exposure: mixed (pinned image listing, labelled declarations and Fallout 3 sibling source).
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Code origin: original reconstruction from the pinned image listing with labelled declarations.
-// Adapted bodies: none.
-// kPlayableRaceFlag: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// Code origin: original reconstruction from the pinned image listing with a sibling helper.
+// Adapted bodies: TestBit from the Fallout 3 sibling (CC0-1.0).
+// TestBit: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422
 // TESRace::QCanUseMeleeWeapons, TESRace::QCanUseWeaponType: CRASHLOGGER_PDB(59818@2026.10.24)
 // 0x3ebda0 TESRace::GetPlayable
 // 0x3e6250 TESRace::GetBodyPartData
@@ -17,9 +18,14 @@
 #include "TESRace.h"
 
 namespace {
-constexpr std::uint32_t kPlayableRaceFlag = 1;
 constexpr std::uint32_t kMeleeWeapons = 0x7E;
 constexpr std::uint32_t kWeaponsAndSpells = 0x3FE;
+
+// Test a flag by its bit index.
+inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
+{
+    return (a_flags >> a_bit) & 1u;
+}
 }
 
 // The constructor is not compared: it is defined so that this unit emits the vftable and with it
