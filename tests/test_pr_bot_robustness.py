@@ -493,6 +493,15 @@ class PoolTests(WorkDir):
                                                                           'next': 9e12, 'posted': True})
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2)
 
+    def test_a_rejected_head_is_not_warmed_or_queued_until_it_is_pushed_again(self):
+        bot = self.pool_bot(lambda *a: self.prs(1, 2), lambda pr, tree: self.fail('should not run'))
+        warmed = []
+        bot.warm = lambda pr: warmed.append(pr['number'])
+        pr_bot.State(self.work / 'state', 1, 'a' * 40).set('rejected', 'header')
+        pr_bot.State(self.work / 'state', 2, 'b' * 40).set('rejected', 'lint')
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
+        self.assertEqual(warmed, [])
+
     def test_pushes_to_main_take_turns(self):
         bot = FakeBot(self.work)
         held = []

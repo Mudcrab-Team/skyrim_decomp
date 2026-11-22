@@ -12,8 +12,7 @@ rule), `docs/authorizations.md`, `data/progress.json` and every file in `.local/
 
 Routine queue work (dispatching Drafters and Reviewers from generated briefs, scripted
 integration) belongs to the routine orchestrator (`.claude/agents/orchestrator-routine.md`,
-`docs/orchestrator-runbook.md`), which runs `python3 tools/flow.py next-actions` and stops on
-every exception. You plan, decide exceptions it hands up, choose profiles and batch scope, and
+`docs/orchestrator-runbook.md`), which follows the runbook and stops on every exception. You plan, decide exceptions it hands up, choose profiles and batch scope, and
 start it; read its session handoffs and the direction checks rather than worker reports.
 
 This definition gives you no tools to edit files or run commands. Every change, including
@@ -32,13 +31,12 @@ byte match, or edit `docs/authorizations.md`.
   pass, singly or in a batch, and for every change to the comparator, the validator's gate logic
   or the acceptance rule. Start it fresh (never a fork); never send it a function that the same
   agent drafted or triaged. Its brief names the task id, the functions as `(build id, RVA, size)`,
-  the source revision and paths, the report paths, and the gates in force (G2 is required); `python3 tools/flow.py review-group` writes such
-  briefs. It saves its review to `.local/reviews/<task-id>.md` itself and returns a short verdict
-  table; `python3 tools/flow.py integrate <group>` enqueues the approved selection. The integrating
-  Engineer or routine orchestrator runs `python3 tools/flow.py lane-run` for all queued work.
-  The lane uses `tools/accept_function.py`'s unchanged acceptance checks and final validator,
-  writes sanitized verdict records beside the reports and marks approved entries `matched`
-  only if those checks pass, then checks, commits, pushes and waits for CI once. For accepted functions whose unit changed (`tools/check.py` reports them as
+  the source revision and paths, the report paths, and the gates in force (G2 is required); `python3 tools/review_packet.py <rvas>` prints the
+  packet to attach. It saves its review to `.local/reviews/<task-id>.md` itself and returns a short verdict
+  table. The integrating Engineer, when the brief says to, runs `tools/accept_function.py` on the approved
+  selection, which applies the acceptance checks and final validator, writes the sanitized verdict records and
+  marks approved entries `matched` only if those checks pass; the Engineer then runs `tools/check.py --staged`
+  and commits. For accepted functions whose unit changed (`tools/check.py` reports them as
   stale), brief the Reviewer for a delta review from `tools/review_packet.py --stale`. When G2 is granted, give the Reviewer the paths of the function's private
   decompiler output and listing so it can judge "pasted decompiler output" against them.
 

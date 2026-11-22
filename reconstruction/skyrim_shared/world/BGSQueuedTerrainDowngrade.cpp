@@ -1,13 +1,42 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"BGSQueuedTerrainDowngrade","rationale":"vtable owner and slot; method spelling invented","slot":5},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Source exposure: mixed (pinned image listing and labelled declarations).
+// Code origin: original reconstruction from the pinned listing and labelled declarations.
+// Adapted bodies: none.
+// SPDX-License-Identifier: CC0-1.0
 // BGSQueuedTerrainDowngrade: EXE_RTTI
-// Slot5: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Slot5, owner, task, cancelled and release function names: GUESS(low)
 // 0x51c740 BGSQueuedTerrainDowngrade::Slot5
+// 0x51ac30 BGSQueuedTerrainDowngrade::Function51ac30
+// 0x51acf0 BGSQueuedTerrainDowngrade::Function51acf0
 #include "BGSQueuedTerrainDowngrade.h"
 // Slot5: GUESS(low); method name inferred from vtable owner and slot
 std::uint32_t BGSQueuedTerrainDowngrade::Slot5() const
 {
     return 0x1;
+}
+
+namespace {
+constexpr std::uint32_t kStatusMask = 0x70000000u;
+constexpr std::uint32_t kFirstDowngradeState = 0x30000000u;
+constexpr std::uint32_t kSecondDowngradeState = 0x40000000u;
+}
+
+// Test whether the pending task is in either of the two downgrade states.
+bool BGSQueuedTerrainDowngrade::Function51ac30() const
+{
+    if (task) {
+        const std::uint32_t status = task->status & kStatusMask;
+        return status == kFirstDowngradeState || status == kSecondDowngradeState;
+    }
+    return false;
+}
+
+// Drop the pending task and mark this request as cancelled.
+void BGSQueuedTerrainDowngrade::Function51acf0()
+{
+    QueuedLodTask* pending = task;
+    if (pending) {
+        task = nullptr;
+        ReleaseTerrainDowngradeTask(pending);
+    }
+    cancelled = true;
 }

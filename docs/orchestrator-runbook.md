@@ -80,8 +80,7 @@ is the default first Reviewer; exactly `gpt-6.1-sol` is the strong Reviewer
 for sampling second passes, confirmation of non-Opus escalations and reviews of comparator,
 validator, verifier and acceptance-rule changes. Sol was admitted by maintainer decision WITHOUT
 a calibration ("sol is goood enough dont waste time"); Terra's admission followed calibration.
-Every second pass under `claude-low` uses a different model from the first review; an initial
-Sol review therefore needs Opus. Opus keeps these duties outside `claude-low`. Independence is
+Sonnet may do these duties under every profile; no second pass with a different model is required. Independence is
 per run: fresh context, never the run that drafted, engineered, triaged or first-reviewed the
 function. A profile Reviewer the rule does not admit is replaced by Opus with a note; a sampling pass with no admitted independent model is refused.
 

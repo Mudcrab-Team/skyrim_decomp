@@ -2,6 +2,7 @@
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -63,6 +64,17 @@ class FallbackTests(unittest.TestCase):
         self.assertEqual(claude[2]['cwd'], self.dir)
         self.assertEqual(claude[1][claude[1].index('--tools') + 1], 'Read,Grep,Glob')
         self.assertIn('claude-sonnet-5-5', claude[1])
+
+    def test_a_review_cached_by_an_earlier_process_is_reused_on_a_fresh_thread(self):
+        state = FakeState()
+        state.data['review_text'] = VERDICT
+        state.once = lambda key, fn: state.data[key] if key in state.data else state.data.setdefault(key, fn())
+        got = []
+        worker = threading.Thread(target=lambda: got.append(self.bot.reviewed(state, 'review_text', self.fail)))
+        worker.start()
+        worker.join()
+        self.assertEqual(got, [VERDICT])
+        self.assertNotIn('reviewer', state.data)
 
     def test_a_missing_codex_binary_falls_back(self):
         self.codex = (FileNotFoundError('codex'), b'', b'')

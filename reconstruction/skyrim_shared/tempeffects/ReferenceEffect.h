@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ReferenceEffect, GetAttached, ReferenceEffectController, controller: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // Function5d88c0, unknown08: GUESS(low)
+// ReferenceEffect::CheckAge, finished, lifetime, age: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once
 #include <cstdint>
 
@@ -40,6 +41,14 @@ public:
     virtual std::uint8_t GetAttached() const;
     bool Function5d88c0();
 
-    std::uint8_t unknown08[0x28];
+    bool CheckAge() const;
+
+    std::uint8_t unknown08[8];
+    float lifetime;
+    std::uint8_t unknown14[12];
+    float age;
+    std::uint8_t unknown24[12];
     ReferenceEffectController* controller;
+    std::uint8_t unknown38[8];
+    bool finished;
 };

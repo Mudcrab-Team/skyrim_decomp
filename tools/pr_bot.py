@@ -662,6 +662,18 @@ def host_category(detail):
     return 'bytes differ'
 
 
+def pdb_advisory_lines(decision):
+    """Advisory lines for functions whose name, signature or size disagrees with a known PDB fact. Never a
+    block: the contributor may be right, and only a byte match decides."""
+    found = decision.get('pdb_advisory') or []
+    if not found:
+        return []
+    return ['Advisory (does not block the merge): these functions disagree with a known PDB name, prototype or size '
+            'and the unit does not say why. Fix it, or add a short comment saying why it differs '
+            '(`python3 tools/pdb_facts.py <rva>` lists the facts):'] + [f'- {line}' for line in found[:20]] + (
+        [f'- and {len(found) - 20} more'] if len(found) > 20 else [])
+
+
 def removed_lines(decision):
     """Lines naming accepted functions the PR drops from their unit, whose acceptance can then no longer bind."""
     removed = sorted(int(r) for r in decision.get('removed') or ())
@@ -793,6 +805,8 @@ def comment_body(sha, decision, leak_codes=()):
     """The outcome text, with the accepted functions the PR removes added to any outcome that is not a hold."""
     text = outcome_body(sha, decision, leak_codes)
     extra = removed_lines(decision) if decision.get('blocked') in (None, 'stale', 'companion') else []
+    if decision.get('blocked') in (None, 'stale', 'companion'):
+        extra = extra + pdb_advisory_lines(decision)
     if not extra:
         return text
     return '\n'.join(extra if text == 'Nothing to report.' else [text, *extra])
@@ -1168,8 +1182,9 @@ class Bot:
 
     def reviewed(self, state, key, fn):
         """state.once for a review text, also recording which reviewer produced it."""
-        if key not in state.data:
-            self.used.reviewer = None
+        # Reset on every call: a review cached by an earlier process is not run here, and `used` is thread-local,
+        # so a worker that never ran a review has no attribute to read.
+        self.used.reviewer = None
         text = state.once(key, fn)
         if self.used.reviewer:
             state.set('reviewer', self.used.reviewer)
@@ -1485,6 +1500,14 @@ class Bot:
                 pack = tree / '.local/packs' / target['build_id'] / f'0x{rva:x}'
                 if pack.is_dir():
                     packs.append(f'.local/packs/{target["build_id"]}/0x{rva:x}/')
+        out += ['', '## PDB facts (tools/pdb_facts.py; hints and sources, never identity; checklist item 7)']
+        import pdb_facts
+        for cpp, rvas in sorted(units.items()):
+            for rva in (r for r in rvas if r in functions):
+                try:
+                    out += pdb_facts.render(pdb_facts.collect(tree, rva)).split('\n')
+                except Exception as exc:  # optional facts must never stop a review
+                    out.append(f'PDB facts for 0x{rva:x} unavailable: {exc}')
         lint = self.run([sys.executable, 'tools/lint_review_readiness.py', '--root', tree, *sorted(files)],
                         cwd=tree, check=False, timeout=300)
         out += ['', '## Mechanical readiness lint (tools/lint_review_readiness.py on the unit files)',
@@ -2264,6 +2287,7 @@ class Bot:
         decision['unit_files'] = {r: u for u, rs in check_units.items() for r in rs}
         decision['host_why'] = self.host_failures(state, sfx, everything, host1, host2)
         decision['removed'] = removed
+        decision['pdb_advisory'] = self.pdb_advisory(check_units)
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
@@ -2876,7 +2900,7 @@ class Bot:
             self.record(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'])
         if not state.get('commented'):
             # A clean merge needs no new comment, but an existing one must not keep showing an old rejection.
-            create = bool(comment or decision['blocked'] or state.get('batch')
+            create = bool(comment or decision['blocked'] or state.get('batch') or decision.get('pdb_advisory')
                           or any(v.startswith('fail:') for v in verdicts.values()))
             text = comment or comment_body(head, dict(decision, verdicts={int(r): v for r, v in verdicts.items()}),
                                            leak_codes)
@@ -3007,6 +3031,17 @@ class Bot:
         except OSError:
             return False
         return str(number) in listed
+
+    def pdb_advisory(self, units):
+        """Disagreements with known PDB facts for the PR's units; empty when the facts are absent or fail."""
+        import pdb_facts
+        out = []
+        for cpp in sorted(units):
+            try:
+                out += [f'{cpp} {line}' for line in pdb_facts.advisory_for_unit(self.tree, cpp)]
+            except Exception:  # advisory only
+                continue
+        return out
 
     def autofix_edits(self, files, accepted):
         """{path: (new text, [kinds])} for the PR's changed unit files that a mechanical repair applies to."""
@@ -3454,7 +3489,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
-                if pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now:
+                # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
+                # bot will not look at, and queueing it costs a `gh pr view` per tick.
+                if (pr['number'] in inflight or state.get('done') or ledger.get('next', 0) > now
+                        or bot.already_rejected(pr)):
                     continue
                 try:
                     bot.warm(pr)

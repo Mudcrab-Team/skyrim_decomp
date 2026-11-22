@@ -1,4 +1,5 @@
 // Source exposure: mixed (pinned image and cited public declarations).
+// 0xfa6e10 compared function
 // Code origin: original reconstruction using the cited names and partial base declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiPSysBombModifier: GUESS(low)

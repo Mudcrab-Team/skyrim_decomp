@@ -27,7 +27,7 @@
           "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "bddb846a4a6e0aceae313d6d0d2da3245ed45ec11259b1d96b2d78dca519586f",
+        "object_sha256": "05ddd304adc0357a7c8cbb27b2836c02046d7b2fa2a8431d11419330909c2503",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/camera/DragonCameraState.cpp",
@@ -38,7 +38,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "bd79d99ec373a333cc655f47e8b1b50ef895c165",
+    "base_sha": "2aa927da2276a5b2534328ca91cc6dcb45c77958",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -49,7 +49,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "b11ba49c8c7dd22847eeab097674c59318dbdac9",
+    "head_sha": "d3f41e55d4481ca9efbdb0b317fd441c3d06595a",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -62,10 +62,10 @@
     "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44540751998,
+    "run_id": 45036002376,
     "rva": "0x55c740",
     "schema": 2,
-    "source_sha256": "5d1edfabb2e25621140e8b8f77559c6faff125637731d69dbe1aef3f22b29d79",
+    "source_sha256": "730003f932884215a746be7b38a4648c955b14d1ed7e3d719a6029dea0fd0d02",
     "status": "pass",
     "symbols": [
       "?Begin@DragonCameraState@@UEAAXXZ"
@@ -100,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "1fd37af1d460db95c3f57db680b47dfc46286a7aa6fe1ed4afd0a2779d4c88fe",
           "code_sections": 1,
-          "object_sha256": "bddb846a4a6e0aceae313d6d0d2da3245ed45ec11259b1d96b2d78dca519586f"
+          "object_sha256": "05ddd304adc0357a7c8cbb27b2836c02046d7b2fa2a8431d11419330909c2503"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -164,7 +164,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim/camera/DragonCameraState.cpp",
-          "source_revision": "5d1edfabb2e25621140e8b8f77559c6faff125637731d69dbe1aef3f22b29d79"
+          "source_revision": "730003f932884215a746be7b38a4648c955b14d1ed7e3d719a6029dea0fd0d02"
         },
         "symbol_map_sha256": "f484cce2c27cd12ee24b8bdacd324065441d04a73ce79e13db521a1256053a82",
         "target": {
@@ -177,7 +177,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/camera/DragonCameraState.cpp",
-    "digest": "5d1edfabb2e25621140e8b8f77559c6faff125637731d69dbe1aef3f22b29d79",
+    "digest": "730003f932884215a746be7b38a4648c955b14d1ed7e3d719a6029dea0fd0d02",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim/camera/DragonCameraState.cpp",
@@ -185,7 +185,7 @@
       "reconstruction/skyrim/camera/TESCameraState.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "v0id-array",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/f484cce2c27cd12ee24b8bdacd324065441d04a73ce79e13db521a1256053a82.json",
     "sha256": "f484cce2c27cd12ee24b8bdacd324065441d04a73ce79e13db521a1256053a82"

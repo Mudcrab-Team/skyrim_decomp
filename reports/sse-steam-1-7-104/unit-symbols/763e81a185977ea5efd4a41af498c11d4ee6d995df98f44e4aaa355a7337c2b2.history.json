@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/763e81a185977ea5efd4a41af498c11d4ee6d995df98f44e4aaa355a7337c2b2.json",
+  "versions": [
+    {
+      "sha256": "763e81a185977ea5efd4a41af498c11d4ee6d995df98f44e4aaa355a7337c2b2",
+      "base": null,
+      "added": [
+        "?GetInterpolator@BSProceduralLightningController@@UEBAPEAVNiInterpolator@@G@Z",
+        "?GetInterpolatorID@BSProceduralLightningController@@UEAAPEBDG@Z",
+        "?LoadBinary@BSProceduralLightningController@@UEAAXAEAVNiStream@@@Z",
+        "?InterpolatorIsCorrectType@BSProceduralLightningController@@UEBA_NPEAVNiInterpolator@@G@Z",
+        "?RegisterStreamables@BSProceduralLightningController@@UEAA_NAEAVNiStream@@@Z",
+        "?g_procLightningIDNames@@3QBQEBDB",
+        "?NiTimeController_LoadBinary@@YAXPEAVNiTimeController@@AEAVNiStream@@@Z",
+        "?StreamReadSlot@@YAXAEAVNiStream@@@Z",
+        "?ReadStreamSubA@@YAXPEAXAEAVNiStream@@@Z",
+        "?ReadStreamSubB@@YAXPEAXAEAVNiStream@@@Z",
+        "?NiRTTI_NiBoolTimelineInterpolator@@3VNiRTTI@@A",
+        "?NiRTTI_NiFloatInterpolator@@3VNiRTTI@@A",
+        "?NiTimeController_RegisterStreamables@@YA_NPEAVNiTimeController@@AEAVNiStream@@@Z",
+        "?GetInterpolatorCount@BSProceduralLightningController@@UEBAIXZ",
+        "?CreatePoseInterpolator@BSProceduralLightningController@@UEAAPEAVNiInterpolator@@G@Z",
+        "?SynchronizePoseInterpolator@BSProceduralLightningController@@UEAAXPEAVNiInterpolator@@G@Z",
+        "?GuaranteeTimeRange@BSProceduralLightningController@@UEAAXMM@Z",
+        "?SendGeomEvent@BSProceduralLightningController@@QEAAXXZ",
+        "?SendEvent@GeometryEventSource@@QEAAXAEBUBSProceduralGeomEvent@@@Z"
+      ]
+    }
+  ]
+}

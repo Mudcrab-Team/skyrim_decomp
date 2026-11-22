@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Slot5@BGSQueuedObjectDowngrade@@UEBAIXZ": {
+      "rva": 5359376,
+      "size": 6
+    },
+    "?Function51b2f0@BGSQueuedObjectDowngrade@@QEBA_NXZ": {
+      "rva": 5354224,
+      "size": 32
+    },
+    "?Function51b3b0@BGSQueuedObjectDowngrade@@QEAAXXZ": {
+      "rva": 5354416,
+      "size": 41
+    },
+    "?ReleaseObjectDowngradeTask@@YAXPEAUQueuedLodTask@@@Z": {
+      "rva": 5282176,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Slot5@BGSQueuedObjectDowngrade@@UEBAIXZ",
+        "rva": "0x51c710",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function51b2f0@BGSQueuedObjectDowngrade@@QEBA_NXZ",
+        "rva": "0x51b2f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function51b3b0@BGSQueuedObjectDowngrade@@QEAAXXZ",
+        "rva": "0x51b3b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?ReleaseObjectDowngradeTask@@YAXPEAUQueuedLodTask@@@Z",
+        "rva": "0x509980",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}
