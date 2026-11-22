@@ -1,12 +1,16 @@
 // Source exposure: mixed (local binary analysis and public names).
+// 0x3202d0 compared function
 // Origin: {"generator_family":"member-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"1254832e5ca7cdca7f6330a2018dde32919625f6149744dd0138e59a943106d8"}
 // Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Function3202d0, entries: GUESS(low)
 // BGSListForm: EXE_RTTI
 // GetCount: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 #pragma once
 #include <cstddef>
 #include <cstdint>
+
+class TESForm;
 // GetCount: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // BGSLoadFormBuffer: GUESS(low); stand-in for the load buffer, only the signed field at 0x44 that Revert reads
 class BGSLoadFormBuffer
@@ -26,7 +30,10 @@ public:
     virtual void Revert(BGSLoadFormBuffer* a_buf);  // compared: 0x320a10
     void RevertBase(BGSLoadFormBuffer* a_buf);
     void ClearList();
+    const TESForm* Function3202d0(std::uint32_t a_index) const;
 
-    std::uint8_t padding[0x28];
-    std::uint32_t member;
+    std::uint8_t padding08[0x18];  // 08
+    const TESForm** entries;       // 20
+    std::uint8_t padding28[0x8];   // 28
+    std::uint32_t member;          // 30
 };

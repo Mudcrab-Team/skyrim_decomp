@@ -1,12 +1,12 @@
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original reconstruction; other bodies drafted as noted in the header.
+// SPDX-License-Identifier: CC0-1.0
+// 0x1cdf30 TESFile::Function1cdf30
+// Function1cdf30, Function1cdd10Stub: GUESS(low)
+// Adapted bodies: none
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image, with the class layout from the header beside this file. SeekNextSubrecord, Duplicate and Seek were finished by claude-opus-5-5 from the Drafter's near-misses.
 // GetCurrentThreadId, GetLastError, FormatMessageA, LocalFree: STANDIN OBSERVED; Win32 imports of the image, declared locally
-// 0x1ca460 TESFile::OpenTES
-// 0x1cdc10 TESFile::GetCurrentSubRecordType
-// 0x1cd7d0 TESFile::GetFormType
-// 0x1cdc60 TESFile::SeekNextSubrecord
-// 0x1ce7e0 TESFile::Duplicate
-// 0x1cd860 TESFile::Seek
 #include "TESFile.h"
 
 #include <cstring>
@@ -22,6 +22,7 @@ extern bool                 g_threadSafeFiles;
 extern std::uint32_t        g_tes4RecordType;
 extern const std::uint32_t  g_seekOrigin;
 FormType                    ConvertFormType(std::uint32_t a_recordType);
+void                        Function1cdd10Stub(TESFile* a_self, std::uint32_t a_arg, std::uint32_t a_zero);
 Main*                       Main::singleton;
 
 namespace {
@@ -132,6 +133,11 @@ std::uint32_t TESFile::QueryFilePosition()
         position = file->trueFilePos;
     }
     return position;
+}
+
+void TESFile::Function1cdf30(std::uint32_t a_arg)
+{
+    return Function1cdd10Stub(this, a_arg, 0);
 }
 
 bool TESFile::Seek(std::uint32_t a_offset)

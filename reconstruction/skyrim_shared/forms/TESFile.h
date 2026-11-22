@@ -1,4 +1,5 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// 0x1cdf30 compared function
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none declared; tools/check_origin.py reports none above its threshold (0.75)
 // at CommonLibSSE-NG b93280e, powerof3/CommonLibSSE 654e55f and momusdigital/fnv_decomp 91e1b6e8.
@@ -19,12 +20,12 @@
 // TESFile::unk024: GUESS(low); the word at 0x24 is used as the file position while unk018 is set
 // BSFile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the two position members
 // BSFile::auxTrueFilePos, ::trueFilePos: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares auxTrueFilePos as std::int32_t, read here as an unsigned position
+// Function1cdf30: GUESS(low)
 // TESFile::OpenInternal, ::ReadFormHeader, ::ReadChunkHeader, ::SeekRaw, ::DuplicateForThread: GUESS; callees at RVAs 0x1ca490, 0x1cf0f0, 0x1cf2e0, 0x1cfcf0, 0x1cf680 with no community name
 // TESFile::EnsureOpen, ::IsCompressed, ::GetRootFile, ::QueryFilePosition: GUESS; inline helpers with no address of their own, named for what they do
 // ConvertFormType: GUESS; the callee at RVA 0x1e5c10 maps a form record type to a FormType
 // FormType: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only None is named
 // g_tes4RecordType, g_seekOrigin, g_threadSafeFiles: GUESS; globals at RVAs 0x2078250, 0x1a41400,
-// 0x2077fe8
 #pragma once
 
 #include <cstdint>
@@ -76,6 +77,7 @@ public:
     FormType GetFormType();
     std::uint32_t GetCurrentSubRecordType();
     TESFile* Duplicate(std::uint32_t a_cacheSize = 0x4000);
+    void Function1cdf30(std::uint32_t a_arg);
 
 private:
     bool     OpenInternal(char* a_path, char* a_fileName, NiFile::OpenMode a_mode, bool a_lock);
