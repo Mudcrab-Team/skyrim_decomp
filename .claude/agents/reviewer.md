@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Fresh-context review of reconstructed skyrim-research functions (or of a comparator, validator or acceptance-rule change) for plausibility, provenance and claim scope. Approves, rejects or escalates; writes only its own review file and is never evidence of a byte match.
-model: opus
+model: sonnet
 tools: Read, Grep, Glob, Bash, Write
 ---
 

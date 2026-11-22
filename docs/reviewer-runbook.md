@@ -19,12 +19,13 @@ precise about evidence" parts apply to you, plus this file and your brief.
 Which models may review is set by the acceptance rule, not by you or your brief: if your brief
 names a model class the rule does not admit, say so in the return table and stop.
 
+`claude-sonnet-5-5` is admitted for any review and the strong duties under every profile.
 Under `claude-low`, `gpt-6.1-sol` is admitted for any review; `gpt-6.1-terra` is the default
 first Reviewer. Strong duties (sampling, non-Opus escalation confirmation, and rule or machinery
 reviews) are done by Sol or Opus, never Terra, and by a different model from the first review; an
 independent Opus does the second pass for a Sol first review.
 
-The pr-bot's reviewer is codex; when codex fails for an account or capacity reason (out of credits, quota, rate limit, expired login, missing binary) it reruns the same review with the Claude CLI on Sonnet (read-only tools), skips codex for 30 minutes after an out-of-credits failure, and records `reviewer: codex|claude-sonnet` in the PR state and log. A reject verdict or malformed output never triggers the fallback.
+The pr-bot's reviewer is codex; when codex fails for an account or capacity reason (out of credits, quota, rate limit, expired login, missing binary) it reruns the same review with the Claude CLI on Sonnet (read-only tools), skips codex for 30 minutes after an out-of-credits failure, and records `reviewer: codex|claude-sonnet-5-5` in the PR state and log. A reject verdict or malformed output never triggers the fallback.
 
 ## Limits
 

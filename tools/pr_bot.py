@@ -72,7 +72,7 @@ MAPPING_CHECKS = ('mapping', 'pr-check / mapping')
 REVIEW_MODEL = 'gpt-6.1-terra'
 # Fallback reviewer when codex fails for an account or capacity reason; read-only tools only.
 CLAUDE_BIN = shutil.which('claude') or str(Path.home() / '.local/bin/claude')
-CLAUDE_REVIEW_MODEL = 'sonnet'
+CLAUDE_REVIEW_MODEL = 'claude-sonnet-5-5'
 CODEX_PAUSE = 1800  # seconds codex is skipped after an out-of-credits style failure
 ACCOUNT_FAILURE = re.compile(r'credit|quota|rate.?limit|usage limit|insufficient|billing|capacity|overloaded|'
                              r'too many requests|\b429\b|unauthorized|\b401\b|log ?in|sign ?in|auth|token expired|'
@@ -1150,10 +1150,10 @@ class Bot:
                     raise Stop(f'codex failed ({why})' if why else 'codex failed')
             if text is None:
                 self.codex_paused_until[0] = self.clock() + CODEX_PAUSE
-                print(f'{stamp()} codex unavailable ({why}); reviewing with claude-sonnet, '
+                print(f'{stamp()} codex unavailable ({why}); reviewing with {CLAUDE_REVIEW_MODEL}, '
                       f'codex skipped for {CODEX_PAUSE // 60} min', file=sys.stderr, flush=True)
         if text is None:
-            reviewer = 'claude-sonnet'
+            reviewer = CLAUDE_REVIEW_MODEL
             result = self.run([CLAUDE_BIN, '-p', '--model', CLAUDE_REVIEW_MODEL, '--tools', 'Read,Grep,Glob',
                                '--permission-mode', 'dontAsk', '--no-session-persistence'], cwd=self.tree,
                               input=prompt.encode(), timeout=self.config['model_timeout'], check=False)

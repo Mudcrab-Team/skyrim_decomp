@@ -137,16 +137,20 @@ A function is accepted only when ALL of these hold:
    were laxer and all 4 reference rejects were caught. The reviews were
    `.local/reviews/review-p26-terra-cal-{1..4}.md` and
    `.local/reviews/review-p19-wave2-{1..4}.md`. This was one wave at one revision, mostly small
-   functions, with only 4 reference rejects. Sonnet is prepared, pending blind calibration and a
-   Reviewer-checked rule change.
+   functions, with only 4 reference rejects.
+
+   The Sonnet class as a Reviewer is admitted only as `claude-sonnet-5-5`, under every profile
+   (including `cheap` and `claude-low`), for any review (ordinary, delta and full) and for the
+   strong duties below, by maintainer decision WITHOUT a calibration (`docs/authorizations.md`,
+   Notes). The alias `sonnet` is not admitted.
 
    The Sol class as the strong Reviewer is admitted only as `gpt-6.1-sol` under `claude-low`
    for any review. Terra is the default Reviewer. For the strong duties (confirmation of a
    non-Opus `escalate` before the maintainer, and reviews of comparator, validator, verifier or
-   acceptance-rule changes) the tools admit Sol or Opus, never Terra. Unlike Terra,
+   acceptance-rule changes) the tools admit Sonnet, Sol or Opus, never Terra. Unlike Terra,
    Sol was admitted by maintainer decision WITHOUT a calibration:
    "sol is goood enough dont waste time" (`docs/authorizations.md`, Notes). Sol may give a fresh
-   function review when confirming an escalation. Outside `claude-low`, Opus remains required for these strong review duties. Reviewer independence is per run: use fresh context, never the
+   function review when confirming an escalation. Outside `claude-low`, Sonnet or Opus may do these strong review duties. Reviewer independence is per run: use fresh context, never the
    run that drafted, engineered, triaged or first-reviewed the function, including machinery
    and rule changes. A non-Opus `reject` needs no confirmation.
    The acceptance tools refuse models not admitted for the profile in use.
