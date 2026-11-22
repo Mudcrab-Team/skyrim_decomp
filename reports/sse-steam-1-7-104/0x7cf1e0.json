@@ -27,7 +27,7 @@
           "/Ireconstruction",
           "/showIncludes"
         ],
-        "object_sha256": "3d7cb29dd6a2cc718b0d34b800d32432328a740512d334335ae6f4e39b3846b2",
+        "object_sha256": "23582432f2aeccb6c44df67ca2abe38373ebb7c1bb55d6a8111fd7a9b693cae8",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/controls/JumpAnimEventHandler.cpp",
@@ -38,7 +38,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "b075b0e782540a368ad77d29499c24515a925bf2",
+    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -49,7 +49,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "5d5e933e8ff5377947fac810d14466573a44ba2d",
+    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -62,10 +62,10 @@
     "recipe_sha256": "b1119bb6d7e96bcd776dd4e4ac598fb74441d25e055ecd1c733a71482655bcfc",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44471602334,
+    "run_id": 44954941715,
     "rva": "0x7cf1e0",
     "schema": 2,
-    "source_sha256": "8fb818990ee34c2d7fb2abce60048cae45f1568aeebb88b28c61e98c4829b38d",
+    "source_sha256": "f3e69f7a6c67c069d62aa6582c3df7cd5abbc01276f12e9660a54100f0bf09b6",
     "status": "pass",
     "symbols": [
       "?Handle@JumpAnimEventHandler@@QEAA_NPEAVActor@@@Z"
@@ -100,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "8c0cb8ddc8e523412c19d1fe3996cfea92c3a54e5d69652ba651ca10076a6ef3",
           "code_sections": 1,
-          "object_sha256": "3d7cb29dd6a2cc718b0d34b800d32432328a740512d334335ae6f4e39b3846b2"
+          "object_sha256": "23582432f2aeccb6c44df67ca2abe38373ebb7c1bb55d6a8111fd7a9b693cae8"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -164,7 +164,7 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim/controls/JumpAnimEventHandler.cpp",
-          "source_revision": "8fb818990ee34c2d7fb2abce60048cae45f1568aeebb88b28c61e98c4829b38d"
+          "source_revision": "f3e69f7a6c67c069d62aa6582c3df7cd5abbc01276f12e9660a54100f0bf09b6"
         },
         "symbol_map_sha256": "922512d019d9719909547b753eb26f0456161ed1eacb6852f89b5918c4045c1c",
         "target": {
@@ -177,7 +177,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/controls/JumpAnimEventHandler.cpp",
-    "digest": "8fb818990ee34c2d7fb2abce60048cae45f1568aeebb88b28c61e98c4829b38d",
+    "digest": "f3e69f7a6c67c069d62aa6582c3df7cd5abbc01276f12e9660a54100f0bf09b6",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim/controls/JumpAnimEventHandler.cpp",
@@ -185,7 +185,7 @@
       "reconstruction/skyrim_shared/actors/Actor.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "ariizona",
   "symbol_map": {
     "path": "reports/sse-steam-1-7-104/unit-symbols/922512d019d9719909547b753eb26f0456161ed1eacb6852f89b5918c4045c1c.json",
     "sha256": "922512d019d9719909547b753eb26f0456161ed1eacb6852f89b5918c4045c1c"

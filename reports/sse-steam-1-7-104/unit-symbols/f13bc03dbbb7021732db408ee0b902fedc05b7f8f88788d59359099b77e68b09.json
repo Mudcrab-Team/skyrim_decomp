@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetCtlrID@NiPSysModifierCtlr@@UEBAPEAXXZ": {
+      "rva": 16386912,
+      "size": 5
+    },
+    "?SaveBinary@NiPSysModifierCtlr@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16386560,
+      "size": 43
+    },
+    "?SaveBinary@NiSingleInterpController@@UEAAXAEAVNiStream@@@Z": {
+      "rva": 16133920,
+      "size": null
+    },
+    "?SaveFixedString@NiStream@@QEAAXAEBQEAX@Z": {
+      "rva": 15616592,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetCtlrID@NiPSysModifierCtlr@@UEBAPEAXXZ",
+        "rva": "0xfa0b60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiPSysModifierCtlr@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xfa0a00",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveBinary@NiSingleInterpController@@UEAAXAEAVNiStream@@@Z",
+        "rva": "0xf62f20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?SaveFixedString@NiStream@@QEAAXAEBQEAX@Z",
+        "rva": "0xee4a50",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

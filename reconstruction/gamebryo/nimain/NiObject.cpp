@@ -1,7 +1,11 @@
-// Licence: uses the name Clone from powerof3/CommonLibSSE (see the header), so this file is GPL-3.0.
-// IsEqual's body is adapted from CharmedBaryon/CommonLibSSE-NG b93280e src/RE/N/NiObject.cpp (MIT; the notice is in NiObject.h, and the header lists every adapted body).
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
-// pinned image, with names and types from the header beside this file.
+// Source exposure: mixed (pinned image, CommonLibSSE-NG declarations, and FNV sibling comparison).
+// Licence: GPL-3.0 because the name Clone comes from powerof3/CommonLibSSE.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Code origin: original except for the bodies listed below.
+// Adapted bodies: IsEqual and RegisterStreamables, CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/N/NiObject.cpp (MIT).
+// NiObject::RegisterStreamables, NiStream::RegisterSaveObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiObject::RegisterStreamables: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); the pinned sibling has the same forwarding body.
+// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/staging/blk_00a40000_o2.cpp:3827
 // 0xedca00 NiObject::ProcessClone
 // 0xedcb60 NiObject::StreamCanSkip
 // 0xedcb90 NiObject::GetGroup
@@ -9,7 +13,10 @@
 // 0xedcbc0 NiObject::ctor
 // 0xedc920 NiObject::Clone
 // 0xedc7e0 NiObject::IsEqual
+// 0xedc7b0 NiObject::RegisterStreamables
 #include "NiObject.h"
+
+#include "NiObjectNET.h"
 
 // Private stand-in used only by this translation unit; the shared header stays opaque.
 // NiCloneMap, NiCloneMap::Visit: GUESS(low); names invented, the callee is bound by address through bind-hints.json
@@ -39,6 +46,12 @@ bool NiObject::StreamCanSkip() { return false; }
 NiObjectGroup* NiObject::GetGroup() const { return nullptr; }
 
 NiObject* NiObject::CreateClone(NiCloningProcess&) { return this; }
+
+// Register this object with the stream's save table.
+bool NiObject::RegisterStreamables(NiStream& a_stream)
+{
+	return a_stream.RegisterSaveObject(this);
+}
 
 bool NiObject::IsEqual(NiObject* a_object)
 {

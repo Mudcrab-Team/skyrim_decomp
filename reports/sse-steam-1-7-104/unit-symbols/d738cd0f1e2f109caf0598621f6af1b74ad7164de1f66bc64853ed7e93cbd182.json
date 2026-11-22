@@ -1,0 +1,540 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Function1582070@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552688,
+      "size": 12
+    },
+    "?Function1582100@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552832,
+      "size": 12
+    },
+    "?Function1582120@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552864,
+      "size": 12
+    },
+    "?Function1582140@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552896,
+      "size": 12
+    },
+    "?Function1582160@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552928,
+      "size": 12
+    },
+    "?Function1582180@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552960,
+      "size": 12
+    },
+    "?Function15821a0@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22552992,
+      "size": 12
+    },
+    "?Function1582250@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22553168,
+      "size": 12
+    },
+    "?Function1582270@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22553200,
+      "size": 12
+    },
+    "?Function1582290@BSShaderResourceManager@@QEAAXPEAXE@Z": {
+      "rva": 22553232,
+      "size": 12
+    },
+    "?Function1582550@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22553936,
+      "size": 12
+    },
+    "?Function1582600@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554112,
+      "size": 12
+    },
+    "?Function1582620@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554144,
+      "size": 12
+    },
+    "?Function1582640@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554176,
+      "size": 12
+    },
+    "?Function1582660@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554208,
+      "size": 12
+    },
+    "?Function15826f0@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554352,
+      "size": 12
+    },
+    "?Function1582710@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554384,
+      "size": 12
+    },
+    "?Function15827a0@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554528,
+      "size": 12
+    },
+    "?Function1582870@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22554736,
+      "size": 12
+    },
+    "?Function15829a0@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22555040,
+      "size": 12
+    },
+    "?Function15829c0@BSShaderResourceManager@@QEAAXXZ": {
+      "rva": 22555072,
+      "size": 12
+    },
+    "?g_textureLookupState@@3UTextureLookupState@@A": {
+      "rva": 53681984,
+      "size": null
+    },
+    "?Function100b530@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16823600,
+      "size": null
+    },
+    "?Function100bac0@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16825024,
+      "size": null
+    },
+    "?Function100c000@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16826368,
+      "size": null
+    },
+    "?Function100c010@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16826384,
+      "size": null
+    },
+    "?Function100bcd0@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16825552,
+      "size": null
+    },
+    "?Function100c850@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16828496,
+      "size": null
+    },
+    "?Function100c090@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16826512,
+      "size": null
+    },
+    "?Function100cf10@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16830224,
+      "size": null
+    },
+    "?Function100cf20@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16830240,
+      "size": null
+    },
+    "?Function10194e0@@YAXPEAXI@Z": {
+      "rva": 16880864,
+      "size": null
+    },
+    "?Function100d250@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16831056,
+      "size": null
+    },
+    "?Function100d1e0@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16830944,
+      "size": null
+    },
+    "?Function100d1f0@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16830960,
+      "size": null
+    },
+    "?Function100d650@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16832080,
+      "size": null
+    },
+    "?Function100d660@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16832096,
+      "size": null
+    },
+    "?Function100f180@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16839040,
+      "size": null
+    },
+    "?Function100f190@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16839056,
+      "size": null
+    },
+    "?Function100d8d0@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16832720,
+      "size": null
+    },
+    "?Function100d950@@YAXPEAUTextureLookupState@@@Z": {
+      "rva": 16832848,
+      "size": null
+    },
+    "?g_shaderResourceState@@3PEAUShaderResourceState@@EA": {
+      "rva": 54748160,
+      "size": null
+    },
+    "?Function154af80@@YAXPEAUShaderResourceState@@@Z": {
+      "rva": 22327168,
+      "size": null
+    },
+    "?Function154afb0@@YAXPEAUShaderResourceState@@@Z": {
+      "rva": 22327216,
+      "size": null
+    },
+    "?Function15828b0@BSShaderResourceManager@@QEAAIXZ": {
+      "rva": 22554800,
+      "size": 7
+    },
+    "?Function15828c0@BSShaderResourceManager@@QEAAMXZ": {
+      "rva": 22554816,
+      "size": 9
+    },
+    "?g_shaderResourceFlags@@3IA": {
+      "rva": 53699572,
+      "size": null
+    },
+    "?g_shaderResourceScale@@3MA": {
+      "rva": 34433236,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Function1582070@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582070",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582100@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582100",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582120@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582120",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582140@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582140",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582160@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582160",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582180@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582180",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15821a0@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x15821a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582250@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582250",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582270@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582270",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582290@BSShaderResourceManager@@QEAAXPEAXE@Z",
+        "rva": "0x1582290",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582550@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582550",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582600@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582600",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582620@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582620",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582640@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582640",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582660@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582660",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15826f0@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x15826f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582710@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582710",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15827a0@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x15827a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1582870@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x1582870",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15829a0@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x15829a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15829c0@BSShaderResourceManager@@QEAAXXZ",
+        "rva": "0x15829c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_textureLookupState@@3UTextureLookupState@@A",
+        "rva": "0x3331f40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100b530@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100b530",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100bac0@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100bac0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100c000@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100c000",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100c010@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100c010",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100bcd0@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100bcd0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100c850@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100c850",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100c090@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100c090",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100cf10@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100cf10",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100cf20@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100cf20",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function10194e0@@YAXPEAXI@Z",
+        "rva": "0x10194e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d250@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d250",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d1e0@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d1e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d1f0@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d1f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d650@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d650",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d660@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d660",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100f180@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100f180",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100f190@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100f190",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d8d0@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d8d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function100d950@@YAXPEAUTextureLookupState@@@Z",
+        "rva": "0x100d950",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_shaderResourceState@@3PEAUShaderResourceState@@EA",
+        "rva": "0x3436400",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function154af80@@YAXPEAUShaderResourceState@@@Z",
+        "rva": "0x154af80",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function154afb0@@YAXPEAUShaderResourceState@@@Z",
+        "rva": "0x154afb0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15828b0@BSShaderResourceManager@@QEAAIXZ",
+        "rva": "0x15828b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function15828c0@BSShaderResourceManager@@QEAAMXZ",
+        "rva": "0x15828c0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_shaderResourceFlags@@3IA",
+        "rva": "0x33363f4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_shaderResourceScale@@3MA",
+        "rva": "0x20d68d4",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

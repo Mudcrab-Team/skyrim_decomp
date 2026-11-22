@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "4195c34bb0945a59b5b4e45bc48c2020f75c96f61c6b0946e4ff99c5ff9ebde4",
+        "object_sha256": "bc609105e021fd345cacab897eb1c7846c2aa49a6ec04b901b312b88d578419d",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/ai/AIProcess.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "bd79d99ec373a333cc655f47e8b1b50ef895c165",
+    "base_sha": "872d9f99bff07fcdd6db486f6739c382f42d2296",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "b11ba49c8c7dd22847eeab097674c59318dbdac9",
+    "head_sha": "eb3ea693c3383cde139110c51bb3206ca2d2dc64",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44540751998,
+    "run_id": 44868944455,
     "rva": "0x720660",
     "schema": 2,
-    "source_sha256": "28f2482ae0623d95ac46000a4c61c95f78db616bef238706992361a9eaf8b2fe",
+    "source_sha256": "ebb90d6a2423d8da6235a1e0638ec57d9f37e0d26e9ab26f448c11b772c3df54",
     "status": "pass",
     "symbols": [
       "?GetCurrentWeapon@AIProcess@@QEBAPEAVInventoryEntryData@@_N@Z"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "8b73cdc4100529847bfe4820d71757b7ac4a6252f73f8024cf43f95d630b58e2",
           "code_sections": 1,
-          "object_sha256": "4195c34bb0945a59b5b4e45bc48c2020f75c96f61c6b0946e4ff99c5ff9ebde4"
+          "object_sha256": "bc609105e021fd345cacab897eb1c7846c2aa49a6ec04b901b312b88d578419d"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +159,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim/ai/AIProcess.cpp",
-          "source_revision": "28f2482ae0623d95ac46000a4c61c95f78db616bef238706992361a9eaf8b2fe"
+          "source_revision": "ebb90d6a2423d8da6235a1e0638ec57d9f37e0d26e9ab26f448c11b772c3df54"
         },
-        "symbol_map_sha256": "4c49ffeaec976af6acbb4d31f496625094a39c09f845852df64468d198248b54",
+        "symbol_map_sha256": "07c9862d65d8444cc1848b352fb730509c8d7c43b43598b9271e06036e3de717",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/ai/AIProcess.cpp",
-    "digest": "28f2482ae0623d95ac46000a4c61c95f78db616bef238706992361a9eaf8b2fe",
+    "digest": "ebb90d6a2423d8da6235a1e0638ec57d9f37e0d26e9ab26f448c11b772c3df54",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim/ai/AIProcess.cpp",
       "reconstruction/skyrim/ai/AIProcess.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "redwatchwanderer",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/4c49ffeaec976af6acbb4d31f496625094a39c09f845852df64468d198248b54.json",
-    "sha256": "4c49ffeaec976af6acbb4d31f496625094a39c09f845852df64468d198248b54"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/07c9862d65d8444cc1848b352fb730509c8d7c43b43598b9271e06036e3de717.json",
+    "sha256": "07c9862d65d8444cc1848b352fb730509c8d7c43b43598b9271e06036e3de717"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

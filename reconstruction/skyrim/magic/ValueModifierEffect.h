@@ -9,6 +9,7 @@
 class ValueModifierEffect {
 public:
     void SetActorValue(std::uint32_t value);
+    void Function5bcba0(const void* a_location);
 private:
     std::uint64_t unknown00[18];
     std::uint32_t actorValue;

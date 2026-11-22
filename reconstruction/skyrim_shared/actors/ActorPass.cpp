@@ -1,5 +1,4 @@
 // Source exposure: mixed (binary-analysis and community-headers).
-// Drafted by gpt-6.1-terra. Origin: original reconstruction; community declarations adapted as noted.
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x68be20 P2061::Actor::Function68be20

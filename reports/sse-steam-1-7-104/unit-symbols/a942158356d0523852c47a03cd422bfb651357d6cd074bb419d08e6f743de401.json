@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Functionf9f3a0@NiPSysMeshEmitter@@QEAAXPEAV1@@Z": {
+      "rva": 16380832,
+      "size": 44
+    },
+    "?Functionfb9ae0@NiPSysMeshEmitter@@QEAAXPEAV1@@Z": {
+      "rva": 16489184,
+      "size": 38
+    },
+    "?Functionfc0300@@YAXPEAVNiPSysMeshEmitter@@0@Z": {
+      "rva": 16515840,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Functionf9f3a0@NiPSysMeshEmitter@@QEAAXPEAV1@@Z",
+        "rva": "0xf9f3a0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionfb9ae0@NiPSysMeshEmitter@@QEAAXPEAV1@@Z",
+        "rva": "0xfb9ae0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionfc0300@@YAXPEAVNiPSysMeshEmitter@@0@Z",
+        "rva": "0xfc0300",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

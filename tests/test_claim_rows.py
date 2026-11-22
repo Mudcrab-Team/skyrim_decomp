@@ -262,3 +262,36 @@ class HeaderBudgetMessageTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class BlockCommentFindingsTests(unittest.TestCase):
+    """A comment that sends the contributor to "the findings below" must list them, whatever the block."""
+
+    def decision(self, blocked, key):
+        return {'blocked': blocked, 'merge': False, key: [0x10], 'companions': [0x10] if key == 'companions' else [],
+                'verdicts': {0x10: 'fail:precheck', 0x20: 'fail:precheck', 0x30: 'matched'},
+                'pre': {0x10: ['reconstruction/a/B.cpp: finding one'], 0x20: ['reconstruction/a/B.cpp: finding one',
+                                                                         '0x20: finding two']}}
+
+    def test_stale_and_companion_comments_list_the_precheck_findings_once(self):
+        for blocked, key in (('stale', 'stale'), ('companion', 'companions')):
+            with self.subTest(blocked=blocked):
+                text = pr_bot.outcome_body(HEAD, self.decision(blocked, key))
+                self.assertIn('Findings from the mechanical checks', text)
+                self.assertEqual(text.count('finding one'), 1)
+                self.assertIn('- 0x20: finding two', text)
+                self.assertLess(text.index('Findings from'), text.index('Please keep'))
+
+    def test_the_findings_block_is_absent_when_no_function_failed_the_precheck(self):
+        decision = self.decision('stale', 'stale')
+        decision['verdicts'] = {0x10: 'fail:host1'}
+        self.assertNotIn('Findings from', pr_bot.outcome_body(HEAD, decision))
+
+
+class OutsideFirstTests(unittest.TestCase):
+    def test_outside_prs_are_submitted_before_the_owners_in_listing_order(self):
+        def pr(number, login):
+            return {'number': number, 'author': {'login': login}}
+        listed = [pr(582, pr_bot.OWNER), pr(579, pr_bot.OWNER.upper()), pr(574, 'aivv73'), pr(570, pr_bot.OWNER),
+                  pr(550, 'eclepso')]
+        self.assertEqual([p['number'] for p in pr_bot.outside_first(listed)], [574, 550, 582, 579, 570])

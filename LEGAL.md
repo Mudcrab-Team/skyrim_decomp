@@ -56,6 +56,11 @@ decision below.
 
 **Project licensing.** See `LICENSE`: CC0 1.0 for project-authored reconstructions, docs and research, with per-file exceptions.
 
+**Sibling decompilation (Fallout 3): maintainer decision.** The maintainer has also allowed the
+Fallout 3 decompilation `momusdigital/f3_decomp` at `f5bac1b5` on the same terms as FNV below. Its
+LICENSE is CC0 1.0, so no permission exception is involved; labels read `SIBLING(...CC0-1.0)`
+(`docs/authorizations.md`, Notes). It is another game, so it is never evidence about the Skyrim binary.
+
 **Sibling decompilation (FNV): maintainer decision.** The maintainer (awarebayes) has decided
 that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `91e1b6e8` may be
 read by Engineers and Drafters and that its names, declarations and code may be reused in

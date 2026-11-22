@@ -1,7 +1,7 @@
 """Report reconstruction bodies that resemble a same-named body in a community or sibling source.
 
 Advisory and local only, like tools/check_labels.py: it reads the private pinned clones under
-`.local/sources` (CommonLibSSE-NG, the powerof3 fork, the FNV decompilation), which CI does not
+`.local/sources` (CommonLibSSE-NG, the powerof3 fork, the FNV and Fallout 3 decompilations), which CI does not
 have. It never edits anything and never decides provenance; a Reviewer starts the provenance
 check from its list (`.claude/agents/reviewer.md`, item 2).
 
@@ -18,7 +18,8 @@ similarity reaches the threshold:
 
 A body that is empty or a single `return` of a literal, a (qualified) name or `this` is reported
 as `trivial`: a one-statement accessor necessarily coincides with the community declaration and
-is not an adaptation. Every other hit is `adapted`, and is shown with whether the unit's leading
+is not an adaptation, and so is a single `return` of comparisons and `&&`/`||`/`!` over names,
+members and literals (`return a == 3 || a == 7;`). Every other hit is `adapted`, and is shown with whether the unit's leading
 comment names the upstream file (for the FNV clone: a `Sibling source:` line with that path).
 
 What it cannot see: a body copied under another method name or into another class, a body split
@@ -50,9 +51,10 @@ DEFAULT_SOURCES = {
     'CharmedBaryon/CommonLibSSE-NG': ('.local/sources/CommonLibSSE-NG', 'MIT', ('include', 'src')),
     'powerof3/CommonLibSSE': ('.local/sources/CommonLibSSE-po3', 'GPL-3.0', ('include', 'src')),
     'momusdigital/fnv_decomp': ('.local/sources/fnv_decomp', 'no-licence', ('include', 'src')),
+    'momusdigital/f3_decomp': ('.local/sources/f3_decomp', 'CC0-1.0', ('include', 'src')),
     'fo4-private': ('.local/sources/fo4-private', 'author-permission', GAME_DIRS),
 }
-SIBLINGS = {'momusdigital/fnv_decomp', 'fo4-private'}
+SIBLINGS = {'momusdigital/fnv_decomp', 'momusdigital/f3_decomp', 'fo4-private'}
 FORKS = {'powerof3/CommonLibSSE': 'CharmedBaryon/CommonLibSSE-NG'}
 SUFFIXES = ('.h', '.hpp', '.inl', '.cpp', '.cxx', '.cc', '.c')
 
@@ -235,9 +237,64 @@ def normalise(body, params=()):
     return [rename.get(t, t) for t in tokens]
 
 
+COMPARE = {'==', '!=', '<', '>', '<=', '>=', '&&', '||'}
+
+
+def comparison_expression(tokens):
+    """True for an expression built only from comparisons and `&&`, `||`, `!` over names, member
+    paths and literals, with parentheses for grouping. Calls, casts, indexing, arithmetic and
+    bit operations are rejected, so the body can only restate a compare of values it is given."""
+    pos = 0
+
+    def operand():
+        nonlocal pos
+        while pos < len(tokens) and tokens[pos] == '!':
+            pos += 1
+        if pos >= len(tokens):
+            return False
+        t = tokens[pos]
+        if t == '(':
+            # `f<T>(x)` lexes as `f < T > (x)`; a group right after `>` is a cast or call.
+            if pos and tokens[pos - 1] == '>':
+                return False
+            pos += 1
+            if not expression() or pos >= len(tokens) or tokens[pos] != ')':
+                return False
+            pos += 1
+            return True
+        if t == '-' and pos + 1 < len(tokens) and LITERAL.match(tokens[pos + 1]):
+            pos += 1
+            t = tokens[pos]
+        if LITERAL.match(t):
+            pos += 1
+            return True
+        if not (IDENT.match(t) or t.startswith('$L')):
+            return False
+        pos += 1
+        while pos + 1 < len(tokens) and tokens[pos] in ('::', '.', '->') and (
+                IDENT.match(tokens[pos + 1]) or tokens[pos + 1].startswith('$L')):
+            pos += 2
+        # A name followed by `(` or `[` is a call or an index, which the grammar never admits.
+        return pos >= len(tokens) or tokens[pos] not in ('(', '[')
+
+    def expression():
+        nonlocal pos
+        if not operand():
+            return False
+        while pos < len(tokens) and tokens[pos] in COMPARE:
+            pos += 1
+            if not operand():
+                return False
+        return True
+
+    return bool(tokens) and expression() and pos == len(tokens) and any(t in COMPARE for t in tokens)
+
+
 def trivial(tokens):
-    """Empty, or one `return` of a literal, `this`, or a name or member path (`x`, `A::k`, `a.b`,
-    `a->b`); a call, an index, a cast or an operator makes the body non-trivial."""
+    """Empty, or one `return` of a literal, `this`, a name or member path (`x`, `A::k`, `a.b`,
+    `a->b`), or a comparison/logical expression over such operands and literals (`a == 3 || a == 7`).
+    A call, an index, a cast or arithmetic makes the body non-trivial; a bare compare of values the
+    function is given necessarily coincides with any other declaration of the same test."""
     if not tokens:
         return True
     if tokens[0] != 'return' or tokens[-1] != ';':
@@ -245,9 +302,11 @@ def trivial(tokens):
     inner = tokens[1:-1]
     if len(inner) == 1:
         return bool(LITERAL.match(inner[0]) or IDENT.match(inner[0]) or inner[0].startswith('$L'))
-    return len(inner) >= 3 and len(inner) % 2 == 1 and all(
-        (IDENT.match(t) or t.startswith('$L')) if n % 2 == 0 else t in ('::', '.', '->')
-        for n, t in enumerate(inner))
+    if len(inner) >= 3 and len(inner) % 2 == 1 and all(
+            (IDENT.match(t) or t.startswith('$L')) if n % 2 == 0 else t in ('::', '.', '->')
+            for n, t in enumerate(inner)):
+        return True
+    return comparison_expression(inner)
 
 
 def similarity(a, b):

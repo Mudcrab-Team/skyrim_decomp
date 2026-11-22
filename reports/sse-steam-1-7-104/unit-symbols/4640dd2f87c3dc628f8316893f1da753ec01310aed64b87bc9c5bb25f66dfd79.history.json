@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/4640dd2f87c3dc628f8316893f1da753ec01310aed64b87bc9c5bb25f66dfd79.json",
+  "versions": [
+    {
+      "sha256": "4640dd2f87c3dc628f8316893f1da753ec01310aed64b87bc9c5bb25f66dfd79",
+      "base": null,
+      "added": [
+        "?GetElapsedTime@ActiveEffectReferenceEffectController@@UEAAMXZ",
+        "?GetNoInitialFlare@ActiveEffectReferenceEffectController@@UEAA_NXZ",
+        "?GetSourcePosition@ActiveEffectReferenceEffectController@@UEAAAEBVNiPoint3@@XZ",
+        "?GetEffectPersists@ActiveEffectReferenceEffectController@@UEAA_NXZ",
+        "?GetGoryVisuals@ActiveEffectReferenceEffectController@@UEAA_NXZ",
+        "?GetHitEffectShader@ActiveEffectReferenceEffectController@@UEAAPEAVTESEffectShader@@XZ",
+        "?GetHitEffectArt@ActiveEffectReferenceEffectController@@UEAAPEAVBGSArtObject@@XZ",
+        "?GetEffectRefData@@YAPEAVReferenceEffectRefData@@PEAVActiveEffectOwner@@@Z",
+        "?GetEffectShaderForRef@@YAPEAVTESEffectShader@@PEAVReferenceEffectRefData@@_N@Z",
+        "?GetEffectArtForRef@@YAPEAVBGSArtObject@@PEAVReferenceEffectRefData@@_N@Z",
+        "?SetTarget@ActiveEffectReferenceEffectController@@QEAAXPEAVReferenceTarget@@@Z",
+        "?gNullHandle@@3IA",
+        "?CreateRefHandle@@YAXPEAIPEAVReferenceTarget@@@Z"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?GetType@ExtraFlags@@UEBAIXZ": {
+      "rva": 1618512,
+      "size": 6
+    },
+    "?Function18b200@ExtraFlags@@QEAAXPEAVBGSLoadGameBuffer@@@Z": {
+      "rva": 1618432,
+      "size": 24
+    },
+    "?LoadDataEndian@BGSLoadGameBuffer@@QEAAXPEAXII@Z": {
+      "rva": 6520432,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?GetType@ExtraFlags@@UEBAIXZ",
+        "rva": "0x18b250",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function18b200@ExtraFlags@@QEAAXPEAVBGSLoadGameBuffer@@@Z",
+        "rva": "0x18b200",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadDataEndian@BGSLoadGameBuffer@@QEAAXPEAXII@Z",
+        "rva": "0x637e70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

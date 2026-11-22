@@ -13,7 +13,7 @@ from rva_headers import claimed_rvas
 from contrib_screen import (EMAIL, MAX_BYTES, MAX_HISTORY_BYTES, MAX_IDENTITY_BYTES, MAX_MESSAGE_BYTES,
                             STANDARD_HEADERS, screen, screen_text)
 
-UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/([A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
+UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 SHA = re.compile(r'[0-9a-f]{40}\Z')
 
 

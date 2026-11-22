@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Copy@TESPatrolPackageData@@UEAAXPEAVTESPackageData@@PEAVTESForm@@@Z": {
+      "rva": 4853968,
+      "size": 69
+    },
+    "?Compare@TESPatrolPackageData@@QEAA_NPEAVTESPackageData@@@Z": {
+      "rva": 4854048,
+      "size": 83
+    },
+    "?LoadGame@TESPatrolPackageData@@UEAAXPEAVBGSLoadFormBuffer@@@Z": {
+      "rva": 4854256,
+      "size": 68
+    },
+    "??_R0?AVTESPatrolPackageData@@@8": {
+      "rva": 34575832,
+      "size": null
+    },
+    "??_R0?AVTESPackageData@@@8": {
+      "rva": 34575408,
+      "size": null
+    },
+    "__RTDynamicCast": {
+      "rva": 22714330,
+      "size": null
+    },
+    "?LoadDataEndian@BGSLoadFormBuffer@@QEAAXPEAXII@Z": {
+      "rva": 6520432,
+      "size": null
+    },
+    "?Copy@PatrolRefData@@QEAAXPEAV1@PEAVTESForm@@@Z": {
+      "rva": 4854448,
+      "size": 17
+    },
+    "?InitItem@PatrolRefData@@QEAAXPEAVTESForm@@@Z": {
+      "rva": 4854560,
+      "size": 16
+    },
+    "?Copy@PatrolData@@QEAAXPEAV1@PEAVTESForm@@@Z": {
+      "rva": 4859328,
+      "size": null
+    },
+    "?InitItem@PatrolData@@QEAAXPEAVTESForm@@@Z": {
+      "rva": 4859088,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Copy@TESPatrolPackageData@@UEAAXPEAVTESPackageData@@PEAVTESForm@@@Z",
+        "rva": "0x4a10d0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Compare@TESPatrolPackageData@@QEAA_NPEAVTESPackageData@@@Z",
+        "rva": "0x4a1120",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadGame@TESPatrolPackageData@@UEAAXPEAVBGSLoadFormBuffer@@@Z",
+        "rva": "0x4a11f0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_R0?AVTESPatrolPackageData@@@8",
+        "rva": "0x20f95d8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??_R0?AVTESPackageData@@@8",
+        "rva": "0x20f9430",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "__RTDynamicCast",
+        "rva": "0x15a97da",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?LoadDataEndian@BGSLoadFormBuffer@@QEAAXPEAXII@Z",
+        "rva": "0x637e70",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Copy@PatrolRefData@@QEAAXPEAV1@PEAVTESForm@@@Z",
+        "rva": "0x4a12b0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitItem@PatrolRefData@@QEAAXPEAVTESForm@@@Z",
+        "rva": "0x4a1320",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Copy@PatrolData@@QEAAXPEAV1@PEAVTESForm@@@Z",
+        "rva": "0x4a25c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?InitItem@PatrolData@@QEAAXPEAVTESForm@@@Z",
+        "rva": "0x4a24d0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

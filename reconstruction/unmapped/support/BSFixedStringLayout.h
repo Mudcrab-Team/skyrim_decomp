@@ -1,6 +1,5 @@
 // Origin: copied represented declaration from reconstruction/bsengine/BSFixedStringLayout.h; only include spellings changed.
 // Source exposure: community-headers
-// Drafted by GPT-6.1 Sol; p106 value layouts adapted from pinned community declarations.
 // BSFixedString, BSFixedStringCS, Color, NiPoint2, NiPoint3, NiColor, NiColorA,
 // NiPointer, BSTSmartPointer: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // entry, value: GUESS(medium)

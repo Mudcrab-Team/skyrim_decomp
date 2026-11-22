@@ -35,7 +35,7 @@ reason codes only; no bytes, listings or decompiler output.
   disassembly, decompiler output, dumps, proprietary symbols or secrets, here or in comments.
 - [ ] Every name carries its origin label (`docs/contributor-card.md`); a body adapted from a community
   source is declared in the unit header with its licence.
-- [ ] Anything taken from the FNV decompilation (`momusdigital/fnv_decomp@91e1b6e8`) is labelled
+- [ ] Anything taken from the FNV or Fallout 3 decompilation (`momusdigital/fnv_decomp@91e1b6e8`, `momusdigital/f3_decomp@f5bac1b5`) is labelled
   `SIBLING(...)`, and a reused body has a `Sibling source:` header line; it is never evidence about the
   Skyrim binary.
 - [ ] AI assistance and source exposure are stated above and in the unit header.

@@ -2,7 +2,6 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Code origin: original bodies written from the local listing; declarations from the pinned community headers.
 // Adapted bodies: none
-// Drafted by: eclepso, assisted by claude-sonnet-5-5
 // 0x1581e30 ShadowArray::~ShadowArray
 // 0x157ed10 BSShadowDirectionalLight::GetPassExtraParam
 // 0x1581730 BSShadowDirectionalLight::UpdateSunDirectionBlend

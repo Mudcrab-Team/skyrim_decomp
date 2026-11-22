@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "??_GBSAnimationGraphManager@@UEAAPEAXI@Z": {
+      "rva": 12336176,
+      "size": 52
+    },
+    "??1BSAnimationGraphManager@@UEAA@XZ": {
+      "rva": 12321408,
+      "size": null
+    },
+    "??3@YAXPEAX_K@Z": {
+      "rva": 22705212,
+      "size": null
+    },
+    "?Functionbc0e60@BSAnimationGraphManager@@QEAAXPEAX0@Z": {
+      "rva": 12324448,
+      "size": 9
+    },
+    "?Functionbc0fb0@BSAnimationGraphManager@@QEAAXPEAX@Z": {
+      "rva": 12324784,
+      "size": 9
+    },
+    "?Functionbc1d80@@YAXPEAVBSAnimationGraphManager@@PEAX11@Z": {
+      "rva": 12328320,
+      "size": null
+    },
+    "?Functionbc2df0@@YAXPEAVBSAnimationGraphManager@@PEAX1@Z": {
+      "rva": 12332528,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "??_GBSAnimationGraphManager@@UEAAPEAXI@Z",
+        "rva": "0xbc3c30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??1BSAnimationGraphManager@@UEAA@XZ",
+        "rva": "0xbc0280",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "??3@YAXPEAX_K@Z",
+        "rva": "0x15a743c",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionbc0e60@BSAnimationGraphManager@@QEAAXPEAX0@Z",
+        "rva": "0xbc0e60",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionbc0fb0@BSAnimationGraphManager@@QEAAXPEAX@Z",
+        "rva": "0xbc0fb0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionbc1d80@@YAXPEAVBSAnimationGraphManager@@PEAX11@Z",
+        "rva": "0xbc1d80",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionbc2df0@@YAXPEAVBSAnimationGraphManager@@PEAX1@Z",
+        "rva": "0xbc2df0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}
