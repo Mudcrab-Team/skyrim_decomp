@@ -1492,6 +1492,25 @@ class Bot:
             raise Stop('leakgrep did not complete')
         return result.returncode == 1, parse_leak_codes(result.stdout.decode(errors='replace'))
 
+    def leakgrep_units(self, base, head):
+        """(hit, codes) of the scan over the added lines under reconstruction/ only.
+
+        A carried record holds digests and byte counts that the hex-run rule would flag in every file; those
+        are verified by the check job, and unit source is what the scan exists for.
+        """
+        script = self.tools / 'leakgrep.py'
+        if not script.is_file():
+            if self.dry_run:
+                return False, []
+            raise Stop('leakgrep is not available')
+        diff = self.run(['git', 'diff', '--no-renames', '--no-color', '-U0', '--diff-algorithm=minimal',
+                         f'{base}...{head}', '--', SCOPE_PREFIX], cwd=self.root).stdout
+        result = self.run([sys.executable, script, '--diff', '-', '--private-list',
+                           self.root / '.local/leakgrep-private.txt'], input=diff, check=False, timeout=120)
+        if result.returncode not in (0, 1) or b'leakgrep: ' not in result.stdout:
+            raise Stop('leakgrep did not complete')
+        return result.returncode == 1, parse_leak_codes(result.stdout.decode(errors='replace'))
+
     def leakgrep_text(self, text):
         """True if leakgrep flags free text (a commit message), fed to it as an added-lines diff."""
         script = self.tools / 'leakgrep.py'
@@ -2850,7 +2869,7 @@ class Bot:
     def carried_decision(self, pr, state, files, base):
         number, head = pr['number'], pr['headRefOid']
         blocked = dict(merge=False, verdicts={})
-        hit, codes = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
+        hit, codes = state.once('leakgrep', lambda: list(self.leakgrep_units(base, head)))
         if hit:
             return dict(blocked, blocked='leak', leak_source='leakgrep', leak_evidence=codes)
         tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()

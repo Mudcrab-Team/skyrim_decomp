@@ -342,6 +342,8 @@ class World:
             return self.bind(names, kw)
         if tool.startswith('python') and any(n.endswith('record.py') for n in names):
             return self.record(names, kw)
+        if tool.startswith('python') and any(n.endswith('leakgrep.py') for n in names):
+            return REAL_RUN(names, cwd=kw.get('cwd'), capture_output=True, input=kw.get('input'))
         if tool == 'git':
             return self.git(names, kw)
         raise AssertionError(f'unscripted command: {names[:3]}')
@@ -441,6 +443,9 @@ class ReplayBot(pr_bot.Bot):
         return []
 
     def leakgrep(self, base, head):
+        return (False, [])
+
+    def leakgrep_units(self, base, head):
         return (False, [])
 
     def leakgrep_text(self, text):
@@ -855,6 +860,19 @@ class CarriedRecordsTests(Replay):
         self.w.poll(self.bot)
         self.assertFalse(self.merged(7))
         self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'ci')
+
+    def test_the_leak_scan_of_a_carried_pr_reads_unit_source_and_not_the_digests_in_records(self):
+        digest = '0123456789abcdef' * 4
+        files = self.carried_files()
+        files[f'reports/{BUILD}/0x1000.json'] = json.dumps(dict(
+            function_id=f'{BUILD}-0x1000', source=dict(compiled=unit_path(0x1000)), code_section_sha256=digest))
+        head = self.w.make_pr(7, files, author=pr_bot.OWNER)
+        base = self.w.github.prs[7]['base']
+        # the bot's checkout needs the PR's objects, as the lane's own fetch gives it
+        git(self.w.root, 'fetch', '-q', 'origin', 'refs/pull/7/head')
+        self.assertEqual(pr_bot.Bot.leakgrep_units(self.bot, base, head), (False, []))
+        full = pr_bot.Bot.leakgrep(self.bot, base, head)
+        self.assertTrue(full[0], 'the full scan is expected to flag the digest, which is why the lane scopes it')
 
     def test_a_contributor_pr_with_the_same_files_is_a_scope_finding_not_a_carried_merge(self):
         self.w.make_pr(7, self.carried_files(), author='alice')
