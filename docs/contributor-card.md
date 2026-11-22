@@ -50,6 +50,10 @@ equivalent). Cheaper models are fine for drafting.
 5. The lead merges the passing branches into one, runs `submit --dry-run`, and opens one PR with
    `submit --all-dirty`.
 
+**Subagent batches are a drafting split, not a PR split.** Never open one PR per subagent, worktree or
+batch of 10 to 15. Subagents never open PRs or run `submit`; only the lead does, once, for the whole
+run. Split only above the 200 cap, and never open extra PRs just to trigger checks.
+
 Worktree and storage setup for this is in [contributor-parallel.md](contributor-parallel.md).
 
 Read `docs/contributor-lessons.md` before your first PR: common Reviewer rejections.
