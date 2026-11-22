@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 inline BaseFormComponent::~BaseFormComponent() {}
 class BSFixedString { public: BSFixedString(); ~BSFixedString(); const char* value; };
 class TESModel : public BaseFormComponent { public: ~TESModel() override; void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual const char* GetModel() const; virtual void SetModel(const char*); virtual void* GetAsModelTextureSwap(); BSFixedString model; void* textures; std::uint32_t* addons; std::uint16_t numTextures,numAddons; };

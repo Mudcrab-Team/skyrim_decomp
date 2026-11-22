@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstdint>
-#include "../../skyrim_shared/actors/PlayerCharacterMembers.h"
+#include "skyrim_shared/actors/PlayerCharacterMembers.h"
 namespace P2072 {
 class PlayerCombatView;
 class CombatGroup { public: void Remove(PlayerCombatView* player); };

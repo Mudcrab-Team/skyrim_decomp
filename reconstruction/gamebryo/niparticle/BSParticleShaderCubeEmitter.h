@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../nimain/NiRefObject.h"
+#include "gamebryo/nimain/NiRefObject.h"
 
 class NiPoint3;
 

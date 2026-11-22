@@ -5,7 +5,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 // FormEditorIDSet: GUESS(low); the callee at RVA 0x10d710, bound by the unit's bind-hints.json
 void FormEditorIDSet(void* a_dest, const char* a_str, bool a_flag);

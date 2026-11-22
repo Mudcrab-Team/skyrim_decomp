@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "CombatObjectLayout.h"
-#include "../../../bscore/BSFixedStringLayout.h"
+#include "bscore/BSFixedStringLayout.h"
 
 namespace ResearchLayouts {
 class TESForm;

@@ -25,7 +25,7 @@
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3acd70.h"
+#include "unmapped/storage/FieldLeaf3acd70.h"
 const void* FieldLeaf3acd70::Read() { return &name; }
 // Build: sse-steam-1-7-104; RVA 0x3acd80; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -38,7 +38,7 @@ const void* FieldLeaf3acd70::Read() { return &name; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3acd80.h"
+#include "unmapped/storage/FieldLeaf3acd80.h"
 const void* FieldLeaf3acd80::Read() { return next; }
 // Build: sse-steam-1-7-104; RVA 0x3f0f50; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -51,7 +51,7 @@ const void* FieldLeaf3acd80::Read() { return next; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3f0f50.h"
+#include "unmapped/storage/FieldLeaf3f0f50.h"
 const void* FieldLeaf3f0f50::Read() { return &name; }
 // Build: sse-steam-1-7-104; RVA 0x3f0f60; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -64,7 +64,7 @@ const void* FieldLeaf3f0f50::Read() { return &name; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3f0f60.h"
+#include "unmapped/storage/FieldLeaf3f0f60.h"
 const void* FieldLeaf3f0f60::Read() { return next; }
 // Build: sse-steam-1-7-104; RVA 0x3e1480; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -77,7 +77,7 @@ const void* FieldLeaf3f0f60::Read() { return next; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3e1480.h"
+#include "unmapped/storage/FieldLeaf3e1480.h"
 const void* FieldLeaf3e1480::Read() { return &name; }
 // Build: sse-steam-1-7-104; RVA 0x3e1490; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -90,7 +90,7 @@ const void* FieldLeaf3e1480::Read() { return &name; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3e1490.h"
+#include "unmapped/storage/FieldLeaf3e1490.h"
 const void* FieldLeaf3e1490::Read() { return next; }
 // Build: sse-steam-1-7-104; RVA 0x3ada70; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -103,7 +103,7 @@ const void* FieldLeaf3e1490::Read() { return next; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3ada70.h"
+#include "unmapped/storage/FieldLeaf3ada70.h"
 const void* FieldLeaf3ada70::Read() { return &name; }
 // Build: sse-steam-1-7-104; RVA 0x3ada80; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -116,7 +116,7 @@ const void* FieldLeaf3ada70::Read() { return &name; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3ada80.h"
+#include "unmapped/storage/FieldLeaf3ada80.h"
 const void* FieldLeaf3ada80::Read() { return next; }
 // Build: sse-steam-1-7-104; RVA 0x3a5f10; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -129,7 +129,7 @@ const void* FieldLeaf3ada80::Read() { return next; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3a5f10.h"
+#include "unmapped/storage/FieldLeaf3a5f10.h"
 const void* FieldLeaf3a5f10::Read() { return &name; }
 // Build: sse-steam-1-7-104; RVA 0x3a5f20; 5 bytes
 // Evidence: findings/ghidra-import.md
@@ -142,5 +142,5 @@ const void* FieldLeaf3a5f10::Read() { return &name; }
 // The derived source container adds no fields; original signature and ownership remain unknown.
 // Only Read is compared; a pass proves code under the recipe, not names or runtime behavior.
 // Origin: {"family": "represented-field-leaf", "template_digest": "28aa4df5d3f8b471a558c1295ab2401ad2e177e85cf3db4c37623395be440057", "version": "3-labels2"}
-#include "../unmapped/storage/FieldLeaf3a5f20.h"
+#include "unmapped/storage/FieldLeaf3a5f20.h"
 const void* FieldLeaf3a5f20::Read() { return next; }

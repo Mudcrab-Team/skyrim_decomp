@@ -6,7 +6,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "../skyrim/papyrus/NativeFunctionLayout.h"
+#include "skyrim/papyrus/NativeFunctionLayout.h"
 namespace ResearchLayouts {
 // numInstructionBits, jumpTargetBitCount, localVariableBitCount, memberVariableBitCount,
 // instructions, name, objName, stateName, retType, descTable, userFlags, functionType,

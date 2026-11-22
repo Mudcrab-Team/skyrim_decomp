@@ -11,7 +11,7 @@
 
 #include <cstddef>
 #include <cstdint>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class BGSSoundCategory;
 

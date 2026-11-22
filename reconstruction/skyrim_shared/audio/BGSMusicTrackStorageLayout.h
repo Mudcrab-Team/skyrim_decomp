@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "bsaudio/BSIMusicTrackStorageLayout.h"
-#include "../conditions/TESConditionStorageLayout.h"
+#include "skyrim_shared/conditions/TESConditionStorageLayout.h"
 
 namespace ResearchLayouts {
 class BGSMusicTrackStorageLayout : public BSIMusicTrackStorageLayout {

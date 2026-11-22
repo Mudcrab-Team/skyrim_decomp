@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "BSExtraDataStorageLayout.h"
-#include "../../bsaudio/BSSoundHandleStorageLayout.h"
+#include "bsaudio/BSSoundHandleStorageLayout.h"
 
 namespace ResearchLayouts {
 class ExtraWeaponIdleSoundStorageLayout : public BSExtraDataStorageLayout {

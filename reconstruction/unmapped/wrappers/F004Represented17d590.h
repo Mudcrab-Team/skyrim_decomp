@@ -11,7 +11,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../support/BSExtraDataLayout.h"
+#include "unmapped/support/BSExtraDataLayout.h"
 
 namespace ResearchLayouts {
 class AlchemyItem;

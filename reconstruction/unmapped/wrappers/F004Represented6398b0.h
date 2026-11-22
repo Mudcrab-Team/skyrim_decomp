@@ -11,7 +11,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../support/BGSSaveGameBufferLayout.h"
+#include "unmapped/support/BGSSaveGameBufferLayout.h"
 
 namespace ResearchLayouts {
 class TESForm;

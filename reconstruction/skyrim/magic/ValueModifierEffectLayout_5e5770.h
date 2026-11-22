@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "ActiveEffectLayout_5e5770.h"
-#include "../papyrus/LayoutValueTypes_5e5770.h"
+#include "skyrim/papyrus/LayoutValueTypes_5e5770.h"
 
 namespace ResearchLayouts {
 class ValueModifierEffectLayout : public ActiveEffectLayout {

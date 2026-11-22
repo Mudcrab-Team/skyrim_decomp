@@ -2,5 +2,5 @@
 // Original reconstruction; community-derived shared types are included with their notice.
 // BSInlineHost19ae90, Invoke, reference, p145_lookup_a, p145_lookup_b, p145_consume_a, p145_consume_b, p145_get_handle: GUESS(low) STANDIN
 #pragma once
-#include "../../bscore/BSHandleRefObject.h"
+#include "bscore/BSHandleRefObject.h"
 struct BSInlineHost19ae90 { p145::NiRefObject* reference; ~BSInlineHost19ae90(); };

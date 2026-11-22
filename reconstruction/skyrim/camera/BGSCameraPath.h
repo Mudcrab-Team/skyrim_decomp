@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-#include "../../skyrim_shared/forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class NiFormArray;
 

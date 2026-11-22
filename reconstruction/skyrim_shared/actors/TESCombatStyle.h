@@ -12,7 +12,7 @@
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 void SetFormHelper(TESForm* a_form, bool a_set);
 

@@ -85,13 +85,22 @@ def diagnostic(problem):
     return problem + '; fix: ' + fix
 
 
-def screen_diagnostics(blob, name, *, headers=contrib_screen.STANDARD_HEADERS):
+# Line-style findings: a header the change only includes may carry older lines that are not the
+# contributor's to fix, so they are reported for changed files only.
+STYLE_CODES = frozenset(('include-outside-roots', 'path-or-encoded-escape'))
+
+
+def screen_diagnostics(blob, name, *, headers=contrib_screen.STANDARD_HEADERS, changed=True):
     codes = contrib_screen.screen(blob, name, headers=headers)
+    if not changed:
+        codes = [c for c in codes if c not in STYLE_CODES]
     # Locate single-line offences; whole-file resource findings point to the file's first line.
     locations = {}
     if codes:
         for number, line in enumerate(blob.splitlines(), 1):
             for code in contrib_screen.screen(line, name, headers=headers):
+                if code not in codes:
+                    continue
                 locations.setdefault(code, number)
     return [f'{name}:{locations.get(code, 1)}: deterministic screen: {code}; fix: '
             + ('use a reconstruction-root header path without parent steps or host paths'
@@ -104,6 +113,7 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
     """Screen exactly the changed files and their complete compiler input closures."""
     root = Path(root)
     problems, all_names = [], set(names)
+    all_names_changed = set(names)
     compiled = {PurePosixPath(n).with_suffix('.cpp').as_posix() for n in names
                 if (root / Path(n).with_suffix('.cpp')).is_file()} | set(companions)
     if not compiled:
@@ -117,8 +127,9 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
             all_names.update(closure)
             # Retain the intake screen's closure/angle-header predicates unchanged.
             codes = contrib_screen.screen_tree(root, cpp, headers=headers)
-            if codes and not any(contrib_screen.screen((root / n).read_bytes(), n, headers=headers)
-                                 for n in closure):
+            if codes and not any(
+                    [c for c in contrib_screen.screen((root / n).read_bytes(), n, headers=headers)
+                     if n in all_names_changed or c not in STYLE_CODES] for n in closure):
                 problems += [diagnostic(f'{cpp}: deterministic screen: {code}') for code in codes]
         except (OSError, ValueError) as exc:
             problems.append(diagnostic(str(exc)))
@@ -137,7 +148,7 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
             except ValueError as exc:
                 problems.append(diagnostic(f'{name}: publication guard: {exc}'))
                 continue
-        problems += screen_diagnostics(blob, name, headers=headers)
+        problems += screen_diagnostics(blob, name, headers=headers, changed=name in all_names_changed)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
             problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]

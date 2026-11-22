@@ -12,7 +12,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm_7eb240.h"
+#include "skyrim_shared/forms/TESForm_7eb240.h"
 // The following bases and members represent the AE object rather than allocation-size storage.
 // NiRefObject, BSHandleRefObject, BSTEventSink, IAnimationGraphManagerHolder, NiPoint3, NiTransform, OBJ_REFR, BaseExtraList, ReferenceExtraDataList, TESObjectREFR, Projectile: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 class NiRefObject { public: virtual ~NiRefObject(); virtual void DeleteThis(); volatile std::uint32_t refCount; };

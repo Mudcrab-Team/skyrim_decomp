@@ -9,11 +9,11 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "../skyrim_shared/actors/RaceComponentLayout.h"
-#include "../unmapped/represented/BSExtraDataLayout.h"
-#include "../unmapped/represented/LayoutValueTypes.h"
-#include "../unmapped/represented/BSSoundHandleLayout.h"
-#include "../bscore/BSIntrusiveRefCountedStorageLayout.h"
+#include "skyrim_shared/actors/RaceComponentLayout.h"
+#include "unmapped/represented/BSExtraDataLayout.h"
+#include "unmapped/represented/LayoutValueTypes.h"
+#include "unmapped/represented/BSSoundHandleLayout.h"
+#include "bscore/BSIntrusiveRefCountedStorageLayout.h"
 namespace ResearchLayouts {
 class QueuedParentPointeeLayout;
 class MagicItemPointeeLayout;

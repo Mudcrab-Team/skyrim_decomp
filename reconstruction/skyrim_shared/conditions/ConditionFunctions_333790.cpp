@@ -7,7 +7,7 @@
 // ConditionFunctions::GetIsRace: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x333790 Condition::GetIsRace
 #include "ConditionFunctions_333790.h"
-#include "../actors/Actor_686600.h"
+#include "skyrim_shared/actors/Actor_686600.h"
 extern void* conditionLogger;
 extern const char raceLogFormat[];
 extern thread_local bool conditionLoggingEnabled;

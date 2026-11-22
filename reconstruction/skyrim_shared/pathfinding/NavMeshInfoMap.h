@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 inline BaseFormComponent::~BaseFormComponent() {}
 // ArrayOwner, ClearArray, ResetArrayCount, ReleaseArray: GUESS(low); represented heap array ownership.
 void ClearArray(void*); void ResetArrayCount(std::uint32_t*); void ReleaseArray(void*);

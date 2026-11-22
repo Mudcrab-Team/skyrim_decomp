@@ -6,7 +6,7 @@
 // TESLandTexture and members: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
-#include "../forms/TESForm_2b68d0.h"
+#include "skyrim_shared/forms/TESForm_2b68d0.h"
 #include <cstdint>
 class BGSTextureSet;
 class BGSMaterialType;

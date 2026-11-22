@@ -7,7 +7,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "../thirdparty/scaleform/GRefCountImplStorageLayout.h"
+#include "thirdparty/scaleform/GRefCountImplStorageLayout.h"
 #include "BSIntrusiveRefCountedStorageLayout.h"
 namespace ResearchLayouts {
 class MovieViewPointeeLayout;

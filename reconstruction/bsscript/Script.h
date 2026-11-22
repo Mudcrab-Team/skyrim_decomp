@@ -6,7 +6,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../skyrim_shared/forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class Script : public TESForm
 {

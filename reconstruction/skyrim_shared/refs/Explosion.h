@@ -22,7 +22,7 @@
 #include <intrin.h>
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 class Explosion;
 

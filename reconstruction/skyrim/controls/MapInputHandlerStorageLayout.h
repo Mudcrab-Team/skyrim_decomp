@@ -8,7 +8,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../interface/MenuEventHandlerStorageLayout.h"
+#include "skyrim/interface/MenuEventHandlerStorageLayout.h"
 
 namespace ResearchLayouts {
 class MapMenu;

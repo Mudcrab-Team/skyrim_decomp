@@ -11,7 +11,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../support/CombatInventoryItemMagicLayout.h"
+#include "unmapped/support/CombatInventoryItemMagicLayout.h"
 
 namespace ResearchLayouts {
 class F004Represented83be00 : public CombatInventoryItemMagicLayout {

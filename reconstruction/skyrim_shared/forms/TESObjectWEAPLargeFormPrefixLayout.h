@@ -7,10 +7,10 @@
 // BGSMessageIcon, TESAttackDamageForm, BGSBlockBashData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 #include <cstddef>
-#include "../actors/RaceComponentLayout.h"
-#include "../../skyrim/interface/MessageIconComponentLayout.h"
-#include "../../skyrim/ai/combat/AttackDamageComponentLayout.h"
-#include "../../skyrim/ai/combat/BlockBashComponentLayout.h"
+#include "skyrim_shared/actors/RaceComponentLayout.h"
+#include "skyrim/interface/MessageIconComponentLayout.h"
+#include "skyrim/ai/combat/AttackDamageComponentLayout.h"
+#include "skyrim/ai/combat/BlockBashComponentLayout.h"
 namespace ResearchLayouts {
 // TESObjectWEAP: EXE_RTTI
 // Represented component at 0: TESBoundObject

@@ -7,9 +7,9 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../../skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e5770.h"
-#include "../../bsaudio/BSSoundHandleLayout_5e5770.h"
-#include "../papyrus/LayoutValueTypes_5e5770.h"
+#include "skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5e5770.h"
+#include "bsaudio/BSSoundHandleLayout_5e5770.h"
+#include "skyrim/papyrus/LayoutValueTypes_5e5770.h"
 
 namespace ResearchLayouts {
 class Effect;

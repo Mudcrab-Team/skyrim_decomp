@@ -7,7 +7,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../../skyrim/papyrus/LayoutValueTypes_5c6900.h"
+#include "skyrim/papyrus/LayoutValueTypes_5c6900.h"
 #include "ReferenceEffectControllerLayout_5c6900.h"
 
 namespace ResearchLayouts {

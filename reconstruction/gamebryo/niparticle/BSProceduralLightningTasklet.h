@@ -9,7 +9,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../../bscore/BSTaskletData.h"
+#include "bscore/BSTaskletData.h"
 
 class BSWin32TaskletData : public BSTaskletData
 {

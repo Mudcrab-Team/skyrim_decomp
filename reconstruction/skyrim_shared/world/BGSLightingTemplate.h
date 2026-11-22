@@ -11,7 +11,7 @@
 
 #include <cstdint>
 
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 struct INTERIOR_DATA {
     std::uint8_t unk00[0x4C];  // 00

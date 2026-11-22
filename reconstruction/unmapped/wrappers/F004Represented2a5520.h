@@ -11,8 +11,8 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../support/BSFixedStringLayout.h"
-#include "../support/NiObjectLayout.h"
+#include "unmapped/support/BSFixedStringLayout.h"
+#include "unmapped/support/NiObjectLayout.h"
 
 namespace ResearchLayouts {
 class NiAVObject;

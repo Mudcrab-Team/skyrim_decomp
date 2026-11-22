@@ -6,7 +6,7 @@
 #pragma once
 #include <cstddef>
 class TESFileArray; class TESBoundObject; class TESRace; class TESObjectCELL; class LOADED_REF_DATA; class BSExtraData; class SpellDispelData; class AIProcess;
-#include "../forms/TESForm_33bfc0.h"
+#include "skyrim_shared/forms/TESForm_33bfc0.h"
 struct Point3Short { short x,y,z; };
 class TESBoundObject : public TESForm { public: Point3Short boundMin, boundMax; }; class TESBoundAnimObject : public TESBoundObject {};
 class NiRefObject { public: virtual ~NiRefObject(); unsigned refCount; };

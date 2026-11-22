@@ -5,7 +5,7 @@
 // Community type and member names: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
-#include "../extradata/ExtraDataList.h"
+#include "skyrim_shared/extradata/ExtraDataList.h"
 namespace ResearchLayouts {
 class TESObjectREFRExtraPrefixLayout : public TESForm, public BSHandleRefObject, public BSAnimationGraphEventSink, public IAnimationGraphManagerHolder {
 public:

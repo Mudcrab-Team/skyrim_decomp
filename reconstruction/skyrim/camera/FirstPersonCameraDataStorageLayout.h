@@ -9,9 +9,9 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../../bssystem/QueuedFileDataStorageLayout.h"
-#include "../ai/combat/CombatPathRequestPointerStorageLayout.h"
-#include "../../unmapped/represented/BSTempEffectLayout.h"
+#include "bssystem/QueuedFileDataStorageLayout.h"
+#include "skyrim/ai/combat/CombatPathRequestPointerStorageLayout.h"
+#include "unmapped/represented/BSTempEffectLayout.h"
 namespace ResearchLayouts {
 class CameraObjectPointeeLayout;
 class CameraNodePointeeLayout;

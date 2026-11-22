@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // value, parent, materialName, materialKind, color, buoyancy, flags, impact,

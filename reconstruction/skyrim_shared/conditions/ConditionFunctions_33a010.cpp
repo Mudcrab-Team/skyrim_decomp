@@ -7,7 +7,7 @@
 // ConditionFunctions::HasKeyword: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x33a010 Condition::HasKeyword
 #include "ConditionFunctions_33a010.h"
-#include "../refs/TESObjectREFR_2ef670.h"
+#include "skyrim_shared/refs/TESObjectREFR_2ef670.h"
 extern void* conditionLogger;
 extern const char keywordLogFormat[];
 extern thread_local bool conditionLoggingEnabled;

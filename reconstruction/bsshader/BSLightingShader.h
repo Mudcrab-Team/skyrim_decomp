@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../gamebryo/nimain/NiRefObject.h"
+#include "gamebryo/nimain/NiRefObject.h"
 
 class BSShaderMaterial;
 class BSRenderPass;

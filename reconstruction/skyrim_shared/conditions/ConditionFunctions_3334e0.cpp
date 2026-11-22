@@ -6,7 +6,7 @@
 // ConditionFunctions, ConditionFunctions::GetInCell: GUESS(low); the static source container and original signature are unverified.
 // 0x3334e0 Condition::GetInCell
 #include "ConditionFunctions_3334e0.h"
-#include "../forms/TESForm_1467c0.h"
+#include "skyrim_shared/forms/TESForm_1467c0.h"
 struct HandleRef { void* vtable; unsigned int refCount, pad; };
 struct AnimationSink { void* vtable; };
 struct AnimationHolder { void* vtable; };

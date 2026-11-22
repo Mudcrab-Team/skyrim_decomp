@@ -7,7 +7,7 @@
 // ConditionFunctions::GetRelationshipRank: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x33b740 Condition::GetRelationshipRank
 #include "ConditionFunctions_33b740.h"
-#include "../actors/Actor_686600.h"
+#include "skyrim_shared/actors/Actor_686600.h"
 extern int GetRelationshipIndex(TESBoundObject*, TESBoundObject*);
 extern int relationshipValues[];
 extern const char* relationshipNames[];

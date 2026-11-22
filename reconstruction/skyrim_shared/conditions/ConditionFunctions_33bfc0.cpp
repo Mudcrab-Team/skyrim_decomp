@@ -7,7 +7,7 @@
 // ConditionFunctions::IsInDialogueWithPlayer: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x33bfc0 Condition::IsInDialogueWithPlayer
 #include "ConditionFunctions_33bfc0.h"
-#include "../actors/Actor_33bfc0.h"
+#include "skyrim_shared/actors/Actor_33bfc0.h"
 template<int N> struct DialogueEventSink { virtual ~DialogueEventSink(); };
 struct DialogueCriticalSection { void* debugInfo; long lockCount, recursionCount; void* owningThread; void* semaphore; unsigned long long spinCount; };
 struct RefHandle { unsigned int value; };

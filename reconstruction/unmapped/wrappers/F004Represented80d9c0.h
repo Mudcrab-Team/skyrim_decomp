@@ -12,7 +12,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../support/NiRefObjectLayout.h"
+#include "unmapped/support/NiRefObjectLayout.h"
 
 namespace ResearchLayouts {
 class F004Represented80d9c0 : public NiRefObjectLayout {

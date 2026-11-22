@@ -7,8 +7,8 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "../skyrim_shared/actors/RaceComponentLayout.h"
-#include "../skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h"
+#include "skyrim_shared/actors/RaceComponentLayout.h"
+#include "skyrim_shared/refs/TESObjectREFRComponentPrefixLayout.h"
 #include "EventInterfaceVptrPrefixLayout.h"
 namespace ResearchLayouts {
 class HarvestSoundPointeeLayout;

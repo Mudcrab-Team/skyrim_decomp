@@ -8,7 +8,7 @@
 // NiRefObject and BSHandleRefObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted reference-count declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
-#include "../skyrim_shared/forms/TESForm_667ad0.h"
+#include "skyrim_shared/forms/TESForm_667ad0.h"
 #include <cstdint>
 class NiRefObject { public: virtual ~NiRefObject(); virtual void DeleteThis(); volatile long refCount; };
 class NiAVObject : public NiRefObject {};

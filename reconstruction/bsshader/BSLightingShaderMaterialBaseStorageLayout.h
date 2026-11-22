@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "BSShaderMaterialStorageLayout.h"
-#include "../bscore/BSFixedStringStorageLayout.h"
+#include "bscore/BSFixedStringStorageLayout.h"
 
 namespace ResearchLayouts {
 class BSTextureSet;

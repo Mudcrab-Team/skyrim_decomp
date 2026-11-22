@@ -3,7 +3,7 @@
 // Code origin: original trivial field operation using an included represented layout.
 // Origin: represented-field-leaf v3-labels2
 #pragma once
-#include "../../skyrim/ai/combat/CombatPathRequestPointerStorageLayout.h"
+#include "skyrim/ai/combat/CombatPathRequestPointerStorageLayout.h"
 class FieldLeaf8eadb0 : public ResearchLayouts::CombatPathRequestPointerStorageLayout {
 public:
     const void* Read();

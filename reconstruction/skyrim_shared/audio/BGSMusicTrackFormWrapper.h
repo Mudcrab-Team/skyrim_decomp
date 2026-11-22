@@ -14,7 +14,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
 inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)

@@ -8,7 +8,7 @@
 // ConditionFunctions::GetPCIsSex: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x333c30 Condition::GetPCIsSex
 #include "ConditionFunctions_333c30.h"
-#include "../actors/Actor_686600.h"
+#include "skyrim_shared/actors/Actor_686600.h"
 extern TESObjectREFR* playerCharacter;
 extern int GetNPCSex(TESNPC*);
 extern void* conditionLogger;

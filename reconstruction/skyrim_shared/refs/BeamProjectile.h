@@ -11,7 +11,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "../saveload/BGSSaveFormBuffer.h"
+#include "skyrim_shared/saveload/BGSSaveFormBuffer.h"
 
 class BGSLoadFormBuffer;
 

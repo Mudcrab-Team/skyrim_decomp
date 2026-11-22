@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "ShaderRefLayout.h"
-#include "../gamebryo/nimain/NiBoneMatrixSetterLayout.h"
+#include "gamebryo/nimain/NiBoneMatrixSetterLayout.h"
 #include "ReloadShaderLayout.h"
 #include "ShaderTableLayout.h"
 namespace ResearchLayouts {

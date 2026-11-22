@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "bscore/BSFixedStringStorageLayout.h"
-#include "../nimain/NiObjectStorageLayout.h"
+#include "gamebryo/nimain/NiObjectStorageLayout.h"
 
 namespace ResearchLayouts {
 class NiParticleSystem;

@@ -8,7 +8,7 @@
 // ConditionFunctions::GetIsVoiceType: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x333eb0 Condition::GetIsVoiceType
 #include "ConditionFunctions_333eb0.h"
-#include "../forms/TESBoundObject_333eb0.h"
+#include "skyrim_shared/forms/TESBoundObject_333eb0.h"
 struct BSHandleRefObject { void* vtable; unsigned int refCount, padding; };
 struct BSAnimationEventSink { void* vtable; };
 struct AnimationGraphManagerHolder { void* vtable; };

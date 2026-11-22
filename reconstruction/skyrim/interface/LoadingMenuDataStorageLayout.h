@@ -7,7 +7,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../../bsscaleform/IUIMessageDataStorageLayout.h"
+#include "bsscaleform/IUIMessageDataStorageLayout.h"
 
 namespace ResearchLayouts {
 class BGSLocation;

@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../forms/TESForm.h"
+#include "skyrim_shared/forms/TESForm.h"
 #include <intrin.h>
 class BSLensFlareSpriteRenderData { public: virtual ~BSLensFlareSpriteRenderData(); virtual void DeleteThis(); volatile long refCount; };
 // This owned pointer releases its intrusive count atomically before deleting the sprite.

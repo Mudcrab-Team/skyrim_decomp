@@ -7,7 +7,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "../forms/FormComponentLayout.h"
+#include "skyrim_shared/forms/FormComponentLayout.h"
 namespace ResearchLayouts {
 class RacePointeeLayout;
 class EnchantmentPointeeLayout;

@@ -7,9 +7,9 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "../../skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5c6900.h"
-#include "../../bsaudio/BSSoundHandleLayout_5c6900.h"
-#include "../papyrus/LayoutValueTypes_5c6900.h"
+#include "skyrim_shared/tempeffects/ActiveEffectReferenceEffectControllerLayout_5c6900.h"
+#include "bsaudio/BSSoundHandleLayout_5c6900.h"
+#include "skyrim/papyrus/LayoutValueTypes_5c6900.h"
 
 class BGSSaveFormBuffer;
 namespace ResearchLayouts {
