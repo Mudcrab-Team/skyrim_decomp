@@ -25,11 +25,23 @@ class TESBoundAnimObject : public TESBoundObject
 public:
 };
 
+// TESObjectREFR, TESObjectREFR::OpenContainer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the called method is declared
+class TESObjectREFR
+{
+public:
+    void OpenContainer(std::int32_t a_openType) const;
+};
+
+// g_containerOpener: GUESS(low); the reference pointer the activator is compared against
+extern TESObjectREFR* g_containerOpener;
+
 class TESObjectCONT : public TESBoundAnimObject
 {
 public:
     virtual void InitializeData();  // compared: 0x281530
     void InitItemImpl() override;  // compared: 0x281a30
+    // OpenForActivator: GUESS(low); opens the container reference when the activator is the expected reference
+    void OpenForActivator(TESObjectREFR* a_container, TESObjectREFR* a_activator);
 
     // Members written by the compared body, split out of the padding; the total size is not known from the listing.
     std::uint8_t unknown20[0x99];  // 20

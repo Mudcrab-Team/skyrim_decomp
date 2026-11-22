@@ -1,0 +1,16 @@
+// Source exposure: binary-analysis of the pinned image.
+// Code origin: original; the listing only
+// SPDX-License-Identifier: CC0-1.0
+// DeletingLeaf1226b80: GUESS(low)
+#pragma once
+
+void operator delete(void*, unsigned __int64) noexcept;
+
+class DeletingLeaf1226b80
+{
+public:
+    virtual ~DeletingLeaf1226b80() {}
+
+    unsigned char storage[0x10];
+};
+static_assert(sizeof(DeletingLeaf1226b80) == 0x18, "observed sized deletion argument");

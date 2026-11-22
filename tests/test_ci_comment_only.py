@@ -63,7 +63,7 @@ class CommentOnlyTests(unittest.TestCase):
 
     def commit_files(self, **files):
         for name, text in files.items():
-            path = self.root / name.replace('__', '/').replace('_cpp', '.cpp').replace('_py', '.py')
+            path = self.root / name.replace('__', '/').replace('_cpp', '.cpp').replace('_py', '.py').replace('_h', '.h')
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, newline='\n')
         run(self.root, 'add', '.')
@@ -81,6 +81,19 @@ class CommentOnlyTests(unittest.TestCase):
         head = self.commit_files(tools__x_py='print(1)\n', reconstruction__misc__Widget_cpp=SOURCE + '\n')
         with self.assertRaises(ValueError):
             ci.prepare(self.root, self.base, head, Path(self.tmp.name) / 'work-mixed')
+
+    def test_a_lint_failure_carries_the_file_line_and_message(self):
+        bare = HEADER.replace('// Widget, Get, value: GUESS(low)', '// GUESS(low): no names before the label')
+        head = self.commit_files(reconstruction__misc__Widget_h=bare)
+        with self.assertRaises(ci.LintFailure) as caught:
+            ci.prepare(self.root, self.base, head, Path(self.tmp.name) / 'work-lint')
+        self.assertTrue(any(f.startswith(f'{HDR}:2: ') and 'label outside the v2 grammar' in f
+                            for f in caught.exception.findings))
+        self.assertIsInstance(caught.exception, ValueError)
+
+    def test_the_summary_names_the_findings(self):
+        text = ci.summary_text(dict(error='LintFailure', findings=[f'{HDR}:2: label outside the v2 grammar']))
+        self.assertIn(f'- {HDR}:2: label outside the v2 grammar', text)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
 // Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// 0x1df190 compared function
+// Function1df190: GUESS(low)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BaseFormComponent: STANDIN EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only class names, base chain,
 // slot order and sizes are claimed.
@@ -40,6 +42,7 @@ public:
 	void CopyComponent() override;  // 03
 	// TESAttackDamageForm::GetAttackDamage: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot 4, target 0x1df130
 	virtual std::uint16_t GetAttackDamage() const;  // 04
+	void Function1df190(std::uint16_t a_value);  // compared: 0x1df190
 
 		// attackDamage: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 	std::uint16_t attackDamage;  // 08

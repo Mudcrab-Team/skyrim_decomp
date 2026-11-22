@@ -1,14 +1,28 @@
 // Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"low","kind":"guess","owner":"CombatAimController","rationale":"vtable owner and slot; method spelling invented","slot":6},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// 0x80a2f0 compared function
+// 0x80a280 compared function
+// SPDX-License-Identifier: CC0-1.0
+// Code origin: bodies written from the pinned image listing; class name from image RTTI
+// Adapted bodies: none
 // CombatAimController: EXE_RTTI
-// Slot6: GUESS(low)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Slot6, flags3C, aimValue, aimCount, gAimDefault: GUESS(low) STANDIN
 #pragma once
+
 #include <cstdint>
-// Slot6: GUESS(low); method name inferred from vtable owner and slot
+
+extern float gAimDefault;
+
 class CombatAimController
 {
 public:
     virtual std::uint8_t Slot6() const;
+    void Function80a280();   // compared: 0x80a280
+    void Function80a2f0();   // compared: 0x80a2f0
+
+    std::uint64_t unk08[6];  // 08 .. 37
+    std::uint32_t unk38;     // 38 .. 3b
+    std::uint32_t flags3C;   // 3c
+    float aimValue;          // 40
+    std::int32_t aimCount;   // 44
 };
+static_assert(sizeof(CombatAimController) == 0x48, "size observed from the listed member offsets");

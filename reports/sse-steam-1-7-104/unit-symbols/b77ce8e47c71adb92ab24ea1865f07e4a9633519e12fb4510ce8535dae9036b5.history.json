@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "map": "reports/sse-steam-1-7-104/unit-symbols/b77ce8e47c71adb92ab24ea1865f07e4a9633519e12fb4510ce8535dae9036b5.json",
+  "versions": [
+    {
+      "sha256": "b77ce8e47c71adb92ab24ea1865f07e4a9633519e12fb4510ce8535dae9036b5",
+      "base": null,
+      "added": [
+        "__imp_GetLastError",
+        "__imp_FormatMessageA",
+        "__imp_LocalFree",
+        "__imp_GetCurrentThreadId",
+        "?OpenTES@TESFile@@QEAA_NW4OpenMode@NiFile@@_N@Z",
+        "?OpenInternal@TESFile@@AEAA_NPEAD0W4OpenMode@NiFile@@_N@Z",
+        "?GetFormType@TESFile@@QEAA?AW4FormType@@XZ",
+        "?Seek@TESFile@@QEAA_NI@Z",
+        "?GetCurrentSubRecordType@TESFile@@QEAAIXZ",
+        "?SeekNextSubrecord@TESFile@@QEAA_NXZ",
+        "?Duplicate@TESFile@@QEAAPEAV1@I@Z",
+        "?ReadFormHeader@TESFile@@AEAA_NXZ",
+        "?ReadChunkHeader@TESFile@@AEAA_NXZ",
+        "?DuplicateForThread@TESFile@@AEAAPEAV1@II@Z",
+        "?SeekRaw@TESFile@@AEAAXII@Z",
+        "?ConvertFormType@@YA?AW4FormType@@I@Z",
+        "?g_seekOrigin@@3IB",
+        "?g_threadSafeFiles@@3_NA",
+        "?g_tes4RecordType@@3IA",
+        "?singleton@Main@@2PEAV1@EA",
+        "?CopyBytes@@YAXPEAX_KPEBX1@Z",
+        "?Read@BSFile@@QEAAIPEAXI@Z",
+        "?g_secondRecordType@@3IA",
+        "?IsReservedFormID@@YA_NI@Z"
+      ]
+    }
+  ]
+}

@@ -58,6 +58,7 @@ DEFAULT_CHECKOUTS = {
 # docs/authorizations.md. FNV uses headers and its build list; the anonymous sibling uses
 # only its allowed game-code folders and never mixed generated aggregates.
 DEFAULT_SIBLINGS = {'momusdigital/fnv_decomp': '.local/sources/fnv_decomp',
+                    'momusdigital/f3_decomp': '.local/sources/f3_decomp',
                     'fo4-private': '.local/sources/fo4-private'}
 SIBLING_DIRS = ('include',)
 # Name lists at a checkout's root, read as declarations (meh321's has no headers).

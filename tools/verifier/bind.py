@@ -1170,6 +1170,17 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
             symbols[new] = entry
             found[new] = (how, fn.get('community_name'))
             report['changed'] = True
+        # A unit edit can re-decorate an accepted function (a method turned virtual, say). The record's
+        # frozen map still carries the old decoration at this RVA, and the comparator rejects a second
+        # name there unless a fold declares it.
+        folded = set().union(*(set(g) for g in smap.get('folds', []) if new in g))
+        for rec in task.get('export', {}).get('unit_already_records', []):
+            gone = rec.get('symbol')
+            if (gone and gone != new and parse_rva(rec['rva']) == rva and gone not in defined
+                    and gone not in folded and symbols.get(gone, {}).get('rva') == rva):
+                del symbols[gone]
+                report['renamed'].append({'rva': hex(rva), 'old': gone, 'new': new})
+                report['changed'] = True
         report['functions'].append({'rva': hex(rva), 'symbol': new, 'how': how})
 
     bound_at = {parse_rva(f['rva']): f['symbol'] for f in report['functions']}

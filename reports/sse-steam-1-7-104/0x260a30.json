@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "e980bef2c60ee91bfe69071642fc3b6863f9a998891f44a06ec3b97012659b95",
+        "object_sha256": "9e3b7971be0c554ab9327bd83a18714b106810865dcb4e566e7a08aa730aff0e",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "b075b0e782540a368ad77d29499c24515a925bf2",
+    "base_sha": "e6ecf84cd9d60a4121794023735cfd3775773bdb",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "5d5e933e8ff5377947fac810d14466573a44ba2d",
+    "head_sha": "e8b745e8038a73bfebfdd0bbb9bb8e859c197ba1",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44471602334,
+    "run_id": 44954941715,
     "rva": "0x260a30",
     "schema": 2,
-    "source_sha256": "eed78d10f34bccf0b1dbf7a67fca676f00872e4057ac6329ce27e9643ee60f5d",
+    "source_sha256": "0bdfe037f7b466c5595fc91f37621a874aa7213d7d81b30bc696526d572fbbd8",
     "status": "pass",
     "symbols": [
       "?InitializeData@BGSExplosion@@UEAAXXZ"
@@ -98,7 +98,7 @@
         "candidate": {
           "code_section_sha256": "e2d94b2ff1c819faad6e82b2b38129fdf80274cd07f428a6ee9b6ed28df732ab",
           "code_sections": 1,
-          "object_sha256": "e980bef2c60ee91bfe69071642fc3b6863f9a998891f44a06ec3b97012659b95"
+          "object_sha256": "9e3b7971be0c554ab9327bd83a18714b106810865dcb4e566e7a08aa730aff0e"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +159,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
-          "source_revision": "eed78d10f34bccf0b1dbf7a67fca676f00872e4057ac6329ce27e9643ee60f5d"
+          "source_revision": "0bdfe037f7b466c5595fc91f37621a874aa7213d7d81b30bc696526d572fbbd8"
         },
-        "symbol_map_sha256": "f159663bfc5f2759d13f734ab4fa1b5648435192d52e94739f5362ebacfacc53",
+        "symbol_map_sha256": "be0fcbd32825f754c1b231d3a10c0abb2455a457b69df462cced1478aa138972",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +172,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
-    "digest": "eed78d10f34bccf0b1dbf7a67fca676f00872e4057ac6329ce27e9643ee60f5d",
+    "digest": "0bdfe037f7b466c5595fc91f37621a874aa7213d7d81b30bc696526d572fbbd8",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/forms/BGSExplosion.cpp",
       "reconstruction/skyrim_shared/forms/BGSExplosion.h"
     ]
   },
-  "submitter": "taylorturnerit",
+  "submitter": "ariizona",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/f159663bfc5f2759d13f734ab4fa1b5648435192d52e94739f5362ebacfacc53.json",
-    "sha256": "f159663bfc5f2759d13f734ab4fa1b5648435192d52e94739f5362ebacfacc53"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/be0fcbd32825f754c1b231d3a10c0abb2455a457b69df462cced1478aa138972.json",
+    "sha256": "be0fcbd32825f754c1b231d3a10c0abb2455a457b69df462cced1478aa138972"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

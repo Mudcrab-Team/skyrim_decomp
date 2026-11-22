@@ -63,6 +63,19 @@ class HeaderCheckTests(unittest.TestCase):
         self.write('reconstruction/a/Widget.h', OLD.replace('// line 3\n', ''))
         self.assertEqual(self.head(), [])
 
+    def test_ci_hash_binding_lines_do_not_count_but_other_lines_still_do(self):
+        five = ''.join(f'// note {i}\n' for i in range(6))
+        binding = '// CI hash: 0x32dde4 ??_ETESModel@@WCA@EAAPEAXI@Z\n'
+        tail = '// Widget: GUESS(low)\n#pragma once\nclass Widget {};\n'
+        self.write('reconstruction/a/Bound.h', five + binding + '// CI hash: 0x32dde8 ??_ETESModel@@WCA@EAAPEAXI@Z\n' + tail)
+        self.write('reconstruction/a/Spaced.h', five + '// CI hash:0x32dde4 Sym\n' + tail)
+        self.write('reconstruction/a/Prose.h', five + '// CI hash: 0x32dde4 two words\n' + tail)
+        self.write('reconstruction/a/NoRva.h', five + '// CI hash: Sym\n' + tail)
+        self.write('reconstruction/a/Trailing.h', five + '// CI hash: 0x32dde4 Sym extra\n' + tail)
+        problems = self.head()
+        self.assertEqual(sorted(p.split(':')[0].rsplit('/', 1)[1] for p in problems),
+                         ['NoRva.h', 'Prose.h', 'Trailing.h'])
+
     def test_unprintable_path_is_not_echoed(self):
         self.write('reconstruction/a/we ird;$(x).h', OLD)
         problems = self.head()

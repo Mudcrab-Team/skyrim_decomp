@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Functionfa0950@NiPSysEmitterCtlr@@QEAAXPEAV1@@Z": {
+      "rva": 16386384,
+      "size": 44
+    },
+    "?Functionff4f40@NiPSysEmitterCtlr@@QEAAXPEAV1@@Z": {
+      "rva": 16731968,
+      "size": 46
+    },
+    "?Functionf62de0@@YAXPEAVNiPSysEmitterCtlr@@0@Z": {
+      "rva": 16133600,
+      "size": null
+    },
+    "?Functioneb11e0@@YAXPEAX0@Z": {
+      "rva": 15405536,
+      "size": null
+    },
+    "?Functionf9a3f0@@YAXPEAVNiPSysEmitterCtlr@@0@Z": {
+      "rva": 16360432,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Functionfa0950@NiPSysEmitterCtlr@@QEAAXPEAV1@@Z",
+        "rva": "0xfa0950",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionff4f40@NiPSysEmitterCtlr@@QEAAXPEAV1@@Z",
+        "rva": "0xff4f40",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionf62de0@@YAXPEAVNiPSysEmitterCtlr@@0@Z",
+        "rva": "0xf62de0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioneb11e0@@YAXPEAX0@Z",
+        "rva": "0xeb11e0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functionf9a3f0@@YAXPEAVNiPSysEmitterCtlr@@0@Z",
+        "rva": "0xf9a3f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

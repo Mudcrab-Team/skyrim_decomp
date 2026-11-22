@@ -1,10 +1,11 @@
-// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
-// the compared functions from the pinned image).
-// Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
+// 0x153250 compared function
+// Code origin: original stand-in; no external declaration or body reused.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // MagicItemFindKeywordFunctor: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
+// MagicItemFindKeywordFunctor::MatchCondition: CRASHLOGGER_PDB(59818@2026.10.24)
 // MagicItemTraversalFunctor, MagicItemFindFunctor: STANDIN EXE_RTTI
-// MagicItemFindKeywordFunctor::~MagicItemFindKeywordFunctor: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
-// MagicItemTraversalFunctor::~MagicItemTraversalFunctor, unknown08, unknown10, unknown18: GUESS(low)
+// unknown08, unknown10, unknown18, MatcherAt40, MatcherHolder, ArgType, their members: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -25,13 +26,38 @@ public:
 };
 static_assert(sizeof(MagicItemFindFunctor) == 0x18, "MagicItemFindFunctor size");
 
+class MatcherAt40
+{
+public:
+    virtual void Unk08();
+    virtual void Unk10();
+    virtual void Unk18();
+    virtual void Unk20();
+    virtual bool Matches(void* a_keyword);
+};
+
+class MatcherHolder
+{
+public:
+    std::uint8_t unknown00[0x40];  // 00
+    MatcherAt40 matcher;  // 40
+};
+
+class ArgType
+{
+public:
+    std::uint8_t unknown00[0x10];  // 00
+    MatcherHolder* field10;  // 10
+};
+
 class MagicItemFindKeywordFunctor : public MagicItemFindFunctor
 {
 public:
     MagicItemFindKeywordFunctor();
     virtual ~MagicItemFindKeywordFunctor();  // compared: 0x152790 (scalar deleting destructor)
 
-    // members: padding kept; only the destructor is compared
-    std::uint8_t unknown18[0x8];  // 18
+    bool MatchCondition(ArgType* a_arg);  // compared: 0x153250
+
+    void* field18;  // 18
 };
 static_assert(sizeof(MagicItemFindKeywordFunctor) == 0x20, "MagicItemFindKeywordFunctor size");

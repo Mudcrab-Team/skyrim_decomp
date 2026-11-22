@@ -1,4 +1,5 @@
 // Source exposure: mixed (local binary analysis and public names).
+// 0x18c1d0 compared function
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
 // Adapted bodies: none. Body synthesized from the bounded leaf template.
 // ExtraCellWaterEnvMap: EXE_RTTI
@@ -11,4 +12,6 @@ class ExtraCellWaterEnvMap
 {
 public:
     virtual std::uint32_t GetType() const;
+    // Function18c1d0: GUESS(low); forwards to an external helper with both pointers advanced 0x10.
+    void Function18c1d0(ExtraCellWaterEnvMap* a_other);
 };

@@ -7,6 +7,7 @@
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/facegen/bsfacegenkeyframe.cpp:59
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/facegen/bsfacegenkeyframe.cpp:82
 // Unk_0B, Unk_0E: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); implementation context only
+// 0x43ad00 BSFaceGenKeyframeMultiple::GetCustomName
 // 0x43aca0 BSFaceGenKeyframeMultiple::GetExpressionName
 // 0x43ace0 BSFaceGenKeyframeMultiple::GetPhonemeName
 // 0x432080 BSFaceGenKeyframeMultiple::Unk_0E
@@ -14,7 +15,14 @@
 #include "BSFaceGenKeyframeMultiple.h"
 
 // RVA 0x43ad00, 22 bytes: only index 0 has a name.
-
+const char* BSFaceGenKeyframeMultiple::GetCustomName(std::int32_t a_index)
+{
+    // The same unsigned bound check as the two tables below; this table has one entry.
+    if (static_cast<std::uint32_t>(a_index) <= 0) {
+        return g_customNameTable[a_index];
+    }
+    return nullptr;
+}
 
 // RVA 0x43aca0, 23 bytes: indices up to 16 have names.
 const char* BSFaceGenKeyframeMultiple::GetExpressionName(std::uint32_t a_index)

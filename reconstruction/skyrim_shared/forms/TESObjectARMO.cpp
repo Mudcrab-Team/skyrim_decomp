@@ -1,14 +1,17 @@
-// Code origin: bodies written by the contributor from the compared functions' behaviour; names and
-// declarations come from the header (CharmedBaryon/CommonLibSSE-NG, MIT).
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
+// Code origin: bodies written by the contributor (no adapted bodies); names and declarations from CharmedBaryon/CommonLibSSE-NG (MIT).
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
-// Adapted bodies: none.
 // 0x27f1b0 TESObjectARMO::GetDescriptionOwnerFile
 // 0x27ef24 TESObjectARMO::dtor
 // 0x27eef4 TESObjectARMO::dtor
 // 0x27ef6c TESObjectARMO::dtor
+// 0x27ef00 TESObjectARMO::dtor
+// 0x27ef0c TESObjectARMO::dtor
+// TESObjectARMO::dtor: CRASHLOGGER_PDB(59818@2026.10.24)
+// CI hash: 0x27ef00 ??_ETESObjectARMO@@WBNI@EAAPEAXI@Z
+// CI hash: 0x27ef0c ??_ETESObjectARMO@@WBPA@EAAPEAXI@Z
+// CI hash: 0x27ef6c ??_ETESObjectARMO@@WLA@EAAPEAXI@Z
 // 0x27dae0 TESObjectARMO::InitializeData
 // 0x27ee20 TESObjectARMO::SaveGame
 // 0x27ee60 TESObjectARMO::LoadGame
