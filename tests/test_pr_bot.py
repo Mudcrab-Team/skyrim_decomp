@@ -50,6 +50,24 @@ class PollableTests(unittest.TestCase):
         opted = self.pr(owner, [pr_bot.OPT_IN_LABEL])
         self.assertEqual(pr_bot.pollable([opted]), [opted])
 
+    def test_an_owner_pr_of_reconstruction_files_only_is_polled_for_its_own_head(self):
+        owner = pr_bot.OWNER
+        calls = []
+
+        class Bot:
+            def changed_files(self, number):
+                calls.append(number)
+                return [{'filename': 'reconstruction/a/B.cpp'}] if number == 1 else [{'filename': 'tools/x.py'}]
+        mixed = dict(self.pr(owner), number=2, headRefOid='b' * 40)
+        recon = dict(self.pr(owner), headRefOid='a' * 40)
+        known = {}
+        pr_bot.mark_owner_reconstruction(Bot(), [recon, mixed], known)
+        pr_bot.mark_owner_reconstruction(Bot(), [recon, mixed], known)
+        self.assertEqual(calls, [1, 2])  # each head is listed once
+        self.assertEqual(pr_bot.pollable([recon, mixed]), [recon])
+        # a push moves the head; the tag does not follow it
+        self.assertEqual(pr_bot.pollable([dict(recon, headRefOid='c' * 40)]), [])
+
     def test_outside_pr_needs_no_label_but_drafts_and_other_bases_stay_out(self):
         outside = self.pr('alice')
         self.assertEqual(pr_bot.pollable([outside, self.pr('alice', draft=True), self.pr('alice', base='dev'),

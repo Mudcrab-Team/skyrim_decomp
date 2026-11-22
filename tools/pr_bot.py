@@ -3304,14 +3304,33 @@ def merged_unrecorded(directory, now, max_age=RECORD_RETRY_WINDOW):
 
 
 def pollable(prs):
-    """The open PRs the poll loop processes: outside PRs, and owner PRs that opted in with the label."""
+    """The open PRs the poll loop processes: outside PRs, owner PRs that opted in with the label, and owner PRs
+    whose head the poll found to change only reconstruction/ (the same two-host and review gate applies)."""
     def opted_in(pr):
-        return any(label.get('name') == OPT_IN_LABEL for label in pr.get('labels') or [])
+        return (any(label.get('name') == OPT_IN_LABEL for label in pr.get('labels') or [])
+                or (bool(pr.get('reconstruction_head')) and pr['reconstruction_head'] == pr.get('headRefOid')))
     return [pr for pr in prs if (pr['author']['login'].casefold() != OWNER.casefold() or opted_in(pr))
             and pr['baseRefName'] == 'main' and not pr['isDraft']]
 
 
 POOL_SIZE = 2
+
+
+def mark_owner_reconstruction(bot, prs, known):
+    """Tag the owner's open PRs whose changed files are all under reconstruction/, once per head.
+
+    The tag carries the head it was computed for, so a push to another head loses it until the files are
+    listed again. Tooling, mapping and mixed PRs stay opt-in: nothing else of the owner's is merged by the bot.
+    """
+    for pr in prs:
+        if (pr['author']['login'].casefold() != OWNER.casefold() or pr['baseRefName'] != 'main' or pr['isDraft']
+                or any(label.get('name') == OPT_IN_LABEL for label in pr.get('labels') or [])):
+            continue
+        key = (pr['number'], pr['headRefOid'])
+        if key not in known:
+            known[key] = scope_problem(bot.changed_files(pr['number'])) is None
+        if known[key]:
+            pr['reconstruction_head'] = pr['headRefOid']
 
 
 def outside_first(prs):
@@ -3432,6 +3451,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     retried = None
     swept = None
     probes = None
+    reconstruction_heads = {}  # (number, head) -> whether an owner PR changes only reconstruction/
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with ThreadPoolExecutor(max_workers=workers) as pool:
         turn = 0
@@ -3483,6 +3503,13 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 delay = gh.failed()
                 print(stamp(), f'poll: gh failed: {exc}; GitHub calls back off for {delay:.0f}s', file=sys.stderr,
                       flush=True)
+                continue
+            try:
+                mark_owner_reconstruction(bot, prs, reconstruction_heads)
+            except GhFailure as exc:
+                delay = gh.failed()
+                print(f'{stamp()} poll: owner PR files: gh failed ({exc}); GitHub calls back off for {delay:.0f}s',
+                      file=sys.stderr, flush=True)
                 continue
             now = time.time()
             for pr in outside_first(pollable(prs)):
