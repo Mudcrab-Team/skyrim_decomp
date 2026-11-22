@@ -1,7 +1,7 @@
 // Source exposure: mixed (pinned image listing and authorized sibling hints).
-// Origin: SIBLING(fo4-private@1b765c70, author-permission)
-// Body reconstructed from the target listing.
-// SetActorValue: Sibling source: fo4-private@1b765c70 src/Game/Magic/StimpakEffect.cpp:6
+// Code origin: original declarations with labelled community and sibling names.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Sibling source: fo4-private@1b765c70 src/Game/Magic/StimpakEffect.cpp:6
 // ValueModifierEffect, ValueModifierEffect::SetActorValue: SIBLING(fo4-private@1b765c70, author-permission)
 // unknown00, unknown60, unknown80: GUESS(low)
 // ValueModifierEffect::actorValue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

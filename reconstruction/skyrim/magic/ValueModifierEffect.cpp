@@ -1,7 +1,7 @@
 // Source exposure: mixed (pinned image listing, labelled declarations and sibling source).
 // Code origin: original reconstruction and the cited sibling adaptation.
 // Adapted bodies: SetActorValue follows the cited Fallout 4 sibling (author-permission).
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: fo4-private@1b765c70 src/Game/Magic/StimpakEffect.cpp:6
 // Sibling source: momusdigital/fnv_decomp@91e1b6e src/fallout/magic/valuemodifiereffect.h:24
 // 0x5ba090 ValueModifierEffect::SetActorValue
