@@ -1,0 +1,25 @@
+// Source exposure: mixed (local binary analysis and public names).
+// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
+// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// BSReference: EXE_RTTI
+// RegisterStreamables: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
+// member, padding: GUESS(low); storage names invented for the measured member offset
+// Unit-local view of BSReference: carries the members and declarations the functions of this unit need, so the shared BSReference.h stays as it is.
+#pragma once
+#include <cstdint>
+// RegisterStreamables: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
+class NiObject;
+
+// IsEqualBase: GUESS(low); address 0xedc7e0, the NiObject comparison the image calls first, bound by hint
+bool IsEqualBase(NiObject* a_self, NiObject* a_object);
+
+// BSReference, pName: GUESS(low); stand-in without its base classes, pName is the string pointer at 0x10
+class BSReference
+{
+public:
+    virtual std::uint8_t RegisterStreamables() const;
+    virtual bool IsEqual(NiObject* a_object);  // compared: 0x10001c0
+
+    std::uint8_t unknown08[0x8];  // 08
+    const char* pName;            // 10
+};
