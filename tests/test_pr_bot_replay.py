@@ -815,7 +815,7 @@ class ChunkedReviewTests(Replay):
         self.assertFalse(self.merged(7), log)
         decision = self.w.state(self.bot, 7).get('decision')
         self.assertEqual(set(map(int, decision['verdicts'])), set(self.RVAS))
-        whole = [p for p in (self.bot.work / 'reviews').glob('pr7-*.txt') if '-c' not in p.stem]
+        whole = [p for p in (self.bot.work / 'reviews').glob('pr7-*.txt') if re.fullmatch(r'pr7-[0-9a-f]{12}', p.stem)]
         self.assertEqual(len(whole), 1)
         merged = json.loads(whole[0].read_text())
         self.assertEqual(merged['leak'], 'yes')
