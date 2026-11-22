@@ -1275,6 +1275,30 @@ def pack_export_timeout(functions):
     return 1800 + 20 * functions
 
 
+LIVE_GROUPS = set()  # process groups of exports in flight, so a service stop can end them with the bot
+LIVE_GROUPS_LOCK = threading.Lock()
+TERMINATING = threading.Event()
+
+
+def kill_live_groups():
+    """SIGKILL every export process group still running; the bot is about to exit."""
+    TERMINATING.set()
+    with LIVE_GROUPS_LOCK:
+        groups = list(LIVE_GROUPS)
+    for group in groups:
+        try:
+            os.killpg(group, signal.SIGKILL)
+        except OSError:
+            pass
+
+
+def stop_on_sigterm(signum=None, frame=None):
+    """Service stop or restart: end the exporters first, since they sit in their own session and would outlive
+    the bot holding the Ghidra project lock, and leave without recording the killed export as a host failure."""
+    kill_live_groups()
+    os._exit(128 + signal.SIGTERM)
+
+
 def run_in_group(argv, cwd, input, timeout):
     """subprocess.run that kills the whole process group on timeout.
 
@@ -1283,12 +1307,22 @@ def run_in_group(argv, cwd, input, timeout):
     """
     proc = subprocess.Popen(argv, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, start_new_session=True)
+    with LIVE_GROUPS_LOCK:
+        LIVE_GROUPS.add(proc.pid)
     try:
         out, err = proc.communicate(input, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        os.killpg(proc.pid, signal.SIGKILL)
+    except BaseException:
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except OSError:
+            pass
         proc.communicate()
         raise
+    finally:
+        with LIVE_GROUPS_LOCK:
+            LIVE_GROUPS.discard(proc.pid)
+    if TERMINATING.is_set():
+        threading.Event().wait()  # the process is leaving; the export's death is not a failure of the PR
     return subprocess.CompletedProcess(argv, proc.returncode, out, err)
 
 
@@ -3908,12 +3942,16 @@ def current(slot, pr):
     return fresh if pollable([fresh]) else None
 
 
-def work_one(slots, gh, pr):
-    """One PR on a free slot; the printed line is the outcome, a failure goes to its own ledger."""
+def work_one(slots, gh, pr, only_conflicting=False):
+    """One PR on a free slot; the printed line is the outcome, a failure goes to its own ledger.
+
+    With `only_conflicting` the slot is the conflict lane's, which has no scratch tree of its own: a PR that
+    turned out not to conflict any more is left for the next tick to send to a real slot.
+    """
     slot = slots.get()
     try:
         pr = current(slot, pr)
-        if pr is None:
+        if pr is None or (only_conflicting and pr.get('mergeable') != 'CONFLICTING'):
             return
         result = slot.attempt(pr)
         if result is not None:
@@ -3979,13 +4017,17 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     for index in range(workers):
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
+    # A conflicting PR is answered from a scratch worktree without touching a slot's tree; its own lane keeps
+    # that quick answer from waiting behind compiles that hold every slot.
+    conflict_slots = queue.Queue()
+    conflict_slots.put(bot.for_slot('conflict'))
     refilled = None
     retried = None
     swept = None
     probes = None
     reconstruction_heads = {}  # (number, head) -> whether an owner PR changes only reconstruction/
     directory = bot.work / ('dry' if bot.dry_run else 'state')
-    with ThreadPoolExecutor(max_workers=workers) as pool:
+    with ThreadPoolExecutor(max_workers=workers) as pool, ThreadPoolExecutor(max_workers=1) as conflict_pool:
         turn = 0
         while rounds is None or turn < rounds:
             turn += 1
@@ -4061,7 +4103,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     break
                 except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
                     print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-                inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
+                if pr.get('mergeable') == 'CONFLICTING':
+                    inflight[pr['number']] = conflict_pool.submit(work_one, conflict_slots, gh, pr, True)
+                else:
+                    inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
             sleep(interval)
         for future in list(inflight.values()):
             future.result()
@@ -4123,6 +4168,7 @@ def main(argv=None):
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
+        signal.signal(signal.SIGTERM, stop_on_sigterm)
         return poll(bot, a.interval, a.restart_after, refill_every=REFILL_EVERY)
     if a.dry_run and a.command is None:
         return 1 if dry_run_open_prs(bot, a.seed_state) else 0

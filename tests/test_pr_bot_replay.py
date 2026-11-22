@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from unittest import mock
 
@@ -569,6 +570,83 @@ class ConcurrentPrTests(Replay):
         squashes = [s for s in self.w.main_log() if s.startswith('Reconstruct')]
         self.assertEqual(len(squashes), 2)
         self.assertEqual(len(re.findall(r'"merge": true', log)), 2)
+
+
+class ConflictLaneTests(Replay):
+    def test_a_conflicting_pr_is_answered_while_every_slot_is_busy_compiling(self):
+        self.w.move_main({unit_path(0x3000): unit(0x3000)})
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, author='alice')
+        self.w.make_pr(8, {unit_path(0x2000): unit(0x2000)}, author='bob')
+        self.w.make_pr(9, {unit_path(0x3000): unit(0x3000).replace('return 1', 'return 2')}, author='carol')
+        self.w.move_main({unit_path(0x3000): unit(0x3000).replace('return 1', 'return 3')})
+        self.w.github.prs[9]['mergeable'] = 'CONFLICTING'
+        released = threading.Event()
+        busy_until_answered = []
+        original = ReplayBot.attempt
+
+        def attempt(bot, pr, now=None):
+            # Both slots sit here until PR 9 has been answered; a bot that queues PR 9 behind them never gets there.
+            if pr['number'] != 9:
+                busy_until_answered.append(released.wait(15))
+            return original(bot, pr, now)
+
+        def watch():
+            for _ in range(200):
+                if self.w.sticky(9):
+                    released.set()
+                    return
+                threading.Event().wait(0.05)  # the world's clock is stubbed; this wait is real
+            released.set()
+            busy_until_answered.append('timeout')
+        watcher = threading.Thread(target=watch)
+        watcher.start()
+        with mock.patch.object(ReplayBot, 'attempt', attempt):
+            self.w.poll(self.bot)
+        watcher.join()
+        self.assertEqual(busy_until_answered, [True, True])
+        self.assertIn('conflicts with main', self.w.sticky(9)[0])
+        self.assertTrue(self.merged(7) and self.merged(8))
+
+
+class ExportGroupTests(unittest.TestCase):
+    def test_ending_the_bot_kills_a_running_export_and_its_children(self):
+        marker = Path(tempfile.mkdtemp()) / 'child.pid'
+        script = ("import subprocess, sys, time\n"
+                  "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])\n"
+                  f"open({str(marker)!r}, 'w').write(str(child.pid))\n"
+                  "time.sleep(60)\n")
+        failure = []
+
+        def export():
+            try:
+                pr_bot.run_in_group([sys.executable, '-c', script], None, None, 120)
+            except BaseException as exc:
+                failure.append(exc)
+        pr_bot.TERMINATING.clear()
+        thread = threading.Thread(target=export, daemon=True)
+        thread.start()
+        for _ in range(200):
+            if marker.exists() and marker.read_text():
+                break
+            time.sleep(0.05)
+        grandchild = int(marker.read_text())
+        try:
+            self.assertTrue(pr_bot.LIVE_GROUPS)
+            pr_bot.kill_live_groups()
+            for _ in range(100):
+                try:
+                    os.kill(grandchild, 0)
+                except ProcessLookupError:
+                    break
+                time.sleep(0.05)
+            else:
+                os.kill(grandchild, 9)
+                self.fail("the exporter's child outlived the group kill")
+            self.assertEqual(failure, [])  # the killed export is not raised as a failure while the bot leaves
+        finally:
+            pr_bot.TERMINATING.clear()
+            with pr_bot.LIVE_GROUPS_LOCK:
+                pr_bot.LIVE_GROUPS.clear()
 
 
 class ReviewerTests(Replay):
