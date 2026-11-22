@@ -1680,7 +1680,9 @@ class ReviewContextTests(unittest.TestCase):
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
         self.assertIn('its recipe hash DIFFERS', self.prompts[0])
 
-    def test_an_accepted_function_is_compared_with_the_recipe_of_its_record_not_the_one_the_unit_names(self):
+    def test_an_accepted_function_is_compared_with_the_recipe_the_unit_names_not_the_one_of_its_record(self):
+        # The CI job rebuilds a changed unit with the unit's recipe whatever its old record pinned, so a row
+        # built with the record's older recipe is a binding mismatch.
         evidence = self.declare_other_recipe('')
         default = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         record = {'source': {'compiled': 'reconstruction/a/B.cpp'}, 'recipe': {'path': default},
@@ -1691,11 +1693,7 @@ class ReviewContextTests(unittest.TestCase):
             {'id': 'b-0x10', 'build_id': 'b', 'rva': 0x10, 'size': 8, 'status': 'matched', 'name': 'N',
              'name_origin': 'GUESS', 'report': 'reports/0x10.json'}]}))
         self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
-        self.assertIn('its recipe hash agrees', self.prompts[0])
-        record['runs'][0]['report']['contract_version'] = 3  # the job binds only contract v2 records
-        (self.tree / 'reports/0x10.json').write_text(json.dumps(record))
-        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
-        self.assertIn('its recipe hash DIFFERS', self.prompts[1])
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
 
     def test_origin_findings_the_unit_already_had_on_main_are_left_out_of_the_prompt(self):
         hit = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'revision': 'abc',

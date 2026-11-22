@@ -1314,13 +1314,13 @@ class Bot:
         recipe = re.search(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', text)
         recipe = recipe.group(0) if recipe else 'reconstruction/recipes/msvc-19.16.27054-o2.json'
         recipe_sha = hashlib.sha256((tree / recipe).read_bytes()).hexdigest() if (tree / recipe).is_file() else None
-        # The CI job compiles a function that already has an accepted record with that record's recipe, an RVA
-        # requested by a `// CI hash:` line with its default recipe, and anything else with the recipe the unit
-        # names, so the second host's hash is compared with the recipe that job selects.
+        # The CI job compiles a function that already has an accepted record, and anything else the unit names,
+        # with the recipe the unit names (the first host's recipe); an RVA requested only by a `// CI hash:` line
+        # gets the default recipe, so the second host's hash is compared with the recipe that job selects.
         import ci_target_hash_check as ci_job
         requested = {int(r, 16) for r, _ in ci_job.REQUEST.findall(text[:8192])}
         recorded = self.accepted_recipe(rva, cpp)
-        ci_file = tree / (recorded or (ci_job.DEFAULT_RECIPE if rva in requested else recipe))
+        ci_file = tree / (recipe if recorded else (ci_job.DEFAULT_RECIPE if rva in requested else recipe))
         ci_recipe_sha = hashlib.sha256(ci_file.read_bytes()).hexdigest() if ci_file.is_file() else None
         report = None
         if evidence.get('report'):
