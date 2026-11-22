@@ -1,13 +1,21 @@
-// Code origin: SetCenter and RegisterStreamables bodies written from the local listings; declarations added to the existing unit header.
+// Code origin: GetLength, SetCenter and RegisterStreamables are original reconstructions from local listings; other project bodies are retained.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Adapted bodies: none
+// Recipe: reconstruction/recipes/o2-fpfast.json
 // 0xfceab0 BSMultiBoundAABB::SetCenter
 // 0xfce8c0 BSMultiBoundAABB::RegisterStreamables
 // 0x213ab0 BSMultiBoundAABB::~BSMultiBoundAABB
 // 0xfce870 BSMultiBoundAABB::LoadBinary
+// 0x213c70 BSMultiBoundAABB::GetLength
 #include "BSMultiBoundAABB.h"
+#include <cmath>
+
+float BSMultiBoundAABB::GetLength()
+{
+    return std::sqrt(unk2C.x * unk2C.x + unk2C.y * unk2C.y + unk2C.z * unk2C.z);
+}
 
 void BSMultiBoundAABB::SetCenter(const NiPoint3& a_center)
 {
