@@ -1777,7 +1777,11 @@ class Bot:
             lines.append(f'  first-host (Mac, Wine) comparator report {rel}: ' +
                          '; '.join(f'{k}: {"agree" if v else "DIFFER"}' for k, v in first.items()))
         row, run = evidence.get('row'), evidence.get('run')
-        if evidence.get('carried'):
+        if evidence.get('carried') == CARRY_REASON_DIGEST:
+            lines.append(f'  second host (CI hash job): {evidence["carried"]}; the function has a published target hash '
+                         'and was matched on two hosts at base, the change is comment-only, and the unit digest equals '
+                         'the accepted record\'s, so the bytes are those of that two-host-matched build')
+        elif evidence.get('carried'):
             lines.append(f'  second host (CI hash job): {evidence["carried"]}; the function has no published target hash, '
                          'so the first host\'s compare of the new text is the only byte check of it')
         elif row:

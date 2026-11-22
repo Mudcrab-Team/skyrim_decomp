@@ -338,3 +338,21 @@ class RepublishRowsTests(unittest.TestCase):
         self.bot.regenerate = self.regenerate
         self.assertEqual(self.bot.republish_rows([0x2010, 0x2040]), [])
         self.assertEqual(self.asked, [])
+
+
+class CarriedEvidenceLineTests(unittest.TestCase):
+    """The Reviewer is told why a carried host 1 stands, and the no-target wording is not used for a target."""
+
+    def lines(self, reason):
+        with tempfile.TemporaryDirectory() as tmp:
+            bot = pr_bot.Bot(root=ROOT, work=Path(tmp))
+            bot.binding_facts = lambda *a: ({}, None)
+            return '\n'.join(bot.binding_lines(0x10, 'reconstruction/a/B.cpp', 'd', dict(carried=reason, host1='fail')))
+
+    def test_a_digest_carry_names_the_two_host_build_and_not_the_missing_target(self):
+        text = self.lines(pr_bot.CARRY_REASON_DIGEST)
+        self.assertIn('two-host-matched build', text)
+        self.assertNotIn('has no published target hash', text)
+
+    def test_a_no_target_carry_keeps_its_wording(self):
+        self.assertIn('has no published target hash', self.lines(pr_bot.CARRY_REASON))
