@@ -110,6 +110,9 @@ counts above.
   files as a name and unit-boundary evidence source"), with the five files by SHA-256 and size, the
   scope (name evidence only) and the conditions: the files and dumps of them are never committed, a name a
   unit takes from them carries a label, and the data files here are allowed as committed.
+- **Widened scope (2026-11-22).** For `tesv-2013-map`, `fo4-pdb` and `Fallout4Beta.pdb` the "public symbols
+  only, no layouts" limits described above are no longer limits on use; see `docs/authorizations.md`, Notes. The
+  `fnv-x360-pdb` files stay name-only. Files and excerpts are still never committed.
 - **Removal.** Everything taken from a symbol file is in `data/name-corroboration.json` and
   `data/symbol-names.json` and nowhere else. Deleting those two files removes it.
 - **Label.** `SYMBOLS(<source-id>)`, with `<source-id>` one of `tesv-2013-map` (the map),
