@@ -1,10 +1,10 @@
+// Source exposure: mixed (names and declarations from community headers; the listing of the pinned image).
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Code origin: original; reconstructed from the pinned listing, with the community name and PDB layout
 // GetLastLoadedRegion: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // lastLoadedRegion: CRASHLOGGER_PDB(59818@2026.10.24)
 // 0x251ca0 TESRegionDataManager::GetLastLoadedRegion
 // Adapted bodies: none
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
 #include "TESRegionDataManager.h"
 
 TESRegionDataObjects* TESRegionDataManager::AsRegionDataObjects(TESRegionData* a_data) const
