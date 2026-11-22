@@ -60,19 +60,19 @@ BGSMovementType* TESRace::GetMovementType(std::int32_t a_index)
 // Report whether this race can equip a melee weapon.
 bool TESRace::QCanUseMeleeWeapons() const
 {
-    return (validEquipTypes & kMeleeWeapons) > 0;
+    return GetValidEquipTypes(kMeleeWeapons) > 0;
 }
 
 // Report whether the race supports the indexed weapon type.
 bool TESRace::QCanUseWeaponType(std::uint32_t a_type) const
 {
-    return (validEquipTypes & (1u << a_type)) != 0;
+    return GetValidEquipTypes(1u << a_type) != 0;
 }
 
 // Report whether this race can equip a weapon, staff or spell.
 bool TESRace::Function3e82e0() const
 {
-    return (validEquipTypes & kWeaponsAndSpells) > 0;
+    return GetValidEquipTypes(kWeaponsAndSpells) > 0;
 }
 
 // Look up a face detail texture for the selected sex.

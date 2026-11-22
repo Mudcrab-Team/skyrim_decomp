@@ -7,6 +7,7 @@
 // TESTopicInfo::objConditions: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; a pointer-sized block here, NG declares TESCondition
 // TESTopicInfo::unk3B: GUESS(low); stands for favorLevel, data, fileOffset and the padding up to 0x48
 // TESTopicInfo::ResetSaidOnceFlags, TESTopicInfo::DeleteFromTopic: CRASHLOGGER_PDB(59818@2026.10.24)
+// TESTopicInfo::SetSaidOnceState: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -31,6 +32,9 @@ public:
     std::uint16_t infoIndex;      // 38
     bool          saidOnce;       // 3A
     std::uint8_t  unk3B[0x0D];    // 3B
+
+private:
+    void SetSaidOnceState(bool a_saidOnce) { saidOnce = a_saidOnce; }
 };
 static_assert(sizeof(TESTopicInfo) == 0x48, "layout");
 

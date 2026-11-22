@@ -15,6 +15,7 @@
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
 // TESRace::validEquipTypes, TESRace::faceRelatedData, TESRace::FaceRelatedData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESRace::QCanUseMeleeWeapons, TESRace::QCanUseWeaponType: CRASHLOGGER_PDB(59818@2026.10.24)
+// TESRace::GetValidEquipTypes: GUESS(low)
 #pragma once
 
 #include <cstdint>
@@ -87,5 +88,8 @@ public:
     };
 
     FaceRelatedData* faceRelatedData[2];   // 4A8
+
+private:
+    std::uint32_t GetValidEquipTypes(std::uint32_t a_mask) const { return validEquipTypes & a_mask; }
 };
 static_assert(sizeof(TESRace) == 0x4B8, "layout");

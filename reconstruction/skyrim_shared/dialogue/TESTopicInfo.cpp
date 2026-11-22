@@ -22,7 +22,7 @@ void TESTopicInfo::LoadGame(BGSLoadFormBuffer* a_buf)
 {
     TESForm::LoadGame(a_buf);
     if (static_cast<std::int32_t>(a_buf->changeFlags) < 0) {
-        saidOnce = true;
+        SetSaidOnceState(true);
     }
 }
 
@@ -30,7 +30,7 @@ void TESTopicInfo::Revert(BGSLoadFormBuffer* a_buf)
 {
     TESForm::Revert(a_buf);
     if (static_cast<std::int32_t>(a_buf->oldChangeFlags) < 0) {
-        saidOnce = false;
+        SetSaidOnceState(false);
     }
 }
 // Assign the response's index in the topic.
@@ -42,7 +42,7 @@ void TESTopicInfo::Function3f2620(std::uint16_t a_index)
 // Clear the response's said-once state, including its persistent change flag.
 void TESTopicInfo::ResetSaidOnceFlags()
 {
-    saidOnce = false;
+    SetSaidOnceState(false);
     RemoveChange(kSaidOnceChange);
 }
 
