@@ -654,6 +654,17 @@ class RejectedHeadTests(Replay):
         self.assertEqual(len(self.w.sticky(7)), 1)  # the one comment was edited, not duplicated
 
 
+class ListedPathMissingTests(Replay):
+    def test_a_listed_file_the_head_does_not_hold_is_not_a_stop_and_the_pr_still_lands(self):
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        listed = self.w.files_of
+        self.w.files_of = lambda number: listed(number) + [
+            dict(filename='reconstruction/fx/ghost.txt', status='modified')]
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertNotIn('git failed', log)
+
+
 class MainMovesTests(Replay):
     def test_main_moving_during_the_compile_does_not_stale_the_landing(self):
         self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
