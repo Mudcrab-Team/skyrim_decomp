@@ -17,7 +17,6 @@ task directory. Only these files go to a verifier host: the comparator and its h
 toolchain pin, the target manifest, the unit's include closure, the recipe and the symbol map.
 """
 import base64
-import fcntl
 import hashlib
 import json
 import os
@@ -492,6 +491,9 @@ def lock(task_dir):
     path = Path(task_dir) / '.attempt' / 'lock'
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = open(path, 'w')
+    # Imported here: the module is also loaded by Windows CI tools that never take the lock, and
+    # fcntl does not exist there.
+    import fcntl
     try:
         fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
