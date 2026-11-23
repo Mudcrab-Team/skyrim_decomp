@@ -560,6 +560,57 @@ class PoolTests(WorkDir):
         self.assertEqual(calls[0], 3)
         self.assertEqual(sorted(calls[:2]), [1, 3])
 
+    def test_the_third_slot_opens_only_while_the_machine_is_not_overloaded(self):
+        self.assertEqual(pr_bot.POOL_SIZE, 3)
+        self.assertTrue(pr_bot.slot_free(0, 3, load=99, cores=8))
+        self.assertTrue(pr_bot.slot_free(1, 3, load=99, cores=8))
+        self.assertTrue(pr_bot.slot_free(2, 3, load=16, cores=8))
+        self.assertFalse(pr_bot.slot_free(2, 3, load=16.5, cores=8))
+        self.assertFalse(pr_bot.slot_free(3, 3, load=0, cores=8))
+        self.assertFalse(pr_bot.slot_free(2, 2, load=0, cores=8))
+
+    def test_an_owner_pr_with_a_matched_merge_decision_lands_without_a_compile_slot(self):
+        release, calls = threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append((pr['number'], tree.name))
+            if pr['number'] != 9:
+                release.wait(5)
+        rows = self.prs(1, 2, 9)
+        for row in rows[:2]:
+            row['author'] = {'login': 'carol'}
+        rows[2].update(author={'login': pr_bot.OWNER}, mergeable='MERGEABLE')
+        bot = self.pool_bot(lambda *a: rows, arrived)
+        bot.demand = [0]
+        pr_bot.State(self.work / 'state', 9, rows[2]['headRefOid']).set(
+            'decision', dict(merge=True, blocked=None, verdicts={'16': 'matched', '32': 'matched'}))
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 2:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] == 9]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=3)
+        self.assertEqual(dict(calls)[9], 'tree-merge')
+        self.assertEqual(sorted(n for n, _ in calls[:3]), [1, 2, 9])
+
+    def test_merge_ready_needs_every_function_matched_and_an_open_head(self):
+        owner = {'author': {'login': pr_bot.OWNER}, 'mergeable': 'MERGEABLE'}
+        state = pr_bot.State(self.work / 'state', 5, 'b' * 40)
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched', '32': 'fail:host2'}))
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched'}))
+        self.assertTrue(pr_bot.merge_ready(state, owner))
+        self.assertFalse(pr_bot.merge_ready(state, dict(owner, author={'login': 'carol'})))
+        self.assertFalse(pr_bot.merge_ready(state, dict(owner, mergeable='CONFLICTING')))
+        state.set('merged', True)
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+
     def test_a_pr_waiting_on_the_hash_check_gives_its_slot_up_when_another_pr_is_ready(self):
         bot = FakeBot(self.work)
         bot.demand = [1]

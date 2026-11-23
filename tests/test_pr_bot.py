@@ -922,6 +922,7 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertEqual(pr_bot.host_category('function-symbol-missing'), 'unbound')
         self.assertEqual(pr_bot.host_category('unresolved-symbol'), 'unbound')
         self.assertEqual(pr_bot.host_category('mismatch'), 'bytes differ')
+        self.assertEqual(pr_bot.host_category('relocation-target-mismatch'), 'reference')
         self.assertEqual(pr_bot.host_category('code-byte-mismatch'), 'bytes differ')
         d = dict(pr_bot.decide([0x10], {0x10: 'fail'}, {0x10: 'fail'}, {0x10: 'approve'}),
                  host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})

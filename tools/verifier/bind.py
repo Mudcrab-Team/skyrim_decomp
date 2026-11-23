@@ -399,6 +399,18 @@ def by_position(image, fn_rva, rel):
     return None
 
 
+def field_addend(obj, section, rel):
+    """The addend the candidate object stores in a relocation's field (a member offset into a global), or 0."""
+    if rel.kind not in REL32_TAIL and rel.kind != ADDR32NB:
+        return 0
+    data = obj.section(section).data
+    fmt = '<I' if rel.kind == ADDR32NB else '<i'
+    try:
+        return struct.unpack_from(fmt, data, rel.offset)[0]
+    except struct.error:
+        return 0
+
+
 # MSVC special-name prefixes of the three destructor functions a class with a virtual destructor gets.
 DTOR_KINDS = {'??1': 'destructor', '??_G': 'scalar deleting destructor', '??_E': 'vector deleting destructor'}
 # Access codes of adjustor thunks (`[thunk]: ... adjustor{n}'`): a thunk is never the slot body itself.
@@ -1282,15 +1294,20 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                 contradicted = False
                 if value is None and base is not None:
                     pos = by_position(image, base, rel)
-                    if pos is not None and pos in accept:
-                        how, value = ('object lifetime position' if pos in life_known and pos not in known
-                                      else 'position'), pos
+                    # The field encodes the symbol plus the member offset the candidate stores in it, and
+                    # the comparator adds that offset back, so the symbol's own RVA is what is bound. The
+                    # pack lists the address actually used, so either form is evidence.
+                    addend = field_addend(obj, index, rel) if pos is not None else 0
+                    if pos is not None and (pos in accept or pos - addend in accept):
+                        shown = pos if pos in accept else pos - addend
+                        how, value = ('object lifetime position' if shown in life_known and shown not in known
+                                      else 'position'), pos - addend
                     elif (pos is not None and is_funclet and state is not None and rel.kind in REL32_TAIL
                           and starts is not None and pos in starts):
                         # The compiler's own destructor of a local is a function of the image the pack
                         # need not list; the relocated target being a known function start is the evidence.
                         how, value = 'unwind funclet position', pos
-                    contradicted = value is None and pos is not None and pos not in accept
+                    contradicted = value is None and pos is not None and pos not in accept and pos - addend not in accept
                 if value is None:
                     q = names(ref)
                     pool = refs + life_refs if is_funclet else refs

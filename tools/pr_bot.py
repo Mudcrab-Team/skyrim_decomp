@@ -222,6 +222,7 @@ def runbook_checklist(root):
 
 # Runs in the bot's tree so that the records are built with the tools and inventory of the reviewed base.
 # tools/verifier/attempt exit code for a unit whose include the recipe cannot resolve (not counted as an attempt).
+COMPILE_FAILED_EXIT = 3
 REFUSED_INCLUDE_EXIT = 4
 RECORD_CALL = """import json, sys
 sys.path.insert(0, sys.argv[1] + '/tools')
@@ -920,7 +921,12 @@ UNBOUND_FIX = ('the compiled object had no symbol the compare could bind to that
 INCLUDE_FIX = ('the unit includes a repository header its recipe cannot resolve (nothing was compared); name a '
                '`-root-includes` recipe in the unit (`reconstruction/recipes/<name>.json`) or include the header '
                'relative to the including file')
-CATEGORY_FIX = {'unbound': UNBOUND_FIX, 'include': INCLUDE_FIX}
+COMPILE_FIX = ('the unit did not compile on the compare host, by an error or a timeout (nothing was compared); '
+               'compile it locally with the unit\'s recipe to see the error')
+REFERENCE_FIX = ('a reference in the function resolves to a different address than the game encodes (the other '
+                 'bytes may match); check the global or callee it names')
+CATEGORY_FIX = {'unbound': UNBOUND_FIX, 'include': INCLUDE_FIX, 'compile': COMPILE_FIX,
+                'reference': REFERENCE_FIX}
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -933,6 +939,8 @@ def host_category(detail):
     # difference; the contributor's remedy (a `// CI hash:` line for a renamed stand-in) differs.
     if any(word in detail for word in ('no-target', 'unbound', 'bind', 'symbol-missing', 'unresolved-symbol')):
         return 'unbound'
+    if 'relocation-target' in detail:
+        return 'reference'
     return 'bytes differ'
 
 
@@ -2402,13 +2410,20 @@ class Bot:
                     out[int(str(fn['rva']), 0)] = 'fail'
                     why[int(str(fn['rva']), 0)] = 'include'
                 continue
-            if code not in (0, 1, 3):
+            if code == COMPILE_FAILED_EXIT:
+                # No attempt report exists when the compile fails; reading the missing files made every
+                # function look like a byte difference or a missing result.
+                for fn in json.loads((task / 'task.json').read_text())['functions']:
+                    out[int(str(fn['rva']), 0)] = 'fail'
+                    why[int(str(fn['rva']), 0)] = 'compile'
+                continue
+            if code not in (0, 1):
                 # The tool's own last line says why (a bad task row, a missing toolchain); without it every
                 # failure looks the same in the service log.
                 lines = [l for l in done.stderr.decode(errors='replace').splitlines() if l.strip()]
                 raise HostFailure(f'verifier host did not complete (exit {code}, {tid_of(task)}): '
                            f'{(lines[-1] if lines else "no error text")[:200]}')
-            attempts = sorted((task / 'attempts').glob('[0-9]*')) if code != 3 else []
+            attempts = sorted((task / 'attempts').glob('[0-9]*'))
             for fn in json.loads((task / 'task.json').read_text())['functions']:
                 rva = int(str(fn['rva']), 0)
                 try:
@@ -3883,7 +3898,7 @@ class Bot:
 
     def task_slot(self, number, head):
         """The slot whose tree still holds the PR's confirm tasks, else this one."""
-        for index in range(POOL_SIZE):
+        for index in (*range(POOL_SIZE), 'merge'):
             slot = self.for_slot(index)
             if next((slot.tree / '.local/tasks').glob(f'prbot-{number}-{head[:8]}-*'), None):
                 return slot
@@ -4569,7 +4584,11 @@ def pollable(prs):
             and pr['baseRefName'] == 'main' and not pr['isDraft']]
 
 
-POOL_SIZE = 2
+POOL_SIZE = 3
+# A third compile starts only while the machine is not already overloaded by the first two; the 1-minute load
+# is compared with this many times the core count.
+EXTRA_SLOT_LOAD_FACTOR = 2
+BASE_SLOTS = 2
 HASH_YIELD_AFTER = 120  # seconds a PR may hold a slot on the hash check while another PR is ready
 
 
@@ -4588,6 +4607,37 @@ def mark_owner_reconstruction(bot, prs, known):
             known[key] = owner_pr_in_scope(bot.changed_files(pr['number']))
         if known[key]:
             pr['reconstruction_head'] = pr['headRefOid']
+
+
+def slot_free(running, workers, load=None, cores=None):
+    """True when another PR may take a pool slot.
+
+    The first BASE_SLOTS are always open; each further one only while the 1-minute load average is at most
+    EXTRA_SLOT_LOAD_FACTOR times the core count, so a busy machine keeps running two compiles, not three.
+    """
+    if running >= workers:
+        return False
+    if running < BASE_SLOTS:
+        return True
+    if load is None:
+        try:
+            load = os.getloadavg()[0]
+        except OSError:
+            return False
+    return load <= EXTRA_SLOT_LOAD_FACTOR * (cores or os.cpu_count() or 1)
+
+
+def merge_ready(state, pr):
+    """True for an owner PR whose head already has a merge decision with every function matched.
+
+    Such a head needs only the record build and the merge, from cached results, so the poll gives it the
+    merge lane instead of a compile slot. Anything uncached is still computed by `process`, just on that lane.
+    """
+    decision = state.get('decision') or {}
+    verdicts = decision.get('verdicts') or {}
+    return (is_owner(pr) and decision.get('merge') is True and not decision.get('blocked') and bool(verdicts)
+            and all(v == 'matched' for v in verdicts.values()) and not state.get('merged') and not state.get('done')
+            and not state.get('rejected') and pr.get('mergeable') == 'MERGEABLE')
 
 
 def is_owner(pr):
@@ -4767,6 +4817,10 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     # that quick answer from waiting behind compiles that hold every slot.
     conflict_slots = queue.Queue()
     conflict_slots.put(bot.for_slot('conflict'))
+    # An owner PR whose decision is already merge with everything matched lands from cache on its own lane, so it
+    # does not wait for a compile slot that outside PRs and long owner PRs keep busy.
+    merge_slots = queue.Queue()
+    merge_slots.put(bot.for_slot('merge'))
     refilled = None
     retried = None
     swept = None
@@ -4775,7 +4829,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     reconstruction_heads = {}  # (number, head) -> whether an owner PR changes only reconstruction/
     directory = bot.work / ('dry' if bot.dry_run else 'state')
     with (ThreadPoolExecutor(max_workers=workers) as pool, ThreadPoolExecutor(max_workers=1) as conflict_pool,
-          ThreadPoolExecutor(max_workers=1) as maint_pool):
+          ThreadPoolExecutor(max_workers=1) as merge_pool, ThreadPoolExecutor(max_workers=1) as maint_pool):
         turn = 0
         while rounds is None or turn < rounds:
             turn += 1
@@ -4848,7 +4902,9 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                 if pr.get('mergeable') == 'CONFLICTING':
                     inflight[pr['number']] = conflict_pool.submit(work_one, conflict_slots, gh, pr, True)
-                elif len(on_pool) < workers and (not is_owner(pr) or len(owner_on_pool) < max(1, workers - 1)):
+                elif merge_ready(state, pr):
+                    inflight[pr['number']] = merge_pool.submit(work_one, merge_slots, gh, pr)
+                elif slot_free(len(on_pool), workers) and (not is_owner(pr) or len(owner_on_pool) < max(1, workers - 1)):
                     # Submitting everything would queue first-come first-served inside the pool, so a contributor's
                     # PR listed after the owner's would wait behind them; each tick instead fills only free slots,
                     # in outside-first order. The owner's PRs never take the last slot: they run for hours, and an

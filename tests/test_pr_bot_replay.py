@@ -1205,6 +1205,15 @@ class IncludeRefusalTests(Replay):
         decision = dict(verdicts={0x1000: 'fail:host2'}, host_why={0x1000: {'host2': 'include'}})
         self.assertIn('-root-includes', pr_bot.reason_text(decision, 0x1000, 'host2'))
 
+    def test_a_failed_compile_is_not_reported_as_a_byte_difference(self):
+        result, why = self.compare(pr_bot.COMPILE_FAILED_EXIT)
+        self.assertEqual(result, {0x1000: 'fail'})
+        self.assertEqual(why, {0x1000: 'compile'})
+        decision = dict(verdicts={0x1000: 'fail:host2'}, host_why={0x1000: {'host2': 'compile'}})
+        text = pr_bot.reason_text(decision, 0x1000, 'host2')
+        self.assertIn('did not compile', text)
+        self.assertNotIn('byte', text)
+
     def test_any_other_unexpected_exit_is_still_a_host_failure(self):
         with self.assertRaises(pr_bot.HostFailure):
             self.compare(5)
