@@ -553,6 +553,40 @@ def is_write(argv):
     return '--push' in names
 
 
+MAIN_CHECK_WORKFLOW = 'check.yml'  # "Infrastructure checks"
+MAIN_RED_TTL = 120  # seconds one lookup of main's newest finished run is reused
+
+
+class MainWatch:
+    """Whether the newest finished infrastructure run on main failed, looked up at most once per TTL.
+
+    A merge on a red main can stack a second break on the first, so merges wait until main is green;
+    intake, compile and review go on meanwhile. Shared by every slot (copies of the bot keep the reference).
+    """
+
+    def __init__(self, fetch, clock=time.time, ttl=MAIN_RED_TTL):
+        self.fetch, self.clock, self.ttl = fetch, clock, ttl
+        self.lock = threading.Lock()
+        self.at, self.red = None, None
+
+    def red_sha(self):
+        """The sha of the failing newest run, or None when main is green or has no finished run."""
+        with self.lock:
+            if self.at is None or self.clock() - self.at >= self.ttl:
+                self.red = self.fetch()
+                self.at = self.clock()
+            return self.red
+
+
+def red_run(runs):
+    """The head sha of the newest finished run if it failed. Cancelled and skipped runs say nothing about main."""
+    for run in runs:
+        if run.get('conclusion') in ('cancelled', 'skipped', 'neutral', None):
+            continue
+        return run.get('head_sha') if run['conclusion'] in ('failure', 'timed_out', 'startup_failure') else None
+    return None
+
+
 class GhBackoff:
     """One delay shared by every worker: a GitHub outage is nobody's PR, and retrying at full speed only loops."""
 
@@ -1484,6 +1518,7 @@ class Bot:
                             review_workers=REVIEW_CHUNK_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
+        self.main_watch = MainWatch(self.fetch_main_red)
         self.clock = time.time
         self.used = threading.local()  # the reviewer of this thread's latest review
         self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
@@ -1614,6 +1649,19 @@ class Bot:
 
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
+
+    def fetch_main_red(self):
+        out = self.run(['gh', 'api', f'repos/{REPOSITORY}/actions/workflows/{MAIN_CHECK_WORKFLOW}/runs'
+                        '?branch=main&event=push&status=completed&per_page=5']).stdout
+        return red_run((json.loads(out) if out.strip() else {}).get('workflow_runs') or [])
+
+    def merge_pr(self, number, head, subject, body, check=False):
+        """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
+        red = self.main_watch.red_sha()
+        if red:
+            print(f'main red at {red}; holding merges', file=sys.stderr)
+            raise Waiting(f'main red at {red}; holding merges')
+        return self.run(merge_command(number, head, subject, body), check=check)
 
     def bot_comments(self, number):
         """The PR's issue comments the bot wrote: the owner's account, starting with the marker prefix."""
@@ -3257,7 +3305,7 @@ class Bot:
                 body = ('Lesson notes only: no function is claimed, compared or recorded by this change; the '
                         'template, leak scan, scope check and review passed.\n\n'
                         f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
-                merged = self.run(merge_command(number, head, subject, body), check=False)
+                merged = self.merge_pr(number, head, subject, body, check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
@@ -3361,7 +3409,7 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                merged = self.run(merge_command(number, head, *deletion_squash_message(number, login, uid, len(names))),
+                merged = self.merge_pr(number, head, *deletion_squash_message(number, login, uid, len(names)),
                                   check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
@@ -3537,7 +3585,7 @@ class Bot:
                             'differ and no function is claimed by them; the leak scan and the check and hash jobs on '
                             'the head passed.\n\n'
                             f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
-                merged = self.run(merge_command(number, head, subject, body), check=False)
+                merged = self.merge_pr(number, head, subject, body, check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
@@ -3577,7 +3625,7 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                merged = self.run(merge_command(number, head, *carried_squash_message(number, login, uid, rvas)),
+                merged = self.merge_pr(number, head, *carried_squash_message(number, login, uid, rvas),
                                   check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
@@ -3625,7 +3673,7 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                merged = self.run(merge_command(number, head, *mapping_squash_message(number, login, uid, count)),
+                merged = self.merge_pr(number, head, *mapping_squash_message(number, login, uid, count),
                                   check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
@@ -3993,7 +4041,7 @@ class Bot:
                 state.set('merged', True)
                 state.set('recorded', True)
             else:
-                merged = self.run(merge_command(number, head, subject, body), check=False)
+                merged = self.merge_pr(number, head, subject, body, check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)

@@ -72,7 +72,7 @@ three times backs that head off; read the bot's log before re-triggering.
 ## Non-reconstruction PRs (bot says `tooling`)
 
 The bot never merges these. Review scope and run the leak scan; when `check` is green, merge with
-`gh pr merge --squash --admin` (`scope` and `hash` failing or absent is expected). Merge only when every
+`python3 tools/merge_tooling_pr.py N` (a raw `gh pr merge --squash --admin` skips its checks: red `check`/`tests` jobs, and a stale base that undoes main's changes, which it prints by file and hunk) (`scope` and `hash` failing or absent is expected). Merge only when every
 job except `scope` and `hash` has finished green: a pending `tests` shard is not green, and an admin merge
 over one is how `main` goes red. Accepted precedents:
 

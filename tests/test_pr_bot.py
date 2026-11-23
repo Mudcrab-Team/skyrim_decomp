@@ -177,6 +177,44 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual((leak, out), ('no', {0x10: 'approve', 0x30: 'reject'}))
 
 
+class MainRedTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_newest_finished_run_decides_and_cancelled_runs_are_skipped(self):
+        run = lambda c, sha='s': {'conclusion': c, 'head_sha': sha}
+        self.assertEqual(pr_bot.red_run([run('cancelled'), run('failure', 'abc'), run('success')]), 'abc')
+        self.assertIsNone(pr_bot.red_run([run('success'), run('failure', 'abc')]))
+        self.assertIsNone(pr_bot.red_run([]))
+
+    def test_lookup_is_cached_for_the_ttl(self):
+        now, calls = [1000.0], []
+        watch = pr_bot.MainWatch(lambda: calls.append(1) or 'abc', clock=lambda: now[0], ttl=120)
+        self.assertEqual((watch.red_sha(), watch.red_sha()), ('abc', 'abc'))
+        now[0] += 119
+        watch.red_sha()
+        self.assertEqual(len(calls), 1)
+        now[0] += 2
+        watch.red_sha()
+        self.assertEqual(len(calls), 2)
+
+    def test_red_main_holds_the_merge_and_resumes_when_green(self):
+        bot = FakeBot(self.work)
+        state = ['deadbeef']
+        bot.main_watch = pr_bot.MainWatch(lambda: state[0], ttl=0)
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err), self.assertRaises(pr_bot.Waiting):
+            bot.process(PR)
+        self.assertIn('main red at deadbeef; holding merges', err.getvalue())
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        state[0] = None
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 1)
+
+
 class ScopeAndMergeTests(unittest.TestCase):
     def test_scope_rejects_anything_outside_reconstruction(self):
         ok = [{'filename': 'reconstruction/a/B.cpp', 'status': 'added'}]
