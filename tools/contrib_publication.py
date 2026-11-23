@@ -93,7 +93,7 @@ def new_claimed_functions(git, base, head, files):
 
 
 # Per-PR cap on new functions; the intake bot's limit and its timeouts are sized for it.
-MAX_FUNCTIONS = 200
+MAX_FUNCTIONS = 1000
 
 
 def screen_publication(root, base, head, *, merge_method='squash', headers=STANDARD_HEADERS,
