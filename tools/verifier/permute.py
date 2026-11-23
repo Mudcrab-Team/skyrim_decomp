@@ -3,7 +3,7 @@
 
     tools/verifier/permute.py run <task-dir> --rva 0x... [--function Class::Name] [--also Class::Helper]
         [--source-root DIR] [--budget 600] [--batch 16] [--patience 8] [--seed 1] [--out DIR]
-        [--transport scp|inline] [--no-resume] [--dry-run]
+        [--jobs N] [--dry-run]
     tools/verifier/permute.py mutate <file.cpp> --function Class::Name [--steps 3] [--seed 1]
 
 `run` reads the unit of a task directory (task.json as for `attempt`), finds the definition of the
@@ -16,15 +16,14 @@ code is closer to the target:
    meaning, which is harmless for the search because only a byte-identical object counts, and the
    Reviewer still reads the winner against the target.
 2. Every candidate must pass tools/lint_reconstruction.py before it is compiled.
-3. Candidates go to the standing verifier in batches: the candidate bodies (compressed) are
-   uploaded as one file (`--transport inline` carries them in the command line and is not to be
-   used: the provider keeps command lines), and ONE
-   `boat exec` per batch returns one sanitized line per candidate (distance from
-   align.py, its components, instruction counts, a hash of the function's object code, seconds).
-   The machine compiles them in parallel (`--jobs`, default 4 = its vCPUs), each worker in its
-   own hard-linked copy of the unit, with the recipe's flags and the environment unit_build uses.
+3. Candidates go to the runner host that `attempt` uses (.local/verifier/runners.json, so the same
+   recipe, toolchain pins and image checks) in batches: one upload of the candidate sources, one
+   agent command that compiles them `--jobs` at a time (default: the host's max_parallel, taking
+   free slots only) in per-worker copies of the unit, and one download of the objects. The host
+   needs no objdump; the objects are disassembled and scored here (align.py: distance and
+   components, instruction counts, a hash of the function's code and relocations).
 4. Search: greedy hill-climb over batches with sideways moves, random restarts from the best,
-   and a seen-set keyed by the function's object-code hash. Stops at distance 0, at the Boat time
+   and a seen-set keyed by the function's object-code hash. Stops at distance 0, at the wall-time
    budget, or after --patience batches without a new best.
 5. At distance 0 the winning unit is compiled and compared once more by unit_build.py (the real
    comparator, all of the task's functions). Only that report says pass; run `attempt` on the
@@ -32,13 +31,12 @@ code is closer to the target:
 
 Outputs (private, under the task's .local tree unless --out): `best.cpp` (the unit with the best
 body), `history.jsonl` (one row per scored candidate: id, parent, mutations, score), `result.json`
-(start and best distance, candidates, Boat seconds, comparator result) and the comparator's
+(start and best distance, candidates, timings, comparator result) and the comparator's
 files under `final/`. Nothing game-derived is printed. Wall time of the run is queued to the cost
 ledger as stage `draft`, as `attempt` does. `mutate` prints a mutated copy of a local file; it
 is for tests and for perturbing a matched unit in a recovery self-test.
 """
 import argparse
-import base64
 import copy
 import hashlib
 import json
@@ -46,11 +44,9 @@ import os
 from pathlib import Path
 import random
 import re
-import shlex
 import shutil
 import sys
 import time
-import zlib
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
@@ -1360,14 +1356,131 @@ def _fmt(c):
 
 
 # --------------------------------------------------------------------------------------------
-# Remote side: runs on the verifier host inside the task's run directory.
+# Host side: compile only. The verifier hosts have no llvm-objdump (the Windows one has no
+# Python packages either), so the host returns the objects and the caller disassembles and scores.
 
-def encode_payload(obj):
-    return base64.b64encode(zlib.compress(json.dumps(obj).encode(), 9)).decode()
+def write_cands(path, sources):
+    """An xz tar of {candidate id: full unit source}; near-identical sources compress to almost nothing."""
+    import io
+    import tarfile
+    with tarfile.open(path, 'w:xz') as tar:
+        for cid, text in sorted(sources.items()):
+            data = text.encode()
+            info = tarfile.TarInfo(f'{cid}.cpp')
+            info.size, info.mode, info.mtime = len(data), 0o644, int(time.time())
+            tar.addfile(info, io.BytesIO(data))
 
 
-def decode_payload(text):
-    return json.loads(zlib.decompress(base64.b64decode(text)))
+def read_cands(path):
+    import tarfile
+    out = {}
+    with tarfile.open(path) as tar:
+        for member in tar.getmembers():
+            m = re.fullmatch(r'(v\d{5})\.cpp', member.name)
+            if not m or not member.isfile():
+                raise ValueError(f'unexpected member {member.name!r} in the candidate archive')
+            out[m.group(1)] = tar.extractfile(member).read().decode()
+    return out
+
+
+def compile_batch(run, sources, jobs, compile_one):
+    """Compile each source in a worker's own copy of the run's repository; (rows, {id: object bytes}).
+
+    `compile_one(workdir, compiled, cid)` returns (returncode, combined output, object path or None).
+    A worker copy is made once per call and only the compiled file is rewritten, so the headers
+    stay shared in content and the run's own copy is never touched.
+    """
+    import concurrent.futures
+    import threading
+    run = Path(run).resolve()
+    repo = run / 'repo'
+    compiled = json.loads((repo / '.unit' / 'spec.json').read_text())['compiled']
+    perm = run / 'perm'
+    perm.mkdir(exist_ok=True)
+    free = list(range(jobs))
+    lock = threading.Lock()
+    objects = {}
+
+    def worker_dir(k):
+        w = perm / f'w{k}'
+        if not (w / 'repo').is_dir():
+            shutil.copytree(repo, w / 'repo', ignore=shutil.ignore_patterns('.unit', '.local'))
+        return w
+
+    def one(item):
+        cid, text = item
+        with lock:
+            k = free.pop()
+        t0 = time.monotonic()
+        try:
+            w = worker_dir(k)
+            src = w / 'repo' / compiled
+            src.write_text(text)
+            rc, output, obj = compile_one(w, compiled, cid)
+            if rc != 0 or obj is None or not Path(obj).is_file():
+                # Error codes only in the row: compiler messages quote source text.
+                codes = sorted(set(re.findall(r'\b(?:error|fatal error) ([A-Z]+\d+)', output)))
+                return {'id': cid, 'st': 'compile-failed', 'codes': codes[:5], 'rc': rc,
+                        't': round(time.monotonic() - t0, 2)}
+            objects[cid] = Path(obj).read_bytes()
+            Path(obj).unlink()
+            return {'id': cid, 'st': 'compiled', 't': round(time.monotonic() - t0, 2)}
+        except Exception as exc:  # noqa: BLE001 - one broken candidate must not lose the batch
+            return {'id': cid, 'st': 'error', 'why': type(exc).__name__, 't': round(time.monotonic() - t0, 2)}
+        finally:
+            with lock:
+                free.append(k)
+
+    with concurrent.futures.ThreadPoolExecutor(jobs) as pool:
+        rows = list(pool.map(one, sorted(sources.items())))
+    return rows, objects
+
+
+def host_compiler(msvc, loader, flags):
+    """compile_one for this host: the recipe's flags and the environment unit_build.py compiles with."""
+    import subprocess
+    sys.path.insert(0, str(HERE))
+    import unit_build
+    env = unit_build.clean_env(os.environ)
+    env['VSLANG'] = '1033'
+    msvc = Path(msvc).resolve()
+    if loader == 'native':
+        settings = unit_build.native_settings(msvc)
+        env['INCLUDE'] = settings['INCLUDE']
+        cl = str(Path(settings['BINDIR']) / 'cl.exe')
+    else:
+        cl = str(msvc / 'bin/x64/cl')
+
+    def compile_one(worker, compiled, cid):
+        obj = worker / f'{cid}.obj'
+        proc = subprocess.run([cl] + flags + [f'/Fo{obj}', compiled], cwd=worker / 'repo', env=env,
+                              capture_output=True, text=True, errors='replace', timeout=unit_build.COMPILE_TIMEOUT)
+        return proc.returncode, proc.stdout + proc.stderr, obj
+    return compile_one
+
+
+def pc_batch(a):
+    """`pc-batch`: compile an uploaded candidate archive and pack the objects and rows into one archive."""
+    import io
+    import tarfile
+    run = Path(a.run).resolve()
+    names = [a.cands, a.out]
+    if not all(re.fullmatch(r'(cands|out)-\d{4}\.tar', n) for n in names):
+        raise SystemExit('bad archive name')
+    sources = read_cands(run / a.cands)
+    (run / a.cands).unlink()
+    spec = json.loads((run / 'repo' / '.unit' / 'spec.json').read_text())
+    flags = json.loads((run / 'repo' / spec['recipe']).read_text())['flags']
+    t0 = time.monotonic()
+    rows, objects = compile_batch(run, sources, a.jobs, host_compiler(a.msvc, a.loader, flags))
+    with tarfile.open(run / a.out, 'w:xz') as tar:
+        blobs = {'rows.json': json.dumps({'rows': rows, 'wall': round(time.monotonic() - t0, 2)}).encode()}
+        blobs.update({f'{cid}.obj': data for cid, data in objects.items()})
+        for name, data in sorted(blobs.items()):
+            info = tarfile.TarInfo(name)
+            info.size, info.mode, info.mtime = len(data), 0o644, int(time.time())
+            tar.addfile(info, io.BytesIO(data))
+    return 0
 
 
 def function_hash(listing):
@@ -1379,154 +1492,108 @@ def function_hash(listing):
     return h.hexdigest()[:16]
 
 
-def remote_batch(payload, run_dir):
-    """Compile and score every candidate; print one sanitized JSON line each."""
-    import concurrent.futures
-    import subprocess
-    sys.path.insert(0, str(HERE))
-    import align
-    import disasm
-    from unit_build import clean_env
-    run = Path(run_dir).resolve()  # cl runs in each worker's copy, so /Fo needs an absolute path
-    repo = run / 'repo'
-    p = payload
-    objdump = disasm.find_objdump(p.get('objdump') or '/usr/bin/llvm-objdump')
-    image = p['image']
-    target_file = run / 'perm' / f'target-0x{p["rva"]:x}.txt'
-    target_file.parent.mkdir(parents=True, exist_ok=True)
-    if not target_file.is_file():
-        listing, base = align.objdump_target(objdump, image, p['rva'], p['size'])
-        target_file.write_text(json.dumps({'listing': listing, 'base': base}))
-    tgt = json.loads(target_file.read_text())
-    symbols = align.load_symbols(repo / p['symbols'])
-    recipe = json.loads((repo / p['recipe']).read_text())
-    base_text = (repo / p['compiled']).read_text()
-    spans = [tuple(x) for x in p['spans']]
-    env = clean_env(os.environ)
-    msvc = Path(p['msvc'])
-    t_rows = align._as_rows(tgt['listing'])
-    n_target = len(align.build(t_rows, size=p['size'], base=tgt['base']))
-
-    def worker_dir(k):
-        w = run / 'perm' / f'w{k}'
-        stamp = w / '.stamp'
-        want = hashlib.sha256(base_text.encode()).hexdigest()
-        if not stamp.is_file() or stamp.read_text() != want:
-            shutil.rmtree(w, ignore_errors=True)
-            w.mkdir(parents=True)
-            subprocess.run(['cp', '-al', str(repo), str(w / 'repo')], check=True)
-            stamp.write_text(want)
-        return w
-
-    workers = [worker_dir(k) for k in range(p['jobs'])]
-    free = list(range(p['jobs']))
-    import threading
-    lock = threading.Lock()
-
-    def one(item):
-        cid, body = item
-        with lock:
-            k = free.pop()
-        t0 = time.monotonic()
-        try:
-            w = workers[k]
-            src = w / 'repo' / p['compiled']
-            tmp = src.with_name(src.name + '.tmp')
-            tmp.write_text(splice(base_text, spans, body))
-            os.replace(tmp, src)  # replaces the hard link, so the shared copy stays unchanged
-            obj = w / f'{cid}.obj'
-            proc = subprocess.run([str(msvc / 'bin/x64/cl')] + recipe['flags'] + [f'/Fo{obj}', p['compiled']],
-                                  cwd=w / 'repo', env=env, capture_output=True, text=True, errors='replace',
-                                  timeout=300)
-            if proc.returncode != 0 or not obj.is_file():
-                (w / 'last-compile.log').write_text(proc.stdout + proc.stderr)
-                # Error codes only: compiler messages quote source text, and exec output is kept.
-                codes = sorted(set(re.findall(r'\b(?:error|fatal error) ([A-Z]+\d+)', proc.stdout + proc.stderr)))
-                return {'id': cid, 'st': 'compile-failed', 'codes': codes[:5], 'rc': proc.returncode,
-                        't': round(time.monotonic() - t0, 2)}
-            cand = align.objdump_candidate(objdump, obj, p['symbol'])
-            obj.unlink()
-            if not align.parse_listing(cand):
-                return {'id': cid, 'st': 'no-symbol', 't': round(time.monotonic() - t0, 2)}
-            _text, data = align.summarise(tgt['listing'], cand, symbols=symbols, image_base=tgt['base'],
-                                          target_size=p['size'])
-            comps = data['components']
-            return {'id': cid, 'st': 'ok', 'd': data['distance'], 'p': comps['prologue'], 'b': comps['body'],
-                    'r': comps['refs'], 'es': data['edits']['shape'], 'ex': data['edits']['exact'],
-                    'n': data['candidate_instructions'], 'nt': n_target, 'h': function_hash(cand),
-                    't': round(time.monotonic() - t0, 2)}
-        except Exception as exc:  # noqa: BLE001 - one broken candidate must not lose the batch
-            return {'id': cid, 'st': 'error', 'why': type(exc).__name__, 't': round(time.monotonic() - t0, 2)}
-        finally:
-            with lock:
-                free.append(k)
-
-    t0 = time.monotonic()
-    with concurrent.futures.ThreadPoolExecutor(p['jobs']) as pool:
-        for row in pool.map(one, p['cands']):
-            print(json.dumps(row), flush=True)
-    print(json.dumps({'batch': len(p['cands']), 'wall': round(time.monotonic() - t0, 2)}), flush=True)
-    return 0
-
-
 # --------------------------------------------------------------------------------------------
-# Local driver.
+# Caller side: score returned objects, and the scorer that drives a runner host.
 
-def remote_scorer(machine, run_dir, payload_base, timings, log, transport='scp', stage=None):
-    """Score a batch remotely. `scp` uploads the candidate bodies as a file first (two Boat calls);
-    `inline` puts them, compressed, in the exec command line (one call), which Boat may retain."""
-    import boatctl
+_SCORING = {}
+
+
+def scoring_init(ctx):
+    import align
+    _SCORING.update(ctx, symbols=align.load_symbols(ctx['symbols']))
+
+
+def score_object(item):
+    """The scoring row for one compiled object, using the context set by scoring_init."""
+    import align
+    cid, obj = item
+    c = _SCORING
+    t0 = time.monotonic()
+    try:
+        cand = align.objdump_candidate(c['objdump'], obj, c['symbol'])
+        if not align.parse_listing(cand):
+            return {'id': cid, 'st': 'no-symbol'}
+        _text, data = align.summarise(c['listing'], cand, symbols=c['symbols'], image_base=c['base'],
+                                      target_size=c['size'])
+        comps = data['components']
+        return {'id': cid, 'st': 'ok', 'd': data['distance'], 'p': comps['prologue'], 'b': comps['body'],
+                'r': comps['refs'], 'es': data['edits']['shape'], 'ex': data['edits']['exact'],
+                'n': data['candidate_instructions'], 'nt': c['nt'], 'h': function_hash(cand),
+                't': round(time.monotonic() - t0, 2)}
+    except Exception as exc:  # noqa: BLE001 - one broken candidate must not lose the batch
+        return {'id': cid, 'st': 'error', 'why': type(exc).__name__}
+
+
+def scoring_context(objdump, image, task, fn):
+    import align
+    listing, base = align.objdump_target(objdump, image, fn['rva'], fn['size'])
+    n_target = len(align.build(align._as_rows(listing), size=fn['size'], base=base))
+    return {'objdump': objdump, 'listing': listing, 'base': base, 'size': fn['size'], 'symbol': fn['symbol'],
+            'symbols': str(task['symbols_local']), 'nt': n_target}
+
+
+def runner_scorer(host, unit, jobs, score_all, timings, log, stage):
+    """Score a batch on a runner host (runners.AgentHost with a finished baseline run).
+
+    One upload of the candidate sources, one agent command that compiles them `jobs` at a time
+    and one download of the objects: three ssh operations per batch however many candidates.
+    """
+    import runners
+    import tarfile
     counter = [0]
 
     def score(cands):
-        payload = dict(payload_base, cands=[[c['id'], c['body']] for c in cands])
-        blob = encode_payload(payload)
         counter[0] += 1
+        tag = f'{counter[0]:04d}'
         t0 = time.monotonic()
-        if transport == 'inline':
-            arg = f'--payload {blob}'
-        else:
-            name = f'batch-{counter[0]:04d}.b64'
-            local = Path(stage) / name
-            local.write_text(blob)
+        local = Path(stage) / f'cands-{tag}.tar'
+        write_cands(local, {c['id']: unit.with_body(c['body']) for c in cands})
+        tr, remote = host.transport, host._remote(host._run)
+        try:
+            tr.put([local], remote)
+        finally:
+            local.unlink(missing_ok=True)
+        t1 = time.monotonic()
+        with runners.slots(host.host['host_id'], host.host['max_parallel'], jobs, log=log) as granted:
+            t2 = time.monotonic()
+            code, out, err = tr.run(
+                host._python() + ['-I', tr.join(remote, 'repo/tools/verifier/permute.py'), 'pc-batch', '--run', remote,
+                                  '--cands', f'cands-{tag}.tar', '--out', f'out-{tag}.tar', '--msvc',
+                                  host.host['msvc'], '--loader', host.host['loader'], '--jobs', str(granted)], 600)
+        t3 = time.monotonic()
+        by_id, objects = {}, {}
+        if code == 0:
+            archive = Path(stage) / f'out-{tag}.tar'
+            dest = Path(stage) / f'out-{tag}'
             try:
-                boatctl.upload(machine, local, f'{run_dir}/{name}')
+                tr.get(tr.join(remote, f'out-{tag}.tar'), archive)
+                shutil.rmtree(dest, ignore_errors=True)
+                runners.unpack(archive, dest)
+                for row in json.loads((dest / 'rows.json').read_text())['rows']:
+                    by_id[row['id']] = row
+                    if row['st'] == 'compiled':
+                        objects[row['id']] = dest / f'{row["id"]}.obj'
+                scored = {r['id']: r for r in score_all(sorted(objects.items()))}
+            except (runners.RunnerError, OSError, ValueError, KeyError, tarfile.TarError) as exc:
+                log(f'batch {tag}: results unreadable ({type(exc).__name__})')
+                scored = {}
             finally:
-                local.unlink(missing_ok=True)
-            arg = f'--payload-file {name}'
-        cmd = f'cd {shlex.quote(run_dir)} && python3 -I repo/tools/verifier/permute.py remote --run . {arg}'
-        code, out = 2, ''
-        for wait in (0, 5, 15):
-            time.sleep(wait)
-            try:
-                code, out, _err = boatctl.execute(machine, cmd, 600)
-                break
-            except boatctl.BoatError as exc:
-                # Transient gateway errors (HTTP 5xx) seen on the trial; the batch is safe to repeat
-                # because it writes only inside the run directory.
-                log(f'boat exec failed ({str(exc)[:60]}); retrying')
-        wall = time.monotonic() - t0
-        timings['exec_seconds'] = timings.get('exec_seconds', 0) + wall
-        timings['execs'] = timings.get('execs', 0) + 1
-        rows = {}
-        for line in out.splitlines():
-            try:
-                row = json.loads(line)
-            except ValueError:
-                continue
-            if 'id' in row:
-                rows[row['id']] = row
-            elif 'batch' in row:
-                timings['remote_wall'] = timings.get('remote_wall', 0) + row['wall']
-        if code != 0 or not rows:
-            log(f'remote batch exit {code}, {len(rows)} rows')
-        return [rows.get(c['id'], {'id': c['id'], 'st': 'lost'}) for c in cands]
+                archive.unlink(missing_ok=True)
+                shutil.rmtree(dest, ignore_errors=True)
+        else:
+            log(f'batch {tag}: agent exit {code} {(out or err or "").strip()[-120:]}')
+            scored = {}
+        t4 = time.monotonic()
+        for key, value in (('upload_seconds', t1 - t0), ('slot_wait_seconds', t2 - t1), ('compile_seconds', t3 - t2),
+                           ('fetch_score_seconds', t4 - t3), ('execs', 1)):
+            timings[key] = timings.get(key, 0) + value
+        return [scored.get(c['id'], by_id.get(c['id'], {'id': c['id'], 'st': 'lost'})) for c in cands]
     return score
 
 
 def run(args):
     sys.path.insert(0, str(HERE))
-    import boatctl
+    import disasm
     import pipeline
     started = time.monotonic()
     task = pipeline.load_task(args.task_dir)
@@ -1554,28 +1621,22 @@ def run(args):
     lint = lint_gate(make_lint_root(out / 'lintroot', source_root, closure), compiled, task['build_id'])
     if args.dry_run:
         return dry_run(unit, lint, random.Random(args.seed), args.batch)
+    import runners
     config = pipeline.load_config(task['dir'])
-    machine, state = boatctl.lookup()
-    if machine is None or (args.no_resume and state not in boatctl.RUNNING):
-        raise SystemExit(f'{boatctl.STANDING} is not running (state {state}); --no-resume forbids starting it')
-    if args.no_resume:
-        left = boatctl.seconds_left(boatctl.info(machine))
-        if left is not None and left < args.budget + 120:
-            raise SystemExit(f'only {left} s left before the machine auto-stops; budget is {args.budget} s')
-        how = 'warm (not resumed or extended)'
-    else:
-        machine, how = pipeline.ensure_standing()
-    remote_root = args.remote_root or f'{boatctl.REMOTE_HOME}/tasks/permute'
-    run_dir = f'{remote_root}/{task["task_id"]}-0x{rva:x}'
+    runner = runners.for_attempt()
+    if runner is None:
+        raise SystemExit('no runner host: set "attempt" to a local or ssh host in .local/verifier/runners.json '
+                         '(or SR_RUNNERS_CONFIG)')
+    objdump = disasm.find_objdump(config.get('objdump'))
+    image = config.get('image')
+    if objdump is None or not image or not Path(image).is_file():
+        raise SystemExit('scoring runs here and needs llvm-objdump and the local image (.local/verifier/config.json)')
     log = print
-    log(f'permute {task["task_id"]} 0x{rva:x} {qualified}: machine {how}; remote {run_dir}')
-    # The first compile is a real unit_build run of the unchanged unit: it syncs the copy the
-    # workers link to and checks toolchain and image hashes on this boot.
-    # Every run starts from a fresh remote copy: the run directory is removed at the end, so a
-    # stored sync state would make Host skip the upload of files that are no longer there.
-    (out / '.sync.json').unlink(missing_ok=True)
-    host = pipeline.Host(machine, 'permute', run_dir, task, state_path=out / '.sync.json',
-                         local_image=config.get('image'))
+    # The baseline is a real unit_build run of the unchanged unit on the host: it checks the
+    # toolchain and image hashes and leaves the run directory the candidate batches compile in.
+    host = runners.AgentHost(runner, task, label='permute', log=lambda m: print(m, file=sys.stderr))
+    jobs = args.jobs or runner['max_parallel']
+    log(f'permute {task["task_id"]} 0x{rva:x} {qualified}: {runners.describe(runner)}, {jobs} jobs')
     stage = out / '.stage'
     stage.mkdir(exist_ok=True)
     t0 = time.monotonic()
@@ -1583,27 +1644,33 @@ def run(args):
     timings = {'baseline_seconds': round(time.monotonic() - t0, 1)}
     if code not in (0, 1):
         log(f'baseline unit_build exit {code}: ' + ' | '.join(text.splitlines()[-3:]))
+        host.clean()
         return 2
-    payload_base = {'rva': rva, 'size': fn['size'], 'symbol': fn['symbol'], 'compiled': compiled,
-                    'recipe': task['recipe'], 'symbols': task['symbols_repo'] or pipeline.PRIVATE_SYMBOLS,
-                    'spans': [list(s) for s in unit.spans], 'jobs': args.jobs,
-                    'image': pipeline.remote_image(task['build_id']), 'msvc': f'{boatctl.REMOTE_HOME}/msvc'}
-    scorer = remote_scorer(machine, run_dir, payload_base, timings, log, args.transport, stage)
+    import concurrent.futures
+    ctx = scoring_context(objdump, image, task, fn)
+    pool = concurrent.futures.ProcessPoolExecutor(min(os.cpu_count() or 2, 8), initializer=scoring_init,
+                                                  initargs=(ctx,))
+
+    def score_all(items):
+        return list(pool.map(score_object, items)) if items else []
+    scorer = runner_scorer(host, unit, jobs, score_all, timings, log, stage)
     search = Search(unit, scorer, lint, random.Random(args.seed), batch=args.batch, patience=args.patience,
                     restart_after=args.restart_after, budget=args.budget, log=log, max_steps=args.max_steps)
     try:
         result = search.run()
     except BaseException:
-        # Leave no game-derived listings or objects on the machine and keep the cost record.
-        if not args.keep_remote:
-            boatctl.execute(machine, f'rm -rf {shlex.quote(run_dir)}', 60)
+        # Leave no listings or objects on the host and keep the cost record.
+        host.clean()
+        pool.shutdown(cancel_futures=True)
         pipeline.record_cost(task, 'draft', time.monotonic() - started, time.monotonic() - started)
         raise
+    pool.shutdown()
+    host.clean()
     with open(out / 'history.jsonl', 'w') as f:
         for row in search.history:
             f.write(json.dumps(row) + '\n')
     summary = {'task': task['task_id'], 'rva': f'0x{rva:x}', 'function': qualified, 'status': result['status'],
-               'seed': args.seed, 'batch': args.batch, 'jobs': args.jobs}
+               'seed': args.seed, 'batch': args.batch, 'jobs': jobs, 'host': runner['host_id']}
     final = None
     if 'best' in result:
         best = result['best']
@@ -1618,24 +1685,22 @@ def run(args):
             summary['comparator'] = final
     else:
         summary.update({k: v for k, v in result.items() if k != 'status'})
-    if not args.keep_remote:
-        boatctl.execute(machine, f'rm -rf {shlex.quote(run_dir)}', 60)
     wall = time.monotonic() - started
     timings['wall_seconds'] = round(wall, 1)
     n = summary.get('candidates') or 0
     summary['timings'] = {k: round(v, 1) if isinstance(v, float) else v for k, v in timings.items()}
-    summary['candidates_per_boat_minute'] = round(n / (wall / 60), 1) if wall else None
+    summary['candidates_per_minute'] = round(n / (wall / 60), 1) if wall else None
     (out / 'result.json').write_text(json.dumps(summary, indent=1) + '\n')
     pipeline.record_cost(task, 'draft', wall, wall)
     log(f'result: {summary["status"]}; start d={summary.get("start_distance")} best d={summary.get("best_distance")} '
         f'({summary.get("best_mutations")}); {n} candidates in {wall:.0f} s '
-        f'({summary["candidates_per_boat_minute"]}/Boat min); comparator {final}')
+        f'({summary["candidates_per_minute"]}/min); comparator {final}')
     log(f'private: {out}/ (best.cpp, history.jsonl, result.json)')
     return 0 if final == 'pass' else 1
 
 
 def dry_run(unit, lint, rng, batch):
-    """Local check before any Boat time: the base lints and the mutations find sites in this body."""
+    """Local check before any host time: the base lints and the mutations find sites in this body."""
     problems = lint(unit.with_body(unit.body_of(unit.forest())))
     print(f'base lint: {"PASS" if not problems else "FAIL"}' + ''.join(f'\n  {p}' for p in problems))
     sites = {}
@@ -1688,38 +1753,29 @@ def main(argv=None):
                    help='also mutate this definition in the same file (repeatable), e.g. an inline helper')
     r.add_argument('--source-root', help='checkout-shaped tree holding reconstruction/ (default: this checkout)')
     r.add_argument('--out', help='private output directory (default: <task-dir>/permute/0x<rva>)')
-    r.add_argument('--budget', type=float, default=600.0, help='seconds of Boat time (default 600 = 10 min)')
+    r.add_argument('--budget', type=float, default=600.0, help='seconds of wall time (default 600 = 10 min)')
     r.add_argument('--batch', type=int, default=16)
-    r.add_argument('--jobs', type=int, default=4)
+    r.add_argument('--jobs', type=int, help='compiles at once on the host (default: its max_parallel)')
     r.add_argument('--patience', type=int, default=8, help='batches without a new best before stopping')
     r.add_argument('--restart-after', type=int, default=3, help='batches without progress before a restart')
     r.add_argument('--max-steps', type=int, default=3, help='most mutations stacked in one candidate')
     r.add_argument('--seed', type=int, default=1)
-    r.add_argument('--remote-root', help='parent directory on the machine (default ~/tasks/permute)')
-    r.add_argument('--keep-remote', action='store_true')
-    r.add_argument('--no-resume', action='store_true', help='refuse unless the standing machine is already running')
-    r.add_argument('--dry-run', action='store_true', help='lint the base and one batch locally; no Boat time')
+    r.add_argument('--dry-run', action='store_true', help='lint the base and one batch locally; no host time')
     m = sub.add_parser('mutate', help='print a mutated copy of a file (tests, recovery self-tests)')
     m.add_argument('file')
     m.add_argument('--function', required=True)
     m.add_argument('--steps', type=int, default=3)
     m.add_argument('--seed', type=int, default=1)
-    rm = sub.add_parser('remote', help=argparse.SUPPRESS)
-    rm.add_argument('--run', required=True)
-    rm.add_argument('--payload')
-    rm.add_argument('--payload-file')
-    r.add_argument('--transport', choices=('scp', 'inline'), default='scp',
-                   help='scp: bodies uploaded as a file (default, the one to use); inline: in the exec '
-                        'command line, not to be used (candidate source would sit in the provider\'s command log)')
+    pb = sub.add_parser('pc-batch', help=argparse.SUPPRESS)
+    pb.add_argument('--run', required=True)
+    pb.add_argument('--cands', required=True)
+    pb.add_argument('--out', required=True)
+    pb.add_argument('--msvc', required=True)
+    pb.add_argument('--loader', choices=('wine', 'native'), required=True)
+    pb.add_argument('--jobs', type=int, required=True)
     a = p.parse_args(argv)
-    if a.cmd == 'remote':
-        if a.payload_file:
-            path = Path(a.run) / a.payload_file
-            blob = path.read_text()
-            path.unlink()
-        else:
-            blob = a.payload
-        return remote_batch(decode_payload(blob), a.run)
+    if a.cmd == 'pc-batch':
+        return pc_batch(a)
     if a.cmd == 'mutate':
         return mutate_cmd(a)
     return run(a)

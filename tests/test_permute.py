@@ -264,10 +264,100 @@ class Mutations(unittest.TestCase):
             permute.Unit(u.with_body(out), 'Toy::Probe')
 
 
-class Payload(unittest.TestCase):
-    def test_round_trip(self):
-        obj = {'cands': [['v00001', '{ return 1; }']], 'span': [3, 9]}
-        self.assertEqual(permute.decode_payload(permute.encode_payload(obj)), obj)
+class Batches(unittest.TestCase):
+    def test_candidate_archive_round_trip(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / 'cands-0001.tar'
+            sources = {'v00001': 'int a;\n', 'v00002': 'int b;\n'}
+            permute.write_cands(path, sources)
+            self.assertEqual(permute.read_cands(path), sources)
+
+    def test_candidate_archive_refuses_other_names(self):
+        import io
+        import tarfile
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / 'cands-0001.tar'
+            with tarfile.open(path, 'w:xz') as tar:
+                info = tarfile.TarInfo('../x.cpp')
+                info.size = 0
+                tar.addfile(info, io.BytesIO(b''))
+            with self.assertRaises(ValueError):
+                permute.read_cands(path)
+
+    def _run_dir(self, root):
+        repo = Path(root) / 'repo'
+        (repo / '.unit').mkdir(parents=True)
+        (repo / 'reconstruction').mkdir()
+        (repo / 'reconstruction' / 'unit.cpp').write_text('base')
+        (repo / '.unit' / 'spec.json').write_text(json.dumps({'compiled': 'reconstruction/unit.cpp'}))
+        return Path(root)
+
+    def test_compile_batch_uses_worker_copies_and_reports_failures(self):
+        seen = []
+
+        def compile_one(worker, compiled, cid):
+            text = (worker / 'repo' / compiled).read_text()
+            seen.append((cid, text, worker.name))
+            if 'bad' in text:
+                return 2, 'x.cpp(3): error C2065: oops\nerror C2143: more', None
+            obj = worker / f'{cid}.obj'
+            obj.write_bytes(text.encode())
+            return 0, '', obj
+
+        with tempfile.TemporaryDirectory() as d:
+            run = self._run_dir(d)
+            rows, objects = permute.compile_batch(run, {'v00001': 'one', 'v00002': 'bad', 'v00003': 'three'}, 2,
+                                                  compile_one)
+            by = {r['id']: r for r in rows}
+            self.assertEqual(by['v00001']['st'], 'compiled')
+            self.assertEqual(by['v00002']['st'], 'compile-failed')
+            self.assertEqual(by['v00002']['codes'], ['C2065', 'C2143'])
+            self.assertEqual(objects, {'v00001': b'one', 'v00003': b'three'})
+            self.assertLessEqual(len({w for _, _, w in seen}), 2)
+            self.assertEqual((run / 'repo' / 'reconstruction' / 'unit.cpp').read_text(), 'base')
+
+    def test_compile_batch_survives_a_crashing_worker(self):
+        def compile_one(worker, compiled, cid):
+            raise OSError('disk')
+
+        with tempfile.TemporaryDirectory() as d:
+            rows, objects = permute.compile_batch(self._run_dir(d), {'v00001': 'x'}, 1, compile_one)
+            self.assertEqual(rows[0]['st'], 'error')
+            self.assertEqual(objects, {})
+
+    def test_pc_batch_round_trip(self):
+        import tarfile
+        with tempfile.TemporaryDirectory() as d:
+            run = self._run_dir(d)
+            (run / 'repo' / 'recipe.json').write_text(json.dumps({'flags': ['/O2']}))
+            (run / 'repo' / '.unit' / 'spec.json').write_text(
+                json.dumps({'compiled': 'reconstruction/unit.cpp', 'recipe': 'recipe.json'}))
+            permute.write_cands(run / 'cands-0001.tar', {'v00001': 'one'})
+
+            def fake(msvc, loader, flags):
+                self.assertEqual((msvc, loader, flags), ('tc', 'native', ['/O2']))
+
+                def compile_one(worker, compiled, cid):
+                    obj = worker / f'{cid}.obj'
+                    obj.write_bytes(b'OBJ')
+                    return 0, '', obj
+                return compile_one
+
+            real, permute.host_compiler = permute.host_compiler, fake
+            try:
+                args = type('A', (), dict(run=str(run), cands='cands-0001.tar', out='out-0001.tar', msvc='tc',
+                                          loader='native', jobs=1))
+                self.assertEqual(permute.pc_batch(args), 0)
+            finally:
+                permute.host_compiler = real
+            self.assertFalse((run / 'cands-0001.tar').exists())
+            with tarfile.open(run / 'out-0001.tar') as tar:
+                self.assertEqual(sorted(tar.getnames()), ['rows.json', 'v00001.obj'])
+
+    def test_pc_batch_refuses_odd_archive_names(self):
+        args = type('A', (), dict(run='.', cands='../x.tar', out='out-0001.tar', msvc='t', loader='native', jobs=1))
+        with self.assertRaises(SystemExit):
+            permute.pc_batch(args)
 
     def test_function_hash_ignores_nothing_but_addresses_and_text(self):
         a = '   0: 48 89 5c 24 08\tmov qword ptr [rsp + 0x8], rbx\n   5: c3\tret\n'

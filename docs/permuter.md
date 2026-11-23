@@ -10,21 +10,23 @@ the winning source, the lint passes, and a Reviewer approves it under the rule i
 ## Use
 
 ```sh
-tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> --dry-run   # local: lint and mutation sites, no Boat time
-tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> [--budget 600] [--seed 1]
+tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> --dry-run   # local: lint and mutation sites, no host time
+tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> [--budget 600] [--seed 1] [--batch 16] [--jobs N]
 ```
 
 The task directory is the one `attempt` uses (task.json, symbols.json); the function is found in
 the compiled file by its community name (`--function Class::Name` overrides it) and must have
 exactly one definition there. `--source-root DIR` reads `reconstruction/` from a private copy
 instead of the checkout, so a near-miss draft never has to be in the working tree. The run uses
-the standing machine like `attempt` (it resumes it unless `--no-resume`), works in
-`~/tasks/permute/<task-id>-0x<rva>` (`--remote-root` to change), and removes that directory at the end.
+the runner host that `attempt` uses (`attempt` in `.local/verifier/runners.json`, or
+`SR_RUNNERS_CONFIG`; there is no other backend, and the run stops if none is configured). Scoring
+needs `llvm-objdump` and the local image on the calling machine (`.local/verifier/config.json`).
+The host keeps its files under its work directory for the run and removes them at the end.
 
 Outputs go to `<task-dir>/permute/0x<rva>/` (private): `best.cpp` (the whole unit with the best
 body), `history.jsonl` (every scored candidate: parent, mutations applied, distance and its
 components, object hash, compile seconds), `result.json` (start and best distance, candidates,
-timings, candidates per Boat minute, comparator result) and `final/` (the comparator's files for
+timings, candidates per minute, comparator result) and `final/` (the comparator's files for
 a distance-0 winner). Exit 0 only when the comparator passed. Then copy the body into the unit,
 tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `history.jsonl`.
 
@@ -51,22 +53,23 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    steps are recorded as `<rule>@<n>`). Cookbook rules 3 to 5, 7, 8, 10 and 11 add helpers, parameters or class
    members; they are outside the one body and are left to the Drafter or Engineer.
 2. **Lint gate.** Every candidate passes `tools/lint_reconstruction.py` before it is compiled;
-   the unchanged unit must pass too, or the run stops before using the machine.
-3. **Batches.** The candidate bodies of a batch go up as one compressed file (`boat scp`), and
-   one `boat exec` per batch returns one sanitized JSON line per candidate: distance and components from
-   `align.py`, instruction counts, a 16-hex hash of the function's code and relocations, compile
-   seconds, error codes on failure. The machine compiles `--jobs` candidates at once (default 4,
-   its vCPUs), each worker in its own hard-linked copy of the synced unit, with the recipe's flags
-   and the environment `unit_build.py` uses. Compiler output and listings stay on the machine.
-   File upload is the transport to use. `--transport inline` exists but is not to be used: it
-   puts the compressed candidate source in the exec command line, so reconstructed source would
-   sit in the provider's command log (G5 covers placing it on the machine, not in Boat's
-   records). Its throughput below is kept as a measurement only.
+   the unchanged unit must pass too, or the run stops before using the host.
+3. **Batches.** A first `unit_build` run of the unchanged unit on the host checks the toolchain
+   and image pins exactly as `attempt` does (so the unit's `// Recipe:` and the pinned compiler
+   apply) and leaves the run directory. Each batch is then one upload of the candidate sources
+   (an xz archive; near-identical sources cost almost nothing), one agent command that compiles
+   them `--jobs` at a time (default: the host's `max_parallel`; the first slot is waited for, the
+   others are taken only if free) in per-worker copies of the unit, with the recipe's flags and
+   the environment `unit_build.py` uses, and one download of the objects. The host needs no
+   objdump and no Python packages. The objects are disassembled and scored on the calling
+   machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
+   function's code and relocations. Compiler output stays on the host; a failed compile reports
+   its error codes only.
 4. **Search.** Greedy hill-climb on (distance, exact edits, instruction-count difference), with
    sideways moves to new objects of equal score, a random restart from the best after
    `--restart-after` batches without progress, and a seen-set of object hashes, so a spelling
    that compiles to known code does not count as progress. Stops at distance 0, at `--budget`
-   seconds of wall time on the machine, or after `--patience` batches without a new best.
+   seconds of wall time, or after `--patience` batches without a new best.
 5. **Confirmation.** A distance-0 winner is compiled and compared once more by `unit_build.py`
    (pinned toolchain and image checks, include closure, `verify_function.py`). Only that report
    says pass. Distance 0 alone is not a pass: `align.py` is run without the unwind infos.
@@ -75,14 +78,14 @@ The run's wall time is queued to the cost ledger as stage `draft`, as `attempt` 
 default budget is 600 seconds per function (`--budget 600`), capped at
 20 hours per 1,000 functions.
 
-## Measured (sse-steam-1-7-104, recipe msvc-19.16.27054-o2, standing machine, 4 vCPU)
+## Measured on the retired Boat backend (sse-steam-1-7-104, recipe msvc-19.16.27054-o2, 4 vCPU)
 
 First trial, nine runs, about 6 machine minutes in total (measured wall time of the runs; the
 machine was shared with other agents' compiles):
 
 - **Throughput.** One candidate compiles and scores in a median 0.2 to 0.34 s of a worker's time;
   a batch of 32 on 4 workers takes 1.5 to 2.7 s on the machine. With `--transport inline`, 490
-  to 550 candidates per Boat minute (one exec per batch, about 1 s of round trip). With the
+  to 550 candidates per minute (one exec per batch, about 1 s of round trip). With the
   default `scp`, 220 to 340 per Boat minute: the upload adds about 2.5 s per batch. The
   unchanged-unit `unit_build` run at the start costs 2.3 to 5.4 s. The 10-minute budget is
   therefore 2,000 to 5,000 candidates, far more than the rules generate for a small body: most
