@@ -884,70 +884,34 @@ register move) before you rewrite the logic.
 ## Unsolved patterns
 
 <a id="rule-12"></a>
-**12. A pure callee-saved register swap with the same instructions.** (low)
+**12. A pure callee-saved register swap with the same instructions.** (solved for the lock units; see rule 68)
 Symptom: every instruction matches except which callee-saved registers hold `this` and a loop
-counter. The comparator reports unwind-info-mismatch at +0x0 with equal sizes. In this recipe,
-about 45 source spellings never move `this` out of rbx. Only spellings that add counter
-references flip it, and those add instructions. Whole-program optimization is refuted as the
-cause, and so are the swept flags: `/GL` linked `/LTCG` gives byte-identical code for these
-sources, and no profile data exists ([finding](../findings/whole-program-optimization.md)).
-For the variant whose saves skip the first home slot, see rule 29. Otherwise cause unknown. Untested hypotheses from that finding: EH state removed after frame layout (a
-`noexcept` or `throw()` helper whose throwing path folds away), or frame layout kept from dead
-code (a parameter or `this` whose address is taken and then optimised out). Seen in
-BSReadWriteLock::LockForRead 0xce3250 and LockForWrite 0xce32d0, and in the same form in 0x2bccc0,
-0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260, 0x3c62f0, 0x14e81f0 (the target uses rdi, rbp, rsi for three locals where the candidate
-has rbp, rsi, rdi), 0x4682f0, 0x3a9420, 0x15286c0 (swapped saved registers after nine comparisons) and 0xce3360 (closed with a named
-compare-exchange result, rule 29) (twelve functions; a plain save and restore, an
-RAII guard struct and a reference with an explicit null check were tried on 0x2bccc0). When the
-function saves, changes and restores a thread-local, the guard of rule 21 closed the same
-symptom in 0x6d9f20, and rule 34 closed a swap of the null and pointer registers in 0x6767e0,
-0x301a20 and 0x6af050.
+counter. The comparator reports unwind-info-mismatch at +0x0 with equal sizes. Plain respellings
+of a scalar local never move it (about 45 variants), and whole-program optimization is refuted
+([finding](../findings/whole-program-optimization.md)).
+Solved: make the variable that must win a member of a class-type local. This compiler ranks the
+member of a class-type local ahead of plain scalar locals, with identical instructions, and the
+pairing then follows the usual priority inside each group. BSReadWriteLock::LockForRead 0xce3250
+and LockForWrite 0xce32d0 pass with the spin counter held in a one-member spin-counter object;
+PlayerCharacter::Function6d6820 needed both the index and the current pointer in one-member
+class-type locals (one class per variable; one struct holding both did not work). Prefer a
+plausible class (a guard, cursor, back-off or handle object) and label it `GUESS(low)`. Untested
+at scale: how many other rule-12 functions have a plausible class for the variable.
 
-A hard-tier review of the traces (medium confidence) adds that nothing in the spelling of the counter
-moves the order: seven toolsets from 19.00 to 19.16 and `/GL` with `/LTCG` give identical code, and
-declaring the counter before an early-return call shifts the tie by about 38 units, a tie-breaker only.
-A zero-cost flip needs a different live range or exit structure, as in rules 21, 29, 34 and 35. The
-one confirmed flip of this kind: BGSKeywordForm::HasKeyword 0x1d89e0 swapped its two saved roles
-(`this` and the key) when the exit became `if (found) return true; return false;` (rule 35). Try
-exit-path changes and splitting a live range through a guard or an inlined helper before any counter
-respelling. Which exact shape closes 0xce3250 and 0xce32d0 is untested.
-
-Why the spellings fail: the allocator hands out callee-saved registers in priority order, so the
-swap means two variables rank the other way round. One extra use inside a loop is worth about 350
-and one straight-line use about 30 to 60. Counter type, comparison operator, branch polarity, loop
-keyword, aliasing and declaration order do not move priority at all. Every flip found so far cost
-an extra instruction or removed a local. Stop after a few tries and record the function as unsolved.
-
-Still failing: 0xce3250, 0xce32d0, 0x2bccc0, 0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260, 0x3c62f0, 0x14e81f0, 0x4682f0, 0x3a9420, 0x15286c0.
-
-<a id="rule-13"></a>
-**13. A -2 store to the UnwindHelp stack slot, eager saves of callee-saved registers, and no EH handler.** (low)
+**13. A -2 store to the UnwindHelp stack slot, eager saves of callee-saved registers, and no EH handler.** (solved for the list-destructor family; see rule 69)
 Symptom: the prologue stores the C++ EH UnwindHelp slot and saves rbx/rbp/rsi/rdi before any
-early return, yet the unwind info has flags 0. Because shrink wrapping is off, every register
-differs from a candidate that does not use EH. In lab compiles, a destructor-bearing local around
-a throwing call keeps a handler. Locals whose scope has no throwing call, noexcept or throw()
-helpers, and try/catch all either drop the -2 store or keep a handler; so do the same guards
-under `/GL` and `/LTCG`. A toolset sweep on Script 0x346700 kept the same extra handler and code distance on all seven
-toolsets 19.00 to 19.16, so the compiler version is not the cause. Hypothesis (low to medium
-confidence, untested): the slot is committed while a throwing cleanup still exists, and that cleanup
-is removed afterwards, as with a `noexcept` boundary or a nullable-path guard whose throwing call
-folds away. Rule 67 closed two related prologue functions by keeping a throwing path or a scoped
-guard alive across construction and branching, but those kept a handler. Whole-program optimization is not confirmed for RemoveFavorite and
-refuted for the other near-misses measured ([finding](../findings/whole-program-optimization.md));
-cause unknown. The 151 image functions with this shape cluster by address. Untested hypotheses
-from the finding: EH state removed after frame layout (a `noexcept` or `throw()` helper whose
-throwing path folds away), or frame layout kept from dead code (an address taken and then
-optimised out), tried first on one dense run. Seen in RemoveFavorite 0x237a20 and, as a recursive list-node
-destructor (a scalar-deleted node, an exception-state slot, no handler), in 0x346700, 0x346780,
-0x346800, 0x3244a0 and 0x14c550, where `noexcept(false)`, a non-destructor form and a scalar-deleting
-variant did not add the state; four more of the same shape (0x346880, 0x395320, 0x1f0840, 0x7e99a0)
-were not attempted. Triage these instead of drafting them. Another list-node destructor, 0x7e9ad0, and a plain derived constructor
-with a base-constructor call, 0x4aa240 (0x3f0740 and 0x3f07c0 are reported with the same shape), closed
-(rule 67).
+early return, yet the unwind info has flags 0. Destructor-bearing locals, noexcept helpers and
+try/catch all either drop the -2 store or keep a handler.
+Solved for BSSimpleList destructors: the destructor calls an inline helper with a callback
+parameter, passed as null, whose body has `if (callback) callback(node, data); else delete node;`.
+The indirect call folds away with the constant null callback, but only after the compiler has
+committed the exception-state slot and the eager saves while the call still existed, so no state
+and no handler remain. A loop with no callback parameter keeps a handler or drops the slot.
+0x346700 and the same-shaped instantiations 0x346780, 0x346800 and 0x346880 pass this way. For
+other functions with this shape, look for an inlined helper with a callback, allocator or virtual
+parameter that is constant at the call site; the 151 image functions with this shape are
+unverified. RemoveFavorite 0x237a20 is still unsolved.
 
-Still failing: 0x237a20, 0x346700, 0x346780, 0x346800, 0x3244a0, 0x14c550, 0x346880, 0x395320, 0x1f0840, 0x7e99a0.
-
-<a id="rule-20"></a>
 **20. A pointer loop that the compiler turns into a counted loop.** (low)
 Symptom: the target walks an array with `it != end` (two callee-saved registers, no trip count);
 the candidate computes a trip count with `lea`/`shr`/`cmova` and needs two more callee-saved
@@ -1097,6 +1061,74 @@ inline method. 0x14f320 closed with rule 62, 0xbb8550 with rule 31 and 0x1540f70
 
 Still failing: 0x833510, 0x64d060, 0x64d290, 0xf01610.
 
+**68. A register swap fixed by a class-type local (closes rule 12 for the lock units).**
+Move the variable that must outrank another into a one-member class-type local, one class per
+variable. Plain spellings, declaration order, loop keyword, accessors and an inline function taking
+the plain variable by reference do nothing; the struct membership itself is the lever. A 64-bit
+index with a 32-bit compare also reorders ties, at the price of a 64-bit increment.
+```cpp
+struct SpinCounter { SpinCounter() : n() {} void Pause() { if (n < 10000) { ++n; Sleep(0); } else Sleep(1); } unsigned n; };
+void Lock() { SpinCounter spin; while (!TryAcquire()) spin.Pause(); }
+```
+
+**69. An exception-state slot with no handler in a destructor (closes rule 13 for list nodes).**
+See rule 13. Diagnostic: replace the null callback by a real argument; if the handler appears, the
+dead throwing call is the cause. Bind the template destructor by decorated name (bind hint locally,
+`CI hash:` line for CI); a template name on the header line is not used for binding.
+
+**70. A mis-drafted skip: `continue` read as `break`.** (method)
+Symptom: a loop with two early skips never matches though every other part looks right, and a
+register search keeps failing. Earlier drafts of PlayerCharacter::Function6d6820 wrote both skips
+as `break`; they are `continue`, so tens of traced register variants were run on source that could
+not match. Before a register search, read every branch displacement and check that each skip
+jumps to the loop increment, not past the loop. A signed `int` index compared against a
+`sizeof`-derived count keeps the up-counter next to the strength-reduced pointer; an unsigned index
+becomes a count-down.
+
+**71. A bit-field compared against several values, each masked again.** (solved, 0x6a1120)
+When the target masks the field again for every compare and every direct compare (accessor, copy,
+mask, shift, union, switch, loop) shares one masked value, compare as a signed difference.
+```cpp
+inline bool Differs(unsigned state, unsigned other) { return int(state) - int(other) != 0; }
+```
+The subtraction folds into the compare only after common subexpressions are shared, so each test
+keeps its own mask. The helper is a guess; label it `GUESS(low)`.
+
+**72. A float zero compare whose zero is hoisted above its branch.** (solved, 0xf0c600)
+If a zero for a float compare is hoisted into the entry block above the branch that guards it,
+look for a second use of the same float zero, such as a zero store into a float member: the
+compiler merges the constants and hoists to a common dominator. If the target writes that store as
+an integer zero, write it as raw bits so the compare is the only float user. Diagnostic: replace the
+store value with a non-constant; if the zero returns to its block, this is the cause. The unit also
+needs its own `/fp:fast` recipe on its Recipe line.
+```cpp
+std::uint32_t zero = 0; std::memcpy(&radius, &zero, sizeof radius);
+```
+
+**73. Near misses worth carrying to a permuter (not solved).**
+- Duplicated tail merged after allocation (0x1e5b30, 193/216): a callee-saved register missing from
+  the target's set means the source had a tail written twice and merged late; write the tail once
+  per branch through a small inline helper (`if (master) { strip(); add(); } else { add(); }`).
+  Left: the non-master path keeps its own null test and branch.
+- Handle compare through temporaries (0xee4c80, 252/282): compare through an inline accessor on each
+  side so both handles are loaded, the temporary is destroyed, and then they are compared; declare
+  the string constructor with a default null argument, not an inline delegating default constructor.
+  Left: the temporary and the first lazily saved register swap argument home slots.
+- Clamp with a default case (0xbafa60, 53/58): a `default:` that sets a constant weight places the
+  constant copy after the first case test; `!(w >= lo)` gives the target's compare direction under
+  precise float. Left: the default path threaded to the return and the zero copied from its register.
+- Null-parent ternary (0x329980): the null-tested pointer's register is reused as the phi register
+  on the null path, forcing a copy after the call; arm types, helpers and clamp spellings do not
+  change it, and the aligned-byte score favours a shorter cmov shape over closer ones.
+- A flag-taking inline member jump-threaded late (0x39e9b0, 224/241): the target forms the same
+  subobject address in both arms and saves two unused callee-saved registers; folding the store,
+  memset, inline `Reset()` and a constant-phi bool all fail.
+
+**74. Method: compile many variants per attempt.** Add 8 to 12 variants per attempt as extra `LabNN`
+members, disassemble the candidate object locally and rank them against the target listing; this
+turned one hypothesis per attempt into ten per ten seconds. If more than a few lab callers share an
+inline helper it stops being inlined; use `__forceinline` in lab code only.
+
 ## Method and permuter recommendations
 
 The permuter that mechanises rules 1, 2 (inversions only), 6 and 9 is
@@ -1115,6 +1147,6 @@ The permuter that mechanises rules 1, 2 (inversions only), 6 and 9 is
   mnemonics (12) or a -2 UnwindHelp store with no handler (13) should stop the search and go to
   triage: no source permutation tried here changes them.
 - Reject variants that add code only to steer register allocation (rule 12's counter tricks),
-  even when they score higher.
+  even when they score higher. A class-type local for the variable (rule 68) adds no code and is fine.
 - Watch inlining: extra lab copies can stop a helper being inlined, so a variant that shrinks
   sharply must be rescored alone (`__forceinline` is acceptable in lab code only).
