@@ -13,7 +13,14 @@
 // 0x1a4670 TES::CancelMasterFileLoads
 // 0x1a2200 TES::Function1a2200
 // 0x1b4660 TES::ScalarDeletingDestructor
+// 0x1a2610 TES::GetWorldSpace
 #include "TES.h"
+
+// Return the worldspace containing the current exterior grid.
+TESWorldSpace* TES::GetWorldSpace() const
+{
+    return worldSpace;
+}
 
 namespace {
 constexpr unsigned kReleaseStorage = 1u;

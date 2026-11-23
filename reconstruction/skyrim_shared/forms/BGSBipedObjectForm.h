@@ -1,11 +1,14 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
+// Code origin: existing community layout; slot-test declaration inferred from the listing, with its name from CrashLogger.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSBipedObjectForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BaseFormComponent: STANDIN EXE_RTTI
 // BGSBipedObjectForm::ClearDataComponent, BGSBipedObjectForm::InitializeDataComponent, BGSBipedObjectForm::~BGSBipedObjectForm: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BaseFormComponent::~BaseFormComponent: GUESS(low)
 // unk08, unknown0C: GUESS(low); unk08 is the dword the initialiser stores zero into
+// BGSBipedObjectForm::FillsBipedSlot: CRASHLOGGER_PDB(59818@2026.10.24)
+// a_slot: GUESS(low); signed bit index observed in the slot-mask test
 #pragma once
 
 #include <cstdint>
@@ -22,6 +25,7 @@ class BGSBipedObjectForm : public BaseFormComponent
 {
 public:
     BGSBipedObjectForm();
+    bool FillsBipedSlot(std::int32_t a_slot) const;
     virtual void ClearDataComponent();  // compared: 0x1d20f0
     virtual void InitializeDataComponent();  // compared: 0x1d20e0
     virtual ~BGSBipedObjectForm();  // compared: 0x1d21f0 (scalar deleting destructor)

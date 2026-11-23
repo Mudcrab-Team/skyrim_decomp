@@ -9,9 +9,22 @@
 // 0x14e7ef0 BSShaderProperty::SetFlags
 // 0x14e7450 BSShaderProperty::SaveBinary
 // 0x14e7390 BSShaderProperty::LoadBinary
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0x14e7ec0 BSShaderProperty::CanMerge
+// Adapted bodies: none
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 #include "BSShaderProperty.h"
 
 #include <climits>
+
+// Properties with different flags cannot share a material.
+bool BSShaderProperty::CanMerge(const BSShaderProperty* a_other)
+{
+	if (flags != a_other->flags) {
+		return false;
+	}
+	return material->DoIsCopy(a_other->material);
+}
 
 float BSShaderProperty::QMaterialAlpha()
 {

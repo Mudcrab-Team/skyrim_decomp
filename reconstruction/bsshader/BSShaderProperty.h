@@ -14,6 +14,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiPoint2::LoadBinary, NiPoint2::SaveBinary: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence); names and stream parameter forms from include/NiPoint2.h, the Skyrim callees are unnamed
 // g_shaderMaterialManager, ShaderMaterialManager, AcquireMaterial, ReleaseMaterial: GUESS(low); the image calls a method on a global with (material, flag, flag) and one with (material)
+// CanMerge, BSShaderMaterial::Create, BSShaderMaterial::CopyMembers, BSShaderMaterial::DoIsCopy: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 
 #include <cstdint>
@@ -81,6 +82,9 @@ class BSShaderMaterial
 {
 public:
 	virtual ~BSShaderMaterial();  // 00
+	virtual BSShaderMaterial* Create();  // 01
+	virtual void CopyMembers(BSShaderMaterial* a_other);  // 02
+	virtual bool DoIsCopy(BSShaderMaterial* a_other);  // 03
 
 	std::uint32_t refCount;           // 08
 	NiPoint2      texCoordOffset[2];  // 0C
@@ -183,7 +187,7 @@ public:
 	virtual void         Unk_2D();           // 2D
 	virtual void         Unk_2E();           // 2E
 	virtual void         Unk_2F();           // 2F
-	virtual void         CanMerge();         // 30
+	virtual bool         CanMerge(const BSShaderProperty* a_other);  // 30
 	virtual void         SetMaterialAlpha(); // 31
 	virtual float        QMaterialAlpha();   // 32
 	virtual std::int32_t ForEachTexture(ForEachVisitor& a_visitor);  // 33
