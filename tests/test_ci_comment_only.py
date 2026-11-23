@@ -61,6 +61,11 @@ class CommentOnlyTests(unittest.TestCase):
         changed = self.prepare(reconstruction__misc__Widget_h=HEADER.replace('GUESS(low)', 'GUESS(high)'))
         self.assertEqual(changed, [HDR])
 
+    def test_adding_a_hash_request_still_asks(self):
+        request = '// CI hash: 0x10 ?Value@Widget@@QEAAHXZ\n'
+        changed = self.prepare(reconstruction__misc__Widget_cpp=SOURCE.replace('#include', request + '#include', 1))
+        self.assertEqual(changed, [CPP])
+
     def commit_files(self, **files):
         for name, text in files.items():
             path = self.root / name.replace('__', '/').replace('_cpp', '.cpp').replace('_py', '.py').replace('_h', '.h')

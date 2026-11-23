@@ -72,6 +72,13 @@ def comment_only_change(root, base, name, blob):
     old = subprocess.run(['git', '-C', str(root), 'show', f'{base}:{name}'], capture_output=True)
     if old.returncode != 0:
         return False
+    def requests(text):
+        return REQUEST.findall(text.decode('utf-8-sig', 'replace')[:8192])
+
+    # A `// CI hash:` line is a request to compare, not prose: stripping it as a comment would let a PR that
+    # only adds the request skip the very compile the request asks for.
+    if requests(old.stdout) != requests(blob):
+        return False
     try:
         return digest_v2.strip_comments(old.stdout, name) == digest_v2.strip_comments(blob, name)
     except ValueError:
