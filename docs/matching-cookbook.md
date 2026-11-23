@@ -34,7 +34,10 @@ TESFile::Seek 0x1cd860 and Duplicate 0x1ce7e0, which share the helper.
 Symptom: the target has a loop that is not rotated, a computed value that is never used, and a
 null test that repeats. Cause: a null-checking helper is called in both the loop condition and the
 body: `while (Root(p->parent)) p = Root(p->parent);`. Fix: write it that way rather than with one
-cached call. Closed Duplicate 0x1ce7e0.
+cached call. Closed Duplicate 0x1ce7e0. A helper that includes the null test
+(`return object && object->GetRTTI() == rtti;`) in the loop body also removed a loop-head alignment
+pad that four loop spellings (for, while, `continue`, a helper) kept:
+BSMasterParticleSystem::IsMasterParticleSystem 0xffbcf0.
 
 **4. A computation hoisted above a check: the source computed it first, or the predicate is a
 helper called twice.** (medium)
@@ -122,7 +125,9 @@ accessor are unknown. Its probable origin is a flag accessor that takes a bit in
 says index and shift, not mask), not the community wrappers: `stl::enumeration::any()` and
 `REX::EnumSet::any()` test `(_impl & mask) != 0`, the expression that folds (not tried as a
 by-value copy). Closed Character::SetCrimeFaction 0x67eab0, TESObjectCELL::GetLocation 0x2bb180
-and NiNode::OnVisible 0xee2cc0; it also fixed the flag tests of NiNode::UpdateDownwardPass
+and NiNode::OnVisible 0xee2cc0; 0x3299f0 closed with the whole 32-bit member as the word (a byte view did not), and 0x3bfc00 with
+a by-value clear-bit helper that keeps the complement inside the helper. It also fixed the flag tests
+of NiNode::UpdateDownwardPass
 0xee24d0 and TESNPC::ClearData 0x3bbf50, which still differ elsewhere (rules 19, 20).
 
 **17. `static_assert` needs a message.** (high)
@@ -169,7 +174,9 @@ Instantiate at the observed entry with the observed value; use another instance 
 save/restore. A separately read TLS flag needs its own variable and binding, not another guessed
 use of this slot. This shape passed BGSKeyword::Load 0x391fe0 (299/299, unwind covered) and its
 accepted regression in a fresh one-host attempt; that is a source-shape observation, not acceptance.
-TESForm 0x1e6930 and 0x1e5b30 remain separate, unclosed functions.
+The same guard closed Actor 0x6d9f20 (120/120), where the candidate's only differences were a
+permutation of the three callee-saved roles and the TLS offset form; the plain save, loop, restore
+version did not. TESForm 0x1e6930 and 0x1e5b30 remain separate, unclosed functions.
 
 **22. A callee's out-parameter below an 8-byte temporary in the home slots is a small type.**
 (medium)
@@ -301,6 +308,16 @@ BSLightingShaderMaterialMultiLayerParallax constructor 0x15281a0, both in one-ho
 shared header's pointer is an aggregate, put the class in a standalone unit rather than change
 the header under other accepted units.
 
+The same fix applies to any sub-object whose stores the target schedules as a unit: give it its own
+inline constructor or member function and let the owner call it. A list member whose constructor
+clears its count before the two pointers (NiParticleSystem 0xf99cb0), a spline basis template with its
+own constructor (NiBSplineBasisData 0xf769a0), and a pair of floats built by a two-argument
+constructor and assigned from a temporary, with the flag OR in a `set` member (0x80a250), each moved
+the displaced store into place; assigning the members from the owner's body did not. A base class
+declared `__declspec(novtable)` with a pure `GetType` and an inline constructor closed
+ExtraInteraction 0x18c280, where the target stores the base's zero field before the vtable (changed
+together with reading `a_rhs.ptr` in the pointer copy).
+
 **32. One 16-bit immediate store over two members: two adjacent bytes.** (medium)
 Symptom: the target clears a 16-bit field with `mov word ptr [m], 0`, and the candidate writes it from
 a zeroed register (`xor eax, eax; mov word ptr [m], ax`), so it is shorter. Cause: a 16-bit member
@@ -318,6 +335,95 @@ temporary with a function returning the type by value (`member = Make(a_str);`).
 because the image function may be the type's constructor. Closed BGSKeyword::SetFormEditorID
 0x29e720 in a one-host attempt.
 
+**19. A struct copy whose last store moves one slot earlier: read the scalar first, copy the
+sub-object through references.** (medium, one observation)
+Symptom: copying a bound (three floats then a float radius), the target loads the radius early
+and stores it last; the candidate stores it one store earlier than the source order, whether the
+radius is cached in a local or stored before the last centre component. A direct
+`radius = other.radius` and a `center = other.center` struct copy change more (a wider move). Fix:
+`const float radius = src.radius; NiPoint3& destCenter = dest->bound.center; const NiPoint3&
+center = src.bound.center; destCenter.x = center.x; ...; dest->bound.radius = radius;`, with the
+base copy called as the real member (`NiNode::CopyMembers(dest, cloning)`) rather than a
+free stand-in bound by address. Both changes were made together, so which one matters is unknown.
+Closed BSOrderedNode::CopyMembers 0x1570240. Not closed: NiNode::UpdateDownwardPass 0xee24d0
+(code-byte-mismatch, two stores swapped), which has not been tried with this spelling.
+
+**34. Exits that differ only in register choice, select form or epilogue sharing: one result local,
+one return.** (high)
+Symptom: the instruction set is the same or one off, and the target ends in a conditional move or a
+shared zero/true block where the candidate has a set-on-condition, a duplicated epilogue, an
+inverted last branch, or keeps a pointer or null in another register. Cause: early returns,
+`return a ? b : c` and value-returning helpers hand the optimiser separate exits. Fix: declare the
+result first and assign it on every path, with one return at the end:
+
+```cpp
+bool result = false;
+if (state == kA) {
+    result = true;
+} else if (other && other->Test()) {
+    result = true;
+}
+return result;
+```
+
+A switch assigns the result in each case and `break`s, with no `default` (or a `default: break;`,
+or the result preset before the switch); a switch that returns directly closed with an explicit
+`default: return -1;` inside the switch and typed enum labels, where the same return after the
+switch did not. Keep an early return only on a path that leaves through a different epilogue, such
+as a tail call (0xa00860). Tried first and not enough in every case: early returns, ternaries, a
+helper returning the value, a bool helper. Closed 0x86aa30, 0x8f1bd0, 0xa00860, 0x152340,
+0x8f26a0, 0x868df0 (`result = true` instead of `return true` was the whole change), 0x6cb940,
+0x6767e0, 0x6af050, 0x301a20, 0x6744d0 and 0x6c6380 (the last under the `o2-fpfast` recipe); the
+switch-returning form is 0x184ab0.
+
+**35. A loop that stops on a found result: put the result in the loop condition; clear flags with
+`if`.** (medium, two observations)
+Symptom: the candidate rotates the loop with a pre-test where the target tests the index at the
+top, or a counter increment lands after a conditional move instead of before the element loads.
+Fix: `for (i = 0; !sound && i < count; ++i) { if (entries[i].id == id) sound = entries[i].sound; }`
+(0x14b570), and `if (a[i] != b[i]) equal = false;` rather than `equal = same ? equal : false;`
+(0x183b40, where that was the only change). Not enough for 0x1d89e0 (see Unsolved).
+
+**36. Walking a linked list: take a reference to the element, advance, then use it.** (medium)
+Symptom: the loop matches except for one missing instruction and the order of an argument move.
+Cause: the target keeps the element address computed before the position advances. A helper
+that returns the element and advances through an out-parameter (`GetNext(pos, &pos->data)`)
+scored the same 93 of 104 bytes in four attempts. Fix: read the context value into a local before
+the loop, then `const Ref& item = pos->element; pos = pos->next; item->Visit(ctx, a, b);`. Closed
+NiParticleSystem 0xf999c0 (promoted from idea A below).
+
+**37. A flag word loaded, edited in a register and stored once.** (low, two observations)
+Symptom: the target does one load and one store of the word; the candidate emits two read-modify-write
+operations with another load between, or hoists the load above a branch. Two spellings each closed
+one function: the word declared `volatile` with one assignment expression
+(`flags = (flags & ~kClear) | kSet;`, 0xfddba0), and, for a word tested under a branch, member helpers
+on the pointed-to struct, a clear that returns whether anything was set and a set by slot, with the
+null test of the struct inside each branch (0x14e77b0). `volatile` alone did not close 0x14e77b0, and
+setter, by-value helper and temporary spellings did not close 0xfddba0.
+
+**38. A compare whose width or sign decides the branch form.** (medium)
+Symptom: size off by a few bytes with the same control flow, a mask kept in a wider register, or a
+condition inverted. Fixes that each closed one function, each after other spellings failed:
+cast the masked value to the field's width, `static_cast<std::uint16_t>(x & mask) == value`, in place
+of a helper taking the mask and value (0x674250); write the mask as a signed 64-bit constant in
+`(flags & kMask) <= 0` (0x1519980); widen a byte field to `int` before a range test (0x868df0,
+0x41efc0); test two values that differ in one bit as `((x - a) & ~bit) == 0` on an `int` (0x41efc0).
+In rule 16's helper, pass the whole 32-bit member, not a byte view of it (0x3299f0).
+
+**39. `delete` after an inlined release adds a null test: delete a local copy.** (medium)
+Symptom: the candidate has an extra null test before the operator delete that the target lacks.
+Cause: `if (ptr && ptr->DecRef() == 1) delete ptr;` re-reads the member, and a reload is a new
+value (rule 1, from the other side). Fix: `T* object = ptr; if (object && object->DecRef() == 1)
+delete object;`. Closed ExtraAnimGraphManager 0x18ed10 (with an inline defaulted destructor) and
+the release at 0x7aa7e0.
+
+**40. A null path threaded straight to the exit, where the target keeps a zero and tests it again:
+pass the value through an inline accessor with its own null test.** (low, one observation)
+Symptom: the candidate sends the null-process and null-entry paths directly to the zero return.
+Fix: `InventoryEntryData* entry = GetCurrentAmmoEntry(); TESForm* form = entry ? entry->GetObject() :
+nullptr; if (form && form->IsAmmo()) return ...;`. Closed Actor::GetCurrentAmmo 0x6cc700. Not tried
+on the same symptom in 0x64d290 and 0x14e70b0.
+
 ## Shaping ideas from one contributor's cheap-model runs
 
 These are observations from one contributor's drafting runs with a cheap model, not rules.
@@ -326,12 +432,7 @@ has not checked them. Treat each as a hypothesis and try it when a candidate is 
 comparator pass is the only evidence. The names below (`Node`, `list`, `value`) are invented
 examples. (low)
 
-**A. Walking a linked list: take a reference, advance, then use the reference.**
-Symptom: a loop calls a function on each list element, and the candidate is shorter by one
-instruction. Cause: the target may keep an address computation of the element that nothing uses
-later. Fix: take a reference to the node's element, advance the node pointer, and only then make
-the call:
-`Value& item = node->value; node = node->next; Visit(item);`
+**A. Walking a linked list.** Confirmed by a pass; see rule 36.
 
 **B. Give each value its own local, declared just before its write.**
 Symptom: stack offsets differ because the candidate shares one slot between values. Fix: copy
@@ -365,7 +466,12 @@ sources, and no profile data exists ([finding](../findings/whole-program-optimiz
 For the variant whose saves skip the first home slot, see rule 29. Otherwise cause unknown. Untested hypotheses from that finding: EH state removed after frame layout (a
 `noexcept` or `throw()` helper whose throwing path folds away), or frame layout kept from dead
 code (a parameter or `this` whose address is taken and then optimised out). Seen in
-BSReadWriteLock::LockForRead 0xce3250 and LockForWrite 0xce32d0.
+BSReadWriteLock::LockForRead 0xce3250 and LockForWrite 0xce32d0, and in the same form in 0x2bccc0,
+0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260 and 0x3c62f0 (eight functions; a plain save and restore, an
+RAII guard struct and a reference with an explicit null check were tried on 0x2bccc0). When the
+function saves, changes and restores a thread-local, the guard of rule 21 closed the same
+symptom in 0x6d9f20, and rule 34 closed a swap of the null and pointer registers in 0x6767e0,
+0x301a20 and 0x6af050.
 
 **13. A -2 store to the UnwindHelp stack slot, eager saves of callee-saved registers, and no EH handler.** (low)
 Symptom: the prologue stores the C++ EH UnwindHelp slot and saves rbx/rbp/rsi/rdi before any
@@ -378,20 +484,65 @@ refuted for the other near-misses measured ([finding](../findings/whole-program-
 cause unknown. The 151 image functions with this shape cluster by address. Untested hypotheses
 from the finding: EH state removed after frame layout (a `noexcept` or `throw()` helper whose
 throwing path folds away), or frame layout kept from dead code (an address taken and then
-optimised out), tried first on one dense run. Seen in RemoveFavorite 0x237a20.
-
-**19. A struct copy whose last store moves one slot earlier.** (low)
-Symptom: copying a bound (three floats then a float radius), the target loads the radius early
-and stores it last; the candidate stores it one store earlier than the source order, whether the
-radius is cached in a local or stored before the last centre component. A direct
-`radius = other.radius` and a `center = other.center` struct copy change more (an 8-byte `movsd`).
-Not closed: NiNode::UpdateDownwardPass 0xee24d0 (code-byte-mismatch, two stores swapped).
+optimised out), tried first on one dense run. Seen in RemoveFavorite 0x237a20 and, as a recursive list-node
+destructor (a scalar-deleted node, an exception-state slot, no handler), in 0x346700, 0x346780,
+0x346800, 0x3244a0 and 0x14c550, where `noexcept(false)`, a non-destructor form and a scalar-deleting
+variant did not add the state; four more of the same shape (0x346880, 0x395320, 0x1f0840, 0x7e99a0)
+were not attempted. Triage these instead of drafting them.
 
 **20. A pointer loop that the compiler turns into a counted loop.** (low)
 Symptom: the target walks an array with `it != end` (two callee-saved registers, no trip count);
 the candidate computes a trip count with `lea`/`shr`/`cmova` and needs two more callee-saved
 registers, so the prologue differs. A raw pointer loop and a range-for over `begin()`/`end()` both
-give the counted form. Not closed: TESNPC::ClearData 0x3bbf50.
+give the counted form; `if (count)` before the loop and a `do`-`while` did not help either. Not
+closed: TESNPC::ClearData 0x3bbf50 and the entry-array visitor 0x397810.
+
+**41. Repeated tests of one value folded into a single test.** (low, four functions)
+Symptom: the target tests the same loaded word or pointer more than once (three separate masks of a
+state word, three form-type compares, a parent null test plus a use-flag test repeated through an
+inlined helper) and the candidate always folds them into one subtract-and-test or one test. About 40
+spellings did not help on Character 0x6a1120 (bit-field, raw masks, shifts, signed fields, struct
+copies, helpers, switch, loops, base-class views); switch, `||` and early returns did not help on
+0x1e9fc0; calling the helper twice did not help on TESWorldSpace 0x30dad0 and 0x30e140. The local
+copy with plain comparisons that closed SetAlpha 0x14e7f40 (`const float old = alpha;` tested with
+`old >= 1.0f` and `a < 1.0f`) has not been tried on them.
+
+**42. Two operands loaded or stored in the other order.** (low, five functions)
+Symptom: every instruction matches except that two loads or two stores come in the opposite order,
+or a compare's operands flip. Local-variable orderings, direct stores, a `const` and a non-const
+local, a reference parameter, a hoisted declaration, signed and unsigned types, local copies, and
+initialiser-list versus body assignment all failed on 0x1812d0, 0x1892e0, 0x449390, 0x639a20 and
+0xf857d0 (the last loads a 16-byte value right after the base constructor call, before the vtable
+store). Try rule 31's sub-object constructor first.
+
+**43. A set-on-condition where the target uses a conditional move, and the bare-return idiom.**
+(low, five functions)
+Symptom: the target returns from a both-null path with an unshared return and shares one true block
+at the end, or keeps a preset zero and selects with a conditional move; every spelling tried emits a
+set-on-condition, a duplicated true block or an extra jump. Tried: an explicit result flag, references,
+pointers, a struct array, two arrays, loop counter signedness. Seen in 0x186670, 0x186370, 0x18b1c0,
+0x41f410 and 0x2f3da0 (which keeps a constant true in a callee-saved register). Rule 34 closed the
+same symptom in twelve other functions; it is not recorded as tried on these.
+
+**44. A find loop whose index increment and found register differ.** (low, five functions)
+Symptom: the target copies the index before incrementing, tests a found flag at the loop top and
+re-compares the last element after the loop; the candidate strength-reduces to a pointer, hoists the
+increment or swaps the index and result registers. A flag loop gave a register swap and a last-element
+loop gave a widened copy of the counter. Seen in 0x1d89e0, 0x3cc660, 0x727bf0, 0x6ff0e0 and the nested
+search 0x3e8380. Rule 35 closed a found-in-condition loop with a different exit.
+
+**45. Float code: loads of the operands before the first compare.** (low, five functions)
+Symptom: the target loads all the source floats (or computes both centres) before the first compare,
+the candidate loads them one at a time and the operand order follows the source order; the
+short-to-float conversion differs between the default and `o2-fpfast` recipes. Source reordering did
+not converge on 0x518a30, 0x191710, 0x18a8c0, 0xbafa60 and 0x3c7460.
+
+**46. A tail call where the target calls, or the reverse.** (low, three functions)
+Symptom: the final call of the candidate becomes a jump where the target keeps a normal call
+(BSWaterShaderProperty::ForEachTexture 0x152ce50), or the target jumps to the sink's slot although a
+stack local's address went to the previous call and MSVC emits a call and a return for every variant:
+void and bool returns, a hidden-return temporary (0x7a3ec0). Also 0x3c62f0 (the template pointer
+sits in another register for the tail call).
 
 ## Method and permuter recommendations
 
