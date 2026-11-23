@@ -15,6 +15,7 @@ warm). It compiles, binds names, compares, and prints one line per function: PAS
 code, first mismatch offset, candidate/target size and matching-byte progress versus the previous attempt.
 Name your actual model at claim time; `attempt` and `done` inherit it. For a standalone task use
 `attempt --model <model-id>` (or `--agent <tool-name>`); project agents may use `--profile <profile>`.
+If a cookbook rule fixed it, pass `--rule N` (or `--rule N,M`) on the attempt that passes.
 Keep going while matching bytes rise, even if the first mismatch stays put. Stop after the brief's
 N counted attempts with no improvement over the best score (default 3, full profile 4), or the existing
 hard attempt cap. Missing progress is unknown, not zero; the score never proves a match. Read locally
