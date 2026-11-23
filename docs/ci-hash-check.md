@@ -60,18 +60,23 @@ unmatched functions, plus `contributor-targets.json`: the offered `contrib.py ne
 all functions in the current open claim snapshot. Claim addresses outside progress are resolved
 against local function/pdata boundaries; unresolved identities stop generation. The checked-in
 offered inventory records public claim URLs/scopes and hashes of its input snapshots. This
-coverage is smaller than the full executable census. `target_hash_offers.py` also offers a bounded window of
-unmapped ordinary functions whose class already has a layout unit. A class with a generated CrashLogger layout header
-(`reconstruction/generated/crashlogger_pdb/types/`, label `CRASHLOGGER_PDB(59818@version)`) counts as having one, if its
-fullest PDB type is a struct or class with a size and a unit of it can be placed (`tools/unit_paths.py`); those classes
-are offered after the classes with a real unit, and the PDB layout is a community reconstruction, not evidence. The
-local-support verdict is unaffected: it comes from the analysis of the function itself and is required either way.
-`contrib.py` accepts them and `tools/record.py` creates their inventory entry on acceptance
-(`findings/claim-time-mapping.md`). The window refills itself: offered functions stay offered until they are
-recorded, and when fewer than the low-water mark (2,000 by default, `--low-water`, `SR_WINDOW_LOW_WATER` for the
-bot) are left to claim, the next slice (2,000 by default, `--slice`, `SR_WINDOW_SLICE`) is added, so the published
-list grows by one slice per refill and never by the size of the function table. A slice is ordered by real-unit classes first, then small and
-medium functions first, known names (community, RTTI, address library) and classes with matched siblings ahead
+coverage is smaller than the full executable census, and grows in address-range chunks. `target_hash_offers.py` also
+offers unmapped ordinary functions that the local analysis supports (verdict `supported` or `caution`). No class or
+layout is needed: a function the table gives no usable class for, or whose class has no layout, is offered with no class
+on its row, and the contributor names the class with `--class` when starting it. A class with a real layout unit, or a
+generated CrashLogger layout header (`reconstruction/generated/crashlogger_pdb/types/`, label
+`CRASHLOGGER_PDB(59818@version)`) whose fullest PDB type is a struct or class with a size and a placeable unit
+(`tools/unit_paths.py`), is still named on the row and ranks first; the PDB layout is a community reconstruction, not
+evidence. The local-support verdict is unaffected: it comes from the analysis of the function itself and is required
+either way. `contrib.py` accepts every offered row and `tools/record.py` creates its inventory entry on acceptance
+(`findings/claim-time-mapping.md`). Offered rows stay offered until they are recorded: a row carries `class`, or
+`window` when it has none, and the refill keeps both. A chunk is added when fewer than the low-water mark (2,000 by
+default, `--low-water`, `SR_WINDOW_LOW_WATER` for the bot) are left to claim: the next slice (2,000 by default,
+`--slice`, `SR_WINDOW_SLICE`) of qualifying functions by ascending address, so a chunk is a stretch of the image and
+the next one starts where the last ended. `--range LOW-HIGH` publishes every qualifying function with
+`LOW <= RVA < HIGH` at once, whatever is left to claim; a very large publication is shipped as several such ranges, each
+checked before the next. Within a chunk the order is real-unit classes first, then PDB-layout classes, then the rest;
+small and medium functions first, known names (community, RTTI, address library) and classes with matched siblings ahead
 of the rest, very large and known-hard shapes last. Functions that internal workers have planned (private plan
 files under `.local/twins` and `.local/stamp-sweep`, passed as `--reserved-dir`) are skipped and, if not claimed,
 withdrawn from the window; the plans themselves are never published. The bot logs the slice and a line with
@@ -90,7 +95,7 @@ python3.13 tools/target_hashes.py --image <private-image> \
     --out data/target-hashes/sse-steam-1-7-104.json
 ```
 
-The index manifest binds thirteen bounded JSON shards with SHA-256 and row counts, keeping every
+The index manifest binds bounded JSON shards with SHA-256 and row counts, keeping every
 file below the existing publication cap. It records the build, image hash, inventory snapshot hash, comparator and normalizer
 source hashes, compiler-pin file hash and recipe hashes. Each row records RVA, size, extraction
 method, `normalized_sha256` and `layout_sha256`; the build and normalization version are inherited

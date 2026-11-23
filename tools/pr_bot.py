@@ -151,6 +151,7 @@ RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
 PROBE_COOLDOWN = 1800  # seconds before the same head's hash run is requested again
+ROWS_RERUN_LIMIT = 3  # runs asked for one head because main published rows its run's base lacked
 PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
 PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
@@ -2385,17 +2386,24 @@ class Bot:
                     # skipped the compile and uploaded nothing. Waiting for an artifact would re-probe forever; the
                     # empty map lets the carry rule judge each function.
                     break
-                late = [] if not found or state is None or state.get('rows_rerun') else self.late_rows(target, functions)
+                tried = int(state.get('rows_rerun_n') or 0) if state is not None else 0
+                late = [] if not found or state is None or tried >= ROWS_RERUN_LIMIT else self.late_rows(target, functions)
                 if found and not late:
                     break
                 unusable.add(run.get('id', run.get('details_url')))
                 if late:
-                    # The run's base predates rows that main has since published for these functions; ask for a
-                    # run against today's base, once.
+                    # The run's base predates rows that main has since published for these functions. A draft/ready
+                    # cycle or a re-run keeps the PR's recorded base, so a run asked for that way sees the same
+                    # rows again; only a new head (main merged into the branch) moves the base. Each attempt is
+                    # counted, and only a no-target that the run's own base could not have answered is retried.
                     since = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                     state.set('rows_at', since)
                     state.set('rows_rerun', late)
+                    state.set('rows_rerun_n', tried + 1)
                     probed_at = None
+                    if not self.dry_run and self.refresh_base(number, head):
+                        raise Waiting('main merged into the branch so the hash run sees the published target rows; '
+                                      'the new head is checked on the next tick')
                 # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 # A stale run that finished before the probe was requested says nothing about the probe's run,
                 # which has yet to start or finish; waiting for it is the point of the probe.
@@ -2452,17 +2460,53 @@ class Bot:
             for step in job.get('steps') or []) for job in jobs)
 
     def late_rows(self, directory, functions):
-        """RVAs the run's own rows call `no-target` although main now publishes a target row for them."""
+        """RVAs the run's own rows call `no-target` although main now publishes a target row for them.
+
+        A function whose row was already published at the base the run compared against is not late: its
+        no-target is the run's own finding, and another run would say the same.
+        """
         reports = sorted(Path(directory).rglob('target-result.json'))
         try:
-            rows = json.loads(reports[0].read_text()).get('functions') or [] if reports else []
+            report = json.loads(reports[0].read_text()) if reports else {}
+            rows = report.get('functions') or []
         except (OSError, ValueError):
             return []
         published = self.target_rvas()
         wanted = {int(r) for r in functions}
         late = {int(row['rva'], 16) for row in rows if isinstance(row, dict) and row.get('result') == 'no-target'
                 and re.fullmatch(r'0[xX][0-9a-fA-F]+', str(row.get('rva')))}
-        return sorted(late & wanted & published)
+        late &= wanted & published
+        base = report.get('base_sha') if isinstance(report, dict) else None
+        if late and isinstance(base, str) and re.fullmatch(r'[0-9a-f]{40}', base):
+            late -= self.target_rvas_at(base)
+        return sorted(late)
+
+    def refresh_base(self, number, head):
+        """True when main was merged into the PR's branch, which gives CI a new head and a current base."""
+        try:
+            return bool(self.merge_main_into_branch(dict(number=number, headRefOid=head)))
+        except (subprocess.SubprocessError, OSError, ValueError) as exc:
+            print(f'{stamp()} pr {number}: merging main to refresh the base failed ({type(exc).__name__}: {exc})',
+                  file=sys.stderr, flush=True)
+            return False
+
+    def target_rvas_at(self, revision):
+        """RVAs with a published target row in the shards of `revision`; empty when they cannot be read."""
+        found = set()
+        with self.root_lock:
+            listing = self.run(['git', 'ls-tree', '--name-only', revision, 'data/target-hashes/'], check=False)
+            if listing.returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', revision], check=False)
+                listing = self.run(['git', 'ls-tree', '--name-only', revision, 'data/target-hashes/'], check=False)
+            for name in listing.stdout.decode(errors='replace').split():
+                if not re.fullmatch(r'data/target-hashes/sse-steam-1-7-104-part-\d+\.json', name):
+                    continue
+                shown = self.run(['git', 'show', f'{revision}:{name}'], check=False)
+                try:
+                    found.update(row['rva'] for row in json.loads(shown.stdout)['functions'])
+                except (ValueError, KeyError, TypeError):
+                    continue
+        return found
 
     def latest_hash_run(self, head, unusable=()):
         return self.latest_check_run(head, HASH_CHECKS, unusable)
@@ -2512,6 +2556,16 @@ class Bot:
             return not state.get('probe_blocked')
         if not self.dry_run:
             state.set('probe_at', time.time())
+        try:
+            return self.request_hash_run(number, head, state)
+        except BaseException:
+            # The cooldown stands for a request that reached GitHub. A `gh` failure before one did (the shared
+            # backoff then holds every call) must not leave the head waiting on a run nobody asked for.
+            if not self.dry_run:
+                state.drop('probe_at')
+            raise
+
+    def request_hash_run(self, number, head, state):
         reasons = []
         live = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'isDraft,state')
         if live.get('state') == 'OPEN' and not live.get('isDraft'):
@@ -2666,8 +2720,12 @@ class Bot:
                 dest.mkdir(exist_ok=True)
                 (dest / 'task.json').write_text(json.dumps(dict(
                     info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn])))
-                if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
-                            check=False, timeout=self.config['compare_timeout']).returncode not in (0, 1):
+                # A compile that only timed out under host load usually passes on a second try; a repeat is a real fault.
+                for attempt in range(2):
+                    if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
+                                check=False, timeout=self.config['compare_timeout']).returncode in (0, 1):
+                        break
+                else:
                     raise Stop('record build did not complete')
                 row = ci['rows'].get(str(rva))
                 made = out / info['build_id'] / f'0x{rva:x}.json'
@@ -4019,9 +4077,10 @@ class Bot:
         """
         number, head = pr['number'], pr['headRefOid']
         info = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json',
-                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,state')
+                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,isCrossRepository,state')
         repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
-        if (info.get('headRefOid') != head or info.get('state') != 'OPEN' or not info.get('maintainerCanModify')
+        if (info.get('headRefOid') != head or info.get('state') != 'OPEN'
+                or not (info.get('maintainerCanModify') or info.get('isCrossRepository') is False)
                 or not repo.get('name') or not owner.get('login') or not info.get('headRefName')):
             return None
         url = branch_url(owner['login'], repo['name'])
@@ -4322,6 +4381,7 @@ class Bot:
                     return abandon()
             if files:
                 git('add', '--', *files)
+            self.collect_cookbook_hits(number, records)
             if git('commit', '--quiet', '-m', f'{subject}\n\n{body}', check=False).returncode:
                 return abandon()
             now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
@@ -4335,6 +4395,25 @@ class Bot:
                 return True
             # Lost the race to another push: rebuild on the new main rather than rebasing a record.
         return abandon()
+
+    COOKBOOK_FILES = ('docs/cookbook-hits.json', 'docs/matching-cookbook.md')
+
+    def collect_cookbook_hits(self, number, records):
+        """Stage the cookbook hit table and rank section for the squash being landed; never raises.
+
+        The hits ride in the same commit as the records so main is never ranked from a stale table. The
+        ranking is advisory, so any failure here is logged, the two files are restored and the merge goes on.
+        """
+        tree = self.tree
+        try:
+            done = self.run([sys.executable, 'tools/cookbook_rank.py', '--collect', records, '--repo', tree],
+                            cwd=tree, timeout=300, check=False)
+            if done.returncode:
+                raise ValueError((done.stdout or b'').decode(errors='replace').strip()[-200:] or f'exit {done.returncode}')
+            self.run(['git', 'add', '--', *self.COOKBOOK_FILES], cwd=tree)
+        except Exception as exc:  # noqa: BLE001 - the merge must not depend on the ranking
+            print(f'{stamp()} pr {number}: cookbook hits not collected: {exc}', file=sys.stderr, flush=True)
+            self.run(['git', 'checkout', '--quiet', 'HEAD', '--', *self.COOKBOOK_FILES], cwd=tree, check=False)
 
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
@@ -4443,13 +4522,20 @@ def mark_owner_reconstruction(bot, prs, known):
             pr['reconstruction_head'] = pr['headRefOid']
 
 
+def is_owner(pr):
+    return pr['author']['login'].casefold() == OWNER.casefold()
+
+
 def outside_first(prs):
-    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+    """The PRs with outside contributors' first, in the order GitHub listed them, then the owner's oldest first.
 
     The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
-    long-running ones.
+    long-running ones. GitHub lists newest first, and every tick refills the free slots from the front, so
+    a newer owner PR that keeps coming back (a head waiting on CI, a new push) would starve an older one
+    for hours; the owner's PRs therefore run in number order.
     """
-    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+    return sorted(prs, key=lambda pr: (pr['author']['login'].casefold() == OWNER.casefold(),
+                                       pr['number'] if pr['author']['login'].casefold() == OWNER.casefold() else 0))
 
 
 def outcome(result, pr):
@@ -4562,6 +4648,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
     on_pool = set()  # the inflight PRs that hold one of the `workers` slots (the conflict lane has its own)
+    owner_on_pool = set()  # those of them that are the owner's
     # A conflicting PR is answered from a scratch worktree without touching a slot's tree; its own lane keeps
     # that quick answer from waiting behind compiles that hold every slot.
     conflict_slots = queue.Queue()
@@ -4579,6 +4666,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             for number in [n for n, f in inflight.items() if f.done()]:
                 del inflight[number]
                 on_pool.discard(number)
+                owner_on_pool.discard(number)
             if restart_after and time.time() - started > restart_after and not inflight:
                 return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
             wait = gh.remaining()
@@ -4652,12 +4740,15 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                 if pr.get('mergeable') == 'CONFLICTING':
                     inflight[pr['number']] = conflict_pool.submit(work_one, conflict_slots, gh, pr, True)
-                elif len(on_pool) < workers:
+                elif len(on_pool) < workers and (not is_owner(pr) or len(owner_on_pool) < max(1, workers - 1)):
                     # Submitting everything would queue first-come first-served inside the pool, so a contributor's
                     # PR listed after the owner's would wait behind them; each tick instead fills only free slots,
-                    # in outside-first order.
+                    # in outside-first order. The owner's PRs never take the last slot: they run for hours, and an
+                    # outside PR that arrives meanwhile must start at once, not after one of them finishes.
                     inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
                     on_pool.add(pr['number'])
+                    if is_owner(pr):
+                        owner_on_pool.add(pr['number'])
                 else:
                     bot.demand[0] += 1
             sleep(interval)

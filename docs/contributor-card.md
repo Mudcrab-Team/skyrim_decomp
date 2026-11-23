@@ -56,6 +56,9 @@ equivalent). Cheaper models are fine for drafting.
 4. Each subagent loops `compare` on its tasks until PASS and gives up on a function after a few tries.
 5. The lead merges the passing branches into one, runs `submit --dry-run`, and opens one PR with
    `submit --all-dirty`.
+6. Every subagent brief asks it to report bottlenecks and suspicious behaviour, one line each with a
+   time cost (AGENTS.md, "Report bottlenecks"). The lead lists them under "Bottlenecks" in the PR
+   description, or opens a `tooling.yml` issue for a step that costs more than about 5 minutes per function.
 
 **Subagent batches are a drafting split, not a PR split.** Never open one PR per subagent, worktree or
 batch of 10 to 15. Subagents never open PRs or run `submit`; only the lead does, once, for the whole

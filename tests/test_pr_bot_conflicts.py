@@ -209,6 +209,16 @@ class MergeMainTests(unittest.TestCase):
         self.assertEqual(self.fork_head(), head)
         self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve()}'])
 
+    def test_a_branch_in_the_repository_itself_needs_no_maintainer_edit_flag(self):
+        head = self.pr_commit(header=['// Evidence: pr\n'])
+        self.main_commit(header=['// Sibling: main\n'])
+        bot = self.bot(can_modify=False)
+        inner = bot.gh_json
+        bot.gh_json = lambda *a: dict(inner(*a), isCrossRepository=False)
+        new = bot.merge_main_into_branch(dict(shared.PR, headRefOid=head))
+        self.assertEqual(new, self.fork_head())
+        self.assertNotEqual(new, head)
+
     def test_a_push_that_loses_a_race_leaves_the_authors_new_commit_alone(self):
         head = self.pr_commit(header=['// Evidence: pr\n'])
         self.main_commit(header=['// Sibling: main\n'])
