@@ -7,7 +7,7 @@ apply here too. No authorization gate or acceptance requirement is changed by th
 ## Current flow
 
 Function work goes through a pull request. A Drafter or generator works in a plain git worktree
-on a branch, touches only `reconstruction/**` and opens a PR (`gh pr create`). `pr-check.yml`
+on a branch, touches only `reconstruction/**` and `docs/cookbook-notes/**` and opens a PR (`gh pr create`). `pr-check.yml`
 runs the scope and leak scan and the Windows CI-hash job (host 1); the PR bot compares on the Mac
 or PC (host 2), makes one review call with an admitted model and lands one squash commit that
 already holds the records (it builds the squash itself, applies the records, pushes, then merges
@@ -21,6 +21,11 @@ is not looked at again until it changes. The acceptance rule is the summary at t
 "Acceptance rule" in `docs/verification.md`; the threat model is `docs/threat-model.md`. An open
 draft PR is the claim. Tooling PRs (`tools/**`, `tests/**`) take the normal route: branch CI green,
 then merge.
+
+**Lesson notes.** Drafters leave a note in `docs/cookbook-notes/` for each near-miss and each hard-won pass
+(`docs/cookbook-notes/README.md`). Maintainers periodically fold notes with a demonstrated fix into numbered
+rules of `docs/matching-cookbook.md` and unsolved clusters into its "Unsolved patterns"; a folded note is
+deleted in the same change. The folding PR is a tooling PR and takes the normal route.
 
 **Superseded, pending deletion.** The sections below on claims, the lane and lane-run, the
 Drafter and Reviewer queue, review groups, families and the sampling second pass describe the

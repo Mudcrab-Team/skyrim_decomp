@@ -294,7 +294,7 @@ count." The orchestrator supplied the threat model recorded in `docs/threat-mode
 Scope: a function is `matched` on a byte match on two hosts (host 1, the GitHub Windows CI-hash
 job; host 2, the Mac Wine or PC comparator) plus one review by an admitted model (Terra under
 `claude-low`, otherwise Opus), as written in `docs/verification.md`. A pull request touching only
-`reconstruction/**` is checked and, when it passes, squash-merged by a bot with a bot-written
+`reconstruction/**` and `docs/cookbook-notes/**` is checked and, when it passes, squash-merged by a bot with a bot-written
 message. Review groups, the sampling second pass, from-scratch reruns and the lane's requirements
 are no longer part of the rule.
 

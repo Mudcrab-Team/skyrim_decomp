@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 import subprocess
 
+from cookbook_notes import NOTE_FILE, validate as note_codes
 from rva_headers import claimed_rvas
 from contrib_screen import (EMAIL, MAX_BYTES, MAX_HISTORY_BYTES, MAX_IDENTITY_BYTES, MAX_MESSAGE_BYTES,
                             STANDARD_HEADERS, screen, screen_text)
@@ -84,6 +85,8 @@ def new_claimed_functions(git, base, head, files):
         return claimed_rvas([git('show', f'{revision}:{name}').decode('utf-8', 'replace')])
     now, before = set(), set()
     for item in files:
+        if NOTE_FILE.fullmatch(item['path']):
+            continue
         now |= claims(head, item['path'])
         before |= claims(base, item['path'])
     return len(now - before)
@@ -115,7 +118,7 @@ def screen_publication(root, base, head, *, merge_method='squash', headers=STAND
     files = []
     for row in rows:
         status, name = row.split('\t', 1)
-        if status not in ('A', 'M') or not UNIT.fullmatch(name):
+        if status not in ('A', 'M') or not (UNIT.fullmatch(name) or NOTE_FILE.fullmatch(name)):
             raise PublicationRejected('PR scope includes unsupported paths, deletions or renames')
         files.append(dict(path=name, status=status))
     if not files:
@@ -142,7 +145,7 @@ def screen_publication(root, base, head, *, merge_method='squash', headers=STAND
             if len(parents) != 1:
                 raise PublicationRejected('contributor merge commits need maintainer intake')
             names = git('diff-tree', '--no-commit-id', '--name-only', '-r', '--no-renames', commit).decode().splitlines()
-            if any(not UNIT.fullmatch(n) for n in names):
+            if any(not (UNIT.fullmatch(n) or NOTE_FILE.fullmatch(n)) for n in names):
                 raise PublicationRejected('unpublished history changes files outside contributor scope')
             comparison = parents[0]
         for name in names:
@@ -151,7 +154,10 @@ def screen_publication(root, base, head, *, merge_method='squash', headers=STAND
                 raise PublicationRejected('non-regular source file or historical deletion', commit=commit, path=name)
             if int(git('cat-file', '-s', f'{commit}:{name}')) > MAX_BYTES:
                 raise PublicationRejected('deterministic screen: file-size-cap', commit=commit, path=name)
-            codes = screen(git('show', f'{commit}:{name}'), name, headers=headers)
+            if NOTE_FILE.fullmatch(name):
+                codes = note_codes(name, git('show', f'{commit}:{name}').decode('utf-8', 'replace'))
+            else:
+                codes = screen(git('show', f'{commit}:{name}'), name, headers=headers)
             if codes:
                 raise PublicationRejected('deterministic screen: ' + ', '.join(codes), commit=commit, path=name)
         args = ['diff', '--no-ext-diff', '--no-textconv', comparison]

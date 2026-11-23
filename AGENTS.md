@@ -5,7 +5,7 @@
 Read the common publication and evidence rules below. Internal runners, queues and role briefs
 are not prerequisites for drafting or submitting a function.
 
-**Flow for everyone:** open a PR touching only `reconstruction/**`; checks run (scope and leak scan,
+**Flow for everyone:** open a PR touching only `reconstruction/**` and `docs/cookbook-notes/**` (lesson notes); checks run (scope and leak scan,
 Windows CI-hash compile); the bot compares on a second host, makes one review and squash-merges.
 A function is `matched` on a byte match on two hosts plus one admitted review
 ([docs/verification.md](docs/verification.md), [docs/threat-model.md](docs/threat-model.md)).

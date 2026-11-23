@@ -61,6 +61,7 @@ import repo_slug
 import attempt_progress
 import ready_queue
 import crashlogger_pdb
+import cookbook_notes
 from local_paths import local_dir, local_path, main_checkout_local, main_worktree_local, no_sibling_names
 
 REPO = Path(__file__).resolve().parents[1]
@@ -2479,6 +2480,8 @@ def run_compare(ctx, ident=None, root=None):
     for rva, metric in progress.items():
         ctx.say(attempt_progress.describe(rva, metric, prof['stuck_after']))
     ctx.say(attempt_progress.guidance(prof['stuck_after']))
+    for line in note_reminders(ctx, tdir, task, results, number):
+        ctx.say(line)
     stalled = bool(progress) and all(m and m['no_improvement'] >= prof['stuck_after'] for m in progress.values())
     if passed < len(results) and (stalled or number >= prof['contrib_max_tries']) and not summary['practice']:
         # Advice only: a contributor may go on, but a weak model rarely recovers past this point.
@@ -2492,6 +2495,89 @@ def run_compare(ctx, ident=None, root=None):
     (out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
     (tdir / 'last-compare.json').write_text(json.dumps(summary, indent=2) + '\n')
     return (OK if passed == len(results) else FAILED), summary, nxt
+
+
+NOTE_ATTEMPTS = 4  # a pass that took this many compares is a hard-won one
+
+
+def note_needs(task, results, attempts):
+    """[(function, kind)] that deserve a lesson note: every unmatched one, and a pass after many attempts."""
+    out = []
+    for fn in task['functions']:
+        row = next((r for r in results if r.get('rva') == fn['rva']), None) or {}
+        if row.get('result') != 'pass':
+            out.append((fn, 'near-miss'))
+        elif attempts >= NOTE_ATTEMPTS:
+            out.append((fn, 'hard-won pass'))
+    return out
+
+
+def note_exists(ctx, fn):
+    rva = parse_rva(fn['rva'])
+    return any((ctx.repo / cookbook_notes.NOTES_DIR).glob(f'{rva:x}-*.md'))
+
+
+def note_reminders(ctx, tdir, task, results, attempts):
+    """One line per function that needs a note and has none yet."""
+    return [f'note: {fn["rva"]} {fn.get("community_name")}: {kind} after {attempts} attempt(s); write a lesson note '
+            f'with `{ctx.cli} note {tdir.name} {fn["rva"]}` (docs/cookbook-notes/README.md)'
+            for fn, kind in note_needs(task, results, attempts) if not note_exists(ctx, fn)]
+
+
+def task_attempts(tdir):
+    runs = tdir / 'runs'
+    return len(list(runs.glob('[0-9][0-9][0-9]'))) if runs.is_dir() else 0
+
+
+def last_results(tdir):
+    try:
+        return json.loads((tdir / 'last-compare.json').read_text())['functions']
+    except (OSError, ValueError, KeyError):
+        return []
+
+
+def pending_notes(ctx):
+    """Lesson notes with uncommitted changes, which a submission carries along with the unit."""
+    return sorted(n for n in changed_paths(ctx) if cookbook_notes.NOTE_FILE.fullmatch(n) and (ctx.repo / n).is_file())
+
+
+def cmd_note(ctx, args):
+    """Write the lesson-note template for a function, pre-filled from the task, for the drafter to finish."""
+    tdir, task = load_task(ctx, args.task, pick_current=True)
+    results, attempts = last_results(tdir), task_attempts(tdir)
+    if args.rva:
+        wanted = parse_rva(args.rva)
+        picked = [(fn, 'requested') for fn in task['functions'] if parse_rva(fn['rva']) == wanted]
+        if not picked:
+            raise Stop(USAGE, f'{args.rva} is not a function of task {tdir.name}')
+    else:
+        picked = note_needs(task, results, attempts)
+        if not picked:
+            raise Stop(USAGE, 'no near-miss or hard-won pass in this task; name a function with --rva to write one anyway')
+    progress = {}
+    try:
+        progress = json.loads((tdir / 'last-compare.json').read_text()).get('progress') or {}
+    except (OSError, ValueError):
+        pass
+    written = []
+    for fn, _kind in picked:
+        rva = parse_rva(fn['rva'])
+        row = next((r for r in results if r.get('rva') == fn['rva']), None) or {}
+        metric = progress.get(fn['rva']) or {}
+        score = f'{metric["best"]}/{metric["total"]} ({metric["metric"]})' if metric.get('best') is not None else None
+        name = fn.get('community_name') or fn.get('symbol') or f'sub_{rva:x}'
+        path = ctx.repo / (args.path or cookbook_notes.note_path(rva, args.slug or name))
+        if path.exists() and not args.force:
+            ctx.say(f'{path.relative_to(ctx.repo)} exists; kept (--force replaces it)')
+            written.append(str(path.relative_to(ctx.repo)))
+            continue
+        outcome = 'fixed' if row.get('result') == 'pass' else 'unsolved'
+        text = cookbook_notes.render(rva, name, fn.get('label'), outcome, score, attempts)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+        written.append(str(path.relative_to(ctx.repo)))
+        ctx.say(f'wrote {written[-1]}: finish every TODO in words and short plain C++ (never bytes, hex or listings)')
+    return OK, {'notes': written}, f'finish the TODO lines, then `{ctx.cli} preflight` and submit; the note goes in the same PR'
 
 
 def cmd_compare(ctx, args):
@@ -2550,7 +2636,10 @@ def cmd_preflight(ctx, args):
     if ctx.run(['git', 'rev-parse', '--verify', '--quiet', base], cwd=ctx.repo, capture_output=True).returncode:
         base = 'HEAD'
     unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
-    files = submission_files(ctx, base, unit)
+    files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
+    for d_, t_ in picked:
+        for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_)):
+            ctx.say(line)
     head = git(ctx, 'write-tree') if args.staged else None
     details = {}
     problems = intake_problems(ctx, base, head=head, files=files, details=details)
@@ -2718,6 +2807,11 @@ def cmd_submit(ctx, args):
         unit += [n for n in task_i['contrib']['unit'] if (ctx.repo / n).is_file() and n not in unit]
     summary = summaries[0] if len(picked) == 1 else dict(summaries[0], functions=[
         r for s_ in summaries for r in s_['functions']])
+    notes = [n for n in pending_notes(ctx) if n not in unit]
+    for d_, t_ in picked:
+        for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_)):
+            ctx.say(line)
+    unit = unit + notes
     up, push = upstream_remote(ctx)
     preflight = submit_preflight(ctx, push)
     blockers += preflight['blockers']
@@ -2979,6 +3073,12 @@ def parser():
     s.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
     s = sub.add_parser('compare')
     s.add_argument('task', nargs='?')
+    s = sub.add_parser('note')
+    s.add_argument('task', nargs='?')
+    s.add_argument('--rva', help='write a note for this function even when it is not a near-miss')
+    s.add_argument('--slug', help='short file-name slug (default: the function name)')
+    s.add_argument('--path', help=argparse.SUPPRESS)
+    s.add_argument('--force', action='store_true', help='replace an existing note')
     s = sub.add_parser('submit')
     s.add_argument('task', nargs='*', help='one or more task names; several make one pull request')
     s.add_argument('--all-dirty', action='store_true',
@@ -3015,7 +3115,7 @@ def parser():
 
 
 COMMANDS = {'doctor': cmd_doctor, 'setup': cmd_setup, 'next': cmd_next, 'claim': cmd_claim, 'release': cmd_release,
-            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'submit': cmd_submit,
+            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'note': cmd_note, 'submit': cmd_submit,
             'preflight': cmd_preflight, 'intake': cmd_intake, 'go': cmd_go, 'feedback': cmd_feedback}
 
 

@@ -145,6 +145,12 @@ every other document are optional: an unread document is never a reason to stop.
 10. Go to step 1. A finished, stuck or budget-exhausted unit ends that unit only. Continue
     until `next` prints `EMPTY` or the infrastructure stop below applies.
 
+## Lesson notes
+
+Read `docs/cookbook-notes/` for the unit's class or cause before step 1. After a unit ends on a
+near-miss, or passes after 4 or more attempts, write one note per such function (`docs/drafter-card.md`,
+"Lesson notes") in the same worktree, so it travels in the unit's PR.
+
 ## Finished
 
 Stop when `next` prints `EMPTY`, or when `attempt` failed three times in a row for an infrastructure

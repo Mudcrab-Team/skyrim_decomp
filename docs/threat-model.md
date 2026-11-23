@@ -9,7 +9,7 @@ punishment; no one is banned for being active.
 |---|---|
 | Game-derived text (disassembly, decompiler names, byte runs, inline assembly) published in a PR | `tools/leakgrep.py` over added lines only, blocking, rule codes and line numbers only; the single review also reports `leak: yes/no` and cannot override a grep hit; squash merge with a bot-written message, so contributor history and commit messages are never published |
 | A false byte match (the claim that matters most) | Byte match on two independent hosts: the GitHub Windows CI-hash job and the Mac Wine or PC comparator against the real binary; neither host trusts the PR's own tools |
-| A PR edits `.github/` or `tools/` to fake host 1, or edits anything outside the function source | `scope` job and the bot's own path check: only `reconstruction/**` merges automatically; tooling changes take the normal reviewed route |
+| A PR edits `.github/` or `tools/` to fake host 1, or edits anything outside the function source | `scope` job and the bot's own path check: only `reconstruction/**` and lesson notes in `docs/cookbook-notes/` merge automatically; tooling changes take the normal reviewed route |
 | A push after review swaps the content | Merge with `--match-head-commit`: a changed head fails the merge and the bot starts over |
 | A shared header edit silently breaks matched functions elsewhere | CI recompiles matched functions whose include closure contains a changed header; a regression blocks |
 | Provenance: unlicensed code, pasted decompiler output, byte steering | The one review (blocking grounds in `docs/verification.md`), `Origin` and label lint, family template plus sample review |

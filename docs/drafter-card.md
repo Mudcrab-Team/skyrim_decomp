@@ -24,6 +24,12 @@ stops itself at its deadline. One unit per shell command: never chain several `a
 command or start one in the background (shell timeout of 600000 ms, and a second run on a unit fails with
 "another attempt is running").
 
+**Lesson notes.** Before drafting, `ls docs/cookbook-notes/` and read the notes for your class or cause.
+When you stop on a near-miss, or a pass took 4 or more attempts, write one note in your checkout:
+`python3 tools/cookbook_notes.py --new 0x<rva> --name <Class::Method> --outcome fixed|unsolved --score "<best>" --attempts <n>`,
+then finish every `TODO` (format: `docs/cookbook-notes/README.md`). Words and short plain C++ only; never
+bytes, hex, disassembly or listing text. Commit it with your units.
+
 **Names and binding.** Your class and function names may differ from the community names; the
 decorated name is read from your object. `attempt` binds functions and references itself and
 compares again in the same run; a run that compared nothing because of binding does not count

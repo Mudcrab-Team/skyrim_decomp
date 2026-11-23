@@ -8,6 +8,7 @@ import re
 import tempfile
 
 import check_code_rules
+import cookbook_notes
 import contrib_screen
 import lint_reconstruction
 import lint_review_readiness
@@ -199,12 +200,33 @@ def provenance_findings(ctx, unit, root=None):
     return labels, origin, problems, warnings
 
 
+def note_problems(ctx, name, head):
+    """Findings for one lesson note, read from the index tree when there is one, else the working file."""
+    if head:
+        shown = ctx.run(['git', 'show', f'{head}:{name}'], cwd=ctx.repo, capture_output=True)
+        blob = shown.stdout if shown.returncode == 0 else None
+    else:
+        path = ctx.repo / name
+        blob = path.read_bytes() if path.is_file() else None
+    try:
+        codes = ['missing'] if blob is None else cookbook_notes.validate(name, blob.decode('utf-8'))
+    except UnicodeDecodeError:
+        codes = ['encoding']
+    return [diagnostic(f'{name}: lesson note refused ({", ".join(codes)}); fix: follow docs/cookbook-notes/README.md')
+            for _ in [0] if codes]
+
+
 def intake_problems(ctx, rows, head=None, details=None):
     """Same intake scope, publication, source lint, readiness and screen for Git or local input."""
     problems = []
     names = []
     for status, name in rows:
-        if not UNIT.fullmatch(name):
+        if cookbook_notes.NOTE_FILE.fullmatch(name):
+            if status == 'D':
+                problems.append(diagnostic(f'{name}: deleting a note is for maintainers'))
+            else:
+                problems.extend(note_problems(ctx, name, head))
+        elif not UNIT.fullmatch(name):
             problems.append(diagnostic(f'{name}: outside contributor scope (reconstruction/<area>/<Class>.h or .cpp only)'))
         elif status == 'D':
             problems.append(diagnostic(f'{name}: deleting a unit file is for maintainers'))

@@ -40,7 +40,7 @@ A reconstruction is not a match.
 admitted model. Host 1 is the GitHub Windows CI-hash job (see "CI hash check as the second
 host"); host 2 is the Mac Wine or PC comparator. The review is one `approve` from Terra under
 `claude-low` or from Opus. If a host is down the PR waits; two hosts are never waived. The match
-floor below is unchanged. A pull request touching only `reconstruction/**` is checked, reviewed
+floor below is unchanged. A pull request touching only `reconstruction/**` and `docs/cookbook-notes/**` is checked, reviewed
 and merged by the bot; a function that fails any part stays `drafted` and gets no record. When a PR
 changes a header, every matched function whose include closure contains it is recompiled on CI:
 `pass` keeps it matched (its record is rebound to the new digest), a regression blocks the PR.

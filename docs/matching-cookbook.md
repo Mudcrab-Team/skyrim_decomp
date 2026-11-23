@@ -6,6 +6,8 @@ compiler reacts to source shapes, not what the original said, and are starting h
 evidence. Spellings must still meet `docs/drafter-card.md`. Confidence: **high** = closed a
 function and the counter-variants failed; **medium** = closed one function; **low** = unsettled.
 
+Newer lessons that are not rules yet are one file each in [cookbook-notes/](cookbook-notes/README.md); read the ones for your class or cause too.
+
 **Before the first draft, read the sibling.** Open the FNV method and the class's small accessors
 that the pack's "Sibling source" section lists; their helper boundaries, argument order and
 accessor forms are a cheap first hypothesis. Adapt, do not assume: FNV is a 32-bit VC++ 2008 build
