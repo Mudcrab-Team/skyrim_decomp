@@ -77,7 +77,7 @@ files under `.local/twins` and `.local/stamp-sweep`, passed as `--reserved-dir`)
 withdrawn from the window; the plans themselves are never published. The bot logs the slice and a line with
 claimable left, claimed and the daily burn rate. An open PR may also claim a function outside the window: when its header claims an RVA that has no
 row and the RVA is an ordinary, locally supported function start of the private table, the bot passes it to
-`target_hash_offers.py --extra-rva`, which publishes the same hash-only row (no class filter; at most 128 per run, kept
+`target_hash_offers.py --extra-rva`, which publishes the same hash-only row (no class filter; at most 256 per run, kept
 until recorded), and the head gets a fresh hash run against the new base. Claims are read by `tools/rva_headers.py`: the compact
 `// 0x<rva> <Name>` lines, `RVA 0x<rva>, <n> bytes` records and `compared at RVA ...` labels, never an address in prose.
 A claim that still has no row is listed in the sticky comment. Install the

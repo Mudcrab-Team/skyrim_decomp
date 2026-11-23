@@ -25,7 +25,10 @@ VERDICT_RANK = {'supported': 0, 'caution': 1}
 SIZE_TIERS = (64, 256, 1024)  # small, small-medium, medium; above is large
 UNNAMED_HOW = {'placeholder'}
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')  # private plans of internal workers, relative to the bot root
-ON_DEMAND_MAX = 128  # PR-claimed functions published per run; a PR is capped at far fewer
+ON_DEMAND_MAX = 256  # PR-claimed functions published per run; at least one PR's cap of new functions
+# Kinds a PR may claim on demand. Static initializers are matched on main already and generated reflection
+# initializers are claimed by whole units, so they cannot depend on the ordinary-only window.
+ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
 MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
 PDB_DIR = 'reconstruction/generated/crashlogger_pdb'  # generated layout headers, label CRASHLOGGER_PDB(59818@version)
 
@@ -197,7 +200,7 @@ def select_on_demand(metadata, known, extra, retained=()):
             refused[rva] = 'already-recorded'
         elif not fn or rva < MIN_RVA:
             refused[rva] = 'not-a-function-start'
-        elif fn.get('kind') != 'ordinary' or not fn.get('size'):
+        elif fn.get('kind') not in ON_DEMAND_KINDS or not fn.get('size'):
             refused[rva] = 'not-an-ordinary-function'
         elif (fn.get('v2') or {}).get('verdict') not in VERDICT_RANK:
             refused[rva] = 'locally-unsupported'
@@ -205,11 +208,13 @@ def select_on_demand(metadata, known, extra, retained=()):
             accepted.add(rva)
     # The cap bounds what one run newly publishes. A retained row belongs to a claim already published, and
     # cutting it by RVA order would drop the rows of a PR that is still being checked or has merged unrecorded.
-    fresh = sorted(accepted)[:ON_DEMAND_MAX]
+    # Retained rows are not new, so they must not use up the cap: a claim larger than the cap would otherwise
+    # re-select the same lowest RVAs on every run and never publish the rest.
+    fresh = sorted(accepted - set(retained))[:ON_DEMAND_MAX]
     kept = set()
     for rva in retained:
         fn = metadata.get(rva)
-        if rva not in known and fn and fn.get('kind') == 'ordinary' and fn.get('size') \
+        if rva not in known and fn and fn.get('kind') in ON_DEMAND_KINDS and fn.get('size') \
                 and (fn.get('v2') or {}).get('verdict') in VERDICT_RANK:
             kept.add(rva)
     return sorted(set(fresh) | kept), refused

@@ -35,6 +35,17 @@ class OnDemandSelectionTests(unittest.TestCase):
                                    0x2200: 'not-an-ordinary-function', 0x2300: 'locally-unsupported',
                                    0x2500: 'already-recorded', 0x10: 'not-a-function-start'})
 
+    def test_static_initializers_are_accepted_but_funclets_are_not(self):
+        table = {0x2000: row(kind='static-initializer'), 0x2100: row(kind='eh-funclet')}
+        got, refused = offers.select_on_demand(table, set(), [0x2000, 0x2100])
+        self.assertEqual((got, refused), ([0x2000], {0x2100: 'not-an-ordinary-function'}))
+
+    def test_a_claim_beyond_the_cap_publishes_the_rest_on_the_next_run(self):
+        table = {0x2000 + 0x10 * i: row() for i in range(offers.ON_DEMAND_MAX + 30)}
+        first, _ = offers.select_on_demand(table, set(), list(table))
+        second, _ = offers.select_on_demand(table, set(), list(table), retained=first)
+        self.assertEqual(set(second), set(table))
+
     def test_earlier_rows_stay_until_recorded_or_no_longer_valid(self):
         got, refused = offers.select_on_demand(self.TABLE, {0x2400}, [], retained=[0x2000, 0x2400, 0x2300, 0x9999])
         self.assertEqual((got, refused), ([0x2000], {}))
