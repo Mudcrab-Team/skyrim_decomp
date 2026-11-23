@@ -426,6 +426,12 @@ Fix: `InventoryEntryData* entry = GetCurrentAmmoEntry(); TESForm* form = entry ?
 nullptr; if (form && form->IsAmmo()) return ...;`. Closed Actor::GetCurrentAmmo 0x6cc700. Not tried
 on the same symptom in 0x64d290 and 0x14e70b0.
 
+**47. A pick between a pointer and a fallback: write the null test as `p == nullptr ? fallback : p`.**
+(low, one observation)
+Symptom: the select of a pointer or its fallback gives a different jump shape from the target.
+Fix: `return space == nullptr ? cell : space;`, the null-check-first ternary. `space ? space : cell` and the
+if-assign form both missed. Closed TESObjectREFR 0x2f3d30.
+
 ## Shaping ideas from one contributor's cheap-model runs
 
 These are observations from one contributor's drafting runs with a cheap model, not rules.

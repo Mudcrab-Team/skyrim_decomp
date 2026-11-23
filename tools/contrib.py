@@ -2501,7 +2501,7 @@ NOTE_ATTEMPTS = 4  # a pass that took this many compares is a hard-won one
 
 
 def note_needs(task, results, attempts):
-    """[(function, kind)] that deserve a lesson note: every unmatched one, and a pass after many attempts."""
+    """[(function, kind)] worth a look for a lesson note: unmatched ones, and a pass after many attempts."""
     out = []
     for fn in task['functions']:
         row = next((r for r in results if r.get('rva') == fn['rva']), None) or {}
@@ -2518,10 +2518,20 @@ def note_exists(ctx, fn):
 
 
 def note_reminders(ctx, tdir, task, results, attempts):
-    """One line per function that needs a note and has none yet."""
-    return [f'note: {fn["rva"]} {fn.get("community_name")}: {kind} after {attempts} attempt(s); write a lesson note '
-            f'with `{ctx.cli} note {tdir.name} {fn["rva"]}` (docs/cookbook-notes/README.md)'
-            for fn, kind in note_needs(task, results, attempts) if not note_exists(ctx, fn)]
+    """A line per hard-won pass that has no note yet, and one line for all near-misses.
+
+    A note is worth writing only for a spelling the cookbook does not record or a cause it does not cover, so a
+    near-miss is not prompted one by one: the single line leaves the cookbook check to the drafter.
+    """
+    todo = [(fn, kind) for fn, kind in note_needs(task, results, attempts) if not note_exists(ctx, fn)]
+    lines = [f'note: {fn["rva"]} {fn.get("community_name")}: pass after {attempts} attempt(s); if the spelling that '
+             f'fixed it is not in docs/matching-cookbook.md, write a lesson note with `{ctx.cli} note {tdir.name} '
+             f'{fn["rva"]}` (docs/cookbook-notes/README.md)' for fn, kind in todo if kind == 'hard-won pass']
+    near = [fn['rva'] for fn, kind in todo if kind == 'near-miss']
+    if near:
+        lines.append(f'note: {len(near)} unmatched ({", ".join(near)}); write a lesson note (`{ctx.cli} note {tdir.name} '
+                     '<rva>`) only if the cause is not already in docs/matching-cookbook.md')
+    return lines
 
 
 def task_attempts(tdir):

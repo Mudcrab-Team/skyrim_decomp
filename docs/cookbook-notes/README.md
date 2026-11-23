@@ -1,14 +1,23 @@
 # Cookbook lesson notes
 
 One small file per lesson, so a near-miss you solved (or could not) helps the next drafter.
-Maintainers fold notes into [docs/matching-cookbook.md](../matching-cookbook.md) from time to time.
+Merged notes are folded into [docs/matching-cookbook.md](../matching-cookbook.md) at the next round,
+and the folded note files are deleted.
 
 Read the notes for your function's class or cause here before drafting.
 
 ## When to write one
 
-After a batch: one note for each near-miss (function not matched when you stopped) and each hard-won
-pass (four or more compares). `./sr note <task>` writes the template pre-filled; finish every `TODO`.
+Write a note only when one of these holds, and check [docs/matching-cookbook.md](../matching-cookbook.md)
+first:
+
+1. A spelling fixed something the cookbook does not record (outcome `fixed`; usually a pass that took four
+   or more compares).
+2. A near-miss whose cause is not covered by any cookbook rule or "Unsolved patterns" entry (outcome
+   `unsolved`, a new cause).
+
+A failure that matches a cookbook rule or unsolved pattern gets no note; the round's results already
+record it. `./sr note <task>` writes the template pre-filled; finish every `TODO`.
 Put the note in the same PR as the units, or send a notes-only PR; it is merged after the leak scan,
 the template check and one review. Notes never affect matching or digests.
 

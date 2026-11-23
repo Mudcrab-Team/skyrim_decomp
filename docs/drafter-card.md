@@ -25,7 +25,8 @@ command or start one in the background (shell timeout of 600000 ms, and a second
 "another attempt is running").
 
 **Lesson notes.** Before drafting, `ls docs/cookbook-notes/` and read the notes for your class or cause.
-When you stop on a near-miss, or a pass took 4 or more attempts, write one note in your checkout:
+Write a note only if a spelling fixed something `docs/matching-cookbook.md` does not record, or a near-miss
+has a cause it does not cover (a failure the cookbook already describes gets no note). In your checkout:
 `python3 tools/cookbook_notes.py --new 0x<rva> --name <Class::Method> --outcome fixed|unsolved --score "<best>" --attempts <n>`,
 then finish every `TODO` (format: `docs/cookbook-notes/README.md`). Words and short plain C++ only; never
 bytes, hex, disassembly or listing text. Commit it with your units.

@@ -22,10 +22,14 @@ is not looked at again until it changes. The acceptance rule is the summary at t
 draft PR is the claim. Tooling PRs (`tools/**`, `tests/**`) take the normal route: branch CI green,
 then merge.
 
-**Lesson notes.** Drafters leave a note in `docs/cookbook-notes/` for each near-miss and each hard-won pass
-(`docs/cookbook-notes/README.md`). Maintainers periodically fold notes with a demonstrated fix into numbered
-rules of `docs/matching-cookbook.md` and unsolved clusters into its "Unsolved patterns"; a folded note is
-deleted in the same change. The folding PR is a tooling PR and takes the normal route.
+**Lesson notes.** Drafters leave a note in `docs/cookbook-notes/` only for a spelling the cookbook does not record or a
+near-miss cause it does not cover (`docs/cookbook-notes/README.md`).
+
+**Round step: fold the cookbook.** After each RE round's PR opens, one engineer folds that round's pass and
+fail diagnoses plus any merged `docs/cookbook-notes/` into `docs/matching-cookbook.md`: a new or extended
+numbered rule only where a pass demonstrates the fix (cite the RVAs), and failures-only causes into "Unsolved
+patterns" with the spellings that did not help. The folded note files are deleted in the same change. The
+folding PR is a tooling PR and takes the normal route.
 
 **Superseded, pending deletion.** The sections below on claims, the lane and lane-run, the
 Drafter and Reviewer queue, review groups, families and the sampling second pass describe the

@@ -3,9 +3,10 @@
 Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, assisted by
 <model>"`, edit the two source files it creates, `compare`, then `submit --dry-run` and `submit`.
 Open a PR that touches only `reconstruction/**` and `docs/cookbook-notes/**`; checks run; the bot reviews and merges.
-Before drafting, read `docs/cookbook-notes/` for your function's class or cause. After a batch, run
-`./sr note <task>` for each near-miss and each pass that took 4+ compares, finish it, and submit it in
-the same PR (words and plain C++ only, never bytes or listings).
+Before drafting, read `docs/cookbook-notes/` for your function's class or cause. Write a note
+(`./sr note <task>`) only for a spelling that fixed something the cookbook does not record, or a near-miss
+cause it does not cover; submit it in the same PR (words and plain C++ only, never bytes or listings).
+Merged notes are folded into the cookbook at the next round.
 Stuck or unsure? Ask in [Discussions (Q&A)](https://github.com/Mudcrab-Team/skyrim_decomp/discussions/categories/q-a).
 
 Aim for 50 to 200 functions per PR (200 is the per-PR cap); more is fine, and one PR per family or
