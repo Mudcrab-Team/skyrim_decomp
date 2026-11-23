@@ -189,6 +189,8 @@ class FakeGitHub:
             rid = int(m[1])
             head = next(h for h, rs in ci.runs.items() if any(r['id'] == rid for r in rs))
             return self.ok({'id': rid, 'head_sha': head, 'run_attempt': 1, 'event': 'pull_request'})
+        if 'workflows/check.yml/runs' in line:
+            return self.ok({'workflow_runs': []})  # main is green: no guarded merge is held
         if 'actions/runs?head_sha' in line:
             return self.ok({'workflow_runs': []})
         if a[:2] == ['run', 'download']:
