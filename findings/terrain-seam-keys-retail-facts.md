@@ -1,0 +1,135 @@
+Transfer status: UNREVIEWED
+
+# Finding: terrain lighting techniques at the near-to-LOD seam
+
+| Item | Evidence record |
+|---|---|
+| Status | OBSERVED for verified claims. INFERRED and UNVERIFIED items are marked. Static only. |
+| Author | The Sol research run, `gpt-6.2-sol` via Codex (not the reviewer below). |
+| Human operator | Taylor. |
+| Reviewer | A separate `gpt-6.2-sol` run via Codex, high effort, fresh context. See "Independent review" below. |
+| Date | Review on 2026-11-22 CST (2026-11-23 UTC). The draft date is 2026-11-23 UTC. |
+| Reviewed draft SHA-256 | `fffb6132b1019c5b5c9ca32dc16923eac4759388c61fcc2a1588ee42ba4de081` |
+| Build | `sse-steam-1-7-104`, retail `1.7.104.0`. Executable SHA-256 `846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f`, equal to the pin in [builds/target.json](../builds/target.json). Both runs asserted the equality. |
+| Principal function RVAs | `0x1ab970`, `0x1abad0`, `0x2ad3a0`, `0x2b2c60`, `0x2b3380`, `0x30db20`, `0x511630`, `0x5160c0`, `0x5166e0`, `0x9a03e0`, `0x9a0618`, `0x65f530`, `0x151a160`, `0x1520830`, `0x1547d20`, `0x1548820`, `0x15496ca`, `0x15896d0`. All native addresses in this finding are RVAs. Descriptive function labels are our own names and are GUESS. |
+| Source exposure | Mixed. Both runs used the operator's pinned executable, the shipped Lighting shader package, the shipped INI templates and public generated layout names, including a public Calendar layout. The reviewer also read shipped asset archives. Prior reviewed findings #946, #822 and #812 supplied anchors. Analysis used local extraction of selected facts. The independent reviewer also read the public merged downstream tree to scope the G03 correction; this finding makes no claim about that code. |
+| Name provenance | `hasLOD`, `landBlendParams`, `terrainTexFade`, `terrainOverlayTexture` and `terrainNoiseTexture` come from the public generated tables and carry the label CRASHLOGGER_PDB(59818@2026.10.24). The name `Calendar::gameHour` comes from CommonLibSSE-NG revision `b93280e832f263dbef44e44cbe2936622a02f91a`. Other descriptive native field and function names are our own and are GUESS. Setting and shader names come from the retail inputs. |
+| Intended recipient | Skyrim Research department lead for boundary review under [docs/clean-room.md](../docs/clean-room.md). Proposed downstream use: Mudcrab issue #939. |
+
+All addresses are RVAs for the pinned build at image base `0x140000000`, except the quoted #822 sentence in G03, which uses a virtual address. **Verified** identifies a static read at the cited source. **Inferred** identifies an interpretation of those facts. **Unverified** identifies missing evidence. Keep listings of the game files in `.local/`. Nothing game-derived is in this file except counts, field offsets, addresses, constants, formulas and shipped asset names.
+
+## Review verdicts
+
+| Group | Verdict | Main correction |
+|---|---|---|
+| G01. Near and LOD technique selection | Corrected | The transient exception in the grid-transition state is the center cell. The map projection conditions are now explicit. |
+| G02. Technique 19 inputs | Corrected | Exact ramp literals, the reciprocal span, and distinct sources for the atlas-cell center and the loaded-grid center. |
+| G03. Correction to #822 G08 | Corrected | The earlier restore sentence is replaced. The correction is limited to the early restore in modes 25 and 26. |
+
+## Question and method
+
+Which near and distant terrain techniques can the stock exterior path select at the seam? What supplies the technique 19 texture bindings, UV origin, distance origin and transition weight? Static analysis follows the land property, loaded-grid updates, render pass keys, draw-time constant writers and the shader records identified in #946 and #822.
+
+The measured shader archive SHA-256 is `fd1ba630f443353ed21ed4ca0380968f9c7091c8434518ea3cc79bc6d38c18e7`. The extracted Lighting package SHA-256 is `72cfc73eb0938d5949f0b3a8683722a33b671a34b41b750ba138de8d154c5fbc`. Baselines are corrected #946 at `021abdd766ae66514631cab081afdeda8e825b7c` ([terrain-lod-vs-near-retail-facts.md](terrain-lod-vs-near-retail-facts.md)), #822 at `e37cab1e148b5587cba1cb41b7f3c08a948e56f8` ([terrain-lod-shading-retail-facts.md](terrain-lod-shading-retail-facts.md)), and #812 at `61776bc2b47ef7fbebdafa8354ddbc044e00b6fc` ([exterior-fog-retail-facts.md](exterior-fog-retail-facts.md)). The LOD inventory supplied native anchors.
+
+This finding extends #946, which compares the near and LOD shading terms. #946 G02 describes the technique 19 distant blend. G02 below adds the CPU sources of its inputs and corrects the ramp arithmetic. G03 below corrects one sentence of #822 G08.
+
+## Observations
+
+### G01. Selectors for near terrain and terrain LOD
+
+**Verified.** The near constructor sets property bit 14 and initializes bit 46 from the effective terrain manager's `hasLOD` field at `+0x36` (`0x2b359e–0x2b3646`). The field name is CRASHLOGGER_PDB(59818@2026.10.24). The constructor clears bit 46 if the world or the manager is absent. The manager lookup follows parent-world links while the parent-use field at `+0xa2` has mask 2 (`0x30db20`). The ordinary Lighting pass builder selects technique 8 with bit 14 and technique 19 with bit 46, subject to the later technique overrides in the generic selector (`0x151abc2–0x151adbd`). Technique number alone does not select a full near PS key. The grid update can change bit 46 after construction (`0x1ab970–0x1aba90`, `0x1abae2–0x1abb35`).
+
+**Verified.** With `uGridsToLoad = 5` and effective terrain LOD, the full-grid updater assigns the settled mask to each existing eligible land quadrant. The updater requires a current exterior world and nonzero effective `hasLOD` (`0x1ab983–0x1ab99f`). It skips missing cells and missing quadrant geometry. A zero in the 5 × 5 mask at `0x17efb88` enables technique 19. The five entries for the center and its four cardinal neighbours clear bit 46. They use technique 8 on the ordinary selector. The other 20 entries set bit 46 for the outer ring and the four inner diagonals. They use technique 19. While the temporary grid-transition byte at `0x219e5f5` is set, the updater bypasses the mask. It clears bit 46 at the center and sets it at every other eligible position. The center is the sole exception (`0x1ab9f0–0x1aba6a`). A grid shift sets the transition byte and the associated interpolation-pending byte before it runs the updater. A later update clears the transition byte and reapplies the settled mask. This happens after center interpolation has completed and the checked pending pointer is null (`0x1a063d–0x1a0666`, `0x1a0cf2–0x1a0d08`, `0x15497aa–0x15497c8`). Grid update and initialization write this state at `0x1a065f`, `0x1a0cfa` and `0x1a3789`. The separate cell updater at `0x1abad0` assigns bit 46 to the inverse of its input Boolean (`0x1abae2–0x1abb35`). It has no grid-size check. Its invocation conditions are **unverified**. A different grid setting skips the full-grid updater, including its transition branch. New land still starts with the constructor's effective `hasLOD` value. The checked technique decisions use state and grid position. Camera-to-chunk distance does not enter them directly. **Unverified.** The full pattern on other grid sizes, the invocation conditions of the single-cell writer, and the exact frame in which a particular grid settles.
+
+**Verified.** The BTR property words in the #822 census are `0x80401000/0x00000003`. An independent walk of `Skyrim - Meshes1.bsa` found the same two words on all 9,584 linked BTR land properties. Property bit 33 picks technique 18. Property bit 12 supplies raw key bit 2. The LOD-specific branch uses property bit 55 to add `0x40000` (`0x151a98e–0x151a99f`, `0x151ad41`, `0x151ae2e–0x151ae5e`). The scanned serialized properties have bit 55 clear. Draw setup can remap technique 18 to 9 before forming the VS and PS keys (`0x1547d20–0x1547d9a`). The remap happens when the byte at `0x20d681f` is zero. The key helpers retain technique, model-space bit `0x4` and projected bit `0x40000`. The PS helper forces bit 0 (`0x15896a0–0x15896e1`). With the remap byte nonzero, technique 18 gives PS `12000005` or `12040005`, with VS `12000004` or `12040004`, respectively. With the remap byte zero, technique 9 gives PS `09000005` or `09040005`. The VS keys end in `04`. All eight records occur in the Lighting package (#822 G01).
+
+**Verified.** The map path requests property bit 55 on eligible LOD properties only when the textures configured by `sWorldMapOverlayNormalTexture:MapMenu` and `sWorldMapOverlayNormalSnowTexture:MapMenu` both load. Map preparation loads them (`0x99fdb6–0x99fe3f`). The map-entry path supplies true to the terrain and object LOD updaters when the two overlay texture pointers at `0x20d6920/0x20d6928` are nonnull (`0x9a057d–0x9a059a`). Both compiled default textures are in `Skyrim - Textures5.bsa`. The five shipped INI templates omit both settings. The updaters write property bit 55 on eligible nodes (`0x511663 → 0x51209a`, `0x505953 → 0x506655`). Map exit supplies false (`0x9a065f/0x9a0666`). The other direct caller in the terrain-manager update also supplies false (`0x516112/0x516120`). The projected LOD setup tests raw bit `0x40000` before it uses the map overlay resources (`0x154a530–0x154a61f`). The traced flag route uses the map texture settings. It leaves the generic projected-normal settings in their separate path. That path uses property bit 18 and raw key bit `0x8000`, and reads its normal-resource settings in a separate branch (`0x151ab30–0x151ab42`, `0x154a0de–0x154a124`). With the remap byte nonzero, bit 55 selects `12040005` and a clear bit selects `12000005`. With the remap byte zero, the corresponding technique 9 keys are `09040005` and `09000005`. A projected technique 18 key requires the projected flag and a nonzero remap byte.
+
+**Verified.** The following are the compiled fields and explicit entries in the five shipped INI templates. “Absent” means the named template does not contain the setting.
+
+| Setting and compiled field RVA | Compiled | Base template | Low / Medium / High / Ultra |
+|---|---:|---|---|
+| `uGridsToLoad:General`, `0x2079eb0` | 5 | Absent | Absent |
+| `bDisplayLODLand:LOD`, `0x20b5e30` | 1 | Absent | Absent |
+| `bEnableLandFade:Display`, `0x207b988` | 1 | Absent | Absent |
+| `bDrawLandShadows:Display`, `0x207b840` | 0 | Absent | Absent |
+| `bLandSpecular:Landscape`, `0x207b970` | 1 | Absent | Absent |
+| `fSplitDistanceMult:TerrainManager`, `0x20b33d8` | 1.5 | Absent | 0.5 / 1.1 / 1.5 / 1.5 |
+| `bEnableProjecteUVDiffuseNormals:Display`, `0x20d8d78` | 1 | Absent | 0 / 1 / 1 / 1 |
+| `bEnableProjecteUVDiffuseNormalsOnCubemap:Display`, `0x20d8d90` | 0 | Absent | Absent |
+
+**Verified.** `bDrawLandShadows` and `bLandSpecular` supply near property bits 9 and 0 (`0x2b3623–0x2b3658`). The checked `bEnableLandFade` paths supply a separate property fade field at `+0x108` (`0x2b358f–0x2b3599`, `0x2ad3a0`). `bDisplayLODLand` controls terrain LOD admission through the cache at `0x33d3d45` (#822 G08). `fSplitDistanceMult` feeds the terrain manager (`0x519af8`). None of these fields occurs in the traced bit 46 or bit 55 decisions.
+
+**Inferred.** A stock exterior with a loaded 5 × 5 grid and ordinary stock land LOD, once the settled updater has run and both ordinary draws are present, can pair near technique 19 with LOD PS `12000005` at the outer edge. The inner cross uses near technique 8. The map projection flag with the remap byte nonzero selects `12040005`. These are conditional static results. The stock seam pairing is inferred, not observed in a draw. **Unverified.** Live draw keys at a specific seam, the full near PS key, the time before the settled mask applies in a given frame, and indirect effects of mods, weather, world changes, and special render passes.
+
+**Confidence: high** for the flag writers, grid mask, key composition and defaults. **Confidence: medium** for which keys a particular stock frame draws. An exact-build trace with grid position, accumulation mode and raw draw keys would establish that frame's selection.
+
+### G02. Technique 19 UV, distance and transition inputs
+
+**Verified.** Lighting group 6 contains two technique 19 VS records and 18 technique 19 PS records. Each technique 19 VS payload also occurs under the corresponding technique 8 VS key. A VS payload alone cannot establish the selected technique or the pixel blend. Both technique 19 VS records (`13000001` at package offset 9046664 and `13000201` at 9050952) measure the Euclidean XY distance `r` between the original vertex position and `VS b2[7].zw`. The weight uses the float32 outer radius `9625.599609375` and the float32 slope `0.0003756009682547301`. Subtract `r` from the outer radius, multiply by the slope, saturate, and subtract the result from one. The algebraic span is the reciprocal of the slope, about 2662.399952392579 world units. The algebraic inner endpoint is the outer radius minus that span, about 6963.199656982421 world units. The rounded endpoints are 6963.2 and 9625.6, and the rounded span is about 2662.4. Use the decoded slope when calculating the endpoint. #946 G02 shows the slope rounded to `0.000376`, which gives a different endpoint. With a supplied float32 distance and nearest rounding per operation, the last zero is at 6963.19970703125 and the first positive weight is at 6963.2001953125. The first full weight is at 9625.599609375. Both VS write the weight to `TEXCOORD7.w`. All 18 technique 19 PS multiply the interpolated `TEXCOORD7.w` by `PS b1[0].z`. Register assignment varies by permutation. This is the same pixel gate and vertex ramp as #946 G02 and G08. **Unverified.** Pixel transition locations in a live draw. They depend on vertex positions, interpolation and the live gate.
+
+**Verified.** Both VS scale the transformed layer UV by the float32 value `0.010416666977107525`, add `VS b2[7].xy`, then flip V. The material's XY values supply these UV offsets.
+
+**Verified.** The atlas lookup and the distance origin use two different centers. The near-land updater at `0x2b2c60` uses the individual land cell center to query the effective world terrain manager and select an atlas node (`0x2b2cf9–0x2b2d35`, `0x5166e0`). For a selected node of positive width, it computes each offset as follows. The delta from the cell coordinate to the node base cell coordinate, plus the quadrant's half-cell displacement, is multiplied by the float32 reciprocal of the node width. The reciprocal is computed once. Each quadrant contributes a half cell on its high side along each axis. Each component wraps into `[0,1]` with exactly 1 retained. The cell X/Y are read from loaded land storage `+0x49b8/+0x49bc`. Node base X/Y are signed 16-bit fields at `+0x48/+0x4a`. The node width in cells is four times the unsigned field in bits 23 through 30 of the node state word at `+0x40`. The results go to material `landBlendParams.xy` (`0x2b2e78–0x2b2f99`). The field name is CRASHLOGGER_PDB(59818@2026.10.24). The positive-width formula describes valid node widths. The update has no local zero-width guard. With no node, the updater skips the offset write. The constructor supplies `(1,1,1,1)` to the material vector (`0x152730f`, source `0x20ceed0`).
+
+**Verified.** The per-draw upload at `0x154973f–0x15497f0` takes `VS b2[7].xy` from the near material's `landBlendParams` at `+0x108/+0x10c`. It takes ZW from the interpolated loaded-grid cell center minus the draw geometry's XY translation at `+0xa0/+0xa4`. The previous center is stored at `0x20d6958/0x20d695c`, and the target at `0x20d6960/0x20d6964`. Each axis of a new center is `(gridCell + 0.5) × 4096` (`0x1a0597–0x1a05bf`, `0x1a0c46–0x1a0d01`, `0x1a12a0–0x1a12c8`, `0x1a37aa–0x1a37da`). The uploaded origin is `lerp(previousCenter, targetCenter, fraction) − geometryTranslation.xy`. The interpolation fraction is `saturate((clock − startClock) × (float32(0.2) / scale))`. The clock, start timestamp and scale are at `0x20d68d0`, `0x20d6968` and `0x20d6948`, respectively. The scale initializes to 1.0. This interpolation moves the center of the shader ramp. The scale changes the interpolation time. The ramp literals stay in the VS.
+
+**Verified.** Renderer updates fill the clock from callback index 0 at `0x2c65e6–0x2c661a`, `0x2c689c–0x2c68d5`, and `0x658d24–0x658d58`. The callback installed at `0x6537d4` and at `0x65daf7` reads the Calendar hour and multiplies it by 60 twice (`0x65f5a0–0x65f5c4`, `0x645fe0–0x645ff7`). CommonLibSSE-NG revision `b93280e832f263dbef44e44cbe2936622a02f91a` gives the `Calendar::gameHour` name and the 12-hour fallback. Thus the clock uses in-game seconds from the current hour-of-day. The default interpolation spans about five in-game seconds with monotonic clock input. The traced fraction has no day-wrap adjustment. The callback path provides zero when the callback is absent.
+
+**Verified.** Native material setup writes `PS b1[0].z` as 1.0 when global byte `0x20d681e` is nonzero, and 0.0 otherwise (`0x1548abd–0x1548afe`). This byte initializes to 1. The direct-reference scan found two reads and no direct writes. The near material's `terrainTexFade` at `+0x150` goes to W. The field name is CRASHLOGGER_PDB(59818@2026.10.24). W is distinct from Z, the technique 19 blend gate. No settings binding for the scale at `0x20d6948` or for the pixel gate was found in the checked direct references.
+
+**Verified.** `t13` takes near material `terrainOverlayTexture` at `+0xf8`. The update takes the selected terrain block's Lighting material diffuse texture (`0x2b2d3c → 0x511520`, argument zero). A missing node or an ineligible block or texture can leave or set this field null. A pre-existing nonnull overlay other than the shared default skips the whole quadrant update, including the noise and UV changes (`0x2b2de6–0x2b2e24`). For a nonnull overlay, material setup takes the render resource at texture `+0x48` and its view at `+0x10`, or supplies a null view if the render resource is absent. A null overlay skips this update entirely (`0x1548c6f–0x1548cbf`). The field name is CRASHLOGGER_PDB(59818@2026.10.24).
+
+**Verified.** `t15` takes near material `terrainNoiseTexture` at `+0x100`. The updater uses the noise lookup (`0x2b2d4e → 0x511890`) or the shared default at `0x3336448` (`0x2b2e24–0x2b2e75`). Both fields initialize null (`0x15272fa–0x1527301`). The noise field can remain null before an eligible update or if the lookup and fallback are both null. Material setup skips the `t15` bind when the field is null (`0x1548cc0–0x1548cd9`). All 18 technique 19 PS sample both slots. The field name is CRASHLOGGER_PDB(59818@2026.10.24). A skipped bind does not establish which resource the draw samples.
+
+**Unverified.** Indirect writers of the gate byte, the live interpolation and gate values, the clock values that reached a given transition, and the bound views when either bind is skipped.
+
+**Confidence: high** for the constant and texture routes, shader literals and computed ramp. A traced draw would establish the live center, blend gate and resource views.
+
+### G03. Correction to #822 G08
+
+**Verified.** #822 G08 at commit `e37cab1e148b5587cba1cb41b7f3c08a948e56f8` (line 151 of its file) says: “The technique-remap byte at `0x1420d681f` clears on an eligible path and sets when a secondary object at `+0x78` exists.” The quoted address is a virtual address. Its RVA is `0x20d681f`. The first clause holds. The second clause conflates the early branch with the common exit. The earlier sentence does not say “early” or “only”.
+
+**What is right.** Accumulation modes 25 and 26 share one handler. Mode dispatch indexes the table at `0x33d4b20` (`0x151eec9–0x151eee3`). Registration sets slots 25 and 26 to `0x1520830` (`0x14ead08–0x14ead16`). If the entry field at `+0x10` is null, the guard fails and the handler leaves the byte unchanged. After the guard (`0x152083a–0x152084a`), the handler clears the byte at `0x152084a`. The early restore to one at `0x15208a9` requires a nonnull secondary object and bit 0 set in that object's byte at `+0x26` (`0x152088c–0x15208a4`). A nonnull secondary object with that bit clear takes the alternate call at `0x15208bb–0x15208d4`. It then restores the byte at `0x15208d9`. A null secondary pointer reaches the same restore directly. Thus all eligible normal returns set the byte to one, whatever the secondary pointer. A secondary object alone does not select the early restore. The paths differ in branch and timing. The write RVAs are `0x152084a`, `0x15208a9` and `0x15208d9`.
+
+**Scope of the correction.** The correction applies to the #822 G08 sentence and to the restore timing in modes 25 and 26. It does not change other #822 facts. Normal mode 20 is registered separately (`0x14eacad–0x14eacb4`) and takes the path `0x15205c0 → 0x15215b0` if its entry field exists. The image initializes the byte at `0x20d681f` to one. The technique 18-to-9 remap described in #822 G01 still applies when the byte is zero (`0x1547d43–0x1547d58`). The separate technique 19 pixel gate is the byte at `0x20d681e` (G02). **Unverified.** Which live draws use either accumulation mode, and which keys they resolve while the byte is zero.
+
+**Confidence: high** for the branch and restore order. A draw trace inside mode 25 or 26 would show which keys it resolves before the restore. **Verified within scope.** The technique 19 shader weight and Z-lane gate agree with #946 G02 and G08. The map projection route extends #822. The fog result from #812 supplies context for the weather limitation below.
+
+## Interpretation and alternatives
+
+**Inferred.** For a stock exterior edge where the settled updater has run and both draws occur, the expected pairing is near technique 19 and terrain LOD PS `12000005`. In the settled grid, cells on the inner cross select technique 8. While the transition byte is set, technique 19 covers every eligible cell except the center cell. The radial ramp changes weight within a technique 19 draw. The grid mask determines which eligible near chunks receive that technique.
+
+**Verified.** The ordinary LOD key changes when the eligible property receives bit 55. Modes 25 and 26 can independently remap noise technique 18 to technique 9. A different `uGridsToLoad` skips the full-grid updater, and absent effective terrain LOD initializes the near property without bit 46. These conditions describe the checked branches.
+
+## Negative results and limitations
+
+**Verified within the checked direct paths.** No matched setting name for a separate terrain blend distance, terrain LOD blend toggle, or object LOD in shadow toggle was found in the enumerated named setting fields and the five shipped templates. Weather affects the shared fog inputs in #812. The traced near technique bit and LOD projected bit have no direct weather read. Other worldspace and cell flags can affect terrain admission or supply. This finding covers the effective parent-world manager, loaded-grid state and the cited property writes.
+
+**Unverified.** Indirect writers or setting effects outside the traced paths, current runtime settings, live seam keys, state at arbitrary streaming boundaries, draw order and the visible seam. No live draw capture was made. Static only. These values and rules need boundary review before any transfer.
+
+## Independent review (2026-11-22 CST, 2026-11-23 UTC)
+
+Reviewer: `gpt-6.2-sol` through Codex, high effort, fresh context, separate run. The reviewer did not author the finding. Date: 2026-11-22 CST, which is 2026-11-23 UTC.
+Source reviewed: the draft of this finding (SHA-256 above), against the pinned image `sse-steam-1-7-104` (measured SHA-256 equals the pin in [builds/target.json](../builds/target.json)), the shipped shader and asset archives, the five shipped INI templates, and the earlier reviewed findings. Exposure of the review: mixed (retail executable, shipped assets, generated names, the draft). The independent reviewer also read the public merged downstream tree to scope the G03 correction; this finding makes no claim about that code. Method: static reading of the pinned native listing, the installed shader and asset archives and the INI templates. The reviewer sealed its three conclusions before it opened the author's handoff. This is a static finding review. It is not match evidence for any function. It does not decide transfer eligibility ([docs/clean-room.md](../docs/clean-room.md)).
+
+The observations above already include the corrected text. A Claude Sonnet 5.5 worker only assembled this file from the corrected text and drafted nothing. The draft contains no apparent recovered source, disassembly byte sequence or private machine path. The formulas describe data and arithmetic. The RVAs and shader constants identify the evidence.
+
+| Group | Verdict | One-line status |
+|---|---|---|
+| G01. Near and LOD technique selection | Corrected | The transient exception is the center cell. The settled cross and the conditional LOD keys hold. The map flag conditions are explicit. |
+| G02. Technique 19 inputs | Corrected | The core sources hold. The ramp uses the decoded slope. The endpoint arithmetic, atlas-cell center and loaded-grid center are distinct. |
+| G03. Correction to #822 G08 | Corrected | The branch is right. The earlier sentence is cited exactly. The correction is limited to the restore timing in eligible modes 25 and 26. |
+
+Summary: 0 confirmed, 3 corrected, 0 rejected.
+
+## Reviewer and outcome
+
+Reviewed independently on 2026-11-22 CST (2026-11-23 UTC) by `gpt-6.2-sol` (Codex, high effort, fresh context), separate from the author. Outcome: 0 confirmed, 3 corrected (G01, G02, G03), 0 rejected. Static only. A review verdict is not match evidence, and transfer eligibility is not decided. Transfer status: UNREVIEWED. Unverified:
+
+- Live draw keys: which near key and which LOD key draw at a given seam, and the elapsed time before the settled mask applies in a frame. The stock seam pairing (near technique 19 with LOD PS `12000005`) is inferred from static selectors.
+- Bound texture views: the resources bound when the overlay or noise update is skipped, and the views used at draw time.
+- The invocation conditions of the separate single-cell updater, and the full grid pattern on grid sizes other than 5.
+- Indirect writers of the pixel gate byte, the live interpolation and gate values, and live draw keys during accumulation modes 25 and 26.
+- Pixel transition locations, draw order and the visible seam. No live draw capture was made.
