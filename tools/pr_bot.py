@@ -456,7 +456,18 @@ HOST_FAILURE_COMMENT = ('A verifier host did not complete the comparison of this
                         'The bot retries with a growing delay, and re-checks at once on a new push.')
 
 
-def settled(state):
+def conflict_cleared(state, pr):
+    """True when a head left done only because it conflicted with main now merges cleanly, per `pr`'s `mergeable`.
+
+    A head done for any other reason (merged, rejected on content, blocked on the contributor) never qualifies, and
+    a PR whose mergeability is UNKNOWN or still CONFLICTING waits. `pr` is the listed or freshly viewed PR, so this
+    costs no query of its own.
+    """
+    return (bool(pr) and pr.get('mergeable') == 'MERGEABLE' and bool(state.get('done')) and not state.get('merged')
+            and (state.get('summary') or {}).get('blocked') == 'conflict')
+
+
+def settled(state, pr=None):
     """True when a head needs no further look from the poll.
 
     A head that ended blocked on `record` (the bot or its host could not write a record for an accepted
@@ -464,6 +475,8 @@ def settled(state):
     and the circuit breaker bounds the tries.
     """
     if not state.get('done'):
+        return False
+    if conflict_cleared(state, pr):
         return False
     return state.get('merged') or (state.get('summary') or {}).get('blocked') != 'record'
 
@@ -2409,7 +2422,7 @@ class Bot:
     def warm(self, pr):
         """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
         number, head = pr['number'], pr['headRefOid']
-        if settled(State(self.work / 'state', number, head)) or pr.get('mergeable') == 'CONFLICTING':
+        if settled(State(self.work / 'state', number, head), pr) or pr.get('mergeable') == 'CONFLICTING':
             return
         if self.latest_hash_run(head):
             return
@@ -2665,8 +2678,14 @@ class Bot:
     def _process(self, pr, base=None):
         number, head = pr['number'], pr['headRefOid']
         state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
-        if settled(state):
+        if settled(state, pr):
             return state.data
+        if conflict_cleared(state, pr):
+            # The conflict answer is out of date: drop it, and its comment mark so the new outcome replaces the
+            # sticky "conflicts with main" text. A crash from here on leaves the head not done, so it is retried.
+            state.drop('done')
+            state.drop('commented')
+            state.drop('summary')
         if pr.get('mergeable') == 'CONFLICTING' and not state.get('merged'):
             return self.conflicting(pr, state)
         started = time.time()
@@ -4372,7 +4391,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 ledger = state.get('failure') or {}
                 # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
                 # bot will not look at, and queueing it costs a `gh pr view` per tick.
-                if (pr['number'] in inflight or settled(state) or ledger.get('next', 0) > now
+                if (pr['number'] in inflight or settled(state, pr) or ledger.get('next', 0) > now
                         or bot.already_rejected(pr) or bot.bot_error_blocked(pr)):
                     continue
                 try:

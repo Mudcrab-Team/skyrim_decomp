@@ -639,6 +639,63 @@ class ConflictLaneTests(Replay):
         self.assertTrue(self.merged(7) and self.merged(8))
 
 
+class ConflictRecheckTests(Replay):
+    def conflicted_head(self):
+        """A head the bot answered with the conflict comment, as an earlier tick left it."""
+        self.w.make_pr(9, {unit_path(0x3000): unit(0x3000)}, author='carol')
+        head = self.w.github.prs[9]['head']
+        self.w.github.prs[9]['mergeable'] = 'CONFLICTING'
+        body = pr_bot.sticky_body(head, pr_bot.CONFLICT_COMMENT)
+        self.w.github.comments[9] = [dict(id=900, login=pr_bot.OWNER, body=body)]
+        state = self.w.state(self.bot, 9)
+        state.set('summary', dict(pr=9, head=head, blocked='conflict', merge=False, verdicts={}))
+        state.set('commented', True)
+        state.set('done', True)
+
+    def test_a_conflict_done_head_is_looked_at_again_once_github_says_mergeable(self):
+        self.conflicted_head()
+        head = self.w.github.prs[9]['head']
+        self.w.poll(self.bot)  # still conflicting: untouched
+        self.assertIn('conflicts with main', self.w.sticky(9)[0])
+        self.w.github.prs[9]['mergeable'] = 'MERGEABLE'
+        log = self.w.poll(self.bot)
+        self.assertEqual(self.w.github.prs[9]['head'], head)
+        self.assertTrue(self.merged(9), log)
+        self.assertEqual(len(self.w.sticky(9)), 1)
+        self.assertNotIn('conflicts with main', self.w.sticky(9)[0])
+
+    def test_a_still_conflicting_head_is_not_reprocessed(self):
+        self.conflicted_head()
+        before = len(self.w.github.calls)
+        self.w.poll(self.bot, times=2)
+        self.assertEqual([c for c in self.w.github.calls[before:] if c[:2] == ['pr', 'view']], [])
+
+    def test_a_content_rejected_head_stays_settled_when_mergeable(self):
+        self.w.make_pr(7, {unit_path(0x1000): 'int Nothing() { return 0; }\n'})
+        self.w.poll(self.bot)
+        state = self.w.state(self.bot, 7)
+        self.assertTrue(state.get('done') or state.get('rejected'))
+        self.assertFalse(pr_bot.conflict_cleared(state, dict(mergeable='MERGEABLE')))
+        before = len(self.w.github.calls)
+        self.w.poll(self.bot, times=2)
+        self.assertEqual([c for c in self.w.github.calls[before:] if c[:2] == ['pr', 'view']], [])
+
+    def test_only_a_done_unmerged_conflict_state_qualifies(self):
+        mergeable = dict(mergeable='MERGEABLE')
+        state = self.w.state(self.bot, 11, 'a' * 40)
+        state.set('summary', dict(blocked='conflict'))
+        self.assertFalse(pr_bot.conflict_cleared(state, mergeable))  # not done yet
+        state.set('done', True)
+        self.assertTrue(pr_bot.conflict_cleared(state, mergeable))
+        self.assertFalse(pr_bot.conflict_cleared(state, dict(mergeable='UNKNOWN')))
+        self.assertFalse(pr_bot.conflict_cleared(state, dict(mergeable='CONFLICTING')))
+        state.set('summary', dict(blocked='stale'))
+        self.assertFalse(pr_bot.conflict_cleared(state, mergeable))
+        state.set('summary', dict(blocked='conflict'))
+        state.set('merged', True)
+        self.assertFalse(pr_bot.conflict_cleared(state, mergeable))
+
+
 class ExportGroupTests(unittest.TestCase):
     def test_ending_the_bot_kills_a_running_export_and_its_children(self):
         marker = Path(tempfile.mkdtemp()) / 'child.pid'
