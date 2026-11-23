@@ -2135,6 +2135,16 @@ class Bot:
         except (OSError, ValueError, KeyError, TypeError, AttributeError):
             return False
 
+    def record_is_current(self, rva):
+        """True when the function's accepted record already binds the unit text now on main."""
+        try:
+            inventory = json.loads((self.tree / 'data/progress.json').read_text())
+            row = next((fn for fn in inventory['functions'] if fn['rva'] == rva and fn.get('report')), None)
+            unit = json.loads((self.tree / row['report']).read_text())['source']['compiled']
+        except (OSError, ValueError, KeyError, TypeError):
+            return False
+        return self.digest_equals_record(rva, unit, inventory)
+
     def carried_records(self, tag, rvas, build_id, reasons=None):
         """Records for carried functions, from the accepted record of each; {rva} that could not be carried."""
         out, failed, reasons = self.work / 'records' / tag, set(), reasons or {}
@@ -3998,13 +4008,19 @@ class Bot:
         for r in rvas:
             argv += ['--rva', hex(r)]
         done = self.run(argv, cwd=self.tree, timeout=1800, check=False)
+        # A digest-carried function keeps its accepted record unchanged, so record.py has nothing to write for it
+        # and says "already matched"; that is not a refusal when the record still binds the unit text on main.
+        left = {r: why for r, why in refused_by_record(done.stdout).items()
+                if not (why == 'already matched' and self.record_is_current(int(r, 16)))}
+        if done.returncode and not left and refused_by_record(done.stdout):
+            state.set('recorded', True)
+            return
         if done.returncode:
             # record.py prints which function it refused and why; without it the log only says "python3.13 failed".
             tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
             raise Stop(f'record step failed after the merge: {tail[0][:300]}')
         # record.py exits 0 when any function was recorded; one it refused is reported only in its output and
         # would otherwise stay stale on main while the PR is marked recorded.
-        left = refused_by_record(done.stdout)
         if left:
             raise Stop(f'record step refused {len(left)} function(s) after the merge: '
                        + ', '.join(f'{r}: {why}' for r, why in sorted(left.items())[:3])[:300])
