@@ -17,6 +17,7 @@ task directory. Only these files go to a verifier host: the comparator and its h
 toolchain pin, the target manifest, the unit's include closure, the recipe and the symbol map.
 """
 import base64
+import fcntl
 import hashlib
 import json
 import os
@@ -43,7 +44,7 @@ try:
 except ImportError:
     cost_hooks = None
 
-TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
+TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py',
               'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
 TASK_ID = re.compile(r'[a-z0-9][a-z0-9.-]{0,55}')
 PRIVATE_SYMBOLS = 'task/symbols.json'
@@ -256,12 +257,15 @@ def compiler_include_problem(task, repo=REPO):
 
 def unit_spec(task, files, host):
     schema = 2 if any('internal_selector' in f for f in task['functions']) else 1
-    return {'unit_spec_schema': schema, 'task_id': task['task_id'], 'host': host, 'build_id': task['build_id'],
+    spec = {'unit_spec_schema': schema, 'task_id': task['task_id'], 'host': host, 'build_id': task['build_id'],
             'compiled': task['compiled'], 'recipe': task['recipe'],
             'symbols': task['symbols_repo'] or PRIVATE_SYMBOLS,
             'functions': [{k: f[k] for k in ('rva', 'size', 'symbol', 'internal_selector') if k in f}
                           for f in task['functions']],
             'files': {name: sha256_file(path) for name, path in sorted(files.items())}}
+    if task.get('pins'):
+        spec['pins'] = task['pins']
+    return spec
 
 
 def changed_files(spec_files, state, machine, remote_dir):
@@ -464,10 +468,6 @@ def function_line(fn, fdir, obj):
         parts.append(f'unwind {cov.get("unwind")}')
     if reason == 'function-symbol-missing':
         parts.append(f'(object does not define {fn["symbol"]})')
-    elif reason == 'comparator-error':
-        # The error record's detail is the comparator's own masked complaint (no report was written).
-        last = [line for line in detail.splitlines() if line.strip()][-1:] or ['no detail']
-        parts.append(f'(the comparator stopped before a verdict: {last[0].strip()[:160]})')
     elif reason == 'unresolved-symbol':
         # The comparator's detail names the symbol only; it holds no bytes.
         parts.append(f'({detail})')
@@ -492,9 +492,6 @@ def lock(task_dir):
     path = Path(task_dir) / '.attempt' / 'lock'
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = open(path, 'w')
-    # Imported here: the module is also loaded by Windows CI tools that never take the lock, and
-    # fcntl does not exist there.
-    import fcntl
     try:
         fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:

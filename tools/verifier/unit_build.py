@@ -54,8 +54,7 @@ import time
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-from source_digest import include_closure, recipe_flag_problem  # noqa: E402
-from digest_v2 import tu_digest  # noqa: E402
+from source_digest import include_closure, recipe_flag_problem, tu_digest  # noqa: E402
 
 SPEC_SCHEMA = 1
 # Variables that change include search or add compiler flags; the wrapper sets INCLUDE itself.
@@ -64,6 +63,7 @@ SHOW_INCLUDES = '/showIncludes'
 NOTE_PREFIX = 'Note: including file:'
 KEEP_IN_COPY = {'.unit', '.local'}
 EXIT_IMAGE, EXIT_SYNC, EXIT_TOOLCHAIN = 42, 43, 44
+PINS_FILE = 'tools/verifier/pinned.sha256'
 LOADERS = ('wine', 'native')
 COMPILE_TIMEOUT = 180
 # The include directories the msvc-wine wrapper (msvcenv.sh) puts in INCLUDE, in its order; a native
@@ -421,7 +421,7 @@ def boot_id():
     return None
 
 
-def prepare_host(repo, msvc, image, wrapper, expected_image, marker_dir=None, use_cache=True):
+def prepare_host(repo, msvc, image, wrapper, expected_image, marker_dir=None, use_cache=True, pins_file=PINS_FILE):
     """Toolchain and image checks, once per boot (a resume or a fork is a new boot), or on every
     call when `use_cache` is False.
 
@@ -429,7 +429,7 @@ def prepare_host(repo, msvc, image, wrapper, expected_image, marker_dir=None, us
     which equal the pins whenever the check passed.
     """
     marker_dir = marker_dir or os.environ.get('SR_PREP_MARKER_DIR', '/dev/shm')
-    pins = (repo / 'tools/verifier/pinned.sha256').read_text()
+    pins = (repo / pins_file).read_text()
     boot = boot_id()
     key = hashlib.sha256(f'{boot}\n{pins}\n{wrapper["BINDIR"]}\n{image}\n{expected_image}'.encode()).hexdigest()
     marker = Path(marker_dir) / f'sr-verifier-prep-{key[:16]}'
@@ -447,7 +447,7 @@ def prepare_host(repo, msvc, image, wrapper, expected_image, marker_dir=None, us
         binary = Path(wrapper['BINDIR']) / name
         hashes[name] = sha256_file(binary) if binary.is_file() else None
         if hashes[name] != digest:
-            raise UnitError(EXIT_TOOLCHAIN, 'toolchain-mismatch', f'{name} does not match pinned.sha256')
+            raise UnitError(EXIT_TOOLCHAIN, 'toolchain-mismatch', f'{name} does not match {pins_file}')
     image = Path(image)
     if not image.is_file():
         image.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -530,8 +530,13 @@ def run(args):
     if target.get('build_id') != spec['build_id']:
         raise UnitError(4, 'invalid-spec', 'spec build id differs from builds/target.json')
     spec['image_sha256'] = target['image_sha256']
+    # A compiler-build sweep names the pin file of the toolset it compiles with; every other unit
+    # uses the project's pinned compiler.
+    pins_file = spec.get('pins', PINS_FILE)
+    if pins_file != PINS_FILE and not re.fullmatch(r'tools/verifier/pinned/[a-z0-9][a-z0-9.-]*\.sha256', pins_file):
+        raise UnitError(4, 'invalid-spec', 'pins must be tools/verifier/pinned/<toolset>.sha256')
     prep, compiler_hashes = prepare_host(repo, msvc, args.image, wrapper, target['image_sha256'],
-                                         use_cache=not spec.get('fresh_prep'))
+                                         use_cache=not spec.get('fresh_prep'), pins_file=pins_file)
     lap('prep')
     host = host_facts(loader, compiler_hashes, prep)
     print(f'host {spec["host"]} prep {prep} {host["os"]} {loader}')
