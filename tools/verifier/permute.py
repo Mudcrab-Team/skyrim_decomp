@@ -297,7 +297,6 @@ def emit(block, tail=''):
 
 def find_body(text, qualified):
     """(start, end) of the `{ ... }` body of the definition of `qualified` (e.g. "TESFile::Seek")."""
-    parts = qualified.split('::')
     toks, _ = lex(text)
     offsets, pos = [], 0
     for t in toks:
@@ -305,10 +304,8 @@ def find_body(text, qualified):
         offsets.append(pos)
         pos += len(t.text)
     names = [t.text for t in toks]
-    want = []
-    for p in parts:
-        want += [p, '::']
-    want = want[:-1]
+    # Lexed, so a destructor name (`~` is its own token) matches as written in the source.
+    want = [x.text for x in lex(qualified)[0]]
     hits = []
     for i in range(len(toks) - len(want)):
         if names[i:i + len(want)] != want or (i and names[i - 1] == '::'):

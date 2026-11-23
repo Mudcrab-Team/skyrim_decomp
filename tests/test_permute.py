@@ -168,6 +168,11 @@ class Mutations(unittest.TestCase):
         self.assertTrue(permute.m_zero_form(tree, random.Random(0)))
         self.assertIn('const int zero_ = 0;', ' '.join(u.body_of(tree).split()))
 
+    def test_find_body_matches_a_destructor(self):
+        text = 'Toy::Toy() = default;\n\nToy::~Toy()\n{\n    Clear();\n}\n'
+        start, end = permute.find_body(text, 'Toy::~Toy')
+        self.assertEqual(text[start:end].strip(), '{\n    Clear();\n}')
+
     def test_if_invert(self):
         out = apply_one('if-invert')
         self.assertIn('if (!(a_node->flags & 4))', ' '.join(out.split()))
