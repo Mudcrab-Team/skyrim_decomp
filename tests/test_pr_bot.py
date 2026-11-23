@@ -1506,6 +1506,25 @@ class Host1Tests(unittest.TestCase):
         with self.assertRaisesRegex(pr_bot.Stop, 'left no result'):
             self.host1()
 
+    def test_a_run_cancelled_by_the_probe_is_waited_past_not_a_stop(self):
+        self.bot.probe_hash_run = lambda number, head, force=False: True
+        self.bot.approve_pending = lambda head: None
+        self.job.update(id=1, started_at='2000-01-01T00:00:00Z')
+        self.files.pop('hash-result.json')
+        cancelled = dict(self.job, id=2, conclusion='cancelled', started_at='2999-01-01T00:00:00Z')
+        later = dict(self.job, id=3, conclusion='success', started_at='2999-06-01T00:00:00Z')
+        stale = self.job
+        calls = []
+
+        def on_sleep(seconds):
+            calls.append(seconds)
+            self.jobs = [stale, cancelled] if len(calls) == 1 else [stale, cancelled, later]
+            if len(calls) > 1:
+                self.files['hash-result.json'] = {'0x10': 'pass', '0x20': 'pass'}
+        self.wait_with(on_sleep)
+        got, _ = self.host1()
+        self.assertEqual(got, {0x10: 'pass', 0x20: 'pass'})
+
     def test_a_listed_artifact_that_will_not_download_is_not_a_run_without_a_result(self):
         self.artifacts = [{'name': 'hash-result', 'expired': False}]
         self.files.pop('hash-result.json')

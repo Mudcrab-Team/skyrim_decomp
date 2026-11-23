@@ -2321,7 +2321,11 @@ class Bot:
                 # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 # A stale run that finished before the probe was requested says nothing about the probe's run,
                 # which has yet to start or finish; waiting for it is the point of the probe.
-                elif probed_at is not None and (run.get('started_at') or '') >= probed_at:
+                elif (probed_at is not None and (run.get('started_at') or '') >= probed_at
+                      and run.get('conclusion') != 'cancelled'):
+                    # A cancelled run was superseded (the probe's own draft/ready toggle or a newer push cancels
+                    # the run in flight through the workflow's concurrency group); it says nothing about the
+                    # run that replaced it, so the wait goes on.
                     raise Stop('hash check left no result')
                 elif probed_at is None:
                     probed_at = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
