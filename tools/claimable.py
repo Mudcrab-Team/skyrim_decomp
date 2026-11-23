@@ -31,7 +31,7 @@ def sharded_json(root, path, key):
     data = json.loads((root / path).read_text())
     if 'parts' not in data:
         return data
-    rows = [] if key == 'functions' else {}
+    rows = []
     for part in data.pop('parts'):
         blob = (root / part['path']).read_bytes()
         if hashlib.sha256(blob).hexdigest() != part['sha256']:
