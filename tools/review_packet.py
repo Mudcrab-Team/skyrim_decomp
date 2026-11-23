@@ -43,6 +43,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check import (ROOT, STALE_UNIT, _json_or_none, acceptance_staleness,  # noqa: E402
                    record_code_section, review_record_path)
+import record_store
 from source_digest import include_closure  # noqa: E402
 from digest_v2 import DIGEST_METHODS, review_binds, tu_digest, unit_digest  # noqa: E402
 

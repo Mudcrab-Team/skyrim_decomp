@@ -14,6 +14,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
+import record_store
 import contrib
 from compare import check_relocation_layout, code_section_sha256, find_function
 from pecoff import CoffObject, Reject
@@ -49,7 +50,7 @@ def reference(root, rva):
     fn = next(f for f in inventory['functions'] if f['rva'] == rva)
     if fn['status'] != 'matched':
         raise ValueError('self-test reference is no longer matched')
-    record = json.loads((root / fn['report']).read_text())
+    record = json.loads(record_store.read_text(root / fn['report']))
     source = record['source']
     closure = include_closure(root, source['compiled'])
     if source['digest'] != tu_digest(root, closure, source['digest_method']) or sorted(source['translation_unit']) != sorted(closure):

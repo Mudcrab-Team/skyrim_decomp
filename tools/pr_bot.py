@@ -69,6 +69,7 @@ import traceback
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cookbook_notes  # noqa: E402
+import record_store  # noqa: E402
 import drafter_claim  # noqa: E402
 import header_check  # noqa: E402
 from contrib_publication import MAX_FUNCTIONS  # noqa: E402
@@ -1946,7 +1947,7 @@ class Bot:
             if fn['rva'] != rva or not fn.get('report'):
                 continue
             try:
-                record = json.loads((tree / fn['report']).read_text())
+                record = json.loads(record_store.read_text((tree / fn['report'])))
                 report = record['runs'][0]['report']
             except (OSError, ValueError, KeyError, IndexError, TypeError):
                 return None
@@ -2164,7 +2165,7 @@ class Bot:
             if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in named or not fn.get('report'):
                 continue
             try:
-                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+                source = json.loads(record_store.read_text((tree / fn['report']))).get('source') or {}
             except (OSError, ValueError):
                 continue
             unit = source.get('compiled')
@@ -2193,7 +2194,7 @@ class Bot:
             if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in present or not fn.get('report'):
                 continue
             try:
-                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+                source = json.loads(record_store.read_text((tree / fn['report']))).get('source') or {}
             except (OSError, ValueError):
                 continue
             unit = source.get('compiled')
@@ -2318,7 +2319,7 @@ class Bot:
         from source_digest import include_closure
         row = next((fn for fn in inventory['functions'] if fn['rva'] == rva and fn.get('report')), None)
         try:
-            source = json.loads((self.tree / row['report']).read_text()).get('source') or {}
+            source = json.loads(record_store.read_text((self.tree / row['report']))).get('source') or {}
             closure = sorted(include_closure(self.tree, unit))
             return (source.get('digest_method') == 'tu-sha256-v2' and source.get('compiled') == unit
                     and sorted(source.get('translation_unit') or ()) == closure
@@ -2331,7 +2332,7 @@ class Bot:
         try:
             inventory = json.loads((self.tree / 'data/progress.json').read_text())
             row = next((fn for fn in inventory['functions'] if fn['rva'] == rva and fn.get('report')), None)
-            unit = json.loads((self.tree / row['report']).read_text())['source']['compiled']
+            unit = json.loads(record_store.read_text((self.tree / row['report'])))['source']['compiled']
         except (OSError, ValueError, KeyError, TypeError):
             return False
         return self.digest_equals_record(rva, unit, inventory)
@@ -2715,7 +2716,7 @@ class Bot:
         """The task's info with its unit symbol map on disk, binding it again when the map is gone; None if bind fails."""
         symbols = str(info.get('symbols', ''))
         # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
-        if symbols.startswith('reports/') and (self.tree / symbols).is_file():
+        if symbols.startswith('reports/') and record_store.is_file(self.tree / symbols):
             return info
         # The record must point at a public symbol map; bind freezes this unit's names into an
         # immutable one without touching the shared map.
@@ -4370,7 +4371,7 @@ class Bot:
         """Whether the function's review record on the checked-out main came from this task."""
         path = self.tree / 'reports' / build / f'0x{rva:x}.review.json'
         try:
-            return json.loads(path.read_text()).get('review_task_id') == task_id
+            return json.loads(record_store.read_text(path)).get('review_task_id') == task_id
         except (OSError, ValueError):
             return False
 

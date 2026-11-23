@@ -24,6 +24,7 @@ from lint_reconstruction import lint_tree
 import cost_ledger
 import revision_cache
 from validation_reads import read_bytes, read_text, read_once
+import record_store
 import symbol_map as symbol_maps
 import sparse_checkouts as sparse
 import compare_internal
@@ -131,7 +132,7 @@ def public_path(name, prefixes, what, root):
     path = Path(name)
     require(not path.is_absolute() and '..' not in path.parts and path.parts[0] in prefixes,
             f'Match record: {what} must be under {"/".join(sorted(prefixes))}/')
-    require((root / path).is_file(), f'Match record: {what} {name} does not exist')
+    require(record_store.is_file(root / path), f'Match record: {what} {name} does not exist')
     return path.as_posix()
 
 
@@ -470,7 +471,7 @@ def validate_review(fn, record, root=None):
     check_internal_admission(record)
     root = ROOT if root is None else root
     name = review_record_path(fn)
-    require((root / name).is_file(), f'Review record: {name} is missing; matched needs a Reviewer approve')
+    require(record_store.is_file(root / name), f'Review record: {name} is missing; matched needs a Reviewer approve')
     try:
         review = json.loads(read_text(root / name))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -814,7 +815,7 @@ def validate(data, target, root=None, stale_ok=False):
         path = Path(fn['evidence'])
         require(not path.is_absolute() and '..' not in path.parts and path.parts[0] in {'findings', 'reports'},
                 'Evidence must reference public findings or reports')
-        require(((ROOT if root is None else root) / path).is_file(), 'Evidence does not exist')
+        require(record_store.is_file((ROOT if root is None else root) / path), 'Evidence does not exist')
         heavy.append(fn)
     # Units share headers and most entries share a unit, so resolving include closures once per
     # validation (not once per entry, per worker) is what keeps a full-inventory pass tolerable.
@@ -827,8 +828,8 @@ def validate(data, target, root=None, stale_ok=False):
             'Overlapping function ranges')
     matched = {review_record_path(fn) for fn in data['functions'] if fn['status'] == 'matched'}
     reports = (ROOT if root is None else root) / 'reports'
-    for path in sorted(reports.glob('*/*.review.json')) if reports.is_dir() else []:
-        name = path.relative_to(reports.parent).as_posix()
+    for name in [f'reports/{b.name}/{n}' for b in record_store.build_dirs(reports.parent)
+                 for n in record_store.names(b, 'review')]:
         # A leftover approval would read as acceptance of an entry the inventory does not accept.
         require(name in matched, f'Review record: {name} belongs to no matched inventory entry')
     tolerated = (lambda _: True) if stale_ok is True else (lambda i: bool(stale_ok) and i in stale_ok)
@@ -838,7 +839,7 @@ def validate(data, target, root=None, stale_ok=False):
     for path in sorted(reports.glob('*/*.history.json')) if reports.is_dir() else []:
         name = path.relative_to(reports.parent).as_posix()
         map_name = name[:-len('.history.json')] + '.json'
-        require((reports.parent / map_name).is_file(), f'{name}: no symbol map {map_name} beside it')
+        require(record_store.is_file(reports.parent / map_name), f'{name}: no symbol map {map_name} beside it')
         symbol_maps.load_state(reports.parent, map_name)
     import family_review
     family_review.validate_metadata(ROOT if root is None else root)
@@ -1165,10 +1166,24 @@ def check_git(root=ROOT, staged=False, content_revision=None, only=None):
                + revision_cache.policy_digest(root) + repr((terms, workflow_terms)).encode())
     memo = revision_cache.BlobMemo(root, hashlib.sha256(scanner).hexdigest())
 
-    def scan(name, payload, mode):
+    def scan_one(name, payload, mode):
         check_anonymity(name, payload, terms)
         check_private_workflow(name, payload, workflow_terms)
         inspect_payload(name, payload, mode)
+
+    def scan(name, payload, mode):
+        if record_store.is_pack_name(name):
+            # A shard is binary, so each record inside is judged as the file it replaces.
+            require(mode in {'100644', '100755'} and len(payload) <= 8 * 1024 * 1024,
+                    f'{name}: invalid record shard')
+            try:
+                entries = record_store.expand_payload(name, payload)
+            except (ValueError, OSError, record_store.lzma.LZMAError) as exc:
+                raise ValueError(f'{name}: unreadable record shard ({exc})') from None
+            for entry_name, entry_text in entries:
+                scan_one(entry_name, entry_text.encode(), mode)
+        else:
+            scan_one(name, payload, mode)
         return hashlib.sha256(payload).hexdigest()
 
     count = 0

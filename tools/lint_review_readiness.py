@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 
+import record_store
 import lint_reconstruction as existing
 
 
@@ -112,7 +113,7 @@ def main(argv=None):
                     raise ValueError(f'{value}: expected exactly one function identity; found {len(matches)}')
                 selected += matches
             for fn in selected:
-                record = json.loads((args.root / fn['report']).read_text())
+                record = json.loads(record_store.read_text(args.root / fn['report']))
                 names += record['source']['translation_unit']
         if not names:
             parser.error('supply files or --functions')

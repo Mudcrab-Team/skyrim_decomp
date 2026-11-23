@@ -15,6 +15,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
+import record_store
 import ci_hash_check as public
 import contrib
 import pdb_types
@@ -210,9 +211,9 @@ def bindings(root):
     inventory = json.loads((root / 'data/progress.json').read_text())
     result = {}
     for fn in inventory['functions']:
-        if not fn.get('report') or not (root / fn['report']).is_file():
+        if not fn.get('report') or not record_store.is_file(root / fn['report']):
             continue
-        record = json.loads((root / fn['report']).read_text())
+        record = json.loads(record_store.read_text(root / fn['report']))
         if not record.get('source', {}).get('compiled') or not record.get('runs'):
             continue
         report = record['runs'][0]['report']

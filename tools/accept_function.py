@@ -67,6 +67,7 @@ from check import (ROOT, LABEL_ONLY, MAX_NAMING_FINDINGS, REVIEW_RECORD_SCHEMA, 
                    REVIEW_SCHEMA_FIELDS, STALE_REVIEW, STALE_UNIT, _json_or_none, acceptance_staleness,
                    is_hash, naming_finding_problem, record_code_section, review_record_path, validate,
                    validate_match, validate_review, check_internal_admission)
+import record_store  # noqa: E402
 from build_index import INDEX, write_index  # noqa: E402
 from check_source_digest import source_digest_cache  # noqa: E402
 from lint_reconstruction import label_grammar_applies, lint_tree  # noqa: E402
@@ -678,7 +679,7 @@ def prepare(root, data, target, index, title, header, block, blob, when, *, carr
         refuse(previous.get('verdict') == 'approve' and previous.get('function_id') == fn['id'],
                f'{review_record_path(fn)} is not an approve for {fn["id"]}')
     else:
-        refuse(not out.exists(), f'{review_record_path(fn)} already exists')
+        refuse(not record_store.exists(out), f'{review_record_path(fn)} already exists')
     if kind == 'full':
         # A full review stands on its own; it carries no link to the approval it replaces.
         return fn, record, review_record(fn, record, header, title, blob, when, 'full', naming)
@@ -710,7 +711,8 @@ def apply(root, data, new, target, prepared, tolerated, when, *, rebuild_index=T
     unchanged_elsewhere(data, new, [i for i, *_ in prepared])
     written = [review_record_path(fn) for _, fn, _, review in prepared if review is not None]
     touched = [PROGRESS, INDEX] + written
-    saved = {name: (root / name).read_bytes() if (root / name).is_file() else None for name in touched}
+    saved = {name: record_store.read_bytes(root / name) if record_store.is_file(root / name) else None
+             for name in touched}
     try:
         for _, fn, _, review in prepared:
             if review is not None:
@@ -1103,10 +1105,10 @@ def revoke(root, build_id, rva, reason, when=None):
     record_path = entry.pop('report', None)
     new['updated_at'] = when.strftime('%Y-%m-%dT%H:%M:%SZ')
     unchanged_elsewhere(data, new, [index])
-    removed = [p for p in (review_record_path(fn), record_path) if p and (root / p).is_file()]
-    saved = {name: (root / name).read_bytes() for name in removed}
+    removed = [p for p in (review_record_path(fn), record_path) if p and record_store.is_file(root / p)]
+    saved = {name: record_store.read_bytes(root / name) for name in removed}
     for name in removed:
-        (root / name).unlink()
+        record_store.remove(root / name)
     try:
         validate(new, target, root)
     except (ValueError, KeyError, TypeError) as exc:

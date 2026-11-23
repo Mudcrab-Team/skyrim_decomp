@@ -37,6 +37,7 @@ from source_digest import include_closure, recipe_flag_problem  # noqa: E402
 import boatctl  # noqa: E402
 import disasm  # noqa: E402
 import vsession  # noqa: E402
+import record_store  # noqa: E402
 import sparse_checkouts as sparse  # noqa: E402
 try:
     import cost_hooks  # noqa: E402  (optional: the cost ledger may not be installed)
@@ -150,6 +151,11 @@ def load_task(task_dir, repo=REPO):
     if public_symbols:
         sparse.ensure(repo, [symbols])
     symbols_path = (Path(repo) / symbols) if public_symbols else (task_dir / symbols)
+    if public_symbols and not symbols_path.is_file() and record_store.is_file(symbols_path):
+        # The compilers and the comparator take a real path, so a packed map is unpacked beside the task.
+        copy = Path(task_dir) / 'symbols-unpacked.json'
+        copy.write_bytes(record_store.read_bytes(symbols_path))
+        symbols_path = copy
     if not symbols_path.is_file():
         raise PipelineError(f'symbol map not found: {symbols_path}')
     functions = []

@@ -15,6 +15,13 @@ a from-scratch comparator re-run) and git history as the audit trail.
 
 ## Layout
 
+- `reports/<build id>/packs/<kind>-<shard>.xz`: the per-function records below, stored as xz shards (match
+  records and Reviewer records by 0x10000 RVA range, unit symbol maps and their histories by the first two
+  digest digits). Each shard maps a record's name to its exact text, so every hash that binds a record
+  still holds. `tools/record_store.py` is the only reader and writer: `dump <path>` prints one record,
+  `unpack` writes them all out as the loose files named below, `pack` folds loose files back in. A loose
+  file with the same name overrides its packed copy; the bot writes shards, and an owner PR may still carry
+  loose records. The publication scan reads inside every shard and judges each record as a file.
 - `reports/<build id>/<rva>.json`: the match record for the function at that RVA, with the RVA
   lowercase hex with `0x`, as in the inventory id. The inventory entry names it in `report`.
 - `reports/<build id>/<rva>.review.json`: the sanitized Reviewer record for that function. It

@@ -9,9 +9,13 @@ import json
 import re
 from pathlib import Path
 import subprocess
+
+import record_store
 import tempfile
 
-PATTERNS = '/*\n!/reports/\n!/site/\n'
+# Record shards are small and stay; every other file under reports/ is fetched on demand, so a
+# worker never writes the maps and families it does not use.
+PATTERNS = '/*\n!/site/\n!/reports/\n/reports/*/packs/\n'
 
 
 def git(root, *args, **kwargs):
@@ -73,22 +77,22 @@ def reports(root, names):
     if not sparse:
         for name in names:
             path = root / name
-            yield name, json.loads(path.read_text()) if path.is_file() else None
+            yield name, json.loads(record_store.read_text(path)) if record_store.is_file(path) else None
         return
     skipped = {row[2:].decode() for row in git(root, 'ls-files', '-v', '-z', '--', 'reports/').split(b'\0')
                if row[:1].upper() == b'S'}
     # A file avoids filling stdin while cat-file is blocked on its output pipe.
     with tempfile.TemporaryFile() as requests:
         requests.write(''.join(':' + n + '\n' for n in names
-                               if n in skipped and not (root / n).is_file()).encode())
+                               if n in skipped and not record_store.is_file(root / n)).encode())
         requests.seek(0)
         with subprocess.Popen(['git', 'cat-file', '--batch'], cwd=root, stdin=requests,
                               stdout=subprocess.PIPE) as proc:
             try:
                 for name in names:
                     path = root / name
-                    if path.is_file():
-                        yield name, json.loads(path.read_text())
+                    if record_store.is_file(path):
+                        yield name, json.loads(record_store.read_text(path))
                     elif name in skipped:
                         header = proc.stdout.readline().split()
                         if header[-1:] == [b'missing']:
@@ -110,6 +114,9 @@ def reports(root, names):
 def ensure(root, names):
     """Materialize selected reports and referenced maps, histories and family manifests."""
     if not active(root):
+        return
+    skipped = git(root, 'ls-files', '-v', '-z', '--', 'reports/').split(b'\0')
+    if not any(row[:1].upper() == b'S' for row in skipped):
         return
     seen, pending = set(), set(names)
     def references(value):

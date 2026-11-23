@@ -9,6 +9,8 @@ import io
 from pathlib import Path
 import stat
 
+import record_store
+
 _READS = ContextVar('validation_reads', default=None)
 
 
@@ -30,6 +32,9 @@ def identity(path):
 
 def read_bytes(path):
     path = Path(path).absolute()
+    if not path.is_file() and record_store.split(path) is not None:
+        # Packed records are immutable inside a shard, so no stat identity is needed.
+        return record_store.read_bytes(path)
     cache = _READS.get()
     if cache is None:
         return path.read_bytes()

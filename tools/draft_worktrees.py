@@ -13,6 +13,7 @@ import sys
 import tempfile
 import uuid
 
+import record_store
 from source_digest import include_closure
 
 from digest_v2 import tu_digest
@@ -27,7 +28,7 @@ def git(root, *args):
 
 
 def read(path, default=None):
-    return json.loads(path.read_text()) if path.is_file() else default
+    return json.loads(record_store.read_text(path)) if record_store.is_file(path) else default
 
 
 def save(path, value):

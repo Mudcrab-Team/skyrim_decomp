@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 
+import record_store
 import build_model_trend as attribution
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,7 +57,7 @@ def standings(root, data):
         if fn['status'] != 'matched' or identity in seen:
             continue
         seen.add(identity)
-        record = json.loads((root / fn['report']).read_text())
+        record = json.loads(record_store.read_text(root / fn['report']))
         for name in credit(fn, record, root):
             totals[name]['functions'] += 1
             totals[name]['bytes'] += fn['size']

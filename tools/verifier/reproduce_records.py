@@ -28,6 +28,7 @@ import uuid
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import pipeline  # noqa: E402
+import record_store  # noqa: E402
 import runners  # noqa: E402
 from digest_v2 import tu_digest  # noqa: E402  (pipeline puts tools/ on the path)
 
@@ -37,10 +38,9 @@ REPO = pipeline.REPO
 def records(repo=REPO):
     target = json.loads((Path(repo) / 'builds/target.json').read_text())
     out = []
-    for path in sorted((Path(repo) / 'reports' / target['build_id']).glob('0x*.json')):
-        if path.name.endswith('.review.json'):
-            continue
-        rec = json.loads(path.read_text())
+    build = Path(repo) / 'reports' / target['build_id']
+    for name in record_store.names(build, 'match'):
+        rec = json.loads(record_store.read_text(build / name))
         if 'match_record_schema' in rec:
             out.append(rec)
     return target, out
@@ -68,8 +68,14 @@ def units(recs, target, matched, root):
             fn = rec['runs'][0]['report']['function']
             functions.append({'rva': fn['rva'], 'size': fn['size'], 'symbol': fn['symbol']})
             by_rva[fn['rva']] = rec
+        local = REPO / symbols
+        if not local.is_file():
+            # Compilers take a real path, so a packed map is written out beside the run.
+            local = Path(root) / f'{tid}-symbols.json'
+            local.parent.mkdir(parents=True, exist_ok=True)
+            local.write_bytes(record_store.read_bytes(REPO / symbols))
         task = {'dir': Path(root) / tid, 'task_id': tid, 'build_id': target['build_id'], 'compiled': compiled,
-                'recipe': recipe, 'symbols_local': REPO / symbols, 'symbols_repo': symbols,
+                'recipe': recipe, 'symbols_local': local, 'symbols_repo': symbols,
                 'functions': sorted(functions, key=lambda f: f['rva']), 'max_attempts': None, 'record_notes': []}
         out.append((task, by_rva))
     return out

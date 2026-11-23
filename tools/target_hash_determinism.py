@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import sys
 
+import record_store
 import ci_hash_check as public
 import compare
 import compare_runtime
@@ -34,7 +35,7 @@ def audit(root, image_path, msvc, work):
     results = []
     for rva in rvas:
         ref = public.reference(root, rva)
-        record = json.loads((root / inventory[rva]['report']).read_text())
+        record = json.loads(record_store.read_text(root / inventory[rva]['report']))
         version = record['runs'][0]['report']['comparator']['version']
         engine = {compare.COMPARATOR_VERSION: compare,
                   compare_runtime.COMPARATOR_VERSION: compare_runtime}[version]

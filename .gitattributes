@@ -12,3 +12,5 @@
 *.cmd text eol=crlf
 # Target-hash manifests bind the raw pin-file digest on every compile host.
 *.sha256 text eol=lf
+# Record shards are xz archives; the publication scan reads inside them.
+reports/*/packs/*.xz binary

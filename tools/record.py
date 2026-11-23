@@ -31,6 +31,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
 import claimable  # noqa: E402
+import record_store  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
 from digest_v2 import review_binds  # noqa: E402
@@ -43,7 +44,7 @@ PUSH_ATTEMPTS = 6
 
 
 def _load(root, name):
-    return json.loads((Path(root) / name).read_text())
+    return json.loads(record_store.read_text(Path(root) / name))
 
 
 def review_blob_digest(blob):
@@ -230,9 +231,9 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
         written, prior = [], {}
         try:
             source = Path(records) / build_id / f'0x{rva:x}.json' if records is not None else root / report
-            if not source.is_file():
+            if not record_store.is_file(source):
                 raise ValueError('no match record was produced')
-            record = json.loads(source.read_text())
+            record = json.loads(record_store.read_text(source))
             if author:
                 from build_leaderboard import handle
                 if not handle(author):
@@ -253,12 +254,12 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                                                                        record['source'].get('digest')):
                     raise ValueError('already matched')
             if records is not None or author or drafter:
-                prior[root / report] = (root / report).read_bytes() if (root / report).is_file() else None
+                prior[root / report] = record_store.read_bytes(root / report) if record_store.is_file(root / report) else None
                 _write_json(root / report, record)
                 written.append(root / report)
             candidate = dict(copy.deepcopy(fn), status='matched', report=report, evidence=report)
             record = validate_match(candidate, target, root)
-            prior[review_path] = review_path.read_bytes() if review_path.is_file() else None
+            prior[review_path] = record_store.read_bytes(review_path) if record_store.is_file(review_path) else None
             _write_json(review_path, review_record(candidate, record, model, task_id, review_blob, when))
             written.append(review_path)
             validate_review(candidate, record, root)
@@ -280,7 +281,7 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
         out['files'] += [report, review_record_path(fn)]
         # A unit map is immutable and content-addressed, so a record that points at one must carry it.
         for rel in (record['symbol_map']['path'], symbol_map.history_name(record['symbol_map']['path'])):
-            if '/unit-symbols/' in rel and (root / rel).is_file() and rel not in out['files']:
+            if '/unit-symbols/' in rel and record_store.is_file(root / rel) and rel not in out['files']:
                 out['files'].append(rel)
     if changed:
         data['updated_at'] = when.strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -298,6 +299,8 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
             if (root / 'data/scope.json').is_file():
                 (root / name).write_text(render(root))
                 out['files'].append(name)
+    # Records are committed as shards; the loose files written above were only the working copy.
+    out['files'] = record_store.fold(root, out['files'])
     return out
 
 

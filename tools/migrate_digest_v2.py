@@ -17,6 +17,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_store  # noqa: E402
 from digest_v2 import DIGEST_METHOD, tu_digest  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,7 +60,7 @@ def main(argv=None):
     a = p.parse_args(argv)
     root = a.root
     names = a.records or sorted(
-        str(q.relative_to(root)) for q in (root / 'reports').glob('*/0x*.json') if not q.name.endswith('.review.json'))
+        str(q.relative_to(root)) for b in record_store.build_dirs(root) for n in record_store.names(b, 'match') for q in [b / n])
     counts, stale = {}, []
     for name in names:
         outcome, text = migrate(root, root / name)
