@@ -1265,6 +1265,46 @@ class CarriedRecordsTests(Replay):
         self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'scope')
 
 
+class CommentOnlyLaneTests(Replay):
+    """An owner PR that only edits comments of files claiming no function lands without a compile or review."""
+    HEADER = 'reconstruction/fx/Helper.h'
+
+    def setUp(self):
+        super().setUp()
+        self.w.move_main({self.HEADER: '// note\nint helper;\n'})
+
+    def add_check(self, number, conclusion='success'):
+        head = self.w.github.prs[number]['head']
+        self.w.ci.runs.setdefault(head, []).append(dict(
+            id=900 + number, name='check', head_sha=head, status='completed', conclusion=conclusion,
+            started_at=OLD, details_url='https://ci.invalid/runs/1'))
+
+    def test_a_comment_only_change_to_a_header_with_no_function_merges_with_no_compile_or_review(self):
+        self.w.make_pr(7, {self.HEADER: '// noinline: reworded note\nint helper;\n'}, author=pr_bot.OWNER)
+        self.add_check(7)
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual((self.w.reviewers.calls, self.w.compiled, self.w.recorded), ([], [], []))
+        self.assertTrue(self.w.main_log()[0].startswith('Comment-only change to 1 reconstruction file'))
+
+    def test_a_code_change_is_not_in_the_lane(self):
+        self.w.make_pr(7, {self.HEADER: '// note\nint helper2;\n'}, author=pr_bot.OWNER)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertEqual(self.w.reviewers.calls, [])
+
+    def test_an_outside_contributors_comment_change_is_not_merged_by_the_lane(self):
+        self.w.make_pr(7, {self.HEADER: '// reworded\nint helper;\n'}, author='alice')
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+    def test_a_failed_hash_job_blocks_the_merge(self):
+        self.w.make_pr(7, {self.HEADER: '// reworded\nint helper;\n'}, author=pr_bot.OWNER, ci='fail')
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+
 class CarriedDeletionTests(Replay):
     """Only the removed files of a carried-records PR are checked as deletions."""
 

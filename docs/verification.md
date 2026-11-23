@@ -771,6 +771,9 @@ only when the hash job skipped its compile because every changed unit differs fr
 unit's translation unit and digest (v2) equal those of the function's accepted record, so the bytes are those of an
 already two-host-matched build; any digest change gets no carry.
 
+An owner PR whose every change is comment-only (equal to base once comments are removed) to files that claim no
+function has nothing to match or record; the bot merges it on a clean leak scan and green `check` and `hash` jobs.
+
 The same carry applies when the unit changed in code elsewhere but the function's own definition (its body as
 extracted from the unit's files, comments and layout ignored) is identical at base and head, the function was
 accepted at base and has no target hash, and the Mac compare at head passes; the bot then logs and records

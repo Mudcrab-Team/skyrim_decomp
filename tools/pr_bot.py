@@ -2704,6 +2704,8 @@ class Bot:
         self.overlay(head, files)
         if deletion_lane(files):
             return self.process_deletion(pr, state, files, base, started)
+        if self.comment_lane(pr, base, files):
+            return self.process_comment_only(pr, state, files, base, started)
         if state.once('autofix_tried', lambda: self.autofix(pr, state, files)):
             # The branch has a new head; this one is finished and the next tick starts the new one.
             summary = dict(pr=number, head=head, blocked=None, merge=False, verdicts={},
@@ -3141,6 +3143,70 @@ class Bot:
         if failed:
             return dict(blocked, blocked='ci', failed=failed)
         return dict(blocked=None, merge=True, verdicts={})
+
+    def comment_lane(self, pr, base, files):
+        """True for an owner PR that only edits comments of existing reconstruction/ headers and sources, none of
+        which defines a function the bot compares.
+
+        Such a change cannot reach the compiler (digest_v2.same_code: equal once every comment is removed) and
+        no function is claimed by the files, so there is nothing to compare or record; the leak scan and the CI
+        `check` and `hash` jobs on the head still decide the merge.
+        """
+        from digest_v2 import same_code
+        if pr['author']['login'].casefold() != OWNER.casefold() or not files:
+            return False
+        for item in files:
+            name = item.get('filename', '')
+            if (item.get('status') != 'modified' or item.get('previous_filename') or '..' in Path(name).parts
+                    or not name.startswith(SCOPE_PREFIX) or not name.endswith(('.h', '.cpp'))):
+                return False
+        if any(self.unit_claims(files).values()):
+            return False
+        for item in files:
+            old = self.run(['git', 'show', f'{base}:{item["filename"]}'], check=False, cwd=self.root)
+            new = self.run(['git', 'show', f'{pr["headRefOid"]}:{item["filename"]}'], check=False, cwd=self.root)
+            if old.returncode or new.returncode or not same_code(old.stdout, new.stdout, item['filename']):
+                return False
+        return True
+
+    def process_comment_only(self, pr, state, files, base, started):
+        number, head = pr['number'], pr['headRefOid']
+        decision = state.get('decision')
+        if not decision:
+            hit, codes = state.once('leakgrep', lambda: list(self.leakgrep_units(base, head)))
+            blocked = dict(merge=False, verdicts={})
+            if hit:
+                decision = dict(blocked, blocked='leak', leak_source='leakgrep', leak_evidence=codes)
+            else:
+                failed = self.carried_ci(head)
+                decision = (dict(blocked, blocked='ci', failed=failed) if failed
+                            else dict(blocked=None, merge=True, verdicts={}))
+            state.set('decision', decision)
+        summary = dict(pr=number, head=head, blocked=decision['blocked'], merge=decision['merge'], verdicts={},
+                       seconds=round(time.time() - started, 1))
+        state.set('summary', summary)
+        if self.dry_run:
+            return summary
+        with self.land_lock:
+            if decision['merge'] and not state.get('merged'):
+                login = pr['author']['login']
+                uid = self.gh_json('api', f'users/{login}')['id']
+                subject = f'Comment-only change to {len(files)} reconstruction file{"s" if len(files) != 1 else ""} (#{number})'
+                body = ('Every changed file equals its base once comments are removed, so no compile result can '
+                        'differ and no function is claimed by them; the leak scan and the check and hash jobs on '
+                        'the head passed.\n\n'
+                        f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
+                merged = self.run(merge_command(number, head, subject, body), check=False)
+                if merged.returncode:
+                    return self.merge_refused(pr, state, summary)
+                state.set('merged', True)
+        if not state.get('commented'):
+            text = ('Merged: comment-only change.' if decision['merge'] else carried_comment(decision))
+            self.say(number, sticky_body(head, text), create=not decision['merge'])
+            state.set('commented', True)
+        self.drop_probe(number)
+        state.set('done', True)
+        return summary
 
     def process_carried(self, pr, state, files, started):
         """The owner lane for a PR that brings its own match records: verify them, then the usual squash merge.
