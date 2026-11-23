@@ -286,6 +286,46 @@ class LandWithRecordsTests(WorkDir):
         self.assertTrue(git(self.origin, 'log', '-1', '--format=%s', squash).startswith('Reconstruct 1 function'))
         self.assertIn('Co-authored-by: a', git(self.origin, 'log', '-1', '--format=%B', squash))
 
+    def stub_cookbook(self, body):
+        (self.root / 'docs').mkdir(exist_ok=True)
+        (self.root / 'docs/cookbook-hits.json').write_text('{}\n')
+        (self.root / 'docs/matching-cookbook.md').write_text('rank\n')
+        (self.root / 'tools/cookbook_rank.py').write_text(body)
+        git(self.root, 'add', '-A')
+        git(self.root, 'commit', '-q', '-m', 'cookbook')
+        git(self.root, 'push', '-q', 'origin', 'HEAD:main')
+        git(self.root, 'checkout', '-q', '-B', 'pr', self.head)
+        git(self.root, 'rebase', '-q', 'main')
+        self.head = git(self.root, 'rev-parse', 'HEAD')
+        git(self.root, 'checkout', '-q', 'main')
+        self.base = git(self.root, 'rev-parse', 'HEAD')
+        self.pr = dict(PR, headRefOid=self.head)
+        self.bot.gh_json = lambda *a: {'headRefOid': self.head, 'state': 'OPEN'}
+        self.state = pr_bot.State(self.dir / 'work/state2', PR['number'], self.head)
+        self.state.set('records', str(self.dir / 'records'))
+        self.state.set('base_sha', self.base)
+        review = self.dir / 'work/reviews' / f'pr{PR["number"]}-{self.head[:12]}.txt'
+        review.write_text('{}')
+
+    def test_the_cookbook_hits_ride_in_the_same_commit_as_the_records(self):
+        self.stub_cookbook("import pathlib, sys\nroot = pathlib.Path(sys.argv[sys.argv.index('--repo') + 1])\n"
+                           "(root / 'docs/cookbook-hits.json').write_text('{\"0x1000\": [3]}\\n')\n"
+                           "(root / 'docs/matching-cookbook.md').write_text('ranked\\n')\n")
+        self.assertTrue(self.land())
+        squash = git(self.origin, 'rev-parse', 'main^1')
+        names = git(self.origin, 'show', '--name-only', '--format=', squash).split()
+        self.assertEqual(sorted(names), ['docs/cookbook-hits.json', 'docs/matching-cookbook.md',
+                                         'reconstruction/U.cpp', 'reports/0x1000.json'])
+
+    def test_a_failing_cookbook_step_does_not_block_the_merge_and_leaves_its_files_alone(self):
+        self.stub_cookbook("import pathlib, sys\nroot = pathlib.Path(sys.argv[sys.argv.index('--repo') + 1])\n"
+                           "(root / 'docs/cookbook-hits.json').write_text('half\\n')\nsys.exit(1)\n")
+        self.assertTrue(self.land())
+        squash = git(self.origin, 'rev-parse', 'main^1')
+        names = git(self.origin, 'show', '--name-only', '--format=', squash).split()
+        self.assertEqual(sorted(names), ['reconstruction/U.cpp', 'reports/0x1000.json'])
+        self.assertEqual(git(self.origin, 'show', 'main:docs/cookbook-hits.json'), '{}')
+
     def test_the_prs_drafter_line_is_passed_to_the_record_step(self):
         body = '- Drafted by: someone, assisted by claude-sonnet-5-5 (a person, and the AI model if one wrote code)'
         self.bot.gh_json = lambda *a: {'headRefOid': self.head, 'state': 'OPEN', 'body': body}

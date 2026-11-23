@@ -4308,6 +4308,7 @@ class Bot:
                     return abandon()
             if files:
                 git('add', '--', *files)
+            self.collect_cookbook_hits(number, records)
             if git('commit', '--quiet', '-m', f'{subject}\n\n{body}', check=False).returncode:
                 return abandon()
             now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
@@ -4321,6 +4322,25 @@ class Bot:
                 return True
             # Lost the race to another push: rebuild on the new main rather than rebasing a record.
         return abandon()
+
+    COOKBOOK_FILES = ('docs/cookbook-hits.json', 'docs/matching-cookbook.md')
+
+    def collect_cookbook_hits(self, number, records):
+        """Stage the cookbook hit table and rank section for the squash being landed; never raises.
+
+        The hits ride in the same commit as the records so main is never ranked from a stale table. The
+        ranking is advisory, so any failure here is logged, the two files are restored and the merge goes on.
+        """
+        tree = self.tree
+        try:
+            done = self.run([sys.executable, 'tools/cookbook_rank.py', '--collect', records, '--repo', tree],
+                            cwd=tree, timeout=300, check=False)
+            if done.returncode:
+                raise ValueError((done.stdout or b'').decode(errors='replace').strip()[-200:] or f'exit {done.returncode}')
+            self.run(['git', 'add', '--', *self.COOKBOOK_FILES], cwd=tree)
+        except Exception as exc:  # noqa: BLE001 - the merge must not depend on the ranking
+            print(f'{stamp()} pr {number}: cookbook hits not collected: {exc}', file=sys.stderr, flush=True)
+            self.run(['git', 'checkout', '--quiet', 'HEAD', '--', *self.COOKBOOK_FILES], cwd=tree, check=False)
 
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
