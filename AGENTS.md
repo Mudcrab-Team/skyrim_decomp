@@ -82,6 +82,14 @@ list under a "Bottlenecks" heading in the PR description, or file it as a `tooli
 (see [docs/contributing-agent.md](docs/contributing-agent.md), "Getting help"). Name problems by
 tool and step only, never with game bytes or disassembly.
 
+## Ship bulk work in one go
+
+Bulk work ships as one commit and one PR: hash or data publishes, inventory refreshes, mechanical
+rewrites, folder moves. Split it only for a named hard limit, such as the 1 MiB per-file cap (split
+files, not PRs), the 200-function cap per reconstruction PR, or a GitHub size limit. Name that
+limit in the PR. "Test the first chunk", "safer in pieces" and staged rollouts are not reasons:
+measure on the single PR instead.
+
 ## Be precise about evidence
 
 - The target is pinned by `builds/target.json`, including its locally measured hash.
