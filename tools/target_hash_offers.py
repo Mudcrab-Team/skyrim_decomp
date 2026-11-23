@@ -10,6 +10,7 @@ import datetime as dt
 import json
 from pathlib import Path
 import sys
+import time
 
 import claimable
 import contrib
@@ -29,6 +30,7 @@ ON_DEMAND_MAX = 256  # PR-claimed functions published per run; at least one PR's
 # Kinds a PR may claim on demand. Static initializers are matched on main already and generated reflection
 # initializers are claimed by whole units, so they cannot depend on the ordinary-only window.
 ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
+PLAN_IDLE_HOURS = 12  # a plan directory untouched this long is treated as abandoned and stops reserving
 MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
 PDB_DIR = 'reconstruction/generated/crashlogger_pdb'  # generated layout headers, label CRASHLOGGER_PDB(59818@version)
 
@@ -110,15 +112,36 @@ def _rvas(node, out):
                 _rvas(int(key), out)
 
 
-def reserved_rvas(directories):
+def plan_idle_hours(directory, now):
+    """Hours since the newest file under `directory` was written; infinite when it holds none."""
+    newest = None
+    for path in Path(directory).rglob('*'):
+        if '__pycache__' in path.parts:
+            continue
+        try:
+            if path.is_file():
+                newest = max(newest or 0, path.stat().st_mtime)
+        except OSError:
+            continue
+    return float('inf') if newest is None else (now - newest) / 3600
+
+
+def reserved_rvas(directories, max_idle_hours=None, now=None):
     """RVAs that internal workers are stamping or twin-propagating, from their private plan files.
 
     Each `*.json` directly in a directory is read: a list of RVAs, a list of nested lists holding them
     (cluster plans, `[rva, name]` pairs), or a dict keyed by RVA. Unreadable files are skipped. The result
     only filters what is offered; it is never published.
+
+    With `max_idle_hours`, a directory whose files have all been idle that long is skipped: a plan nobody is
+    writing to would otherwise hold its functions out of the offered window indefinitely, and the window
+    runs dry while they sit unclaimed.
     """
     out = set()
+    now = time.time() if now is None else now
     for directory in directories:
+        if max_idle_hours is not None and plan_idle_hours(directory, now) > max_idle_hours:
+            continue
         for path in sorted(Path(directory).glob('*.json')):
             try:
                 node = json.loads(path.read_text())
@@ -291,6 +314,8 @@ def main(argv=None):
     p.add_argument('--slice',type=int,default=SLICE,dest='slice_size',help='unmapped functions added per refill: the lowest-addressed ones')
     p.add_argument('--reserved-dir',type=Path,action='append',default=[],
                    help='directory of private plan files whose functions are not offered (repeatable)')
+    p.add_argument('--plan-idle-hours',type=float,default=PLAN_IDLE_HOURS,
+                   help='a --reserved-dir with no file written for this many hours stops reserving; 0 keeps every plan')
     p.add_argument('--range',dest='rva_range',type=lambda v:tuple(int(x,0) for x in v.split('-')),
                    help='LOW-HIGH: offer every qualifying function with LOW <= RVA < HIGH, ignoring the low-water mark')
     p.add_argument('--extra-rva',action='append',default=[],type=lambda v:int(v,0),
@@ -298,7 +323,7 @@ def main(argv=None):
     a=p.parse_args(argv)
     ctx=contrib.Ctx(repo=ROOT,interactive=False)
     index=ctx.github().open_items(refresh=True)
-    reserved=reserved_rvas(a.reserved_dir)
+    reserved=reserved_rvas(a.reserved_dir,a.plan_idle_hours or None)
     output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved,a.extra_rva,a.rva_range)
     claimable.write_sharded(ROOT,hashes.OFFERED,output,'functions',claimable.OFFERED_ROWS)
     import target_facts  # the sidecar must follow the list it describes
