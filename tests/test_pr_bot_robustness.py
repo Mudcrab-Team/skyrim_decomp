@@ -113,7 +113,22 @@ class PrecheckTests(WorkDir):
         found = self.run_precheck(self.evidence(), origin=[hit])
         self.assertIn('does not name it with that file', found[0x10][0])
 
-    def test_base_flags_come_from_the_units_text_at_base_and_skip_declared_and_trivial_hits(self):
+    def test_a_declared_non_mit_hit_at_base_is_inherited_but_a_new_one_still_blocks(self):
+        gpl = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'path': 'src/B.cpp',
+               'trivial': False, 'declared': 'yes', 'licence': 'GPL-3.0', 'fork_of': None, 'similarity': 0.91}
+        flags = {pr_bot.declared_origin_key(gpl)}
+        self.assertTrue(pr_bot.inherited_origin(gpl, flags))
+        self.assertFalse(pr_bot.inherited_origin(dict(gpl, function='B::g'), flags))
+        self.assertFalse(pr_bot.inherited_origin(dict(gpl, declared=None), flags))
+        self.bot.base_origin_flags = lambda units, base, tag: flags
+        self.assertEqual(self.run_precheck(self.evidence(), origin=[gpl]), {})
+        added = dict(gpl, function='B::g', declared=None)
+        found = self.run_precheck(self.evidence(), origin=[gpl, added])
+        self.assertIn('does not name it with that file', found[0x10][0])
+        problems, _ = pr_bot.origin_findings([added], {})
+        self.assertEqual(problems, [('reconstruction/a/B.cpp', 'unpermitted-source')])
+
+    def test_base_flags_come_from_the_units_text_at_base_and_skip_trivial_hits(self):
         import check_origin
         shown = {'base:reconstruction/a/B.cpp': b'int B::f() { return 1; }\n'}
 
@@ -133,7 +148,7 @@ class PrecheckTests(WorkDir):
                 mock.patch.object(check_origin, 'check_unit', check_unit):
             flags = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, 'base', '7-aaaaaaaa')
             none = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, None, '7-aaaaaaaa')
-        self.assertEqual(flags, {pr_bot.origin_key(base)})
+        self.assertEqual(flags, {pr_bot.origin_key(base), pr_bot.declared_origin_key(hits[1])})
         self.assertEqual(seen, [['B.cpp']])
         self.assertEqual(none, set())
 

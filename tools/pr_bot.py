@@ -1041,6 +1041,18 @@ def origin_key(hit):
     return (hit['file'], hit['function'], hit['repo'], hit['path'], hit.get('similarity'))
 
 
+def declared_origin_key(hit):
+    """The base-flag key of a declared finding; kept apart so a label dropped by the PR is not hidden by it."""
+    return ('declared',) + origin_key(hit)
+
+
+def inherited_origin(hit, flags):
+    """True when the merge base already had this finding: undeclared there, or declared there and still declared."""
+    if origin_key(hit) in flags:
+        return True
+    return bool(hit.get('declared')) and declared_origin_key(hit) in flags
+
+
 def dropped_claims_text(rvas):
     """The sticky-comment lines for header claims that were not compared because no target row exists."""
     listed = ', '.join(f'0x{r:x}' for r in rvas[:20]) + (f' and {len(rvas) - 20} more' if len(rvas) > 20 else '')
@@ -1997,7 +2009,7 @@ class Bot:
             elif line.startswith('check_origin: threshold') and ' compared with ' in line:
                 pins = line.split(' compared with ', 1)[1]
         total = len(hits)
-        hits = [h for h in hits if not old_flags or origin_key(h) not in old_flags]
+        hits = [h for h in hits if not old_flags or not inherited_origin(h, old_flags)]
         skipped = (f'; {total - len(hits)} finding(s) identical to ones the unit already had on main are left out '
                    f'(earlier provenance, not introduced by this PR)') if total != len(hits) else ''
         if not hits:
@@ -2942,7 +2954,7 @@ class Bot:
                 inherited = self.base_origin_flags(check_units, base, f'{number}-{head[:8]}')
             except (OSError, ValueError, Stop):
                 inherited = set()
-            kept = [h for h in hits if origin_key(h) not in inherited]
+            kept = [h for h in hits if not inherited_origin(h, inherited)]
             if kept or not hits:
                 origin_problems, origin_permitted = origin_findings(kept, headers, unverified)
             if not origin_problems:
@@ -3007,7 +3019,7 @@ class Bot:
         findings = prereview.unit_findings(tree, changed, build)
         hits, headers, _unverified = self.origin_hits(units)
         old_flags = self.base_origin_flags(units, state.get('base_sha'), tag)
-        hits = [h for h in hits if origin_key(h) not in old_flags]
+        hits = [h for h in hits if not inherited_origin(h, old_flags)]
         findings += [(file, f'{file}: {text}') for file, text in prereview.origin_problems(hits, headers)]
         evidence = self.review_evidence(tag, sorted(passed), host1, host2, state)
         out, bot_side = {}, []
@@ -3037,9 +3049,10 @@ class Bot:
         return safe
 
     def base_origin_flags(self, units, base, tag):
-        """Origin findings the units already had at `base`: keys of undeclared, non-trivial similarities there.
+        """Origin findings the units already had at `base`: keys of non-trivial similarities there.
 
-        A body the PR did not touch keeps the same similarity to the same upstream body; the PR neither
+        Declared findings (a labelled upstream body, whatever its licence) are flagged under their own key, so
+        a PR that keeps the declaration inherits them while one that drops the label does not. A body the PR did not touch keeps the same similarity to the same upstream body; the PR neither
         introduced the finding nor can be asked to fix a unit's earlier provenance, which is project debt. A
         body the PR rewrites, or a label it drops, has a different key or no base counterpart and still counts.
         Best effort: a base the clone cannot show, or a missing clone, yields no flags.
@@ -3067,8 +3080,9 @@ class Bot:
                     path.write_bytes(shown.stdout)
                     files.append(path)
                 for hit in check_origin.check_unit(files, clones, root=scratch) if files else ():
-                    if not (hit.get('trivial') or hit.get('fork_of') or hit.get('declared')):
-                        flags.add(origin_key(hit))
+                    if hit.get('trivial') or hit.get('fork_of'):
+                        continue
+                    flags.add(declared_origin_key(hit) if hit.get('declared') else origin_key(hit))
         finally:
             shutil.rmtree(scratch, ignore_errors=True)
         return flags
