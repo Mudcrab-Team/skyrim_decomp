@@ -1,7 +1,10 @@
 #!/bin/sh
 # Deploy a pr_bot revision only after it has run, with every write refused, against the PRs open right now.
 #
-#   tools/pr_bot_deploy.sh SHA
+#   tools/pr_bot_deploy.sh SHA [--allow-stale]
+#
+# SHA must contain origin/main (be at its head or ahead of it); a revision behind it is refused unless
+# --allow-stale is given, since a stale pin runs the bot without fixes that already landed.
 #
 # Environment (all required except the last three):
 #   SR_BOT_ROOT     checkout holding .local and the origin remote, as passed to pr_bot.py --root
@@ -13,13 +16,31 @@
 #                   from main on every restart should check out this SHA instead while the file exists
 set -eu
 
-sha=${1:?usage: pr_bot_deploy.sh SHA}
+sha=${1:?usage: pr_bot_deploy.sh SHA [--allow-stale]}
+allow_stale=0
+case "${2:-}" in
+    "") ;;
+    --allow-stale) allow_stale=1 ;;
+    *) echo "unknown argument: $2" >&2; exit 2 ;;
+esac
 : "${SR_BOT_ROOT:?}" "${SR_BOT_SRC:?}" "${SR_BOT_PYTHON:?}"
 [ -z "${SR_BOT_ENV:-}" ] || . "$SR_BOT_ENV"
 
 # Best effort: a revision already present locally needs no fetch, and rev-parse below rejects an unknown one.
 git -C "$SR_BOT_SRC" fetch -q origin "$sha" 2>/dev/null || git -C "$SR_BOT_SRC" fetch -q origin 2>/dev/null || true
 sha=$(git -C "$SR_BOT_SRC" rev-parse --verify "$sha^{commit}")
+
+# Refuse a revision that lacks the current origin/main. Skipped only when the checkout has no origin/main at all.
+git -C "$SR_BOT_SRC" fetch -q origin main 2>/dev/null || true
+if main=$(git -C "$SR_BOT_SRC" rev-parse --verify -q "refs/remotes/origin/main^{commit}") \
+        && ! git -C "$SR_BOT_SRC" merge-base --is-ancestor "$main" "$sha"; then
+    if [ "$allow_stale" = 1 ]; then
+        echo "warning: $sha does not contain origin/main ($main); deploying anyway (--allow-stale)" >&2
+    else
+        echo "refusing $sha: it does not contain origin/main ($main); deploy origin/main HEAD or pass --allow-stale" >&2
+        exit 1
+    fi
+fi
 
 scratch=$(mktemp -d)
 trap 'git -C "$SR_BOT_SRC" worktree remove --force "$scratch/code" >/dev/null 2>&1 || true; rm -rf "$scratch"' EXIT
