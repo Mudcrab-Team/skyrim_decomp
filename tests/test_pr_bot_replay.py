@@ -592,7 +592,8 @@ class ConcurrentPrTests(Replay):
         self.w.make_pr(8, {unit_path(0x2000): unit(0x2000)}, author='bob')
         log = self.w.poll(self.bot)
         self.assertTrue(self.merged(7) and self.merged(8), log)
-        self.assertEqual({p.name for p in self.bot.work.glob('tree*')}, {'tree', 'tree-1'})
+        # the housekeeping tree is a third
+        self.assertEqual({p.name for p in self.bot.work.glob('tree*')}, {'tree', 'tree-1', 'tree-maint'})
         names = self.w.main_files()
         for rva in (0x1000, 0x2000):
             self.assertIn(unit_path(rva), names)

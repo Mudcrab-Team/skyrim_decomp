@@ -758,6 +758,55 @@ class PoolTests(WorkDir):
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600)
         self.assertEqual(len(listed), 2)
 
+    def test_a_hung_refill_does_not_hold_back_a_pr_that_arrives(self):
+        started, seen = threading.Event(), []
+
+        class Hanging(PoolTests.PoolBot):
+            def refill_offers(self):
+                started.set()
+                seen.append(self.release.wait(10))  # False if no PR was worked while this was still running
+                return 2000
+
+            def attempt(self, pr, now=None):
+                started.wait(10)
+                self.release.set()
+                return super().attempt(pr, now)
+        bot = Hanging(self.work)
+        bot.release = threading.Event()
+        bot.arrived = lambda pr, tree: seen.append(('pr', pr['number']))
+        bot.gh_json = lambda *a: self.prs(3) if a[:2] == ('pr', 'list') else dict(
+            self.prs(3)[0], state='OPEN', mergeable='MERGEABLE')
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600, await_housekeeping=False)
+        self.assertIn(('pr', 3), seen)
+        self.assertIn(True, seen)
+
+    def test_housekeeping_has_its_own_tree_and_a_dry_run_keeps_slot_zero(self):
+        bot = FakeBot(self.work)
+        other = bot.maintenance_tree()
+        self.assertEqual(other.tree, self.work / 'tree-maint')
+        self.assertNotEqual(other.tree, bot.for_slot(0).tree)
+        self.assertTrue(any(c[:2] == ['git', 'clone'] for c in bot.calls))
+        dry = FakeBot(self.work, dry_run=True)
+        self.assertEqual(dry.maintenance_tree().tree, dry.for_slot(0).tree)
+        self.assertFalse(any(c[:2] == ['git', 'clone'] for c in dry.calls))
+
+    def test_counting_the_window_does_not_hold_the_land_lock_but_regenerating_does(self):
+        seen = []
+
+        class Counting(FakeBot):
+            def offered_open(self):
+                seen.append(('count', self.land_lock.locked()))
+                return left[0]
+
+            def regenerate(self, number, extra=()):
+                seen.append(('regenerate', self.land_lock.locked()))
+        left = [2500]
+        bot = Counting(self.work)
+        self.assertEqual(bot.refill_offers(), 2500)
+        left[0] = 10
+        self.assertEqual(bot.refill_offers(), 10)
+        self.assertEqual(seen, [('count', False), ('count', False), ('regenerate', True)])
+
     def test_idle_poll_sweeps_finished_claims_once_per_period_and_survives_a_failure(self):
         calls = []
 

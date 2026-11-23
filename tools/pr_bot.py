@@ -1655,12 +1655,35 @@ class Bot:
         with self.root_lock:
             self._prepare_tree(base)
 
-    def _prepare_tree(self, base):
+    def _ensure_clone(self):
         if not (self.tree / '.git').exists():
             self.tree.parent.mkdir(parents=True, exist_ok=True)
             self.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', self.root, self.tree])
             url = self.run(['git', 'remote', 'get-url', 'origin']).stdout.decode().strip()
             self.run(['git', 'remote', 'set-url', 'origin', url], cwd=self.tree)
+
+    def _link_local(self):
+        shared, local = self.root / '.local', self.tree / '.local'
+        if not shared.is_dir():
+            return
+        local.mkdir(exist_ok=True)
+        own = {'tasks', 'pr-bot', 'wt', 'flow', 'queue', 'worktrees', 'briefs', 'contrib-autopilot'}
+        for entry in shared.iterdir():
+            if entry.is_dir() and entry.name not in own and not (local / entry.name).exists():
+                (local / entry.name).symlink_to(entry, target_is_directory=True)
+
+    def maintenance_tree(self):
+        """The bot for the housekeeping jobs: a scratch tree of their own, so no PR slot's checkout is touched."""
+        if self.dry_run:
+            return self.for_slot(0)  # a dry run refuses the clone; it reads the trees that exist
+        other = self.for_slot('maint')
+        with self.root_lock:
+            other._ensure_clone()
+            other._link_local()
+        return other
+
+    def _prepare_tree(self, base):
+        self._ensure_clone()
         self.run(['git', 'fetch', '--quiet', str(self.root), base], cwd=self.tree, check=False)
         if self.run(['git', 'rev-parse', '-q', '--verify', 'HEAD'], cwd=self.tree, check=False).returncode == 0:
             # Only a tree that was checked out before has anything to undo; a fresh clone would
@@ -1669,12 +1692,7 @@ class Bot:
             # data/target-hashes: an untracked shard left by a failed regenerate commit blocks the detach checkout.
             self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes', 'docs/cookbook-notes'], cwd=self.tree, check=False)
         self.run(['git', 'checkout', '--quiet', '--detach', base], cwd=self.tree)
-        shared, local = self.root / '.local', self.tree / '.local'
-        local.mkdir(exist_ok=True)
-        own = {'tasks', 'pr-bot', 'wt', 'flow', 'queue', 'worktrees', 'briefs', 'contrib-autopilot'}
-        for entry in shared.iterdir():
-            if entry.is_dir() and entry.name not in own and not (local / entry.name).exists():
-                (local / entry.name).symlink_to(entry, target_is_directory=True)
+        self._link_local()
 
     def head_blob(self, head, name):
         """The file's bytes at the PR head, or None when the head has no such path (deleted, or never there).
@@ -3685,9 +3703,11 @@ class Bot:
         count that was seen.
         """
         threshold = WINDOW_LOW_WATER if threshold is None else threshold
-        with self.land_lock:  # the push to main takes its turn with merges and records
-            left = self.offered_open()
-            if left < threshold:
+        # Counting is a fetch and a checkout in this bot's own tree; only a regeneration pushes to main and so
+        # takes its turn with merges and records. Holding the lock for the count made a merge wait behind it.
+        left = self.offered_open()
+        if left < threshold:
+            with self.land_lock:
                 self.regenerate(None)
         return left
 
@@ -4627,14 +4647,60 @@ def window_line(left, claimed, burn):
     return f'{left} claimable left, {claimed} claimed, burn {day}/day (24h), {week:g}/day (7d avg){runway}'
 
 
+def housekeeping(bot, directory, due):
+    """The jobs that need no PR, each failure printed and none fatal; they run on the bot's maintenance tree."""
+    try:
+        _housekeeping(bot, directory, due)
+    except Exception as exc:  # a pool thread's exception would otherwise vanish with its future
+        print(f'{stamp()} housekeeping: unexpected {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+
+
+def _housekeeping(bot, directory, due):
+    try:
+        slot = bot.maintenance_tree()
+    except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+        print(f'{stamp()} housekeeping: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+        return
+    errors = (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError)
+    if 'refill' in due:
+        try:
+            left = slot.refill_offers()
+            metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
+            print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
+        except errors as exc:
+            print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    if 'records' in due:
+        try:
+            for number in slot.retry_records(directory):
+                print(f'{stamp()} pr {number}: records landed on retry', flush=True)
+        except errors as exc:
+            print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    if 'claims' in due:
+        try:
+            for number in slot.close_done_claims():
+                print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
+        except errors + (RuntimeError,) as exc:
+            print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    if 'probes' in due:
+        try:
+            for number in slot.sweep_probes():
+                print(f'{stamp()} probe #{number}: done, closed', flush=True)
+        except errors as exc:
+            print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+
+
 def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
-         refill_every=None):
+         refill_every=None, await_housekeeping=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
 
     A PR is never queued twice, and a finished head or one that is backing off costs no worker. After a
     `gh` failure nothing is listed or run until the shared GitHub backoff has passed. `rounds` bounds the
-    loop for tests. With `refill_every`, an idle bot checks the offered window at most that often.
+    loop for tests. With `refill_every`, an idle bot checks the offered window at most that often. That check
+    and the other housekeeping run beside the loop (`housekeeping`), never in it; `await_housekeeping`
+    (default: when `rounds` is set) makes each tick wait for a pass it started, so a test counts exactly.
     """
+    if await_housekeeping is None:
+        await_housekeeping = rounds is not None
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -4657,9 +4723,11 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     retried = None
     swept = None
     probes = None
+    maint = None  # the running housekeeping pass, if any
     reconstruction_heads = {}  # (number, head) -> whether an owner PR changes only reconstruction/
     directory = bot.work / ('dry' if bot.dry_run else 'state')
-    with ThreadPoolExecutor(max_workers=workers) as pool, ThreadPoolExecutor(max_workers=1) as conflict_pool:
+    with (ThreadPoolExecutor(max_workers=workers) as pool, ThreadPoolExecutor(max_workers=1) as conflict_pool,
+          ThreadPoolExecutor(max_workers=1) as maint_pool):
         turn = 0
         while rounds is None or turn < rounds:
             turn += 1
@@ -4667,42 +4735,34 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 del inflight[number]
                 on_pool.discard(number)
                 owner_on_pool.discard(number)
-            if restart_after and time.time() - started > restart_after and not inflight:
+            if restart_after and time.time() - started > restart_after and not inflight and maint is None:
                 return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
             wait = gh.remaining()
             if wait:
                 sleep(min(wait, interval))
                 continue
-            if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
-                refilled = time.time()  # a failure waits for the next window, not the next tick
-                try:
-                    slot = bot.for_slot(0)
-                    left = slot.refill_offers()
-                    metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
-                    print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                    print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-            if not bot.dry_run and not inflight and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
-                retried = time.time()
-                try:
-                    for number in bot.for_slot(0).retry_records(directory):
-                        print(f'{stamp()} pr {number}: records landed on retry', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                    print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-            if not bot.dry_run and not inflight and (swept is None or time.time() - swept >= CLAIM_SWEEP_EVERY):
-                swept = time.time()
-                try:
-                    for number in bot.for_slot(0).close_done_claims():
-                        print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
-                    print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-            if not bot.dry_run and not inflight and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
-                probes = time.time()
-                try:
-                    for number in bot.for_slot(0).sweep_probes():
-                        print(f'{stamp()} probe #{number}: done, closed', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                    print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if maint is not None and maint.done():
+                maint = None
+            if maint is None and not inflight:
+                # Housekeeping runs beside the loop on its own tree, never inside it: a count that hung on a full
+                # disk held every PR that arrived meanwhile for the length of its timeout.
+                due = []
+                if refill_every and (refilled is None or time.time() - refilled >= refill_every):
+                    refilled = time.time()  # a failure waits for the next window, not the next tick
+                    due.append('refill')
+                if not bot.dry_run and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
+                    retried = time.time()
+                    due.append('records')
+                if not bot.dry_run and (swept is None or time.time() - swept >= CLAIM_SWEEP_EVERY):
+                    swept = time.time()
+                    due.append('claims')
+                if not bot.dry_run and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
+                    probes = time.time()
+                    due.append('probes')
+                if due:
+                    maint = maint_pool.submit(housekeeping, bot, directory, due)
+                    if await_housekeeping:
+                        maint.result()
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
