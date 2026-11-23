@@ -23,10 +23,22 @@ def style(problems):
 
 
 class Hops(unittest.TestCase):
-    def test_a_parent_hop_stays_refused_in_a_file_the_change_writes(self):
+    def test_a_parent_hop_that_stays_under_reconstruction_is_allowed(self):
         blob = b'#include "../core/Base.h"\n'
-        self.assertEqual(sorted(contrib_screen.screen(blob, 'reconstruction/a/W.h')),
-                         ['include-outside-roots', 'path-or-encoded-escape'])
+        self.assertEqual(contrib_screen.screen(blob, 'reconstruction/a/W.h'), [])
+
+    def test_a_parent_hop_that_leaves_reconstruction_stays_refused(self):
+        for target in ('../../core/Base.h', '../../../core/Base.h', '../core/../../x.h', '../core/Base.cpp'):
+            blob = f'#include "{target}"\n'.encode()
+            self.assertIn('include-outside-roots', contrib_screen.screen(blob, 'reconstruction/a/W.h'), target)
+
+    def test_a_parent_hop_is_refused_in_a_file_outside_reconstruction(self):
+        blob = b'#include "../core/Base.h"\n'
+        self.assertIn('include-outside-roots', contrib_screen.screen(blob, 'other/a/W.h'))
+
+    def test_a_parent_step_in_a_string_is_still_a_path_finding(self):
+        blob = b'#include "../core/Base.h"\nconst char* p = "../secret";\n'
+        self.assertIn('path-or-encoded-escape', contrib_screen.screen(blob, 'reconstruction/a/W.h'))
 
     def make(self, root, dependent_line):
         write(root, 'reconstruction/core/Base.h', '#pragma once\n// Base.\nstruct Base\n{\n    int x;\n};\n')

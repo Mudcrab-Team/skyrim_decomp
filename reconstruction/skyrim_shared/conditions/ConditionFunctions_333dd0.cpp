@@ -11,7 +11,7 @@
 // ConditionFunctions::GetIsID: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x333dd0 Condition::GetIsID
 #include "ConditionFunctions_333dd0.h"
-#include "skyrim_shared/forms/TESForm_333dd0.h"
+#include "../forms/TESForm_333dd0.h"
 class TESBoundObject;
 struct NiPoint3 { float x, y, z; };
 struct OBJ_REFR { TESBoundObject* objectReference; NiPoint3 angle, location; };

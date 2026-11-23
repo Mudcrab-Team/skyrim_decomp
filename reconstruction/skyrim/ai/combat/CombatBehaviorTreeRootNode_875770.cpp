@@ -7,14 +7,8 @@
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:165
 // CombatBehaviorTreeRootNode::LoadGame: SIBLING(fo4-private@1b765c70, author-permission); adapted using target evidence
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorTreeNode.cpp:216
-// 0x8756c0 CombatBehaviorTreeRootNode::Enter
 // 0x875770 CombatBehaviorTreeRootNode::LoadGame
 #include "CombatBehaviorTreeRootNode_875770.h"
-void CombatBehaviorTreeRootNode::Enter(CombatBehaviorThread* thread) {
-    const CombatBehaviorTreeNode* previous = thread->previousNode;
-    thread->Push(&previous);
-    thread->Descend(0);
-}
 void CombatBehaviorTreeRootNode::LoadGame(CombatBehaviorThread* thread, void*) {
     const CombatBehaviorTreeNode* previous = thread->previousNode;
     thread->Push(&previous);

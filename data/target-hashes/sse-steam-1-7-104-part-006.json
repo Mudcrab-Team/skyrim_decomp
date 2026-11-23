@@ -1,6 +1,20 @@
 {
   "functions": [
     {
+      "rva": 3721952,
+      "size": 7,
+      "normalized_sha256": "9d8c54070d8756b3dc67114d0b2f6d0f3598dd19c8e8c9b1599a1cf851849609",
+      "layout_sha256": "84ed92d00c3944d93ac0256a15094bc9dfe2d8c23384eea923f2fcd507816e0b",
+      "extraction": "linked-reference-inference"
+    },
+    {
+      "rva": 3722608,
+      "size": 184,
+      "normalized_sha256": "6cbc1e7e9ec2270216fbbb3e98378ad87f9cba1ee6670531283c1914b0d63e6d",
+      "layout_sha256": "c58e8025d1727427742b48d5169a7e07727dcc93cb12c84c3c57c41f2355ddc5",
+      "extraction": "linked-reference-inference"
+    },
+    {
       "rva": 3722800,
       "size": 93,
       "normalized_sha256": "f4ecbbcc13489572f2877c41143968b2f6947dff7917e525364e0a8081c5dcc3",
@@ -13984,20 +13998,6 @@
       "size": 62,
       "normalized_sha256": "a0329f7de08742b114e880ac32fd7ca2729f8b0f8fa13a231e448a3396efd313",
       "layout_sha256": "e975a3ee205203323478554fbb159a1a17f282d28d59a848a0f1032f152b9f56",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 4809504,
-      "size": 23,
-      "normalized_sha256": "b7c3f2a3dca97baccae6ed941e62d35ed89832c64d28d15b54bb4f845b49fd9f",
-      "layout_sha256": "cb039b8c1ff27b35ac72d2ecd64debcb28e1f84a1d235ea5b88992bc3a391d56",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 4809664,
-      "size": 8,
-      "normalized_sha256": "42bf2fe8994233d2e2eaf9d217f425ee1530fb5e5d6924672ca17f13bdf43411",
-      "layout_sha256": "b0683700c0c970d3a39bb25dc4d20b03d5f5c429ece8a4b3d664468187f362bb",
       "extraction": "linked-reference-inference"
     }
   ]

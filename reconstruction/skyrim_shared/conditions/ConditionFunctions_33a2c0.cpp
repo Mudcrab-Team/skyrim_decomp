@@ -7,7 +7,7 @@
 // ConditionFunctions::LocationHasKeyword: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x33a2c0 Condition::LocationHasKeyword
 #include "ConditionFunctions_33a2c0.h"
-#include "skyrim_shared/world/BGSLocation_33a2c0.h"
+#include "../world/BGSLocation_33a2c0.h"
 class TESObjectREFR;
 extern BGSLocation* GetCurrentLocation(TESObjectREFR*);
 extern void* conditionLogger;

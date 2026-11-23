@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 #include "BSExtraDataStorageLayout.h"
-#include "bscore/BSFixedStringStorageLayout.h"
+#include "../../bscore/BSFixedStringStorageLayout.h"
 
 namespace ResearchLayouts {
 class ExtraEditorRefMoveDataStorageLayout : public BSExtraDataStorageLayout {

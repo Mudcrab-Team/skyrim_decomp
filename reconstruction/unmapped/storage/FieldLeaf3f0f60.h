@@ -3,7 +3,7 @@
 // Code origin: original trivial field operation using an included represented layout.
 // Origin: represented-field-leaf v3-labels2
 #pragma once
-#include "bscore/EventFactoryNameLinkStorageLayout.h"
+#include "../../bscore/EventFactoryNameLinkStorageLayout.h"
 class FieldLeaf3f0f60 : public ResearchLayouts::EventFactoryNameLinkStorageLayout {
 public:
     const void* Read();

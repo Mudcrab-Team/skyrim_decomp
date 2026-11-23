@@ -4,7 +4,7 @@
 // BGSMenuIcon: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 #pragma once
 #include <cstdint>
-#include "skyrim_shared/forms/TESForm.h"
+#include "../../skyrim_shared/forms/TESForm.h"
 // BaseFormComponent::~BaseFormComponent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 inline BaseFormComponent::~BaseFormComponent() {}
 // BSFixedString, BSFixedString::~BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

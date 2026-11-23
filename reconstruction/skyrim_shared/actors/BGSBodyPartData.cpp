@@ -7,7 +7,5 @@
 // names: GUESS(low); names and original signatures are tentative.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x38b720 BGSBodyPartData::GetBodyPart
-// 0x38b2c0 BGSBodyPartData::InitializeData
 #include "BGSBodyPartData.h"
 BGSBodyPart* BGSBodyPartData::GetBodyPart(int type) const { return (unsigned)type <= 5 ? parts[type] : nullptr; }
-void BGSBodyPartData::InitializeData() { for (auto& part : parts) part = nullptr; ragdoll = nullptr; }

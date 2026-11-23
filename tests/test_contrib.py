@@ -925,6 +925,33 @@ class FollowUpTests(Base):
             self.assertEqual(cm.exception.code, contrib.USAGE, bad)
             self.assertIn('--area must be', cm.exception.message)
 
+    def _bare_entry_start(self, *extra):
+        entry = {'id': 'x-0x2c5ce0', 'build_id': TARGET['build_id'], 'rva': 0x2c5ce0, 'size': 29, 'status': 'mapped',
+                 'name': 'Function2c5ce0', 'name_origin': 'GUESS'}
+        data = {'target_build_id': TARGET['build_id'], 'functions': [entry]}
+        args = contrib.parser().parse_args(['start', '0x2c5ce0', '--no-branch', *extra])
+        seen = {}
+
+        def stop_after_naming(ctx, target):
+            seen['named'] = True
+            raise contrib.Stop(contrib.USAGE, 'no executable in this test')
+
+        with unittest.mock.patch.object(contrib, 'inventory', return_value=data), \
+                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming):
+            with self.assertRaises(contrib.Stop) as cm:
+                contrib.start(self.ctx(env={'PATH': ''}), args)
+        return cm.exception, seen
+
+    def test_start_names_the_class_of_a_bare_placeholder_entry_only_when_given(self):
+        stop, seen = self._bare_entry_start()
+        self.assertIn('--class', stop.message)
+        self.assertNotIn('named', seen)
+        stop, seen = self._bare_entry_start('--class', 'TESObjectCELL')
+        self.assertTrue(seen.get('named'), stop.message)
+        stop, seen = self._bare_entry_start('--class', 'not a class')
+        self.assertIn('--class must be', stop.message)
+        self.assertNotIn('named', seen)
+
     def test_redact_hides_checkout_and_home(self):
         home = str(self.tmp / 'home')
         ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home})

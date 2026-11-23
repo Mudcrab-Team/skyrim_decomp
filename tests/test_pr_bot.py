@@ -1080,6 +1080,15 @@ class RecordStepTests(RecordStaleTests):
             self.bot.record(self.pr, self.state, [0x30, 0x40])
         self.assertFalse(self.state.get('recorded'))
 
+    def test_an_already_matched_function_whose_record_is_current_needs_no_record(self):
+        self.stdout = json.dumps({'recorded': [], 'refused': {'0x30': 'already matched'}}).encode()
+        self.bot.record_is_current = lambda rva: rva == 0x30
+        base_run = self.bot.run
+        self.bot.run = lambda argv, **kw: (subprocess.CompletedProcess(argv, 1, self.stdout, b'')
+                                           if str(argv[1]).endswith('record.py') else base_run(argv, **kw))
+        self.bot.record(self.pr, self.state, [0x30])
+        self.assertTrue(self.state.get('recorded'))
+
     def test_output_that_is_not_json_is_not_a_refusal(self):
         self.stdout = b'no json here\n'
         self.bot.record(self.pr, self.state, [0x30])

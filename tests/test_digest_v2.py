@@ -150,5 +150,25 @@ class PathIndependenceTests(unittest.TestCase):
             d.unit_digest({'reconstruction/a/U.cpp': b'#include "Missing.h"\n'})
 
 
+class SameCodeResolved(unittest.TestCase):
+    PRESENT = {'reconstruction/core/Dep.h', 'reconstruction/core/Other.h'}
+
+    def same(self, old, new):
+        return d.same_code_resolved(old, new, 'reconstruction/fx/U.cpp', self.PRESENT.__contains__)
+
+    def test_a_parent_step_and_a_root_path_to_one_file_are_the_same(self):
+        self.assertTrue(self.same(b'#include "../core/Dep.h"\nint a;\n', b'#include "core/Dep.h"\nint a;\n'))
+
+    def test_an_include_that_reaches_another_file_differs(self):
+        self.assertFalse(self.same(b'#include "../core/Dep.h"\n', b'#include "core/Other.h"\n'))
+
+    def test_a_target_that_reaches_nothing_stays_as_written(self):
+        self.assertFalse(self.same(b'#include "../core/Gone.h"\n', b'#include "core/Gone.h"\n'))
+
+    def test_a_code_change_differs(self):
+        self.assertFalse(self.same(b'#include "../core/Dep.h"\nint a;\n', b'#include "core/Dep.h"\nint b;\n'))
+
+
 if __name__ == '__main__':
     unittest.main()
+

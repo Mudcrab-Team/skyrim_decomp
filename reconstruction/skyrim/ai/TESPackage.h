@@ -8,7 +8,7 @@
 // objectType, unknown20, unknown25: GUESS(low); measured from the listings, names invented
 #pragma once
 #include <cstdint>
-#include "skyrim_shared/forms/TESForm.h"
+#include "../../skyrim_shared/forms/TESForm.h"
 class TESPackage : public TESForm
 {
 public:

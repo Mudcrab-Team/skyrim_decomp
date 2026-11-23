@@ -11,7 +11,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/support/BhkNiCollisionObjectLayout.h"
+#include "../support/BhkNiCollisionObjectLayout.h"
 
 namespace ResearchLayouts {
 class F004Represented2f93c0 : public BhkNiCollisionObjectLayout {

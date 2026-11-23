@@ -7,8 +7,8 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
-#include "skyrim_shared/forms/FormComponentLayout.h"
-#include "gamebryo/nimain/NiRefObjectStorageLayout.h"
+#include "../forms/FormComponentLayout.h"
+#include "../../gamebryo/nimain/NiRefObjectStorageLayout.h"
 namespace ResearchLayouts {
 class HandleReferenceComponentPrefixLayout : public NiRefObjectStorageLayout {
 public:

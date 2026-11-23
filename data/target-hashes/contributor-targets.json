@@ -1,10 +1,28 @@
 {
   "schema": 1,
   "build_id": "sse-steam-1-7-104",
-  "snapshot_utc": "2026-11-22T22:49:11.436144+00:00",
+  "snapshot_utc": "2026-11-23T02:01:37.059980+00:00",
   "function_metadata_sha256": "15ba17036f4312634d884316084923fbf3e4bdad61101ab28ae476b187376710",
-  "claims_snapshot_sha256": "efc394017b4ca8f6eecd79bcdde920dfea736510962e5048156eb21e148e6139",
+  "claims_snapshot_sha256": "83769c1d64be2d3f4028f737a2e74b49258bbfeb2b73cf97f68c29710551edfe",
   "claims": [
+    {
+      "number": 928,
+      "url": "https://github.com/Mudcrab-Team/skyrim_decomp/issues/928",
+      "entries": [
+        [
+          1713680,
+          1713681
+        ],
+        [
+          1909104,
+          1909105
+        ],
+        [
+          21921472,
+          21921473
+        ]
+      ]
+    },
     {
       "number": 871,
       "url": "https://github.com/Mudcrab-Team/skyrim_decomp/issues/871",
@@ -1646,10 +1664,6 @@
         [
           1641664,
           1641665
-        ],
-        [
-          1909104,
-          1909105
         ],
         [
           3062960,
@@ -4270,12 +4284,7 @@
     {
       "number": 597,
       "url": "https://github.com/Mudcrab-Team/skyrim_decomp/issues/597",
-      "entries": [
-        [
-          21921472,
-          21921473
-        ]
-      ]
+      "entries": []
     },
     {
       "number": 596,
@@ -5038,8 +5047,8 @@
       ]
     }
   ],
-  "next_candidate_count": 2569,
-  "claim_function_count": 1108,
+  "next_candidate_count": 2589,
+  "claim_function_count": 1109,
   "functions": [
     {
       "rva": 1335904,
@@ -11454,6 +11463,12 @@
       "class": "ThirdPersonState"
     },
     {
+      "rva": 5758688,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 6005456,
       "size": 128,
       "extent_source": "local-function-table",
@@ -12130,6 +12145,12 @@
       "size": 18,
       "extent_source": "local-function-table",
       "class": "Main"
+    },
+    {
+      "rva": 6689152,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 6692384,
@@ -13259,6 +13280,12 @@
       "class": "Actor"
     },
     {
+      "rva": 7056464,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 7070352,
       "size": 50,
       "extent_source": "local-function-table",
@@ -14290,6 +14317,30 @@
       "class": "MovementControllerNPC"
     },
     {
+      "rva": 7972144,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 7972160,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 7972176,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 7972192,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 8011456,
       "size": 47,
       "extent_source": "local-function-table",
@@ -14348,6 +14399,12 @@
       "size": 73,
       "extent_source": "local-function-table",
       "class": "MovementHandlerAgentStairsHelper"
+    },
+    {
+      "rva": 8032192,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 8032864,
@@ -14722,6 +14779,12 @@
       "class": "TempLoadGameBuffer"
     },
     {
+      "rva": 8429248,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 8430160,
       "size": 42,
       "extent_source": "local-function-table",
@@ -14768,6 +14831,12 @@
       "size": 62,
       "extent_source": "local-function-table",
       "class": "CombatAreaHoldPosition"
+    },
+    {
+      "rva": 8454176,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 8572208,
@@ -15400,6 +15469,12 @@
       "class": "VATSCameraState"
     },
     {
+      "rva": 9553232,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 9654432,
       "size": 7,
       "extent_source": "local-function-table"
@@ -15477,6 +15552,12 @@
       "class": "MagicItemData"
     },
     {
+      "rva": 9906448,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 10013040,
       "size": 61,
       "extent_source": "local-function-table",
@@ -15535,6 +15616,18 @@
       "size": 54,
       "extent_source": "local-function-table",
       "class": "BGSLoadGameBuffer"
+    },
+    {
+      "rva": 10275888,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 10285136,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 10287536,
@@ -15747,6 +15840,12 @@
       "class": "SaveStorageWrapper"
     },
     {
+      "rva": 11848624,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 12252720,
       "size": 12,
       "extent_source": "local-function-table",
@@ -15885,6 +15984,24 @@
       "class": "BSAnimationGraphManager"
     },
     {
+      "rva": 12338512,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 12465792,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 13063248,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 13411888,
       "size": 26,
       "extent_source": "local-function-table",
@@ -15967,6 +16084,12 @@
       "size": 45,
       "extent_source": "local-function-table",
       "class": "BSSmallBlockAllocator"
+    },
+    {
+      "rva": 13549072,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 13549936,
@@ -16163,6 +16286,12 @@
       "size": 31,
       "extent_source": "local-function-table",
       "class": "TES"
+    },
+    {
+      "rva": 15553792,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 15583056,
@@ -16459,10 +16588,28 @@
       "class": "NiFloatsExtraData"
     },
     {
+      "rva": 15827904,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 15855488,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 15855552,
       "size": 89,
       "extent_source": "local-function-table",
       "class": "NiObject"
+    },
+    {
+      "rva": 15856576,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 15966208,
@@ -16547,6 +16694,12 @@
       "size": 52,
       "extent_source": "local-function-table",
       "class": "NiBlendAccumTransformInterpolator"
+    },
+    {
+      "rva": 16175168,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 16198592,
@@ -16891,6 +17044,12 @@
       "class": "NiAVObject"
     },
     {
+      "rva": 16593072,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 16616528,
       "size": 79,
       "extent_source": "local-function-table",
@@ -16985,6 +17144,12 @@
       "size": 63,
       "extent_source": "local-function-table",
       "class": "BSSubIndexTriShape"
+    },
+    {
+      "rva": 16740016,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 16757168,
@@ -17143,6 +17308,12 @@
       "class": "NiObject"
     },
     {
+      "rva": 17428592,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 17575664,
       "size": 49,
       "extent_source": "local-function-table",
@@ -17153,6 +17324,12 @@
       "size": 93,
       "extent_source": "local-function-table",
       "class": "NiObject"
+    },
+    {
+      "rva": 17601200,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 18556160,
@@ -17167,6 +17344,30 @@
       "class": "BGSMoviePlayer"
     },
     {
+      "rva": 18644640,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18647856,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18657024,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18657040,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 18660752,
       "size": 122,
       "extent_source": "local-function-table",
@@ -17177,6 +17378,54 @@
       "size": 66,
       "extent_source": "local-function-table",
       "class": "PathingRequest"
+    },
+    {
+      "rva": 18662816,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18663104,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18663184,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18663584,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18663856,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18688096,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18700528,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18700544,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 18704032,
@@ -17257,10 +17506,76 @@
       "class": "BSNavmesh"
     },
     {
+      "rva": 18872176,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18984304,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18990128,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18990160,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 18995584,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19032720,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19043936,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
       "rva": 19081664,
       "size": 52,
       "extent_source": "local-function-table",
       "class": "MovementTweenerAgentNodeFollower"
+    },
+    {
+      "rva": 19082432,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19082448,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19160624,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19163360,
+      "size": 15,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 21911760,

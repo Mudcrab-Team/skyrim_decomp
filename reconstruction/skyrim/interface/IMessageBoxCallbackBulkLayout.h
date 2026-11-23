@@ -10,7 +10,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "bscore/BSIntrusiveRefCountedBulkLayout.h"
+#include "../../bscore/BSIntrusiveRefCountedBulkLayout.h"
 
 namespace ResearchLayouts {
 class IMessageBoxCallbackBulkLayout : public BSIntrusiveRefCountedBulkLayout {

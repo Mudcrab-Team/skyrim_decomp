@@ -104,6 +104,12 @@
     "size": 59
    }
   },
+  "0x109f070": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
   "0x10c2ef0": {
    "crashlogger": {
     "class": "NiObject",
@@ -124,6 +130,12 @@
     "size": 93
    }
   },
+  "0x10c92b0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
   "0x11b2500": {
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
@@ -134,6 +146,18 @@
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
     "size": 51
+   }
+  },
+  "0x11c7ea0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
+  "0x11c8b30": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
    }
   },
   "0x11cbd90": {
@@ -150,6 +174,22 @@
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
     "name": "PathingRequest::sub_1410B9F40",
     "size": 66
+   }
+  },
+  "0x11cc5a0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
+  "0x11cc6c0": {
+   "crashlogger": {
+    "class": "IMovementSelectIdle",
+    "convention": "thiscall",
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "name": "IMovementSelectIdle::~IMovementSelectIdle",
+    "prototype": "void (IMovementSelectIdle_7e59d0ee*)",
+    "size": 15
    }
   },
   "0x11d66a0": {
@@ -229,6 +269,34 @@
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
     "name": "IntersectionCompareFunction",
     "size": 67
+   }
+  },
+  "0x11ff770": {
+   "crashlogger": {
+    "class": "BSNavmeshSearch",
+    "convention": "thiscall",
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "name": "BSNavmeshSearch::ctor",
+    "prototype": "NiBoneMatrixSetterI_cb2536df*(NiBoneMatrixSetterI_cb2536df*)",
+    "size": 15
+   }
+  },
+  "0x121ad70": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
+  "0x1245e30": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
+  "0x12468e0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
    }
   },
   "0x146260": {
@@ -8437,6 +8505,11 @@
     "size": 106
    }
   },
+  "0x57dee0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
   "0x5ba2d0": {
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
@@ -9300,6 +9373,11 @@
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
     "prototype": "unsigned long long (void)",
     "size": 18
+   }
+  },
+  "0x661180": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
    }
   },
   "0x661e20": {
@@ -10757,6 +10835,11 @@
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
    }
   },
+  "0x6bac50": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
   "0x6be290": {
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
@@ -12038,6 +12121,26 @@
     "size": 120
    }
   },
+  "0x79a530": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
+  "0x79a540": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
+  "0x79a550": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
+  "0x79a560": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
   "0x7a3ec0": {
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
@@ -12102,6 +12205,11 @@
     "name": "MovementHandlerAgentStairsHelper::dtor_deleting",
     "prototype": "void (BSParticleShaderProperty_d994b2f7*)",
     "size": 73
+   }
+  },
+  "0x7a8fc0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
    }
   },
   "0x7a9260": {
@@ -12570,6 +12678,11 @@
     "size": 92
    }
   },
+  "0x809ec0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
+   }
+  },
   "0x80a250": {
    "crashlogger": {
     "class": "CombatAimController",
@@ -12636,6 +12749,11 @@
     "name": "CombatAreaHoldPosition::dtor_deleting",
     "prototype": "void (BSParticleShaderProperty_d994b2f7*)",
     "size": 62
+   }
+  },
+  "0x810020": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)"
    }
   },
   "0x82cd30": {
@@ -13588,6 +13706,12 @@
     "size": 54
    }
   },
+  "0x9ccc30": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
   "0x9cf9b0": {
    "crashlogger": {
     "class": "SaveStorageWrapper",
@@ -13832,6 +13956,12 @@
     "size": 111
    }
   },
+  "0xb4cbb0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
   "0xbaf9d0": {
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
@@ -13925,6 +14055,12 @@
     "size": 107
    }
   },
+  "0xc75450": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
   "0xcca630": {
    "crashlogger": {
     "class": "BSAudioManager",
@@ -14001,6 +14137,16 @@
    "crashlogger": {
     "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
     "size": 45
+   }
+  },
+  "0xcebe10": {
+   "crashlogger": {
+    "class": "IMemoryHeap",
+    "convention": "thiscall",
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "name": "IMemoryHeap::~IMemoryHeap",
+    "prototype": "void (IMemoryHeap*)",
+    "size": 15
    }
   },
   "0xcec170": {
@@ -14570,6 +14716,22 @@
     "size": 123
    }
   },
+  "0xf183c0": {
+   "crashlogger": {
+    "class": "NiTriShape",
+    "convention": "thiscall",
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "name": "NiTriShape::dtor",
+    "prototype": "void (IMovementControllerRegisterInterface*)",
+    "size": 15
+   }
+  },
+  "0xf1ef80": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
+   }
+  },
   "0xf1efc0": {
    "crashlogger": {
     "class": "NiTriBasedGeomData",
@@ -14578,6 +14740,12 @@
     "name": "NiTriBasedGeomData::NiTriBasedGeomData",
     "prototype": "void (NiTriBasedGeomData*)",
     "size": 89
+   }
+  },
+  "0xf1f3c0": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
    }
   },
   "0xf3a000": {
@@ -14670,6 +14838,12 @@
     "name": "NiBlendAccumTransformInterpolator::dtor_deleting",
     "prototype": "void (BSParticleShaderProperty_d994b2f7*)",
     "size": 52
+   }
+  },
+  "0xf6d040": {
+   "crashlogger": {
+    "label": "CRASHLOGGER_PDB(59818@2026.10.24)",
+    "size": 15
    }
   },
   "0xf72bc0": {
@@ -15307,6 +15481,6 @@
   }
  },
  "schema": 1,
- "targets": 2114,
- "with_facts": 2033
+ "targets": 2165,
+ "with_facts": 2061
 }

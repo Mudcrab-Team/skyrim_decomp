@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "skyrim_shared/forms/TESForm.h"
+#include "../forms/TESForm.h"
 inline BaseFormComponent::~BaseFormComponent() {}
 class BGSPreloadable : public BaseFormComponent { public: ~BGSPreloadable() override {} void InitializeDataComponent() override; void ClearDataComponent() override; void CopyComponent(BaseFormComponent*) override; virtual void Preload(); };
 struct ImpactEntry { const void* key; void* value; ImpactEntry* next; };

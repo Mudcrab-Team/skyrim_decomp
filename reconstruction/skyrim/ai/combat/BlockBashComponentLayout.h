@@ -7,7 +7,7 @@
 // BGSMessageIcon, TESAttackDamageForm, BGSBlockBashData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 #include <cstdint>
-#include "skyrim_shared/actors/RaceComponentLayout.h"
+#include "../../../skyrim_shared/actors/RaceComponentLayout.h"
 namespace ResearchLayouts {
 class ImpactDataPointeeLayout;
 class MaterialPointeeLayout;

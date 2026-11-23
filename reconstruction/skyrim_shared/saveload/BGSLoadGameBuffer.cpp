@@ -1,7 +1,6 @@
 // Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
 // pinned image and the class layout in the header beside this file. A byte match shows that this source and recipe produce the checked code; it does not verify the community names.
 // 0x637a90 BGSLoadGameBuffer::GetVersion
-// 0x637e70 BGSLoadGameBuffer::LoadDataEndian
 // 0x637ab0 BGSLoadGameBuffer::ReadFormID
 #include "BGSLoadGameBuffer.h"
 
@@ -11,12 +10,6 @@
 std::uint8_t BGSLoadGameBuffer::GetVersion()
 {
 	return gBGSSaveLoadGame->QueryState();
-}
-
-void BGSLoadGameBuffer::LoadDataEndian(void* a_data, std::uint32_t a_size)
-{
-	std::memcpy(a_data, static_cast<std::uint8_t*>(buffer) + bufferPosition, a_size);
-	bufferPosition += a_size;
 }
 
 bool BGSLoadGameBuffer::ReadFormID(std::uint32_t& a_formID)

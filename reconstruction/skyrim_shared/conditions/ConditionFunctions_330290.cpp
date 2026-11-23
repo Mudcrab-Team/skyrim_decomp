@@ -7,7 +7,7 @@
 // ConditionFunctions::GetDistance: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x330290 Condition::GetDistance
 #include "ConditionFunctions_330290.h"
-#include "skyrim_shared/forms/TESForm_1467c0.h"
+#include "../forms/TESForm_1467c0.h"
 extern float DistanceBetween(TESForm*, TESForm*, bool, bool);
 extern void* conditionLogger;
 extern const char distanceLogFormat[];

@@ -81,6 +81,8 @@ DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 SELF_TEST_RVA = 0xef8900
 UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
 PLAIN_NAME = re.compile(r'((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
+# A claim-time entry with no class: the bare RVA placeholder (tools/claimable.py).
+BARE_PLACEHOLDER = re.compile(r'Function[0-9a-f]+')
 RVA_TOKEN = re.compile(r'(?<![0-9A-Za-z])0x([0-9a-fA-F]{3,8})(?![0-9A-Za-z])')
 # Pinned community naming sources (SOURCES.md) that tools/check_labels.py and check_origin.py read
 # from .local/sources/.
@@ -2140,9 +2142,21 @@ def start(ctx, args, quiet=False):
         if fn['status'] == 'matched' and not args.practice:
             raise Stop(USAGE, f'{text} is already matched; use --practice to try it as an exercise', f'{ctx.cli} next')
         fns.append(fn)
+    given = getattr(args, 'class_name', None)
+    if given is not None and not PLAIN_NAME.fullmatch(f'{given}::Function'):
+        raise Stop(USAGE, f'--class must be a plain class name such as TESObjectCELL, not {given!r}')
+    if given:
+        # The class is the contributor's reading and only names the unit; the inventory entry keeps its own
+        # GUESS label. Entries that already carry a class are left as they are.
+        fns = [dict(fn, name=f'{given}::{fn["name"]}') if BARE_PLACEHOLDER.fullmatch(fn.get('name') or '') else fn
+               for fn in fns]
     m = [PLAIN_NAME.fullmatch(fn.get('name') or '') for fn in fns]
     if not all(m):
-        raise Stop(USAGE, 'only plain Class::Method names can be started with a skeleton', f'{ctx.cli} next')
+        bare = any(BARE_PLACEHOLDER.fullmatch(fn.get('name') or '') for fn in fns)
+        raise Stop(USAGE, 'only plain Class::Method names can be started with a skeleton'
+                   + ('; an entry named Function<rva> has no class yet: pass --class <ClassName>, '
+                      'your reading of the owner (label it GUESS unless a public table names it)' if bare else ''),
+                   f'{ctx.cli} next')
     classes = {x.group(1) for x in m}
     if len(classes) != 1:
         raise Stop(USAGE, 'one unit per task: give functions of one class')
@@ -2952,6 +2966,8 @@ def parser():
     s.add_argument('rva', nargs='+')
     s.add_argument('--drafted-by')
     s.add_argument('--area')
+    s.add_argument('--class', dest='class_name', metavar='CLASS',
+                   help='owner class for entries still named Function<rva> (your reading; label it GUESS)')
     s.add_argument('--recipe')
     s.add_argument('--deleting-cleanup', choices=('inline', 'out-of-line'),
                    help='for a scalar deleting destructor identified locally: inline complete cleanup or call out')

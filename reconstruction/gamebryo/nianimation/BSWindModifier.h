@@ -9,7 +9,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "gamebryo/niparticle/NiPSysModifier.h"
+#include "../niparticle/NiPSysModifier.h"
 
 class NiRTTI;
 

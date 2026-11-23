@@ -152,6 +152,27 @@ class CarriedRecordsPrepareTests(PrepareBase):
         self.assertIn('would orphan', str(caught.exception))
 
 
+class ReboundRecordsTests(PrepareBase):
+    def test_an_entry_whose_carried_record_binds_another_unit_is_not_requested_from_the_old_unit(self):
+        make_tree(self.root, {0x100: OLD, 0x200: OLD})
+        (self.root / 'reports/x').mkdir(parents=True)
+        self.git('init', '-q', '-b', 'main')
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'base')
+        base = self.git('rev-parse', 'HEAD')
+        self.git('checkout', '-q', '-b', 'pr')
+        (self.root / 'reports/x/0x200.json').write_text(json.dumps({'source': {'compiled': NEW}}))
+        (self.root / 'reports/x/0x300.json').write_text('not json')
+        self.git('add', '-A')
+        self.git('commit', '-qm', 'rebind')
+        head = self.git('rev-parse', 'HEAD')
+        moved = ci.rebound_units(self.root, base, head)
+        self.assertEqual(moved, {0x200: NEW})
+        known = {OLD: [dict(rva=0x100), dict(rva=0x200)], NEW: [dict(rva=0x400)]}
+        self.assertEqual(ci.without_rebound(known, moved),
+                         {OLD: [dict(rva=0x100)], NEW: [dict(rva=0x400)]})
+
+
 class IncludeResolutionTests(unittest.TestCase):
     def problems(self, files, deleted):
         from unittest import mock

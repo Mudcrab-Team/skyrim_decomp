@@ -6,15 +6,9 @@
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // Adapted bodies: none.
 // 0xfe4fe0 BSMultiBoundShape::GetWithinPoint
-// 0xfe4fb0 BSMultiBoundShape::ctor
 #include "BSMultiBoundShape.h"
 
 bool BSMultiBoundShape::GetWithinPoint(const NiPoint3& a_pos)
 {
     return false;
-}
-
-BSMultiBoundShape::BSMultiBoundShape()
-{
-    unk10 = 0;
 }

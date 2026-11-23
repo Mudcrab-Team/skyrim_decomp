@@ -31,7 +31,7 @@ template<class T> struct LockedArray_93c990 : ArrayStorage<T>, ArrayBase {
   return found;
  }
  T& At(unsigned index) const { return this->data[index]; }
- // The selected append has its own body at the independently extracted append RVA; retain that call boundary while comparing it separately.
+ // noinline: The selected append has its own body at the independently extracted append RVA; retain that call boundary while comparing it separately.
  __declspec(noinline) void Push(const T& value) {
   unsigned index=Reserve(ArrayFunctor(this),this->capacity,sizeof(T));
   if(index!=~0u) Construct(this->data+index,value);

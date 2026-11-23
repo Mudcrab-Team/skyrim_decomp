@@ -351,5 +351,30 @@ class TotalsTest(unittest.TestCase):
             self.assertEqual(unknown.returncode, 2)
 
 
+class TreeNoinlineDebt(unittest.TestCase):
+    # Files that still carry an R38 finding; the list only shrinks. A file whose note is fixed
+    # must leave it, so a regrown finding anywhere else fails here.
+    KNOWN = {'reconstruction/bsshader/BSLightingShaderMaterialEye.h',
+             'reconstruction/bsshader/BSLightingShaderMaterialLandscape.h',
+             'reconstruction/gamebryo/nianimation/NiBlendTransformInterpolator_f67ed0.cpp',
+             'reconstruction/gamebryo/nimain/BSLeafAnimNode.cpp',
+             'reconstruction/gamebryo/nimain/NiTexture.h',
+             'reconstruction/skyrim_shared/actors/TESNPC.cpp'}
+
+    def test_no_new_noinline_without_evidence(self):
+        root = Path(rules.__file__).resolve().parents[1]
+        found = set()
+        for path in (root / 'reconstruction').rglob('*'):
+            if path.suffix not in ('.h', '.cpp') or 'generated' in path.parts:
+                continue
+            text = path.read_text(encoding='utf-8', errors='replace')
+            if 'noinline' not in text:
+                continue
+            name = path.relative_to(root).as_posix()
+            if any(' R38 ' in line for line in rules.refusals(name, text)):
+                found.add(name)
+        self.assertEqual(set(), found - self.KNOWN, 'noinline without a `// noinline:` note')
+
+
 if __name__ == '__main__':
     unittest.main()

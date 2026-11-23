@@ -1,4 +1,5 @@
 """Conservative resource/path screen for contributed C++; not a C++ security sandbox."""
+import posixpath
 import re
 import unicodedata
 from pathlib import PurePosixPath
@@ -20,6 +21,20 @@ MAX_MESSAGE_BYTES = 4096
 MAX_HISTORY_BYTES = 65536
 MAX_IDENTITY_BYTES = 256
 EMAIL = re.compile(r'[^\s<>@,;"\\]+@[^\s<>@,;"\\]+\Z')
+
+
+def stays_in_tree(name, target):
+    """Whether `target`, written in `name`, climbs only to another header under `reconstruction/`.
+
+    Accepted units were written with `"../area/X.h"` and a recipe without an include root finds a
+    repository header no other way, so the spelling has to stay allowed; what a parent step must never do
+    is leave the tree or take a host path.
+    """
+    if (not name.startswith('reconstruction/') or '\\' in target or ':' in target or target.startswith('/')
+            or not re.fullmatch(r'[A-Za-z0-9_./-]+', target) or not target.endswith('.h')):
+        return False
+    joined = posixpath.normpath(posixpath.join(posixpath.dirname(name), target))
+    return joined.startswith('reconstruction/') and '..' not in joined.split('/')
 
 
 def screen(blob, name, *, headers=STANDARD_HEADERS):
@@ -54,6 +69,8 @@ def screen(blob, name, *, headers=STANDARD_HEADERS):
         return sorted(problems | {'preprocessor-spelling'})
     # Comments cannot hide keywords or arguments from this additional screen.
     normalized = re.sub(r'/\*.*?\*/', ' ', spliced, flags=re.S)
+    hops = {target for kind, target in includes if kind == '"' and '..' in target.split('/')
+            and stays_in_tree(name, target)}
     for text_variant in (text, spliced, normalized):
         if re.search(r'\b(?:__asm__|__asm|_asm|asm|__emit|__pragma|_Pragma)\b', text_variant):
             problems.add('assembly-or-pragma-operator')
@@ -67,13 +84,18 @@ def screen(blob, name, *, headers=STANDARD_HEADERS):
             if not PRAGMAS.fullmatch(match.group(1).strip()):
                 problems.add('unsafe-pragma')
         # A path or escape in any literal/macro/comment must not name a host location.
+        pathed = text_variant
+        for hop in hops:
+            pathed = pathed.replace(f'"{hop}"', '"x.h"')
         if (re.search(r'(?:(?<![A-Za-z0-9_])[A-Za-z]:[\\/]|["\'][A-Za-z]:|\\\\|(?:^|[\s"\'(<>=])/[^/*=\s])', text_variant)
-                or re.search(r'\.\.[\\/]|[\\/]\.\.(?:[\\/"\']|$)', text_variant)
+                or re.search(r'\.\.[\\/]|[\\/]\.\.(?:[\\/"\']|$)', pathed)
                 or re.search(r'~[\\/]|\.(?:local|git)(?:[\\/"\']|$)', text_variant)
                 or re.search(r'\\(?:x[0-9a-fA-F]|[uU][0-9a-fA-F]|[0-7])', text_variant)):
             problems.add('path-or-encoded-escape')
     for kind, target in includes:
         parts = PurePosixPath(target).parts
+        if target in hops:
+            continue
         if (not parts or any(p in ('.', '..') for p in parts) or '\\' in target or ':' in target
                 or target.startswith('/') or not re.fullmatch(r'[A-Za-z0-9_./-]+', target)):
             problems.add('include-outside-roots')

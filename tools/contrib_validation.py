@@ -103,7 +103,7 @@ def screen_diagnostics(blob, name, *, headers=contrib_screen.STANDARD_HEADERS, c
                     continue
                 locations.setdefault(code, number)
     return [f'{name}:{locations.get(code, 1)}: deterministic screen: {code}; fix: '
-            + ('use a reconstruction-root header path without parent steps or host paths'
+            + ('use a header path that stays inside reconstruction/, never a host path'
                if code in ('path-or-encoded-escape', 'include-outside-roots') else
                'remove the refused construct or reduce the reported resource use') for code in codes]
 

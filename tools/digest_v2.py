@@ -144,6 +144,41 @@ def same_code(old, new, name):
         return False
 
 
+QUOTED_INCLUDE = re.compile(r'^([ \t]*#[ \t]*include[ \t]*)"([^"\n]+)"', re.M)
+
+
+def _spelled_by_target(text, name, exists):
+    """`text` with each quoted include rewritten to the repository file it reaches.
+
+    A target is searched next to the including file, then from the repository's `reconstruction/`
+    root; one that reaches no file stays as written, so a changed or broken include still differs.
+    """
+    own = posixpath.dirname(name)
+
+    def reach(match):
+        target = match.group(2)
+        for base in (own, 'reconstruction'):
+            found = posixpath.normpath(posixpath.join(base, target))
+            if exists(found):
+                return f'{match.group(1)}"{found}"'
+        return match.group(0)
+    return QUOTED_INCLUDE.sub(reach, text)
+
+
+def same_code_resolved(old, new, name, exists):
+    """Whether two versions of a file differ only in comments and in how a repository include is spelled.
+
+    `exists(path)` says whether a repository file is present in the tree the new text lives in. The
+    digest v2 maps every repository include to a fixed token, so such a change leaves every unit
+    digest as it was; this is what lets the owner lane merge a respelling without a compile.
+    """
+    try:
+        return (_spelled_by_target(strip_comments(old, name, False), name, exists)
+                == _spelled_by_target(strip_comments(new, name, False), name, exists))
+    except ValueError:
+        return False
+
+
 REPO_INCLUDE = '#include @repo'
 FORBIDDEN_V2 = re.compile(r'(?<![A-Za-z0-9_])__FILEW?__(?![A-Za-z0-9_])|^[ \t]*#[ \t]*line\b', re.M)
 

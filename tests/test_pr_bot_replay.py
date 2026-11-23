@@ -1265,6 +1265,91 @@ class CarriedRecordsTests(Replay):
         self.assertEqual(self.w.state(self.bot, 7).get('decision')['blocked'], 'scope')
 
 
+class CommentOnlyLaneTests(Replay):
+    """An owner PR that only edits comments of files claiming no function lands without a compile or review."""
+    HEADER = 'reconstruction/fx/Helper.h'
+
+    def setUp(self):
+        super().setUp()
+        self.w.move_main({self.HEADER: '// note\nint helper;\n'})
+
+    def add_check(self, number, conclusion='success'):
+        head = self.w.github.prs[number]['head']
+        self.w.ci.runs.setdefault(head, []).append(dict(
+            id=900 + number, name='check', head_sha=head, status='completed', conclusion=conclusion,
+            started_at=OLD, details_url='https://ci.invalid/runs/1'))
+
+    def test_a_comment_only_change_to_a_header_with_no_function_merges_with_no_compile_or_review(self):
+        self.w.make_pr(7, {self.HEADER: '// noinline: reworded note\nint helper;\n'}, author=pr_bot.OWNER)
+        self.add_check(7)
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual((self.w.reviewers.calls, self.w.compiled, self.w.recorded), ([], [], []))
+        self.assertTrue(self.w.main_log()[0].startswith('Comment-only change to 1 reconstruction file'))
+
+    def test_a_code_change_is_not_in_the_lane(self):
+        self.w.make_pr(7, {self.HEADER: '// note\nint helper2;\n'}, author=pr_bot.OWNER)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        self.assertEqual(self.w.reviewers.calls, [])
+
+    def test_an_outside_contributors_comment_change_is_not_merged_by_the_lane(self):
+        self.w.make_pr(7, {self.HEADER: '// reworded\nint helper;\n'}, author='alice')
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+    def test_a_failed_hash_job_blocks_the_merge(self):
+        self.w.make_pr(7, {self.HEADER: '// reworded\nint helper;\n'}, author=pr_bot.OWNER, ci='fail')
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+
+class IncludeRespellLaneTests(Replay):
+    """An owner PR that only changes how a repository include is spelled lands without a compile or review."""
+    UNIT = 'reconstruction/fx/Claims.cpp'
+    DEP = 'reconstruction/core/Dep.h'
+
+    def setUp(self):
+        super().setUp()
+        self.w.move_main({self.DEP: '// dep\nstruct Dep { int x; };\n',
+                          self.UNIT: '#include "../core/Dep.h"\n' + unit(0x1000)})
+
+    def add_check(self, number, conclusion='success'):
+        head = self.w.github.prs[number]['head']
+        self.w.ci.runs.setdefault(head, []).append(dict(
+            id=900 + number, name='check', head_sha=head, status='completed', conclusion=conclusion,
+            started_at=OLD, details_url='https://ci.invalid/runs/1'))
+
+    def test_a_respelled_include_in_a_file_that_claims_a_function_merges_without_a_compile(self):
+        self.w.make_pr(7, {self.UNIT: '#include "core/Dep.h"\n' + unit(0x1000)}, author=pr_bot.OWNER)
+        self.add_check(7)
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual((self.w.reviewers.calls, self.w.compiled, self.w.recorded), ([], [], []))
+        self.assertTrue(self.w.main_log()[0].startswith('Respell includes in 1 reconstruction file'))
+
+    def test_an_include_that_reaches_another_file_is_not_in_the_lane(self):
+        self.w.make_pr(7, {self.UNIT: '#include "../core/Other.h"\n' + unit(0x1000),
+                           'reconstruction/core/Other.h': '// other\nstruct Other { int y; };\n'},
+                       author=pr_bot.OWNER)
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+    def test_a_code_change_next_to_the_respelling_is_not_in_the_lane(self):
+        self.w.make_pr(7, {self.UNIT: '#include "core/Dep.h"\n' + unit(0x1000).replace('return 1', 'return 2')},
+                       author=pr_bot.OWNER)
+        self.add_check(7)
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+    def test_an_outside_contributors_respelling_is_not_merged_by_the_lane(self):
+        self.w.make_pr(7, {self.UNIT: '#include "core/Dep.h"\n' + unit(0x1000)}, author='alice')
+        self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+
+
 class CarriedDeletionTests(Replay):
     """Only the removed files of a carried-records PR are checked as deletions."""
 

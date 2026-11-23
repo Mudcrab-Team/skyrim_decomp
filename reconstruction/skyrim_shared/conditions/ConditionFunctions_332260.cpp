@@ -7,7 +7,7 @@
 // ConditionFunctions::GetQuestCompleted: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x332260 Condition::GetQuestCompleted
 #include "ConditionFunctions_332260.h"
-#include "skyrim_shared/quest/TESQuest_332260.h"
+#include "../quest/TESQuest_332260.h"
 class TESObjectREFR;
 extern void* conditionLogger;
 extern const char questCompletedLogFormat[];

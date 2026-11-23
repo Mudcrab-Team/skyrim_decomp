@@ -50,13 +50,13 @@ class Preflight(fixtures.SubmitTests):
         _code, submit = self.submit()
         self.assertIn(finding, submit['blockers'])
 
-    def test_parent_include_gets_the_same_screen_as_intake_like_72(self):
+    def test_parent_step_in_a_literal_gets_the_same_screen_as_intake_like_72(self):
         cpp = self.repo / self.unit[1]
-        cpp.write_text(cpp.read_text().replace('"TESActorBaseData.h"', '"../forms/TESActorBaseData.h"'))
+        cpp.write_text(cpp.read_text() + '\nconst char* kHostPath = "../secret";\n')
         self.refresh_digest()
         _code, result = self.preflight()
         finding = next(p for p in result['blockers'] if 'path-or-encoded-escape' in p)
-        line = next(i for i, text in enumerate(cpp.read_text().splitlines(), 1) if '#include' in text)
+        line = next(i for i, text in enumerate(cpp.read_text().splitlines(), 1) if 'kHostPath' in text)
         self.assertIn(f'{self.unit[1]}:{line}:', finding)
         self.assertIn('fix:', finding)
         self.git('add', *self.unit)

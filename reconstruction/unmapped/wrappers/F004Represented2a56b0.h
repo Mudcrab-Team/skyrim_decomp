@@ -11,7 +11,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/support/ImageSpaceModifierInstanceLayout.h"
+#include "../support/ImageSpaceModifierInstanceLayout.h"
 
 namespace ResearchLayouts {
 class F004Represented2a56b0 : public ImageSpaceModifierInstanceLayout {

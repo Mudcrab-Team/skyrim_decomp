@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "e514e4fdec887a34a19c309b408235ee71af19a64f1297f50bb112e3df783354",
+        "object_sha256": "1a9365d3441f6df8d8df19641c94c5fa49897b8f04a763a09ac0eee7393c39d1",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
@@ -46,7 +46,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "8f837da6de7d47fda10b5517c934f66605cc1ecf1532f4b65b9ae1985bc6c4e4",
+        "object_sha256": "949e0da436ab9f78f872ff04dfc6d07a17e8974e22d699a15891c8d460fd4c86",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
@@ -64,13 +64,13 @@
     "/showIncludes was measured once, on the first accepted unit, to change no object section except the object-path record in .debug$S (and the .chks64 checksum of it); it was not re-measured for this unit.",
     "Whole-object hashes differ between compiles in the COFF timestamp, the object path recorded in .debug$S (each host compiles to its own path) and the .chks64 checksum of that section.",
     "A byte match shows that this source and recipe produce the checked code. It does not verify the community name, and it does not show that the original source looked like this.",
-    "Source state: working tree on base commit 8292d7bf3b0e006a010a23cee3ce467cd7600bf7, with uncommitted changes to reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp, reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.h, reports/sse-steam-1-7-104/unit-symbols/9d953a8eccf04758c4d152b9e56b5d9588c7ddd1738d20fb6dabec1dbe222700.json at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
+    "Source state: working tree on base commit 348c5f6f5516503df8a959acd67916bab773351b, with uncommitted changes to reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp at confirm time. The runs bind the unit digest, recipe and symbol-map hashes above and comparator source sha256 6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46 (each report's comparator.source_sha256), not a commit; tools/check.py recomputes them from whatever tree this record is committed in."
   ],
   "recipe": {
     "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
     "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
   },
-  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_boat_machine.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x3269a0 --symbol '?DoClearDucking@BGSMusicSingleTrack@@QEAAXXZ' --compiled reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp --unit reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/9d953a8eccf04758c4d152b9e56b5d9588c7ddd1738d20fb6dabec1dbe222700.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
+  "reproduction": "From the repository root, on each compile host, with cl 19.16.27054 x64 unpacked at <msvc> (an MSVC toolset and Windows SDK whose compiler binaries match tools/verifier/pinned.sha256; tools/verifier/setup_toolchain.sh shows one way to unpack them with msvc-wine) and CL, EXTERNAL_INCLUDE, INCLUDE, LIB, LIBPATH, _CL_ removed from the environment. Under Wine: <msvc>/bin/x64/cl /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp (the msvc-wine wrapper sets INCLUDE to toolchain and SDK directories only). Natively on Windows: set INCLUDE to the directories the wrapper uses, in its order, <msvc>/VC/Tools/MSVC/<toolset>/atlmfc/include;<msvc>/VC/Tools/MSVC/<toolset>/include;<msvc>/Windows Kits/10/Include/<sdk>/shared;.../ucrt;.../um;.../winrt;.../km (tools/verifier/unit_build.py, MSVC_INCLUDE_DIRS), then run <msvc>/VC/Tools/MSVC/<toolset>/bin/Hostx64/x64/cl.exe /nologo /c /O2 /MD /GS- /EHsc /GR /fp:precise /Gy /showIncludes /Fo<work>/candidate.obj reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp. On both, the verifier required the repository files /showIncludes lists to equal --unit below ; python3 -I tools/verifier/tu_task.py --function-id sse-steam-1-7-104-0x3269a0 --symbol '?DoClearDucking@BGSMusicSingleTrack@@QEAAXXZ' --compiled reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp --unit reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.h --recipe reconstruction/recipes/msvc-19.16.27054-o2.json --symbols reports/sse-steam-1-7-104/unit-symbols/9d953a8eccf04758c4d152b9e56b5d9588c7ddd1738d20fb6dabec1dbe222700.json --object <work>/candidate.obj --out <work> ; python3 tools/verifier/verify_function.py --task-file <work>/task-file.json --object <work>/candidate.obj --build-record <work>/build-record.json --image <your SkyrimSE.exe> --report <work>/report.json",
   "runs": [
     {
       "compared_on": "mac-wine",
@@ -80,7 +80,7 @@
         "candidate": {
           "code_section_sha256": "bf59a54d8a086209672c369c52eafceaa87940e758d72f570a82d0ae0f6bd716",
           "code_sections": 1,
-          "object_sha256": "e514e4fdec887a34a19c309b408235ee71af19a64f1297f50bb112e3df783354"
+          "object_sha256": "1a9365d3441f6df8d8df19641c94c5fa49897b8f04a763a09ac0eee7393c39d1"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -142,8 +142,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp",
-          "source_revision": "7c24261038ab59f5918c1ede394109961276e669132a7f4247e92adc3538dd35"
+          "path": "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
+          "source_revision": "04e6f40c6147180b80c2b9f2a55021ba07d5a38fe25a5c8caf4040f7958d7d2e"
         },
         "symbol_map_sha256": "9d953a8eccf04758c4d152b9e56b5d9588c7ddd1738d20fb6dabec1dbe222700",
         "target": {
@@ -161,7 +161,7 @@
         "candidate": {
           "code_section_sha256": "bf59a54d8a086209672c369c52eafceaa87940e758d72f570a82d0ae0f6bd716",
           "code_sections": 1,
-          "object_sha256": "8f837da6de7d47fda10b5517c934f66605cc1ecf1532f4b65b9ae1985bc6c4e4"
+          "object_sha256": "949e0da436ab9f78f872ff04dfc6d07a17e8974e22d699a15891c8d460fd4c86"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -223,8 +223,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp",
-          "source_revision": "7c24261038ab59f5918c1ede394109961276e669132a7f4247e92adc3538dd35"
+          "path": "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
+          "source_revision": "04e6f40c6147180b80c2b9f2a55021ba07d5a38fe25a5c8caf4040f7958d7d2e"
         },
         "symbol_map_sha256": "9d953a8eccf04758c4d152b9e56b5d9588c7ddd1738d20fb6dabec1dbe222700",
         "target": {
@@ -242,7 +242,7 @@
         "candidate": {
           "code_section_sha256": "bf59a54d8a086209672c369c52eafceaa87940e758d72f570a82d0ae0f6bd716",
           "code_sections": 1,
-          "object_sha256": "8f837da6de7d47fda10b5517c934f66605cc1ecf1532f4b65b9ae1985bc6c4e4"
+          "object_sha256": "949e0da436ab9f78f872ff04dfc6d07a17e8974e22d699a15891c8d460fd4c86"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -304,8 +304,8 @@
         "report_schema": 1,
         "result": "pass",
         "source": {
-          "path": "reconstruction/fo4b4b_3269d0/BGSMusicSingleTrack.cpp",
-          "source_revision": "7c24261038ab59f5918c1ede394109961276e669132a7f4247e92adc3538dd35"
+          "path": "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
+          "source_revision": "04e6f40c6147180b80c2b9f2a55021ba07d5a38fe25a5c8caf4040f7958d7d2e"
         },
         "symbol_map_sha256": "9d953a8eccf04758c4d152b9e56b5d9588c7ddd1738d20fb6dabec1dbe222700",
         "target": {
@@ -318,10 +318,8 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
-    "digest": "812a99bb6dbbf3bca2a8521a78d589ec15e1ff312e36bfacff505134fb7f1ab8",
+    "digest": "04e6f40c6147180b80c2b9f2a55021ba07d5a38fe25a5c8caf4040f7958d7d2e",
     "digest_method": "tu-sha256-v2",
-    "run_digest": "7c24261038ab59f5918c1ede394109961276e669132a7f4247e92adc3538dd35",
-    "run_digest_method": "tu-sha256-v1",
     "translation_unit": [
       "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.cpp",
       "reconstruction/skyrim_shared/audio/BGSMusicSingleTrack.h"
