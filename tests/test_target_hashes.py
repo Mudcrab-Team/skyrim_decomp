@@ -78,6 +78,23 @@ class TargetHashTest(unittest.TestCase):
         recursive = h.target_section(bytes.fromhex('e8fbffffffc3'), 0x1000)
         self.assertEqual(h.layout(recursive), [(1, 5, fx.REL32)])
 
+    def test_thread_local_epoch_offset_is_inferred_only_in_the_guard_shape(self):
+        try:
+            import iced_x86  # noqa: F401
+        except ImportError:
+            self.skipTest('local generator dependency iced-x86==1.21.0 not installed')
+        tls = bytes.fromhex('65488b042558000000')  # mov rax, gs:[58h]
+        index = bytes.fromhex('ba082a0000')  # mov edx, imm32
+        use = bytes.fromhex('488b0cc8' '8b040a' 'c3')  # mov rcx,[rax+rcx*8]; mov eax,[rdx+rcx]; ret
+        sec = h.target_section(tls + index + use, 0x1000)
+        self.assertEqual(h.layout(sec), [(10, 14, compare.SECREL)])
+        # The same immediate without the TLS-block lookup is ordinary code and stays exact.
+        self.assertEqual(h.layout(h.target_section(index + bytes.fromhex('8b040a' 'c3'), 0x1000)), [])
+        # An immediate in a register the lookup never uses is not a section offset.
+        other = bytes.fromhex('be082a0000')  # mov esi, imm32
+        lookup = bytes.fromhex('488b0cd0' 'c3')  # mov rcx,[rax+rdx*8]; ret
+        self.assertEqual(h.layout(h.target_section(tls + other + lookup, 0x1000)), [])
+
     def test_preparation_reads_blobs_never_executes_pr_and_rejects_symlinks(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / 'repo'

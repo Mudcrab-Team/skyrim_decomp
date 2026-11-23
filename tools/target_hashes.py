@@ -59,14 +59,33 @@ def target_section(data, rva):
     ADDR32NB/SECREL and linker transformations need a private, locally checked override.
     No other immediates, register operands, internal branches or padding are erased.
     """
-    from iced_x86 import Decoder, FlowControl, OpKind, Register
+    from iced_x86 import Decoder, FlowControl, Mnemonic, OpKind, Register, RegisterExt
     decoder = Decoder(64, data, ip=rva)
     relocs = []
-    for ins in decoder:
+    # MSVC's thread-safe local-static guard loads the thread-local epoch's section offset into a register
+    # and then indexes the thread's TLS block with it; the linker writes the offset into the immediate.
+    # Only that exact shape is inferred, so any other immediate stays exact code.
+    imm_loads = {}  # full register -> (instruction index, immediate field offset)
+    tls_seen = None
+    for number, ins in enumerate(decoder):
         if ins.is_invalid:
             raise ValueError('unsupported target instruction')
         fields = decoder.get_constant_offsets(ins)
         offset = ins.ip - rva
+        if (ins.mnemonic == Mnemonic.MOV and ins.op0_kind == OpKind.REGISTER and ins.op1_kind == OpKind.IMMEDIATE32
+                and fields.immediate_size == 4):
+            imm_loads[RegisterExt.full_register(ins.op0_register)] = (number, offset + fields.immediate_offset)
+        elif (ins.mnemonic == Mnemonic.MOV and ins.op1_kind == OpKind.MEMORY and ins.memory_segment == Register.GS
+              and ins.memory_base == Register.NONE and ins.memory_index == Register.NONE
+              and ins.memory_displacement == 0x58):
+            tls_seen = number
+        elif (tls_seen is not None and number - tls_seen <= 8 and ins.memory_base != Register.NONE
+              and ins.memory_index != Register.NONE and ins.memory_index_scale == 1
+              and ins.memory_displacement == 0 and not ins.is_ip_rel_memory_operand):
+            for reg in (ins.memory_base, ins.memory_index):
+                loaded = imm_loads.pop(RegisterExt.full_register(reg), None)
+                if loaded and number - loaded[0] <= 8:
+                    relocs.append(Reloc(loaded[1], 0, compare.SECREL))
         if ins.is_ip_rel_memory_operand:
             if ins.memory_base != Register.RIP or fields.displacement_size != 4:
                 raise ValueError('unsupported IP-relative field')
@@ -82,7 +101,7 @@ def target_section(data, rva):
                     raise ValueError('unsupported external branch')
                 relocs.append(Reloc(offset + fields.immediate_offset, 0, 0x04))
     sec = Section(1, '.text', 0, 0, 0, 0, 0, 0, 0)
-    sec.data, sec.relocs = data, relocs
+    sec.data, sec.relocs = data, sorted(relocs, key=lambda r: r.offset)
     layout(sec)
     return sec
 
