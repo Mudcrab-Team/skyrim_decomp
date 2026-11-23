@@ -492,6 +492,42 @@ class PoolTests(WorkDir):
         self.assertEqual(calls.count(1), 1)
         self.assertEqual(calls.count(2), 1)
 
+    def test_free_slots_go_to_outside_prs_before_the_owners_even_when_listed_last(self):
+        release, calls = threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            release.wait(5)
+        rows = self.prs(1, 2, 3)
+        for row in rows[:2]:
+            row['author'] = {'login': pr_bot.OWNER}
+        rows[2]['author'] = {'login': 'carol'}
+        bot = self.pool_bot(lambda *a: rows, arrived)
+        bot.demand = [0]
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 2:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] in (1, 2)]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=3)
+        self.assertEqual(calls[0], 3)
+        self.assertEqual(sorted(calls[:2]), [1, 3])
+
+    def test_a_pr_waiting_on_the_hash_check_gives_its_slot_up_when_another_pr_is_ready(self):
+        bot = FakeBot(self.work)
+        bot.demand = [1]
+        bot.config['hash_wait'] = 3600
+        bot.latest_hash_run = lambda head, unusable: {'status': 'in_progress', 'id': 1, 'started_at': 'z'}
+        with mock.patch.object(pr_bot, 'HASH_YIELD_AFTER', 0), mock.patch.object(pr_bot.time, 'sleep'):
+            with self.assertRaises(pr_bot.Waiting) as caught:
+                pr_bot.Bot.host1(bot, 5, 'a' * 40, [0x10], pr_bot.State(self.work / 'state', 5, 'a' * 40))
+        self.assertIn('slot released', str(caught.exception))
+
     def test_a_gh_outage_lists_nothing_and_waits_out_the_shared_backoff(self):
         now, naps, listed = [0.0], [], []
 

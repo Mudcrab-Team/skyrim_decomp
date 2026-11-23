@@ -1475,6 +1475,7 @@ class Bot:
         self.used = threading.local()  # the reviewer of this thread's latest review
         self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
         self.carry_targets = {}  # revision -> RVAs with a published target hash there, for the comment-only carry
+        self.demand = [0]  # shared by every slot: PRs the poll has ready to run but no free slot for
         self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
@@ -2347,7 +2348,8 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         skipped = False
-        deadline = time.time() + self.config['hash_wait']
+        waiting_since = time.time()
+        deadline = waiting_since + self.config['hash_wait']
         since = state.get('rows_at') if state is not None else None  # rows published after the head's earlier runs began
         probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
         unusable = set()  # runs that finished without a result, e.g. on a stale base lacking the tools
@@ -2405,6 +2407,10 @@ class Bot:
                 raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
                 raise Waiting('hash check has not finished')
+            if self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER:
+                # CI runs on GitHub, not on this slot; holding it for the rest of hash_wait would keep PRs that
+                # are ready to run (outside contributors' first) from starting at all.
+                raise Waiting('hash check has not finished; slot released for waiting PRs')
             time.sleep(20)
         table = results_from_report(found[0]) if found else {}
         if run.get('conclusion') != 'success' and 'regressed' not in table.values():
@@ -4403,6 +4409,7 @@ def pollable(prs):
 
 
 POOL_SIZE = 2
+HASH_YIELD_AFTER = 120  # seconds a PR may hold a slot on the hash check while another PR is ready
 
 
 def mark_owner_reconstruction(bot, prs, known):
@@ -4540,6 +4547,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     for index in range(workers):
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
+    on_pool = set()  # the inflight PRs that hold one of the `workers` slots (the conflict lane has its own)
     # A conflicting PR is answered from a scratch worktree without touching a slot's tree; its own lane keeps
     # that quick answer from waiting behind compiles that hold every slot.
     conflict_slots = queue.Queue()
@@ -4556,6 +4564,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             turn += 1
             for number in [n for n, f in inflight.items() if f.done()]:
                 del inflight[number]
+                on_pool.discard(number)
             if restart_after and time.time() - started > restart_after and not inflight:
                 return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
             wait = gh.remaining()
@@ -4609,6 +4618,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                       file=sys.stderr, flush=True)
                 continue
             now = time.time()
+            bot.demand[0] = 0
             for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
@@ -4628,8 +4638,14 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                 if pr.get('mergeable') == 'CONFLICTING':
                     inflight[pr['number']] = conflict_pool.submit(work_one, conflict_slots, gh, pr, True)
-                else:
+                elif len(on_pool) < workers:
+                    # Submitting everything would queue first-come first-served inside the pool, so a contributor's
+                    # PR listed after the owner's would wait behind them; each tick instead fills only free slots,
+                    # in outside-first order.
                     inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
+                    on_pool.add(pr['number'])
+                else:
+                    bot.demand[0] += 1
             sleep(interval)
         for future in list(inflight.values()):
             future.result()
