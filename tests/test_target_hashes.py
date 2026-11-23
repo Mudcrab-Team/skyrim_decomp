@@ -175,7 +175,8 @@ class TargetHashTest(unittest.TestCase):
         manifest=h.load_manifest(ROOT); covered={f['rva'] for f in manifest['functions']}
         progress=ci.contrib.inventory(ROOT)
         candidates={ci.contrib.parse_rva(c['rva']) for c in ci.contrib.candidates(ROOT,progress) if c['startable']}
-        offered=json.loads((ROOT/h.OFFERED).read_text())
+        import claimable
+        offered=claimable.sharded_json(ROOT,h.OFFERED,'functions')
         claimed={a for claim in offered['claims'] for a,b in claim['entries'] if b==a+1}
         self.assertTrue(candidates <= covered)
         self.assertTrue(claimed <= covered)

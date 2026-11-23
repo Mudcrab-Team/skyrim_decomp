@@ -32,7 +32,7 @@ class TargetFacts(unittest.TestCase):
         self.assertNotIn('object', al)
 
     def test_committed_file_matches_derivation_shape(self):
-        data = json.loads((ROOT / target_facts.OUT).read_text())
+        data = target_facts.read(ROOT)
         self.assertEqual(data['schema'], target_facts.SCHEMA)
         self.assertLessEqual(data['with_facts'], data['targets'])
         self.assertEqual(len(data['facts']), data['with_facts'])

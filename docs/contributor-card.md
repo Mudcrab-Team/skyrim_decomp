@@ -22,7 +22,8 @@ the functions nobody holds and names the others with their claim issues.
 `next` offers callee-ready functions first (every callee already matched; `data/ready-queue.json`,
 regenerated with `tools/ready_queue.py`); the ordering is advisory.
 `data/target-hashes/contributor-target-facts.json` (from `tools/target_facts.py`) lists the committed PDB name,
-prototype, size and alignment proposal per offered target, as hints only.
+prototype, size and alignment proposal per offered target, as hints only. The file is an index; the entries are in
+`contributor-target-facts-part-NNN.json` beside it (`tools/target_facts.py` reads them back together).
 
 Read only the private pack named by the helper, after the owner has agreed to model exposure.
 Never post listings, pseudo-C, Ghidra projects, bytes, objects, raw diagnostics or paths. Keep the

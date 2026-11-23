@@ -12,6 +12,7 @@ from pathlib import Path
 import struct
 import sys
 
+import claimable
 import compare
 from pecoff import CoffObject, PeImage, Reject, Reloc, Section
 
@@ -170,8 +171,8 @@ def generate(root, image_path, overrides=None):
     image = PeImage(image_bytes)
     inventory_bytes = (root / 'data/progress.json').read_bytes()
     inventory = json.loads(inventory_bytes)
-    offered_bytes = (root / OFFERED).read_bytes()
-    offered = json.loads(offered_bytes)
+    offered_bytes = (root / OFFERED).read_bytes()  # binds the parts by their digests
+    offered = claimable.sharded_json(root, OFFERED, 'functions')
     if offered['build_id'] != target['build_id'] or offered['unresolved_rvas']:
         raise ValueError('offered target identity or boundary unresolved')
     functions = {f['rva']: f for f in inventory['functions']}

@@ -235,7 +235,7 @@ def select_on_demand(metadata, known, extra, retained=()):
 def retained_on_demand(root):
     """RVAs of earlier on-demand rows in the published offered list, kept until they are recorded."""
     try:
-        rows = json.loads((Path(root) / hashes.OFFERED).read_text())['functions']
+        rows = claimable.sharded_json(root, hashes.OFFERED, 'functions')['functions']
     except (OSError, ValueError, KeyError):
         return set()
     return {row['rva'] for row in rows if row.get('on_demand')}
@@ -300,9 +300,9 @@ def main(argv=None):
     index=ctx.github().open_items(refresh=True)
     reserved=reserved_rvas(a.reserved_dir)
     output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved,a.extra_rva,a.rva_range)
-    (ROOT/hashes.OFFERED).write_text(json.dumps(output,indent=2)+'\n')
+    claimable.write_sharded(ROOT,hashes.OFFERED,output,'functions',claimable.OFFERED_ROWS)
     import target_facts  # the sidecar must follow the list it describes
-    (ROOT/target_facts.OUT).write_text(target_facts.render(target_facts.build(ROOT)))
+    target_facts.write(ROOT,target_facts.build(ROOT))
     print(json.dumps(dict(extra_targets=len(output['functions']),next_candidates=output['next_candidate_count'],
                           claims=len(output['claims']),window=window,acceptance='not-evaluated')))
     return 0

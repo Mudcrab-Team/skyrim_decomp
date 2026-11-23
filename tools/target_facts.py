@@ -17,17 +17,19 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import claimable  # noqa: E402
 import pdb_facts  # noqa: E402
 import pdb_types  # noqa: E402
 
 OFFERED = 'data/target-hashes/contributor-targets.json'
 OUT = 'data/target-hashes/contributor-target-facts.json'
 SCHEMA = 1
+FACTS_PER_PART = 1500  # a fact entry is about 600 bytes; parts stay under the 1 MiB tracked-file cap
 
 
 def build(root):
     root = Path(root)
-    offered = json.loads((root / OFFERED).read_text())
+    offered = claimable.sharded_json(root, OFFERED, 'functions')
     tree = pdb_types.load_tree(root)
     alignment = pdb_facts._load(root / 'data/symbol-alignment.json')
     facts = {}
@@ -47,23 +49,32 @@ def build(root):
             'with_facts': len(facts), 'facts': facts}
 
 
-def render(data):
-    return json.dumps(data, indent=1, sort_keys=True) + '\n'
+def read(root):
+    """The facts file with its parts merged back, as `build` returns it."""
+    return claimable.sharded_json(root, OUT, 'facts')
+
+
+def write(root, data):
+    """Write the facts as an index and parts beside it; returns the paths written."""
+    return claimable.write_sharded(root, OUT, data, 'facts', FACTS_PER_PART)
 
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--check', action='store_true', help='fail when the committed file differs from the derived one')
+    p.add_argument('--check', action='store_true', help='fail when the committed files differ from the derived ones')
     a = p.parse_args(argv)
-    text = render(build(ROOT))
-    path = ROOT / OUT
+    data = build(ROOT)
     if a.check:
-        if not path.is_file() or path.read_text() != text:
+        try:
+            current = read(ROOT)
+        except (OSError, ValueError, KeyError):
+            current = None
+        if current != data:
             print(f'{OUT} is stale; run python3 tools/target_facts.py', file=sys.stderr)
             return 1
         return 0
-    path.write_text(text)
-    print(f'{OUT}: {json.loads(text)["with_facts"]} of {json.loads(text)["targets"]} targets have facts')
+    write(ROOT, data)
+    print(f'{OUT}: {data["with_facts"]} of {data["targets"]} targets have facts')
     return 0
 
 

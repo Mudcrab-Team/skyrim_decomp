@@ -77,7 +77,10 @@ the next one starts where the last ended. `--range LOW-HIGH` publishes every qua
 `LOW <= RVA < HIGH` at once, whatever is left to claim; a very large publication is shipped as several such ranges, each
 checked before the next. Within a chunk the order is real-unit classes first, then PDB-layout classes, then the rest;
 small and medium functions first, known names (community, RTTI, address library) and classes with matched siblings ahead
-of the rest, very large and known-hard shapes last. Functions that internal workers have planned (private plan
+of the rest, very large and known-hard shapes last. The offered list and its facts sidecar are indexes with their
+rows in `contributor-targets-part-NNN.json` and `contributor-target-facts-part-NNN.json` files (3,000 and 1,500 entries a
+file, each under the 1 MiB tracked-file cap); the index holds each part's SHA-256 and count, a reader refuses a part that
+differs, and the target-hash manifest still pins the index's exact bytes. Functions that internal workers have planned (private plan
 files under `.local/twins` and `.local/stamp-sweep`, passed as `--reserved-dir`) are skipped and, if not claimed,
 withdrawn from the window; the plans themselves are never published. The bot logs the slice and a line with
 claimable left, claimed and the daily burn rate. An open PR may also claim a function outside the window: when its header claims an RVA that has no

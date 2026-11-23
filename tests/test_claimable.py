@@ -218,6 +218,26 @@ class WindowPolicyTests(Fixture):
         self.assertIn(0x1020, again)
         self.assertNotIn(0x1020, new)
 
+    def test_a_long_offered_list_is_stored_in_parts_and_read_back_whole(self):
+        rows = [{'rva': 0x1000 + 0x10 * i, 'size': 8, 'window': True} for i in range(7)]
+        output = {'schema': 1, 'build_id': BUILD, 'claim_function_count': 0, 'functions': rows}
+        written = claimable.write_sharded(self.repo, claimable.OFFERED, output, 'functions', 3)
+        self.assertEqual(len(written), 4)  # the index and three parts
+        index = json.loads((self.repo / claimable.OFFERED).read_text())
+        self.assertNotIn('functions', index)
+        self.assertEqual([p['count'] for p in index['parts']], [3, 3, 1])
+        self.assertEqual(claimable.sharded_json(self.repo, claimable.OFFERED, 'functions')['functions'], rows)
+        self.assertEqual(set(claimable.offered_window(self.repo)), {r['rva'] for r in rows})
+        # A shorter list leaves no stale part behind.
+        claimable.write_sharded(self.repo, claimable.OFFERED, dict(output, functions=rows[:3]), 'functions', 3)
+        self.assertEqual(len(list((self.repo / 'data/target-hashes').glob('contributor-targets-part-*.json'))), 1)
+        # A part that no longer matches its digest is refused, so no reader works from a partial list.
+        part = self.repo / index['parts'][0]['path']
+        part.write_text(part.read_text().replace('4096', '4097'))
+        self.assertEqual(claimable.offered_window(self.repo), {})
+        with self.assertRaises(ValueError):
+            claimable.sharded_json(self.repo, claimable.OFFERED, 'functions')
+
     def test_an_unclaimed_reserved_row_is_withdrawn_but_a_claimed_one_stays(self):
         table = {0x200: meta(0x200, 20)[1], 0x300: meta(0x300, 150)[1], 0x500: meta(0x500, 300)[1]}
         classes, _added, _left = target_hash_offers.plan_window(
