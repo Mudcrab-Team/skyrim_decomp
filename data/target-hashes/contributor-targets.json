@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "build_id": "sse-steam-1-7-104",
-  "snapshot_utc": "2026-11-23T20:02:43.889067+00:00",
+  "snapshot_utc": "2026-11-23T20:04:23.102502+00:00",
   "function_metadata_sha256": "15ba17036f4312634d884316084923fbf3e4bdad61101ab28ae476b187376710",
   "claims_snapshot_sha256": "953ca7d5cc80e03cca0eafc2415c43e07609a69a2a174ab76f598c081d6d99e6",
   "claims": [
@@ -5114,7 +5114,7 @@
       ]
     }
   ],
-  "next_candidate_count": 12114,
+  "next_candidate_count": 67307,
   "claim_function_count": 1115,
   "unresolved_rvas": [],
   "parts": [
@@ -5135,13 +5135,103 @@
     },
     {
       "path": "data/target-hashes/contributor-targets-part-003.json",
-      "sha256": "4f532b6fb746f8c361d8c5720416e4285c695c949befbf3a49b678e0e028592b",
+      "sha256": "9e7b898a3f19d4325f11e37eea20d78bde8cfd647633aa916b2f33366f5de3be",
       "count": 3000
     },
     {
       "path": "data/target-hashes/contributor-targets-part-004.json",
-      "sha256": "591feba8de86e4008e71d86f9ab2b0fab833d882c695abc214792f1cb05c3fd3",
-      "count": 308
+      "sha256": "711b62e03c32c0367159909cd49aec6138af757725e5716481f2b850f0fa1eb6",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-005.json",
+      "sha256": "b79b3491be36d64a322587c054d5d0820953853480f3a69d9344e1debbe5b236",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-006.json",
+      "sha256": "a5ae2c3706c3bd1349629d55ac2496e242faeee339daf8aae90e1dc2d90ade50",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-007.json",
+      "sha256": "0611314f974ebebd18c496c09ee87c24d964acd649199b5a8742340574db18cf",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-008.json",
+      "sha256": "c81ebcd930ad36aa6f9a72cc1789944adb54bef9366d5235c839df0e6b74d688",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-009.json",
+      "sha256": "e81c2b4753b126b8a432c699068d034921ab019946d6495d7732ad53a6c0e46e",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-010.json",
+      "sha256": "f8a7e1a5b98e2749ac04f77bfc101a85815c6075016d7235f023ec864e602b25",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-011.json",
+      "sha256": "291273e7ba903c25457c5b92251e230713902585a209ad4e70b2c8c26c1381b5",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-012.json",
+      "sha256": "f94a96f2f375f17954f70dd605e13dd8b154ee4aca14fdc0a708c19b0e7ce73e",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-013.json",
+      "sha256": "1a11be963b8a22b5da6e1cb3b1fbc93db2a3ea54d188c70e3de60827d894d128",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-014.json",
+      "sha256": "d9b12cbfd313ffc293210cdb816dc2a56cb6e5f4f006dfb8291008e496b9f0b5",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-015.json",
+      "sha256": "1c7adc0e9ce67416289e05dbcb6687d498c77e6213af144bf6e8aa9271c1444f",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-016.json",
+      "sha256": "296909d4ede9693f81353a7886fb0f403272ca0d659a999154fc3331018fa73b",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-017.json",
+      "sha256": "26a60d731fa98ed207da6a1235f868deb16168b9be75005150bc93100a3b9460",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-018.json",
+      "sha256": "f1e18e53c6a8f5660fc3993efa4e27a1aae11a497a6fa6890c387f5cc8e081c2",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-019.json",
+      "sha256": "c39d62115ccb56fddfb7724ab30d358ad3d33c0bf2230089cbe97cb9cae7ca2e",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-020.json",
+      "sha256": "bf9dae414a3e85a911b9ffbf85aacdb2654f9d9cc3655f4d93537a705d772ea7",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-021.json",
+      "sha256": "58d4bcf956c27b5f11b064f4e1d6820c378fdaeee2591799ff582ebdede701c0",
+      "count": 3000
+    },
+    {
+      "path": "data/target-hashes/contributor-targets-part-022.json",
+      "sha256": "35ea29ecf5b0a3e51bc1cb5d17b094f42c00e26b2af72911ec5075f821de88c0",
+      "count": 1499
     }
   ]
 }
