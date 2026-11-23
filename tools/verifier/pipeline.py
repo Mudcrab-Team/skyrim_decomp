@@ -124,6 +124,26 @@ def resolve_task_dir(arg, repo=REPO):
     return (main_checkout(repo) / path).resolve()
 
 
+UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
+
+
+def unit_recipe(repo, compiled, fallback):
+    """The recipe the unit's own source names (first recipe path in the file), else `fallback`.
+
+    CI and `contrib.py compare` build the unit with the recipe it declares, so a drafter-side attempt that
+    kept the task file's recipe would measure a different compile than the one the project confirms."""
+    try:
+        found = UNIT_RECIPE.search((Path(repo) / compiled).read_text(encoding='utf-8-sig', errors='replace'))
+    except OSError:
+        return fallback
+    if not found:
+        return fallback
+    if not (Path(repo) / found.group(0)).is_file():
+        raise PipelineError(f'{compiled} names recipe {found.group(0)}, which does not exist; '
+                            'name a recipe under reconstruction/recipes/ or drop the Recipe: line')
+    return found.group(0)
+
+
 def load_task(task_dir, repo=REPO):
     task_dir = resolve_task_dir(task_dir, repo)
     private_root(task_dir)
@@ -144,6 +164,7 @@ def load_task(task_dir, repo=REPO):
     recipe = raw.get('recipe') or (f'reconstruction/recipes/{raw["recipe_name"]}.json' if raw.get('recipe_name') else None)
     if not isinstance(recipe, str) or not recipe.startswith('reconstruction/recipes/'):
         raise PipelineError('task.json: recipe must be reconstruction/recipes/<name>.json')
+    recipe = unit_recipe(repo, compiled, recipe)
     symbols = raw.get('symbols', 'symbols.json')
     if not isinstance(symbols, str):
         raise PipelineError('task.json: symbols must be a path')
