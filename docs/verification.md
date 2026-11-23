@@ -773,6 +773,11 @@ already two-host-matched build; any digest change gets no carry.
 
 An owner PR whose every change is comment-only (equal to base once comments are removed) to files that claim no
 function has nothing to match or record; the bot merges it on a clean leak scan and green `check` and `hash` jobs.
+The same lane takes an owner PR whose files also differ from base only in how a repository include is spelled (each
+include read as the file it reaches, `digest_v2.same_code_resolved`), even for files that define functions: tu-sha256-v2
+hashes an include as a fixed token, so no unit digest and no record changes, `check` proves that on the head and `hash`
+compiles it. A recipe without an include root finds a header outside the including file's directory only through a
+parent-step spelling (`"../area/X.h"`), so this is how a unit made unbuildable by a root-relative spelling is repaired.
 
 The same carry applies when the unit changed in code elsewhere but the function's own definition (its body as
 extracted from the unit's files, comments and layout ignored) is identical at base and head, the function was

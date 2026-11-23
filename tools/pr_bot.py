@@ -2704,8 +2704,9 @@ class Bot:
         self.overlay(head, files)
         if deletion_lane(files):
             return self.process_deletion(pr, state, files, base, started)
-        if self.comment_lane(pr, base, files):
-            return self.process_comment_only(pr, state, files, base, started)
+        lane = self.comment_lane(pr, base, files)
+        if lane:
+            return self.process_comment_only(pr, state, files, base, started, lane)
         if state.once('autofix_tried', lambda: self.autofix(pr, state, files)):
             # The branch has a new head; this one is finished and the next tick starts the new one.
             summary = dict(pr=number, head=head, blocked=None, merge=False, verdicts={},
@@ -3145,14 +3146,18 @@ class Bot:
         return dict(blocked=None, merge=True, verdicts={})
 
     def comment_lane(self, pr, base, files):
-        """True for an owner PR that only edits comments of existing reconstruction/ headers and sources, none of
-        which defines a function the bot compares.
+        """'comment' or 'include' for an owner PR that only edits existing reconstruction/ headers and sources
+        without changing what the compiler reads, else False.
 
-        Such a change cannot reach the compiler (digest_v2.same_code: equal once every comment is removed) and
-        no function is claimed by the files, so there is nothing to compare or record; the leak scan and the CI
-        `check` and `hash` jobs on the head still decide the merge.
+        'comment': every file equals its base once comments are removed (digest_v2.same_code) and none defines a
+        function the bot compares, so there is nothing to compare or record.
+        'include': some files also differ in how a repository include is spelled (digest_v2.same_code_resolved,
+        the same file reached). The unit digests are unchanged, so every accepted record still binds its unit;
+        the `check` job proves that on the head, and the `hash` job compiles it. Such files may define functions,
+        which is what lets a respelling repair units a spelling made unbuildable.
+        The leak scan and the CI `check` and `hash` jobs on the head still decide the merge.
         """
-        from digest_v2 import same_code
+        from digest_v2 import same_code, same_code_resolved
         if pr['author']['login'].casefold() != OWNER.casefold() or not files:
             return False
         for item in files:
@@ -3160,16 +3165,24 @@ class Bot:
             if (item.get('status') != 'modified' or item.get('previous_filename') or '..' in Path(name).parts
                     or not name.startswith(SCOPE_PREFIX) or not name.endswith(('.h', '.cpp'))):
                 return False
-        if any(self.unit_claims(files).values()):
-            return False
+        respelled = []
         for item in files:
             old = self.run(['git', 'show', f'{base}:{item["filename"]}'], check=False, cwd=self.root)
             new = self.run(['git', 'show', f'{pr["headRefOid"]}:{item["filename"]}'], check=False, cwd=self.root)
-            if old.returncode or new.returncode or not same_code(old.stdout, new.stdout, item['filename']):
+            if old.returncode:
                 return False
-        return True
+            if new.returncode:
+                return False
+            if same_code(old.stdout, new.stdout, item['filename']):
+                continue
+            if not same_code_resolved(old.stdout, new.stdout, item['filename'], lambda path: (self.tree / path).is_file()):
+                return False
+            respelled.append(item)
+        if any(self.unit_claims([f for f in files if f not in respelled]).values()):
+            return False
+        return 'include' if respelled else 'comment'
 
-    def process_comment_only(self, pr, state, files, base, started):
+    def process_comment_only(self, pr, state, files, base, started, lane='comment'):
         number, head = pr['number'], pr['headRefOid']
         decision = state.get('decision')
         if not decision:
@@ -3191,17 +3204,26 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                subject = f'Comment-only change to {len(files)} reconstruction file{"s" if len(files) != 1 else ""} (#{number})'
-                body = ('Every changed file equals its base once comments are removed, so no compile result can '
-                        'differ and no function is claimed by them; the leak scan and the check and hash jobs on '
-                        'the head passed.\n\n'
-                        f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
+                plural = 's' if len(files) != 1 else ''
+                if lane == 'include':
+                    subject = f'Respell includes in {len(files)} reconstruction file{plural} (#{number})'
+                    body = ('Every changed file equals its base once comments are removed and each repository include '
+                            'is read as the file it reaches, so no unit digest changes; the leak scan and the check '
+                            'and hash jobs on the head passed.\n\n'
+                            f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
+                else:
+                    subject = f'Comment-only change to {len(files)} reconstruction file{plural} (#{number})'
+                    body = ('Every changed file equals its base once comments are removed, so no compile result can '
+                            'differ and no function is claimed by them; the leak scan and the check and hash jobs on '
+                            'the head passed.\n\n'
+                            f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
                 merged = self.run(merge_command(number, head, subject, body), check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
         if not state.get('commented'):
-            text = ('Merged: comment-only change.' if decision['merge'] else carried_comment(decision))
+            merged_text = 'Merged: include respelling.' if lane == 'include' else 'Merged: comment-only change.'
+            text = merged_text if decision['merge'] else carried_comment(decision)
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
