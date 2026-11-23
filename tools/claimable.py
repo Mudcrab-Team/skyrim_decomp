@@ -41,6 +41,19 @@ def offered_classes(root):
     return {row['rva']: row['class'] for row in rows if row.get('class')}
 
 
+def offered_window(root):
+    """{rva: class or None} for every offered row the refill keeps until it is recorded.
+
+    A row is kept when it names a class (its layout is the reason it was offered) or carries `window`
+    (published by a window slice that had no layout to name, so there is no class to find it by).
+    """
+    try:
+        rows = json.loads((Path(root) / OFFERED).read_text())['functions']
+    except (OSError, ValueError, KeyError):
+        return {}
+    return {row['rva']: row.get('class') for row in rows if row.get('class') or row.get('window')}
+
+
 def entry(build_id, rva, size, cls=None):
     """The inventory entry a claim-time function gets: mapped, with a placeholder name labelled GUESS."""
     name = f'Function{rva:x}'

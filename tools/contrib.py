@@ -1739,7 +1739,7 @@ def cmd_next(ctx, args):
         me = ctx.github().user()
         import claimable
         pool = [(f['rva'], f['build_id']) for f in data['functions']]
-        pool += [(rva, data['target_build_id']) for rva in claimable.offered_classes(ctx.repo)]
+        pool += [(rva, data['target_build_id']) for rva in claimable.offered_window(ctx.repo)]
         claimed = {rva for rva, build in pool
                    if batch_claims.claimed(index, rva, me) and
                    any(it.get('build_id') in (None, build) for it in batch_claims.claimed(index, rva, me))}

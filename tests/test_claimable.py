@@ -88,7 +88,7 @@ class ClaimableTests(Fixture):
         rows = contrib.candidates(self.repo, self.data, claimed={0x200}, published=True)
         self.assertNotIn(0x200, [int(r['rva'], 16) for r in rows])
 
-    def test_window_takes_small_functions_of_classes_with_a_layout(self):
+    def test_window_takes_every_supported_ordinary_function_and_names_only_layout_classes(self):
         def meta(rva, size, cls, verdict='supported', kind='ordinary'):
             return rva, {'rva': rva, 'size': size, 'kind': kind, 'owner': {'class': cls} if cls else None,
                          'v2': {'verdict': verdict}}
@@ -96,8 +96,12 @@ class ClaimableTests(Fixture):
                       meta(0x50, 8, 'Foo', 'unsupported'), meta(0x60, 8, 'Foo', kind='thunk'),
                       meta(0x70, 40, 'Foo', 'caution'), meta(0x80, 8, 'Foo')])
         got = target_hash_offers.select_window(self.repo, table, known={0x80})
-        self.assertEqual(list(got), [0x20, 0x70, 0x10])
-        self.assertEqual(list(target_hash_offers.select_window(self.repo, table, set(), limit=1)), [0x20])
+        self.assertEqual(got, {0x20: 'Foo', 0x70: 'Foo', 0x10: 'Foo', 0x30: None, 0x40: None})
+        self.assertEqual(list(got), [0x20, 0x70, 0x10, 0x30, 0x40])
+        # A limit is an address chunk, not the best-ranked few.
+        self.assertEqual(list(target_hash_offers.select_window(self.repo, table, set(), limit=1)), [0x10])
+        self.assertEqual(list(target_hash_offers.select_window(self.repo, table, set(), rva_range=(0x20, 0x50))),
+                         [0x20, 0x30, 0x40])
 
 
 def meta(rva, size, cls='Foo', verdict='supported', reasons=(), cautions=(), names=(), how=None):
@@ -140,11 +144,15 @@ class WindowPolicyTests(Fixture):
         rows = [meta(0x10, 8, cls='Actor'), meta(0x20, 8, cls='Zzzq'), meta(0x30, 8, cls='Enumy'),
                 meta(0x40, 8, cls='Dup'), meta(0x50, 8, cls='Nolayout'), meta(0x60, 8, cls='Actor', verdict='unsupported')]
         # Zzzq has a header but no unit area rule, so nothing could be started there; the others have no PDB layout.
-        self.assertEqual(self.window(rows), [0x10])
+        # They are still offered, after the layout class and without a class on the row.
+        self.assertEqual(self.window(rows), [0x10, 0x20, 0x30, 0x40, 0x50])
+        self.assertEqual({r: c for r, c in target_hash_offers.select_window(self.repo, dict(rows), set()).items() if c},
+                         {0x10: 'Actor'})
 
     def test_no_pdb_directory_changes_nothing(self):
         self.assertEqual(target_hash_offers.pdb_layout_classes(self.repo), set())
-        self.assertEqual(self.window([meta(0x10, 8, cls='Actor')]), [])
+        self.assertEqual(target_hash_offers.select_window(self.repo, dict([meta(0x10, 8, cls='Actor')]), set()),
+                         {0x10: None})
 
     def test_pdb_only_classes_rank_after_real_units_and_keep_size_order_within_each(self):
         self.pdb_types(('Actor', 'struct', 40, '-'), ('Foo', 'struct', 8, '-'))
@@ -192,6 +200,23 @@ class WindowPolicyTests(Fixture):
             self.assertEqual((left, len(added)), (4, expected_added))
             self.assertTrue({0x200, 0x300, 0x500} <= set(classes))
         self.assertEqual(sorted(added), [0x1000, 0x1010, 0x1020])
+
+    def test_a_range_chunk_is_added_whatever_is_left_and_classless_rows_stay_offered(self):
+        table = self.table(6) | {0x200: meta(0x200, 20)[1]}
+        table[0x1020]['owner'] = None
+        classes, added, left = target_hash_offers.plan_window(
+            self.repo, table, self.data, {0x100: {}}, set(), set(), 0, 1, rva_range=(0x1010, 0x1040))
+        self.assertEqual((left, sorted(added)), (4, [0x1010, 0x1020, 0x1030]))
+        self.assertIsNone(classes[0x1020])
+        # The row written for it carries `window` and no class; the next refill reads it back as offered.
+        (self.repo / 'data/target-hashes/contributor-targets.json').write_text(json.dumps({'functions': [
+            {'rva': 0x1020, 'size': 40, 'window': True}, {'rva': 0x1030, 'size': 40, 'class': 'Foo', 'window': True},
+            {'rva': 0x1040, 'size': 40}]}))
+        self.assertEqual(claimable.offered_window(self.repo), {0x1020: None, 0x1030: 'Foo'})
+        self.assertEqual(claimable.offered_classes(self.repo), {0x1030: 'Foo'})
+        again, new, _left = target_hash_offers.plan_window(self.repo, table, self.data, {0x100: {}}, set(), set(), 0, 1)
+        self.assertIn(0x1020, again)
+        self.assertNotIn(0x1020, new)
 
     def test_an_unclaimed_reserved_row_is_withdrawn_but_a_claimed_one_stays(self):
         table = {0x200: meta(0x200, 20)[1], 0x300: meta(0x300, 150)[1], 0x500: meta(0x500, 300)[1]}
