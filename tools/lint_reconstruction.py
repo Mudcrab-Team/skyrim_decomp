@@ -166,7 +166,10 @@ SIBLING_LABEL = re.compile(rf'SIBLING\(({SIBLING_ID})@([0-9a-f]{{7,40}}), ([A-Za
 # Header line of a unit that reuses a body, or a substantial part of one, from a sibling:
 # `Sibling source: <owner>/<repo>@<rev> <path>[:<line>]` (several lines for several bodies).
 SIBLING_HEADER = re.compile(rf'Sibling source:\s*({SIBLING_ID})@([0-9a-f]{{7,40}})\s+'
-                            r'((?:src|include)/[^\s:]+)(?::(\d+))?')
+                            # A citation may hold spaces (some sibling paths do), so a path that ends in
+                            # a file extension at a word boundary wins over the whitespace-delimited form.
+                            r'((?:src|include)/[^:\r\n]*?\.[A-Za-z0-9]+(?=:\d|[\s,;)]|$)|(?:src|include)/[^\s:]+)'
+                            r'(?::(\d+))?', re.M)
 LABEL_LINE = re.compile(rf'^\s*//\s*(?P<names>\S(?:.*?\S)?)\s*:\s*(?P<labels>{LABEL}(?:\s+{LABEL})*)'
                         r'\s*(?:;\s*(?P<note>.*))?$')
 ORIGIN_LABEL = re.compile(r'COMMUNITY\(|SIBLING\(|CRASHLOGGER_PDB\(|SYMBOLS\(|GUESS|EXE_RTTI|OBSERVED')

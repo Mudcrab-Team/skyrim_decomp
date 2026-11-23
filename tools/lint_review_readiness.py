@@ -22,7 +22,9 @@ def origin_statement_problems(name, text):
     explicit = re.search(r'^\s*(?://+|/\*+|\*+)?\s*(?:body origin|implementation origin|code origin|provenance|origin)\s*:\s*\S',
                          header, re.I | re.M)
     if not explicit and not statement:
-        return [f'{name}: missing reconstruction origin statement in leading header']
+        return [f'{name}: missing reconstruction origin statement in leading header; add a line such as '
+                '"// Code origin: original reconstruction from the pinned image listing" (name the sibling or '
+                'community body instead when one was adapted)']
     return []
 
 

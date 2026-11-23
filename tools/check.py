@@ -1134,12 +1134,20 @@ def check_private_workflow(name, payload, terms):
             'Private workflow guard: forbidden private value in publication tree (details withheld)')
 
 
-def check_git(root=ROOT, staged=False, content_revision=None):
-    records = subprocess.check_output(['git', 'ls-files', '--stage', '-z'], cwd=root).split(b'\0')
+def check_git(root=ROOT, staged=False, content_revision=None, only=None):
+    """Scan every index entry (or, with `only`, just those paths) for publication hygiene.
+
+    Each blob is judged on its own bytes, so a scan restricted to the staged paths gives the same
+    verdict for those paths as the whole-tree scan.
+    """
+    listing = ['git', '--literal-pathspecs', 'ls-files', '--stage', '-z']
+    if only is not None:
+        listing += ['--', *only]
+    records = subprocess.check_output(listing, cwd=root).split(b'\0')
     terms = anonymity_terms(root)
     workflow_terms = private_workflow_terms(root)
     publication_key = None
-    if staged:
+    if staged and only is None:
         # An identical immutable index was already scanned under these exact tools and denylist.
         # Working files never use this shortcut; the current private denylist is read above.
         publication_key = hashlib.sha256((revision_cache.snapshot(root, staged=True) + repr(terms) + repr(workflow_terms)).encode()
@@ -1212,12 +1220,74 @@ def check_git(root=ROOT, staged=False, content_revision=None):
     return count
 
 
-def run(staged=False, then=None):
+# Staged additions that need no inventory, index or picture re-check: a new unit is judged by the
+# source lint and the blob scan alone, and those read nothing that another unit can change.
+SCOPED_NOTES = re.compile(r'docs/cookbook-notes/[A-Za-z0-9_.-]+\.md')
+
+
+def scoped_staged_paths(root=ROOT):
+    """The staged paths when the change is only new unit sources (or cookbook notes), else None.
+
+    Anything else (an edit or deletion of a tracked file, metadata, tools, recipes, generated
+    files) can change what another entry's validation sees, so it keeps the whole-tree check.
+    """
+    out = subprocess.check_output(['git', 'diff', '--cached', '--name-status', '--no-renames', '-z'],
+                                  cwd=root).decode('utf-8').split('\0')
+    fields = [f for f in out if f]
+    if not fields or len(fields) % 2:
+        return None
+    from lint_reconstruction import SOURCE
+    names = []
+    for status, name in zip(fields[::2], fields[1::2]):
+        # The lint's own shape rule decides what a unit source is; a notes file needs the blob scan only.
+        if status != 'A' or not (SOURCE.fullmatch(name) or SCOPED_NOTES.fullmatch(name)):
+            return None
+        names.append(name)
+    return names
+
+
+def scoped_context(root, names):
+    """Index paths the lint may open besides the staged files themselves.
+
+    The lint reads the target pin, recipes, the licence text, and whatever a header names
+    (evidence files, a recipe, an own or shared header). Every path-like word of the staged text
+    that is tracked is exported, which can only add context, never hide it.
+    """
+    from lint_reconstruction import LICENCE_TEXT
+    tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode('utf-8').split('\0'))
+    wanted = {'builds/target.json', LICENCE_TEXT} | {t for t in tracked if t.startswith('reconstruction/recipes/')}
+    for name in names:
+        blob = subprocess.check_output(['git', 'show', f':{name}'], cwd=root).decode('utf-8', 'replace')
+        base = name.rsplit('/', 1)[0]
+        for word in set(re.findall(r'[A-Za-z0-9_][A-Za-z0-9_./+-]*', blob)):
+            wanted.update(c for c in (word, f'reconstruction/{word}', f'{base}/{word}', f'{base}/{name[len(base) + 1:].split(".")[0]}.h')
+                          if c in tracked)
+    return sorted(wanted - set(names))
+
+
+def check_staged_scoped(root, names):
+    """Blob scan plus source lint for the staged units only; (files scanned, None)."""
+    import staged_exports
+    count = check_git(root, staged=True, only=names)
+    sources = [n for n in names if n.startswith('reconstruction/')]
+    with staged_exports.directory(root) as tmp:
+        wanted = [*names, *scoped_context(root, names)]
+        subprocess.run(['git', 'checkout-index', '-z', f'--prefix={tmp}/', '--stdin'], cwd=root,
+                       input='\0'.join(wanted).encode('utf-8') + b'\0', check=True)
+        lint(Path(tmp), sources)
+    return count, None
+
+
+def run(staged=False, then=None, full=False):
     """The complete publication scan and metadata load; (tracked file count, validated data).
 
     `then(data)` runs inside the same sparse-checkout and digest-cache scope, so a caller that
     builds from the validated data does not scan or validate again.
     """
+    if staged and not full and then is None:
+        names = scoped_staged_paths()
+        if names:
+            return check_staged_scoped(ROOT, names)
     # Check anonymity before metadata/lint diagnostics could quote offending content.
     with sparse.full(ROOT):
         content_revision = []
@@ -1232,12 +1302,18 @@ def run(staged=False, then=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--staged', action='store_true', help='Check index blobs and staged metadata')
+    parser.add_argument('--full', action='store_true',
+                        help='With --staged, check the whole index instead of only the staged new units')
     args = parser.parse_args()
     try:
-        count, _ = run(args.staged)
+        count, data = run(args.staged, full=args.full)
     except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError) as exc:
         print(f'FAIL: {exc}', file=sys.stderr)
         return 1
+    if data is None:
+        print(f'PASS: {count} staged files (scan and source lint; inventory unchanged, use --full for the whole index). '
+              'No Skyrim byte comparison performed.')
+        return 0
     print(f'PASS: metadata and {count} tracked files. No Skyrim byte comparison performed.')
     return 0
 
