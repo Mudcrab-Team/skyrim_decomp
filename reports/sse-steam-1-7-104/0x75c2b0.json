@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "1e74b3029a88e1620fa90e36899964b95fc141cee0f43f73f7589d66f81ea07d",
+        "object_sha256": "cf932693a6a1f3acde5ea2fb18fdde24f5be4243f0ce000fd1e67635ff93535f",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim_shared/actors/PlayerCharacter.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "f28a34bb61c4e3a5e58a0513a0b0ef623245fc9a",
+    "base_sha": "1230765021d18746adcd4c5811d1f87b8593a841",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "43f06e587a50c7f9a6e7724f5453deb40c0bf864",
+    "head_sha": "68d9775e83f988da6a411d3c8d2d9b95e29792a2",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 45052023083,
+    "run_id": 45186779107,
     "rva": "0x75c2b0",
     "schema": 2,
-    "source_sha256": "e011ca2b0265c52e038a1116e4d709d8da2ab003926e1a11b7346604a9477b2c",
+    "source_sha256": "6ef88ac58cfd3c33c0447c8a00ab7ed81a96747f076e5d722669309620ffaeb6",
     "status": "pass",
     "symbols": [
       "?Slot8@PlayerCharacter@@UEBAEXZ"
@@ -79,7 +79,7 @@
     "unit": "reconstruction/skyrim_shared/actors/PlayerCharacter.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
-  "drafter_model": "not stated",
+  "drafter_model": "DeepSeek V4.1 Flash (drafting through a local harness) and Claude Sonnet 5.5 (assembly)",
   "function_id": "sse-steam-1-7-104-0x75c2b0",
   "match_record_schema": 2,
   "notes": [
@@ -99,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "ec261b6e918d1b4881631d19b706b7c3b2541e9048588bb5d8ff60c0b3f4c9ff",
           "code_sections": 1,
-          "object_sha256": "1e74b3029a88e1620fa90e36899964b95fc141cee0f43f73f7589d66f81ea07d"
+          "object_sha256": "cf932693a6a1f3acde5ea2fb18fdde24f5be4243f0ce000fd1e67635ff93535f"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -160,9 +160,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim_shared/actors/PlayerCharacter.cpp",
-          "source_revision": "e011ca2b0265c52e038a1116e4d709d8da2ab003926e1a11b7346604a9477b2c"
+          "source_revision": "6ef88ac58cfd3c33c0447c8a00ab7ed81a96747f076e5d722669309620ffaeb6"
         },
-        "symbol_map_sha256": "d10e89bcbc850d736613bec0cc8a947c3613adc2b2b320c20e8be29d22fc4d17",
+        "symbol_map_sha256": "cbb77b3435e0597b9cd783381df4deb18f3f29229e67ee3d83a0977eb462469d",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -173,17 +173,17 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim_shared/actors/PlayerCharacter.cpp",
-    "digest": "e011ca2b0265c52e038a1116e4d709d8da2ab003926e1a11b7346604a9477b2c",
+    "digest": "6ef88ac58cfd3c33c0447c8a00ab7ed81a96747f076e5d722669309620ffaeb6",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim_shared/actors/PlayerCharacter.cpp",
       "reconstruction/skyrim_shared/actors/PlayerCharacter.h"
     ]
   },
-  "submitter": "samintanim",
+  "submitter": "taylorturnerit",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/d10e89bcbc850d736613bec0cc8a947c3613adc2b2b320c20e8be29d22fc4d17.json",
-    "sha256": "d10e89bcbc850d736613bec0cc8a947c3613adc2b2b320c20e8be29d22fc4d17"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/cbb77b3435e0597b9cd783381df4deb18f3f29229e67ee3d83a0977eb462469d.json",
+    "sha256": "cbb77b3435e0597b9cd783381df4deb18f3f29229e67ee3d83a0977eb462469d"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

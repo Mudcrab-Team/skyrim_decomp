@@ -26,17 +26,18 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "9faf30dc3357b800fa22a5654919c2bbce7bf9ee76d7d8f4a5b8d0f0e50d7736",
+        "object_sha256": "d64f9e7285dd97415f46b9d3361df7316c17d22c8b7be2a0a6cb235477602345",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/gamebryo/nimain/NiNode.cpp",
-          "reconstruction/gamebryo/nimain/NiNode.h"
+          "reconstruction/gamebryo/nimain/NiNode.h",
+          "reconstruction/gamebryo/nimain/NiObject.h"
         ]
       }
     }
   },
   "ci_confirmation": {
-    "base_sha": "521df5ee2e9e1e9d674ddafa702e4bf5bdb74068",
+    "base_sha": "1230765021d18746adcd4c5811d1f87b8593a841",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +48,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "5473d63d45699dc7717864063d95e29353a06eba",
+    "head_sha": "68d9775e83f988da6a411d3c8d2d9b95e29792a2",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,13 +61,12 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44930829353,
+    "run_id": 45186779107,
     "rva": "0xfd8fa0",
     "schema": 2,
-    "source_sha256": "9353a43b86650def416bdf8dd8aac237604033655d424193e1eaa9b0fefd5344",
+    "source_sha256": "2b8a534d9435424b86fe3cc70f930f433c404980cb172652a1e540d313b18586",
     "status": "pass",
     "symbols": [
-      "??1BSNiNode@@UEAA@XZ",
       "??1BSTempNodeManager@@UEAA@XZ"
     ],
     "target": {
@@ -80,6 +80,7 @@
     "unit": "reconstruction/gamebryo/nimain/NiNode.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "DeepSeek V4.1 Flash (drafting through a local harness) and Claude Sonnet 5.5 (assembly)",
   "function_id": "sse-steam-1-7-104-0xfd8fa0",
   "match_record_schema": 2,
   "notes": [
@@ -99,7 +100,7 @@
         "candidate": {
           "code_section_sha256": "a7c2fb702b0b5be47c3f259e215d7935c290429755daf592ff7111f9ed929542",
           "code_sections": 1,
-          "object_sha256": "9faf30dc3357b800fa22a5654919c2bbce7bf9ee76d7d8f4a5b8d0f0e50d7736"
+          "object_sha256": "d64f9e7285dd97415f46b9d3361df7316c17d22c8b7be2a0a6cb235477602345"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -162,9 +163,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/gamebryo/nimain/NiNode.cpp",
-          "source_revision": "9353a43b86650def416bdf8dd8aac237604033655d424193e1eaa9b0fefd5344"
+          "source_revision": "2b8a534d9435424b86fe3cc70f930f433c404980cb172652a1e540d313b18586"
         },
-        "symbol_map_sha256": "d45aa35e4f0c0e1c77b7187e6e067c4103c7a4d1edb7f9568e0788acb4f4f885",
+        "symbol_map_sha256": "3b3f5ecf860d86bf6abc1d495b9be8773799f10d4085afbf56545d26980ca1da",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -175,17 +176,18 @@
   ],
   "source": {
     "compiled": "reconstruction/gamebryo/nimain/NiNode.cpp",
-    "digest": "9353a43b86650def416bdf8dd8aac237604033655d424193e1eaa9b0fefd5344",
+    "digest": "2b8a534d9435424b86fe3cc70f930f433c404980cb172652a1e540d313b18586",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/gamebryo/nimain/NiNode.cpp",
-      "reconstruction/gamebryo/nimain/NiNode.h"
+      "reconstruction/gamebryo/nimain/NiNode.h",
+      "reconstruction/gamebryo/nimain/NiObject.h"
     ]
   },
-  "submitter": "eclepso",
+  "submitter": "taylorturnerit",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/d45aa35e4f0c0e1c77b7187e6e067c4103c7a4d1edb7f9568e0788acb4f4f885.json",
-    "sha256": "d45aa35e4f0c0e1c77b7187e6e067c4103c7a4d1edb7f9568e0788acb4f4f885"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/3b3f5ecf860d86bf6abc1d495b9be8773799f10d4085afbf56545d26980ca1da.json",
+    "sha256": "3b3f5ecf860d86bf6abc1d495b9be8773799f10d4085afbf56545d26980ca1da"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",

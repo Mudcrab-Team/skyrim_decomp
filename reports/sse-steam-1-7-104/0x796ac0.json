@@ -26,7 +26,7 @@
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "50036abec8d5008dbb08763abd1b9eab80566bdd3579680e954a739edb0ec786",
+        "object_sha256": "919ce7dbe86b327c9698070be475f964538b59e6013ec1e5d5b6c841da5bc2d8",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/skyrim/ai/movement/MovementControllerNPC.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "b075b0e782540a368ad77d29499c24515a925bf2",
+    "base_sha": "1230765021d18746adcd4c5811d1f87b8593a841",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "5d5e933e8ff5377947fac810d14466573a44ba2d",
+    "head_sha": "68d9775e83f988da6a411d3c8d2d9b95e29792a2",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -60,10 +60,10 @@
     "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44471602334,
+    "run_id": 45186779107,
     "rva": "0x796ac0",
     "schema": 2,
-    "source_sha256": "fc5ec8fa6ac407c840f6402529f59a42240378906c00f9fa6e66e735b706be1c",
+    "source_sha256": "a21c3c2b75d6269c7c71ce4a55add642e33f1640bff193c933594b741533c8ac",
     "status": "pass",
     "symbols": [
       "?Unk_0F@MovementControllerNPC@@UEAAEXZ"
@@ -79,6 +79,7 @@
     "unit": "reconstruction/skyrim/ai/movement/MovementControllerNPC.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "DeepSeek V4.1 Flash (drafting through a local harness) and Claude Sonnet 5.5 (assembly)",
   "function_id": "sse-steam-1-7-104-0x796ac0",
   "match_record_schema": 2,
   "notes": [
@@ -98,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "41d229e095955eadf566ac778ee96b6603aa469253790fa26cd5dc4795cda712",
           "code_sections": 1,
-          "object_sha256": "50036abec8d5008dbb08763abd1b9eab80566bdd3579680e954a739edb0ec786"
+          "object_sha256": "919ce7dbe86b327c9698070be475f964538b59e6013ec1e5d5b6c841da5bc2d8"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -159,9 +160,9 @@
         "result": "pass",
         "source": {
           "path": "reconstruction/skyrim/ai/movement/MovementControllerNPC.cpp",
-          "source_revision": "fc5ec8fa6ac407c840f6402529f59a42240378906c00f9fa6e66e735b706be1c"
+          "source_revision": "a21c3c2b75d6269c7c71ce4a55add642e33f1640bff193c933594b741533c8ac"
         },
-        "symbol_map_sha256": "816627750a754828f61d22684689f52e81832fe105fc5cfc152ab7da7d82917a",
+        "symbol_map_sha256": "2c024e50e5639c060f2e02da871b747c69453b5f35e9f7eba2d8b44b94955c1a",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,7 +173,7 @@
   ],
   "source": {
     "compiled": "reconstruction/skyrim/ai/movement/MovementControllerNPC.cpp",
-    "digest": "fc5ec8fa6ac407c840f6402529f59a42240378906c00f9fa6e66e735b706be1c",
+    "digest": "a21c3c2b75d6269c7c71ce4a55add642e33f1640bff193c933594b741533c8ac",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/skyrim/ai/movement/MovementControllerNPC.cpp",
@@ -181,8 +182,8 @@
   },
   "submitter": "taylorturnerit",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/816627750a754828f61d22684689f52e81832fe105fc5cfc152ab7da7d82917a.json",
-    "sha256": "816627750a754828f61d22684689f52e81832fe105fc5cfc152ab7da7d82917a"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/2c024e50e5639c060f2e02da871b747c69453b5f35e9f7eba2d8b44b94955c1a.json",
+    "sha256": "2c024e50e5639c060f2e02da871b747c69453b5f35e9f7eba2d8b44b94955c1a"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",
