@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?VerifyAddress@NiStandardAllocator@@UEBAEXZ": {
+      "rva": 15400240,
+      "size": 3
+    },
+    "?Functioneafb10@NiStandardAllocator@@QEAAXPEAXI@Z": {
+      "rva": 15399696,
+      "size": 104
+    },
+    "?g_allocatorInitFlag@@3HA": {
+      "rva": 57257112,
+      "size": null
+    },
+    "?g_allocatorInitObject@@3VNiStandardAllocatorInitObject@@A": {
+      "rva": 57255952,
+      "size": null
+    },
+    "?NiStandardAllocatorInitThreadHeader@@YAXPEAVNiStandardAllocatorInitObject@@PEAH@Z": {
+      "rva": 13494288,
+      "size": null
+    },
+    "?NiStandardAllocatorDispatch@@YAXPEAVNiStandardAllocatorInitObject@@PEAX_N@Z": {
+      "rva": 13493920,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?VerifyAddress@NiStandardAllocator@@UEBAEXZ",
+        "rva": "0xeafd30",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Functioneafb10@NiStandardAllocator@@QEAAXPEAXI@Z",
+        "rva": "0xeafb10",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_allocatorInitFlag@@3HA",
+        "rva": "0x369ac98",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?g_allocatorInitObject@@3VNiStandardAllocatorInitObject@@A",
+        "rva": "0x369a810",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiStandardAllocatorInitThreadHeader@@YAXPEAVNiStandardAllocatorInitObject@@PEAH@Z",
+        "rva": "0xcde810",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?NiStandardAllocatorDispatch@@YAXPEAVNiStandardAllocatorInitObject@@PEAX_N@Z",
+        "rva": "0xcde6a0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

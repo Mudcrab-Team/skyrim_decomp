@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?IsPoint3ValueSupported@NiPoint3Interpolator@@UEBAEXZ": {
+      "rva": 16272928,
+      "size": 3
+    },
+    "?IsEqual@NiPoint3Interpolator@@UEAA_NPEAVNiObject@@@Z": {
+      "rva": 16272080,
+      "size": 120
+    },
+    "?IsEqualInterpolatorBase@@YA_NAEAVNiKeyBasedInterpolator@@PEAVNiObject@@@Z": {
+      "rva": 16180720,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?IsPoint3ValueSupported@NiPoint3Interpolator@@UEBAEXZ",
+        "rva": "0xf84e20",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsEqual@NiPoint3Interpolator@@UEAA_NPEAVNiObject@@@Z",
+        "rva": "0xf84ad0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?IsEqualInterpolatorBase@@YA_NAEAVNiKeyBasedInterpolator@@PEAVNiObject@@@Z",
+        "rva": "0xf6e5f0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

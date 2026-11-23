@@ -86,6 +86,8 @@ DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 COMPARED_LINE = re.compile(r'^//[ \t]*0x[0-9a-fA-F]+(?:[ \t]|$)', re.M)
 # `// CI hash: 0x<rva> <symbol>` binds a compared function to its decorated symbol, the same
 # mechanical content as a compared line; the form is exactly the one the CI hash job reads.
+# A drafter's record of the cookbook rules that fixed a function; counted by tools/cookbook_rank.py.
+COOKBOOK_HIT = re.compile(r'//[ \t]*Cookbook:[ \t]*0x[0-9a-fA-F]+[ \t]+\d+(?:[ \t]*,[ \t]*\d+)*')
 CI_HASH_BINDING = re.compile(r'//[ \t]*CI hash:[ \t]*0x[0-9a-fA-F]+[ \t]+\S+')
 EXPOSURE = ('black-box', 'community-headers', 'binary-analysis', 'mixed')
 NAME_ORIGINS = ('COMMUNITY', 'SIBLING', 'CRASHLOGGER_PDB', 'SYMBOLS', 'GUESS', 'EXE_RTTI', 'OBSERVED')
@@ -448,11 +450,11 @@ def licence_text_problems(root):
 
 def numbered_header_lines(header):
     """[(file line number, line)] of the header lines that count against HEADER_LIMIT: everything but
-    labels, sibling citations, compared-function and CI hash binding lines and the SPDX line. `header` is a
+    labels, sibling citations, compared-function, CI hash binding and `Cookbook:` rule lines and the SPDX line. `header` is a
     `leading_comment`, which starts at line 1 of the file and keeps blank lines."""
     return [(n, ln) for n, ln in enumerate(header.split('\n'), 1) if ln.strip() and ln.strip() != '//'
             and not LABEL_WORD.search(ln) and 'Sibling source:' not in ln and not COMPARED_LINE.match(ln.strip())
-            and not CI_HASH_BINDING.fullmatch(ln.strip())
+            and not CI_HASH_BINDING.fullmatch(ln.strip()) and not COOKBOOK_HIT.fullmatch(ln.strip())
             and 'SPDX-License-Identifier' not in ln]
 
 

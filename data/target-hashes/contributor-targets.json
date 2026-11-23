@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "build_id": "sse-steam-1-7-104",
-  "snapshot_utc": "2026-11-23T13:45:20.102481+00:00",
+  "snapshot_utc": "2026-11-23T14:39:54.532944+00:00",
   "function_metadata_sha256": "15ba17036f4312634d884316084923fbf3e4bdad61101ab28ae476b187376710",
   "claims_snapshot_sha256": "7cf7bfd5d803ac02f5a0e69af6c56d2dfb49876327a4e30f124cac8b26d46dc5",
   "claims": [
@@ -19367,6 +19367,582 @@
       "size": 52,
       "extent_source": "local-function-table",
       "class": "MovementTweenerAgentNodeFollower"
+    },
+    {
+      "rva": 19351856,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19351888,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19351920,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19377392,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19422144,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19422176,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19632880,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19650064,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19833856,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19833888,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19833920,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19861088,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19921360,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19921392,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19921424,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19927920,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19952608,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19952640,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 19961024,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20024448,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20221840,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20221872,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20221936,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20221968,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20295552,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20428720,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20441856,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20560416,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20560448,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20560480,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20560512,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20560544,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20560576,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20579440,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20579472,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20627872,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20722944,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20764400,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20776736,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20831024,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20849952,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20861136,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20871376,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989328,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989360,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989392,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989456,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989488,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989520,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989552,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989584,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989616,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989648,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989680,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989712,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989744,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989776,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989808,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989840,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989872,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989904,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989936,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20989968,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20990000,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20990032,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 20990064,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21045968,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21046000,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21046032,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21046064,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21066192,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21071552,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21071584,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21105632,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21150272,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21150304,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21150336,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21214528,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21228080,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21284816,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21284848,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21284880,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325632,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325664,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325696,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325728,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325760,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325792,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325824,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325856,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21325888,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21339360,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21422320,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21422352,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21422384,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
+    },
+    {
+      "rva": 21439456,
+      "size": 29,
+      "extent_source": "local-function-table",
+      "on_demand": true
     },
     {
       "rva": 21911760,

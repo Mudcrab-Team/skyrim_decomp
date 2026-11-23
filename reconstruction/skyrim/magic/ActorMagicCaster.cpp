@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Source exposure: mixed (names and declarations from community headers; the listing of the pinned
-// image).
-// Adapted bodies: none
+// Source exposure: mixed (names and declarations from community headers; base classes, sizes and
+// the compared functions from the pinned image).
+// Code origin: original reconstruction from the pinned image listing; class prefixes, member names
+// and virtual-slot order follow the cited community declarations.
+// Adapted bodies: none declared; ActorMagicCaster::ClearMagicNode is reported close to the sibling body named below.
+// Sibling source: fo4-private@1b765c70 src/Game/Magic/ActorMagicCaster.cpp:251 (ActorMagicCaster::ClearMagicNode is close to it, similarity 0.75 by tools/check_origin.py)
+// ActorMagicCaster::ClearMagicNode: SIBLING(fo4-private@1b765c70, author-permission)
 // 0x5c1260 ActorMagicCaster::SetSkipCheckCast
 // 0x5c1b10 ActorMagicCaster::GetCasterStatsObject
 // 0x5c2d00 ActorMagicCaster::GetIsDualCasting
@@ -9,6 +13,7 @@
 // 0x5c3110 ActorMagicCaster::SetDualCasting
 // 0x5c1800 ActorMagicCaster::PrepareSound
 // 0x5cdb80 ActorMagicCaster::Cast
+// 0x5c15e0 ActorMagicCaster::Function5c15e0
 #include "ActorMagicCaster.h"
 
 // RVA 0x5c1260, 8 bytes, ActorMagicCaster::SetSkipCheckCast.
@@ -64,6 +69,19 @@ void ActorMagicCaster::Cast()
     if (IsCastReady()) {
         StartCast(1u);
     }
+}
+
+// RVA 0x5c15e0, 102 bytes, ActorMagicCaster::Function5c15e0.
+// The base finish-load runs first; a caster with no current spell takes the prepared spell from the
+// caster's slot, clears the casting-art-attached flag and starts the attach step on the caster.
+void ActorMagicCaster::Function5c15e0()
+{
+    MagicCaster::FinishLoadGame();
+    if (currentSpell == nullptr) {
+        PrepareCastingSounds(casterStats->spellSlots[slotIndex]);
+    }
+    castFlags.all &= ~8u;
+    return casterStats->Function6d7770(slotIndex, (casterStats->actorState2 & 0xE0u) >= 0x60u, true);
 }
 
 // Accepted leaf retained from the integrated version.

@@ -1389,6 +1389,23 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(calls.count(ready), 1)
         self.assertFalse([c for c in calls if c[:3] == ['gh', 'pr', 'create'] or c[:4] == ['gh', 'api', '-X', 'POST']])
 
+    def test_a_gh_failure_while_asking_for_the_run_leaves_no_cooldown_behind(self):
+        self.job['name'] = 'other'
+        calls = []
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+        state = pr_bot.State(self.work / 'state', 7, HEAD)
+
+        def failing(*a):
+            raise pr_bot.GhFailure('gh failed')
+        self.bot.gh_json = failing
+        with self.assertRaises(pr_bot.GhFailure):
+            self.bot.probe_hash_run(7, HEAD)
+        self.assertIsNone(state.get('probe_at'))
+        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if '/check-runs' in a[1] else {'state': 'OPEN', 'isDraft': False}
+        self.assertTrue(self.bot.probe_hash_run(7, HEAD))
+        self.assertIn(['gh', 'pr', 'ready', '7', '-R', pr_bot.REPOSITORY, '--undo'], calls)
+        self.assertIsNotNone(pr_bot.State(self.work / 'state', 7, HEAD).get('probe_at'))
+
     def sweep(self, probes, targets, run_status='in_progress', done=False):
         calls = []
         self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')

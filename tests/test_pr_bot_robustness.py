@@ -113,7 +113,22 @@ class PrecheckTests(WorkDir):
         found = self.run_precheck(self.evidence(), origin=[hit])
         self.assertIn('does not name it with that file', found[0x10][0])
 
-    def test_base_flags_come_from_the_units_text_at_base_and_skip_declared_and_trivial_hits(self):
+    def test_a_declared_non_mit_hit_at_base_is_inherited_but_a_new_one_still_blocks(self):
+        gpl = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'path': 'src/B.cpp',
+               'trivial': False, 'declared': 'yes', 'licence': 'GPL-3.0', 'fork_of': None, 'similarity': 0.91}
+        flags = {pr_bot.declared_origin_key(gpl)}
+        self.assertTrue(pr_bot.inherited_origin(gpl, flags))
+        self.assertFalse(pr_bot.inherited_origin(dict(gpl, function='B::g'), flags))
+        self.assertFalse(pr_bot.inherited_origin(dict(gpl, declared=None), flags))
+        self.bot.base_origin_flags = lambda units, base, tag: flags
+        self.assertEqual(self.run_precheck(self.evidence(), origin=[gpl]), {})
+        added = dict(gpl, function='B::g', declared=None)
+        found = self.run_precheck(self.evidence(), origin=[gpl, added])
+        self.assertIn('does not name it with that file', found[0x10][0])
+        problems, _ = pr_bot.origin_findings([added], {})
+        self.assertEqual(problems, [('reconstruction/a/B.cpp', 'unpermitted-source')])
+
+    def test_base_flags_come_from_the_units_text_at_base_and_skip_trivial_hits(self):
         import check_origin
         shown = {'base:reconstruction/a/B.cpp': b'int B::f() { return 1; }\n'}
 
@@ -133,7 +148,7 @@ class PrecheckTests(WorkDir):
                 mock.patch.object(check_origin, 'check_unit', check_unit):
             flags = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, 'base', '7-aaaaaaaa')
             none = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, None, '7-aaaaaaaa')
-        self.assertEqual(flags, {pr_bot.origin_key(base)})
+        self.assertEqual(flags, {pr_bot.origin_key(base), pr_bot.declared_origin_key(hits[1])})
         self.assertEqual(seen, [['B.cpp']])
         self.assertEqual(none, set())
 
@@ -491,6 +506,42 @@ class PoolTests(WorkDir):
         self.assertEqual(sorted(calls)[:2], [1, 2])
         self.assertEqual(calls.count(1), 1)
         self.assertEqual(calls.count(2), 1)
+
+    def test_free_slots_go_to_outside_prs_before_the_owners_even_when_listed_last(self):
+        release, calls = threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            release.wait(5)
+        rows = self.prs(1, 2, 3)
+        for row in rows[:2]:
+            row['author'] = {'login': pr_bot.OWNER}
+        rows[2]['author'] = {'login': 'carol'}
+        bot = self.pool_bot(lambda *a: rows, arrived)
+        bot.demand = [0]
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 2:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] in (1, 2)]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=3)
+        self.assertEqual(calls[0], 3)
+        self.assertEqual(sorted(calls[:2]), [1, 3])
+
+    def test_a_pr_waiting_on_the_hash_check_gives_its_slot_up_when_another_pr_is_ready(self):
+        bot = FakeBot(self.work)
+        bot.demand = [1]
+        bot.config['hash_wait'] = 3600
+        bot.latest_hash_run = lambda head, unusable: {'status': 'in_progress', 'id': 1, 'started_at': 'z'}
+        with mock.patch.object(pr_bot, 'HASH_YIELD_AFTER', 0), mock.patch.object(pr_bot.time, 'sleep'):
+            with self.assertRaises(pr_bot.Waiting) as caught:
+                pr_bot.Bot.host1(bot, 5, 'a' * 40, [0x10], pr_bot.State(self.work / 'state', 5, 'a' * 40))
+        self.assertIn('slot released', str(caught.exception))
 
     def test_a_gh_outage_lists_nothing_and_waits_out_the_shared_backoff(self):
         now, naps, listed = [0.0], [], []

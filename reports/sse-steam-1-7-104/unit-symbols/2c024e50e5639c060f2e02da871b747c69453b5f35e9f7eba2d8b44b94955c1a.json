@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "symbols": {
+    "?Unk_0F@MovementControllerNPC@@UEAAEXZ": {
+      "rva": 7957184,
+      "size": 8
+    },
+    "?Function796460@MovementControllerNPC@@QEAAXXZ": {
+      "rva": 7955552,
+      "size": 98
+    },
+    "?Function673b40@@YA_NPEAVMovementLinkTarget@@@Z": {
+      "rva": 6765376,
+      "size": null
+    },
+    "?movementEventTypeA@@3PEBXEB": {
+      "rva": 52700088,
+      "size": null
+    },
+    "?movementEventTypeB@@3PEBXEB": {
+      "rva": 52700096,
+      "size": null
+    },
+    "?Function1213890@@YA_NPEAVMovementOwner@@PEBX@Z": {
+      "rva": 18954384,
+      "size": null
+    }
+  },
+  "folds": [],
+  "_provenance": {
+    "entries": [
+      {
+        "name": "?Unk_0F@MovementControllerNPC@@UEAAEXZ",
+        "rva": "0x796ac0",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function796460@MovementControllerNPC@@QEAAXXZ",
+        "rva": "0x796460",
+        "size_from": "task",
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function673b40@@YA_NPEAVMovementLinkTarget@@@Z",
+        "rva": "0x673b40",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?movementEventTypeA@@3PEBXEB",
+        "rva": "0x32423b8",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?movementEventTypeB@@3PEBXEB",
+        "rva": "0x32423c0",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      },
+      {
+        "name": "?Function1213890@@YA_NPEAVMovementOwner@@PEBX@Z",
+        "rva": "0x1213890",
+        "size_from": null,
+        "community_name": null,
+        "note": "bound by tools/verifier/bind.py (unknown) from the task pack; the decorated name is the reconstruction's"
+      }
+    ],
+    "note": "Unit reference namespace from the task and candidate object"
+  }
+}

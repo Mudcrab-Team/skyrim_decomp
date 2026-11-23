@@ -7,6 +7,8 @@ Before drafting, read `docs/cookbook-notes/` for your function's class or cause.
 (`./sr note <task>`) only for a spelling that fixed something the cookbook does not record, or a near-miss
 cause it does not cover; submit it in the same PR (words and plain C++ only, never bytes or listings).
 Merged notes are folded into the cookbook at the next round.
+If a cookbook rule fixed a function, add one header line to its unit, `// Cookbook: 0x<rva> N` (or `N, M`); it does
+not count against the header budget, and it feeds the rule ranking at the top of the cookbook.
 Stuck or unsure? Ask in [Discussions (Q&A)](https://github.com/Mudcrab-Team/skyrim_decomp/discussions/categories/q-a).
 
 Aim for 50 to 200 functions per PR (200 is the per-PR cap); more is fine, and one PR per family or

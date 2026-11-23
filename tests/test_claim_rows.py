@@ -237,10 +237,60 @@ class Host1LateRowTests(unittest.TestCase):
         self.assertEqual(got[0x10], 'pass')
         self.assertIsNone(self.state.get('rows_rerun'))
 
-    def test_the_rerun_is_asked_for_once(self):
+    def test_the_rerun_is_bounded(self):
         self.state.set('rows_rerun', [0x20])
+        self.state.set('rows_rerun_n', pr_bot.ROWS_RERUN_LIMIT)
         got = self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
         self.assertEqual(got[0x20], 'fail')
+
+    def test_a_second_run_that_still_lacks_the_rows_is_asked_for_again(self):
+        # The first request left the PR's recorded base alone, so its run saw the same old rows.
+        self.bot.config['hash_wait'] = 600
+        self.state.set('rows_rerun', [0x20])
+        self.state.set('rows_rerun_n', 1)
+        self.job['started_at'] = '2026-01-03T00:00:00Z'
+        self.state.set('rows_at', '2026-01-02T00:00:00Z')
+
+        waits = []
+
+        def stop_waiting(_seconds):
+            waits.append(1)
+            if len(waits) > 1:
+                raise pr_bot.Stop('waiting for the fresh run')
+        with mock.patch.object(pr_bot.time, 'sleep', stop_waiting), self.assertRaises(pr_bot.Stop):
+            self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
+        self.assertEqual(self.state.get('rows_rerun_n'), 2)
+        self.assertIn(['gh', 'pr', 'ready', '7', '-R', pr_bot.REPOSITORY, '--undo'], self.calls)
+
+    def test_a_retry_merges_main_into_the_branch_so_the_base_moves(self):
+        merged = []
+        self.bot.merge_main_into_branch = lambda pr: merged.append(pr) or 'f' * 40
+        with self.assertRaises(pr_bot.Waiting):
+            self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
+        self.assertEqual(merged, [{'number': 7, 'headRefOid': HEAD}])
+        self.assertFalse(any(c[:3] == ['gh', 'pr', 'ready'] for c in self.calls))
+
+    def test_a_row_the_runs_own_base_already_had_is_not_late(self):
+        base = 'b' * 40
+        self.rows[1]['rva'] = '0x20'
+        original = self.fake_run
+
+        def with_base(argv, **kw):
+            argv = [str(a) for a in argv]
+            if argv[:2] == ['git', 'ls-tree']:
+                return subprocess.CompletedProcess(argv, 0, b'data/target-hashes/sse-steam-1-7-104-part-000.json\n', b'')
+            if argv[:2] == ['git', 'show']:
+                return subprocess.CompletedProcess(argv, 0, json.dumps({'functions': [{'rva': 0x20}]}).encode(), b'')
+            result = original(argv, **kw)
+            if argv[:3] == ['gh', 'run', 'download']:
+                target = Path(argv[argv.index('-D') + 1])
+                (target / 'target-result.json').write_text(
+                    json.dumps({'head_sha': HEAD, 'base_sha': base, 'functions': self.rows}))
+            return result
+        self.bot.run = with_base
+        got = self.bot.host1(7, HEAD, [0x10, 0x20], self.state, {})
+        self.assertEqual(got[0x20], 'fail')
+        self.assertIsNone(self.state.get('rows_rerun_n'))
 
 
 class HeaderBudgetMessageTests(unittest.TestCase):

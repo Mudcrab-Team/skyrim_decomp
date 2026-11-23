@@ -22,11 +22,11 @@
           "/GS-",
           "/EHsc",
           "/GR",
-          "/fp:precise",
+          "/fp:fast",
           "/Gy",
           "/showIncludes"
         ],
-        "object_sha256": "50129728ba9db20ecb4dc8e3d4f735bc978e989c6af0cfff31c59ade7bdbb7f1",
+        "object_sha256": "323c4ba21c7f4e0e380e5e807545ebb4bffb890470c51dce1b4b4ce67247c932",
         "opened_equals_closure": true,
         "repository_files_opened": [
           "reconstruction/contrib_nifloatinterpolator/NiFloatInterpolator.cpp",
@@ -36,7 +36,7 @@
     }
   },
   "ci_confirmation": {
-    "base_sha": "3aca30dea439a6fc41f17379298f9c34552b9380",
+    "base_sha": "1230765021d18746adcd4c5811d1f87b8593a841",
     "build_id": "sse-steam-1-7-104",
     "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
     "conclusion": "success",
@@ -47,7 +47,7 @@
       "machine": "maintainer-mac",
       "os": "macos"
     },
-    "head_sha": "887dc18f5e4321446d19256e1e23c4bcb02c40a2",
+    "head_sha": "68d9775e83f988da6a411d3c8d2d9b95e29792a2",
     "host_id": "github-windows-native",
     "job": "hash",
     "kind": "pr-check-hash",
@@ -57,13 +57,13 @@
     "map_status": "pass",
     "normalized_sha256": "e18aacce29affcdddaa5f641ac1ec12552e0fe9d066e6408941b1792818b8619",
     "os": "windows",
-    "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838",
+    "recipe_sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3",
     "result": "hash-match",
     "run_attempt": 1,
-    "run_id": 44462488362,
+    "run_id": 45186779107,
     "rva": "0xf61760",
     "schema": 2,
-    "source_sha256": "0f30f96b9d8994a36e28a3d64b62a0add320107898413c629ad896ec1f02363e",
+    "source_sha256": "9ac24bfc3f44608e75686d09d1c9580946d96987965c12845076d563b35e37aa",
     "status": "pass",
     "symbols": [
       "?IsFloatValueSupported@NiFloatInterpolator@@UEBA_NXZ"
@@ -79,14 +79,15 @@
     "unit": "reconstruction/contrib_nifloatinterpolator/NiFloatInterpolator.cpp",
     "workflow": ".github/workflows/pr-check.yml"
   },
+  "drafter_model": "DeepSeek V4.1 Flash (drafting through a local harness) and Claude Sonnet 5.5 (assembly)",
   "function_id": "sse-steam-1-7-104-0xf61760",
   "match_record_schema": 2,
   "notes": [
     "Second host: the pr-check hash job (target-hash commitments, no game bytes in CI); the first host's comparator report is verbatim."
   ],
   "recipe": {
-    "path": "reconstruction/recipes/msvc-19.16.27054-o2.json",
-    "sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+    "path": "reconstruction/recipes/o2-fpfast.json",
+    "sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3"
   },
   "reproduction": "Compile with the pinned recipe and compare with tools/verifier/attempt on a registered first host; the second host is the pr-check.yml hash job of the recorded run, which compiles the same source and checks the published target hashes.",
   "runs": [
@@ -98,7 +99,7 @@
         "candidate": {
           "code_section_sha256": "ec261b6e918d1b4881631d19b706b7c3b2541e9048588bb5d8ff60c0b3f4c9ff",
           "code_sections": 1,
-          "object_sha256": "50129728ba9db20ecb4dc8e3d4f735bc978e989c6af0cfff31c59ade7bdbb7f1"
+          "object_sha256": "323c4ba21c7f4e0e380e5e807545ebb4bffb890470c51dce1b4b4ce67247c932"
         },
         "comparator": {
           "source_sha256": "6bf71d89b21ea1da2659302269501becec45984942f017f52a1b71d339d08e46",
@@ -150,18 +151,18 @@
             "/GS-",
             "/EHsc",
             "/GR",
-            "/fp:precise",
+            "/fp:fast",
             "/Gy"
           ],
-          "recipe_sha256": "923a7ef7ea6d9792a66669014f059f40af29e111b065f2ae6b0a6835d7f4e838"
+          "recipe_sha256": "82cadfcb4415b21c1f923d1c9f2f49e7a72cf49fbb5c4765d3fe6f78ad23c4a3"
         },
         "report_schema": 1,
         "result": "pass",
         "source": {
           "path": "reconstruction/contrib_nifloatinterpolator/NiFloatInterpolator.cpp",
-          "source_revision": "0f30f96b9d8994a36e28a3d64b62a0add320107898413c629ad896ec1f02363e"
+          "source_revision": "9ac24bfc3f44608e75686d09d1c9580946d96987965c12845076d563b35e37aa"
         },
-        "symbol_map_sha256": "4b615dde139d3fab513d90f3a4fa61db904d3128256e5d9b98516780897bf2c5",
+        "symbol_map_sha256": "1548916963ecc4ddb1b2185cf058bf6dd244e6ed4b23f9f09853d0b9473f238f",
         "target": {
           "expected_image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f",
           "image_sha256": "846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f"
@@ -172,17 +173,17 @@
   ],
   "source": {
     "compiled": "reconstruction/contrib_nifloatinterpolator/NiFloatInterpolator.cpp",
-    "digest": "0f30f96b9d8994a36e28a3d64b62a0add320107898413c629ad896ec1f02363e",
+    "digest": "9ac24bfc3f44608e75686d09d1c9580946d96987965c12845076d563b35e37aa",
     "digest_method": "tu-sha256-v2",
     "translation_unit": [
       "reconstruction/contrib_nifloatinterpolator/NiFloatInterpolator.cpp",
       "reconstruction/contrib_nifloatinterpolator/NiFloatInterpolator.h"
     ]
   },
-  "submitter": "v-macrev",
+  "submitter": "taylorturnerit",
   "symbol_map": {
-    "path": "reports/sse-steam-1-7-104/unit-symbols/4b615dde139d3fab513d90f3a4fa61db904d3128256e5d9b98516780897bf2c5.json",
-    "sha256": "4b615dde139d3fab513d90f3a4fa61db904d3128256e5d9b98516780897bf2c5"
+    "path": "reports/sse-steam-1-7-104/unit-symbols/1548916963ecc4ddb1b2185cf058bf6dd244e6ed4b23f9f09853d0b9473f238f.json",
+    "sha256": "1548916963ecc4ddb1b2185cf058bf6dd244e6ed4b23f9f09853d0b9473f238f"
   },
   "toolchain_pin": {
     "path": "tools/verifier/pinned.sha256",
