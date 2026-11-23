@@ -28,8 +28,12 @@ near-miss cause it does not cover (`docs/cookbook-notes/README.md`).
 **Round step: fold the cookbook.** After each RE round's PR opens, one engineer folds that round's pass and
 fail diagnoses plus any merged `docs/cookbook-notes/` into `docs/matching-cookbook.md`: a new or extended
 numbered rule only where a pass demonstrates the fix (cite the RVAs), and failures-only causes into "Unsolved
-patterns" with the spellings that did not help. The folded note files are deleted in the same change. The
-folding PR is a tooling PR and takes the normal route.
+patterns" with the spellings that did not help. The folded note files are deleted in the same change. Every rule ends with one `Evidence:` line (distinct RVAs
+the rule closed) and, where functions still fail on that cause, one `Still failing:` line; a function closed by
+another rule is listed under that rule, not repeated. The engineer then runs
+`python3 tools/cookbook_rank.py --collect <tasks dir or worktree>` (adds the `--rule` hits of accepted functions
+and the `// Cookbook:` header lines to `docs/cookbook-hits.json`) and commits the regenerated ranking section;
+`tests/test_cookbook_rank.py` fails when it is stale. The folding PR is a tooling PR and takes the normal route.
 
 **Superseded, pending deletion.** The sections below on claims, the lane and lane-run, the
 Drafter and Reviewer queue, review groups, families and the sampling second pass describe the

@@ -2,6 +2,7 @@
 """One reconstruction attempt: compile the unit on the standing verifier and compare each function.
 
     tools/verifier/attempt <task-dir>            # .local/tasks/<task-id>/ with task.json
+    tools/verifier/attempt --rule 48 <task-dir>  # on the attempt that passes: the cookbook rule(s) that fixed it
     tools/verifier/attempt --clean <task-dir>    # remove this task's files on the machine (never stops it)
     tools/verifier/attempt <group-dir>           # a multi-unit task (group.json): print each unit's state
 
@@ -206,7 +207,7 @@ def fallback_budget(task_dir, qdir, tier='fallback'):
     return entry['attempts_per_function'] * len(wq.unpassed(qdir, unit, tier))
 
 
-def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None):
+def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=()):
     started = time.monotonic()
     task = pipeline.load_task(task_dir)
     import draft_worktrees
@@ -358,6 +359,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     (dest / 'attempt.txt').write_text(text + '\n' + ''.join(f'{r}\n' for r in all_rows))
     with open(task_dir / 'attempts.jsonl', 'a') as log:
         log.write(json.dumps({'attempt': number, 'exit': code, 'counted': counted, 'tier': tier, 'model': model, 'progress': progress,
+                              **({'cookbook_rules': list(rules)} if rules else {}),
                               **({'free_compile_failure': True} if free_compile else {}),
                               'seconds': round(time.monotonic() - started, 1),
                               'runner': runner['host_id'] if runner else 'boat',
@@ -462,6 +464,8 @@ def main():
     p.add_argument('--model', help='actual model id; normally inherited from the queue claim')
     p.add_argument('--agent', help='agent/tool name when no model is used')
     p.add_argument('--profile', choices=sorted(profiles.PROFILES), help='project Drafter profile default')
+    p.add_argument('--rule', metavar='N[,M]', help='cookbook rule number(s) that turned a fail into this pass; recorded '
+                   'in attempts.jsonl and counted by tools/cookbook_rank.py once the function is accepted')
     p.add_argument('--clean', action='store_true', help="remove the task's files on the machine")
     p.add_argument('--stop', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
@@ -483,7 +487,11 @@ def main():
             return 2
         if a.tier != 'first' and not a.queue_dir:
             p.error(f'--tier {a.tier} requires --queue-dir')
-        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile)
+        try:
+            rules = sorted({int(n) for n in a.rule.split(',')}) if a.rule else []
+        except ValueError:
+            p.error('--rule takes cookbook rule numbers such as 48 or 48,12')
+        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules)
     except (PipelineError, boatctl.BoatError, runners.RunnerError, wq.QueueError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f'attempt: {agent_advice.explain(exc, "attempt")}', file=sys.stderr)
         return 2
