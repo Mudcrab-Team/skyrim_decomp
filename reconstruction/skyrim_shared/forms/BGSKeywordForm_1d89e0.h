@@ -1,7 +1,6 @@
 // Source exposure: mixed (community declarations and the contributor-owned pack).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Base form: shared header declarations/BaseFormComponent.h for BaseFormComponent.
 // BGSKeywordForm, BGSKeywordForm::~BGSKeywordForm, BGSKeywordForm::InitializeDataComponent, BGSKeywordForm::ClearDataComponent, BGSKeywordForm::CopyComponent, BGSKeywordForm::HasKeyword, BGSKeywordForm::GetDefaultKeyword, BGSKeywordForm::keywords, BGSKeywordForm::numKeywords, BGSKeywordForm::pad14: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSKeyword: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once

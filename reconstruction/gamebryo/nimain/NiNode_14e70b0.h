@@ -1,7 +1,6 @@
 // Source exposure: mixed (community declarations and the contributor-owned pack).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Stand-in base: NiAVObject declared locally because shared declarations/NiAVObject.h omits parent and AsFadeNode.
 // NiAVObject, NiNode, BSFadeNode: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiAVObject::~NiAVObject, NiAVObject::AsFadeNode, NiAVObject::parent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiAVObject::GetParent: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)

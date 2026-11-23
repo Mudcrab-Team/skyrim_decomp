@@ -1,7 +1,6 @@
 // Source exposure: mixed (community declarations and the contributor-owned pack).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Stand-in declarations: BSShaderProperty, BSShaderMaterial, NiSourceTexture declared locally for minimal layout.
 // BSWaterShaderProperty, BSWaterShaderProperty::ForEachTexture: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSShaderProperty, BSShaderProperty::ForEachVisitor, BSShaderProperty::ForEachVisitor::~ForEachVisitor, BSShaderProperty::ForEachVisitor::Accept, BSShaderProperty::material, BSShaderMaterial, NiSourceTexture: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BSWaterShaderProperty::~BSWaterShaderProperty, vslot01, vslot02, vslot03, vslot04, vslot05, vslot06, vslot07, vslot08, vslot09, vslot0A, vslot0B, vslot0C, vslot0D, vslot0E, vslot0F, vslot10, vslot11, vslot12, vslot13, vslot14, vslot15, vslot16, vslot17, vslot18, vslot19, vslot1A, vslot1B, vslot1C, vslot1D, vslot1E, vslot1F, vslot20, vslot21, vslot22, vslot23, vslot24, vslot25, vslot26, vslot27, vslot28, vslot29, vslot2A, vslot2B, vslot2C, vslot2D, vslot2E, vslot2F, vslot30, vslot31, vslot32, propertyPad, materialPad, unk40, unk48, unk50, GetTexture2, GetTexture3: GUESS(low)
