@@ -28,6 +28,7 @@ import symbol_map as symbol_maps
 import sparse_checkouts as sparse
 import compare_internal
 import compare_runtime
+import check_include_resolve
 import compare as legacy_comparator
 
 ROOT = Path(__file__).resolve().parents[1]
