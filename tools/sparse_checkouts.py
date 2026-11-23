@@ -1,4 +1,4 @@
-"""Small worker checkouts; report reads always use this checkout's index, never moving main.
+"""Small worker checkouts (a cone with a sparse index); report reads use this checkout's index, never moving main.
 
 Acceptance lanes stay full. Full-tree checks can temporarily expand a worker and restore its
 patterns afterwards. Missing tracked reports can be read in one cat-file batch without creating
@@ -13,9 +13,9 @@ import subprocess
 import record_store
 import tempfile
 
-# Record shards are small and stay; every other file under reports/ is fetched on demand, so a
-# worker never writes the maps and families it does not use.
-PATTERNS = '/*\n!/site/\n!/reports/\n/reports/*/packs/\n'
+# Directories a worker leaves out. site/ is generated; reconstruction/unmapped/static is the largest
+# generated family and no unit outside it includes from it, so it is fetched only when a task names it.
+SKIP = ('site', 'reconstruction/unmapped/static')
 
 
 def git(root, *args, **kwargs):
@@ -28,8 +28,35 @@ def active(root):
     return result.returncode == 0 and result.stdout.strip() == 'true'
 
 
-def set_patterns(tree, patterns=PATTERNS):
-    git(tree, 'sparse-checkout', 'set', '--no-cone', '--stdin', input=patterns.encode())
+def cone_dirs(tree, skip=SKIP, prefix=''):
+    """The directories to keep, as a cone: every directory of HEAD except `skip` and what it holds.
+
+    A directory that has a skipped path below it is replaced by its other children, because a cone
+    keeps whole directories.
+    """
+    listing = git(tree, 'ls-tree', '-d', '--name-only', 'HEAD', *([prefix + '/'] if prefix else [])).decode()
+    keep = []
+    for name in listing.split('\n'):
+        if not name or name in skip:
+            continue
+        if any(item.startswith(name + '/') for item in skip):
+            keep.extend(cone_dirs(tree, skip, name))
+        else:
+            keep.append(name)
+    return keep
+
+
+def set_patterns(tree, patterns=None):
+    """Cone mode with a sparse index: the index records an omitted directory as one entry.
+
+    `patterns` is a list of directories, or the text of a non-cone pattern file when restoring a
+    worker that was made that way.
+    """
+    if isinstance(patterns, str):
+        git(tree, 'sparse-checkout', 'set', '--no-cone', '--stdin', input=patterns.encode())
+        return
+    dirs = cone_dirs(tree) if patterns is None else list(patterns)
+    git(tree, 'sparse-checkout', 'set', '--cone', '--sparse-index', *dirs)
 
 
 def add_worktree(root, tree, revision, branch=None, new_branch=False):
@@ -43,14 +70,23 @@ def add_worktree(root, tree, revision, branch=None, new_branch=False):
     git(tree, 'read-tree', '-mu', 'HEAD')
 
 
+def cone(root):
+    result = subprocess.run(['git', 'config', '--bool', 'core.sparseCheckoutCone'], cwd=root,
+                            capture_output=True, text=True)
+    return result.returncode == 0 and result.stdout.strip() == 'true'
+
+
 @contextmanager
 def full(tree):
     """Run the unchanged full-tree consumers, then restore sparsity even on failure."""
     patterns = None
     if active(tree):
-        path = Path(git(tree, 'rev-parse', '--path-format=absolute', '--git-path',
-                        'info/sparse-checkout').decode().strip())
-        patterns = path.read_text()
+        if cone(tree):
+            patterns = [d for d in git(tree, 'sparse-checkout', 'list').decode().split('\n') if d]
+        else:
+            path = Path(git(tree, 'rev-parse', '--path-format=absolute', '--git-path',
+                            'info/sparse-checkout').decode().strip())
+            patterns = path.read_text()
         git(tree, 'sparse-checkout', 'disable')
     try:
         yield
@@ -113,10 +149,16 @@ def reports(root, names):
 
 def ensure(root, names):
     """Materialize selected reports and referenced maps, histories and family manifests."""
+    names = [report_name(n) for n in names]
     if not active(root):
         return
     skipped = git(root, 'ls-files', '-v', '-z', '--', 'reports/').split(b'\0')
     if not any(row[:1].upper() == b'S' for row in skipped):
+        return
+    if cone(root):
+        # A cone keeps whole directories, so the directory of each name is what gets added.
+        dirs = sorted({Path(report_name(n)).parent.as_posix() for n in names})
+        git(root, 'sparse-checkout', 'add', *dirs)
         return
     seen, pending = set(), set(names)
     def references(value):

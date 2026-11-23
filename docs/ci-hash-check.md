@@ -98,8 +98,9 @@ python3.13 tools/target_hashes.py --image <private-image> \
     --out data/target-hashes/sse-steam-1-7-104.json
 ```
 
-The index manifest binds bounded JSON shards with SHA-256 and row counts, keeping every
-file below the existing publication cap. It records the build, image hash, inventory snapshot hash, comparator and normalizer
+The index manifest binds bounded binary shards (`tools/target_hash_store.py`: 73-byte fixed rows,
+raw digests, one shard per 0x100000 RVA range; `dump SHARD` prints one as JSON) with SHA-256 and row
+counts, keeping every file below the existing publication cap. It records the build, image hash, inventory snapshot hash, comparator and normalizer
 source hashes, compiler-pin file hash and recipe hashes. Each row records RVA, size, extraction
 method, `normalized_sha256` and `layout_sha256`; the build and normalization version are inherited
 from the manifest. **No bytes, mask contents, reference destinations, listings or decompiler output

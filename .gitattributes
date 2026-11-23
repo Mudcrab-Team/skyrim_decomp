@@ -14,3 +14,5 @@
 *.sha256 text eol=lf
 # Record shards are xz archives; the publication scan reads inside them.
 reports/*/packs/*.xz binary
+# Target-hash shards are fixed-width binary rows.
+data/target-hashes/*.thb binary

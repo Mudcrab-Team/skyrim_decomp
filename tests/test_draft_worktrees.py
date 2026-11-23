@@ -87,7 +87,7 @@ class DraftWorktrees(unittest.TestCase):
         self.assertEqual(drafts.read(tree / '.local/worktree-owner.json')['task'], 'g-foo')
         self.assertTrue(drafts.sparse.active(tree))
         self.assertFalse((tree / 'site').exists())
-        self.assertFalse((tree / f'reports/{BUILD}/0x2000.json').exists())
+        self.assertTrue((tree / f'reports/{BUILD}/0x2000.json').exists())
         self.assertEqual(self.claim()['draft'], unit['draft'])
         with self.assertRaisesRegex(ValueError, 'claimed draft checkout'):
             drafts.route_attempt(self.directory, self.root)
@@ -796,7 +796,7 @@ class DraftWorktrees(unittest.TestCase):
             self.assertEqual(drafts.confirm_one(self.root, self.directory, ['--out', str(self.tmp / 'out')]), 0)
         self.assertEqual(seen, ['int harvested;\n', 'int harvested;\n'])
 
-    def test_confirm_with_sparse_aware_harvest_keeps_only_selected_reports(self):
+    def test_confirm_with_sparse_aware_harvest_runs_in_the_sparse_tree(self):
         (self.root / 'tools/sparse_checkouts.py').write_text('# synthetic sparse-aware tools\n')
         git(self.root, 'add', 'tools/sparse_checkouts.py')
         git(self.root, 'commit', '-m', 'synthetic sparse-aware transport')
@@ -809,7 +809,7 @@ class DraftWorktrees(unittest.TestCase):
             if len(command) > 1 and ('verifier/bind.py' in str(command[1]) or 'verifier/confirm' in str(command[1])):
                 seen.append(command[1])
                 self.assertTrue(drafts.sparse.active(cwd))
-                self.assertFalse((Path(cwd) / f'reports/{BUILD}/0x2000.json').exists())
+                self.assertTrue((Path(cwd) / f'reports/{BUILD}/0x2000.json').exists())
                 return subprocess.CompletedProcess(command, 0)
             return original_run(command, cwd=cwd, **kwargs)
         with patch('draft_worktrees.subprocess.run', side_effect=run):

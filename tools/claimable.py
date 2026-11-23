@@ -7,6 +7,9 @@ inventory grows only with accepted work. Counts and RVAs only; nothing here read
 import hashlib
 import json
 from pathlib import Path
+import struct
+
+import target_hash_store
 
 MANIFEST = 'data/target-hashes/sse-steam-1-7-104.json'
 OFFERED = 'data/target-hashes/contributor-targets.json'
@@ -78,10 +81,10 @@ def published_sizes(root):
         manifest = json.loads((root / MANIFEST).read_text())
         out = {}
         for shard in manifest['shards']:
-            for row in json.loads((root / shard['path']).read_text())['functions']:
-                out[row['rva']] = row['size']
+            for rva, size, _extraction in target_hash_store.facts((root / shard['path']).read_bytes()):
+                out[rva] = size
         return out
-    except (OSError, ValueError, KeyError):
+    except (OSError, ValueError, KeyError, struct.error):
         return {}
 
 

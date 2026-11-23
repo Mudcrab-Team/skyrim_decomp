@@ -25,6 +25,7 @@ import cost_ledger
 import revision_cache
 from validation_reads import read_bytes, read_text, read_once
 import record_store
+import target_hash_store
 import symbol_map as symbol_maps
 import sparse_checkouts as sparse
 import compare_internal
@@ -1172,7 +1173,15 @@ def check_git(root=ROOT, staged=False, content_revision=None, only=None):
         inspect_payload(name, payload, mode)
 
     def scan(name, payload, mode):
-        if record_store.is_pack_name(name):
+        if target_hash_store.BINARY.fullmatch(name):
+            # Rows are numbers and digests, so the structure is the whole check: a well-formed shard
+            # of the right size holds nothing a text scan could judge.
+            require(mode in {'100644', '100755'} and len(payload) <= 1024 * 1024, f'{name}: invalid target-hash shard')
+            try:
+                target_hash_store.rows(payload)
+            except (ValueError, KeyError, TypeError, target_hash_store.struct.error):
+                raise ValueError(f'{name}: invalid target-hash shard') from None
+        elif record_store.is_pack_name(name):
             # A shard is binary, so each record inside is judged as the file it replaces.
             require(mode in {'100644', '100755'} and len(payload) <= 8 * 1024 * 1024,
                     f'{name}: invalid record shard')

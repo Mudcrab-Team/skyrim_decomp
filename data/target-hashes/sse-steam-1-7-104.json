@@ -5,7 +5,7 @@
   "normalization_version": "relocation-masked-sha256-v1",
   "hash_algorithm": "SHA-256",
   "comparator_sha256": "a9bc14136d2f69195e5062cf3a2652b8caf1b948b2cf9ae57d94502978828b55",
-  "normalizer_sha256": "75de4f24f73c6d26ea06e82f2b9d82169bd1e5b2652969beea92d343852fb16b",
+  "normalizer_sha256": "2b24058b7228aec8803d01d8a841d6ccfb059587e549bfe4a71ac5f5d26d4c36",
   "inventory_sha256": "94e1bcd6c4ac3c79e0f1bc85ffdddb31efb4088d8c09ac6cbd0a23b82b135c86",
   "offered_inventory_sha256": "f7fae0cadd048d9f0a689bb6d1950a8cc3a300cf9c2af2813ff190c096e48406",
   "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
@@ -47,269 +47,129 @@
   "acceptance": "not-evaluated",
   "shards": [
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-000.json",
-      "sha256": "9170cd4be57988ccff6e525e336cde5d7352302c1856ceb56b28684c87a5fd81",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-000.thb",
+      "sha256": "852d6fa9c4a592f64d2b8d34a2b639c8ccf0a8d5beddd61174c261d4c993304e",
+      "count": 8159
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-001.json",
-      "sha256": "0c952e4f733425ec2fdeb17de0560e238d1a4ab679cead48b8a098c4fe1ac271",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-001.thb",
+      "sha256": "dc9c63bd728abd922aba7116d44ec0ab2a35330db15a493e787a7eaca0ce3358",
+      "count": 5688
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-002.json",
-      "sha256": "ea2982c7c17c37cd92913076ac82d77c771504383719d7548b87cb9560bbde13",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-002.thb",
+      "sha256": "7061b4435fd74a10a03ad007c2f41d332884fca12a83933aea576eb8a994a2d9",
+      "count": 4289
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-003.json",
-      "sha256": "d83054bb76ed45af49360549cac7410c5edac36affb11762076b1f1286449a90",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-003.thb",
+      "sha256": "830cdfe3074e8f92b2eb0f48d40bd288a7c8561ceee031be268cb9d657c49328",
+      "count": 4769
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-004.json",
-      "sha256": "78f90596f9ec6fee9a017544bfa55652aff90b7d31cdeac2f80dbbdc21ce6037",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-004.thb",
+      "sha256": "d45daf4dfc665ab3cfdc611087dbe412b97a069b17555cd150c352d8d4cff23c",
+      "count": 4887
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-005.json",
-      "sha256": "c165339639c17c432474856e1df2e8d7b635efe4ea15522118466b4de6251fa8",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-005.thb",
+      "sha256": "dd7f4a97da99e97c0d739b76b74c3cfdf3ef8155a141c6149e0cfc152c84089c",
+      "count": 4087
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-006.json",
-      "sha256": "62dd2cbbf62e2732d1929dee3ce578d47e5d933a364e818f4c6da2552a099f81",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-006.thb",
+      "sha256": "ffb8d3273450a909e7c80bddd608474859db3698541c84659b7ae9b6b3cf5dec",
+      "count": 3974
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-007.json",
-      "sha256": "7fc7eae092f8dc53c9b66ff0742d841635ea02d748149c4b34195147088f886c",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-007.thb",
+      "sha256": "46787f7eadf9cfa49800c23f7efd98fb95cc1bbef33716cb96955c80a1df8cf9",
+      "count": 4290
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-008.json",
-      "sha256": "fc422d6851038a041dc7c8429275282c716531bc4f8215590e12c08704b48764",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-008.thb",
+      "sha256": "da551cb106d7e1de14d5147870b6cf507b865e6e38e57013e27267cff04f0a21",
+      "count": 6460
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-009.json",
-      "sha256": "9b8db30b0b1102d26f885ae06c7115b773a506650b850360ddad335b1c6a4857",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-009.thb",
+      "sha256": "611b225078192ee4bd85b2311c57b8f958d8eb73a34be2ecb26bbc2b91c289af",
+      "count": 3396
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-010.json",
-      "sha256": "89aee8517db52141c51a0496f0f573b3683022fca6f7cd9edc8c04fcdc0d92f6",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-010.thb",
+      "sha256": "49175c2f9acde3897d9458dec01345b5b1a90551e2bee353d8bd68930c6f5dba",
+      "count": 4318
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-011.json",
-      "sha256": "ee896017e1bccfed35e87ba51c8e571d21783cd5e408307d6e2767a5b735c659",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-011.thb",
+      "sha256": "7f0ee942f414a9c809e3485012fabe08fe54c5504e6f37d43370f45a9cb8f3a3",
+      "count": 4150
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-012.json",
-      "sha256": "0b180d8e42e9a28f2d2ad0ce5e544f6230ac21c3d1174600eda2a6217749c534",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-012.thb",
+      "sha256": "5272b66ab984c62ab1bb8fcb345d9bd1d9e52685aa3ce55ae1e6bd0769619767",
+      "count": 3685
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-013.json",
-      "sha256": "e0477395940b453bca13e02a848abe9dd929b0046fe4df1666cd58402434aa28",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-013.thb",
+      "sha256": "1a3384db8e785d66f5bd0bdf1ff2430e595bceead47b9a337123efc0f300d738",
+      "count": 3056
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-014.json",
-      "sha256": "00848a3baecb7ec9c8d70d12f27ff0865eda80c658e00ca87526e6d8d755ccb4",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-014.thb",
+      "sha256": "0d828c07715f5e1196583768c21dede4810a6eb8eb9dc4553dd2e682e5df8965",
+      "count": 3624
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-015.json",
-      "sha256": "5c054cf993f943cb197dad9ab699b3d5a69f68f17ff9c2a53437ffc2bfcecdc4",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-015.thb",
+      "sha256": "aa9ca9d2f0a6464a44f0556e165c394c388b7e1793cb2f34ba4a3205d875afa7",
+      "count": 5341
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-016.json",
-      "sha256": "1210fbcdc6a19bda40c5148af71c47f52cd3be99f310283c53778020e0105e02",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-016.thb",
+      "sha256": "c916f42fa4f63394644044b695acf62b1fc3c32f4ac043ac95fb5d2bf902794a",
+      "count": 3479
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-017.json",
-      "sha256": "aada923631d802d136fe739fa7fd2d76d410f2f03de5efd109d1e43110df528c",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-017.thb",
+      "sha256": "b4d8606ce93ca939987170e442c6c6c3c0db9440bda6bab77e71218a1c5ca4b4",
+      "count": 3044
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-018.json",
-      "sha256": "55046b6ed286d53597eb7e99d2dad80d16206a23c80aa96728f568e2f15b7f98",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-018.thb",
+      "sha256": "45a1952309830902af1663df144d7ad7c2ee850cd21acf839152db5e39d292b6",
+      "count": 5586
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-019.json",
-      "sha256": "7d6d3f654f342c83a3e75be6592e8428ebd222ff210d8a0171f20d883dca55c5",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-019.thb",
+      "sha256": "9b266ded3d37d785f8da082f69b839a9464291170f0e69887feba7a9ac79ce49",
+      "count": 3932
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-020.json",
-      "sha256": "cfc9097d7a86b383e90d10f4ed9a6b8e8074207d0e60cefa82575fc62de8749b",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-020.thb",
+      "sha256": "9291e5d6322a0132f20704f33990ce4917fa12534df51d0cd6207b6f24eedecd",
+      "count": 3614
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-021.json",
-      "sha256": "4d94ca35bf8c4c13ddbf1c98f5744c6baa6907586d692c8db9e8859fe1509b28",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-021.thb",
+      "sha256": "924d74439a8c01f6d398e1cb75fb22123ba321477f9be69b4fe5ba1b082793aa",
+      "count": 4000
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-022.json",
-      "sha256": "d42ed4e2f25115cb17dcf9e375d535b31f3ffb8857d640e9af412cacfe8f60fd",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-022.thb",
+      "sha256": "af831fef6c29ccab3fbee69982a0e65f00d2f80abbf276da1e6249b50bb37811",
+      "count": 392
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-023.json",
-      "sha256": "ad9d1bb617a5a9d4ad64073124e7bb84b7ba3d16b77f497342ff5cbc75770cd4",
-      "count": 2000
+      "path": "data/target-hashes/sse-steam-1-7-104-part-023.thb",
+      "sha256": "f1d58680f82f5c98109c140b46ae49c4e52b45747869671561c0d457ccf571cb",
+      "count": 5807
     },
     {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-024.json",
-      "sha256": "72b8672afadd6f02a906f60632ff7039e1169ff8e5f743e3d6043be82d44e118",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-025.json",
-      "sha256": "b1c6f90e4d8d1d882511bb9c59127cd8fa20ac4664f29ab757c67c17c244f7b7",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-026.json",
-      "sha256": "b5c238577c2f8dcad0a050d89e8752703bc5f4df134282eff66b681f2af783ef",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-027.json",
-      "sha256": "4e5564d5e2df19d32d64bdcc9e256fbdf1c8cd4190891cdaef12e20abd3f47ea",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-028.json",
-      "sha256": "6d1a0a086781fff6668e37d78c2ce1249d16a75a163ca1d4100214d65bcb0581",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-029.json",
-      "sha256": "9fde46b8329b605d8e49bf35af9998c130fd2e088643e8cf24a1b0c02a0a8929",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-030.json",
-      "sha256": "e215964c5e1a989a5626cf2268ce4e673e88adc70054dfd6db3a380e11678ed6",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-031.json",
-      "sha256": "3470362f85be530d80d522188129e0fcfe9a01106a777ed055670cca49714ffb",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-032.json",
-      "sha256": "bf72814562e84be5ce5b0dcf2d4421bd10b037c95e6554f83a30edbade78daa5",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-033.json",
-      "sha256": "426e7c63202eda6015e3b37ee9273cd288af22081cae2fcef729c2f0c5c1f237",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-034.json",
-      "sha256": "fde42de93eddaa49cc1664544f625ac77cfdb0b00ce9938e7f43e28efeaf5dc5",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-035.json",
-      "sha256": "d7646de436d1487bacec8ad240df7b91a4932ef4bf7b7e50e9cf1d7a02e3af59",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-036.json",
-      "sha256": "33f3595d0c328b37dae6d077606d53c9ab931e0810ed62f905ad47bff96aeb74",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-037.json",
-      "sha256": "7914a240f59bd16f96e8e8330dd156ab744848d7b969164b6a1d84ddb14e2bc8",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-038.json",
-      "sha256": "b085318097c2c292c5492bf0718dc37326660c4e43022650f4c59842f16f94b5",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-039.json",
-      "sha256": "13f14d642d361c18aa30aa9f9d699cc56788d90b38c72ce5ce8a777ee03bf3c8",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-040.json",
-      "sha256": "6d19159dbd940c7bb1431b2ac35115c1ee31bea59f8124520a880cb3e52efa06",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-041.json",
-      "sha256": "920071282a12838cf3df9e23f533bc76bb7c1e84aa5627d68f1f282930e1048e",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-042.json",
-      "sha256": "3e5fe12001112ac75651ffcf254547894eca2237aa9bed2ffb24d0b642927a58",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-043.json",
-      "sha256": "1d4c2e9986f3a2993faca8bc5d93a3bedaeb460014a6cdf1c78b87b30eeecaa8",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-044.json",
-      "sha256": "9fbb6353c591a5a39687e5cc312e2691a879b39ac6ead19befe856b0fbdf20f6",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-045.json",
-      "sha256": "2affc4c6108e272dd3184fa59873b31d8772fe935f068533e732a8fef5b35c07",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-046.json",
-      "sha256": "d2f44da0c91271eec1532231fb30bdf8a6ceb3c6fb6e0ef397e31b100dcb88dd",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-047.json",
-      "sha256": "a52e2bf6f83a22eef40999535fdf9227a08ecac3e1a9ef1cea5bf3d598636621",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-048.json",
-      "sha256": "662bd47d24cbea3f1a24af15f9042c74409cedb617298d8bf154baca0f7052aa",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-049.json",
-      "sha256": "587c4f4bdfd49e91f581588eae3b7a0f5039a97e3cc04a99ed51d488dce4d7d5",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-050.json",
-      "sha256": "a4b77ac1cc8b1f48c4d5f9c145432c235ecfc03b0c93c6c49039dcb2d4e9bd16",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-051.json",
-      "sha256": "da4806c0d7cb59405ff53e9bb0c0f242478d8a2c781789e2e614bde663dcacd6",
-      "count": 2000
-    },
-    {
-      "path": "data/target-hashes/sse-steam-1-7-104-part-052.json",
-      "sha256": "705a0d181d218f68a44b9ba12ebefeb7a63ab919910ce7538bf0ac8c979dca94",
-      "count": 29
+      "path": "data/target-hashes/sse-steam-1-7-104-part-056.thb",
+      "sha256": "c409201cb7825377c708331b6100696faef387486d9fea5f42075320426a2f69",
+      "count": 2
     }
   ],
   "function_count": 104029
