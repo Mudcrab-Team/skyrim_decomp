@@ -1,6 +1,13 @@
 {
   "functions": [
     {
+      "rva": 4809072,
+      "size": 62,
+      "normalized_sha256": "a0329f7de08742b114e880ac32fd7ca2729f8b0f8fa13a231e448a3396efd313",
+      "layout_sha256": "e975a3ee205203323478554fbb159a1a17f282d28d59a848a0f1032f152b9f56",
+      "extraction": "linked-reference-inference"
+    },
+    {
       "rva": 4809504,
       "size": 23,
       "normalized_sha256": "b7c3f2a3dca97baccae6ed941e62d35ed89832c64d28d15b54bb4f845b49fd9f",
@@ -4208,6 +4215,13 @@
       "extraction": "linked-reference-inference"
     },
     {
+      "rva": 5308944,
+      "size": 291,
+      "normalized_sha256": "50153c99a7408cfae6c7912608c1c13a46b22c1e0a44d38c7a34f71e0a74faf9",
+      "layout_sha256": "188050ffda6284ba89de93a5d5676d498a32f0c872253bef38536c7a6f8368de",
+      "extraction": "linked-reference-inference"
+    },
+    {
       "rva": 5310032,
       "size": 3,
       "normalized_sha256": "e18aacce29affcdddaa5f641ac1ec12552e0fe9d066e6408941b1792818b8619",
@@ -4586,6 +4600,20 @@
       "extraction": "linked-reference-inference"
     },
     {
+      "rva": 5354592,
+      "size": 135,
+      "normalized_sha256": "022c75546d8278b9e87e96dedfc26fadb2d80aa58f65a928343c63888794928a",
+      "layout_sha256": "79099f72de3a77c3cc3886ac388c56c2db161fe23a44d97b92911a3039941f38",
+      "extraction": "linked-reference-inference"
+    },
+    {
+      "rva": 5354816,
+      "size": 24,
+      "normalized_sha256": "6c6a6301ad9662f01373220d8fcb2373048440a0ece207cd2a6b3428ae90ad10",
+      "layout_sha256": "796632375ad2b0482397157f5b6730f258184b714b9051f4990cb7c64aadbe76",
+      "extraction": "linked-reference-inference"
+    },
+    {
       "rva": 5357968,
       "size": 11,
       "normalized_sha256": "bdd9467f6ba55c7b1ef4f07967e3221e492e8dbfbfd011b087d04daa8aad8490",
@@ -4681,6 +4709,13 @@
       "size": 8,
       "normalized_sha256": "42bf2fe8994233d2e2eaf9d217f425ee1530fb5e5d6924672ca17f13bdf43411",
       "layout_sha256": "b0683700c0c970d3a39bb25dc4d20b03d5f5c429ece8a4b3d664468187f362bb",
+      "extraction": "linked-reference-inference"
+    },
+    {
+      "rva": 5360960,
+      "size": 255,
+      "normalized_sha256": "6ebd41ee21d33909d954b26a79a46761e08c416c596afca945953703c6f8152d",
+      "layout_sha256": "1105e122a5a943a2288fe2f0e540fd6105a1de89fb6556a3a3d08426f1466b22",
       "extraction": "linked-reference-inference"
     },
     {
@@ -13960,41 +13995,6 @@
     },
     {
       "rva": 6739184,
-      "size": 43,
-      "normalized_sha256": "1224fef05cd27996a569bb7d5a17b3f8d3b1c47ee74fb4d03d7cfec308c2ba71",
-      "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 6739424,
-      "size": 43,
-      "normalized_sha256": "1224fef05cd27996a569bb7d5a17b3f8d3b1c47ee74fb4d03d7cfec308c2ba71",
-      "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 6739472,
-      "size": 43,
-      "normalized_sha256": "1224fef05cd27996a569bb7d5a17b3f8d3b1c47ee74fb4d03d7cfec308c2ba71",
-      "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 6739584,
-      "size": 43,
-      "normalized_sha256": "1224fef05cd27996a569bb7d5a17b3f8d3b1c47ee74fb4d03d7cfec308c2ba71",
-      "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 6739632,
-      "size": 43,
-      "normalized_sha256": "1224fef05cd27996a569bb7d5a17b3f8d3b1c47ee74fb4d03d7cfec308c2ba71",
-      "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
-      "extraction": "linked-reference-inference"
-    },
-    {
-      "rva": 6739744,
       "size": 43,
       "normalized_sha256": "1224fef05cd27996a569bb7d5a17b3f8d3b1c47ee74fb4d03d7cfec308c2ba71",
       "layout_sha256": "794c20e2605f871ea2250ad176b9ce1ac1e2da748f24c9f62c5541117f2458cc",
