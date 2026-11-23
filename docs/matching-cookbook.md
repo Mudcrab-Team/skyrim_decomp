@@ -57,7 +57,8 @@ argument setup differs for a value the target leaves in rdx, r8 or r9.
 
 **6. Register differences in a switch: change the width of the switch operand.** (medium)
 `switch (static_cast<std::uint32_t>(byteField))` and switching on a byte enum give different
-register allocation and different zero-extension placement. Try both. Closed VisitWornItems.
+register allocation and different zero-extension placement. Try both. Closed VisitWornItems. A selector parameter declared `std::int32_t` rather
+than unsigned closed ActorProcess 0x700180.
 
 **7. A missing shared constant: put the value-producing branch in its own helper.** (medium)
 Symptom: the target materialises `-1` once and reuses it for both the compare and the result.
@@ -376,7 +377,8 @@ as a tail call (0xa00860). Tried first and not enough in every case: early retur
 helper returning the value, a bool helper. Closed 0x86aa30, 0x8f1bd0, 0xa00860, 0x152340,
 0x8f26a0, 0x868df0 (`result = true` instead of `return true` was the whole change), 0x6cb940,
 0x6767e0, 0x6af050, 0x301a20, 0x6744d0 and 0x6c6380 (the last under the `o2-fpfast` recipe); the
-switch-returning form is 0x184ab0.
+switch-returning form is 0x184ab0. A float result preset to a sentinel constant and assigned inside
+the `if` closed 0x448d10.
 
 **35. A loop that stops on a found result: put the result in the loop condition; clear flags with
 `if`.** (medium, two observations)
@@ -392,7 +394,8 @@ Cause: the target keeps the element address computed before the position advance
 that returns the element and advances through an out-parameter (`GetNext(pos, &pos->data)`)
 scored the same 93 of 104 bytes in four attempts. Fix: read the context value into a local before
 the loop, then `const Ref& item = pos->element; pos = pos->next; item->Visit(ctx, a, b);`. Closed
-NiParticleSystem 0xf999c0 (promoted from idea A below).
+NiParticleSystem 0xf999c0 (promoted from idea A below). The same order closed a list clear in
+0xfce420: take the node, advance the cursor, null the node's item, then `delete node` (sized delete).
 
 **37. A flag word loaded, edited in a register and stored once.** (low, two observations)
 Symptom: the target does one load and one store of the word; the candidate emits two read-modify-write
@@ -401,7 +404,9 @@ one function: the word declared `volatile` with one assignment expression
 (`flags = (flags & ~kClear) | kSet;`, 0xfddba0), and, for a word tested under a branch, member helpers
 on the pointed-to struct, a clear that returns whether anything was set and a set by slot, with the
 null test of the struct inside each branch (0x14e77b0). `volatile` alone did not close 0x14e77b0, and
-setter, by-value helper and temporary spellings did not close 0xfddba0.
+setter, by-value helper and temporary spellings did not close 0xfddba0. Not closed: 0x14ef80, where
+the flag word stays in the register the callee argument needs and the vtable is loaded before the
+bit is set.
 
 **38. A compare whose width or sign decides the branch form.** (medium)
 Symptom: size off by a few bytes with the same control flow, a mask kept in a wider register, or a
@@ -410,7 +415,11 @@ cast the masked value to the field's width, `static_cast<std::uint16_t>(x & mask
 of a helper taking the mask and value (0x674250); write the mask as a signed 64-bit constant in
 `(flags & kMask) <= 0` (0x1519980); widen a byte field to `int` before a range test (0x868df0,
 0x41efc0); test two values that differ in one bit as `((x - a) & ~bit) == 0` on an `int` (0x41efc0).
-In rule 16's helper, pass the whole 32-bit member, not a byte view of it (0x3299f0).
+In rule 16's helper, pass the whole 32-bit member, not a byte view of it (0x3299f0). Also closed:
+`(word & mask) > 0 || (word & bit) > 0` on a `std::uint64_t` copy of the flag word with a result
+local (0x151ca80); a negated compare `!(a >= lowest)` to get the branch direction (0x14e69c0); a
+signed `int` corner index added to a `size_t` row base, the wrap written `(corner + 1) % 3` and
+cast to unsigned (0x11df780).
 
 **39. `delete` after an inlined release adds a null test: delete a local copy.** (medium)
 Symptom: the candidate has an extra null test before the operator delete that the target lacks.
@@ -424,13 +433,67 @@ pass the value through an inline accessor with its own null test.** (low, one ob
 Symptom: the candidate sends the null-process and null-entry paths directly to the zero return.
 Fix: `InventoryEntryData* entry = GetCurrentAmmoEntry(); TESForm* form = entry ? entry->GetObject() :
 nullptr; if (form && form->IsAmmo()) return ...;`. Closed Actor::GetCurrentAmmo 0x6cc700. Not tried
-on the same symptom in 0x64d290 and 0x14e70b0.
+on the same symptom in 0x64d290 and 0x14e70b0. Not closed: 0x64d060, where the target joins two null
+paths into one zero-pointer block before the next test (nested if, ternary, helper and `&&` tried),
+and 0x722210, where the target keeps a null stack local before the test.
 
 **47. A pick between a pointer and a fallback: write the null test as `p == nullptr ? fallback : p`.**
 (low, one observation)
 Symptom: the select of a pointer or its fallback gives a different jump shape from the target.
 Fix: `return space == nullptr ? cell : space;`, the null-check-first ternary. `space ? space : cell` and the
 if-assign form both missed. Closed TESObjectREFR 0x2f3d30.
+
+**48. Float code with a parity branch or a double round-trip: switch the unit to `o2-fpfast`.**
+(medium)
+Symptom: under the default recipe a compare of a float against zero (`delta != 0.0f`) gains a
+parity-flag branch the target lacks, or `fabsf` / `std::fabs` is widened through double. Cause: the
+target was built with fast floating point. Fix: put `Recipe: reconstruction/recipes/o2-fpfast.json`
+in the unit's leading comment before spending attempts on source shapes (compare reads that line,
+not the task file). Passes under it: 0xbbc170
+(parity branch), 0x448d90 (`fabsf`), 0x6b57f0, 0x6ca4c0, 0x7ec6d0 and 0x301a50. It does not fix
+register or load order: 0x18a8c0 lost its parity branch and stayed open (rule 45).
+
+**49. A parameter reused as the address-taken local.** (low, two functions)
+Symptom: the target passes a pointer to a stack slot that holds a small constant to a stream-like
+call, in a home slot of an incoming argument; the candidate declares a new local and the slot or the
+call setup differs. Fix: compute what is needed from the parameter, assign the constant back into
+the parameter and pass its address:
+`const std::uint32_t total = count * 4; count = 4; io(this, buffer, total, &count, 1);`. Closed
+0xef6c60 and 0xef6dd0 (the second goes through a forwarding target pointer read first).
+
+**50. A struct assignment that merges tail scalars into one vector copy: copy the prefix, then each
+scalar.** (low, one observation)
+Symptom: copying a 0x34-byte state, `dst = src` is lowered with the
+trailing scalars folded into a wide move; a plain struct assignment did this. Fix: `std::memcpy(dst.head, src.head, 0x20)` for the
+leading block, then one assignment per trailing scalar in offset order. Closed 0x12329c0. Compare
+rule 19.
+
+**51. A copy of 16-byte-aligned float rows: use `__m128` members.** (low, one observation)
+Symptom: the target copies a 48-byte block with three vector moves and the candidate cannot
+reproduce the aligned moves with plain float members. Fix: declare the block as `__m128 rows[3]`
+(include `<intrin.h>`; preflight rejects `<xmmintrin.h>` as outside the include roots) and assign
+the block as a struct. Closed 0xbbc110.
+
+**52. Adjacent flag bits tested separately: declare them as bit-fields in the stand-in.** (low, two
+observations)
+Symptom: `a && !b` over two neighbouring bits of one byte is folded into one mask compare, and rule
+16's helper does not keep them apart. Fix: in the stand-in layout declare
+`std::uint8_t first : 1; std::uint8_t second : 1;` and test the members. Closed BGSScene 0x3a95d0;
+the same stand-in kept the pair apart on 0x3a9420, which stays open for the loop (rule 20). Rule 41
+records Character 0x6a1120, where bit-fields did not help on three masks of a state word.
+
+**53. Clamping two members to a value: read both members first, the later one first.** (low, one
+observation)
+Symptom: in `member1 = max(member1, v); member2 = min(member2, v)` the candidate loads and stores
+one member before it loads the next. Fix: `float b = p->m2; float a = p->m1;` then
+`p->m1 = (a < v) ? v : a; p->m2 = (v < b) ? b : v;`. Closed ActorProcess 0x6f5e40.
+
+**54. Both arms assign a smart-pointer out-parameter: write `else out = nullptr` and test the
+result.** (low, one observation)
+Symptom: the candidate returns early on the null source, so the null store of the out-parameter is
+missing or sits on a different path. Fix: `if (src) out = src->member; else out = nullptr; return out._ptr != nullptr;`.
+Closed ActorProcess 0x7217e0. The sibling 0x721710 matched with the other form: assign, then
+`if (out._ptr) return true;` inside the `if (src)`, so choose by where the target stores the null.
 
 ## Shaping ideas from one contributor's cheap-model runs
 
@@ -475,7 +538,9 @@ For the variant whose saves skip the first home slot, see rule 29. Otherwise cau
 `noexcept` or `throw()` helper whose throwing path folds away), or frame layout kept from dead
 code (a parameter or `this` whose address is taken and then optimised out). Seen in
 BSReadWriteLock::LockForRead 0xce3250 and LockForWrite 0xce32d0, and in the same form in 0x2bccc0,
-0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260 and 0x3c62f0 (eight functions; a plain save and restore, an
+0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260, 0x3c62f0, 0x14e81f0 (the target uses rdi, rbp, rsi for three locals where the candidate
+has rbp, rsi, rdi), 0x4682f0, 0x3a9420 and 0xce3360 (spill slots one home slot lower than the target; early return
+versus else, a local thread id, branch inversion and a ternary sleep argument tried) (twelve functions; a plain save and restore, an
 RAII guard struct and a reference with an explicit null check were tried on 0x2bccc0). When the
 function saves, changes and restores a thread-local, the guard of rule 21 closed the same
 symptom in 0x6d9f20, and rule 34 closed a swap of the null and pointer registers in 0x6767e0,
@@ -496,16 +561,22 @@ optimised out), tried first on one dense run. Seen in RemoveFavorite 0x237a20 an
 destructor (a scalar-deleted node, an exception-state slot, no handler), in 0x346700, 0x346780,
 0x346800, 0x3244a0 and 0x14c550, where `noexcept(false)`, a non-destructor form and a scalar-deleting
 variant did not add the state; four more of the same shape (0x346880, 0x395320, 0x1f0840, 0x7e99a0)
-were not attempted. Triage these instead of drafting them.
+were not attempted. Triage these instead of drafting them. Another list-node destructor, 0x7e9ad0 (a
+scope object with an empty user destructor did not add the slot), and a plain derived constructor
+with a base-constructor call, 0x4aa240 (members with destructors did not add it; 0x3f0740 and
+0x3f07c0 are reported with the same shape), belong here too.
 
 **20. A pointer loop that the compiler turns into a counted loop.** (low)
 Symptom: the target walks an array with `it != end` (two callee-saved registers, no trip count);
 the candidate computes a trip count with `lea`/`shr`/`cmova` and needs two more callee-saved
 registers, so the prologue differs. A raw pointer loop and a range-for over `begin()`/`end()` both
 give the counted form; `if (count)` before the loop and a `do`-`while` did not help either. Not
-closed: TESNPC::ClearData 0x3bbf50 and the entry-array visitor 0x397810.
+closed: TESNPC::ClearData 0x3bbf50 and the entry-array visitor 0x397810. Also 0x3a9420 (a `++`
+pointer loop still became counted; the target increments after the calls) and 0x75ceb0 (the target
+keeps an un-rotated loop that reloads the array pointer each pass and saves three registers; a
+for with break, a loop condition with a result test and a while with an explicit increment tried).
 
-**41. Repeated tests of one value folded into a single test.** (low, four functions)
+**41. Repeated tests of one value folded into a single test.** (low, six functions)
 Symptom: the target tests the same loaded word or pointer more than once (three separate masks of a
 state word, three form-type compares, a parent null test plus a use-flag test repeated through an
 inlined helper) and the candidate always folds them into one subtract-and-test or one test. About 40
@@ -513,15 +584,21 @@ spellings did not help on Character 0x6a1120 (bit-field, raw masks, shifts, sign
 copies, helpers, switch, loops, base-class views); switch, `||` and early returns did not help on
 0x1e9fc0; calling the helper twice did not help on TESWorldSpace 0x30dad0 and 0x30e140. The local
 copy with plain comparisons that closed SetAlpha 0x14e7f40 (`const float old = alpha;` tested with
-`old >= 1.0f` and `a < 1.0f`) has not been tried on them.
+`old >= 1.0f` and `a < 1.0f`) has not been tried on them. Two closes in the same family: a masked
+type word held in a `std::uint32_t` local and tested `== a || == b` kept two compares, after an
+explicit repeated `if (ptr)` (Explosion 0x7e9020); and rule 51's bit-field stand-ins kept two
+adjacent flag bits apart. Not closed: 0x52cf60 (two per-iteration bit tests with the array reloaded;
+a `bool` parameter collapsed the function to 6 bytes where `std::uint8_t` compiled normally, cause
+unknown) and 0x2e5060 (two flag bits merged into one mask test despite rule 16's helper; rule 51 not
+recorded as tried).
 
-**42. Two operands loaded or stored in the other order.** (low, five functions)
+**42. Two operands loaded or stored in the other order.** (low, six functions)
 Symptom: every instruction matches except that two loads or two stores come in the opposite order,
 or a compare's operands flip. Local-variable orderings, direct stores, a `const` and a non-const
 local, a reference parameter, a hoisted declaration, signed and unsigned types, local copies, and
 initialiser-list versus body assignment all failed on 0x1812d0, 0x1892e0, 0x449390, 0x639a20 and
-0xf857d0 (the last loads a 16-byte value right after the base constructor call, before the vtable
-store). Try rule 31's sub-object constructor first.
+0xf857d0 and 0xf62740 (both load a 16-byte value right after the base constructor call, before the
+vtable store; init list, body assignment and mixed forms left the load late). Try rule 31's sub-object constructor first.
 
 **43. A set-on-condition where the target uses a conditional move, and the bare-return idiom.**
 (low, five functions)
@@ -530,20 +607,30 @@ at the end, or keeps a preset zero and selects with a conditional move; every sp
 set-on-condition, a duplicated true block or an extra jump. Tried: an explicit result flag, references,
 pointers, a struct array, two arrays, loop counter signedness. Seen in 0x186670, 0x186370, 0x18b1c0,
 0x41f410 and 0x2f3da0 (which keeps a constant true in a callee-saved register). Rule 34 closed the
-same symptom in twelve other functions; it is not recorded as tried on these.
+same symptom in twelve other functions; it is not recorded as tried on these. A both-null test written as early returns
+(`if (!a && !b) return false; if (!a || !b) return true;`) before a loop that returns true on a
+mismatch closed ExtraPortalRefData::IsNotEqual 0x186420; that compares two pointed-to records, not
+a bare pointer pair, so it may not transfer.
 
 **44. A find loop whose index increment and found register differ.** (low, five functions)
 Symptom: the target copies the index before incrementing, tests a found flag at the loop top and
 re-compares the last element after the loop; the candidate strength-reduces to a pointer, hoists the
 increment or swaps the index and result registers. A flag loop gave a register swap and a last-element
-loop gave a widened copy of the counter. Seen in 0x1d89e0, 0x3cc660, 0x727bf0, 0x6ff0e0 and the nested
+loop gave a widened copy of the counter. A do-while that copies the index into a local before
+decrementing, tests the copy (`remaining > 0`) and keeps the result in a separate counter closed
+TESShout 0x387e20, a find-last over three entries. Seen in 0x1d89e0, 0x3cc660, 0x727bf0, 0x6ff0e0 and the nested
 search 0x3e8380. Rule 35 closed a found-in-condition loop with a different exit.
 
 **45. Float code: loads of the operands before the first compare.** (low, five functions)
 Symptom: the target loads all the source floats (or computes both centres) before the first compare,
 the candidate loads them one at a time and the operand order follows the source order; the
 short-to-float conversion differs between the default and `o2-fpfast` recipes. Source reordering did
-not converge on 0x518a30, 0x191710, 0x18a8c0, 0xbafa60 and 0x3c7460.
+not converge on 0x518a30, 0x191710, 0x18a8c0, 0xbafa60 and 0x3c7460; the same cause, or interleaved
+sums, also left 0xf02f60 (three rotate-row sums), 0xffed40 (the target loads all four values, the
+float through xmm, before storing), 0xfcf0a0 (loop counter and bit mask swap registers, which swaps
+the plane-component load order) and 0x14e7120 (float register allocation) open. Local copies of the
+three size components, read in order before the square root, closed BSMultiBoundAABB 0xfcf150; try
+that before reordering expressions.
 
 **46. A tail call where the target calls, or the reverse.** (low, three functions)
 Symptom: the final call of the candidate becomes a jump where the target keeps a normal call
@@ -551,6 +638,40 @@ Symptom: the final call of the candidate becomes a jump where the target keeps a
 stack local's address went to the previous call and MSVC emits a call and a return for every variant:
 void and bool returns, a hidden-return temporary (0x7a3ec0). Also 0x3c62f0 (the template pointer
 sits in another register for the tail call).
+
+**55. Scratch register choice in a call or null-checked chain.** (low, six functions)
+Symptom: same instructions and sizes, one scratch register differs. For a virtual call the target
+loads the vtable pointer into r10 or rdx where the candidate uses rax (0x9ff790, an error call in a
+VM log helper; 0x5e70e0, a spell-type call). For a null-checked chain the target keeps the outer
+pointer in rdx (0x4b4d40), uses a second register for the second pointer (0x418510), reuses the
+`this` register for a loaded parent pointer (0x32c260), or picks r9 for a flags temporary where the
+candidate uses r8 (0xf9e760). Tried without effect: return type `bool`, a variadic signature,
+switch, compare, ternary and accessor forms, nested ifs, locals, an inlined helper, local copies, a
+by-value `Set`/`TestBit` helper, an unused extra parameter, a virtual declaration.
+
+**56. A runtime type cast whose select form differs.** (low, two functions)
+Symptom: a geometry-to-skin-instance RTTI cast; the target selects in place on the saved pointer
+and keeps a null re-test after a following flag test, where the candidate selects into a fresh zeroed
+register or folds the cast away. Tried: bool locals, if/else orders, a helper returning a bool or a
+pointer. Seen in 0x21cba0 (best 70 of 103 bytes) and 0x21cc10.
+
+**57. A local zero-filled by a rolled loop.** (low, two functions)
+Symptom: the target clears a five-quadword local plus a trailing dword with a loop; aggregate
+initialisation, a constructor loop and an element class with a constructor all give unrolled or
+vector stores. Seen in 0x11d6760 and its twin 0x11d67b0 (not attempted separately).
+
+**58. A shared tail the candidate duplicates, or stores scheduled around a compare.** (low, six
+functions)
+Symptom: the target has one store or epilogue block shared by two paths (0x833510, a two-way select
+with a single store tail; 0x14f320, a static array teardown loop), joins two null paths into one
+zero block (0x64d060, see rule 40), stores each of five inverted flag bytes right after its own
+compare where the candidate hoists the next compare above the store (0xbb8550), or hoists the
+address of a member into a register before a branch (0xf01610). Tried: tail-duplicated returns,
+locals then one store, brace-init return, zero-init defaults, `uint8` or `bool` members, a pair
+struct, `== 0` forms, a plain member, a reference and a nested struct with an inline method. The
+loop in 0xbb8550 was not unrolled. Also unexplained: a zero register stored into an 8-byte member
+that the function then returns as zero, where the candidate stores an immediate (0x1540f70; void,
+pointer, integer and 64-bit returns and a ref-pointer member tried; compare rule 31).
 
 ## Method and permuter recommendations
 
