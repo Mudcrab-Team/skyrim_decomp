@@ -49,6 +49,14 @@ class IncludeResolve(unittest.TestCase):
             problems = cir.check_units(tmp, {(None, 'reports/x/0x1.json'): ['fn-2']})
         self.assertEqual(len(problems), 1)
 
+    def test_imports_without_fcntl(self):
+        # The Windows hash job loads this module chain through tools/check.py; fcntl is POSIX-only.
+        import subprocess
+        code = "import sys; sys.modules['fcntl'] = None; import check_include_resolve"
+        tools = str(Path(__file__).resolve().parents[1] / 'tools')
+        done = subprocess.run([sys.executable, '-c', code], cwd=tools, capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0, done.stderr[-300:])
+
 
 if __name__ == '__main__':
     unittest.main()
