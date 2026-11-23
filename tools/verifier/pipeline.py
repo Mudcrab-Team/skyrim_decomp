@@ -43,7 +43,7 @@ try:
 except ImportError:
     cost_hooks = None
 
-TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py',
+TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
               'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
 TASK_ID = re.compile(r'[a-z0-9][a-z0-9.-]{0,55}')
 PRIVATE_SYMBOLS = 'task/symbols.json'
@@ -467,6 +467,10 @@ def function_line(fn, fdir, obj):
         parts.append(f'unwind {cov.get("unwind")}')
     if reason == 'function-symbol-missing':
         parts.append(f'(object does not define {fn["symbol"]})')
+    elif reason == 'comparator-error':
+        # The error record's detail is the comparator's own masked complaint (no report was written).
+        last = [line for line in detail.splitlines() if line.strip()][-1:] or ['no detail']
+        parts.append(f'(the comparator stopped before a verdict: {last[0].strip()[:160]})')
     elif reason == 'unresolved-symbol':
         # The comparator's detail names the symbol only; it holds no bytes.
         parts.append(f'({detail})')

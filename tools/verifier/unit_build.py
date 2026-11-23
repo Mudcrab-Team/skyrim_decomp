@@ -54,7 +54,8 @@ import time
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-from source_digest import include_closure, recipe_flag_problem, tu_digest  # noqa: E402
+from source_digest import include_closure, recipe_flag_problem  # noqa: E402
+from digest_v2 import tu_digest  # noqa: E402
 
 SPEC_SCHEMA = 1
 # Variables that change include search or add compiler flags; the wrapper sets INCLUDE itself.
