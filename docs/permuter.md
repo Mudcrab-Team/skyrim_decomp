@@ -46,6 +46,8 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    | `compare`, `commute`, `test-form` | R7 | compare direction and operand order; commutative operands; `!x` versus `x == 0`, `nullptr` versus `0` |
    | `increment` | | `++i`, `i++`, `i += 1`, `i = i + 1` |
    | `out-init` | cookbook 9 | a local whose address is passed keeps or drops its zero initialiser |
+   | `zero-form` | | how a zero is materialised: a never-written zero local read at the use, the literal at the use, or a new `zero_` local standing for one literal |
+   | `return-through` | cookbook 2 | a switch arm `x = e; break;` becomes `return e;`, so that path skips the code after the switch |
 
    Some rewrites can change meaning (a width, a re-read across a call). That does not matter
    for the search, because only identical bytes count, but the Reviewer still reads the result
@@ -69,7 +71,15 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    sideways moves to new objects of equal score, a random restart from the best after
    `--restart-after` batches without progress, and a seen-set of object hashes, so a spelling
    that compiles to known code does not count as progress. Stops at distance 0, at `--budget`
-   seconds of wall time, or after `--patience` batches without a new best.
+   seconds of wall time (time spent waiting out a host outage is not counted), after `--patience`
+   batches without a new best, or as `pool-exhausted`. A round with few new sources (under a
+   quarter of a batch) or no new object code widens the search by one more stacked mutation per
+   candidate, up to 8; four such rounds in a row at that width end the run instead of spending host
+   time on near-empty batches.
+   After every round `history.jsonl`, `best.cpp` and a partial `result.json` (status `running`)
+   are rewritten, so a run that dies keeps what it found (status `aborted: <error>`). A dropped
+   connection repeats the whole batch with a 5 s to 120 s backoff (and starts the host's run
+   directory again first, in case the host restarted) for up to `--outage` seconds (default 1800).
 5. **Confirmation.** A distance-0 winner is compiled and compared once more by `unit_build.py`
    (pinned toolchain and image checks, include closure, `verify_function.py`). Only that report
    says pass. Distance 0 alone is not a pass: `align.py` is run without the unwind infos.

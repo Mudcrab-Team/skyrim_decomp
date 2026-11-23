@@ -49,6 +49,7 @@ bool Toy::Probe(Node* a_node, unsigned int a_limit)
     case 1:
         return true;
     default:
+        total = 2;
         break;
     }
     return total < static_cast<int>(a_limit) + a_node->value;
@@ -142,6 +143,30 @@ class Mutations(unittest.TestCase):
                 self.assertNotEqual(out, base)
                 block, tail = permute.parse_body(out)
                 self.assertEqual(permute.emit(block, tail), out)
+
+    def test_return_through_replaces_assign_and_break(self):
+        out = ' '.join(apply_one('return-through').split())
+        self.assertIn('default: return 2;', out)
+
+    def test_zero_form_names_and_inlines_a_zero(self):
+        text = ('int Toy::Z(int a)\n{\n    const float lo = 0.0f;\n    float r = a;\n'
+                '    if (!(r >= lo)) {\n        r = lo;\n    }\n    return r;\n}\n')
+        u = permute.Unit(text, 'Toy::Z')
+        seen = set()
+        for seed in range(40):
+            tree = copy.deepcopy(u.block)
+            if permute.m_zero_form(tree, random.Random(seed)):
+                seen.add(' '.join(u.body_of(tree).split()))
+        self.assertTrue(any('r = 0.0f;' in s or '>= 0.0f' in s for s in seen))
+        base = ' '.join(u.body_of(u.block).split())
+        self.assertTrue(seen and all(s != base for s in seen))
+
+    def test_zero_form_introduces_a_zero_local_when_none_exists(self):
+        text = 'int Toy::Z(int a)\n{\n    int r = a;\n    if (r < 0) {\n        r = 0;\n    }\n    return r;\n}\n'
+        u = permute.Unit(text, 'Toy::Z')
+        tree = copy.deepcopy(u.block)
+        self.assertTrue(permute.m_zero_form(tree, random.Random(0)))
+        self.assertIn('const int zero_ = 0;', ' '.join(u.body_of(tree).split()))
 
     def test_if_invert(self):
         out = apply_one('if-invert')
@@ -441,6 +466,74 @@ class SearchLoop(unittest.TestCase):
         result = search.run()
         self.assertEqual(result['unique_objects'], 1)
         self.assertTrue(all(not r.get('new_object', False) for r in search.history[1:]))
+
+    def test_dry_rounds_widen_then_stop_as_pool_exhausted(self):
+        u = body_unit()
+        rounds = []
+
+        def score(cands):
+            return [{'id': c['id'], 'st': 'ok', 'd': 5, 'ex': 5, 'n': 1, 'nt': 1, 'h': 'same'} for c in cands]
+        search = permute.Search(u, score, lambda text: [], random.Random(1), batch=4, patience=1000,
+                                budget=10 ** 6, log=lambda m: None, on_round=rounds.append)
+        result = search.run()
+        self.assertEqual(result['status'], 'pool-exhausted')
+        self.assertEqual(search.widen, search.max_steps_cap - search.max_steps)
+        self.assertGreater(len(rounds), 1)  # flushed every round, and once after the base
+
+    def test_fresh_objects_reset_the_dry_count(self):
+        u = body_unit()
+        n = [0]
+
+        def score(cands):
+            out = []
+            for c in cands:
+                n[0] += 1
+                out.append({'id': c['id'], 'st': 'ok', 'd': 5, 'ex': 5, 'n': 1, 'nt': 1, 'h': f'h{n[0]}'})
+            return out
+        search = permute.Search(u, score, lambda text: [], random.Random(1), batch=4, patience=6,
+                                budget=10 ** 6, log=lambda m: None)
+        self.assertEqual(search.run()['status'], 'patience')
+
+
+class Retrying(unittest.TestCase):
+    def test_retries_with_backoff_and_recovers_once_per_failure(self):
+        import runners
+        calls, sleeps, recovered, timings, now = [], [], [], {}, [0.0]
+
+        def call():
+            calls.append(1)
+            if len(calls) < 3:
+                raise runners.TransportError('down')
+            return 'ok'
+
+        def sleep(s):
+            sleeps.append(s)
+            now[0] += s
+        got = permute.retrying(call, timings, lambda m: None, 600, recover=lambda: recovered.append(1),
+                               sleep=sleep, clock=lambda: now[0])
+        self.assertEqual(got, 'ok')
+        self.assertEqual(sleeps, [5, 10])
+        self.assertEqual(len(recovered), 2)
+        self.assertEqual(timings['outage_seconds'], 15)
+
+    def test_gives_up_after_the_limit(self):
+        import runners
+        now = [0.0]
+
+        def sleep(s):
+            now[0] += s
+
+        def call():
+            raise runners.TransportError('down')
+        with self.assertRaises(runners.TransportError):
+            permute.retrying(call, {}, lambda m: None, 20, sleep=sleep, clock=lambda: now[0])
+        self.assertLessEqual(now[0], 20)
+
+    def test_does_not_retry_other_errors(self):
+        def call():
+            raise KeyError('bug')
+        with self.assertRaises(KeyError):
+            permute.retrying(call, {}, lambda m: None, 600, sleep=lambda s: None)
 
 
 class LintRoot(unittest.TestCase):

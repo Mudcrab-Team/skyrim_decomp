@@ -1104,6 +1104,86 @@ def m_out_init(root, rng):
     return True
 
 
+ZERO_LITERAL = re.compile(r'0+(?:\.0*)?[fF]?|\.0+[fF]?|0[uUlL]*')
+
+
+def _zero_vars(root):
+    """{name: literal token} of locals declared as `T x = <zero literal>;` and never written."""
+    out, own = {}, {}
+    for n in walk_nodes(root):
+        d = decl_info(n)
+        if d and d[2] is not None and len(n.t) - d[2] == 3 and ZERO_LITERAL.fullmatch(n.t[d[2] + 1].text) \
+                and n.t[d[2] + 1].kind == 'num':
+            out[d[1]] = n.t[d[2] + 1]
+            own[d[1]] = n.t
+    return {k: v for k, v in out.items()
+            if not any(written(lst, k) for lst in expr_lists(root) if lst is not own[k])}
+
+
+def m_zero_form(root, rng):
+    """How a zero is materialised: a named zero local read at the use, the literal at the use, or a
+    new zero local standing for one literal."""
+    sites = []
+    zeros = _zero_vars(root)
+    lists = expr_lists(root)
+    for name, lit in zeros.items():
+        for lst in lists:
+            for i in uses(lst, name):
+                if not (i and lst[i - 1].text in ('.', '->')):
+                    sites.append(('inline', lst, i, lit))
+    for lst in lists:
+        decl_of = decl_info(Simple(lst)) if lst and lst[-1].text == ';' else None
+        for i, tok in enumerate(lst):
+            if tok.kind != 'num' or not ZERO_LITERAL.fullmatch(tok.text):
+                continue
+            if decl_of and decl_of[1] in zeros and decl_of[2] is not None and i == decl_of[2] + 1:
+                continue  # the zero local's own initialiser
+            for name in zeros:
+                sites.append(('name', lst, i, name))
+            if not zeros:
+                sites.append(('intro', lst, i, None))
+    if not sites:
+        return False
+    how, lst, i, what = rng.choice(sites)
+    if how == 'inline':
+        lst[i] = Tok('num', what.text, lst[i].pre)
+    elif how == 'name':
+        lst[i] = Tok('id', what, lst[i].pre)
+    else:
+        taken = {x.text for x in root.toks() if x.kind == 'id'}
+        name = 'zero_'
+        while name in taken:
+            name += '_'
+        text = lst[i].text
+        ctype = 'float' if text[-1] in 'fF' else 'double' if '.' in text else 'int'
+        lst[i] = Tok('id', name, lst[i].pre)
+        first = root.stmts[0]
+        pre = first.toks()[0].pre if first.toks() else '\n    '
+        root.stmts.insert(0, Simple(toks_of(f'const {ctype} {name} = {text};', pre)))
+    return True
+
+
+def m_return_through(root, rng):
+    """cookbook 2: a switch arm `x = e; break;` returns `e` at once instead of going through the code after the switch."""
+    sites = []
+    for n in walk_nodes(root):
+        if not (isinstance(n, Loop) and n.kind == 'switch'):
+            continue
+        stmts = n.body.stmts
+        for i in range(len(stmts) - 1):
+            a, b = stmts[i], stmts[i + 1]
+            if isinstance(a, Simple) and isinstance(b, Simple) and len(a.t) > 3 and a.t[0].kind == 'id' \
+                    and a.t[0].text not in KEYWORDS and a.t[1].text == '=' and [x.text for x in b.t] == ['break', ';']:
+                sites.append((stmts, i))
+    if not sites:
+        return False
+    stmts, i = rng.choice(sites)
+    a = stmts[i]
+    expr = [copy.copy(x) for x in a.t[2:-1]]
+    stmts[i:i + 2] = [Simple([Tok('id', 'return', a.t[0].pre)] + expr + [a.t[-1]])]
+    return True
+
+
 MUTATIONS = {
     'out-init': (m_out_init, 'cookbook 9', 1),
     'decl-swap': (m_decl_swap, 'R1', 3),
@@ -1120,6 +1200,8 @@ MUTATIONS = {
     'commute': (m_commute, 'R7', 2),
     'test-form': (m_test_form, 'R5/R7', 2),
     'increment': (m_increment, 'increment forms', 1),
+    'zero-form': (m_zero_form, 'zero materialisation', 2),
+    'return-through': (m_return_through, 'cookbook 2', 2),
 }
 
 
@@ -1236,8 +1318,15 @@ def score_key(row):
 
 class Search:
     def __init__(self, unit, scorer, lint, rng, batch=16, patience=8, restart_after=3, budget=600.0,
-                 log=print, clock=time.monotonic, max_steps=3):
+                 log=print, clock=time.monotonic, max_steps=3, max_steps_cap=8, dry_limit=4, on_round=None):
         self.unit, self.scorer, self.lint, self.rng = unit, scorer, lint, rng
+        # A round with few new sources or no new object code widens the search (`widen` extra stacked
+        # mutations per candidate, up to max_steps_cap); `dry_limit` such rounds in a row at the cap
+        # end the run as pool-exhausted instead of spending host time on near-empty batches.
+        self.max_steps_cap, self.dry_limit, self.on_round = max_steps_cap, dry_limit, on_round
+        self.widen = 0
+        self.start = self.best = None
+        self.rounds = 0
         self.batch, self.patience, self.restart_after, self.budget = batch, patience, restart_after, budget
         self.log, self.clock, self.max_steps = log, clock, max_steps
         self.seen_src, self.seen_obj, self.history = set(), {}, []
@@ -1250,7 +1339,8 @@ class Search:
             guard += 1
             parent = self.rng.choice(parents)
             tree = copy.deepcopy(parent['tree'])
-            steps = 1 + min(self.max_steps - 1, int(self.rng.expovariate(1.2)))
+            top = min(self.max_steps + self.widen, self.max_steps_cap)
+            steps = 1 + min(top - 1, int(self.rng.expovariate(1.2 / (1 + self.widen / 2))))
             applied = mutate_forest(tree, self.rng, steps)
             if not applied:
                 continue
@@ -1283,9 +1373,12 @@ class Search:
         if base.get('st') != 'ok':
             return {'status': 'base-not-scored', 'base': _public(base)}
         start = best = current = base
+        self.start = self.best = base
         self.seen_obj[base.get('h')] = score_key(base)
-        stale_best = stale_current = rounds = 0
+        stale_best = stale_current = rounds = dry = 0
         stop = 'patience'
+        if self.on_round:
+            self.on_round(self)
         while True:
             if score_key(best)[0] == 0:
                 stop = 'distance-0'
@@ -1308,14 +1401,22 @@ class Search:
                 stale_best += 1
                 stale_current += 1
                 rounds += 1
+                self.rounds = rounds
+                dry, stop_now = self._dry(dry, True)
+                if stop_now:
+                    stop = 'pool-exhausted'
+                    break
                 continue
             rows = self.scorer(cands)
             rounds += 1
+            self.rounds = rounds
             new_best = new_current = None
+            fresh_count = 0
             for c, r in zip(cands, rows):
                 c.update(r)
                 fresh = c.get('h') not in self.seen_obj
                 c['new_object'] = fresh
+                fresh_count += fresh and c.get('st') == 'ok'
                 self._record(c)
                 if c.get('st') != 'ok' or not fresh:
                     continue
@@ -1338,10 +1439,28 @@ class Search:
             else:
                 stale_best += 1
                 stale_current += 1
-            self.log(f'round {rounds}: {len(cands)} candidates, best {_fmt(best)}, current {_fmt(current)}')
+            self.best = best
+            dry, stop_now = self._dry(dry, len(cands) < max(2, self.batch // 4) or fresh_count == 0)
+            self.log(f'round {rounds}: {len(cands)} candidates, {fresh_count} new objects, best {_fmt(best)}, '
+                     f'current {_fmt(current)}' + (f', widened +{self.widen}' if self.widen else ''))
+            if self.on_round:
+                self.on_round(self)
+            if stop_now:
+                stop = 'pool-exhausted'
+                break
         return {'status': stop, 'start': start, 'best': best, 'rounds': rounds,
                 'candidates': len(self.history), 'lint_rejected': self.lint_rejected,
                 'unique_objects': len(self.seen_obj), 'seconds': round(self.clock() - started, 1)}
+
+    def _dry(self, dry, thin):
+        """(dry-round count, whether the pool is exhausted) after a round that was `thin` or not."""
+        if not thin:
+            return 0, False
+        cap = self.max_steps_cap - self.max_steps
+        if self.widen < cap:
+            self.widen += 1
+            return 0, False
+        return dry + 1, dry + 1 >= self.dry_limit
 
     def _record(self, c):
         self.history.append(_public(c))
@@ -1532,27 +1651,54 @@ def scoring_context(objdump, image, task, fn):
             'symbols': str(task['symbols_local']), 'nt': n_target}
 
 
-def runner_scorer(host, unit, jobs, score_all, timings, log, stage):
+def retrying(call, timings, log, limit, recover=None, sleep=time.sleep, clock=time.monotonic):
+    """call() again after a transport failure, backing off 5 s doubling to 120 s, for up to `limit` seconds.
+
+    Before each retry `recover()` (if given) runs, since a host that went away may have lost the run
+    directory; a failure in it counts as another failed attempt. The time spent failing is added to
+    timings['outage_seconds'], which the search's clock leaves out of the budget.
+    """
+    import runners
+    import subprocess
+    errors = (runners.RunnerError, OSError, subprocess.SubprocessError)
+    began, delay, down = clock(), 5, False
+    while True:
+        try:
+            if down and recover:
+                recover()
+            result = call()
+            if down:
+                timings['outage_seconds'] = timings.get('outage_seconds', 0) + clock() - began
+                log(f'host back after {clock() - began:.0f} s')
+            return result
+        except errors as exc:
+            down = True
+            waited = clock() - began
+            if waited + delay > limit:
+                timings['outage_seconds'] = timings.get('outage_seconds', 0) + waited
+                raise
+            log(f'host unreachable ({type(exc).__name__}); retrying in {delay} s (down {waited:.0f} s)')
+            sleep(delay)
+            delay = min(delay * 2, 120)
+
+
+def runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=1800.0, recover=None):
     """Score a batch on a runner host (runners.AgentHost with a finished baseline run).
 
     One upload of the candidate sources, one agent command that compiles them `jobs` at a time
     and one download of the objects: three ssh operations per batch however many candidates.
+    A dropped connection is retried with backoff (`retrying`), repeating the whole batch.
     """
     import runners
     import tarfile
     counter = [0]
+    empty = [0]
 
-    def score(cands):
-        counter[0] += 1
-        tag = f'{counter[0]:04d}'
-        t0 = time.monotonic()
-        local = Path(stage) / f'cands-{tag}.tar'
-        write_cands(local, {c['id']: unit.with_body(c['body']) for c in cands})
+    def exchange(tag, local):
+        """Upload, compile and download one batch; (exit code, output, objects dir or None, timings)."""
         tr, remote = host.transport, host._remote(host._run)
-        try:
-            tr.put([local], remote)
-        finally:
-            local.unlink(missing_ok=True)
+        t0 = time.monotonic()
+        tr.put([local], remote)
         t1 = time.monotonic()
         with runners.slots(host.host['host_id'], host.host['max_parallel'], jobs, log=log) as granted:
             t2 = time.monotonic()
@@ -1561,7 +1707,9 @@ def runner_scorer(host, unit, jobs, score_all, timings, log, stage):
                                   '--cands', f'cands-{tag}.tar', '--out', f'out-{tag}.tar', '--msvc',
                                   host.host['msvc'], '--loader', host.host['loader'], '--jobs', str(granted)], 600)
         t3 = time.monotonic()
-        by_id, objects = {}, {}
+        if code in (124, 255):
+            raise runners.TransportError(f'batch {tag}: exit {code}')
+        dest = None
         if code == 0:
             archive = Path(stage) / f'out-{tag}.tar'
             dest = Path(stage) / f'out-{tag}'
@@ -1569,23 +1717,41 @@ def runner_scorer(host, unit, jobs, score_all, timings, log, stage):
                 tr.get(tr.join(remote, f'out-{tag}.tar'), archive)
                 shutil.rmtree(dest, ignore_errors=True)
                 runners.unpack(archive, dest)
+            finally:
+                archive.unlink(missing_ok=True)
+        return code, out or err or '', dest, (t1 - t0, t2 - t1, t3 - t2)
+
+    def score(cands):
+        counter[0] += 1
+        tag = f'{counter[0]:04d}'
+        t0 = time.monotonic()
+        local = Path(stage) / f'cands-{tag}.tar'
+        write_cands(local, {c['id']: unit.with_body(c['body']) for c in cands})
+        try:
+            code, text, dest, (up, wait, comp) = retrying(lambda: exchange(tag, local), timings, log, outage, recover)
+        finally:
+            local.unlink(missing_ok=True)
+        t3 = time.monotonic()
+        by_id, scored = {}, {}
+        if code == 0:
+            try:
+                objects = {}
                 for row in json.loads((dest / 'rows.json').read_text())['rows']:
                     by_id[row['id']] = row
                     if row['st'] == 'compiled':
                         objects[row['id']] = dest / f'{row["id"]}.obj'
                 scored = {r['id']: r for r in score_all(sorted(objects.items()))}
-            except (runners.RunnerError, OSError, ValueError, KeyError, tarfile.TarError) as exc:
+            except (OSError, ValueError, KeyError, tarfile.TarError) as exc:
                 log(f'batch {tag}: results unreadable ({type(exc).__name__})')
-                scored = {}
             finally:
-                archive.unlink(missing_ok=True)
                 shutil.rmtree(dest, ignore_errors=True)
         else:
-            log(f'batch {tag}: agent exit {code} {(out or err or "").strip()[-120:]}')
-            scored = {}
-        t4 = time.monotonic()
-        for key, value in (('upload_seconds', t1 - t0), ('slot_wait_seconds', t2 - t1), ('compile_seconds', t3 - t2),
-                           ('fetch_score_seconds', t4 - t3), ('execs', 1)):
+            log(f'batch {tag}: agent exit {code} {text.strip()[-120:]}')
+        empty[0] = 0 if scored or by_id else empty[0] + 1
+        if empty[0] >= 3:
+            raise runners.RunnerError(f'the host returned no results for {empty[0]} batches in a row')
+        for key, value in (('upload_seconds', up), ('slot_wait_seconds', wait), ('compile_seconds', comp),
+                           ('fetch_score_seconds', time.monotonic() - t3), ('execs', 1)):
             timings[key] = timings.get(key, 0) + value
         return [scored.get(c['id'], by_id.get(c['id'], {'id': c['id'], 'st': 'lost'})) for c in cands]
     return score
@@ -1653,24 +1819,55 @@ def run(args):
 
     def score_all(items):
         return list(pool.map(score_object, items)) if items else []
-    scorer = runner_scorer(host, unit, jobs, score_all, timings, log, stage)
+
+    def recover():
+        """After an outage the host may have lost its run directory: start it again from the unit."""
+        host.clean()
+        code, _text = host.run(files, stage)
+        if code not in (0, 1):
+            raise runners.RunnerError(f'baseline after the outage: unit_build exit {code}')
+    scorer = runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=args.outage, recover=recover)
+    summary = {'task': task['task_id'], 'rva': f'0x{rva:x}', 'function': qualified, 'status': 'running',
+               'seed': args.seed, 'batch': args.batch, 'jobs': jobs, 'host': runner['host_id']}
+    written = [0]
+    history = out / 'history.jsonl'
+    history.write_text('')
+
+    def flush(s):
+        """After every round: new history rows, the best body so far and a partial result.json, so a
+        run that dies still leaves what it found."""
+        with open(history, 'a') as f:
+            for row in s.history[written[0]:]:
+                f.write(json.dumps(row) + '\n')
+        written[0] = len(s.history)
+        part = dict(summary, rounds=s.rounds, candidates=len(s.history), widen=s.widen,
+                    unique_objects=len(s.seen_obj), timings={k: round(v, 1) for k, v in timings.items()})
+        if s.best is not None:
+            (out / 'best.cpp').write_text(unit.with_body(s.best['body']))
+            part.update(start_distance=s.start.get('d'), best_distance=s.best.get('d'),
+                        best_id=s.best['id'], best_mutations=s.best['muts'])
+        (out / 'result.json').write_text(json.dumps(part, indent=1) + '\n')
     search = Search(unit, scorer, lint, random.Random(args.seed), batch=args.batch, patience=args.patience,
-                    restart_after=args.restart_after, budget=args.budget, log=log, max_steps=args.max_steps)
+                    restart_after=args.restart_after, budget=args.budget, log=log, max_steps=args.max_steps,
+                    on_round=flush,
+                    clock=lambda: time.monotonic() - timings.get('outage_seconds', 0))
     try:
         result = search.run()
-    except BaseException:
-        # Leave no listings or objects on the host and keep the cost record.
-        host.clean()
+    except BaseException as exc:
+        # Keep what was found, leave no listings or objects on the host and keep the cost record.
+        summary['status'] = f'aborted: {type(exc).__name__}'
+        flush(search)
+        try:
+            host.clean()
+        except Exception:  # noqa: BLE001 - the host may be the thing that failed
+            pass
         pool.shutdown(cancel_futures=True)
         pipeline.record_cost(task, 'draft', time.monotonic() - started, time.monotonic() - started)
         raise
     pool.shutdown()
     host.clean()
-    with open(out / 'history.jsonl', 'w') as f:
-        for row in search.history:
-            f.write(json.dumps(row) + '\n')
-    summary = {'task': task['task_id'], 'rva': f'0x{rva:x}', 'function': qualified, 'status': result['status'],
-               'seed': args.seed, 'batch': args.batch, 'jobs': jobs, 'host': runner['host_id']}
+    summary['status'] = result['status']
+    flush(search)
     final = None
     if 'best' in result:
         best = result['best']
@@ -1760,6 +1957,9 @@ def main(argv=None):
     r.add_argument('--restart-after', type=int, default=3, help='batches without progress before a restart')
     r.add_argument('--max-steps', type=int, default=3, help='most mutations stacked in one candidate')
     r.add_argument('--seed', type=int, default=1)
+    r.add_argument('--outage', type=float, default=1800.0,
+                   help='seconds to keep retrying an unreachable host (backoff 5 to 120 s) before giving up; '
+                        'not counted against --budget')
     r.add_argument('--dry-run', action='store_true', help='lint the base and one batch locally; no host time')
     m = sub.add_parser('mutate', help='print a mutated copy of a file (tests, recovery self-tests)')
     m.add_argument('file')
