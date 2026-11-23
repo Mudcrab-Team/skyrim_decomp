@@ -1573,6 +1573,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         (self.tree / 'data/progress.json').write_text(json.dumps({'functions': [
             {'rva': 0x10, 'status': 'mapped'}, {'rva': 0x20, 'status': 'matched'}]}))
         self.calls, self.bind_code, self.record_ok = [], 0, {0x10: True, 0x20: True}
+        self.confirm_codes = []
         bot = pr_bot.Bot(root=ROOT, work=self.work)
         bot.tree, bot.run = self.tree, self.fake_run
         self.bot = bot
@@ -1596,6 +1597,8 @@ class NewFunctionRecordTests(unittest.TestCase):
                 (self.tree / public).parent.mkdir(parents=True, exist_ok=True)
                 (self.tree / public).write_text('{}')
                 self.set_task(public)
+        if argv[1].endswith('wine_confirm.py') and self.confirm_codes:
+            code = self.confirm_codes.pop(0)
         if argv[1] == '-c':
             rva = json.loads((Path(argv[4]) / 'task.json').read_text())['functions'][0]['rva']
             if self.record_ok[int(rva, 0)]:
@@ -1627,6 +1630,17 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertEqual((failed, self.bound_rvas), (set(), ['0x10']))
         self.assertEqual([f['rva'] for f in json.loads((self.task / 'task.json').read_text())['functions']],
                          ['0x10', '0x20'])
+
+    def test_a_confirmation_that_times_out_once_is_run_again(self):
+        self.confirm_codes = [3]
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertEqual(len(self.seen('wine_confirm.py')), 2)
+
+    def test_a_confirmation_that_never_completes_stops_the_record_build(self):
+        self.confirm_codes = [3, 3]
+        with self.assertRaises(pr_bot.Stop):
+            self.build({0x10})
 
     def test_an_already_public_map_is_not_rebound(self):
         public = 'reports/b/unit-symbols/' + 'd' * 64 + '.json'

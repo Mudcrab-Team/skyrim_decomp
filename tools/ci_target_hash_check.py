@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import ci_hash_check as public
 import contrib
+import cookbook_notes
 import pdb_types
 import lint_reconstruction as lint
 import compare
@@ -106,16 +107,18 @@ def prepare(root, base, head, work):
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only, deleted, carried = [], set(), [], []
-    # Generated CrashLogger PDB output is neither a unit nor read by this job: it is never compiled.
+    # Generated CrashLogger PDB output and lesson notes are neither units nor read by this job: never compiled.
+    # A lesson note is a file a function PR may carry (the scope check admits it), so it must not fail intake.
     names = [n for i in range(0, len(diff) - 1, 2)
-             if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n))]
+             if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n)
+                     or cookbook_notes.NOTE_FILE.fullmatch(n))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
         return root, []
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
-        if pdb_types.is_generated(name):
+        if pdb_types.is_generated(name) or cookbook_notes.NOTE_FILE.fullmatch(name):
             continue
         if CARRIED.fullmatch(name):
             carried.append(name)

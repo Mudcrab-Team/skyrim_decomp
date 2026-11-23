@@ -2720,8 +2720,12 @@ class Bot:
                 dest.mkdir(exist_ok=True)
                 (dest / 'task.json').write_text(json.dumps(dict(
                     info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn])))
-                if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
-                            check=False, timeout=self.config['compare_timeout']).returncode not in (0, 1):
+                # A compile that only timed out under host load usually passes on a second try; a repeat is a real fault.
+                for attempt in range(2):
+                    if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
+                                check=False, timeout=self.config['compare_timeout']).returncode in (0, 1):
+                        break
+                else:
                     raise Stop('record build did not complete')
                 row = ci['rows'].get(str(rva))
                 made = out / info['build_id'] / f'0x{rva:x}.json'
@@ -4519,12 +4523,15 @@ def mark_owner_reconstruction(bot, prs, known):
 
 
 def outside_first(prs):
-    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+    """The PRs with outside contributors' first, in the order GitHub listed them, then the owner's oldest first.
 
     The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
-    long-running ones.
+    long-running ones. GitHub lists newest first, and every tick refills the free slots from the front, so
+    a newer owner PR that keeps coming back (a head waiting on CI, a new push) would starve an older one
+    for hours; the owner's PRs therefore run in number order.
     """
-    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+    return sorted(prs, key=lambda pr: (pr['author']['login'].casefold() == OWNER.casefold(),
+                                       pr['number'] if pr['author']['login'].casefold() == OWNER.casefold() else 0))
 
 
 def outcome(result, pr):
