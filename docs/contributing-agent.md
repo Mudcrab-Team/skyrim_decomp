@@ -80,6 +80,10 @@ the repository on GitHub). When you show output publicly, add `--redact`.
 entry in `data/progress.json` (`next` prints the counts and prefers small functions of classes that already have a
 layout). The bot adds the inventory entry (a `Function<rva>` GUESS name) when it records the match; you never edit `data/progress.json`.
 
+An entry still named `Function<rva>` has no class, so `start` stops and asks for one: `./sr start 0x<rva> --class <Class>`
+names the unit after your reading of the owner class. Label that class GUESS unless a public table (CrashLogger,
+`SYMBOLS(...)`, `SIBLING(...)`) names it. The flag does not rename the inventory entry and is not evidence of identity.
+
 By submitting, a contributor dedicates their contribution under CC0 1.0, or under the file's stated exception licence (`LICENSE`). The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
