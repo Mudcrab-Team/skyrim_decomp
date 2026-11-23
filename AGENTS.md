@@ -71,6 +71,25 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
 - Stop the affected publication if provenance is uncertain. Record the question without reproducing
   suspect content. Unrelated original tooling work may continue.
 
+## Report bottlenecks and suspicious behaviour
+
+Every agent, and every subagent it starts, reports any slow step, repeated failure, wasted work, queue
+or odd tool output it notices. Report each as one line with an estimated time cost, for example
+"staged check about 20 min per unit". Do not quietly work around it. A lead agent puts this
+request in every subagent brief, and reads these lines first when results come back. If one step
+costs more than about 5 minutes per function, stop the batch and get it fixed. Contributors put the
+list under a "Bottlenecks" heading in the PR description, or file it as a `tooling.yml` issue
+(see [docs/contributing-agent.md](docs/contributing-agent.md), "Getting help"). Name problems by
+tool and step only, never with game bytes or disassembly.
+
+## Ship bulk work in one go
+
+Bulk work ships as one commit and one PR: hash or data publishes, inventory refreshes, mechanical
+rewrites, folder moves. Split it only for a named hard limit, such as the 1 MiB per-file cap (split
+files, not PRs), the 200-function cap per reconstruction PR, or a GitHub size limit. Name that
+limit in the PR. "Test the first chunk", "safer in pieces" and staged rollouts are not reasons:
+measure on the single PR instead.
+
 ## Be precise about evidence
 
 - The target is pinned by `builds/target.json`, including its locally measured hash.

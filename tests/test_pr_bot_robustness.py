@@ -507,6 +507,33 @@ class PoolTests(WorkDir):
         self.assertEqual(calls.count(1), 1)
         self.assertEqual(calls.count(2), 1)
 
+    def test_the_owners_prs_leave_one_slot_for_an_outside_pr_that_arrives_later(self):
+        release, calls, listing = threading.Event(), [], []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            release.wait(5)
+        rows = self.prs(1, 2, 3)
+        for row in rows[:2]:
+            row['author'] = {'login': pr_bot.OWNER}
+        rows[2]['author'] = {'login': 'carol'}
+        listing.extend(rows[:2])
+        bot = self.pool_bot(lambda *a: listing + ([rows[2]] if len(ticks) >= 2 else []), arrived)
+        bot.demand = [0]
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 4:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] in (1, 2)]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=5)
+        self.assertEqual(calls[:2], [1, 3])
+        self.assertNotIn(2, calls[:2])
+
     def test_free_slots_go_to_outside_prs_before_the_owners_even_when_listed_last(self):
         release, calls = threading.Event(), []
 

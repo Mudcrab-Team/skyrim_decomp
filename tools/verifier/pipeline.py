@@ -256,12 +256,15 @@ def compiler_include_problem(task, repo=REPO):
 
 def unit_spec(task, files, host):
     schema = 2 if any('internal_selector' in f for f in task['functions']) else 1
-    return {'unit_spec_schema': schema, 'task_id': task['task_id'], 'host': host, 'build_id': task['build_id'],
+    spec = {'unit_spec_schema': schema, 'task_id': task['task_id'], 'host': host, 'build_id': task['build_id'],
             'compiled': task['compiled'], 'recipe': task['recipe'],
             'symbols': task['symbols_repo'] or PRIVATE_SYMBOLS,
             'functions': [{k: f[k] for k in ('rva', 'size', 'symbol', 'internal_selector') if k in f}
                           for f in task['functions']],
             'files': {name: sha256_file(path) for name, path in sorted(files.items())}}
+    if task.get('pins'):
+        spec['pins'] = task['pins']
+    return spec
 
 
 def changed_files(spec_files, state, machine, remote_dir):

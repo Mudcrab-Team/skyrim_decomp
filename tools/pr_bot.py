@@ -2720,8 +2720,12 @@ class Bot:
                 dest.mkdir(exist_ok=True)
                 (dest / 'task.json').write_text(json.dumps(dict(
                     info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn])))
-                if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
-                            check=False, timeout=self.config['compare_timeout']).returncode not in (0, 1):
+                # A compile that only timed out under host load usually passes on a second try; a repeat is a real fault.
+                for attempt in range(2):
+                    if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
+                                check=False, timeout=self.config['compare_timeout']).returncode in (0, 1):
+                        break
+                else:
                     raise Stop('record build did not complete')
                 row = ci['rows'].get(str(rva))
                 made = out / info['build_id'] / f'0x{rva:x}.json'
@@ -4518,13 +4522,20 @@ def mark_owner_reconstruction(bot, prs, known):
             pr['reconstruction_head'] = pr['headRefOid']
 
 
+def is_owner(pr):
+    return pr['author']['login'].casefold() == OWNER.casefold()
+
+
 def outside_first(prs):
-    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+    """The PRs with outside contributors' first, in the order GitHub listed them, then the owner's oldest first.
 
     The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
-    long-running ones.
+    long-running ones. GitHub lists newest first, and every tick refills the free slots from the front, so
+    a newer owner PR that keeps coming back (a head waiting on CI, a new push) would starve an older one
+    for hours; the owner's PRs therefore run in number order.
     """
-    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+    return sorted(prs, key=lambda pr: (pr['author']['login'].casefold() == OWNER.casefold(),
+                                       pr['number'] if pr['author']['login'].casefold() == OWNER.casefold() else 0))
 
 
 def outcome(result, pr):
@@ -4637,6 +4648,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
     on_pool = set()  # the inflight PRs that hold one of the `workers` slots (the conflict lane has its own)
+    owner_on_pool = set()  # those of them that are the owner's
     # A conflicting PR is answered from a scratch worktree without touching a slot's tree; its own lane keeps
     # that quick answer from waiting behind compiles that hold every slot.
     conflict_slots = queue.Queue()
@@ -4654,6 +4666,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
             for number in [n for n, f in inflight.items() if f.done()]:
                 del inflight[number]
                 on_pool.discard(number)
+                owner_on_pool.discard(number)
             if restart_after and time.time() - started > restart_after and not inflight:
                 return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
             wait = gh.remaining()
@@ -4727,12 +4740,15 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                 if pr.get('mergeable') == 'CONFLICTING':
                     inflight[pr['number']] = conflict_pool.submit(work_one, conflict_slots, gh, pr, True)
-                elif len(on_pool) < workers:
+                elif len(on_pool) < workers and (not is_owner(pr) or len(owner_on_pool) < max(1, workers - 1)):
                     # Submitting everything would queue first-come first-served inside the pool, so a contributor's
                     # PR listed after the owner's would wait behind them; each tick instead fills only free slots,
-                    # in outside-first order.
+                    # in outside-first order. The owner's PRs never take the last slot: they run for hours, and an
+                    # outside PR that arrives meanwhile must start at once, not after one of them finishes.
                     inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
                     on_pool.add(pr['number'])
+                    if is_owner(pr):
+                        owner_on_pool.add(pr['number'])
                 else:
                     bot.demand[0] += 1
             sleep(interval)

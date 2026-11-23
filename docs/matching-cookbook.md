@@ -892,6 +892,12 @@ function saves, changes and restores a thread-local, the guard of rule 21 closed
 symptom in 0x6d9f20, and rule 34 closed a swap of the null and pointer registers in 0x6767e0,
 0x301a20 and 0x6af050.
 
+Why the spellings fail: the allocator hands out callee-saved registers in priority order, so the
+swap means two variables rank the other way round. One extra use inside a loop is worth about 350
+and one straight-line use about 30 to 60. Counter type, comparison operator, branch polarity, loop
+keyword, aliasing and declaration order do not move priority at all. Every flip found so far cost
+an extra instruction or removed a local. Stop after a few tries and record the function as unsolved.
+
 Still failing: 0xce3250, 0xce32d0, 0x2bccc0, 0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260, 0x3c62f0, 0x14e81f0, 0x4682f0, 0x3a9420, 0x15286c0.
 
 <a id="rule-13"></a>

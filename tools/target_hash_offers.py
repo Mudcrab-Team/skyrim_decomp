@@ -72,9 +72,10 @@ def pdb_layout_classes(root):
 
 
 def rank_key(fn, siblings, cls, pdb_only=False):
-    """Lower is offered earlier: classes with a real layout unit before classes that only have a generated PDB
-    layout; within each, ordinary shapes by size tier, named before unnamed, more matched siblings first; very
-    large and known-hard functions last."""
+    """Lower is offered earlier: classes with a real layout unit, then classes that only have a generated PDB
+    layout, then functions with no layout to extend (`pdb_only` is 0/False, 1/True or 2); within each, ordinary
+    shapes by size tier, named before unnamed, more matched siblings first; very large and known-hard
+    functions last."""
     tier = size_tier(fn['size'])
     last = is_hard(fn) or tier == len(SIZE_TIERS)
     return (pdb_only, last, tier, not is_named(fn), -siblings.get(cls, 0), VERDICT_RANK[fn['v2']['verdict']], fn['size'],
@@ -132,55 +133,66 @@ def reserved_rvas(directories):
     return out
 
 
-def select_window(root, metadata, known, limit=SLICE, reserved=(), siblings=None, keep=()):
-    """{rva: class}: up to `limit` new unmapped ordinary functions to offer for claim-time mapping, best first.
+def select_window(root, metadata, known, limit=None, reserved=(), siblings=None, keep=(), rva_range=None):
+    """{rva: class or None}: new ordinary functions to offer, best first; the class is named only when it has a layout.
 
-    Only classes that already have a layout unit qualify, so a claim extends reviewed work. A class with a
-    generated CrashLogger layout header counts as having one, provided a unit of it can be placed
-    (tools/unit_paths.py); those rank after classes with a real unit. Locally unsupported functions and
-    `reserved` ones (an internal worker's plan) never qualify, nor do those already offered (`keep`).
-    Ordering is rank_key: real-unit classes first; then small and medium first, known names and classes
-    with matched siblings ahead of the rest, very large and known-hard functions last. The published hash list grows by
-    `limit` per refill, not by the size of the function table.
+    Every ordinary function with a supported or caution verdict qualifies, whatever its class: a claim without a
+    layout still gets its entry when it is recorded, and the contributor gives `--class`. The class is kept on
+    the row only when it has a layout to extend, a real unit or a generated CrashLogger PDB header
+    (tools/unit_paths.py places a unit of it); that is the layout reason the row exists and ranks it first.
+    Locally unsupported functions and `reserved` ones (an internal worker's plan) never qualify, nor do those
+    already offered (`keep`).
+
+    A chunk is an address range: `rva_range` is `(low, high)` and takes every qualifying function in
+    `low <= rva < high`; `limit` takes the lowest-addressed `limit` qualifying ones. Neither depends on the
+    ranking, so a chunk is a stretch of the image and the next one starts where the last ended. Ordering within
+    the result is rank_key.
     """
-    layouts, ranked, siblings = {}, [], siblings or {}  # layouts: class -> pdb_only, or None when not eligible
+    layouts, ranked, siblings = {}, [], siblings or {}  # layouts: class -> 0 real unit, 1 PDB layout only, 2 none
     units = contrib.unit_index(root)  # one directory walk for every class
     pdb = pdb_layout_classes(root)
     skip = set(known) | set(keep) | set(reserved)
-    for rva, fn in metadata.items():
+    low, high = rva_range if rva_range else (0, None)
+    for rva, fn in sorted(metadata.items()):
         owner = fn.get('owner') or {}
         cls = owner.get('class') if isinstance(owner, dict) else None
         verdict = (fn.get('v2') or {}).get('verdict')
-        if (rva in skip or fn.get('kind') != 'ordinary' or not fn.get('size') or not cls
-                or verdict not in VERDICT_RANK or not contrib.PLAIN_NAME.fullmatch(f'{cls}::Function')):
+        if (rva in skip or fn.get('kind') != 'ordinary' or not fn.get('size') or rva < low
+                or (high is not None and rva >= high) or verdict not in VERDICT_RANK):
             continue
+        if cls is not None and not contrib.PLAIN_NAME.fullmatch(f'{cls}::Function'):
+            cls = None
         if cls not in layouts:
-            layouts[cls] = None  # not eligible
+            layouts[cls] = 2
             if cls in units:
                 _area, header, cpp = contrib.unit_files(root, cls, index=units)
                 if header and cpp and (Path(root) / header).is_file() and (Path(root) / cpp).is_file():
-                    layouts[cls] = False  # real unit
-            if layouts[cls] is None and cls in pdb and contrib.area_for(cls, root):
-                layouts[cls] = True  # generated PDB layout only
-        if layouts[cls] is not None:
-            ranked.append((rank_key(fn, siblings, cls, layouts[cls]), rva, cls))
-    return {rva: cls for _key, rva, cls in sorted(ranked)[:limit]}
+                    layouts[cls] = 0
+            if layouts[cls] == 2 and cls in pdb and contrib.area_for(cls, root):
+                layouts[cls] = 1
+        ranked.append((rva, cls if layouts[cls] < 2 else None, layouts[cls], fn))
+        if limit is not None and len(ranked) >= limit:
+            break
+    ranked.sort(key=lambda r: (rank_key(r[3], siblings, r[1], r[2]), r[0]))
+    return {rva: cls for rva, cls, _tier, _fn in ranked}
 
 
-def plan_window(root, metadata, progress, known, wanted, reserved, low_water, slice_size):
-    """(offered {rva: class}, newly added {rva: class}, claimable left before the refill).
+def plan_window(root, metadata, progress, known, wanted, reserved, low_water, slice_size, rva_range=None):
+    """(offered {rva: class or None}, newly added {rva: class or None}, claimable left before the refill).
 
     Offered rows stay offered until recorded, so a claimed function never leaves the list; only an unclaimed
-    one an internal worker has since reserved is withdrawn. A slice is added only when fewer than
-    `low_water` functions are left to claim.
+    one an internal worker has since reserved is withdrawn. A chunk is added when fewer than `low_water`
+    functions are left to claim (the next `slice_size` by address) or, whatever is left, when `rva_range`
+    names one.
     """
     withdrawn = set(reserved) - set(wanted)
-    classes = {rva: cls for rva, cls in claimable.offered_classes(root).items()
+    classes = {rva: cls for rva, cls in claimable.offered_window(root).items()
                if rva in metadata and rva not in known and rva not in withdrawn}
     left = sum(1 for c in contrib.candidates(root, progress, published=True) if c['startable'])
     added = {}
-    if left < low_water:
-        added = select_window(root, metadata, known, slice_size, reserved, matched_siblings(progress), classes)
+    if rva_range or left < low_water:
+        added = select_window(root, metadata, known, None if rva_range else slice_size, reserved,
+                              matched_siblings(progress), classes, rva_range)
         classes.update(added)
     return classes, added, left
 
@@ -229,7 +241,8 @@ def retained_on_demand(root):
     return {row['rva'] for row in rows if row.get('on_demand')}
 
 
-def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slice_size=SLICE, reserved=(), extra=()):
+def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slice_size=SLICE, reserved=(), extra=(),
+            rva_range=None):
     target=contrib.target_manifest(root)
     if hashes.digest(image_bytes)!=target['image_sha256']:
         raise ValueError('image differs from pinned build')
@@ -243,7 +256,7 @@ def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slic
         for a,b in claim.get('entries',[]):
             wanted.update([a] if b==a+1 else [r for r in metadata if a<=r<b])
     next_={contrib.parse_rva(c['rva']) for c in contrib.candidates(root,progress) if c['startable']}
-    classes,added,left=plan_window(root,metadata,progress,known,wanted,reserved,low_water,slice_size)
+    classes,added,left=plan_window(root,metadata,progress,known,wanted,reserved,low_water,slice_size,rva_range)
     next_|=set(classes)
     claimed=len(wanted)
     on_demand,refused=select_on_demand(metadata,known,extra,retained_on_demand(root))
@@ -256,7 +269,8 @@ def collect(root, image_bytes, function_table, claims, low_water=LOW_WATER, slic
         elif rva in pdata:size,source=pdata[rva],'single-pdata-entry'
         else:unresolved.append(rva);continue
         image.read(rva,size,'offered target boundary')
-        rows.append(dict(rva=rva,size=size,extent_source=source,**({'class':classes[rva]} if rva in classes else {}),
+        rows.append(dict(rva=rva,size=size,extent_source=source,**({'class':classes[rva]} if classes.get(rva) else {}),
+                         **({'window':True} if rva in classes else {}),
                          **({'on_demand':True} if rva in on_demand else {})))
     if unresolved:
         raise ValueError('claim boundaries unresolved; nothing published')
@@ -274,16 +288,18 @@ def main(argv=None):
     p.add_argument('--image',type=Path,required=True)
     p.add_argument('--function-table',type=Path,required=True)
     p.add_argument('--low-water',type=int,default=LOW_WATER,help='claimable functions left below which a slice is added')
-    p.add_argument('--slice',type=int,default=SLICE,dest='slice_size',help='unmapped functions added per refill')
+    p.add_argument('--slice',type=int,default=SLICE,dest='slice_size',help='unmapped functions added per refill: the lowest-addressed ones')
     p.add_argument('--reserved-dir',type=Path,action='append',default=[],
                    help='directory of private plan files whose functions are not offered (repeatable)')
+    p.add_argument('--range',dest='rva_range',type=lambda v:tuple(int(x,0) for x in v.split('-')),
+                   help='LOW-HIGH: offer every qualifying function with LOW <= RVA < HIGH, ignoring the low-water mark')
     p.add_argument('--extra-rva',action='append',default=[],type=lambda v:int(v,0),
                    help='RVA an open PR claims that has no row yet; published when it is a real function start (repeatable)')
     a=p.parse_args(argv)
     ctx=contrib.Ctx(repo=ROOT,interactive=False)
     index=ctx.github().open_items(refresh=True)
     reserved=reserved_rvas(a.reserved_dir)
-    output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved,a.extra_rva)
+    output,window=collect(ROOT,a.image.read_bytes(),a.function_table,index.records,a.low_water,a.slice_size,reserved,a.extra_rva,a.rva_range)
     (ROOT/hashes.OFFERED).write_text(json.dumps(output,indent=2)+'\n')
     import target_facts  # the sidecar must follow the list it describes
     (ROOT/target_facts.OUT).write_text(target_facts.render(target_facts.build(ROOT)))
