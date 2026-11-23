@@ -8,7 +8,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "bscore/BSIntrusiveRefCountedStorageLayout.h"
+#include "../../../bscore/BSIntrusiveRefCountedStorageLayout.h"
 namespace ResearchLayouts {
 class MovementInterfacePrefixLayout { public: virtual ~MovementInterfacePrefixLayout(); };
 class MovementStatePrefixLayout : public MovementInterfacePrefixLayout { public: ~MovementStatePrefixLayout() override; };

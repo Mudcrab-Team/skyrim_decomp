@@ -12,7 +12,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/support/CombatInventoryItemLayout.h"
+#include "../support/CombatInventoryItemLayout.h"
 
 namespace ResearchLayouts {
 class Effect;

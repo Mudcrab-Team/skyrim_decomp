@@ -9,7 +9,7 @@
 // TESObjectREFR and virtual declarations: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); adapted declarations.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
-#include "skyrim_shared/forms/TESForm_2ef670.h"
+#include "../forms/TESForm_2ef670.h"
 #include <cstdint>
 class BGSLocation; struct NiPoint3; class TESObjectCELL; class TESTopicInfo; class BGSAnimationSequencer;
 class BGSKeyword; class TESPackage; class BGSScene; class DialogueResponse; class BGSDialogueBranch;

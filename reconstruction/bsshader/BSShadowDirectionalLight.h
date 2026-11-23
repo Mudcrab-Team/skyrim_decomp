@@ -15,7 +15,7 @@
 #pragma once
 
 #include <cstdint>
-#include "gamebryo/nimain/NiRefObject.h"
+#include "../gamebryo/nimain/NiRefObject.h"
 
 struct NiPoint3
 {

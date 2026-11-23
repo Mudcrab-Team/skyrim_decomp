@@ -11,7 +11,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/support/NiPropertyLayout.h"
+#include "../support/NiPropertyLayout.h"
 
 namespace ResearchLayouts {
 class F004Represented20b3d0 : public NiPropertyLayout {

@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "skyrim_shared/forms/TESForm.h"
+#include "../forms/TESForm.h"
 
 // TESEyes: EXE_RTTI COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 class TESEyes : public TESForm {

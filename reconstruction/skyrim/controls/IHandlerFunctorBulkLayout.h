@@ -8,7 +8,7 @@
 // IHandlerFunctorBulkLayout, BSIntrusiveRefCountedBulkLayout: GUESS(medium) STANDIN; represented layout aliases.
 #pragma once
 #include <cstddef>
-#include "bscore/BSIntrusiveRefCountedBulkLayout.h"
+#include "../../bscore/BSIntrusiveRefCountedBulkLayout.h"
 namespace ResearchLayouts {
 class IHandlerFunctorBulkLayout : public BSIntrusiveRefCountedBulkLayout {
 public:

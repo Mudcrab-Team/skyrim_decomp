@@ -6,7 +6,7 @@
 // All ResearchLayouts class and struct names ending Layout, the physical storage wrappers and prefix mirror names: GUESS(medium) STANDIN
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
-#include "skyrim_shared/forms/FormComponentLayout.h"
+#include "../forms/FormComponentLayout.h"
 namespace ResearchLayouts {
 class TESRaceComponentPrefixLayout :
     public FormHeaderLayout,

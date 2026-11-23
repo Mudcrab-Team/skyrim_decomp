@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 
 #pragma once
-#include "skyrim_shared/refs/VirtualREFR.h"
+#include "../refs/VirtualREFR.h"
 namespace P2062 {
 class PlayerVirtual : public VirtualREFR {
   std::uint64_t unknownA0[0x10b];

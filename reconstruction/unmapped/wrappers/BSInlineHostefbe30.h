@@ -2,5 +2,5 @@
 // Body origin: original reconstruction; shared reference types carry their attribution.
 // BSInlineHostefbe30, reference: GUESS(low) STANDIN
 #pragma once
-#include "bscore/BSHandleRefObject.h"
+#include "../../bscore/BSHandleRefObject.h"
 struct BSInlineHostefbe30 { p145::NiRefObject* reference; ~BSInlineHostefbe30(); };

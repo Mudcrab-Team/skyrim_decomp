@@ -7,7 +7,7 @@
 // ConditionFunctions::HasPerk: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x3394e0 Condition::HasPerk
 #include "ConditionFunctions_3394e0.h"
-#include "skyrim_shared/forms/TESForm_1467c0.h"
+#include "../forms/TESForm_1467c0.h"
 class TESObjectREFR; class BGSPerk;
 extern bool ActorHasPerk(TESObjectREFR*, BGSPerk*);
 extern void* conditionLogger;

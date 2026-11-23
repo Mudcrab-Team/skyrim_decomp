@@ -8,8 +8,8 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "bscore/BSIntrusiveRefCountedStorageLayout.h"
-#include "bscore/BSFixedStringStorageLayout.h"
+#include "../bscore/BSIntrusiveRefCountedStorageLayout.h"
+#include "../bscore/BSFixedStringStorageLayout.h"
 
 namespace ResearchLayouts {
 class BSShaderMaterialStorageLayout : public BSIntrusiveRefCountedStorageLayout {

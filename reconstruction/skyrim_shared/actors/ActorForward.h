@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include "skyrim_shared/actors/ActorTargetPrefix.h"
-#include "gamebryo/nimain/NiPoint3.h"
+#include "../../gamebryo/nimain/NiPoint3.h"
 namespace P207SolRetry {
 // ActorForward: STANDIN GUESS(medium); typed actor receiver prefix; ordinary owner inferred.
 class ActorForward : public P206Target::ActorTargetPrefix<> {

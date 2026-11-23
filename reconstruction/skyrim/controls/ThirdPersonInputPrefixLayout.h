@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
-#include "bssystem/QueuedFileDataStorageLayout.h"
+#include "../../bssystem/QueuedFileDataStorageLayout.h"
 namespace ResearchLayouts {
 class ThirdPersonInputPrefixLayout : public CameraStateDataStorageLayout, public PlayerInputDataStorageLayout {
 public:

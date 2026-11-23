@@ -5,7 +5,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "skyrim_shared/tempeffects/ReferenceEffectControllerLayout.h"
+#include "../../skyrim_shared/tempeffects/ReferenceEffectControllerLayout.h"
 namespace ResearchLayouts {
 class ActorMagicCaster;
 class Actor;

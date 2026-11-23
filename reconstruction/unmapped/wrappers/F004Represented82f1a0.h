@@ -12,8 +12,8 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/support/CombatObjectLayout.h"
-#include "unmapped/support/BSFixedStringLayout.h"
+#include "../support/CombatObjectLayout.h"
+#include "../support/BSFixedStringLayout.h"
 
 namespace ResearchLayouts {
 class TESForm;

@@ -7,8 +7,8 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "bscore/IOTaskStorageLayout.h"
-#include "bscore/BSFixedStringStorageLayout.h"
+#include "../bscore/IOTaskStorageLayout.h"
+#include "../bscore/BSFixedStringStorageLayout.h"
 
 namespace ResearchLayouts {
 class QueuedFileStorageLayout;

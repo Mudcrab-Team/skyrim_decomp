@@ -8,7 +8,7 @@
 #pragma once
 
 #include <cstdint>
-#include "gamebryo/nimain/NiRefObject.h"
+#include "../gamebryo/nimain/NiRefObject.h"
 
 // NiRefObjectInline: GUESS(low); a stand-in for the reference-counted root whose destructor body is visible to this unit
 class NiRefObjectInline

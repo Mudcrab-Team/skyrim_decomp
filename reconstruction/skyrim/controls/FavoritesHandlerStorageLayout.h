@@ -8,7 +8,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "skyrim/interface/MenuEventHandlerStorageLayout.h"
+#include "../interface/MenuEventHandlerStorageLayout.h"
 
 namespace ResearchLayouts {
 class FavoritesHandlerStorageLayout : public MenuEventHandlerStorageLayout {

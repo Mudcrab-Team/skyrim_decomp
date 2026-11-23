@@ -7,7 +7,7 @@
 // ConditionFunctions::GetDisabled: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x330dd0 Condition::GetDisabled
 #include "ConditionFunctions_330dd0.h"
-#include "skyrim_shared/forms/TESForm_1467c0.h"
+#include "../forms/TESForm_1467c0.h"
 struct DisabledState { void* vtable; unsigned char flags; };
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value.
 static inline bool TestBit(unsigned int a_flags, unsigned int a_bit)

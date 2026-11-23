@@ -7,7 +7,7 @@
 // ConditionFunctions::GetIsReference: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x334180 Condition::GetIsReference
 #include "ConditionFunctions_334180.h"
-#include "skyrim_shared/forms/TESForm_1467c0.h"
+#include "../forms/TESForm_1467c0.h"
 extern void* conditionLogger;
 extern const char referenceLogFormat[];
 extern thread_local bool conditionLoggingEnabled;

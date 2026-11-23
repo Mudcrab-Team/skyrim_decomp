@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 #include <cstddef>
-#include "bscore/BSIntrusiveRefCountedStorageLayout.h"
+#include "../../bscore/BSIntrusiveRefCountedStorageLayout.h"
 namespace ResearchLayouts {
 class IHandlerFunctorRepresentedLayout : public BSIntrusiveRefCountedStorageLayout {
 public:

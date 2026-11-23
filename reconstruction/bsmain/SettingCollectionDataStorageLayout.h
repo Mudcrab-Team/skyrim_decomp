@@ -10,10 +10,10 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/represented/LayoutValueTypes.h"
-#include "unmapped/represented/BSSoundHandleLayout.h"
-#include "gamebryo/nimain/NiShadePropertyStorageLayout.h"
-#include "unmapped/represented/ReferenceEffectLayout.h"
+#include "../unmapped/represented/LayoutValueTypes.h"
+#include "../unmapped/represented/BSSoundHandleLayout.h"
+#include "../gamebryo/nimain/NiShadePropertyStorageLayout.h"
+#include "../unmapped/represented/ReferenceEffectLayout.h"
 namespace ResearchLayouts {
 class SettingPointeeStorageLayout;
 class RenderPassPointeeStorageLayout;

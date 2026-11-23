@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "skyrim_shared/forms/TESForm.h"
+#include "../forms/TESForm.h"
 
 // BSFixedString: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // value, names, flags: GUESS(low); pooled string values and association flags.

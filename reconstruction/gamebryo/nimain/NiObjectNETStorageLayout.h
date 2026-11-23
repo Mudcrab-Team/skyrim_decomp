@@ -8,7 +8,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "bscore/BSFixedStringStorageLayout.h"
+#include "../../bscore/BSFixedStringStorageLayout.h"
 #include "NiObjectStorageLayout.h"
 
 namespace ResearchLayouts {

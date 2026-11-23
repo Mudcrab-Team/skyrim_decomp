@@ -7,7 +7,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "gamebryo/nimain/NiRefObjectLayout.h"
+#include "../../../gamebryo/nimain/NiRefObjectLayout.h"
 
 namespace ResearchLayouts {
 class CombatObjectLayout : public NiRefObjectLayout {

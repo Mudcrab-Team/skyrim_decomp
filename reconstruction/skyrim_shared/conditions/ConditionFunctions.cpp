@@ -7,7 +7,7 @@
 // ConditionFunctions::GetActorValue: OBSERVED; conditionFunction pointer (+0x40) paired with functionName (+0x00) in the image's 0x50-byte SCRIPT_FUNCTION table (confirmed across >20 entries).
 // 0x3308c0 Condition::GetActorValue
 #include "ConditionFunctions.h"
-#include "skyrim_shared/actors/Actor_3308c0.h"
+#include "../actors/Actor_3308c0.h"
 extern const char* ActorValueName(unsigned int);
 class ConditionLogger { public: void Print(const char*, ...); };
 extern ConditionLogger* conditionLogger;

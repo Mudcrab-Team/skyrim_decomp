@@ -10,7 +10,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "gamebryo/nimain/NiRefObjectStorageLayout.h"
+#include "../../../gamebryo/nimain/NiRefObjectStorageLayout.h"
 namespace ResearchLayouts {
 struct CombatPathActorHandleStorageLayout { std::uint32_t value; };
 struct CombatPathTimerStorageLayout { float aiTimer; float timer; };

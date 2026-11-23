@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "skyrim_shared/forms/TESForm.h"
+#include "../forms/TESForm.h"
 
 class BGSSoundDescriptorForm;
 

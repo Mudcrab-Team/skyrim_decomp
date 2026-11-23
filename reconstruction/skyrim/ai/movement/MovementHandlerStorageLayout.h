@@ -8,7 +8,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "skyrim/controls/PlayerInputHandlerStorageLayout.h"
+#include "../../controls/PlayerInputHandlerStorageLayout.h"
 
 namespace ResearchLayouts {
 class MovementHandlerStorageLayout : public PlayerInputHandlerStorageLayout {

@@ -7,7 +7,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "bscore/BSIntrusiveRefCountedStorageLayout.h"
+#include "../../bscore/BSIntrusiveRefCountedStorageLayout.h"
 
 namespace ResearchLayouts {
 class IGiftMenuScriptCallbackStorageLayout : public BSIntrusiveRefCountedStorageLayout {

@@ -8,7 +8,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "skyrim_shared/forms/TESForm.h"
+#include "../forms/TESForm.h"
 
 // OutfitArray, OutfitTLS, OutfitScope, ClearOutfitArray, ResetOutfitCount, ReleaseOutfitArray,
 // data, capacity, pad0C, count, pad14, saved: GUESS(low); represented heap-array and TLS ownership.

@@ -11,8 +11,8 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "unmapped/support/BSFixedStringLayout.h"
-#include "unmapped/support/NiExtraDataLayout.h"
+#include "../support/BSFixedStringLayout.h"
+#include "../support/NiExtraDataLayout.h"
 
 namespace ResearchLayouts {
 class F004Representedff1b50 : public NiExtraDataLayout {

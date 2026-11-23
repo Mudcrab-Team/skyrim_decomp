@@ -8,7 +8,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include "bscore/AdditionalInterfacePrefixLayout.h"
+#include "../../bscore/AdditionalInterfacePrefixLayout.h"
 namespace ResearchLayouts {
 class BodyPartPointeeLayout;
 class RagdollPointeeLayout;

@@ -9,7 +9,7 @@
 
 #include <cstdint>
 #include <cstddef>
-#include "gamebryo/nimain/NiRefObject.h"
+#include "../gamebryo/nimain/NiRefObject.h"
 
 // RefCountedStandIn: GUESS(low); the pointee of the shared reference, only the vptr slots and count the code uses
 class RefCountedStandIn
