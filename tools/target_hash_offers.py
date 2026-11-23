@@ -29,7 +29,7 @@ RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')  # private plans of inter
 ON_DEMAND_MAX = 256  # PR-claimed functions published per run; at least one PR's cap of new functions
 # Kinds a PR may claim on demand. Static initializers are matched on main already and generated reflection
 # initializers are claimed by whole units, so they cannot depend on the ordinary-only window.
-ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
+ON_DEMAND_KINDS = claimable.ON_DEMAND_KINDS
 PLAN_IDLE_HOURS = 12  # a plan directory untouched this long is treated as abandoned and stops reserving
 MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
 PDB_DIR = 'reconstruction/generated/crashlogger_pdb'  # generated layout headers, label CRASHLOGGER_PDB(59818@version)

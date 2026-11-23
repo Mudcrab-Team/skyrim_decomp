@@ -118,11 +118,16 @@ def entry(build_id, rva, size, cls=None):
             'owner': 'claim-time', 'evidence': EVIDENCE}
 
 
+# Kinds a PR may claim without an inventory entry. The on-demand publisher and the record validator must agree
+# on this, or a function is published and compared but its record is then refused.
+ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
+
+
 def resolve(root, build_id, rva, inventory_rvas, table=None):
     """An entry for a published function the inventory lacks, or None.
 
     `table` is the private function table's rows by RVA when the caller has it: the function must
-    then be an ordinary function there with the published size.
+    then be of an on-demand kind there with the published size.
     """
     if rva in inventory_rvas:
         return None
@@ -131,7 +136,7 @@ def resolve(root, build_id, rva, inventory_rvas, table=None):
         return None
     if table is not None:
         row = table.get(rva)
-        if not row or row.get('kind') != 'ordinary' or row.get('size') != size:
+        if not row or row.get('kind') not in ON_DEMAND_KINDS or row.get('size') != size:
             return None
     return entry(build_id, rva, size, offered_classes(root).get(rva))
 
