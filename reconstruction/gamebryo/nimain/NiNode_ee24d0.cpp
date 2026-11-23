@@ -6,7 +6,6 @@
 // NiNode::UpdateDownwardPass: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // RVA 0xee24d0, 419 bytes: NiNode::UpdateDownwardPass (compared)
 // Adapted bodies: none
-// Drafted by claude-sonnet-5-5
 #include "NiNode_ee24d0.h"
 
 void NiNode::UpdateDownwardPass(NiUpdateData& a_data, std::uint32_t a_arg2)

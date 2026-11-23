@@ -10,7 +10,6 @@
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/tesworldspace.cpp:75
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/fallout_shared/tesworldspace.cpp:28
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/fallout_shared/tesworldspace.cpp:880
-// Drafted by claude-sonnet-5-5
 #include "TESWorldSpace_30e140.h"
 
 bool TESWorldSpace::GetParentUseFlag(std::uint32_t a_flag) const
