@@ -1572,7 +1572,11 @@ def progress_lines(directory, now=None):
         if entry is None or state.get('done') or state.get('merged'):
             continue
         age = max(0, int(now - entry.get('updated_at', now)))
-        flag = ' STUCK' if age > PROGRESS_STUCK_AFTER else ''
+        # A finished stage leaves its entry behind while the PR sits in a stage with no counts (the hash-run
+        # wait, the next review); that age says nothing about a hang, so it is not flagged.
+        finished = entry.get('total') is not None and entry.get('done', 0) >= entry['total']
+        flag = ' (stage complete, later stage untracked)' if finished else (
+            ' STUCK' if age > PROGRESS_STUCK_AFTER else '')
         lines.append(f'pr{entry.get("pr")} {entry.get("head")} {entry.get("stage")} '
                      f'{entry.get("done")}/{entry.get("total")} pass={entry.get("passed", 0)} '
                      f'fail={entry.get("failed", 0)} age={age}s{flag}')

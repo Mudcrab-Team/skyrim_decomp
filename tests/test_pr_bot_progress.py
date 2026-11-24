@@ -93,6 +93,14 @@ class ProgressTests(unittest.TestCase):
         line, = pr_bot.progress_lines(self.dir, now=self.clock.now + 601)
         self.assertIn('STUCK', line)
 
+    def test_a_completed_stage_is_not_called_stuck(self):
+        self.progress.begin('compare', 2)
+        self.progress.advance(True)
+        self.progress.advance(True)
+        line, = pr_bot.progress_lines(self.dir, now=self.clock.now + 5000)
+        self.assertNotIn('STUCK', line)
+        self.assertIn('stage complete', line)
+
     def test_a_finished_head_is_not_listed(self):
         self.progress.begin('compare', 4)
         (self.dir / 'pr7-abcdef012345.json').write_text(json.dumps({'done': True}))
