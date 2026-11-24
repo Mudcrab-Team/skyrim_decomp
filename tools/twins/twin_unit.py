@@ -123,7 +123,7 @@ def deleting_symbol(root, rva, stem):
         return ''
     report = runs[0]['report']
     symbol = report.get('function', {}).get('symbol', '')
-    return symbol if report.get('contract_version') == 2 and re.fullmatch(r'\?\?_G\w+@@\w+', symbol) else ''
+    return symbol if report.get('contract_version') == 2 and re.fullmatch(r'\?\?_G[A-Za-z_]\w*@@\w+@Z', symbol) else ''
 
 
 def included_headers(root, ex):

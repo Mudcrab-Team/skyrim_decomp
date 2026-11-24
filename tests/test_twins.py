@@ -1,4 +1,5 @@
 """tools/twins on synthetic sources and operands (no game data)."""
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -131,6 +132,22 @@ class UnitTests(unittest.TestCase):
         self.assertIn('helper_hash_555555', cpp)
         self.assertIn('GUESS(low) STANDIN', header)
         self.assertNotIn('Widget::', cpp)
+
+    def test_compiler_deleting_destructor_selects_the_reemitted_symbol(self):
+        cpp = STAMPED_CPP.replace('??1Leaf111111@@QEAA@XZ', '??_GLeaf111111@@UEAAPEAXI@Z')
+        header = STAMPED_H.replace('    ~Leaf111111();', '    virtual ~Leaf111111();')
+        tmp = self.fixture({'unmapped/Leaf111111.h': header, 'unmapped/Leaf111111.cpp': cpp})
+        report = Path(tmp.name) / 'reports' / 'sse-steam-1-7-104' / '0x111111.json'
+        report.parent.mkdir(parents=True)
+        report.write_text(json.dumps({
+            'source': {'compiled': 'reconstruction/unmapped/Leaf111111.cpp'},
+            'runs': [{'report': {'contract_version': 2, 'function': {'symbol': '??_GLeaf111111@@UEAAPEAXI@Z'}}}],
+        }))
+        ex = U.load_exemplar(tmp.name, 0x111111, 'unmapped/Leaf111111')
+        self.assertEqual(ex.deleting_symbol, '??_GLeaf111111@@UEAAPEAXI@Z')
+        twin = U.build(tmp.name, ex, 0x444444)
+        self.assertIn('// CI hash: 0x444444 ??_GLeaf444444@@UEAAPEAXI@Z', twin.files[twin.stem + '.cpp'])
+        self.assertIn('Leaf444444::~Leaf444444()', twin.files[twin.stem + '.cpp'])
 
     def test_constants_substitute_in_the_function_only(self):
         tmp = self.fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
