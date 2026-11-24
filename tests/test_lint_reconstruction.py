@@ -454,6 +454,12 @@ class CompactHeaderTests(LintTests):
         self.write(header=HEADER.replace('// Widget', f'{gpl}// Widget'))
         self.assertFalse(any('header states GPL' in p for p in self.problems()))
 
+    def test_gpl_and_mit_labels_for_unlisted_community_repositories_are_accepted(self):
+        for label in ('COMMUNITY(libxse/commonlibf4@0123abc, GPL-3.0)', 'COMMUNITY(Someone/CommonLibF4@0123abc, MIT)',
+                      'COMMUNITY(Fork/CommonLibF4@0123abc, AGPL-3.0-only)'):
+            self.write(header=HEADER.replace('GUESS(low)', label))
+            self.assertFalse(any('COMMUNITY' in p for p in self.problems()), label)
+
     def test_gpl_spdx_line_is_not_flagged(self):
         self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))
         self.assertFalse(any('SPDX' in p or 'write the' in p for p in self.problems()))
