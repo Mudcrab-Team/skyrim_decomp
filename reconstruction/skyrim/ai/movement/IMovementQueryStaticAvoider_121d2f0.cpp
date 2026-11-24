@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x121d2f0, 62 bytes: IMovementQueryStaticAvoider scalar deleting destructor; the inline destructors chain to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x121d2f0 ??_GIMovementQueryStaticAvoider@@UEAAPEAXI@Z
 #include "IMovementQueryStaticAvoider_121d2f0.h"

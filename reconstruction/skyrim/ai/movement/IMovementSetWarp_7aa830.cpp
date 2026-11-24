@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x7aa830, 62 bytes: IMovementSetWarp scalar deleting destructor; the inline destructor chains to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x7aa830 ??_GIMovementSetWarp@@UEAAPEAXI@Z
 #include "IMovementSetWarp_7aa830.h"

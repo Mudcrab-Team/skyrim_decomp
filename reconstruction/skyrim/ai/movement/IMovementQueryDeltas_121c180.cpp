@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x121c180, 62 bytes: IMovementQueryDeltas scalar deleting destructor; the inline destructors chain to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x121c180 ??_GIMovementQueryDeltas@@UEAAPEAXI@Z
 #include "IMovementQueryDeltas_121c180.h"

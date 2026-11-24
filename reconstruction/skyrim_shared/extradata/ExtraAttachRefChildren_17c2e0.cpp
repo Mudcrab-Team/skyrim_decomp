@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x17c2e0, 66 bytes: ExtraAttachRefChildren scalar deleting destructor; the implicit destructor clears the child list, then the inline BSExtraData destructor resets the vftable.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x17c2e0 ??_GExtraAttachRefChildren@@UEAAPEAXI@Z
 #include "ExtraAttachRefChildren_17c2e0.h"

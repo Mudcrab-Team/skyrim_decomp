@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x12187f0, 62 bytes: MovementMessageBlocked scalar deleting destructor; the inline destructors chain to the out-of-line MovementMessage destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x12187f0 ??_GMovementMessageBlocked@@UEAAPEAXI@Z
 #include "MovementMessageBlocked_12187f0.h"

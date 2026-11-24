@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x279180, 62 bytes: TESBoundObject scalar deleting destructor; the inline destructors chain to the out-of-line TESForm destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x279180 ??_GTESBoundObject@@UEAAPEAXI@Z
 #include "TESBoundObject_279180.h"

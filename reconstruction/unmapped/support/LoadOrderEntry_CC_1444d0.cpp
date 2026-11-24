@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x1444d0, 62 bytes: LoadOrderEntry_CC scalar deleting destructor; the inline destructor chains to the out-of-line LoadOrderEntry destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x1444d0 ??_GLoadOrderEntry_CC@@UEAAPEAXI@Z
 #include "LoadOrderEntry_CC_1444d0.h"

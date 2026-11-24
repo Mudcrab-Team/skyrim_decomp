@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x145370, 62 bytes: ViewAllEntry scalar deleting destructor; the inline destructors chain to the out-of-line UI_element destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x145370 ??_GViewAllEntry@@UEAAPEAXI@Z
 #include "ViewAllEntry_145370.h"

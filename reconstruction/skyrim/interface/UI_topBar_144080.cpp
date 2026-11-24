@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x144080, 62 bytes: UI_topBar scalar deleting destructor; the inline destructors chain to the out-of-line UI_element destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x144080 ??_GUI_topBar@@UEAAPEAXI@Z
 #include "UI_topBar_144080.h"

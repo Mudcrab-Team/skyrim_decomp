@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x3f94e0, 76 bytes: hkPrismaticConstraintCinfo scalar deleting destructor; the inline hkConstraintCinfo destructor clears its constraint data; the non-polymorphic hkSerializableCinfo base has nothing to destroy.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x3f94e0 ??_GhkPrismaticConstraintCinfo@@UEAAPEAXI@Z
 #include "hkPrismaticConstraintCinfo_3f94e0.h"

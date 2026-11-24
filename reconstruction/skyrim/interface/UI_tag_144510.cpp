@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x144510, 62 bytes: UI_tag scalar deleting destructor; the inline destructors chain to the out-of-line UI_element destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x144510 ??_GUI_tag@@UEAAPEAXI@Z
 #include "UI_tag_144510.h"

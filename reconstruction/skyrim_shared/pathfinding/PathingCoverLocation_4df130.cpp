@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x4df130, 66 bytes: PathingCoverLocation scalar deleting destructor; the inline destructor resets the vftable, then the out-of-line non-virtual BSPathingLocation base destructor runs.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x4df130 ??_GPathingCoverLocation@@UEAAPEAXI@Z
 #include "PathingCoverLocation_4df130.h"

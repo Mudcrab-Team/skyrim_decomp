@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x4f2060, 62 bytes: NavMeshSearchSLPoint scalar deleting destructor; the inline destructor chains to the out-of-line BSNavmeshSearch destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x4f2060 ??_GNavMeshSearchSLPoint@@UEAAPEAXI@Z
 #include "NavMeshSearchSLPoint_4f2060.h"

@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x159f0a0, 62 bytes: BSWin32GameDataSystemUtility scalar deleting destructor; the inline destructors chain to the out-of-line BSGameDataSystemUtility destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x159f0a0 ??_GBSWin32GameDataSystemUtility@@UEAAPEAXI@Z
 #include "BSWin32GameDataSystemUtility_159f0a0.h"

@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x10ba8b0, 76 bytes: hkRagdollLimitsConstraintCinfo scalar deleting destructor; the inline hkConstraintCinfo destructor clears its constraint data; the non-polymorphic hkSerializableCinfo base has nothing to destroy.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x10ba8b0 ??_GhkRagdollLimitsConstraintCinfo@@UEAAPEAXI@Z
 #include "hkRagdollLimitsConstraintCinfo_10ba8b0.h"

@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x17c560, 66 bytes: ExtraCellWaterEnvMap scalar deleting destructor; the implicit destructor destroys the water texture member, then the inline BSExtraData destructor resets the vftable.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x17c560 ??_GExtraCellWaterEnvMap@@UEAAPEAXI@Z
 #include "ExtraCellWaterEnvMap_17c560.h"

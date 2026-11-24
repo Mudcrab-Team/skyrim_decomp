@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x9565b0, 66 bytes: MagicItemData scalar deleting destructor; the inline destructor resets the vftable, then the BSString member is destroyed.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x9565b0 ??_GMagicItemData@@UEAAPEAXI@Z
 #include "MagicItemData_9565b0.h"

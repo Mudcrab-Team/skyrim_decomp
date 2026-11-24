@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x11d2d10, 62 bytes: IMovementSetPathFollowing scalar deleting destructor; the inline destructors chain to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x11d2d10 ??_GIMovementSetPathFollowing@@UEAAPEAXI@Z
 #include "IMovementSetPathFollowing_11d2d10.h"

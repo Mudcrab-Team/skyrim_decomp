@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x7f5330, 76 bytes: hkHingeConstraintCinfo scalar deleting destructor; the inline hkConstraintCinfo destructor clears its constraint data; the non-polymorphic hkSerializableCinfo base has nothing to destroy.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x7f5330 ??_GhkHingeConstraintCinfo@@UEAAPEAXI@Z
 #include "hkHingeConstraintCinfo_7f5330.h"

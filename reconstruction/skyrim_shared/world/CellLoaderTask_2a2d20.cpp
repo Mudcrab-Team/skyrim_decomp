@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x2a2d20, 62 bytes: CellLoaderTask scalar deleting destructor; the inline destructors chain to the out-of-line IOTask destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x2a2d20 ??_GCellLoaderTask@@UEAAPEAXI@Z
 #include "CellLoaderTask_2a2d20.h"

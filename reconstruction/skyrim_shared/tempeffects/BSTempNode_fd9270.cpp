@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0xfd9270, 62 bytes: BSTempNode scalar deleting destructor; the inline destructors chain to the out-of-line NiNode destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0xfd9270 ??_GBSTempNode@@UEAAPEAXI@Z
 #include "BSTempNode_fd9270.h"

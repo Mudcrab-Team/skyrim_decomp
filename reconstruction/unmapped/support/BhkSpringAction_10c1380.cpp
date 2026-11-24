@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x10c1380, 89 bytes: BhkSpringAction scalar deleting destructor; the inline BhkSpringAction destructor releases the Havok object and drops the instance count, then calls the out-of-line bhkBinaryAction destructor.
 // Sibling source: momusdigital/fnv_decomp@2b07cb3e src/fallout_shared/tesobjectrefr_o2_variant.cpp:533
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x10c1380 ??_GBhkSpringAction@@UEAAPEAXI@Z
 #include "BhkSpringAction_10c1380.h"

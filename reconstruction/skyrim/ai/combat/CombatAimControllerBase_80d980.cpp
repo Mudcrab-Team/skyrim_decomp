@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x80d980, 62 bytes: CombatAimControllerBase scalar deleting destructor; the inline destructors chain to the out-of-line CombatObject destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x80d980 ??_GCombatAimControllerBase@@UEAAPEAXI@Z
 #include "CombatAimControllerBase_80d980.h"

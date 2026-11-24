@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x80f8b0, 62 bytes: CombatAreaRadius scalar deleting destructor; the inline destructors chain to the out-of-line CombatObject destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x80f8b0 ??_GCombatAreaRadius@@UEAAPEAXI@Z
 #include "CombatAreaRadius_80f8b0.h"

@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x80f930, 62 bytes: CombatAreaStandard scalar deleting destructor; the inline destructors chain to the out-of-line CombatObject destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x80f930 ??_GCombatAreaStandard@@UEAAPEAXI@Z
 #include "CombatAreaStandard_80f930.h"

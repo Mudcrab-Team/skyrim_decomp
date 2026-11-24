@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x11d5a00, 62 bytes: IMovementQueryPathingState scalar deleting destructor; the inline destructors chain to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x11d5a00 ??_GIMovementQueryPathingState@@UEAAPEAXI@Z
 #include "IMovementQueryPathingState_11d5a00.h"

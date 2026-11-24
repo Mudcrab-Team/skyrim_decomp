@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x6bc780, 62 bytes: IMovementState scalar deleting destructor; the inline destructors chain to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x6bc780 ??_GIMovementState@@UEAAPEAXI@Z
 #include "IMovementState_6bc780.h"

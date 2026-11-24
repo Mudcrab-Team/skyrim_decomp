@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x7382b0, 62 bytes: BSPlayerDistanceCheckController scalar deleting destructor; the inline destructors chain to the out-of-line NiTimeController destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x7382b0 ??_GBSPlayerDistanceCheckController@@UEAAPEAXI@Z
 #include "BSPlayerDistanceCheckController_7382b0.h"

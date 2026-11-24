@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x11caf90, 62 bytes: IMovementSetState scalar deleting destructor; the inline destructor chains to the out-of-line IMovementInterface destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x11caf90 ??_GIMovementSetState@@UEAAPEAXI@Z
 #include "IMovementSetState_11caf90.h"

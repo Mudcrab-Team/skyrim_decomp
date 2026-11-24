@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0xfeb310, 74 bytes: BSBehaviorGraphExtraData scalar deleting destructor; the inline destructor resets the vftable and destroys the member at 0x18, then the out-of-line NiExtraData destructor runs.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0xfeb310 ??_GBSBehaviorGraphExtraData@@UEAAPEAXI@Z
 #include "BSBehaviorGraphExtraData_feb310.h"

@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x1002d80, 62 bytes: BSPSysStripUpdateModifier scalar deleting destructor; the inline destructors chain to the out-of-line NiPSysModifier destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x1002d80 ??_GBSPSysStripUpdateModifier@@UEAAPEAXI@Z
 #include "BSPSysStripUpdateModifier_1002d80.h"

@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0xfffe50, 74 bytes: BSBoneLODExtraData scalar deleting destructor; the inline destructor resets the vftable and destroys the member at 0x18, then the out-of-line NiExtraData destructor runs.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0xfffe50 ??_GBSBoneLODExtraData@@UEAAPEAXI@Z
 #include "BSBoneLODExtraData_fffe50.h"

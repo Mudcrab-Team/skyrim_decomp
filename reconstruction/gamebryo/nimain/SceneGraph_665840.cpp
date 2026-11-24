@@ -3,6 +3,7 @@
 // Labels: v2
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x665840, 62 bytes: SceneGraph scalar deleting destructor; the inline destructors chain to the out-of-line BSSceneGraph destructor.
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x665840 ??_GSceneGraph@@UEAAPEAXI@Z
 #include "SceneGraph_665840.h"

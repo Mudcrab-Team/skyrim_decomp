@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: CC0-1.0
 // RVA 0x10b1b70, 89 bytes: BhkPlaneShape scalar deleting destructor; the inline BhkPlaneShape destructor releases the Havok object and drops the instance count, then calls the out-of-line bhkHeightFieldShape destructor.
 // Sibling source: momusdigital/fnv_decomp@2b07cb3e src/fallout_shared/tesobjectrefr_o2_variant.cpp:533
+// Code origin: original reconstruction from the pinned image listing
 // Adapted bodies: none
 // CI hash: 0x10b1b70 ??_GBhkPlaneShape@@UEAAPEAXI@Z
 #include "BhkPlaneShape_10b1b70.h"
