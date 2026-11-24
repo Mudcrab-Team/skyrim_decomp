@@ -130,6 +130,10 @@ Nothing in this repository grants third-party rights. See `LICENSE` for the scop
 reconstructions, docs and research; MIT for infrastructure; per-file exceptions); do not label the
 entire repository MIT or CC0. Material reused from FNV under the decision above comes from a CC0
 project; it is labelled `SIBLING(...)` for provenance.
+Community libraries (CommonLibF4 under MIT, GPL forks of it and any other community library) may be
+used for names, declarations and bodies under the maintainer decision in `docs/authorizations.md`
+("Community and sibling source decisions"); each use is labelled `COMMUNITY(<owner>/<repo>@<pin>, <SPDX>)`
+and a GPL label makes the file state the GPL licence.
 Contributor authorship alone does not establish rights to all underlying material.
 
 US law distinguishes ideas/methods from protected expression in [17 USC 102(b)](https://www.law.cornell.edu/uscode/text/17/102).

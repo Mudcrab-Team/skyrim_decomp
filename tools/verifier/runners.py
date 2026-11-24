@@ -17,7 +17,8 @@ the unit's include closure, the comparator and the host scripts, a spec file and
 travels in a command), the host compiles and compares with tools/verifier/unit_build.py, the
 caller fetches `work/<host id>/` and the run directory is removed.
 
-The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides);
+The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides). `attempt` names the default attempt host; an optional
+`attempt_prefer` list is tried first (first reachable wins) and SR_ATTEMPT_HOST overrides both;
 tools/verifier/runners.example.json is the tracked example. Without it, or with `"attempt":
 "boat"`, everything behaves as before. A host is named in records only by its `host_id`, with
 the OS, loader and compiler hashes it reports; private paths, user names and addresses stay in
@@ -80,6 +81,18 @@ class TransportError(RunnerError):
 def config_path():
     configured = os.environ.get('SR_RUNNERS_CONFIG')
     return Path(configured) if configured else starts.state_dir() / 'runners.json'
+
+
+def config_origin():
+    """Where config_path() came from: 'SR_RUNNERS_CONFIG', 'this checkout' or 'another checkout'.
+
+    A fresh worktree has no .local of its own, so the config of the main checkout is used; a
+    drafter there silently inherits that machine's choice of host.
+    """
+    if os.environ.get('SR_RUNNERS_CONFIG'):
+        return 'SR_RUNNERS_CONFIG'
+    here = Path(__file__).resolve().parents[2]
+    return 'this checkout' if here == main_root().resolve() else 'another checkout'
 
 
 def main_root():
@@ -177,7 +190,10 @@ def validate(raw, root=None):
         raise RunnerError('runners config: confirm must list configured hosts')
     if any(out[c]['backend'] == 'boat' for c in confirm):
         raise RunnerError('runners config: confirm lists runner hosts only; Boat confirms through the session')
-    return {'attempt': attempt, 'confirm': confirm, 'hosts': out}
+    prefer = raw.get('attempt_prefer', [])
+    if not isinstance(prefer, list) or any(p not in out or out[p]['backend'] == 'ci-hash' for p in prefer):
+        raise RunnerError('runners config: attempt_prefer must list configured attempt-capable hosts')
+    return {'attempt': attempt, 'attempt_prefer': prefer, 'confirm': confirm, 'hosts': out}
 
 
 def load(path=None, root=None):
@@ -728,12 +744,71 @@ def probe(host, transport=None, timeout=300):
 # ------------------------------------------------------------------ selection
 
 
-def for_attempt(config=None):
-    """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host)."""
+def reachable(host, timeout=8):
+    """True when the host can take an attempt now: a local host always, an ssh host if it answers."""
+    if host['backend'] == 'local':
+        return True
+    if host['backend'] != 'ssh':
+        return False
+    try:
+        proc = subprocess.run(['ssh', '-F', host['ssh_config'], '-o', 'BatchMode=yes',
+                               '-o', f'ConnectTimeout={timeout}', host['ssh_host'], 'echo ok'],
+                              capture_output=True, text=True, timeout=timeout + 5)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return proc.returncode == 0 and 'ok' in proc.stdout
+
+
+def choose_attempt(config, environ=None, probe_fn=None):
+    """(host name, warnings): SR_ATTEMPT_HOST, else the first reachable attempt_prefer entry, else `attempt`.
+
+    A Wine pick while a configured ssh host answers is warned about: that host is usually the
+    faster one and a long drafting session on the slow one is easy to miss.
+    """
+    environ = os.environ if environ is None else environ
+    probe_fn = probe_fn or reachable
+    hosts, warnings = config['hosts'], []
+    forced = environ.get('SR_ATTEMPT_HOST')
+    if forced:
+        if forced not in hosts or hosts[forced]['backend'] == 'ci-hash':
+            raise RunnerError(f'SR_ATTEMPT_HOST={forced!r} is not a configured attempt host '
+                              f'({", ".join(n for n, h in hosts.items() if h["backend"] != "ci-hash")})')
+        return forced, warnings
+    name = None
+    for cand in config.get('attempt_prefer', []):
+        if hosts[cand]['backend'] == 'boat' or probe_fn(hosts[cand]):
+            name = cand
+            break
+        warnings.append(f'preferred attempt host {cand} is not reachable')
+    if name is None:
+        name = config['attempt']
+    if hosts[name].get('loader') == 'wine':
+        for other, h in hosts.items():
+            if other != name and h['backend'] == 'ssh' and probe_fn(h):
+                warnings.append(f'attempt runs on {name} (Wine, slow) but {other} is reachable; set '
+                                f'SR_ATTEMPT_HOST={other} or put it in attempt_prefer')
+                break
+    return name, warnings
+
+
+def for_attempt(config=None, report=None):
+    """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host).
+
+    `report`, if given, receives the config path, its origin and the chosen host, plus warnings.
+    """
     config = config if config is not None else load()
     if config is None:
         return None
-    host = config['hosts'][config['attempt']]
+    name, warnings = choose_attempt(config)
+    host = config['hosts'][name]
+    if report:
+        origin = config_origin()
+        report(f'runners config: {config_path()} ({origin}); attempt host: {name}')
+        if origin == 'another checkout':
+            warnings.insert(0, "this checkout has no runners config of its own; the main checkout's is used "
+                               '(set SR_RUNNERS_CONFIG to choose another)')
+        for w in warnings:
+            report(f'WARNING: {w}')
     if host['backend'] == 'boat':
         return None
     return with_image(host)

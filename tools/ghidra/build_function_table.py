@@ -698,7 +698,7 @@ def class_checks(decl, own, parent, asserted, image_size, rtti_match, header_bas
 AREA_LABELS = {
     'netimmerse': 'NetImmerse (Ni*)', 'bsengine': 'Bethesda engine (BS*)', 'forms': 'Forms (TES*, BGS*)',
     'actors': 'Actors', 'magic': 'Magic', 'havok': 'Havok (hk*)', 'scaleform': 'Scaleform (GFx)',
-    'bnet': 'Bethesda.net client', 'std': 'std and CRT', 'other': 'Other engine classes',
+    'bnet': 'Bethesda.net client', 'std': 'CRT and unsplit std', 'other': 'Other engine classes',
     'unattributed': 'No class known'}
 MAGIC = re.compile(r'^(Magic|ActiveEffect|SpellItem|EnchantmentItem|ScrollItem|AlchemyItem|IngredientItem|'
                    r'MagicItem|MagicCaster|MagicTarget|ActorMagicCaster)')

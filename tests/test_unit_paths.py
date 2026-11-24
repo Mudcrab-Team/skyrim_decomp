@@ -33,6 +33,11 @@ class PdbClassPlacementTests(unittest.TestCase):
         }.items():
             self.assertEqual(self.place(cls), area, cls)
 
+    def test_standard_template_instances_have_an_area(self):
+        self.assertEqual(self.place('Std_deque_P12'), 'std')
+        self.assertEqual(self.place('Std_map_P8_std__string_10b1b30'), 'std')
+        self.assertTrue(unit_paths.area_accepted('std'))
+
     def test_ambiguous_names_stay_unplaced(self):
         for cls in ('Mutex', 'Entry', 'Event', 'Sound', 'GarbageCollector', 'DebugText', 'JobList', 'StateInfo'):
             self.assertIsNone(self.place(cls), cls)

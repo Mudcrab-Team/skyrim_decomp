@@ -257,6 +257,10 @@ class WouldSpend(Exception):
     """A dry run reached a stage that costs a compile or a review; it stops there instead of paying."""
 
 
+class HeadMoved(Waiting):
+    """The PR's head changed under a running head; the old one is dropped and the new one starts next tick."""
+
+
 class HostFailure(Stop):
     """A verifier host did not complete a compare. Repeats of it on one head back off and are said once."""
 
@@ -1452,6 +1456,129 @@ def merge_review_texts(texts):
     return json.dumps({'leak': leak, 'leak_evidence': sorted(kinds), 'functions': rows}, indent=1)
 
 
+PROGRESS_INTERVAL = 60  # seconds between progress writes inside one stage
+PROGRESS_EVERY = 25  # ...or this many finished units, whichever comes first
+PROGRESS_STUCK_AFTER = 600  # a watcher treats an entry this old as stuck
+
+
+def write_json_atomic(path, data):
+    """Readers (a watcher polling the file) never see half of it: write beside it, then rename over it."""
+    path = Path(path)
+    tmp = path.with_name(f'{path.name}.{os.getpid()}.{threading.get_ident()}.tmp')
+    tmp.write_text(json.dumps(data, indent=1, sort_keys=True))
+    os.replace(tmp, path)
+
+
+class Progress:
+    """`pr<N>-<sha12>.progress.json` beside the state file: where a long stage has got to.
+
+    The state file only changes when a stage completes, so a compare of hundreds of units looks the same
+    slow or stuck. Counts here only grow within a stage; a new stage starts again from zero.
+    """
+
+    def __init__(self, directory, number, head, clock=time.time, interval=PROGRESS_INTERVAL,
+                 every=PROGRESS_EVERY, say=None):
+        self.number, self.head = number, head
+        self.path = Path(directory) / f'pr{number}-{head[:12]}.progress.json'
+        self.clock, self.interval, self.every = clock, interval, every
+        self.say = say if say is not None else (lambda line: print(line, flush=True))
+        self.lock = threading.Lock()
+        self.entry = None
+        self.last_write = 0.0
+        self.since_write = 0
+
+    def begin(self, stage, total):
+        with self.lock:
+            now = self.clock()
+            self.entry = dict(pr=self.number, head=self.head[:12], stage=stage, done=0, total=total,
+                              passed=0, failed=0, started_at=now, updated_at=now)
+            self._write(now)
+
+    def advance(self, ok=None, count=1):
+        """One more unit finished (`ok` None when it has no pass/fail meaning); writes when due."""
+        with self.lock:
+            if self.entry is None:
+                return
+            self.entry['done'] = min(self.entry['total'], self.entry['done'] + count)
+            if ok is True:
+                self.entry['passed'] += count
+            elif ok is False:
+                self.entry['failed'] += count
+            self.since_write += count
+            now = self.clock()
+            if (self.entry['done'] >= self.entry['total'] or self.since_write >= self.every
+                    or now - self.last_write >= self.interval):
+                self._write(now)
+
+    def touch(self):
+        """Still alive inside a stage that has no countable parts (the pack export)."""
+        with self.lock:
+            if self.entry is not None:
+                self._write(self.clock())
+
+    def _write(self, now):
+        self.entry['updated_at'] = now
+        self.last_write, self.since_write = now, 0
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            write_json_atomic(self.path, self.entry)
+        except OSError:
+            return  # progress is advisory; it must never fail the stage it reports on
+        e = self.entry
+        self.say(f'progress pr{e["pr"]} {e["head"]} {e["stage"]} {e["done"]}/{e["total"]} '
+                 f'pass={e["passed"]} fail={e["failed"]}')
+
+    @contextlib.contextmanager
+    def heartbeat(self, period=None):
+        """Touch the entry every `period` seconds while the block runs (one opaque child process)."""
+        stop = threading.Event()
+        period = period or self.interval
+
+        def beat():
+            while not stop.wait(period):
+                self.touch()
+        thread = threading.Thread(target=beat, daemon=True)
+        thread.start()
+        try:
+            yield
+        finally:
+            stop.set()
+            thread.join(timeout=5)
+
+    def clear(self):
+        with self.lock:
+            self.entry = None
+        try:
+            self.path.unlink()
+        except OSError:
+            pass
+
+
+def read_json(path):
+    try:
+        data = json.loads(Path(path).read_text())
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def progress_lines(directory, now=None):
+    """One line per in-flight PR head: stage, done/total and the age of the last update."""
+    now = time.time() if now is None else now
+    lines = []
+    for path in sorted(Path(directory).glob('pr*-*.progress.json')):
+        entry = read_json(path)
+        state = read_json(path.with_name(path.name.replace('.progress.json', '.json'))) or {}
+        if entry is None or state.get('done') or state.get('merged'):
+            continue
+        age = max(0, int(now - entry.get('updated_at', now)))
+        flag = ' STUCK' if age > PROGRESS_STUCK_AFTER else ''
+        lines.append(f'pr{entry.get("pr")} {entry.get("head")} {entry.get("stage")} '
+                     f'{entry.get("done")}/{entry.get("total")} pass={entry.get("passed", 0)} '
+                     f'fail={entry.get("failed", 0)} age={age}s{flag}')
+    return lines
+
+
 # ---- state ----------------------------------------------------------------------------------
 
 class State:
@@ -1482,9 +1609,7 @@ class State:
                 self._save()
 
     def _save(self):
-        tmp = self.path.with_suffix('.tmp')
-        tmp.write_text(json.dumps(self.data, indent=1, sort_keys=True))
-        os.replace(tmp, self.path)
+        write_json_atomic(self.path, self.data)
 
     def once(self, key, fn):
         return self.data[key] if key in self.data else self.set(key, fn())
@@ -1559,11 +1684,12 @@ class Bot:
         self.dry_run = dry_run
         self.host1_mode = host1
         self.config = {**dict(model_timeout=3000, review_chunk=REVIEW_CHUNK_FUNCTIONS,
-                            review_workers=REVIEW_CHUNK_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
+                            review_workers=REVIEW_CHUNK_WORKERS, compare_workers=COMPARE_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
         self.main_watch = MainWatch(self.fetch_main_red)
         self.clock = time.time
+        self.progress_by_tag = {}  # tag -> Progress of the PR head being worked, shared by every slot
         self.used = threading.local()  # the reviewer of this thread's latest review
         self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
         self.carry_targets = {}  # revision -> RVAs with a published target hash there, for the comment-only carry
@@ -1591,6 +1717,9 @@ class Bot:
                 self.code_sha_cache = ''
             self.code_sha_cache = self.code_sha_cache or 'unknown'
         return self.code_sha_cache
+
+    def progress_of(self, tag):
+        return getattr(self, 'progress_by_tag', {}).get(tag)
 
     def mark_done(self, state):
         """Finish a head, stamped with the code revision that did, so a later deploy can tell a stale failure."""
@@ -1704,6 +1833,26 @@ class Bot:
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
 
+    def check_head(self, number, head, stage):
+        """Raise HeadMoved when the PR's head is no longer `head`; one REST call, made before an expensive stage.
+
+        `head` may be a prefix (the compare tag keeps eight characters). A failed read says nothing about the
+        head, so the stage goes ahead: the merge still pins the head with --match-head-commit.
+        """
+        try:
+            now = self.run(['gh', 'api', f'repos/{REPOSITORY}/pulls/{number}', '--jq', '.head.sha']).stdout
+        except (Stop, subprocess.SubprocessError, OSError):
+            return
+        now = now.decode(errors='replace').strip() if isinstance(now, bytes) else str(now).strip()
+        if re.fullmatch(r'[0-9a-f]{40}', now) and not now.startswith(head):
+            message = f'pr{number} head moved {head[:8]} -> {now[:8]} before {stage}; dropping the old head'
+            print(message, flush=True)
+            raise HeadMoved(message)
+
+    def check_tag_head(self, tag, stage):
+        number, _, short = tag.partition('-')
+        self.check_head(int(number), short, stage)
+
     def fetch_main_red(self):
         out = self.run(['gh', 'api', f'repos/{REPOSITORY}/actions/workflows/{MAIN_CHECK_WORKFLOW}/runs'
                         '?branch=main&event=push&status=completed&per_page=5']).stdout
@@ -1711,6 +1860,7 @@ class Bot:
 
     def merge_pr(self, number, head, subject, body, check=False):
         """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
+        self.check_head(number, head, 'merge')
         red = self.main_watch.red_sha()
         if red:
             print(f'main red at {red}; holding merges', file=sys.stderr)
@@ -1952,6 +2102,27 @@ class Bot:
         return all(next(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{int(r):x}/report.json'), None)
                    for r in verdicts)
 
+    def adopt_reports(self, tag, verdicts):
+        """Copy the PR head's comparator tasks from the slot tree that ran them; True when this tree then has them.
+
+        A retry takes whichever slot is free. Dropping the cached verdict because the report files are in another
+        slot's tree repeated a compare of hundreds of units that had already finished.
+        """
+        for index in (*range(POOL_SIZE), 'merge', 'maint', 'conflict'):
+            donor = self.for_slot(index)
+            if donor.tree == self.tree or not donor.reports_present(tag, verdicts):
+                continue
+            target = self.tree / '.local/tasks'
+            target.mkdir(parents=True, exist_ok=True)
+            try:
+                for task in (donor.tree / '.local/tasks').glob(f'prbot-{tag}-*'):
+                    shutil.rmtree(target / task.name, ignore_errors=True)
+                    shutil.copytree(task, target / task.name, symlinks=True)
+            except OSError:
+                return False
+            return self.reports_present(tag, verdicts)
+        return False
+
     def review_evidence(self, tag, functions, host1, host2, state):
         """What each host said about each function, with the Mac comparator report's path in the tree."""
         ci = state.get('ci') or {}
@@ -2144,6 +2315,7 @@ class Bot:
         With a `state`, every chunk's answer is cached under its own key, so a retry after one chunk failed
         runs only the chunks without an answer.
         """
+        self.check_head(number, head, 'review')
         old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
         chunks = review_chunks(functions, units, self.config['review_chunk']) if units else [sorted(functions)]
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
@@ -2155,14 +2327,23 @@ class Bot:
         keys = [f'review_chunk{sfx}:' + hashlib.sha256(','.join(map(str, c)).encode()).hexdigest()[:16]
                 for c in chunks]
 
+        progress = self.progress_of(f'{number}-{head[:8]}')
+        if progress:
+            progress.begin('review', len(chunks))
+
         def one(i):
             self.used.reviewer = None
             mine = {owner.get(r) for r in chunks[i]}
             others = [f for cpp in units if cpp not in mine for f in (cpp, cpp[:-4] + '.h')]
             path = out.with_name(f'{out.stem}-c{i}.txt')
-            run = lambda: self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
-                                            companions, old_flags, path, others)
+
+            def run():
+                self.check_head(number, head, f'review chunk {i + 1}/{len(chunks)}')
+                return self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
+                                         companions, old_flags, path, others)
             text = state.once(keys[i], run) if state is not None else run()
+            if progress:
+                progress.advance()
             return text, self.used.reviewer
 
         with ThreadPoolExecutor(max_workers=max(1, min(self.config['review_workers'], len(chunks)))) as pool:
@@ -2411,9 +2592,10 @@ class Bot:
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
         if self.dry_run:
             raise WouldSpend('local compare')
-        return self.compare_on_host(units, tag)
+        self.check_tag_head(tag, 'pack export')
+        return self.compare_on_host(units, tag, lambda: self.check_tag_head(tag, 'compare'))
 
-    def compare_on_host(self, units, tag):
+    def compare_on_host(self, units, tag, before_attempts=None):
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
         lines, tasks = [], []
         for index, (cpp, rvas) in enumerate(sorted(units.items())):
@@ -2429,12 +2611,17 @@ class Bot:
             # A task directory reused from an earlier compare keeps its attempt count, and the verifier
             # refuses a task whose attempt budget is spent (exit 5) however often it is asked again.
             shutil.rmtree(task, ignore_errors=True)
+        progress = self.progress_of(tag)
+        if progress:
+            progress.begin('pack-export', len(tasks))
         try:
-            with self.ghidra_lock:
+            with self.ghidra_lock, (progress.heartbeat() if progress else contextlib.nullcontext()):
                 self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree,
                          timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
             raise HostFailure(f'pack export did not complete ({type(exc).__name__}{": " + str(exc) if isinstance(exc, Stop) and str(exc) else ""})')
+        if before_attempts:
+            before_attempts()
         out, why = {}, {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
@@ -2443,12 +2630,29 @@ class Bot:
             hints = {**recorded_symbol_hints(json.loads(made.read_text()) if made.is_file() else {}, rvas), **hints}
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
-        for task in tasks:
+        # Units are independent (each task directory has its own lock), and a PR near the function cap has
+        # hundreds of them: one after another they outlast the head's chance to stay unchanged.
+        def attempt(task):
             try:
-                done = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
-                                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+                ran = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
+                               cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
             except subprocess.TimeoutExpired:
                 raise HostFailure(f'verifier host timed out ({tid_of(task)})')
+            if progress:
+                progress.advance(ran.returncode == 0)
+            return ran
+        workers = max(1, min(self.config.get('compare_workers', COMPARE_WORKERS), len(tasks)))
+        if progress:
+            progress.begin('compare', len(tasks))
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(attempt, task) for task in tasks]
+            try:
+                finished = [future.result() for future in futures]
+            except BaseException:
+                for future in futures:
+                    future.cancel()
+                raise
+        for task, done in zip(tasks, finished):
             code = done.returncode
             if code == REFUSED_INCLUDE_EXIT:
                 # The verifier refuses before compiling when a header cannot be found with the unit's recipe. That
@@ -2484,7 +2688,7 @@ class Bot:
         self.host2_why[tag] = why
         return out
 
-    def host1(self, number, head, functions, state=None, units=None):
+    def host1(self, number, head, functions, state=None, units=None, may_yield=None):
         """{rva: status} from the head's `hash` run; the run's facts are kept in state for the record."""
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
@@ -2555,9 +2759,13 @@ class Bot:
                 raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
                 raise Waiting('hash check has not finished')
-            if self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER:
+            if (self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER
+                    and (may_yield is None or may_yield())):
                 # CI runs on GitHub, not on this slot; holding it for the rest of hash_wait would keep PRs that
-                # are ready to run (outside contributors' first) from starting at all.
+                # are ready to run (outside contributors' first) from starting at all. While the local compare
+                # of the same head is still running the slot is busy anyway, and the caller only sees this
+                # exception once that compare ends, so yielding early would throw away a result that arrives
+                # minutes later and cost the head a tick.
                 raise Waiting('hash check has not finished; slot released for waiting PRs')
             time.sleep(20)
         table = results_from_report(found[0]) if found else {}
@@ -2889,7 +3097,12 @@ class Bot:
     # ---- one PR head ----
     def process(self, pr, base=None):
         try:
-            return self._process(pr, base)
+            try:
+                return self._process(pr, base)
+            finally:
+                live = self.progress_by_tag.pop(f"{pr['number']}-{pr['headRefOid'][:8]}", None)
+                if live:
+                    live.clear()
         except Rejected as exc:
             if not self.dry_run:
                 if exc.text:
@@ -2990,9 +3203,11 @@ class Bot:
 
     def _process(self, pr, base=None):
         number, head = pr['number'], pr['headRefOid']
-        state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
+        directory = self.work / ('dry' if self.dry_run else 'state')
+        state = State(directory, number, head)
         if settled(state, pr, self.code_sha):
             return state.data
+        self.progress_by_tag[f'{number}-{head[:8]}'] = Progress(directory, number, head)
         if stale_bot_failure(state, self.code_sha):
             # Retry under the deployed code; the stored review stays, so nothing paid is repeated.
             for key in RETRY_DROPS:
@@ -3093,11 +3308,19 @@ class Bot:
 
         tag = f'{number}-{head[:8]}'
 
+        mac_done = threading.Event()
+
         def mac():
+            try:
+                return mac_stage()
+            finally:
+                mac_done.set()
+
+        def mac_stage():
             # A retry can land on another slot whose scratch tree never held this head's comparator
             # reports; the cached verdict would then reach the Reviewer with no report to bind.
             cached = state.get('host2' + sfx)
-            if cached is not None and not self.reports_present(tag, cached):
+            if cached is not None and not self.reports_present(tag, cached) and not self.adopt_reports(tag, cached):
                 state.drop('host2' + sfx)
             got = state.once('host2' + sfx, lambda: {str(k): v for k, v in
                                                      self.mac_compare(check_units, tag).items()})
@@ -3106,9 +3329,11 @@ class Bot:
             return got
 
         def ci():
+            if state.get('host1' + sfx) is None:
+                self.check_head(number, head, 'host1')
             return state.once('host1' + sfx, lambda: {str(k): v for k, v in
                                                       self.host1(number, head, everything, state,
-                                                                 check_units).items()})
+                                                                 check_units, mac_done.is_set).items()})
         # Both hosts first: the Reviewer's binding check needs the comparator report and the CI result.
         with ThreadPoolExecutor(max_workers=2) as pool:
             f_mac, f_ci = pool.submit(mac), pool.submit(ci)
@@ -4159,6 +4384,7 @@ class Bot:
             login = pr['author']['login']
             uid = self.gh_json('api', f'users/{login}')['id']
             subject, body = squash_message(number, login, uid, matched, again)
+            self.check_head(number, head, 'merge')
             if self.land_with_records(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'],
                                       subject, body):
                 state.set('merged', True)
@@ -4677,6 +4903,8 @@ def pollable(prs):
 
 
 POOL_SIZE = 3
+# Parallel verifier attempts inside one PR's compare; the pool already runs PRs side by side, so this stays small.
+COMPARE_WORKERS = 4
 # A third compile starts only while the machine is not already overloaded by the first two; the 1-minute load
 # is compared with this many times the core count.
 EXTRA_SLOT_LOAD_FACTOR = 2
@@ -5048,7 +5276,7 @@ def dry_run_open_prs(bot, seed=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('command', nargs='?', choices=['pr'])
+    p.add_argument('command', nargs='?', choices=['pr', 'status'])
     p.add_argument('number', nargs='?', type=int)
     p.add_argument('--poll', action='store_true')
     p.add_argument('--interval', type=int, default=60)
@@ -5065,6 +5293,10 @@ def main(argv=None):
     a = p.parse_intermixed_args(argv)
     if a.host1 == 'assume-pass' and not a.dry_run:
         p.error('--host1 assume-pass is for dry-run replays only; a live run needs the hash check')
+    if a.command == 'status':
+        for line in progress_lines(Path(a.work or a.root / '.local/pr-bot') / 'state'):
+            print(line)
+        return 0
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:

@@ -9,6 +9,9 @@ cause it does not cover; submit it in the same PR (words and plain C++ only, nev
 Merged notes are folded into the cookbook at the next round.
 If a cookbook rule fixed a function, add one header line to its unit, `// Cookbook: 0x<rva> N` (or `N, M`); it does
 not count against the header budget, and it feeds the rule ranking at the top of the cookbook.
+**Check the sibling x64 hint first.** `./sr start` prints the closest compiled Fallout siblings (needs `./sr setup`
+once) and writes them to `sibling_x64.json` in the task folder. An `EXACT SHAPE` line means the body can be
+transplanted with `tools/sibling_transplant.py`, which writes the `SIBLING(...)` labels; only `compare` decides.
 Stuck or unsure? Ask in [Discussions (Q&A)](https://github.com/Mudcrab-Team/skyrim_decomp/discussions/categories/q-a).
 
 Aim for 50 to 200 functions per PR (1000 is the per-PR cap); more is fine, and one PR per family or

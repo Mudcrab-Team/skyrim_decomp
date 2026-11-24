@@ -48,6 +48,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--only', default='identical', help="'identical' or 'all'")
     ap.add_argument('--limit', type=int, default=1000)
+    ap.add_argument('--tag', default='f3x64', help='task id and source path prefix; names the index the candidates came from')
     a = ap.parse_args()
     out = Path(a.out).resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -78,14 +79,14 @@ def main():
             if bad:
                 res.update(result='unresolvable', reason=bad)
                 results.append(res); continue
-            tid = f'f3x64-{rva:x}'
+            tid = f'{a.tag}-{rva:x}'
             d = out / tid
             d.mkdir(exist_ok=True)
             objb = obj.read_bytes()
-            srcrev = sha(b'f3x64:' + objb)
+            srcrev = sha(a.tag.encode() + b':' + objb)
             task = {'task_id': tid, 'build_id': manifest['build_id'], 'target_image_sha256': manifest['image_sha256'],
                     'recipe_sha256': rsha, 'rva': rva, 'size': size, 'symbol': sym,
-                    'source_revision': srcrev, 'source_path': 'f3x64/' + s['key'][0]}
+                    'source_revision': srcrev, 'source_path': a.tag + '/' + s['key'][0]}
             record = {'source_revision': srcrev, 'source_path': task['source_path'], 'recipe_sha256': rsha,
                       'object_sha256': sha(objb)}
             # the EH personality routine is referenced from unwind data, not from code, so no code relocation names it

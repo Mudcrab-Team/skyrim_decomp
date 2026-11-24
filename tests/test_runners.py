@@ -101,6 +101,46 @@ class Config(unittest.TestCase):
             chosen = runners.for_attempt(runners.load(path, root=tmp))
             self.assertEqual((chosen['host_id'], chosen['backend']), ('mac-wine', 'local'))
 
+    def test_attempt_host_choice(self):
+        c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
+        up, down = (lambda h: True), (lambda h: False)
+        self.assertEqual(runners.choose_attempt(c, {}, up), ('winpc', []))
+        name, warns = runners.choose_attempt(c, {}, down)
+        self.assertEqual(name, 'mac')
+        self.assertEqual(len(warns), 1)
+        self.assertIn('winpc is not reachable', warns[0])
+        # Env override beats preference and probes nothing.
+        self.assertEqual(runners.choose_attempt(c, {'SR_ATTEMPT_HOST': 'mac'}, None), ('mac', []))
+        with self.assertRaises(runners.RunnerError):
+            runners.choose_attempt(c, {'SR_ATTEMPT_HOST': 'nowhere'}, up)
+
+    def test_wine_pick_with_reachable_ssh_host_warns(self):
+        c = runners.validate(config(), root='/repo')
+        name, warns = runners.choose_attempt(c, {}, lambda h: True)
+        self.assertEqual(name, 'mac')
+        self.assertTrue(any('winpc is reachable' in w and 'SR_ATTEMPT_HOST' in w for w in warns))
+        self.assertEqual(runners.choose_attempt(c, {}, lambda h: False), ('mac', []))
+
+    def test_attempt_prefer_must_name_hosts(self):
+        with self.assertRaises(runners.RunnerError):
+            runners.validate(config(attempt_prefer=['nowhere']), root='/repo')
+
+    def test_for_attempt_reports_config_and_host(self):
+        lines = []
+        c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
+        with mock.patch.object(runners, 'reachable', return_value=True), \
+                mock.patch.object(runners, 'config_origin', return_value='another checkout'), \
+                mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop('SR_ATTEMPT_HOST', None)
+            chosen = runners.for_attempt(c, report=lines.append)
+        self.assertEqual(chosen['host_id'], 'winpc-native')
+        self.assertIn('attempt host: winpc', lines[0])
+        self.assertTrue(any(l.startswith('WARNING') and 'main checkout' in l for l in lines))
+
+    def test_config_origin(self):
+        with mock.patch.dict(os.environ, {'SR_RUNNERS_CONFIG': '/x/r.json'}):
+            self.assertEqual(runners.config_origin(), 'SR_RUNNERS_CONFIG')
+
     def test_example_config_is_valid(self):
         example = json.loads((ROOT / 'tools/verifier/runners.example.json').read_text())
         c = runners.validate(example, root='/repo')

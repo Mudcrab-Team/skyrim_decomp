@@ -244,7 +244,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         print(f'attempt {number} {task["task_id"]}: REFUSED include (not counted)\n    {agent_advice.explain(problem, "attempt")}')
         return 4
     config = pipeline.load_config(task_dir)
-    runner = runners.for_attempt()
+    runner = runners.for_attempt(report=print)
     if runner is None:
         machine, how = pipeline.ensure_standing()
         host = pipeline.Host(machine, LABEL, f'{boatctl.REMOTE_HOME}/tasks/{task["task_id"]}', task,

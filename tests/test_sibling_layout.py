@@ -55,6 +55,24 @@ class Layout(unittest.TestCase):
         u = dict(header_decl=HEADER, cpp_body=BODY, labels=[])
         self.assertIn('not matched', sl.apply_layout(u, bad, 'Walk'))
 
+    def test_community_size_fills_a_type_the_sibling_text_does_not_define(self):
+        import json
+        import os
+        import tempfile
+        text = "struct Holder\n{\n    Widget w;\n    int tail;\n};\n"
+        classes = sl.parse_classes(text)
+        self.assertNotIn('tail', sl.Engine(classes, text).layout('Holder').offsets)
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, 'sizes.json')
+            json.dump({'Widget': {'LibA': 12, 'LibB': 12}, 'Clash': {'LibA': 4, 'LibB': 8}}, open(path, 'w'))
+            os.environ['SIBLING_COMMUNITY_SIZES'] = path
+            try:
+                lay = sl.Engine(classes, text).layout('Holder')
+                self.assertEqual(lay.offsets['tail'], 12)
+                self.assertNotIn('Clash', sl.community_sizes())
+            finally:
+                del os.environ['SIBLING_COMMUNITY_SIZES']
+
     def test_stack_frame_difference_is_not_a_layout_fact(self):
         stack = [dict(kind='member-offset', sibling_x64='0x28', skyrim='0x2c', instruction_pattern='mov eax, dword ptr [rsp + #]',
                       source_line='x')]
