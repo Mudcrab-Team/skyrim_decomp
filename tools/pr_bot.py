@@ -1099,6 +1099,22 @@ def pdb_advisory_lines(decision):
         [f'- and {len(found) - 20} more'] if len(found) > 20 else [])
 
 
+LESSON_ASK = ('Lesson note: some of these functions came close but did not byte-match. If you learned why, add a note '
+              'for the cause to this PR (`./sr lesson <rva>` writes the template; words and short plain C++ only, '
+              'format in docs/cookbook-notes/README.md). It is optional and never blocks a merge.')
+LESSON_THANKS = ('Lesson note merged with this PR. Thank you; it is folded into the matching cookbook at the next '
+                 'round, and you are listed as co-author of the merge commit.')
+
+
+def lesson_lines(decision):
+    """One line about lesson notes: an ask when a function mismatched on a host and the PR has no note, a thank-you
+    when a note came along and the PR merged. Advisory only."""
+    mismatched = any(v in ('fail:host1', 'fail:host2') for v in decision.get('verdicts', {}).values())
+    if decision.get('lesson_note'):
+        return [LESSON_THANKS] if decision.get('merge') and not decision.get('blocked') else []
+    return [LESSON_ASK] if mismatched else []
+
+
 def removed_lines(decision):
     """Lines naming accepted functions the PR drops from their unit, whose acceptance can then no longer bind."""
     removed = sorted(int(r) for r in decision.get('removed') or ())
@@ -1275,7 +1291,7 @@ def comment_body(sha, decision, leak_codes=()):
     text = outcome_body(sha, decision, leak_codes)
     extra = removed_lines(decision) if decision.get('blocked') in (None, 'stale', 'companion') else []
     if decision.get('blocked') in (None, 'stale', 'companion'):
-        extra = extra + pdb_advisory_lines(decision)
+        extra = extra + pdb_advisory_lines(decision) + lesson_lines(decision)
     if not extra:
         return text
     return '\n'.join(extra if text == 'Nothing to report.' else [text, *extra])
@@ -3619,6 +3635,8 @@ class Bot:
         decision['host_why'] = self.host_failures(state, sfx, everything, host1, host2)
         decision['removed'] = removed
         decision['pdb_advisory'] = self.pdb_advisory(check_units)
+        decision['lesson_note'] = any(NOTE_FILE.fullmatch(item['filename']) and item.get('status') != 'removed'
+                                      for item in files)
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']

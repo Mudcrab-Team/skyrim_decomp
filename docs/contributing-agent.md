@@ -8,9 +8,7 @@ verifier hosts.
 
 1. Draft the reconstruction locally and get a local comparator PASS.
 2. Open a pull request that touches only `reconstruction/**` and `docs/cookbook-notes/**`. Read the notes there
-   for your function's class or cause before drafting; write a note with `./sr note <task>` only for a spelling that fixed
-   something the cookbook does not record, or a near-miss cause it does not cover (format:
-   `docs/cookbook-notes/README.md`), and include it in the PR. Merged notes are folded into the cookbook at the next round.
+   for your function's class or cause before drafting, and **send your lessons** with the functions (below).
 3. Checks run on the PR: a path and leak scan, and a Windows compile whose hashes are compared to
    the published target hashes (host 1). The project's bot compares on a second host, reviews the
    source once and squash-merges the PR with its own message. Nothing else is needed from you.
@@ -22,6 +20,23 @@ Aim for 50 to 200 functions per PR (1000 is the per-PR cap); more is fine, and o
 class is ideal. A single large function is also a fine PR on its own. Classes can be mixed. Fewer,
 bigger PRs help most: each PR costs a full verification and merge cycle, and large batches have
 merged cleanly in about an hour. Thank you, don't be shy.
+
+## Send your lessons
+
+A note is how the next drafter learns from your attempt, and it is credited to you as co-author of the merge commit.
+Write one when:
+
+- a function **did not match** (a near-miss): what differed and what you tried;
+- a pass **took four or more compares**: the spelling that finally closed it;
+- you **solved a compiler shape** the cookbook has no entry for;
+- a tool step was slow or wrong: that goes under "Bottlenecks" in the PR description (one line, with a time cost), not in a note.
+
+Run `./sr lesson <rva>` (pre-filled from your task; `--name` and `--outcome` for a function with no task), finish every
+`TODO`, and put the file in the same PR. The format, the list of causes and a complete example with no game bytes are in
+[docs/cookbook-notes/README.md](cookbook-notes/README.md); `tools/cookbook_notes.py` checks it, and the maintainers fold
+accepted notes into the matching cookbook and the near-tier lessons (`docs/near-tier-lessons.md`, checked by
+`tools/near_lessons.py`). Words and plain C++ only; an RVA and a name are enough. `submit` prints a reminder when a
+function mismatched or needed many attempts and no note is staged, and the bot's one comment asks too. It never blocks.
 
 ## Big batches: use subagents
 

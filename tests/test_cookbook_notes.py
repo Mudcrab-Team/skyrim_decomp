@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,10 +122,87 @@ class Validate(unittest.TestCase):
         diff = f'+++ b/{NOTE}\n@@ -0,0 +1 @@\n+' + ' '.join(['0f'] * 16) + '\n'
         self.assertEqual([c for _f, _n, c in leakgrep.scan_diff(diff)], ['hex-run'])
 
+    def test_the_documented_example_note_passes_the_check(self):
+        text = (ROOT / 'docs/cookbook-notes/README.md').read_text()
+        block = text[text.index('<!-- example-note -->'):text.index('<!-- /example-note -->')]
+        example = block.split('```markdown\n', 1)[1].rsplit('```', 1)[0]
+        self.assertEqual(cookbook_notes.validate('docs/cookbook-notes/123abc-example-helper.md', example), [])
+
+    def test_the_card_and_guide_have_a_lessons_section(self):
+        for name in ('docs/contributor-card.md', 'docs/contributing-agent.md'):
+            text = (ROOT / name).read_text()
+            self.assertIn('Send your lessons', text, name)
+            self.assertIn('./sr lesson', text, name)
+
     def test_readme_lists_every_cause(self):
         readme = (ROOT / 'docs/cookbook-notes/README.md').read_text()
         for cause in cookbook_notes.CAUSES:
             self.assertIn(cause, readme)
+
+
+class Credits(unittest.TestCase):
+    def test_credit_comes_from_the_co_author_trailer_of_the_commit_that_added_the_note(self):
+        import lesson_credits
+        with tempfile.TemporaryDirectory() as tmp:
+            def git(*args):
+                return subprocess.run(['git', '-c', 'user.name=t', '-c', 'user.email=t@example.invalid', *args], cwd=tmp,
+                                      check=True, capture_output=True, text=True).stdout
+            git('init', '-q')
+            notes = Path(tmp, 'docs/cookbook-notes')
+            notes.mkdir(parents=True)
+            (notes / '1de5e0-first.md').write_text(good())
+            (notes / 'README.md').write_text('x')
+            git('add', '.')
+            git('commit', '-q', '-m', 'merge', '-m', 'Co-authored-by: Alice <12+Alice@users.noreply.github.com>')
+            (notes / '2de5e0-second.md').write_text(good())
+            git('add', '.')
+            git('commit', '-q', '-m', 'merge', '-m', 'no trailer here')
+            (notes / '1de5e0-first.md').unlink()
+            git('add', '-A')
+            git('commit', '-q', '-m', 'fold')
+            self.assertEqual(lesson_credits.credits(tmp), {'alice': ['docs/cookbook-notes/1de5e0-first.md']})
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(lesson_credits.main(['--repo', tmp]), 0)
+            self.assertEqual(out.getvalue().strip(), '@alice: 1 lesson note')
+
+
+class StickyLine(unittest.TestCase):
+    """The one sticky comment asks for a note when functions mismatched and none came along, and thanks for one."""
+    HEAD = 'a' * 40
+
+    def body(self, **extra):
+        decision = dict(blocked=None, merge=True, verdicts={0x10: 'matched', 0x20: 'fail:host2'}, **extra)
+        return pr_bot.comment_body(self.HEAD, decision)
+
+    def test_a_mismatch_without_a_note_gets_one_ask_line(self):
+        text = self.body(lesson_note=False)
+        self.assertEqual(text.count('Lesson note:'), 1)
+        self.assertIn('./sr lesson <rva>', text)
+        self.assertIn('never blocks', text)
+
+    def test_a_mismatch_with_a_note_gets_no_ask(self):
+        text = self.body(lesson_note=True)
+        self.assertNotIn('Lesson note:', text)
+        self.assertIn('Lesson note merged', text)
+
+    def test_no_mismatch_no_ask_and_no_thanks_without_a_note(self):
+        decision = dict(blocked=None, merge=True, verdicts={0x10: 'matched'}, lesson_note=False)
+        text = pr_bot.comment_body(self.HEAD, decision)
+        self.assertNotIn('esson note', text)
+
+    def test_a_review_rejection_is_not_a_near_miss(self):
+        decision = dict(blocked=None, merge=True, verdicts={0x10: 'matched', 0x20: 'fail:review'}, lesson_note=False)
+        self.assertNotIn('Lesson note:', pr_bot.comment_body(self.HEAD, decision))
+
+    def test_a_blocked_pr_gets_no_thanks_and_no_ask(self):
+        decision = dict(blocked='regression', merge=False, verdicts={0x20: 'fail:host2'}, lesson_note=True,
+                        regressed=[0x20], regressed_hosts={})
+        self.assertNotIn('esson note', pr_bot.comment_body(self.HEAD, decision))
+
+    def test_the_ask_names_a_real_command_and_a_real_readme(self):
+        self.assertTrue((ROOT / 'docs/cookbook-notes/README.md').is_file())
+        self.assertIn('lesson', contrib.parser().format_help())
+        self.assertIn('docs/cookbook-notes/README.md', pr_bot.LESSON_ASK)
 
 
 class NoteCommand(fixtures.SubmitTests):
@@ -153,6 +231,41 @@ class NoteCommand(fixtures.SubmitTests):
         self.assertIn('unfinished', cookbook_notes.validate(path.relative_to(self.repo).as_posix(), text))
         again = self.run_cli('note', self.tdir.name)[0]
         self.assertEqual(again, contrib.OK)
+
+    def test_lesson_writes_the_template_for_a_task_function(self):
+        self.fail_the_function()
+        code, result = self.run_cli('lesson', f'0x{self.RVA:x}')
+        self.assertEqual(code, contrib.OK)
+        rel = (result.get('data') or result)['notes'][0]
+        text = (self.repo / rel).read_text()
+        self.assertIn('- Outcome: unsolved', text)
+        self.assertIn('7/9 (aligned_matching_bytes)', text)
+        self.assertTrue(cookbook_notes.NOTE_FILE.fullmatch(rel), rel)
+        self.assertIn('unfinished', cookbook_notes.validate(rel, text))
+
+    def test_lesson_for_a_function_with_no_task_writes_a_bare_template_and_keeps_an_existing_one(self):
+        code, result = self.run_cli('lesson', '0xabc123', '--name', 'Syn::Fn', '--outcome', 'fixed', '--attempts', '5')
+        self.assertEqual(code, contrib.OK)
+        rel = (result.get('data') or result)['notes'][0]
+        self.assertEqual(rel, 'docs/cookbook-notes/abc123-syn-fn.md')
+        text = (self.repo / rel).read_text()
+        self.assertIn('- Outcome: fixed', text)
+        self.assertIn('- Attempts: 5', text)
+        (self.repo / rel).write_text('kept\n')
+        self.run_cli('lesson', '0xabc123', '--name', 'Syn::Fn')
+        self.assertEqual((self.repo / rel).read_text(), 'kept\n')
+
+    def test_the_reminders_name_the_lesson_command(self):
+        for n in range(1, contrib.NOTE_ATTEMPTS + 1):
+            (self.tdir / 'runs' / f'{n:03d}').mkdir(parents=True)
+        hard = contrib.note_reminders(self.ctx(repo=self.repo), self.tdir, self.task,
+                                      self.summary['functions'], contrib.task_attempts(self.tdir))
+        self.assertIn(f'lesson 0x{self.RVA:x}', hard[0])
+        self.summary['functions'][0]['result'] = 'fail'
+        near = contrib.note_reminders(self.ctx(repo=self.repo), self.tdir, self.task,
+                                      self.summary['functions'], contrib.task_attempts(self.tdir))
+        self.assertEqual(len(near), 1)
+        self.assertIn('lesson <rva>', near[0])
 
     def test_a_clean_first_pass_needs_no_note_but_a_hard_won_one_does(self):
         code, _ = self.run_cli('note', self.tdir.name)

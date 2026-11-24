@@ -2550,17 +2550,18 @@ def note_exists(ctx, fn):
 def note_reminders(ctx, tdir, task, results, attempts):
     """A line per hard-won pass that has no note yet, and one line for all near-misses.
 
-    A note is worth writing only for a spelling the cookbook does not record or a cause it does not cover, so a
-    near-miss is not prompted one by one: the single line leaves the cookbook check to the drafter.
+    A note records what the cookbook lacks: the cause of a near-miss, or the spelling of a pass that took many
+    compares. The lines name the one command that writes the template; whether the cause is already in the
+    cookbook is the drafter's call.
     """
     todo = [(fn, kind) for fn, kind in note_needs(task, results, attempts) if not note_exists(ctx, fn)]
     lines = [f'note: {fn["rva"]} {fn.get("community_name")}: pass after {attempts} attempt(s); if the spelling that '
-             f'fixed it is not in docs/matching-cookbook.md, write a lesson note with `{ctx.cli} note {tdir.name} '
-             f'{fn["rva"]}` (docs/cookbook-notes/README.md)' for fn, kind in todo if kind == 'hard-won pass']
+             f'fixed it is not in docs/matching-cookbook.md, send it as a lesson note: `{ctx.cli} lesson {fn["rva"]}` '
+             '(docs/cookbook-notes/README.md)' for fn, kind in todo if kind == 'hard-won pass']
     near = [fn['rva'] for fn, kind in todo if kind == 'near-miss']
     if near:
-        lines.append(f'note: {len(near)} unmatched ({", ".join(near)}); write a lesson note (`{ctx.cli} note {tdir.name} '
-                     '<rva>`) only if the cause is not already in docs/matching-cookbook.md')
+        lines.append(f'note: {len(near)} unmatched ({", ".join(near)}); if the cause is not in docs/matching-cookbook.md, '
+                     f'send it as a lesson note: `{ctx.cli} lesson <rva>` (words and short plain C++; credited in the merge)')
     return lines
 
 
@@ -2618,6 +2619,30 @@ def cmd_note(ctx, args):
         written.append(str(path.relative_to(ctx.repo)))
         ctx.say(f'wrote {written[-1]}: finish every TODO in words and short plain C++ (never bytes, hex or listings)')
     return OK, {'notes': written}, f'finish the TODO lines, then `{ctx.cli} preflight` and submit; the note goes in the same PR'
+
+
+def cmd_lesson(ctx, args):
+    """`lesson <rva>`: the note template for one function, from its task when there is one, else a bare template."""
+    rva = parse_rva(args.rva)
+    try:
+        tdir, _task = load_task(ctx, args.rva)
+    except Stop as stop:
+        if not stop.message.startswith('no contributor task'):
+            raise
+        tdir = None
+    if tdir is not None:
+        return cmd_note(ctx, argparse.Namespace(task=tdir.name, rva=args.rva, slug=args.slug, path=None,
+                                                force=args.force))
+    name = args.name or f'sub_{rva:x}'
+    path = ctx.repo / cookbook_notes.note_path(rva, args.slug or name)
+    rel = path.relative_to(ctx.repo).as_posix()
+    if path.exists() and not args.force:
+        ctx.say(f'{rel} exists; kept (--force replaces it)')
+    else:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(cookbook_notes.render(rva, name, None, args.outcome, None, args.attempts))
+        ctx.say(f'wrote {rel}: finish every TODO in words and short plain C++ (never bytes, hex or listings)')
+    return OK, {'notes': [rel]}, f'finish the TODO lines, then `{ctx.cli} preflight` and submit; the note goes in the same PR'
 
 
 def cmd_compare(ctx, args):
@@ -3119,6 +3144,13 @@ def parser():
     s.add_argument('--slug', help='short file-name slug (default: the function name)')
     s.add_argument('--path', help=argparse.SUPPRESS)
     s.add_argument('--force', action='store_true', help='replace an existing note')
+    s = sub.add_parser('lesson', help='write the lesson-note template for one function (a near-miss, a hard pass, a solved shape)')
+    s.add_argument('rva')
+    s.add_argument('--name', help='function name for the template when there is no task')
+    s.add_argument('--outcome', choices=cookbook_notes.OUTCOMES, default='unsolved', help='template outcome when there is no task')
+    s.add_argument('--attempts', type=int, default=0, help='attempt count for the template when there is no task')
+    s.add_argument('--slug', help='short file-name slug (default: the function name)')
+    s.add_argument('--force', action='store_true', help='replace an existing note')
     s = sub.add_parser('submit')
     s.add_argument('task', nargs='*', help='one or more task names; several make one pull request')
     s.add_argument('--all-dirty', action='store_true',
@@ -3155,7 +3187,7 @@ def parser():
 
 
 COMMANDS = {'doctor': cmd_doctor, 'setup': cmd_setup, 'next': cmd_next, 'claim': cmd_claim, 'release': cmd_release,
-            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'note': cmd_note, 'submit': cmd_submit,
+            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'note': cmd_note, 'lesson': cmd_lesson, 'submit': cmd_submit,
             'preflight': cmd_preflight, 'intake': cmd_intake, 'go': cmd_go, 'feedback': cmd_feedback}
 
 

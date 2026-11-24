@@ -5,10 +5,15 @@ Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, 
 Open a PR that touches only `reconstruction/**` and `docs/cookbook-notes/**`; checks run; the bot reviews and merges.
 A PR that touches only `findings/*.md` (static research prose: settings, values and rules in words, no bytes,
 disassembly or decompiler text) takes the same bot route after a leak scan, the `check` job and one review.
-Before drafting, read `docs/cookbook-notes/` for your function's class or cause. Write a note
-(`./sr note <task>`) only for a spelling that fixed something the cookbook does not record, or a near-miss
-cause it does not cover; submit it in the same PR (words and plain C++ only, never bytes or listings).
-Merged notes are folded into the cookbook at the next round. For a function over about 1,000 bytes, or a first score
+Before drafting, read `docs/cookbook-notes/` for your function's class or cause.
+**Send your lessons.** Next to your functions, send what you learned: a near-miss (what differed, what you tried), a
+pass that took four or more compares (the spelling that closed it) or a compiler shape you solved. `./sr lesson <rva>`
+writes the template pre-filled from your task; finish every `TODO` (fields, causes and a worked example in
+`docs/cookbook-notes/README.md`), then submit it in the same PR. Words and plain C++ only, never bytes or listings;
+an RVA and a name are enough. Notes credit you as co-author of the merge commit and are folded into the cookbook at the
+next round. `submit` and the bot's comment remind you when a function mismatched and no note is there; tool friction
+goes under "Bottlenecks" in the PR description instead.
+For a function over about 1,000 bytes, or a first score
 under 80 percent, also read `docs/near-tier-lessons.md`.
 If a cookbook rule fixed a function, add one header line to its unit, `// Cookbook: 0x<rva> N` (or `N, M`); it does
 not count against the header budget, and it feeds the rule ranking at the top of the cookbook.
