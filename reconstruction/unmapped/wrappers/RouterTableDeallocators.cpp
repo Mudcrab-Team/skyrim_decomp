@@ -35,6 +35,29 @@
 // 0xc76730 RouterTableDeallocators::Deletec76730
 // 0xc79280 RouterTableDeallocators::Deletec79280
 // 0xcba3d0 RouterTableDeallocators::Deletecba3d0
+// CI hash: 0xb2e680 ?Deleteb2e680@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xb2ea20 ?Deleteb2ea20@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xb2eaa0 ?Deleteb2eaa0@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xb32590 ?Deleteb32590@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xb34000 ?Deleteb34000@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xb34080 ?Deleteb34080@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xb34100 ?Deleteb34100@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xbafbb0 ?Deletebafbb0@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xbb1a80 ?Deletebb1a80@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2ba90 ?Deletec2ba90@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2bb10 ?Deletec2bb10@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2bb90 ?Deletec2bb90@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2bc10 ?Deletec2bc10@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2bc90 ?Deletec2bc90@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2bd10 ?Deletec2bd10@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc2bd90 ?Deletec2bd90@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc3d300 ?Deletec3d300@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc5b7f0 ?Deletec5b7f0@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc5e890 ?Deletec5e890@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc68cd0 ?Deletec68cd0@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc76730 ?Deletec76730@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xc79280 ?Deletec79280@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
+// CI hash: 0xcba3d0 ?Deletecba3d0@RouterTableDeallocators@@SAPEAXPEAURouterTableDeallocatorsTaggedObject@@I@Z
 #include "RouterTableDeallocators.h"
 
 void* RouterTableDeallocators::Deleteb2e680(RouterTableDeallocatorsTaggedObject* object, unsigned int flags)

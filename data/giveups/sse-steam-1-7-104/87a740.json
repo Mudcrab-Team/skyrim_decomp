@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x87a740",
+  "records": [
+    {
+      "category": "other",
+      "tried": [
+        "forced inlining of the repeated sequence-node helper",
+        "passed two shared function-scope text buffers into the helper instead of one per call",
+        "bound the vtable and string-pool helper callees and moved tag types out of an anonymous namespace",
+        "used a class-level allocation operator with value-initialised new for the stateless node classes"
+      ],
+      "still_differs": "String-literal references remain unbound or reordered, a few handle stack slots are in a different order, and the draft has one extra nop.",
+      "suspected_cause": "Unbound string-literal references and handle local order; the drafter did not bind the literals or try reordering the handle locals.",
+      "best_similarity": 98.04,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/87a740/1"
+      }
+    }
+  ]
+}

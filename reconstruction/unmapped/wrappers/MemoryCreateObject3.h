@@ -1,7 +1,15 @@
-// Source exposure: mixed (pinned image and community function boundaries).
+// Source exposure: mixed (pinned image RTTI and community function boundaries).
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
-// Code origin: original structural reconstruction of Bethesda MemoryFactoryManager::Allocate factory helpers.
-// MemoryCreateObject3, helper structs, methods and referenced symbols: GUESS(low) STANDIN; original signatures unknown.
+// Code origin: original structural reconstruction of Bethesda BSTDerivedCreator::Create factory helpers.
+// FlightActionEndHandler, FlightActionEntryEndHandler, FlightActionGrabHandler: EXE_RTTI
+// FlightActionHandler, FlightActionReleaseHandler, FlightCrashLandStartHandler: EXE_RTTI
+// FlightCruisingHandler, FlightHoveringHandler, FlightLandEndHandler, FlightLandHandler: EXE_RTTI
+// FlightLandingHandler, FlightPerchingHandler, FlightTakeOffHandler, GetUpEndHandler: EXE_RTTI
+// GetUpStartHandler, HeadTrackingOffHandler, HeadTrackingOnHandler, HitFrameHandler: EXE_RTTI
+// IdleDialogueEnterHandler, IdleDialogueExitHandler, InterruptCastHandler, JumpAnimEventHandler: EXE_RTTI
+// KillActorHandler, KillMoveEndHandler, KillMoveStartHandler, LeftHandSpellCastHandler: EXE_RTTI
+// LeftHandSpellFireHandler, MTStateHandler, MotionDrivenHandler, MountDismountEndHandler: EXE_RTTI
+// MemoryCreateObject3, MemoryFactoryManager, HandlerFunctorBase, AnimHandlerCreators, creator methods and allocator symbols: GUESS(low) STANDIN; original signatures unknown.
 // Adapted bodies: none
 #pragma once
 #include <cstddef>
@@ -12,36 +20,6 @@ extern "C" {
     extern std::uint8_t MemMgrInst_369a810[1];
     void __cdecl MemMgrEnsure_cde810(void* self, std::uint32_t* state);
     void* __cdecl MemMgrAlloc_cde250(void* self, std::size_t size, std::uint32_t align, bool alignReq);
-    extern std::uint8_t Data_1937ed8[1];
-    extern std::uint8_t Data_1937f20[1];
-    extern std::uint8_t Data_1937ff8[1];
-    extern std::uint8_t Data_19380e8[1];
-    extern std::uint8_t Data_1938118[1];
-    extern std::uint8_t Data_1938130[1];
-    extern std::uint8_t Data_1938148[1];
-    extern std::uint8_t Data_1938160[1];
-    extern std::uint8_t Data_1938178[1];
-    extern std::uint8_t Data_1938190[1];
-    extern std::uint8_t Data_19381a8[1];
-    extern std::uint8_t Data_19381c0[1];
-    extern std::uint8_t Data_19381d8[1];
-    extern std::uint8_t Data_19381f0[1];
-    extern std::uint8_t Data_1938208[1];
-    extern std::uint8_t Data_1938220[1];
-    extern std::uint8_t Data_1938238[1];
-    extern std::uint8_t Data_1938250[1];
-    extern std::uint8_t Data_1938268[1];
-    extern std::uint8_t Data_1938328[1];
-    extern std::uint8_t Data_19383e8[1];
-    extern std::uint8_t Data_1938400[1];
-    extern std::uint8_t Data_1938448[1];
-    extern std::uint8_t Data_19384c0[1];
-    extern std::uint8_t Data_19384d8[1];
-    extern std::uint8_t Data_19384f0[1];
-    extern std::uint8_t Data_19385f8[1];
-    extern std::uint8_t Data_1938610[1];
-    extern std::uint8_t Data_1938628[1];
-    extern std::uint8_t Data_19386b8[1];
 }
 
 struct MemoryFactoryManager {
@@ -56,341 +34,264 @@ struct MemoryFactoryManager {
     }
 };
 
-struct HeapAllocBase {
+// Stand-in for IHandlerFunctor<Actor, BSFixedStringCI> (inherits BSIntrusiveRefCounted; size 0x10).
+class HandlerFunctorBase {
+public:
+    virtual ~HandlerFunctorBase();
+
     static void* operator new(std::size_t size) throw() {
         return MemoryFactoryManager::Alloc(size);
     }
-};
 
-struct Obj_7d5680 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5680() {
-        f_8 = 0u;
-        f_0 = Data_1938220;
-    }
-};
+    std::uint32_t refCount;
 
-struct Obj_7d56e0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d56e0() {
-        f_8 = 0u;
-        f_0 = Data_1938208;
-    }
+protected:
+    HandlerFunctorBase() : refCount(0u) {}
 };
+static_assert(sizeof(HandlerFunctorBase) == 0x10, "HandlerFunctorBase size");
 
-struct Obj_7d5740 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5740() {
-        f_8 = 0u;
-        f_0 = Data_1938238;
-    }
+class FlightActionEndHandler : public HandlerFunctorBase {
+public:
+    FlightActionEndHandler() {}
+    ~FlightActionEndHandler() override;
 };
+static_assert(sizeof(FlightActionEndHandler) == 0x10, "FlightActionEndHandler size");
 
-struct Obj_7d57a0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d57a0() {
-        f_8 = 0u;
-        f_0 = Data_19381f0;
-    }
+class FlightActionEntryEndHandler : public HandlerFunctorBase {
+public:
+    FlightActionEntryEndHandler() {}
+    ~FlightActionEntryEndHandler() override;
 };
+static_assert(sizeof(FlightActionEntryEndHandler) == 0x10, "FlightActionEntryEndHandler size");
 
-struct Obj_7d5800 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5800() {
-        f_8 = 0u;
-        f_0 = Data_1938250;
-    }
+class FlightActionGrabHandler : public HandlerFunctorBase {
+public:
+    FlightActionGrabHandler() {}
+    ~FlightActionGrabHandler() override;
 };
+static_assert(sizeof(FlightActionGrabHandler) == 0x10, "FlightActionGrabHandler size");
 
-struct Obj_7d5860 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5860() {
-        f_8 = 0u;
-        f_0 = Data_1938268;
-    }
+class FlightActionHandler : public HandlerFunctorBase {
+public:
+    FlightActionHandler() {}
+    ~FlightActionHandler() override;
 };
+static_assert(sizeof(FlightActionHandler) == 0x10, "FlightActionHandler size");
 
-struct Obj_7d58c0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d58c0() {
-        f_8 = 0u;
-        f_0 = Data_1938160;
-    }
+class FlightActionReleaseHandler : public HandlerFunctorBase {
+public:
+    FlightActionReleaseHandler() {}
+    ~FlightActionReleaseHandler() override;
 };
+static_assert(sizeof(FlightActionReleaseHandler) == 0x10, "FlightActionReleaseHandler size");
 
-struct Obj_7d5920 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5920() {
-        f_8 = 0u;
-        f_0 = Data_1938178;
-    }
+class FlightCrashLandStartHandler : public HandlerFunctorBase {
+public:
+    FlightCrashLandStartHandler() {}
+    ~FlightCrashLandStartHandler() override;
 };
+static_assert(sizeof(FlightCrashLandStartHandler) == 0x10, "FlightCrashLandStartHandler size");
 
-struct Obj_7d5980 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5980() {
-        f_8 = 0u;
-        f_0 = Data_19381d8;
-    }
+class FlightCruisingHandler : public HandlerFunctorBase {
+public:
+    FlightCruisingHandler() {}
+    ~FlightCruisingHandler() override;
 };
+static_assert(sizeof(FlightCruisingHandler) == 0x10, "FlightCruisingHandler size");
 
-struct Obj_7d59e0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d59e0() {
-        f_8 = 0u;
-        f_0 = Data_19381c0;
-    }
+class FlightHoveringHandler : public HandlerFunctorBase {
+public:
+    FlightHoveringHandler() {}
+    ~FlightHoveringHandler() override;
 };
+static_assert(sizeof(FlightHoveringHandler) == 0x10, "FlightHoveringHandler size");
 
-struct Obj_7d5a40 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5a40() {
-        f_8 = 0u;
-        f_0 = Data_1938190;
-    }
+class FlightLandEndHandler : public HandlerFunctorBase {
+public:
+    FlightLandEndHandler() {}
+    ~FlightLandEndHandler() override;
 };
+static_assert(sizeof(FlightLandEndHandler) == 0x10, "FlightLandEndHandler size");
 
-struct Obj_7d5aa0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5aa0() {
-        f_8 = 0u;
-        f_0 = Data_19381a8;
-    }
+class FlightLandHandler : public HandlerFunctorBase {
+public:
+    FlightLandHandler() {}
+    ~FlightLandHandler() override;
 };
+static_assert(sizeof(FlightLandHandler) == 0x10, "FlightLandHandler size");
 
-struct Obj_7d5b00 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5b00() {
-        f_8 = 0u;
-        f_0 = Data_1938148;
-    }
+class FlightLandingHandler : public HandlerFunctorBase {
+public:
+    FlightLandingHandler() {}
+    ~FlightLandingHandler() override;
 };
+static_assert(sizeof(FlightLandingHandler) == 0x10, "FlightLandingHandler size");
 
-struct Obj_7d5b60 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5b60() {
-        f_8 = 0u;
-        f_0 = Data_19384d8;
-    }
+class FlightPerchingHandler : public HandlerFunctorBase {
+public:
+    FlightPerchingHandler() {}
+    ~FlightPerchingHandler() override;
 };
+static_assert(sizeof(FlightPerchingHandler) == 0x10, "FlightPerchingHandler size");
 
-struct Obj_7d5bc0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5bc0() {
-        f_8 = 0u;
-        f_0 = Data_19384c0;
-    }
+class FlightTakeOffHandler : public HandlerFunctorBase {
+public:
+    FlightTakeOffHandler() {}
+    ~FlightTakeOffHandler() override;
 };
+static_assert(sizeof(FlightTakeOffHandler) == 0x10, "FlightTakeOffHandler size");
 
-struct Obj_7d5c20 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5c20() {
-        f_8 = 0u;
-        f_0 = Data_1938130;
-    }
+class GetUpEndHandler : public HandlerFunctorBase {
+public:
+    GetUpEndHandler() {}
+    ~GetUpEndHandler() override;
 };
+static_assert(sizeof(GetUpEndHandler) == 0x10, "GetUpEndHandler size");
 
-struct Obj_7d5c80 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5c80() {
-        f_8 = 0u;
-        f_0 = Data_1938118;
-    }
+class GetUpStartHandler : public HandlerFunctorBase {
+public:
+    GetUpStartHandler() {}
+    ~GetUpStartHandler() override;
 };
+static_assert(sizeof(GetUpStartHandler) == 0x10, "GetUpStartHandler size");
 
-struct Obj_7d5ce0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5ce0() {
-        f_8 = 0u;
-        f_0 = Data_1937ff8;
-    }
+class HeadTrackingOffHandler : public HandlerFunctorBase {
+public:
+    HeadTrackingOffHandler() {}
+    ~HeadTrackingOffHandler() override;
 };
+static_assert(sizeof(HeadTrackingOffHandler) == 0x10, "HeadTrackingOffHandler size");
 
-struct Obj_7d5d40 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5d40() {
-        f_8 = 0u;
-        f_0 = Data_1938610;
-    }
+class HeadTrackingOnHandler : public HandlerFunctorBase {
+public:
+    HeadTrackingOnHandler() {}
+    ~HeadTrackingOnHandler() override;
 };
+static_assert(sizeof(HeadTrackingOnHandler) == 0x10, "HeadTrackingOnHandler size");
 
-struct Obj_7d5da0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5da0() {
-        f_8 = 0u;
-        f_0 = Data_1938628;
-    }
+class HitFrameHandler : public HandlerFunctorBase {
+public:
+    HitFrameHandler() {}
+    ~HitFrameHandler() override;
 };
+static_assert(sizeof(HitFrameHandler) == 0x10, "HitFrameHandler size");
 
-struct Obj_7d5e00 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5e00() {
-        f_8 = 0u;
-        f_0 = Data_1938328;
-    }
+class IdleDialogueEnterHandler : public HandlerFunctorBase {
+public:
+    IdleDialogueEnterHandler() {}
+    ~IdleDialogueEnterHandler() override;
 };
+static_assert(sizeof(IdleDialogueEnterHandler) == 0x10, "IdleDialogueEnterHandler size");
 
-struct Obj_7d5e60 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5e60() {
-        f_8 = 0u;
-        f_0 = Data_19385f8;
-    }
+class IdleDialogueExitHandler : public HandlerFunctorBase {
+public:
+    IdleDialogueExitHandler() {}
+    ~IdleDialogueExitHandler() override;
 };
+static_assert(sizeof(IdleDialogueExitHandler) == 0x10, "IdleDialogueExitHandler size");
 
-struct Obj_7d5ec0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5ec0() {
-        f_8 = 0u;
-        f_0 = Data_19380e8;
-    }
+class InterruptCastHandler : public HandlerFunctorBase {
+public:
+    InterruptCastHandler() {}
+    ~InterruptCastHandler() override;
 };
+static_assert(sizeof(InterruptCastHandler) == 0x10, "InterruptCastHandler size");
 
-struct Obj_7d5f20 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5f20() {
-        f_8 = 0u;
-        f_0 = Data_1938400;
-    }
+// Scoped to avoid redefining reconstruction/skyrim/controls/JumpAnimEventHandler.h.
+namespace AnimHandlerCreators {
+class JumpAnimEventHandler : public HandlerFunctorBase {
+public:
+    JumpAnimEventHandler() {}
+    ~JumpAnimEventHandler() override;
 };
+static_assert(sizeof(JumpAnimEventHandler) == 0x10, "JumpAnimEventHandler size");
+}
 
-struct Obj_7d5f80 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5f80() {
-        f_8 = 0u;
-        f_0 = Data_19383e8;
-    }
+class KillActorHandler : public HandlerFunctorBase {
+public:
+    KillActorHandler() {}
+    ~KillActorHandler() override;
 };
+static_assert(sizeof(KillActorHandler) == 0x10, "KillActorHandler size");
 
-struct Obj_7d5fe0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d5fe0() {
-        f_8 = 0u;
-        f_0 = Data_1937f20;
-    }
+class KillMoveEndHandler : public HandlerFunctorBase {
+public:
+    KillMoveEndHandler() {}
+    ~KillMoveEndHandler() override;
 };
+static_assert(sizeof(KillMoveEndHandler) == 0x10, "KillMoveEndHandler size");
 
-struct Obj_7d6040 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6040() {
-        f_8 = 0u;
-        f_0 = Data_1937ed8;
-    }
+class KillMoveStartHandler : public HandlerFunctorBase {
+public:
+    KillMoveStartHandler() {}
+    ~KillMoveStartHandler() override;
 };
+static_assert(sizeof(KillMoveStartHandler) == 0x10, "KillMoveStartHandler size");
 
-struct Obj_7d60a0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d60a0() {
-        f_8 = 0u;
-        f_0 = Data_19386b8;
-    }
+class LeftHandSpellCastHandler : public HandlerFunctorBase {
+public:
+    LeftHandSpellCastHandler() {}
+    ~LeftHandSpellCastHandler() override;
 };
+static_assert(sizeof(LeftHandSpellCastHandler) == 0x10, "LeftHandSpellCastHandler size");
 
-struct Obj_7d6100 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6100() {
-        f_8 = 0u;
-        f_0 = Data_1938448;
-    }
+class LeftHandSpellFireHandler : public HandlerFunctorBase {
+public:
+    LeftHandSpellFireHandler() {}
+    ~LeftHandSpellFireHandler() override;
 };
+static_assert(sizeof(LeftHandSpellFireHandler) == 0x10, "LeftHandSpellFireHandler size");
 
-struct Obj_7d6160 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6160() {
-        f_8 = 0u;
-        f_0 = Data_19384f0;
-    }
+class MTStateHandler : public HandlerFunctorBase {
+public:
+    MTStateHandler() {}
+    ~MTStateHandler() override;
 };
+static_assert(sizeof(MTStateHandler) == 0x10, "MTStateHandler size");
+
+class MotionDrivenHandler : public HandlerFunctorBase {
+public:
+    MotionDrivenHandler() {}
+    ~MotionDrivenHandler() override;
+};
+static_assert(sizeof(MotionDrivenHandler) == 0x10, "MotionDrivenHandler size");
+
+class MountDismountEndHandler : public HandlerFunctorBase {
+public:
+    MountDismountEndHandler() {}
+    ~MountDismountEndHandler() override;
+};
+static_assert(sizeof(MountDismountEndHandler) == 0x10, "MountDismountEndHandler size");
 
 struct MemoryCreateObject3 {
-    void* Op7d5680();
-    void* Op7d56e0();
-    void* Op7d5740();
-    void* Op7d57a0();
-    void* Op7d5800();
-    void* Op7d5860();
-    void* Op7d58c0();
-    void* Op7d5920();
-    void* Op7d5980();
-    void* Op7d59e0();
-    void* Op7d5a40();
-    void* Op7d5aa0();
-    void* Op7d5b00();
-    void* Op7d5b60();
-    void* Op7d5bc0();
-    void* Op7d5c20();
-    void* Op7d5c80();
-    void* Op7d5ce0();
-    void* Op7d5d40();
-    void* Op7d5da0();
-    void* Op7d5e00();
-    void* Op7d5e60();
-    void* Op7d5ec0();
-    void* Op7d5f20();
-    void* Op7d5f80();
-    void* Op7d5fe0();
-    void* Op7d6040();
-    void* Op7d60a0();
-    void* Op7d6100();
-    void* Op7d6160();
+    HandlerFunctorBase* CreateFlightActionEndHandler();
+    HandlerFunctorBase* CreateFlightActionEntryEndHandler();
+    HandlerFunctorBase* CreateFlightActionGrabHandler();
+    HandlerFunctorBase* CreateFlightActionHandler();
+    HandlerFunctorBase* CreateFlightActionReleaseHandler();
+    HandlerFunctorBase* CreateFlightCrashLandStartHandler();
+    HandlerFunctorBase* CreateFlightCruisingHandler();
+    HandlerFunctorBase* CreateFlightHoveringHandler();
+    HandlerFunctorBase* CreateFlightLandEndHandler();
+    HandlerFunctorBase* CreateFlightLandHandler();
+    HandlerFunctorBase* CreateFlightLandingHandler();
+    HandlerFunctorBase* CreateFlightPerchingHandler();
+    HandlerFunctorBase* CreateFlightTakeOffHandler();
+    HandlerFunctorBase* CreateGetUpEndHandler();
+    HandlerFunctorBase* CreateGetUpStartHandler();
+    HandlerFunctorBase* CreateHeadTrackingOffHandler();
+    HandlerFunctorBase* CreateHeadTrackingOnHandler();
+    HandlerFunctorBase* CreateHitFrameHandler();
+    HandlerFunctorBase* CreateIdleDialogueEnterHandler();
+    HandlerFunctorBase* CreateIdleDialogueExitHandler();
+    HandlerFunctorBase* CreateInterruptCastHandler();
+    HandlerFunctorBase* CreateJumpAnimEventHandler();
+    HandlerFunctorBase* CreateKillActorHandler();
+    HandlerFunctorBase* CreateKillMoveEndHandler();
+    HandlerFunctorBase* CreateKillMoveStartHandler();
+    HandlerFunctorBase* CreateLeftHandSpellCastHandler();
+    HandlerFunctorBase* CreateLeftHandSpellFireHandler();
+    HandlerFunctorBase* CreateMTStateHandler();
+    HandlerFunctorBase* CreateMotionDrivenHandler();
+    HandlerFunctorBase* CreateMountDismountEndHandler();
 };

@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x381250",
+  "records": [
+    {
+      "category": "control-flow",
+      "tried": [
+        "held the looked-up reference in a scoped owner with a destructor instead of a raw pointer and manual release",
+        "wrote a handle-table iterator class with the end recomputed and the increment before the lookup",
+        "called ConsoleLog GetSingleton inline in the print expression and declared the handle inside the actors block",
+        "sequenced the print arguments explicitly and used a typed inventory-object view",
+        "kept the outer substring loop and bound each inner scan to its candidate pointer with explicit case-folding order",
+        "parsed the trophy number before calling the handler",
+        "replaced the whole substring search with a pointer-end template (much worse, reverted)"
+      ],
+      "still_differs": "Search and branch scheduling of the inlined case-insensitive substring search still differ; other runs also saw the target unwind table with one more state than the draft.",
+      "suspected_cause": "An unidentified extra destructible object in the original (one more unwind state) plus the exact loop form of the inlined substring search; not confirmed.",
+      "best_similarity": 92.1,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/381250/1"
+      }
+    }
+  ]
+}

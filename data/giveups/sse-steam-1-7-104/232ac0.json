@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x232ac0",
+  "records": [
+    {
+      "category": "control-flow",
+      "tried": [
+        "expanded the two loops by hand so each has the full extra-list logic inline",
+        "added a read-lock guard with inline constructor and destructor and the original null check",
+        "used 64-bit loop counters where the target widens a 32-bit count",
+        "wrote the found search as an iterator-style loop with a found flag",
+        "added the missing argument setups to the leveled-extra call",
+        "tested the count as 32-bit before widening"
+      ],
+      "still_differs": "The target jumps to the loop test at entry of both loops while the draft rotates them, the second loop body order differs, new list node null stores use a register instead of immediates, and one bit-extract form differs.",
+      "suspected_cause": "Not determined; block layout and one bit-extract form have no confirmed source spelling.",
+      "best_similarity": 93.13,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/232ac0/1"
+      }
+    }
+  ]
+}

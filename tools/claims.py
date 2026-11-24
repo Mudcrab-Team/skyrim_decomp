@@ -631,9 +631,13 @@ def main(argv=None):
             build = public['target_build_id']
             index = ClaimIndex(index.records, build)
             if a.cmd == 'check':
+                import giveup
                 for address in a.rvas:
                     hits = claimed(index, rva(address))
                     print(address + ': ' + (', '.join(f'#{it["number"]} @{it["author"]}' for it in hits) or 'unclaimed'))
+                    # What earlier drafters learned about the function comes with the answer to "may I take it?".
+                    for line in giveup.lines_for(a.root, [address]):
+                        print('  ' + line)
             else:
                 print('issue\tassignee\tcount\tdone\tage (days)')
                 for it in index.records:

@@ -1,187 +1,194 @@
-// Source exposure: mixed (pinned image and community function boundaries).
+// Source exposure: mixed (pinned image RTTI and community function boundaries).
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
-// Code origin: original structural reconstruction of Bethesda MemoryFactoryManager::Allocate factory helpers.
-// MemoryCreateObject3, helper structs, methods and referenced symbols: GUESS(low) STANDIN; original signatures unknown.
+// Code origin: original structural reconstruction of Bethesda BSTDerivedCreator::Create factory helpers.
+// FlightActionEndHandler, FlightActionEntryEndHandler, FlightActionGrabHandler: EXE_RTTI
+// FlightActionHandler, FlightActionReleaseHandler, FlightCrashLandStartHandler: EXE_RTTI
+// FlightCruisingHandler, FlightHoveringHandler, FlightLandEndHandler, FlightLandHandler: EXE_RTTI
+// FlightLandingHandler, FlightPerchingHandler, FlightTakeOffHandler, GetUpEndHandler: EXE_RTTI
+// GetUpStartHandler, HeadTrackingOffHandler, HeadTrackingOnHandler, HitFrameHandler: EXE_RTTI
+// IdleDialogueEnterHandler, IdleDialogueExitHandler, InterruptCastHandler, JumpAnimEventHandler: EXE_RTTI
+// KillActorHandler, KillMoveEndHandler, KillMoveStartHandler, LeftHandSpellCastHandler: EXE_RTTI
+// LeftHandSpellFireHandler, MTStateHandler, MotionDrivenHandler, MountDismountEndHandler: EXE_RTTI
+// MemoryCreateObject3, MemoryFactoryManager, HandlerFunctorBase, AnimHandlerCreators, creator methods and allocator symbols: GUESS(low) STANDIN; original signatures unknown.
 // Adapted bodies: none
-// 0x7d5680 MemoryCreateObject3::Op7d5680
-// 0x7d56e0 MemoryCreateObject3::Op7d56e0
-// 0x7d5740 MemoryCreateObject3::Op7d5740
-// 0x7d57a0 MemoryCreateObject3::Op7d57a0
-// 0x7d5800 MemoryCreateObject3::Op7d5800
-// 0x7d5860 MemoryCreateObject3::Op7d5860
-// 0x7d58c0 MemoryCreateObject3::Op7d58c0
-// 0x7d5920 MemoryCreateObject3::Op7d5920
-// 0x7d5980 MemoryCreateObject3::Op7d5980
-// 0x7d59e0 MemoryCreateObject3::Op7d59e0
-// 0x7d5a40 MemoryCreateObject3::Op7d5a40
-// 0x7d5aa0 MemoryCreateObject3::Op7d5aa0
-// 0x7d5b00 MemoryCreateObject3::Op7d5b00
-// 0x7d5b60 MemoryCreateObject3::Op7d5b60
-// 0x7d5bc0 MemoryCreateObject3::Op7d5bc0
-// 0x7d5c20 MemoryCreateObject3::Op7d5c20
-// 0x7d5c80 MemoryCreateObject3::Op7d5c80
-// 0x7d5ce0 MemoryCreateObject3::Op7d5ce0
-// 0x7d5d40 MemoryCreateObject3::Op7d5d40
-// 0x7d5da0 MemoryCreateObject3::Op7d5da0
-// 0x7d5e00 MemoryCreateObject3::Op7d5e00
-// 0x7d5e60 MemoryCreateObject3::Op7d5e60
-// 0x7d5ec0 MemoryCreateObject3::Op7d5ec0
-// 0x7d5f20 MemoryCreateObject3::Op7d5f20
-// 0x7d5f80 MemoryCreateObject3::Op7d5f80
-// 0x7d5fe0 MemoryCreateObject3::Op7d5fe0
-// 0x7d6040 MemoryCreateObject3::Op7d6040
-// 0x7d60a0 MemoryCreateObject3::Op7d60a0
-// 0x7d6100 MemoryCreateObject3::Op7d6100
-// 0x7d6160 MemoryCreateObject3::Op7d6160
+// 0x7d5680 MemoryCreateObject3::CreateFlightActionEndHandler
+// 0x7d56e0 MemoryCreateObject3::CreateFlightActionEntryEndHandler
+// 0x7d5740 MemoryCreateObject3::CreateFlightActionGrabHandler
+// 0x7d57a0 MemoryCreateObject3::CreateFlightActionHandler
+// 0x7d5800 MemoryCreateObject3::CreateFlightActionReleaseHandler
+// 0x7d5860 MemoryCreateObject3::CreateFlightCrashLandStartHandler
+// 0x7d58c0 MemoryCreateObject3::CreateFlightCruisingHandler
+// 0x7d5920 MemoryCreateObject3::CreateFlightHoveringHandler
+// 0x7d5980 MemoryCreateObject3::CreateFlightLandEndHandler
+// 0x7d59e0 MemoryCreateObject3::CreateFlightLandHandler
+// 0x7d5a40 MemoryCreateObject3::CreateFlightLandingHandler
+// 0x7d5aa0 MemoryCreateObject3::CreateFlightPerchingHandler
+// 0x7d5b00 MemoryCreateObject3::CreateFlightTakeOffHandler
+// 0x7d5b60 MemoryCreateObject3::CreateGetUpEndHandler
+// 0x7d5bc0 MemoryCreateObject3::CreateGetUpStartHandler
+// 0x7d5c20 MemoryCreateObject3::CreateHeadTrackingOffHandler
+// 0x7d5c80 MemoryCreateObject3::CreateHeadTrackingOnHandler
+// 0x7d5ce0 MemoryCreateObject3::CreateHitFrameHandler
+// 0x7d5d40 MemoryCreateObject3::CreateIdleDialogueEnterHandler
+// 0x7d5da0 MemoryCreateObject3::CreateIdleDialogueExitHandler
+// 0x7d5e00 MemoryCreateObject3::CreateInterruptCastHandler
+// 0x7d5e60 MemoryCreateObject3::CreateJumpAnimEventHandler
+// 0x7d5ec0 MemoryCreateObject3::CreateKillActorHandler
+// 0x7d5f20 MemoryCreateObject3::CreateKillMoveEndHandler
+// 0x7d5f80 MemoryCreateObject3::CreateKillMoveStartHandler
+// 0x7d5fe0 MemoryCreateObject3::CreateLeftHandSpellCastHandler
+// 0x7d6040 MemoryCreateObject3::CreateLeftHandSpellFireHandler
+// 0x7d60a0 MemoryCreateObject3::CreateMTStateHandler
+// 0x7d6100 MemoryCreateObject3::CreateMotionDrivenHandler
+// 0x7d6160 MemoryCreateObject3::CreateMountDismountEndHandler
 #include "MemoryCreateObject3.h"
 
-void* MemoryCreateObject3::Op7d5680()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightActionEndHandler()
 {
-    return new Obj_7d5680();
+    return new FlightActionEndHandler();
 }
 
-void* MemoryCreateObject3::Op7d56e0()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightActionEntryEndHandler()
 {
-    return new Obj_7d56e0();
+    return new FlightActionEntryEndHandler();
 }
 
-void* MemoryCreateObject3::Op7d5740()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightActionGrabHandler()
 {
-    return new Obj_7d5740();
+    return new FlightActionGrabHandler();
 }
 
-void* MemoryCreateObject3::Op7d57a0()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightActionHandler()
 {
-    return new Obj_7d57a0();
+    return new FlightActionHandler();
 }
 
-void* MemoryCreateObject3::Op7d5800()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightActionReleaseHandler()
 {
-    return new Obj_7d5800();
+    return new FlightActionReleaseHandler();
 }
 
-void* MemoryCreateObject3::Op7d5860()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightCrashLandStartHandler()
 {
-    return new Obj_7d5860();
+    return new FlightCrashLandStartHandler();
 }
 
-void* MemoryCreateObject3::Op7d58c0()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightCruisingHandler()
 {
-    return new Obj_7d58c0();
+    return new FlightCruisingHandler();
 }
 
-void* MemoryCreateObject3::Op7d5920()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightHoveringHandler()
 {
-    return new Obj_7d5920();
+    return new FlightHoveringHandler();
 }
 
-void* MemoryCreateObject3::Op7d5980()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightLandEndHandler()
 {
-    return new Obj_7d5980();
+    return new FlightLandEndHandler();
 }
 
-void* MemoryCreateObject3::Op7d59e0()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightLandHandler()
 {
-    return new Obj_7d59e0();
+    return new FlightLandHandler();
 }
 
-void* MemoryCreateObject3::Op7d5a40()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightLandingHandler()
 {
-    return new Obj_7d5a40();
+    return new FlightLandingHandler();
 }
 
-void* MemoryCreateObject3::Op7d5aa0()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightPerchingHandler()
 {
-    return new Obj_7d5aa0();
+    return new FlightPerchingHandler();
 }
 
-void* MemoryCreateObject3::Op7d5b00()
+HandlerFunctorBase* MemoryCreateObject3::CreateFlightTakeOffHandler()
 {
-    return new Obj_7d5b00();
+    return new FlightTakeOffHandler();
 }
 
-void* MemoryCreateObject3::Op7d5b60()
+HandlerFunctorBase* MemoryCreateObject3::CreateGetUpEndHandler()
 {
-    return new Obj_7d5b60();
+    return new GetUpEndHandler();
 }
 
-void* MemoryCreateObject3::Op7d5bc0()
+HandlerFunctorBase* MemoryCreateObject3::CreateGetUpStartHandler()
 {
-    return new Obj_7d5bc0();
+    return new GetUpStartHandler();
 }
 
-void* MemoryCreateObject3::Op7d5c20()
+HandlerFunctorBase* MemoryCreateObject3::CreateHeadTrackingOffHandler()
 {
-    return new Obj_7d5c20();
+    return new HeadTrackingOffHandler();
 }
 
-void* MemoryCreateObject3::Op7d5c80()
+HandlerFunctorBase* MemoryCreateObject3::CreateHeadTrackingOnHandler()
 {
-    return new Obj_7d5c80();
+    return new HeadTrackingOnHandler();
 }
 
-void* MemoryCreateObject3::Op7d5ce0()
+HandlerFunctorBase* MemoryCreateObject3::CreateHitFrameHandler()
 {
-    return new Obj_7d5ce0();
+    return new HitFrameHandler();
 }
 
-void* MemoryCreateObject3::Op7d5d40()
+HandlerFunctorBase* MemoryCreateObject3::CreateIdleDialogueEnterHandler()
 {
-    return new Obj_7d5d40();
+    return new IdleDialogueEnterHandler();
 }
 
-void* MemoryCreateObject3::Op7d5da0()
+HandlerFunctorBase* MemoryCreateObject3::CreateIdleDialogueExitHandler()
 {
-    return new Obj_7d5da0();
+    return new IdleDialogueExitHandler();
 }
 
-void* MemoryCreateObject3::Op7d5e00()
+HandlerFunctorBase* MemoryCreateObject3::CreateInterruptCastHandler()
 {
-    return new Obj_7d5e00();
+    return new InterruptCastHandler();
 }
 
-void* MemoryCreateObject3::Op7d5e60()
+HandlerFunctorBase* MemoryCreateObject3::CreateJumpAnimEventHandler()
 {
-    return new Obj_7d5e60();
+    return new AnimHandlerCreators::JumpAnimEventHandler();
 }
 
-void* MemoryCreateObject3::Op7d5ec0()
+HandlerFunctorBase* MemoryCreateObject3::CreateKillActorHandler()
 {
-    return new Obj_7d5ec0();
+    return new KillActorHandler();
 }
 
-void* MemoryCreateObject3::Op7d5f20()
+HandlerFunctorBase* MemoryCreateObject3::CreateKillMoveEndHandler()
 {
-    return new Obj_7d5f20();
+    return new KillMoveEndHandler();
 }
 
-void* MemoryCreateObject3::Op7d5f80()
+HandlerFunctorBase* MemoryCreateObject3::CreateKillMoveStartHandler()
 {
-    return new Obj_7d5f80();
+    return new KillMoveStartHandler();
 }
 
-void* MemoryCreateObject3::Op7d5fe0()
+HandlerFunctorBase* MemoryCreateObject3::CreateLeftHandSpellCastHandler()
 {
-    return new Obj_7d5fe0();
+    return new LeftHandSpellCastHandler();
 }
 
-void* MemoryCreateObject3::Op7d6040()
+HandlerFunctorBase* MemoryCreateObject3::CreateLeftHandSpellFireHandler()
 {
-    return new Obj_7d6040();
+    return new LeftHandSpellFireHandler();
 }
 
-void* MemoryCreateObject3::Op7d60a0()
+HandlerFunctorBase* MemoryCreateObject3::CreateMTStateHandler()
 {
-    return new Obj_7d60a0();
+    return new MTStateHandler();
 }
 
-void* MemoryCreateObject3::Op7d6100()
+HandlerFunctorBase* MemoryCreateObject3::CreateMotionDrivenHandler()
 {
-    return new Obj_7d6100();
+    return new MotionDrivenHandler();
 }
 
-void* MemoryCreateObject3::Op7d6160()
+HandlerFunctorBase* MemoryCreateObject3::CreateMountDismountEndHandler()
 {
-    return new Obj_7d6160();
+    return new MountDismountEndHandler();
 }
-

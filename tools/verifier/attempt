@@ -208,7 +208,83 @@ def fallback_budget(task_dir, qdir, tier='fallback'):
     return entry['attempts_per_function'] * len(wq.unpassed(qdir, unit, tier))
 
 
-def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True):
+def retry_alternatives(task, host, task_dir, dest, image, objdump=None, force=False):
+    """Lines for the failed functions that byte-match under an alternative flag set of the unit's recipe.
+
+    Advisory (docs/verification.md, "Alternative flag sets"): the attempt's verdict stays the one under the
+    unit's own recipe. The unit is accepted under other flags only once its `Recipe:` line names the
+    alternative recipe, which the CI hash job and the second host then compile with. A function without
+    an exception frame in the pinned image is retried without /EHsc; the host compiles the unit once per
+    alternative and every function is compared, so the line also says whether the passing ones keep passing.
+    """
+    sys.path.insert(0, str(pipeline.REPO / 'tools'))
+    import recipe_alternatives as alts
+    from pecoff import Reject
+    options = alts.alternatives(pipeline.REPO, task.get('recipe') or '')
+    failed = []
+    for fn in task['functions']:
+        try:
+            rep = json.loads((dest / f'0x{fn["rva"]:x}' / 'report.json').read_text())
+        except (OSError, ValueError):
+            continue
+        if rep.get('result') != 'pass' and rep.get('reason') not in bind.BINDING_REASONS and 'internal_selector' not in fn:
+            failed.append(fn)
+    if not options or not failed:
+        return []
+    frames = None
+    if any(a['requires'] == 'target-no-eh-frame' for a in options) and image and Path(image).is_file():
+        try:
+            frames = alts.EhFrames.from_bytes(Path(image).read_bytes())
+        except (OSError, ValueError, Reject):
+            frames = None
+    lines = []
+    for alt in options:
+        wanted = [fn for fn in failed if alts.applies(alt, frames, fn['rva'], fn['size'], force)]
+        if not wanted:
+            continue
+        alt_task = dict(task, recipe=alt['recipe'])
+        adest = dest / ('alt-' + alt['id'])
+        try:
+            files, _ = pipeline.unit_manifest(alt_task)
+            host.task = alt_task
+            code = run_once(alt_task, host, files, task_dir, adest)
+        except (PipelineError, boatctl.BoatError, runners.RunnerError, OSError) as exc:
+            lines.append(f'  retry {alt["id"]} ({alts.change_text(alt)}): not run ({exc})')
+            continue
+        finally:
+            host.task = task
+        if code not in (0, 1):
+            lines.append(f'  retry {alt["id"]} ({alts.change_text(alt)}): not compared (exit {code}; see {adest / "remote.txt"})')
+            continue
+        passing = {}
+        for fn in task['functions']:
+            try:
+                passing[fn['rva']] = json.loads((adest / f'0x{fn["rva"]:x}' / 'report.json').read_text()).get('result') == 'pass'
+            except (OSError, ValueError):
+                passing[fn['rva']] = False
+        won = [fn for fn in wanted if passing[fn['rva']]]
+        shifts = []
+        for fn in wanted:
+            if fn in won:
+                continue
+            before = (attempt_progress.read_json(dest / f'0x{fn["rva"]:x}' / 'align.json') or {}).get('distance')
+            align.attempt_summary(adest / f'0x{fn["rva"]:x}', disasm.find_objdump(objdump), image,
+                                  adest / 'candidate.obj', fn, task['symbols_local'])
+            after = (attempt_progress.read_json(adest / f'0x{fn["rva"]:x}' / 'align.json') or {}).get('distance')
+            if before is not None and after is not None:
+                shifts.append(f'0x{fn["rva"]:x} {before} -> {after}')
+        lines.append(f'  retry {alt["id"]} ({alts.change_text(alt)}) on {len(wanted)} function(s): {len(won)} match'
+                     + (f'; aligned distance {", ".join(shifts)} (lower is closer)' if shifts else ''))
+        if won:
+            line = '  ' + ', '.join(f'0x{fn["rva"]:x}' for fn in won) + ': ' + alts.match_line(pipeline.REPO, alt)
+            others = [f'0x{rva:x}' for rva, ok in passing.items() if not ok]
+            if others:
+                line += f' Under these flags {", ".join(others)} would not pass, so a unit that holds them too needs them in a unit of their own.'
+            lines.append(line)
+    return lines
+
+
+def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True, retry=True, force_retry=False):
     started = time.monotonic()
     task = pipeline.load_task(task_dir)
     import draft_worktrees
@@ -329,7 +405,18 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         lines += rows[:10]
         if len(rows) > 10:
             lines.append(f'  ... {len(rows) - 10} more lines in {dest / "attempt.txt"}')
+        if retry and passed < len(outcome):
+            retried = retry_alternatives(task, host, task_dir, dest, config.get('image'), config.get('objdump'), force_retry)
+            lines += retried
+            all_rows = rows + retried
     lines.insert(1, f'model/agent: {model}')
+    if not used:
+        # The first attempt of a unit starts from what earlier drafters learned about its functions.
+        try:
+            import giveup
+            lines[2:2] = giveup.lines_for(pipeline.REPO, [f'0x{fn["rva"]:x}' for fn in task['functions']])
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
     current = {}
     for fn in task['functions']:
         rva = f'0x{fn["rva"]:x}'
@@ -472,6 +559,9 @@ def main():
                    'in attempts.jsonl and counted by tools/cookbook_rank.py once the function is accepted')
     p.add_argument('--no-advisory', action='store_true', help='skip the label and origin warnings (about 7 s of '
                    'local work per unit); for callers that only need the verdict and run those checks elsewhere')
+    p.add_argument('--no-retry', action='store_true', help='skip the advisory retry of failed functions under the '
+                   "recipe's alternative flag sets (data/recipe-alternatives.json); the retry costs one more unit build per alternative")
+    p.add_argument('--retry-any', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--clean', action='store_true', help="remove the task's files on the machine")
     p.add_argument('--stop', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
@@ -497,7 +587,7 @@ def main():
             rules = sorted({int(n) for n in a.rule.split(',')}) if a.rule else []
         except ValueError:
             p.error('--rule takes cookbook rule numbers such as 48 or 48,12')
-        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory)
+        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory, not a.no_retry, a.retry_any)
     except (PipelineError, boatctl.BoatError, runners.RunnerError, wq.QueueError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f'attempt: {agent_advice.explain(exc, "attempt")}', file=sys.stderr)
         return 2

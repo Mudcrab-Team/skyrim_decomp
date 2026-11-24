@@ -1,187 +1,199 @@
-// Source exposure: mixed (pinned image and community function boundaries).
+// Source exposure: mixed (pinned image RTTI and community function boundaries).
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
-// Code origin: original structural reconstruction of Bethesda MemoryFactoryManager::Allocate factory helpers.
-// MemoryCreateObject4, helper structs, methods and referenced symbols: GUESS(low) STANDIN; original signatures unknown.
+// Code origin: original structural reconstruction of Bethesda BSTDerivedCreator::Create factory helpers.
+// NPCAttachHandler, NPCDetachHandler, PairedStopHandler, PickNewIdleHandler: EXE_RTTI
+// PitchOverrideEndHandler, PitchOverrideStartHandler, PlayerBedEnterHandler: EXE_RTTI
+// PlayerChairEnterHandler, PlayerFurnitureExitHandler, RagdollStartHandler: EXE_RTTI
+// RecoilStopHandler, RemoveRagdollHandler, RightHandSpellCastHandler, RightHandSpellFireHandler: EXE_RTTI
+// RightHandWeaponDrawHandler, RightHandWeaponSheatheHandler, StaggeredStopHandler: EXE_RTTI
+// StopMountCameraHandler, VampireFeedEndHandler, VoiceSpellCastHandler, VoiceSpellFireHandler: EXE_RTTI
+// WeaponBeginDrawRightHandler, WeaponBeginSheatheRightHandler, WeaponLeftSwingHandler: EXE_RTTI
+// WeaponRightSwingHandler, ZeroPitchHandler, ConsoleData, FaderData, RefHandleUIData: EXE_RTTI
+// TESFormUIData: EXE_RTTI
+// MemoryCreateObject4, MemoryFactoryManager, HandlerFunctorBase, UIMessageDataBase, creator methods and allocator symbols: GUESS(low) STANDIN; original signatures unknown.
 // Adapted bodies: none
-// 0x7d61c0 MemoryCreateObject4::Op7d61c0
-// 0x7d6220 MemoryCreateObject4::Op7d6220
-// 0x7d6280 MemoryCreateObject4::Op7d6280
-// 0x7d62e0 MemoryCreateObject4::Op7d62e0
-// 0x7d6340 MemoryCreateObject4::Op7d6340
-// 0x7d63a0 MemoryCreateObject4::Op7d63a0
-// 0x7d6400 MemoryCreateObject4::Op7d6400
-// 0x7d6460 MemoryCreateObject4::Op7d6460
-// 0x7d64c0 MemoryCreateObject4::Op7d64c0
-// 0x7d6520 MemoryCreateObject4::Op7d6520
-// 0x7d6580 MemoryCreateObject4::Op7d6580
-// 0x7d65e0 MemoryCreateObject4::Op7d65e0
-// 0x7d6640 MemoryCreateObject4::Op7d6640
-// 0x7d66a0 MemoryCreateObject4::Op7d66a0
-// 0x7d6700 MemoryCreateObject4::Op7d6700
-// 0x7d6760 MemoryCreateObject4::Op7d6760
-// 0x7d67c0 MemoryCreateObject4::Op7d67c0
-// 0x7d6820 MemoryCreateObject4::Op7d6820
-// 0x7d6880 MemoryCreateObject4::Op7d6880
-// 0x7d68e0 MemoryCreateObject4::Op7d68e0
-// 0x7d6940 MemoryCreateObject4::Op7d6940
-// 0x7d69a0 MemoryCreateObject4::Op7d69a0
-// 0x7d6a00 MemoryCreateObject4::Op7d6a00
-// 0x7d6a60 MemoryCreateObject4::Op7d6a60
-// 0x7d6ac0 MemoryCreateObject4::Op7d6ac0
-// 0x7d6b20 MemoryCreateObject4::Op7d6b20
-// 0x98ccf0 MemoryCreateObject4::Op98ccf0
-// 0x98cfa0 MemoryCreateObject4::Op98cfa0
-// 0x98d1f0 MemoryCreateObject4::Op98d1f0
-// 0x98d310 MemoryCreateObject4::Op98d310
+// 0x7d61c0 MemoryCreateObject4::CreateNPCAttachHandler
+// 0x7d6220 MemoryCreateObject4::CreateNPCDetachHandler
+// 0x7d6280 MemoryCreateObject4::CreatePairedStopHandler
+// 0x7d62e0 MemoryCreateObject4::CreatePickNewIdleHandler
+// 0x7d6340 MemoryCreateObject4::CreatePitchOverrideEndHandler
+// 0x7d63a0 MemoryCreateObject4::CreatePitchOverrideStartHandler
+// 0x7d6400 MemoryCreateObject4::CreatePlayerBedEnterHandler
+// 0x7d6460 MemoryCreateObject4::CreatePlayerChairEnterHandler
+// 0x7d64c0 MemoryCreateObject4::CreatePlayerFurnitureExitHandler
+// 0x7d6520 MemoryCreateObject4::CreateRagdollStartHandler
+// 0x7d6580 MemoryCreateObject4::CreateRecoilStopHandler
+// 0x7d65e0 MemoryCreateObject4::CreateRemoveRagdollHandler
+// 0x7d6640 MemoryCreateObject4::CreateRightHandSpellCastHandler
+// 0x7d66a0 MemoryCreateObject4::CreateRightHandSpellFireHandler
+// 0x7d6700 MemoryCreateObject4::CreateRightHandWeaponDrawHandler
+// 0x7d6760 MemoryCreateObject4::CreateRightHandWeaponSheatheHandler
+// 0x7d67c0 MemoryCreateObject4::CreateStaggeredStopHandler
+// 0x7d6820 MemoryCreateObject4::CreateStopMountCameraHandler
+// 0x7d6880 MemoryCreateObject4::CreateVampireFeedEndHandler
+// 0x7d68e0 MemoryCreateObject4::CreateVoiceSpellCastHandler
+// 0x7d6940 MemoryCreateObject4::CreateVoiceSpellFireHandler
+// 0x7d69a0 MemoryCreateObject4::CreateWeaponBeginDrawRightHandler
+// 0x7d6a00 MemoryCreateObject4::CreateWeaponBeginSheatheRightHandler
+// 0x7d6a60 MemoryCreateObject4::CreateWeaponLeftSwingHandler
+// 0x7d6ac0 MemoryCreateObject4::CreateWeaponRightSwingHandler
+// 0x7d6b20 MemoryCreateObject4::CreateZeroPitchHandler
+// 0x98ccf0 MemoryCreateObject4::CreateConsoleData
+// 0x98cfa0 MemoryCreateObject4::CreateFaderData
+// 0x98d1f0 MemoryCreateObject4::CreateRefHandleUIData
+// 0x98d310 MemoryCreateObject4::CreateTESFormUIData
 #include "MemoryCreateObject4.h"
 
-void* MemoryCreateObject4::Op7d61c0()
+HandlerFunctorBase* MemoryCreateObject4::CreateNPCAttachHandler()
 {
-    return new Obj_7d61c0();
+    return new NPCAttachHandler();
 }
 
-void* MemoryCreateObject4::Op7d6220()
+HandlerFunctorBase* MemoryCreateObject4::CreateNPCDetachHandler()
 {
-    return new Obj_7d6220();
+    return new NPCDetachHandler();
 }
 
-void* MemoryCreateObject4::Op7d6280()
+HandlerFunctorBase* MemoryCreateObject4::CreatePairedStopHandler()
 {
-    return new Obj_7d6280();
+    return new PairedStopHandler();
 }
 
-void* MemoryCreateObject4::Op7d62e0()
+HandlerFunctorBase* MemoryCreateObject4::CreatePickNewIdleHandler()
 {
-    return new Obj_7d62e0();
+    return new PickNewIdleHandler();
 }
 
-void* MemoryCreateObject4::Op7d6340()
+HandlerFunctorBase* MemoryCreateObject4::CreatePitchOverrideEndHandler()
 {
-    return new Obj_7d6340();
+    return new PitchOverrideEndHandler();
 }
 
-void* MemoryCreateObject4::Op7d63a0()
+HandlerFunctorBase* MemoryCreateObject4::CreatePitchOverrideStartHandler()
 {
-    return new Obj_7d63a0();
+    return new PitchOverrideStartHandler();
 }
 
-void* MemoryCreateObject4::Op7d6400()
+HandlerFunctorBase* MemoryCreateObject4::CreatePlayerBedEnterHandler()
 {
-    return new Obj_7d6400();
+    return new PlayerBedEnterHandler();
 }
 
-void* MemoryCreateObject4::Op7d6460()
+HandlerFunctorBase* MemoryCreateObject4::CreatePlayerChairEnterHandler()
 {
-    return new Obj_7d6460();
+    return new PlayerChairEnterHandler();
 }
 
-void* MemoryCreateObject4::Op7d64c0()
+HandlerFunctorBase* MemoryCreateObject4::CreatePlayerFurnitureExitHandler()
 {
-    return new Obj_7d64c0();
+    return new PlayerFurnitureExitHandler();
 }
 
-void* MemoryCreateObject4::Op7d6520()
+HandlerFunctorBase* MemoryCreateObject4::CreateRagdollStartHandler()
 {
-    return new Obj_7d6520();
+    return new RagdollStartHandler();
 }
 
-void* MemoryCreateObject4::Op7d6580()
+HandlerFunctorBase* MemoryCreateObject4::CreateRecoilStopHandler()
 {
-    return new Obj_7d6580();
+    return new RecoilStopHandler();
 }
 
-void* MemoryCreateObject4::Op7d65e0()
+HandlerFunctorBase* MemoryCreateObject4::CreateRemoveRagdollHandler()
 {
-    return new Obj_7d65e0();
+    return new RemoveRagdollHandler();
 }
 
-void* MemoryCreateObject4::Op7d6640()
+HandlerFunctorBase* MemoryCreateObject4::CreateRightHandSpellCastHandler()
 {
-    return new Obj_7d6640();
+    return new RightHandSpellCastHandler();
 }
 
-void* MemoryCreateObject4::Op7d66a0()
+HandlerFunctorBase* MemoryCreateObject4::CreateRightHandSpellFireHandler()
 {
-    return new Obj_7d66a0();
+    return new RightHandSpellFireHandler();
 }
 
-void* MemoryCreateObject4::Op7d6700()
+HandlerFunctorBase* MemoryCreateObject4::CreateRightHandWeaponDrawHandler()
 {
-    return new Obj_7d6700();
+    return new RightHandWeaponDrawHandler();
 }
 
-void* MemoryCreateObject4::Op7d6760()
+HandlerFunctorBase* MemoryCreateObject4::CreateRightHandWeaponSheatheHandler()
 {
-    return new Obj_7d6760();
+    return new RightHandWeaponSheatheHandler();
 }
 
-void* MemoryCreateObject4::Op7d67c0()
+HandlerFunctorBase* MemoryCreateObject4::CreateStaggeredStopHandler()
 {
-    return new Obj_7d67c0();
+    return new StaggeredStopHandler();
 }
 
-void* MemoryCreateObject4::Op7d6820()
+HandlerFunctorBase* MemoryCreateObject4::CreateStopMountCameraHandler()
 {
-    return new Obj_7d6820();
+    return new StopMountCameraHandler();
 }
 
-void* MemoryCreateObject4::Op7d6880()
+HandlerFunctorBase* MemoryCreateObject4::CreateVampireFeedEndHandler()
 {
-    return new Obj_7d6880();
+    return new VampireFeedEndHandler();
 }
 
-void* MemoryCreateObject4::Op7d68e0()
+HandlerFunctorBase* MemoryCreateObject4::CreateVoiceSpellCastHandler()
 {
-    return new Obj_7d68e0();
+    return new VoiceSpellCastHandler();
 }
 
-void* MemoryCreateObject4::Op7d6940()
+HandlerFunctorBase* MemoryCreateObject4::CreateVoiceSpellFireHandler()
 {
-    return new Obj_7d6940();
+    return new VoiceSpellFireHandler();
 }
 
-void* MemoryCreateObject4::Op7d69a0()
+HandlerFunctorBase* MemoryCreateObject4::CreateWeaponBeginDrawRightHandler()
 {
-    return new Obj_7d69a0();
+    return new WeaponBeginDrawRightHandler();
 }
 
-void* MemoryCreateObject4::Op7d6a00()
+HandlerFunctorBase* MemoryCreateObject4::CreateWeaponBeginSheatheRightHandler()
 {
-    return new Obj_7d6a00();
+    return new WeaponBeginSheatheRightHandler();
 }
 
-void* MemoryCreateObject4::Op7d6a60()
+HandlerFunctorBase* MemoryCreateObject4::CreateWeaponLeftSwingHandler()
 {
-    return new Obj_7d6a60();
+    return new WeaponLeftSwingHandler();
 }
 
-void* MemoryCreateObject4::Op7d6ac0()
+HandlerFunctorBase* MemoryCreateObject4::CreateWeaponRightSwingHandler()
 {
-    return new Obj_7d6ac0();
+    return new WeaponRightSwingHandler();
 }
 
-void* MemoryCreateObject4::Op7d6b20()
+HandlerFunctorBase* MemoryCreateObject4::CreateZeroPitchHandler()
 {
-    return new Obj_7d6b20();
+    return new ZeroPitchHandler();
 }
 
-void* MemoryCreateObject4::Op98ccf0()
+// BSTDerivedCreator<ConsoleData, IUIMessageData>::Create; returns UIMessageDataBase* (CrashLogger PDB prototype lists void (QueuedPromoteReferencesTask*)).
+UIMessageDataBase* MemoryCreateObject4::CreateConsoleData()
 {
-    return new Obj_98ccf0();
+    return new ConsoleData();
 }
 
-void* MemoryCreateObject4::Op98cfa0()
+// BSTDerivedCreator<FaderData, IUIMessageData>::Create; returns UIMessageDataBase* (CrashLogger PDB prototype lists IMemoryHeap*(void)).
+UIMessageDataBase* MemoryCreateObject4::CreateFaderData()
 {
-    return new Obj_98cfa0();
+    return new FaderData();
 }
 
-void* MemoryCreateObject4::Op98d1f0()
+// BSTDerivedCreator<RefHandleUIData, IUIMessageData>::Create; returns UIMessageDataBase* (CrashLogger PDB prototype lists IMemoryHeap*(void)).
+UIMessageDataBase* MemoryCreateObject4::CreateRefHandleUIData()
 {
-    return new Obj_98d1f0();
+    return new RefHandleUIData();
 }
 
-void* MemoryCreateObject4::Op98d310()
+// BSTDerivedCreator<TESFormUIData, IUIMessageData>::Create; returns UIMessageDataBase* (CrashLogger PDB prototype lists IMemoryHeap*(void)).
+UIMessageDataBase* MemoryCreateObject4::CreateTESFormUIData()
 {
-    return new Obj_98d310();
+    return new TESFormUIData();
 }
-

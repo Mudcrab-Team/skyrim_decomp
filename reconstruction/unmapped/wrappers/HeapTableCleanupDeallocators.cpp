@@ -12,6 +12,7 @@
 // 0xe55b20 HeapTableCleanupDeallocators::Deletee55b20
 // 0xe9bf70 HeapTableCleanupDeallocators::Deletee9bf70
 // 0x1180ae0 HeapTableCleanupDeallocators::Delete1180ae0
+// CI hash: 0xd8eab0 ?Deleted8eab0@HeapTableCleanupDeallocators@@SAPEAXPEAUHeapTableCleanupDeallocatorsTableObject@@I@Z
 #include "HeapTableCleanupDeallocators.h"
 
 void* HeapTableCleanupDeallocators::Deleted41670(HeapTableCleanupDeallocatorsTableObject* object, unsigned int flags)

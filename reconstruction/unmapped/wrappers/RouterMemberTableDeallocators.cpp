@@ -16,6 +16,19 @@
 // 0xcc8180 RouterMemberTableDeallocators::Deletecc8180
 // 0x10d1d00 RouterMemberTableDeallocators::Delete10d1d00
 // 0x10d2320 RouterMemberTableDeallocators::Delete10d2320
+// CI hash: 0xaaa370 ?Deleteaaa370@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xae4800 ?Deleteae4800@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xae4890 ?Deleteae4890@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xae4920 ?Deleteae4920@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xae55e0 ?Deleteae55e0@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xae5670 ?Deleteae5670@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xb2e460 ?Deleteb2e460@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject18@@I@Z
+// CI hash: 0xb2e700 ?Deleteb2e700@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject18@@I@Z
+// CI hash: 0xb2eb20 ?Deleteb2eb20@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0xca1d40 ?Deleteca1d40@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject20@@I@Z
+// CI hash: 0xcc8180 ?Deletecc8180@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject10@@I@Z
+// CI hash: 0x10d1d00 ?Delete10d1d00@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject18@@I@Z
+// CI hash: 0x10d2320 ?Delete10d2320@RouterMemberTableDeallocators@@SAPEAXPEAURouterMemberTableDeallocatorsMemberObject18@@I@Z
 #include "RouterMemberTableDeallocators.h"
 
 void* RouterMemberTableDeallocators::Deleteaaa370(RouterMemberTableDeallocatorsMemberObject10* object, unsigned int flags)

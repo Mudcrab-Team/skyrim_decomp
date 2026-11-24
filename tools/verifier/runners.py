@@ -792,7 +792,8 @@ def choose_attempt(config, environ=None, probe_fn=None):
         if hosts[cand]['backend'] == 'boat' or probe_fn(hosts[cand]):
             name = cand
             break
-        warnings.append(f'preferred attempt host {cand} is not reachable')
+        warnings.append(f'preferred attempt host {cand} is not reachable' + (
+            '; wake-up packet sent' if wake(hosts[cand]) else ''))
     if name is None:
         name = config['attempt']
     if hosts[name].get('loader') == 'wine':

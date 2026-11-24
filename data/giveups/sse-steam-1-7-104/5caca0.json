@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x5caca0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "modelled the delivery-4 navmesh path as RAII objects NavmeshInfo, NavmeshPtr, PathQuery and NearbyActorList in constructor order",
+        "used the CommonLib bhkPickData layout with real default initialisers",
+        "corrected the member order of the small structs from store order",
+        "called the reach virtual on the embedded sub-object",
+        "added member-wise NiPoint3 copy operators and an AddTargetData constructor",
+        "swapped the area and single-target branch order (3 points worse, reverted)",
+        "removed aggregate zeroing and used a switch with table bindings"
+      ],
+      "still_differs": "The frame size differs (0x690 against 0x660), the result flag is kept as a byte instead of a conditional-move dword, and a null re-test skip after Adopt in one delivery case is missing.",
+      "suspected_cause": "Not determined; distance fell without sim gain, which points at stack-slot and frame placement the drafters could not close.",
+      "best_similarity": 66.5,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/5caca0/1"
+      }
+    }
+  ]
+}

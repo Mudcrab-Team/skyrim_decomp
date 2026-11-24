@@ -78,6 +78,7 @@
 // 0xdaa7e0 HeapCleanupDeallocators1::Deletedaa7e0
 // 0xdaa840 HeapCleanupDeallocators1::Deletedaa840
 // 0xdac5d0 HeapCleanupDeallocators1::Deletedac5d0
+// CI hash: 0xd8e5b0 ?Deleted8e5b0@HeapCleanupDeallocators1@@SAPEAXPEAXI@Z
 #include "HeapCleanupDeallocators1.h"
 
 void* HeapCleanupDeallocators1::Deletecf34a0(void* object, unsigned int flags)

@@ -29,6 +29,32 @@
 // 0x112e910 RouterCleanupDeallocators4::Delete112e910
 // 0x1151920 RouterCleanupDeallocators4::Delete1151920
 // 0x115a8e0 RouterCleanupDeallocators4::Delete115a8e0
+// CI hash: 0x10d1790 ?Delete10d1790@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d18d0 ?Delete10d18d0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d1950 ?Delete10d1950@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d1a60 ?Delete10d1a60@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d1c00 ?Delete10d1c00@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d1c80 ?Delete10d1c80@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d1d90 ?Delete10d1d90@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d1f30 ?Delete10d1f30@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10d9ee0 ?Delete10d9ee0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10dd350 ?Delete10dd350@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10e54a0 ?Delete10e54a0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10e6eb0 ?Delete10e6eb0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x10f9e30 ?Delete10f9e30@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1106d90 ?Delete1106d90@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1106e10 ?Delete1106e10@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1107750 ?Delete1107750@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1112f00 ?Delete1112f00@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1116b30 ?Delete1116b30@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1117360 ?Delete1117360@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1124460 ?Delete1124460@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1128640 ?Delete1128640@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x112a8f0 ?Delete112a8f0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x112b2b0 ?Delete112b2b0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x112e910 ?Delete112e910@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x1151920 ?Delete1151920@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
+// CI hash: 0x115a8e0 ?Delete115a8e0@RouterCleanupDeallocators4@@SAPEAXPEAURouterCleanupDeallocators4TaggedObject@@I@Z
 #include "RouterCleanupDeallocators4.h"
 
 void* RouterCleanupDeallocators4::Delete10d1790(RouterCleanupDeallocators4TaggedObject* object, unsigned int flags)

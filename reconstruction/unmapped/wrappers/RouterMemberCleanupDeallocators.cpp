@@ -32,6 +32,35 @@
 // 0xbb9b20 RouterMemberCleanupDeallocators::Deletebb9b20
 // 0xbbbb40 RouterMemberCleanupDeallocators::Deletebbbb40
 // 0xbbc4c0 RouterMemberCleanupDeallocators::Deletebbc4c0
+// CI hash: 0xad1d70 ?Deletead1d70@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xad1e00 ?Deletead1e00@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae2240 ?Deleteae2240@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae2530 ?Deleteae2530@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae26d0 ?Deleteae26d0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae27f0 ?Deleteae27f0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae2910 ?Deleteae2910@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae2ac0 ?Deleteae2ac0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae3630 ?Deleteae3630@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae3a70 ?Deleteae3a70@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae3b90 ?Deleteae3b90@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae40f0 ?Deleteae40f0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae4320 ?Deleteae4320@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae4470 ?Deleteae4470@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae46e0 ?Deleteae46e0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae4eb0 ?Deleteae4eb0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae5090 ?Deleteae5090@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae5440 ?Deleteae5440@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae5830 ?Deleteae5830@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xae5950 ?Deleteae5950@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb5920 ?Deletebb5920@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb6280 ?Deletebb6280@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb64e0 ?Deletebb64e0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb8130 ?Deletebb8130@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb83e0 ?Deletebb83e0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb86c0 ?Deletebb86c0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbb9b20 ?Deletebb9b20@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbbbb40 ?Deletebbbb40@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
+// CI hash: 0xbbc4c0 ?Deletebbc4c0@RouterMemberCleanupDeallocators@@SAPEAXPEAURouterMemberCleanupDeallocatorsMemberObject38@@I@Z
 #include "RouterMemberCleanupDeallocators.h"
 
 void* RouterMemberCleanupDeallocators::Deletead1d70(RouterMemberCleanupDeallocatorsMemberObject38* object, unsigned int flags)

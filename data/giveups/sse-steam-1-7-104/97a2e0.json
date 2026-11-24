@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x97a2e0",
+  "records": [
+    {
+      "category": "inline-set",
+      "tried": [
+        "fixed header offsets for the skill tree node pointer and the player skill data block",
+        "flipped the gamepad branch polarity and dropped padding writes in the GFxValue and FxResponseArgs constructors",
+        "reused one function-scope GFxValue for the next-rank text, the formatted perk text and the skill line",
+        "named the case-0 level value as a local and declared the sixth GetSkillProgress out parameter just before the call",
+        "removed forced inlining of operator= (full callee agreement but every Add outlined, 55 percent)",
+        "added Add overloads for bool and double, and hoisted the char buffers (no change either way)",
+        "declared the out-of-line GFxValue copy 0x5759c0 at the two sites with separate response buffers kept alive through the call"
+      ],
+      "still_differs": "The target calls the out-of-line GFxValue copy 0x5759c0 at only two Add sites while the draft expands it everywhere, and the shared temporary adds an extra inline copy; register choice also differs.",
+      "suspected_cause": "An inliner budget decision in the original at two of about 25 Add sites rather than a source shape; no spelling reproduced it.",
+      "best_similarity": 87.87,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/97a2e0/1"
+      }
+    }
+  ]
+}

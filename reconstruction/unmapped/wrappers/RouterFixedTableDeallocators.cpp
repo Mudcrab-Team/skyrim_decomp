@@ -32,6 +32,13 @@
 // 0x1151860 RouterFixedTableDeallocators::Delete1151860
 // 0x11518c0 RouterFixedTableDeallocators::Delete11518c0
 // 0x1166af0 RouterFixedTableDeallocators::Delete1166af0
+// CI hash: 0xb36eb0 ?Deleteb36eb0@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
+// CI hash: 0xb5cc70 ?Deleteb5cc70@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
+// CI hash: 0xb5cd50 ?Deleteb5cd50@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
+// CI hash: 0xb5cdb0 ?Deleteb5cdb0@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
+// CI hash: 0xc7b920 ?Deletec7b920@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
+// CI hash: 0xc7b9e0 ?Deletec7b9e0@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
+// CI hash: 0x1126710 ?Delete1126710@RouterFixedTableDeallocators@@SAPEAXPEAURouterFixedTableDeallocatorsTableObject@@I@Z
 #include "RouterFixedTableDeallocators.h"
 
 void* RouterFixedTableDeallocators::Deleteadbc70(RouterFixedTableDeallocatorsTableObject* object, unsigned int flags)

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x3409a0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "replaced the if-chain with a switch over the four-character tags",
+        "used a single result variable with if and else instead of early return",
+        "put the failing form-type test first",
+        "kept the buffer pointer in a local before the read and the editor-id call",
+        "added an invented third scratch-buffer constructor parameter (97.7, reverted)"
+      ],
+      "still_differs": "Only the order of two argument moves before the scratch buffer constructor differs, plus the thread-local offset and global index relocations; the byte count is equal.",
+      "suspected_cause": "Not determined; no evidence-backed source change for the argument order was found.",
+      "best_similarity": 99.07,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/3409a0/1"
+      }
+    }
+  ]
+}

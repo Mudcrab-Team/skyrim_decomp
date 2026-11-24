@@ -1,55 +1,56 @@
 // Source exposure: mixed (pinned image and community function boundaries).
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
-// Code origin: original custom-allocator deleting-destructor template.
-// HeapTableDeallocators, types, methods and referenced symbols: GUESS(low) STANDIN; original ownership and layouts unknown.
+// Code origin: original Scaleform-heap scalar deleting destructor wrappers.
+// HeapTableDeallocators, ScaleformHeapAllocator, PolymorphicHeapObject and referenced globals: GUESS(low) STANDIN; original types unknown.
 // Adapted bodies: none
 #pragma once
 
-struct HeapTableDeallocatorsGlobalHeap
+// Minimal vtable stand-in matching slot 12 (Free) of the Scaleform global heap.
+struct ScaleformHeapAllocator
 {
-    virtual void Slot00();
-    virtual void Slot01();
-    virtual void Slot02();
-    virtual void Slot03();
-    virtual void Slot04();
-    virtual void Slot05();
-    virtual void Slot06();
-    virtual void Slot07();
-    virtual void Slot08();
-    virtual void Slot09();
-    virtual void Slot0a();
-    virtual void Slot0b();
+    virtual ~ScaleformHeapAllocator();
+    virtual void Reserved01();
+    virtual void Reserved02();
+    virtual void Reserved03();
+    virtual void Reserved04();
+    virtual void Reserved05();
+    virtual void Reserved06();
+    virtual void Reserved07();
+    virtual void Reserved08();
+    virtual void Reserved09();
+    virtual void Reserved10();
+    virtual void Reserved11();
     virtual void Free(void* block);
 };
 
-struct HeapTableDeallocatorsTableObject
+struct PolymorphicHeapObject
 {
-    void* table;
+    void* vftable;
 };
 
-extern "C" HeapTableDeallocatorsGlobalHeap* GlobalHeapSlot3275ae0;
-extern "C" void GlobalDeallocTarget1177a80(void* object, unsigned long long size);
-extern "C" unsigned char TableTarget1a27c18[];
-extern "C" unsigned char TableTarget1a2b938[];
-extern "C" unsigned char TableTarget1a3bc78[];
-extern "C" unsigned char TableTarget1ab9430[];
-extern "C" unsigned char TableTarget1ab9490[];
+extern "C" ScaleformHeapAllocator* g_scaleformHeap;
+extern "C" void GlobalSizedDelete(void* object, unsigned long long objectSize);
+extern "C" unsigned char kBaseVftable1a27c18[];
+extern "C" unsigned char kBaseVftable1a2b938[];
+extern "C" unsigned char kBaseVftable1a3bc78[];
+extern "C" unsigned char kBaseVftable1ab9430[];
+extern "C" unsigned char kBaseVftable1ab9490[];
 
 struct HeapTableDeallocators
 {
-    static void* Deleted0c180(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted0c1d0(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted11c10(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted1ced0(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted1d8d0(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted5b300(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted5b350(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted5b4d0(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted5b520(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deleted7d560(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deletedf1780(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deletedf17d0(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Deletee6e290(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Delete11a3ef0(HeapTableDeallocatorsTableObject* object, unsigned int flags);
-    static void* Delete11a4010(HeapTableDeallocatorsTableObject* object, unsigned int flags);
+    static void* Deleted0c180(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted0c1d0(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted11c10(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted1ced0(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted1d8d0(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted5b300(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted5b350(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted5b4d0(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted5b520(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deleted7d560(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deletedf1780(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deletedf17d0(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Deletee6e290(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Delete11a3ef0(PolymorphicHeapObject* object, unsigned int deleteFlags);
+    static void* Delete11a4010(PolymorphicHeapObject* object, unsigned int deleteFlags);
 };

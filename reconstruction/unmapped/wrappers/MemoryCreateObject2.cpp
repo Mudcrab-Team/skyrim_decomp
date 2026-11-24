@@ -1,187 +1,195 @@
-// Source exposure: mixed (pinned image and community function boundaries).
+// Source exposure: mixed (pinned image RTTI and community function boundaries).
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
-// Code origin: original structural reconstruction of Bethesda MemoryFactoryManager::Allocate factory helpers.
-// MemoryCreateObject2, helper structs, methods and referenced symbols: GUESS(low) STANDIN; original signatures unknown.
+// Code origin: original structural reconstruction of Bethesda BSTDerivedCreator::Create factory helpers.
+// AnimationObjectDrawHandler, AnimationObjectLoadHandler, AnticipateAttackHandler: EXE_RTTI
+// ArrowAttachHandler, ArrowDetachHandler, ArrowReleaseHandler, AttackStopHandler: EXE_RTTI
+// AttackWinEndHandler, AttackWinStartHandler, BedEnterHandler, BedFurnitureExitHandler: EXE_RTTI
+// BowDrawnHandler, BowReleaseHandler, BowZoomStartHandler, BowZoomStopHandler: EXE_RTTI
+// CameraOverrideStartHandler, CameraOverrideStopHandler, CameraShakeHandler: EXE_RTTI
+// ChairEnterHandler, ChairFurnitureExitHandler, DeathEmoteHandler, DeathStopHandler: EXE_RTTI
+// DecapitateHandler, DisableCharacterBumperHandler, DisableCharacterPitchHandler: EXE_RTTI
+// EnableCharacterBumperHandler, EnableCharacterPitchHandler, EndSummonAnimationHandler: EXE_RTTI
+// ExitCartBeginHandler, ExitCartEndHandler: EXE_RTTI
+// MemoryCreateObject2, MemoryFactoryManager, HandlerFunctorBase, creator methods and allocator symbols: GUESS(low) STANDIN; original signatures unknown.
 // Adapted bodies: none
-// 0x7d4b40 MemoryCreateObject2::Op7d4b40
-// 0x7d4ba0 MemoryCreateObject2::Op7d4ba0
-// 0x7d4c00 MemoryCreateObject2::Op7d4c00
-// 0x7d4c60 MemoryCreateObject2::Op7d4c60
-// 0x7d4cc0 MemoryCreateObject2::Op7d4cc0
-// 0x7d4d20 MemoryCreateObject2::Op7d4d20
-// 0x7d4d80 MemoryCreateObject2::Op7d4d80
-// 0x7d4de0 MemoryCreateObject2::Op7d4de0
-// 0x7d4e40 MemoryCreateObject2::Op7d4e40
-// 0x7d4ea0 MemoryCreateObject2::Op7d4ea0
-// 0x7d4f00 MemoryCreateObject2::Op7d4f00
-// 0x7d4f60 MemoryCreateObject2::Op7d4f60
-// 0x7d4fc0 MemoryCreateObject2::Op7d4fc0
-// 0x7d5020 MemoryCreateObject2::Op7d5020
-// 0x7d5080 MemoryCreateObject2::Op7d5080
-// 0x7d50e0 MemoryCreateObject2::Op7d50e0
-// 0x7d5140 MemoryCreateObject2::Op7d5140
-// 0x7d51a0 MemoryCreateObject2::Op7d51a0
-// 0x7d5200 MemoryCreateObject2::Op7d5200
-// 0x7d5260 MemoryCreateObject2::Op7d5260
-// 0x7d52c0 MemoryCreateObject2::Op7d52c0
-// 0x7d5320 MemoryCreateObject2::Op7d5320
-// 0x7d5380 MemoryCreateObject2::Op7d5380
-// 0x7d53e0 MemoryCreateObject2::Op7d53e0
-// 0x7d5440 MemoryCreateObject2::Op7d5440
-// 0x7d54a0 MemoryCreateObject2::Op7d54a0
-// 0x7d5500 MemoryCreateObject2::Op7d5500
-// 0x7d5560 MemoryCreateObject2::Op7d5560
-// 0x7d55c0 MemoryCreateObject2::Op7d55c0
-// 0x7d5620 MemoryCreateObject2::Op7d5620
+// 0x7d4b40 MemoryCreateObject2::CreateAnimationObjectDrawHandler
+// 0x7d4ba0 MemoryCreateObject2::CreateAnimationObjectLoadHandler
+// 0x7d4c00 MemoryCreateObject2::CreateAnticipateAttackHandler
+// 0x7d4c60 MemoryCreateObject2::CreateArrowAttachHandler
+// 0x7d4cc0 MemoryCreateObject2::CreateArrowDetachHandler
+// 0x7d4d20 MemoryCreateObject2::CreateArrowReleaseHandler
+// 0x7d4d80 MemoryCreateObject2::CreateAttackStopHandler
+// 0x7d4de0 MemoryCreateObject2::CreateAttackWinEndHandler
+// 0x7d4e40 MemoryCreateObject2::CreateAttackWinStartHandler
+// 0x7d4ea0 MemoryCreateObject2::CreateBedEnterHandler
+// 0x7d4f00 MemoryCreateObject2::CreateBedFurnitureExitHandler
+// 0x7d4f60 MemoryCreateObject2::CreateBowDrawnHandler
+// 0x7d4fc0 MemoryCreateObject2::CreateBowReleaseHandler
+// 0x7d5020 MemoryCreateObject2::CreateBowZoomStartHandler
+// 0x7d5080 MemoryCreateObject2::CreateBowZoomStopHandler
+// 0x7d50e0 MemoryCreateObject2::CreateCameraOverrideStartHandler
+// 0x7d5140 MemoryCreateObject2::CreateCameraOverrideStopHandler
+// 0x7d51a0 MemoryCreateObject2::CreateCameraShakeHandler
+// 0x7d5200 MemoryCreateObject2::CreateChairEnterHandler
+// 0x7d5260 MemoryCreateObject2::CreateChairFurnitureExitHandler
+// 0x7d52c0 MemoryCreateObject2::CreateDeathEmoteHandler
+// 0x7d5320 MemoryCreateObject2::CreateDeathStopHandler
+// 0x7d5380 MemoryCreateObject2::CreateDecapitateHandler
+// 0x7d53e0 MemoryCreateObject2::CreateDisableCharacterBumperHandler
+// 0x7d5440 MemoryCreateObject2::CreateDisableCharacterPitchHandler
+// 0x7d54a0 MemoryCreateObject2::CreateEnableCharacterBumperHandler
+// 0x7d5500 MemoryCreateObject2::CreateEnableCharacterPitchHandler
+// 0x7d5560 MemoryCreateObject2::CreateEndSummonAnimationHandler
+// 0x7d55c0 MemoryCreateObject2::CreateExitCartBeginHandler
+// 0x7d5620 MemoryCreateObject2::CreateExitCartEndHandler
 #include "MemoryCreateObject2.h"
 
-void* MemoryCreateObject2::Op7d4b40()
+HandlerFunctorBase* MemoryCreateObject2::CreateAnimationObjectDrawHandler()
 {
-    return new Obj_7d4b40();
+    return new AnimationObjectDrawHandler();
 }
 
-void* MemoryCreateObject2::Op7d4ba0()
+HandlerFunctorBase* MemoryCreateObject2::CreateAnimationObjectLoadHandler()
 {
-    return new Obj_7d4ba0();
+    return new AnimationObjectLoadHandler();
 }
 
-void* MemoryCreateObject2::Op7d4c00()
+HandlerFunctorBase* MemoryCreateObject2::CreateAnticipateAttackHandler()
 {
-    return new Obj_7d4c00();
+    return new AnticipateAttackHandler();
 }
 
-void* MemoryCreateObject2::Op7d4c60()
+HandlerFunctorBase* MemoryCreateObject2::CreateArrowAttachHandler()
 {
-    return new Obj_7d4c60();
+    return new ArrowAttachHandler();
 }
 
-void* MemoryCreateObject2::Op7d4cc0()
+HandlerFunctorBase* MemoryCreateObject2::CreateArrowDetachHandler()
 {
-    return new Obj_7d4cc0();
+    return new ArrowDetachHandler();
 }
 
-void* MemoryCreateObject2::Op7d4d20()
+HandlerFunctorBase* MemoryCreateObject2::CreateArrowReleaseHandler()
 {
-    return new Obj_7d4d20();
+    return new ArrowReleaseHandler();
 }
 
-void* MemoryCreateObject2::Op7d4d80()
+HandlerFunctorBase* MemoryCreateObject2::CreateAttackStopHandler()
 {
-    return new Obj_7d4d80();
+    return new AttackStopHandler();
 }
 
-void* MemoryCreateObject2::Op7d4de0()
+HandlerFunctorBase* MemoryCreateObject2::CreateAttackWinEndHandler()
 {
-    return new Obj_7d4de0();
+    return new AttackWinEndHandler();
 }
 
-void* MemoryCreateObject2::Op7d4e40()
+HandlerFunctorBase* MemoryCreateObject2::CreateAttackWinStartHandler()
 {
-    return new Obj_7d4e40();
+    return new AttackWinStartHandler();
 }
 
-void* MemoryCreateObject2::Op7d4ea0()
+HandlerFunctorBase* MemoryCreateObject2::CreateBedEnterHandler()
 {
-    return new Obj_7d4ea0();
+    return new BedEnterHandler();
 }
 
-void* MemoryCreateObject2::Op7d4f00()
+HandlerFunctorBase* MemoryCreateObject2::CreateBedFurnitureExitHandler()
 {
-    return new Obj_7d4f00();
+    return new BedFurnitureExitHandler();
 }
 
-void* MemoryCreateObject2::Op7d4f60()
+HandlerFunctorBase* MemoryCreateObject2::CreateBowDrawnHandler()
 {
-    return new Obj_7d4f60();
+    return new BowDrawnHandler();
 }
 
-void* MemoryCreateObject2::Op7d4fc0()
+HandlerFunctorBase* MemoryCreateObject2::CreateBowReleaseHandler()
 {
-    return new Obj_7d4fc0();
+    return new BowReleaseHandler();
 }
 
-void* MemoryCreateObject2::Op7d5020()
+HandlerFunctorBase* MemoryCreateObject2::CreateBowZoomStartHandler()
 {
-    return new Obj_7d5020();
+    return new BowZoomStartHandler();
 }
 
-void* MemoryCreateObject2::Op7d5080()
+HandlerFunctorBase* MemoryCreateObject2::CreateBowZoomStopHandler()
 {
-    return new Obj_7d5080();
+    return new BowZoomStopHandler();
 }
 
-void* MemoryCreateObject2::Op7d50e0()
+HandlerFunctorBase* MemoryCreateObject2::CreateCameraOverrideStartHandler()
 {
-    return new Obj_7d50e0();
+    return new CameraOverrideStartHandler();
 }
 
-void* MemoryCreateObject2::Op7d5140()
+HandlerFunctorBase* MemoryCreateObject2::CreateCameraOverrideStopHandler()
 {
-    return new Obj_7d5140();
+    return new CameraOverrideStopHandler();
 }
 
-void* MemoryCreateObject2::Op7d51a0()
+HandlerFunctorBase* MemoryCreateObject2::CreateCameraShakeHandler()
 {
-    return new Obj_7d51a0();
+    return new CameraShakeHandler();
 }
 
-void* MemoryCreateObject2::Op7d5200()
+HandlerFunctorBase* MemoryCreateObject2::CreateChairEnterHandler()
 {
-    return new Obj_7d5200();
+    return new ChairEnterHandler();
 }
 
-void* MemoryCreateObject2::Op7d5260()
+HandlerFunctorBase* MemoryCreateObject2::CreateChairFurnitureExitHandler()
 {
-    return new Obj_7d5260();
+    return new ChairFurnitureExitHandler();
 }
 
-void* MemoryCreateObject2::Op7d52c0()
+HandlerFunctorBase* MemoryCreateObject2::CreateDeathEmoteHandler()
 {
-    return new Obj_7d52c0();
+    return new DeathEmoteHandler();
 }
 
-void* MemoryCreateObject2::Op7d5320()
+HandlerFunctorBase* MemoryCreateObject2::CreateDeathStopHandler()
 {
-    return new Obj_7d5320();
+    return new DeathStopHandler();
 }
 
-void* MemoryCreateObject2::Op7d5380()
+HandlerFunctorBase* MemoryCreateObject2::CreateDecapitateHandler()
 {
-    return new Obj_7d5380();
+    return new DecapitateHandler();
 }
 
-void* MemoryCreateObject2::Op7d53e0()
+HandlerFunctorBase* MemoryCreateObject2::CreateDisableCharacterBumperHandler()
 {
-    return new Obj_7d53e0();
+    return new DisableCharacterBumperHandler();
 }
 
-void* MemoryCreateObject2::Op7d5440()
+HandlerFunctorBase* MemoryCreateObject2::CreateDisableCharacterPitchHandler()
 {
-    return new Obj_7d5440();
+    return new DisableCharacterPitchHandler();
 }
 
-void* MemoryCreateObject2::Op7d54a0()
+HandlerFunctorBase* MemoryCreateObject2::CreateEnableCharacterBumperHandler()
 {
-    return new Obj_7d54a0();
+    return new EnableCharacterBumperHandler();
 }
 
-void* MemoryCreateObject2::Op7d5500()
+HandlerFunctorBase* MemoryCreateObject2::CreateEnableCharacterPitchHandler()
 {
-    return new Obj_7d5500();
+    return new EnableCharacterPitchHandler();
 }
 
-void* MemoryCreateObject2::Op7d5560()
+HandlerFunctorBase* MemoryCreateObject2::CreateEndSummonAnimationHandler()
 {
-    return new Obj_7d5560();
+    return new EndSummonAnimationHandler();
 }
 
-void* MemoryCreateObject2::Op7d55c0()
+HandlerFunctorBase* MemoryCreateObject2::CreateExitCartBeginHandler()
 {
-    return new Obj_7d55c0();
+    return new ExitCartBeginHandler();
 }
 
-void* MemoryCreateObject2::Op7d5620()
+HandlerFunctorBase* MemoryCreateObject2::CreateExitCartEndHandler()
 {
-    return new Obj_7d5620();
+    return new ExitCartEndHandler();
 }
-

@@ -1,7 +1,16 @@
-// Source exposure: mixed (pinned image and community function boundaries).
+// Source exposure: mixed (pinned image RTTI and community function boundaries).
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
-// Code origin: original structural reconstruction of Bethesda MemoryFactoryManager::Allocate factory helpers.
-// MemoryCreateObject4, helper structs, methods and referenced symbols: GUESS(low) STANDIN; original signatures unknown.
+// Code origin: original structural reconstruction of Bethesda BSTDerivedCreator::Create factory helpers.
+// NPCAttachHandler, NPCDetachHandler, PairedStopHandler, PickNewIdleHandler: EXE_RTTI
+// PitchOverrideEndHandler, PitchOverrideStartHandler, PlayerBedEnterHandler: EXE_RTTI
+// PlayerChairEnterHandler, PlayerFurnitureExitHandler, RagdollStartHandler: EXE_RTTI
+// RecoilStopHandler, RemoveRagdollHandler, RightHandSpellCastHandler, RightHandSpellFireHandler: EXE_RTTI
+// RightHandWeaponDrawHandler, RightHandWeaponSheatheHandler, StaggeredStopHandler: EXE_RTTI
+// StopMountCameraHandler, VampireFeedEndHandler, VoiceSpellCastHandler, VoiceSpellFireHandler: EXE_RTTI
+// WeaponBeginDrawRightHandler, WeaponBeginSheatheRightHandler, WeaponLeftSwingHandler: EXE_RTTI
+// WeaponRightSwingHandler, ZeroPitchHandler, ConsoleData, FaderData, RefHandleUIData: EXE_RTTI
+// TESFormUIData: EXE_RTTI
+// MemoryCreateObject4, MemoryFactoryManager, HandlerFunctorBase, UIMessageDataBase, creator methods and allocator symbols: GUESS(low) STANDIN; original signatures unknown.
 // Adapted bodies: none
 #pragma once
 #include <cstddef>
@@ -12,36 +21,6 @@ extern "C" {
     extern std::uint8_t MemMgrInst_369a810[1];
     void __cdecl MemMgrEnsure_cde810(void* self, std::uint32_t* state);
     void* __cdecl MemMgrAlloc_cde250(void* self, std::size_t size, std::uint32_t align, bool alignReq);
-    extern std::uint8_t Data_1937e48[1];
-    extern std::uint8_t Data_1937e60[1];
-    extern std::uint8_t Data_1937ec0[1];
-    extern std::uint8_t Data_1937ef0[1];
-    extern std::uint8_t Data_1937f08[1];
-    extern std::uint8_t Data_1937f38[1];
-    extern std::uint8_t Data_1937f50[1];
-    extern std::uint8_t Data_1937f68[1];
-    extern std::uint8_t Data_1937f80[1];
-    extern std::uint8_t Data_1937f98[1];
-    extern std::uint8_t Data_1937fb0[1];
-    extern std::uint8_t Data_1938028[1];
-    extern std::uint8_t Data_1938058[1];
-    extern std::uint8_t Data_1938088[1];
-    extern std::uint8_t Data_19380d0[1];
-    extern std::uint8_t Data_1938358[1];
-    extern std::uint8_t Data_19383a0[1];
-    extern std::uint8_t Data_19383b8[1];
-    extern std::uint8_t Data_1938490[1];
-    extern std::uint8_t Data_19384a8[1];
-    extern std::uint8_t Data_1938538[1];
-    extern std::uint8_t Data_1938550[1];
-    extern std::uint8_t Data_1938688[1];
-    extern std::uint8_t Data_19386a0[1];
-    extern std::uint8_t Data_19386d0[1];
-    extern std::uint8_t Data_19386e8[1];
-    extern std::uint8_t Data_1984818[1];
-    extern std::uint8_t Data_1984968[1];
-    extern std::uint8_t Data_1984988[1];
-    extern std::uint8_t Data_1984998[1];
 }
 
 struct MemoryFactoryManager {
@@ -56,373 +35,303 @@ struct MemoryFactoryManager {
     }
 };
 
-struct HeapAllocBase {
+// Stand-in for IHandlerFunctor<Actor, BSFixedStringCI> (inherits BSIntrusiveRefCounted; size 0x10).
+class HandlerFunctorBase {
+public:
+    virtual ~HandlerFunctorBase();
+
     static void* operator new(std::size_t size) throw() {
         return MemoryFactoryManager::Alloc(size);
     }
-};
 
-struct Obj_7d61c0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d61c0() {
-        f_8 = 0u;
-        f_0 = Data_1938538;
-    }
-};
+    std::uint32_t refCount;
 
-struct Obj_7d6220 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6220() {
-        f_8 = 0u;
-        f_0 = Data_1938550;
-    }
+protected:
+    HandlerFunctorBase() : refCount(0u) {}
 };
+static_assert(sizeof(HandlerFunctorBase) == 0x10, "HandlerFunctorBase size");
 
-struct Obj_7d6280 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6280() {
-        f_8 = 0u;
-        f_0 = Data_19383b8;
-    }
+class NPCAttachHandler : public HandlerFunctorBase {
+public:
+    NPCAttachHandler() {}
+    ~NPCAttachHandler() override;
 };
+static_assert(sizeof(NPCAttachHandler) == 0x10, "NPCAttachHandler size");
 
-struct Obj_7d62e0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d62e0() {
-        f_8 = 0u;
-        f_0 = Data_1938358;
-    }
+class NPCDetachHandler : public HandlerFunctorBase {
+public:
+    NPCDetachHandler() {}
+    ~NPCDetachHandler() override;
 };
+static_assert(sizeof(NPCDetachHandler) == 0x10, "NPCDetachHandler size");
 
-struct Obj_7d6340 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6340() {
-        f_8 = 0u;
-        f_0 = Data_19386a0;
-    }
+class PairedStopHandler : public HandlerFunctorBase {
+public:
+    PairedStopHandler() {}
+    ~PairedStopHandler() override;
 };
+static_assert(sizeof(PairedStopHandler) == 0x10, "PairedStopHandler size");
 
-struct Obj_7d63a0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d63a0() {
-        f_8 = 0u;
-        f_0 = Data_1938688;
-    }
+class PickNewIdleHandler : public HandlerFunctorBase {
+public:
+    PickNewIdleHandler() {}
+    ~PickNewIdleHandler() override;
 };
+static_assert(sizeof(PickNewIdleHandler) == 0x10, "PickNewIdleHandler size");
 
-struct Obj_7d6400 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6400() {
-        f_8 = 0u;
-        f_0 = Data_1938088;
-    }
+class PitchOverrideEndHandler : public HandlerFunctorBase {
+public:
+    PitchOverrideEndHandler() {}
+    ~PitchOverrideEndHandler() override;
 };
+static_assert(sizeof(PitchOverrideEndHandler) == 0x10, "PitchOverrideEndHandler size");
 
-struct Obj_7d6460 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6460() {
-        f_8 = 0u;
-        f_0 = Data_1938058;
-    }
+class PitchOverrideStartHandler : public HandlerFunctorBase {
+public:
+    PitchOverrideStartHandler() {}
+    ~PitchOverrideStartHandler() override;
 };
+static_assert(sizeof(PitchOverrideStartHandler) == 0x10, "PitchOverrideStartHandler size");
 
-struct Obj_7d64c0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d64c0() {
-        f_8 = 0u;
-        f_0 = Data_19380d0;
-    }
+// RTTI derives from BedEnterHandler : IHandlerFunctor<Actor, BSFixedStringCI> (same 0x10 layout).
+class PlayerBedEnterHandler : public HandlerFunctorBase {
+public:
+    PlayerBedEnterHandler() {}
+    ~PlayerBedEnterHandler() override;
 };
+static_assert(sizeof(PlayerBedEnterHandler) == 0x10, "PlayerBedEnterHandler size");
 
-struct Obj_7d6520 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6520() {
-        f_8 = 0u;
-        f_0 = Data_19384a8;
-    }
+// RTTI derives from ChairEnterHandler : IHandlerFunctor<Actor, BSFixedStringCI> (same 0x10 layout).
+class PlayerChairEnterHandler : public HandlerFunctorBase {
+public:
+    PlayerChairEnterHandler() {}
+    ~PlayerChairEnterHandler() override;
 };
+static_assert(sizeof(PlayerChairEnterHandler) == 0x10, "PlayerChairEnterHandler size");
 
-struct Obj_7d6580 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6580() {
-        f_8 = 0u;
-        f_0 = Data_1937ec0;
-    }
+class PlayerFurnitureExitHandler : public HandlerFunctorBase {
+public:
+    PlayerFurnitureExitHandler() {}
+    ~PlayerFurnitureExitHandler() override;
 };
+static_assert(sizeof(PlayerFurnitureExitHandler) == 0x10, "PlayerFurnitureExitHandler size");
 
-struct Obj_7d65e0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d65e0() {
-        f_8 = 0u;
-        f_0 = Data_1938490;
-    }
+class RagdollStartHandler : public HandlerFunctorBase {
+public:
+    RagdollStartHandler() {}
+    ~RagdollStartHandler() override;
 };
+static_assert(sizeof(RagdollStartHandler) == 0x10, "RagdollStartHandler size");
 
-struct Obj_7d6640 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6640() {
-        f_8 = 0u;
-        f_0 = Data_1937f38;
-    }
+class RecoilStopHandler : public HandlerFunctorBase {
+public:
+    RecoilStopHandler() {}
+    ~RecoilStopHandler() override;
 };
+static_assert(sizeof(RecoilStopHandler) == 0x10, "RecoilStopHandler size");
 
-struct Obj_7d66a0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d66a0() {
-        f_8 = 0u;
-        f_0 = Data_1937ef0;
-    }
+class RemoveRagdollHandler : public HandlerFunctorBase {
+public:
+    RemoveRagdollHandler() {}
+    ~RemoveRagdollHandler() override;
 };
+static_assert(sizeof(RemoveRagdollHandler) == 0x10, "RemoveRagdollHandler size");
 
-struct Obj_7d6700 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6700() {
-        f_8 = 0u;
-        f_0 = Data_1937f98;
-    }
+class RightHandSpellCastHandler : public HandlerFunctorBase {
+public:
+    RightHandSpellCastHandler() {}
+    ~RightHandSpellCastHandler() override;
 };
+static_assert(sizeof(RightHandSpellCastHandler) == 0x10, "RightHandSpellCastHandler size");
 
-struct Obj_7d6760 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6760() {
-        f_8 = 0u;
-        f_0 = Data_1937fb0;
-    }
+class RightHandSpellFireHandler : public HandlerFunctorBase {
+public:
+    RightHandSpellFireHandler() {}
+    ~RightHandSpellFireHandler() override;
 };
+static_assert(sizeof(RightHandSpellFireHandler) == 0x10, "RightHandSpellFireHandler size");
 
-struct Obj_7d67c0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d67c0() {
-        f_8 = 0u;
-        f_0 = Data_1938028;
-    }
+class RightHandWeaponDrawHandler : public HandlerFunctorBase {
+public:
+    RightHandWeaponDrawHandler() {}
+    ~RightHandWeaponDrawHandler() override;
 };
+static_assert(sizeof(RightHandWeaponDrawHandler) == 0x10, "RightHandWeaponDrawHandler size");
 
-struct Obj_7d6820 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6820() {
-        f_8 = 0u;
-        f_0 = Data_19383a0;
-    }
+class RightHandWeaponSheatheHandler : public HandlerFunctorBase {
+public:
+    RightHandWeaponSheatheHandler() {}
+    ~RightHandWeaponSheatheHandler() override;
 };
+static_assert(sizeof(RightHandWeaponSheatheHandler) == 0x10, "RightHandWeaponSheatheHandler size");
 
-struct Obj_7d6880 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6880() {
-        f_8 = 0u;
-        f_0 = Data_19386e8;
-    }
+class StaggeredStopHandler : public HandlerFunctorBase {
+public:
+    StaggeredStopHandler() {}
+    ~StaggeredStopHandler() override;
 };
+static_assert(sizeof(StaggeredStopHandler) == 0x10, "StaggeredStopHandler size");
 
-struct Obj_7d68e0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d68e0() {
-        f_8 = 0u;
-        f_0 = Data_1937f50;
-    }
+class StopMountCameraHandler : public HandlerFunctorBase {
+public:
+    StopMountCameraHandler() {}
+    ~StopMountCameraHandler() override;
 };
+static_assert(sizeof(StopMountCameraHandler) == 0x10, "StopMountCameraHandler size");
 
-struct Obj_7d6940 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6940() {
-        f_8 = 0u;
-        f_0 = Data_1937f08;
-    }
+class VampireFeedEndHandler : public HandlerFunctorBase {
+public:
+    VampireFeedEndHandler() {}
+    ~VampireFeedEndHandler() override;
 };
+static_assert(sizeof(VampireFeedEndHandler) == 0x10, "VampireFeedEndHandler size");
 
-struct Obj_7d69a0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d69a0() {
-        f_8 = 0u;
-        f_0 = Data_1937f68;
-    }
+class VoiceSpellCastHandler : public HandlerFunctorBase {
+public:
+    VoiceSpellCastHandler() {}
+    ~VoiceSpellCastHandler() override;
 };
+static_assert(sizeof(VoiceSpellCastHandler) == 0x10, "VoiceSpellCastHandler size");
 
-struct Obj_7d6a00 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6a00() {
-        f_8 = 0u;
-        f_0 = Data_1937f80;
-    }
+class VoiceSpellFireHandler : public HandlerFunctorBase {
+public:
+    VoiceSpellFireHandler() {}
+    ~VoiceSpellFireHandler() override;
 };
+static_assert(sizeof(VoiceSpellFireHandler) == 0x10, "VoiceSpellFireHandler size");
 
-struct Obj_7d6a60 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6a60() {
-        f_8 = 0u;
-        f_0 = Data_1937e60;
-    }
+class WeaponBeginDrawRightHandler : public HandlerFunctorBase {
+public:
+    WeaponBeginDrawRightHandler() {}
+    ~WeaponBeginDrawRightHandler() override;
 };
+static_assert(sizeof(WeaponBeginDrawRightHandler) == 0x10, "WeaponBeginDrawRightHandler size");
 
-struct Obj_7d6ac0 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6ac0() {
-        f_8 = 0u;
-        f_0 = Data_1937e48;
-    }
+class WeaponBeginSheatheRightHandler : public HandlerFunctorBase {
+public:
+    WeaponBeginSheatheRightHandler() {}
+    ~WeaponBeginSheatheRightHandler() override;
 };
+static_assert(sizeof(WeaponBeginSheatheRightHandler) == 0x10, "WeaponBeginSheatheRightHandler size");
 
-struct Obj_7d6b20 : HeapAllocBase {
-    void* f_0;
-    std::uint32_t f_8;
-    std::uint8_t unk_c[0x4];
-    Obj_7d6b20() {
-        f_8 = 0u;
-        f_0 = Data_19386d0;
-    }
+class WeaponLeftSwingHandler : public HandlerFunctorBase {
+public:
+    WeaponLeftSwingHandler() {}
+    ~WeaponLeftSwingHandler() override;
 };
+static_assert(sizeof(WeaponLeftSwingHandler) == 0x10, "WeaponLeftSwingHandler size");
 
-struct Obj_98ccf0 : HeapAllocBase {
-    void* f_0;
-    std::uint8_t f_8;
-    std::uint8_t f_9;
-    std::uint8_t unk_a[0x6];
-    std::uint64_t f_10;
-    std::uint32_t f_18;
-    std::uint8_t unk_1c[0x4];
-    std::uint64_t f_20;
-    std::uint32_t f_28;
-    std::uint8_t unk_2c[0x4];
-    Obj_98ccf0() {
-        f_8 = 0u;
-        f_9 = 0u;
-        f_0 = Data_1984818;
-        f_10 = 0u;
-        f_18 = 0u;
-        f_20 = 0u;
-        f_28 = 0x4u;
-    }
+class WeaponRightSwingHandler : public HandlerFunctorBase {
+public:
+    WeaponRightSwingHandler() {}
+    ~WeaponRightSwingHandler() override;
 };
+static_assert(sizeof(WeaponRightSwingHandler) == 0x10, "WeaponRightSwingHandler size");
 
-struct Obj_98cfa0 : HeapAllocBase {
-    void* f_0;
-    std::uint8_t f_8;
-    std::uint8_t f_9;
-    std::uint8_t unk_a[0x6];
-    std::uint64_t f_10;
-    std::uint8_t f_18;
-    std::uint8_t unk_19[0x3];
-    std::uint32_t f_1c;
-    std::uint32_t f_20;
-    std::uint32_t f_24;
-    Obj_98cfa0() {
-        f_8 = 0u;
-        f_9 = 0u;
-        f_0 = Data_1984968;
-        f_10 = 0u;
-        f_18 = 0x3u;
-        f_1c = 0u;
-        f_20 = 0x3f800000u;
-        f_24 = 0x101u;
-    }
+class ZeroPitchHandler : public HandlerFunctorBase {
+public:
+    ZeroPitchHandler() {}
+    ~ZeroPitchHandler() override;
 };
+static_assert(sizeof(ZeroPitchHandler) == 0x10, "ZeroPitchHandler size");
 
-struct Obj_98d1f0 : HeapAllocBase {
-    void* f_0;
-    std::uint8_t f_8;
-    std::uint8_t f_9;
-    std::uint8_t unk_a[0x6];
-    std::uint32_t f_10;
-    std::uint8_t unk_14[0x4];
-    Obj_98d1f0() {
-        f_8 = 0u;
-        f_9 = 0u;
-        f_0 = Data_1984988;
-        f_10 = 0u;
-    }
-};
+// Stand-in for IUIMessageData (size 0x10; distinct name avoids redefining BSUIScaleformData.h's IUIMessageData).
+class UIMessageDataBase {
+public:
+    virtual ~UIMessageDataBase();
 
-struct Obj_98d310 : HeapAllocBase {
-    void* f_0;
-    std::uint8_t f_8;
-    std::uint8_t f_9;
-    std::uint8_t unk_a[0xe];
-    Obj_98d310() {
-        f_8 = 0u;
-        f_9 = 0u;
-        f_0 = Data_1984998;
+    static void* operator new(std::size_t size) throw() {
+        return MemoryFactoryManager::Alloc(size);
     }
+
+    bool unk08;
+    bool unk09;
+
+protected:
+    UIMessageDataBase() : unk08(false), unk09(false) {}
 };
+static_assert(sizeof(UIMessageDataBase) == 0x10, "UIMessageDataBase size");
+
+class ConsoleData : public UIMessageDataBase {
+public:
+    void* str;
+    std::uint32_t pickRef;
+    void* file;
+    std::uint32_t type;
+
+    ConsoleData() : str(nullptr), pickRef(0u), file(nullptr), type(4u) {}
+    ~ConsoleData() override;
+};
+static_assert(sizeof(ConsoleData) == 0x30, "ConsoleData size");
+
+struct FaderData : public UIMessageDataBase {
+    void* unk10;
+    std::uint8_t unk18;
+    std::uint32_t unk1c;
+    float fadeDuration;
+    bool unk24;
+    bool unk25;
+    std::uint8_t unk26;
+    std::uint8_t unk27;
+
+    FaderData()
+        : unk10(nullptr),
+          unk18(3u),
+          unk1c(0u),
+          fadeDuration(1.0f),
+          unk24(true),
+          unk25(true),
+          unk26(0u),
+          unk27(0u) {}
+    ~FaderData() override;
+};
+static_assert(sizeof(FaderData) == 0x28, "FaderData size");
+
+struct RefHandleUIData : public UIMessageDataBase {
+    std::uint32_t refHandle;
+
+    RefHandleUIData() : refHandle(0u) {}
+    ~RefHandleUIData() override;
+};
+static_assert(sizeof(RefHandleUIData) == 0x18, "RefHandleUIData size");
+
+struct TESFormUIData : public UIMessageDataBase {
+    void* form;
+
+    TESFormUIData() {}
+    ~TESFormUIData() override;
+};
+static_assert(sizeof(TESFormUIData) == 0x18, "TESFormUIData size");
 
 struct MemoryCreateObject4 {
-    void* Op7d61c0();
-    void* Op7d6220();
-    void* Op7d6280();
-    void* Op7d62e0();
-    void* Op7d6340();
-    void* Op7d63a0();
-    void* Op7d6400();
-    void* Op7d6460();
-    void* Op7d64c0();
-    void* Op7d6520();
-    void* Op7d6580();
-    void* Op7d65e0();
-    void* Op7d6640();
-    void* Op7d66a0();
-    void* Op7d6700();
-    void* Op7d6760();
-    void* Op7d67c0();
-    void* Op7d6820();
-    void* Op7d6880();
-    void* Op7d68e0();
-    void* Op7d6940();
-    void* Op7d69a0();
-    void* Op7d6a00();
-    void* Op7d6a60();
-    void* Op7d6ac0();
-    void* Op7d6b20();
-    void* Op98ccf0();
-    void* Op98cfa0();
-    void* Op98d1f0();
-    void* Op98d310();
+    HandlerFunctorBase* CreateNPCAttachHandler();
+    HandlerFunctorBase* CreateNPCDetachHandler();
+    HandlerFunctorBase* CreatePairedStopHandler();
+    HandlerFunctorBase* CreatePickNewIdleHandler();
+    HandlerFunctorBase* CreatePitchOverrideEndHandler();
+    HandlerFunctorBase* CreatePitchOverrideStartHandler();
+    HandlerFunctorBase* CreatePlayerBedEnterHandler();
+    HandlerFunctorBase* CreatePlayerChairEnterHandler();
+    HandlerFunctorBase* CreatePlayerFurnitureExitHandler();
+    HandlerFunctorBase* CreateRagdollStartHandler();
+    HandlerFunctorBase* CreateRecoilStopHandler();
+    HandlerFunctorBase* CreateRemoveRagdollHandler();
+    HandlerFunctorBase* CreateRightHandSpellCastHandler();
+    HandlerFunctorBase* CreateRightHandSpellFireHandler();
+    HandlerFunctorBase* CreateRightHandWeaponDrawHandler();
+    HandlerFunctorBase* CreateRightHandWeaponSheatheHandler();
+    HandlerFunctorBase* CreateStaggeredStopHandler();
+    HandlerFunctorBase* CreateStopMountCameraHandler();
+    HandlerFunctorBase* CreateVampireFeedEndHandler();
+    HandlerFunctorBase* CreateVoiceSpellCastHandler();
+    HandlerFunctorBase* CreateVoiceSpellFireHandler();
+    HandlerFunctorBase* CreateWeaponBeginDrawRightHandler();
+    HandlerFunctorBase* CreateWeaponBeginSheatheRightHandler();
+    HandlerFunctorBase* CreateWeaponLeftSwingHandler();
+    HandlerFunctorBase* CreateWeaponRightSwingHandler();
+    HandlerFunctorBase* CreateZeroPitchHandler();
+    UIMessageDataBase* CreateConsoleData();
+    UIMessageDataBase* CreateFaderData();
+    UIMessageDataBase* CreateRefHandleUIData();
+    UIMessageDataBase* CreateTESFormUIData();
 };
