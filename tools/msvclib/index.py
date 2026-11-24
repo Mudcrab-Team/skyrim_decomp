@@ -25,12 +25,19 @@ def matched_rvas(progress):
     return {f['rva'] for f in progress['functions'] if f['status'] == 'matched'}
 
 
-def select_leads(hits, table, matched, min_score=0.8, max_amb=3, min_size=48):
-    """RVAs of ordinary, still unmatched target functions whose best index lead is strong and unambiguous."""
+def marked_rvas(tree=None):
+    """RVAs any unit in the tree already marks, matched or not: a second unit would repeat them."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import duplicate_rva
+    return set(duplicate_rva.marked(tree or duplicate_rva.ROOT))
+
+
+def select_leads(hits, table, matched, min_score=0.8, max_amb=3, min_size=48, marked=()):
+    """RVAs of ordinary target functions with no match and no unit yet whose best index lead is strong and unambiguous."""
     out = []
     for rva, (best, close) in hits.items():
         f = table.get(rva)
-        if f is None or rva in matched or f['size'] < min_size:
+        if f is None or rva in matched or rva in marked or f['size'] < min_size:
             continue
         if best[0][0] >= min_score and close <= max_amb:
             out.append(rva)
@@ -63,6 +70,7 @@ def main():
     p.add_argument('--progress', required=True)
     p.add_argument('--out', required=True)
     p.add_argument('--min-score', type=float, default=0.8)
+    p.add_argument('--tree', help='checkout whose units already mark RVAs; default is this repository')
     p = sp.add_parser('family')
     p.add_argument('--scores', required=True)
     p.add_argument('--results', required=True)
@@ -78,7 +86,8 @@ def main():
             f = json.loads(line)
             if f['kind'] == 'ordinary':
                 table[f['rva']] = f
-        sel = select_leads(hits, table, matched_rvas(json.load(open(a.progress))), a.min_score)
+        sel = select_leads(hits, table, matched_rvas(json.load(open(a.progress))), a.min_score,
+                           marked=marked_rvas(a.tree))
         json.dump(sel, open(a.out, 'w'))
         print(len(sel), 'unmatched functions with a lead')
     else:

@@ -1095,6 +1095,11 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
     if (not __import__('os').environ.get('SIBLING_REWRITE') and
             _sp.run(['git', 'ls-files', '--error-unmatch', cpath], cwd=ROOT, capture_output=True).returncode == 0):
         return 'skip: the unit is already tracked in this checkout'
+    import duplicate_rva
+    rel = os.path.relpath(cpath, ROOT) if os.path.isabs(str(cpath)) else str(cpath)
+    other = [x for x in duplicate_rva.marked(ROOT).get(rva, ()) if x != rel]
+    if other:
+        return 'skip: another unit already marks this RVA: ' + other[0]
     fc = Path(hpath).stem.rsplit('_', 1)[0]
     if not re.search(rf'\b(?:class|struct)\s+{re.escape(fc)}\b(?!\s*;)', u['header_decl']):
         # the lint wants the unit's header to declare the class its file is named for

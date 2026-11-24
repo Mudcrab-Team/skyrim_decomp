@@ -74,6 +74,7 @@ import findings_check  # noqa: E402
 import record_store  # noqa: E402
 import target_hash_store  # noqa: E402
 import drafter_claim  # noqa: E402
+import duplicate_rva  # noqa: E402
 import header_check  # noqa: E402
 from contrib_publication import MAX_FUNCTIONS  # noqa: E402
 import lint_reconstruction  # noqa: E402
@@ -1980,9 +1981,27 @@ class Bot:
                         '?branch=main&event=push&status=completed&per_page=5']).stdout
         return red_run((json.loads(out) if out.strip() else {}).get('workflow_runs') or [])
 
+    def refuse_repeats_from_main(self, number, head):
+        """Stop the merge when the PR marks an RVA that a unit landed on main after the PR was checked.
+
+        The PR's checks compare it with the base it was opened on, so two PRs that each pass can still repeat
+        an RVA once both are in. A failed read says nothing, so the merge goes ahead as for the head check.
+        """
+        try:
+            with self.root_lock:
+                self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+            clash = duplicate_rva.against_main(self.root, 'origin/main', head)
+        except (Stop, subprocess.SubprocessError, OSError, SystemExit):
+            return
+        if clash:
+            shown = ', '.join(f'0x{rva:x}' for rva in list(clash)[:5])
+            raise Stop(f'pr{number} repeats RVA(s) {shown} that main marks in another unit; not merging, '
+                       'the branch needs main merged in so the duplicate check sees them')
+
     def merge_pr(self, number, head, subject, body, check=False):
         """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
         self.check_head(number, head, 'merge')
+        self.refuse_repeats_from_main(number, head)
         red = self.main_watch.red_sha()
         if red:
             print(f'main red at {red}; holding merges', file=sys.stderr)
@@ -4685,6 +4704,7 @@ class Bot:
             uid = self.gh_json('api', f'users/{login}')['id']
             subject, body = squash_message(number, login, uid, matched, again)
             self.check_head(number, head, 'merge')
+            self.refuse_repeats_from_main(number, head)
             if self.land_with_records(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'],
                                       subject, body):
                 state.set('merged', True)

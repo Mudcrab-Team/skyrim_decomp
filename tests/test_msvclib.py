@@ -78,6 +78,11 @@ class IndexTests(unittest.TestCase):
         del table[6]
         self.assertEqual(index.select_leads(hits, table, matched={2}), [1])
 
+    def test_leads_skip_rvas_a_unit_already_marks(self):
+        hits = {1: ([(0.95, 0.9, ('u', 'f'))], 1), 2: ([(0.95, 0.9, ('u', 'f'))], 1)}
+        table = {r: {'size': 100} for r in hits}
+        self.assertEqual(index.select_leads(hits, table, matched=set(), marked={2}), [1])
+
     def test_matched_rvas_reads_status(self):
         prog = {'functions': [{'rva': 1, 'status': 'matched'}, {'rva': 2, 'status': 'draft'}]}
         self.assertEqual(index.matched_rvas(prog), {1})
