@@ -330,3 +330,8 @@ Third-party skills import (PR #572, recorded by an Engineer). lemiur, author of 
 - CommonLibF4 (MIT) may be used for names, declarations and bodies, labelled `COMMUNITY(<owner>/<repo>@<pin>, MIT)` with the MIT notice the lint requires.
 - GPL forks of CommonLibF4 and any other community library are allowed, labelled `COMMUNITY(<owner>/<repo>@<pin>, <SPDX>)`. A GPL-licensed label requires the file's leading comment to state the GPL licence; the label check and the lint already accept any repository and SPDX word.
 - No exposure scope changes: nothing game-derived is published, and no sibling or library is evidence about the Skyrim binary.
+
+**Values from shipped data files in findings (maintainer decision by awarebayes, 2026-11-24, recorded here by the orchestrator).**
+- A finding may publish counts, types, formats and individual values read from the game's shipped plugin and archive files (plugin records, mesh and texture archives) where they explain behaviour.
+- Bulk tables, record-by-record listings and copies of file contents stay out, like any other dump.
+- Values are cited by file name, record or form type and field; no bytes are reproduced.
