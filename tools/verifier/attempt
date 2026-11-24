@@ -4,6 +4,7 @@
     tools/verifier/attempt <task-dir>            # .local/tasks/<task-id>/ with task.json
     tools/verifier/attempt --rule 48 <task-dir>  # on the attempt that passes: the cookbook rule(s) that fixed it
     tools/verifier/attempt --clean <task-dir>    # remove this task's files on the machine (never stops it)
+    tools/verifier/attempt --prune --max-attempt-bytes N <private-dir>
     tools/verifier/attempt <group-dir>           # a multi-unit task (group.json): print each unit's state
 
 A multi-unit ("small") task is a directory with group.json and one ordinary task directory per
@@ -45,16 +46,27 @@ a project --profile default. Progress lines show matching bytes versus the previ
 a best-score no-improvement count. Keep improving until N attempts without improvement or the
 existing hard attempt cap. Progress never decides a match.
 
+Results keep src/ and diff-signature.json locally. The signature maps each function to
+counts by mismatch class and alignment operation, an empty object on a pass, or null when
+alignment was unavailable. Set SR_ATTEMPT_MAX_BYTES or pass --max-attempt-bytes to prune
+the current task's completed attempts oldest first, keeping the current result.
+--prune applies the cap immediately to a .local directory or
+subtree and can remove the newest result too. The cap measures file sizes in bytes and
+leaves the attempt logs intact. Active and incomplete attempts are left alone.
+
 Exit status: 0 every function passed, 1 a function failed, 3 compile failed, 4 unit or include
 problem, 5 budget exhausted, 2 anything else. A pass is evidence for review only; it makes
 nothing `matched`.
 """
 import argparse
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
 import shlex
+import shutil
 import sys
+import tempfile
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -173,37 +185,122 @@ def recorded_exit(dest, code):
 
 
 def run_once(task, host, files, task_dir, dest):
-    code, out = host.run(files, task_dir / '.attempt')
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        host.fetch(dest)
-    except (boatctl.BoatError, runners.RunnerError):
-        dest.mkdir(parents=True, exist_ok=True)
+    stage = task_dir / '.attempt'
+    root = pipeline.private_root(task_dir)
+    if not stage.resolve().is_relative_to(root) or not dest.resolve().is_relative_to(root):
+        raise PipelineError("attempt output must stay inside the task's .local directory")
+    with tempfile.TemporaryDirectory(dir=stage) as tmp:
+        snapshot = Path(tmp) / 'src'
+        snapshot.mkdir()
+        staged_files = snapshot_sources(task, files, snapshot)
+        code, out = host.run(staged_files, stage)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            host.fetch(dest)
+        except (boatctl.BoatError, runners.RunnerError):
+            shutil.rmtree(dest, ignore_errors=True)
+            dest.mkdir(parents=True, exist_ok=True)
+        snapshot.rename(dest / 'src')
     (dest / 'remote.txt').write_text(out)
     return recorded_exit(dest, code)
 
 
-def snapshot_sources(repo, task, closure, dest):
-    """Copy the unit's .cpp/.h and any include-closure file in the unit's own directory to
-    <dest>/src/, so a later comparison can diff the source of a failed attempt against the one that
-    fixed it. Shared headers elsewhere in the tree are not copied: they only change through a
-    reviewed commit. Never fails the attempt."""
-    compiled = task.get('compiled')
-    if not compiled:
-        return
-    repo = Path(repo)
-    unit = Path(compiled)
-    wanted = {str(unit), str(unit.with_suffix('.h'))}
-    wanted.update(name for name in closure if Path(name).parent == unit.parent)
-    try:
-        for name in sorted(wanted):
-            source = repo / name
-            if source.is_file():
-                target = dest / 'src' / Path(name).name
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(source.read_bytes())
-    except OSError:
-        pass
+def snapshot_sources(task, files, snapshot):
+    """Stage the unit's source and sibling includes, and compile from the saved copies."""
+    unit = Path(task['compiled'])
+    staged = dict(files)
+    for name, source in files.items():
+        path = Path(name)
+        if path.parent == unit.parent:
+            staged[name] = snapshot / path.name
+            shutil.copyfile(source, staged[name])
+    header = Path(files[task['compiled']]).with_suffix('.h')
+    if header.is_file() and not (snapshot / header.name).exists():
+        shutil.copyfile(header, snapshot / header.name)
+    return staged
+
+
+def attempt_numbers(directory):
+    return sorted((p for p in directory.iterdir() if p.name.isascii() and p.name.isdecimal()
+                   and not p.is_symlink() and p.is_dir()), key=lambda p: int(p.name)) if directory.is_dir() else []
+
+
+def write_diff_signature(task, dest):
+    signatures = {}
+    for fn in task['functions']:
+        rva = f'0x{fn["rva"]:x}'
+        folder = dest / rva
+        report = attempt_progress.read_json(folder / 'report.json')
+        alignment = attempt_progress.read_json(folder / 'align.json')
+        signatures[rva] = {} if report.get('result') == 'pass' else alignment.get('diff_signature')
+    (dest / 'diff-signature.json').write_text(json.dumps(signatures, separators=(',', ':'), sort_keys=True) + '\n')
+
+
+def prune_attempts(scope, cap, keep=None):
+    """Remove oldest logged attempt results under a private scope, using the task lock for deletion."""
+    import file_lock
+
+    scope = Path(scope).resolve()
+    root = pipeline.private_root(scope)
+    if not scope.is_dir():
+        raise PipelineError(f'no private directory: {scope}')
+    lock = root / '.attempt-retention.lock'
+    if lock.is_symlink():
+        raise PipelineError(f'retention lock must be a regular file: {lock}')
+    with lock.open('a') as handle:
+        flags = file_lock.LOCK_EX | file_lock.LOCK_NB if keep is not None else file_lock.LOCK_EX
+        file_lock.flock(handle, flags)
+        return prune_locked(scope, cap, keep)
+
+
+def prune_locked(scope, cap, keep):
+    completed = []
+    for parent, dirs, _ in os.walk(scope):
+        if 'attempts' not in dirs:
+            continue
+        dirs.remove('attempts')
+        attempts = Path(parent) / 'attempts'
+        if attempts.is_symlink():
+            continue
+        try:
+            logged = {row.get('attempt') for row in log_rows(attempts.parent / 'attempts.jsonl') if isinstance(row, dict)}
+        except (OSError, ValueError):
+            continue
+        for run in attempt_numbers(attempts):
+            if int(run.name) not in logged:
+                continue
+            try:
+                finished = (run / 'attempt.txt').stat().st_mtime_ns
+                size = sum((Path(folder) / name).lstat().st_size
+                           for folder, _, names in os.walk(run) for name in names)
+            except FileNotFoundError:
+                continue
+            completed.append((finished, run, size))
+    total = sum(size for _, _, size in completed)
+    removed = 0
+    for _, run, size in sorted(completed):
+        if total <= cap:
+            break
+        if run == keep:
+            continue
+        task = run.parents[1]
+        if not (task / '.attempt').resolve().is_relative_to(scope):
+            continue
+        try:
+            lock = nullcontext() if keep is not None and task == keep.parents[1] else pipeline.lock(task)
+        except PipelineError:
+            continue
+        with lock:
+            if run.is_symlink() or run.parent.is_symlink() or not run.is_dir():
+                continue
+            shutil.rmtree(run)
+            total -= size
+            removed += 1
+    return removed, total
+
+
+def prune_message(removed, total, cap):
+    return f'attempt retention: pruned {removed} result(s), {total} bytes remain (cap {cap})'
 
 
 def fallback_budget(task_dir, qdir, tier='fallback'):
@@ -263,6 +360,7 @@ def retry_alternatives(task, host, task_dir, dest, image, objdump=None, force=Fa
         finally:
             host.task = task
         if code not in (0, 1):
+            write_diff_signature(task, adest)
             lines.append(f'  retry {alt["id"]} ({alts.change_text(alt)}): not compared (exit {code}; see {adest / "remote.txt"})')
             continue
         passing = {}
@@ -283,6 +381,7 @@ def retry_alternatives(task, host, task_dir, dest, image, objdump=None, force=Fa
             after = (attempt_progress.read_json(adest / f'0x{fn["rva"]:x}' / 'align.json') or {}).get('distance')
             if before is not None and after is not None:
                 shifts.append(f'0x{fn["rva"]:x} {before} -> {after}')
+        write_diff_signature(task, adest)
         lines.append(f'  retry {alt["id"]} ({alts.change_text(alt)}) on {len(wanted)} function(s): {len(won)} match'
                      + (f'; aligned distance {", ".join(shifts)} (lower is closer)' if shifts else ''))
         if won:
@@ -343,7 +442,7 @@ def alias_lines(task, dest, results):
 
 
 def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True, retry=True, force_retry=False,
-            auto=True, correct=False, verbose=True):
+            auto=True, correct=False, verbose=True, max_attempt_bytes=None):
     started = time.monotonic()
     task = pipeline.load_task(task_dir)
     import draft_worktrees
@@ -351,8 +450,9 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     task_dir = task['dir']
     handle = pipeline.lock(task_dir)  # held before attribution or attempt writes
     attempts = task_dir / 'attempts'
-    done = sorted(p for p in attempts.glob('[0-9][0-9][0-9]') if p.is_dir()) if attempts.is_dir() else []
-    number = int(done[-1].name) + 1 if done else 1
+    done = attempt_numbers(attempts)
+    logged = max((row.get('attempt', 0) for row in log_rows(task_dir / 'attempts.jsonl')), default=0)
+    number = max(int(done[-1].name) if done else 0, logged) + 1
     budget = task['max_attempts'] if tier == 'first' else fallback_budget(task_dir, qdir, tier)
     used = counted_attempts(task_dir / 'attempts.jsonl', tier)
     if budget is not None and used >= budget:
@@ -445,7 +545,6 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
             bind_lines += hint_lines + bind.describe(final, task_dir)
             if recompared:
                 bind_lines.append('  re-compared after binding (same source)')
-    snapshot_sources(pipeline.REPO, task, closure, dest)
     results = results_of(task, dest)
     bind_lines += alias_lines(task, dest, results)
     binding_only = code in (0, 1) and bool(results) and all(r in bind.BINDING_REASONS for r in results.values())
@@ -546,6 +645,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     lines.append(f'time {time.monotonic() - started:.1f} s')
     lines.extend(verdict_lines(lines[0], all_rows))
     text = '\n'.join(lines)
+    write_diff_signature(task, dest)
     (dest / 'attempt.txt').write_text(text + '\n' + ''.join(f'{r}\n' for r in all_rows))
     with open(task_dir / 'attempts.jsonl', 'a') as log:
         log.write(json.dumps({'attempt': number, 'exit': code, 'counted': counted, 'tier': tier, 'model': model, 'progress': progress,
@@ -567,6 +667,13 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
             actionable = all_rows[0].splitlines()[0].strip()
         if actionable:
             print(actionable + f' (details: {rel}/attempt.txt; --verbose for full output)')
+    if max_attempt_bytes is not None:
+        try:
+            removed, total = prune_attempts(task_dir, max_attempt_bytes, keep=dest)
+            if removed or total > max_attempt_bytes:
+                print(prune_message(removed, total, max_attempt_bytes))
+        except (PipelineError, OSError, ValueError) as exc:
+            print(f'attempt retention: {exc}', file=sys.stderr)
     if runner is None:
         # The standing machine is billed while the attempt runs, so wall time is the draft's compute.
         wall = time.monotonic() - started
@@ -583,9 +690,8 @@ def group_status(group_dir):
     for u in group['units']:
         udir = group_dir / u['dir']
         used = counted_attempts(udir / 'attempts.jsonl')
-        last = 'not attempted'
-        runs = sorted(p for p in (udir / 'attempts').glob('[0-9][0-9][0-9]') if p.is_dir()) \
-            if (udir / 'attempts').is_dir() else []
+        runs = attempt_numbers(udir / 'attempts')
+        last = 'result unavailable' if log_rows(udir / 'attempts.jsonl') else 'not attempted'
         if runs and (runs[-1] / 'attempt.txt').is_file():
             head = (runs[-1] / 'attempt.txt').read_text().splitlines()[:1]
             last = head[0].split(': ', 1)[-1] if head else 'no summary'
@@ -684,6 +790,13 @@ def clean(task_dir):
     return 0
 
 
+def nonnegative_bytes(value):
+    value = int(value)
+    if value < 0:
+        raise argparse.ArgumentTypeError('size cap must be nonnegative')
+    return value
+
+
 def main():
     p = agent_advice.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('task_dir', nargs='?')
@@ -705,7 +818,11 @@ def main():
                    'instruction alignment contradicts (a near-miss whose hints were lost); hides a wrong global in the source, '
                    'so it is for studies, not drafting')
     p.add_argument('--retry-any', action='store_true', help=argparse.SUPPRESS)
-    p.add_argument('--clean', action='store_true', help="remove the task's files on the machine")
+    cleanup = p.add_mutually_exclusive_group()
+    cleanup.add_argument('--clean', action='store_true', help="remove the task's files on the machine")
+    cleanup.add_argument('--prune', action='store_true', help='apply the size cap to a private directory and exit')
+    p.add_argument('--max-attempt-bytes', type=nonnegative_bytes, default=os.environ.get('SR_ATTEMPT_MAX_BYTES'),
+                   help='opt-in size cap in bytes for the task or explicit prune scope (SR_ATTEMPT_MAX_BYTES)')
     p.add_argument('--stop', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
     a = p.parse_args()
@@ -721,6 +838,12 @@ def main():
         if not a.task_dir:
             p.error('a task directory is required')
         group_dir = pipeline.resolve_task_dir(a.task_dir)
+        if a.prune:
+            if a.max_attempt_bytes is None:
+                p.error('--prune requires --max-attempt-bytes or SR_ATTEMPT_MAX_BYTES')
+            removed, total = prune_attempts(group_dir, a.max_attempt_bytes)
+            print(prune_message(removed, total, a.max_attempt_bytes))
+            return int(total > a.max_attempt_bytes)
         if not (group_dir / 'task.json').is_file() and (group_dir / 'group.json').is_file():
             print('\n'.join(group_status(group_dir)))
             return 2
@@ -731,7 +854,8 @@ def main():
         except ValueError:
             p.error('--rule takes cookbook rule numbers such as 48 or 48,12')
         return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory, not a.no_retry, a.retry_any,
-                       not a.no_auto_hints, a.hints_by_alignment, a.verbose or bool(os.environ.get('CI')))
+                       not a.no_auto_hints, a.hints_by_alignment, a.verbose or bool(os.environ.get('CI')),
+                       max_attempt_bytes=a.max_attempt_bytes)
     except (PipelineError, boatctl.BoatError, runners.RunnerError, wq.QueueError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f'attempt: {agent_advice.explain(exc, "attempt")}', file=sys.stderr)
         return 2

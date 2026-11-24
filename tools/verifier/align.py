@@ -1331,7 +1331,7 @@ def reference_pairs(T, C, ops):
             'thread_locals': {n: {hex(v): k for v, k in sorted(votes.items())} for n, votes in sorted(tls.items())}}
 
 
-def report(T, C, unwind=None):
+def report(T, C, unwind=None, signature=False):
     """(summary lines, JSON dict, aligned listing text) for two normalised instruction lists."""
     result = analyse(T, C, unwind)
     counts, costs = Counter(), Counter()
@@ -1403,6 +1403,15 @@ def report(T, C, unwind=None):
         'alignment': [_op_json(op, T, C) for op in result['ops']],
         'reference_pairs': reference_pairs(T, C, result['ops']),
     }
+    if signature:
+        kinds = {'pair': 'pair', 'del': 'missing', 'ins': 'extra', 'move': 'moved'}
+        by_class = {}
+        for op, (_, _, _, classes) in zip(result['ops'], result['rows']):
+            kind = kinds[op[0]]
+            for cls in classes:
+                counts_by_kind = by_class.setdefault(cls, Counter())
+                counts_by_kind[kind] += 1
+        data['diff_signature'] = by_class
     return lines, data, _listing(result, T, C, lines)
 
 
@@ -1507,7 +1516,7 @@ def display_name(name):
 
 
 def summarise(target_listing, candidate_listing, symbols=None, target_rva=None, image_base=None,
-              target_size=None, unwind=None, listing_path=None, tls=None):
+              target_size=None, unwind=None, listing_path=None, tls=None, signature=False):
     """(summary text, JSON dict) for one function.
 
     Listings are llvm-objdump text (the candidate with -r) or rows of (address, bytes, text,
@@ -1522,7 +1531,7 @@ def summarise(target_listing, candidate_listing, symbols=None, target_rva=None, 
     T = build(t_rows, size=target_size, base=image_base)
     C = build(c_rows, symbols=symbols if isinstance(symbols, dict) else load_symbols(symbols), candidate=True,
               tls=tls if isinstance(tls, dict) else load_tls(tls))
-    lines, data, listing = report(T, C, unwind)
+    lines, data, listing = report(T, C, unwind, signature)
     if listing_path is not None:
         Path(listing_path).write_text(listing)
     return '\n'.join(lines), data
@@ -1556,7 +1565,8 @@ def unwind_from_diagnostics(fdir):
     return None
 
 
-def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, unwind=None, out_dir=None, tls=None):
+def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, unwind=None, out_dir=None, tls=None,
+                   signature=False):
     """Align one compiled function against the image; writes align.txt and align.json to `out_dir`.
 
     `fdir` is the attempt's function directory (its diagnostics.json supplies the unwind infos);
@@ -1571,7 +1581,7 @@ def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, u
     out = Path(out_dir) if out_dir is not None else Path(fdir)
     out.mkdir(parents=True, exist_ok=True)
     text, data = summarise(target, candidate, symbols=symbols, image_base=base, target_size=size, unwind=unwind,
-                           listing_path=out / 'align.txt', tls=tls)
+                           listing_path=out / 'align.txt', tls=tls, signature=signature)
     (out / 'align.json').write_text(json.dumps(data, indent=1) + '\n')
     (out / SUMMARY_FILE).write_text(text + '\n')
     return text, data
@@ -1605,7 +1615,7 @@ def attempt_summary(fdir, objdump, image, obj, fn, symbols_path=None):
             return ['aligned: not available (no objdump, image or candidate object)']
         symbols, tls = load_scoring(symbols_path, image)
         text, _ = align_function(fdir, objdump, image, obj, fn['symbol'], fn['rva'], fn['size'],
-                                 symbols=symbols, tls=tls)
+                                 symbols=symbols, tls=tls, signature=True)
         return text.splitlines() + [f'aligned listing: {Path(fdir) / "align.txt"}']
     except Exception as exc:  # noqa: BLE001 - a broken diagnostic must not hide the comparator's result
         return [f'aligned: not available ({type(exc).__name__}: {exc})']
@@ -1643,7 +1653,8 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
         try:
             text, data = align_function(fdir, objdump, image, attempt_dir / 'candidate.obj', fn['symbol'],
                                         fn['rva'], fn['size'], symbols=symbols, tls=tls,
-                                        out_dir=Path(out_root) / fdir.name if out_root else None)
+                                        out_dir=Path(out_root) / fdir.name if out_root else None,
+                                        signature=out_root is None)
         except (OSError, ValueError, subprocess.SubprocessError) as exc:
             yield fn.get('rva'), rep.get('reason'), f'aligned: not available ({exc})', None
             continue
