@@ -13,6 +13,8 @@ facts. The tool never reads image bytes.
 
     sibling_transplant.py plan  --scores S.json --listings DIR [DIR..] --build-results B.json --out PLAN.json
     sibling_transplant.py write PLAN.json 0x<rva> [--task-only]
+    sibling_transplant.py plan ... --rvas NEAR.json     (plan near pairs that are not identical after masking)
+    sibling_transplant.py run PLAN.json 0x<rva>.. --layouts FACTS.json   (stand-in layout for member-offset / vtable-slot pairs)
 """
 import argparse
 import json
@@ -297,11 +299,16 @@ def build_plan_fnv(args):
 
 def build_plan(args):
     scores = json.load(open(args.scores))
-    results = json.load(open(args.build_results))
+    results = [r for b in args.build_results for r in json.load(open(b))]
     stem_src = {Path(r['obj']).stem: r['source'] for r in results}
+    wanted = {int(x) for x in json.load(open(args.rvas))} if args.rvas else None
     out = []
     for x in scores:
-        if not x.get('identical'):
+        # a near pair is not identical after masking; the caller names the pairs it wants
+        if wanted is not None:
+            if x['rva'] not in wanted:
+                continue
+        elif not x.get('identical'):
             continue
         stem, sym = x['key']
         line, texts, fname = locate(args.listings, stem, sym)
@@ -521,7 +528,8 @@ def build_unit(entry, fact, shadow_lines, original_lines, mode=None):
     else:
         labels.append(([method_out], 'SIBLING' if kept else 'GUESS'))
     return dict(cls=cls, header_decl=text_pre.strip('\n'), cpp_body=text_fn + '\n', compared=compared, src_line=src_line,
-                adapted=compared, labels=labels, thunk=False, free=free, method=method, source=entry['source'])
+                adapted=compared, labels=labels, thunk=False, free=free, method=method, source=entry['source'],
+                raw_name=sanitize(raw_name))
 
 
 def render(u, rva, rel_source, cls_file):
@@ -653,7 +661,22 @@ def syntax_precheck(cpp):
     return re.sub(r'^.*? error: ', '', errs[0])[:140] if errs else None
 
 
-def run_one(entry, facts, log, sizes=None):
+def template_instantiation(sym):
+    """Explicit instantiation line for a function-template instance symbol (`??$Name@...`): the sibling
+    function is a template, so nothing is emitted unless the unit asks for this instance."""
+    import subprocess
+    tool = Path('/opt/homebrew/opt/llvm/bin/llvm-undname')
+    if not sym.startswith('??$') or not tool.exists():
+        return None
+    out = subprocess.run([str(tool), sym], capture_output=True, text=True).stdout.strip().splitlines()
+    text = out[-1].strip() if out else ''
+    if not text or text.startswith('error') or ('<' not in text):
+        return None
+    text = CALLCONV.sub('', re.sub(r'\b__(?:cdecl|stdcall|fastcall|thiscall|vectorcall)\b\s*', '', text))
+    return 'template ' + sanitize(text) + ';'
+
+
+def run_one(entry, facts, log, sizes=None, layouts=None):
     import subprocess
     rva = entry['rva']
     if sizes and hex(rva) in sizes:
@@ -671,10 +694,17 @@ def run_one(entry, facts, log, sizes=None):
     line = resolve_line(original_lines, entry['line'], entry.get('texts') or [])
     if line is None and not entry['sym'].startswith(('??_G', '??_E')):
         return 'no-source: listed text not in the clone'
+    if entry['sym'].startswith('??$'):
+        # a template instance: the listing's first source line can belong to another template of the file
+        inst = template_instantiation(entry['sym'])
+        base = re.match(rf'template\s+[^()]*?({IDENT})\s*<', inst or '')
+        found = definition_line(original_lines, f'?{base.group(1)}@@') if base else None
+        if found:
+            line = found
     # A deleting-destructor thunk is emitted next to a constructor or inline destructor whose listed lines say nothing about the class.
     entry = dict(entry, line=line)
     fact = (facts.get(f'0x{rva:x}') or {}).get('crashlogger')
-    res = run_mode(entry, fact, shadow_lines, original_lines, rva, None)
+    res = run_mode(entry, fact, shadow_lines, original_lines, rva, None, (layouts or {}).get(hex(rva)))
     if res.startswith(('FAIL', 'precheck')) and entry['sym'].startswith(('??_G', '??_E')) and entry.get('line'):
         res2 = run_mode(entry, fact, shadow_lines, original_lines, rva, 'excerpt')
         if not res2.startswith('unit:'):
@@ -682,11 +712,31 @@ def run_one(entry, facts, log, sizes=None):
     return res
 
 
-def run_mode(entry, fact, shadow_lines, original_lines, rva, mode):
+def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
     import subprocess
     u = build_unit(entry, fact, shadow_lines, original_lines, mode)
     if isinstance(u, str):
         return 'unit:' + u
+    inst = None if u.get('thunk') else template_instantiation(entry['sym'])
+    # the listing can point at another template than the instance named by the symbol; then nothing is instantiated
+    if inst and layout is not None and '<unsigned char>' in inst:
+        # sizeof(T) of a one-byte instance appears as a sibling immediate of 1 against the target's real size
+        sizes = {int(f['skyrim'], 16) for f in layout if f['kind'] == 'immediate' and f['sibling_x64'] == '0x1'
+                 and f['skyrim'].startswith('0x')} & {2, 4, 8}
+        if len(sizes) == 1:
+            inst = inst.replace('unsigned char', {2: 'short', 4: 'int', 8: '__int64'}[sizes.pop()])
+    if inst and re.search(rf'(?<![\w:]){re.escape(u.get("raw_name") or "?")}\s*<', inst):
+        u['cpp_body'] = u['cpp_body'].rstrip('\n') + '\n\n' + inst + '\n'
+    if layout is not None:
+        if u.get('thunk'):
+            return 'unit:layout: thunk'
+        import sibling_layout
+        if u.get('raw_name') and u.get('method') and u['method'] != u['raw_name'] and not u['method'].startswith('~'):
+            # the declaration still carries the sibling's method name; the definition was renamed to the target's
+            u['header_decl'] = whole_word(u['header_decl'], u['raw_name'], sanitize(u['method']))
+        why = sibling_layout.apply_layout(u, layout, u.get('method'))
+        if why:
+            return 'unit:layout: ' + why
     existing = next((ROOT / '.local/contrib/tasks').glob(f'*-{rva:x}'), None)
     if existing is not None:
         files, out = tuple(json.load(open(existing / 'task.json'))['contrib']['unit']), ''
@@ -739,7 +789,8 @@ def main():
     p = sub.add_parser('plan')
     p.add_argument('--scores', required=True)
     p.add_argument('--listings', nargs='+', required=True)
-    p.add_argument('--build-results', required=True)
+    p.add_argument('--build-results', nargs='+', required=True)
+    p.add_argument('--rvas', help='JSON list of rvas to plan whether or not they are identical (near pairs)')
     p.add_argument('--out', required=True)
     q = sub.add_parser('plan-fnv')
     q.add_argument('--scores', required=True)
@@ -752,6 +803,7 @@ def main():
     r.add_argument('rvas', nargs='+')
     r.add_argument('--jobs', type=int, default=4)
     r.add_argument('--sizes', help='JSON {rva: class size} for deleting-destructor thunks known only by size')
+    r.add_argument('--layouts', help='JSON {rva: [layout facts]} for near pairs that differ only in member offsets or vtable slots')
     r.add_argument('--results', default=str(ROOT / '.local/transplant/results.jsonl'))
     a = ap.parse_args()
     if a.cmd == 'plan':
@@ -763,11 +815,12 @@ def main():
         plan = {o['rva']: o for o in json.load(open(a.plan))}
         facts = load_facts()
         sizes = json.load(open(a.sizes)) if a.sizes else None
+        layouts = json.load(open(a.layouts)) if a.layouts else None
         rvas = [int(x, 16) for x in a.rvas]
         # skeleton creation is serialised inside run_one; the PC attempts overlap
         def one(rva):
             try:
-                res = run_one(plan.get(rva) or {'rva': rva, 'sym': '', 'size': 0}, facts, None, sizes)
+                res = run_one(plan.get(rva) or {'rva': rva, 'sym': '', 'size': 0}, facts, None, sizes, layouts)
             except Exception as exc:  # a bad sibling excerpt must not stop the batch
                 res = f'error:{type(exc).__name__}: {exc}'[:200]
             print(hex(rva), res, flush=True)
