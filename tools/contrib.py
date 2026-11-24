@@ -1447,6 +1447,22 @@ def fetch_sources(ctx, sources=None):
     return done
 
 
+def fetch_x64_index(ctx):
+    """Download the prebuilt x64 shape indexes (docs/sibling-x64.md) into the private folder, each checked
+    against the SHA-256 pinned in data/x64-index.json. Returns a one-line summary."""
+    import x64_index
+    try:
+        pins = x64_index.load_pins(ctx.repo / 'data/x64-index.json')
+        dest = ctx.private / 'x64-index'
+        got = []
+        for game in sorted(pins['assets']):
+            _path, fresh = x64_index.fetch(game, dest, pins)
+            got.append(f'{game} {"downloaded" if fresh else "present"}')
+    except x64_index.IndexError_ as exc:
+        raise Stop(NETWORK, str(exc), f'{ctx.cli} setup --yes   (retry when online)')
+    return ', '.join(got) + f' ({pins["tag"]}, SHA-256 verified) in {dest}'
+
+
 def sibling_analysis_dir(ctx):
     return ctx.private / 'analysis'
 
@@ -1681,6 +1697,13 @@ def cmd_setup(ctx, args):
                  + f'; index joins {joined} inventory functions by name')
         except Stop as exc:
             step('sibling source', 'skipped', exc.message)
+    # 3c. The prebuilt x64 shape index of the CC0 sibling builds (compiled sibling code only; the SHA-256
+    # is pinned in data/x64-index.json). Optional like the sibling clone.
+    if not args.no_sources and not getattr(args, 'no_sibling', False):
+        try:
+            step('x64 index', 'ok', fetch_x64_index(ctx))
+        except Stop as exc:
+            step('x64 index', 'skipped', exc.message)
     # 4. The compiler.
     if tool['status'] in ('ok', 'override'):
         step('compiler', tool['status'], tool.get('bin') or 'SR_CONTRIB_COMPILER')

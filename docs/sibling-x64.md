@@ -29,3 +29,10 @@ compile; the build output lists them.
 **How to use the output.** Treat compiled sibling functions as leads: match them to Skyrim functions by code
 shape with offsets masked, then run the normal comparator. A sibling is never evidence about the Skyrim
 binary (`docs/authorizations.md`); labels and the `Sibling source:` header rules in the cards still apply.
+
+**Prebuilt index.** Release `x64-index-v1` of each fork carries `x64-index-v1-<game>.json.gz`: one signature
+per compiled sibling function (mnemonic stream, call count, large immediates, string literals), built from the
+compiled CC0 code only. It holds no Skyrim bytes, results or addresses. `./sr setup` downloads both into
+`.local/x64-index/` and refuses a file whose SHA-256 differs from the pin in `data/x64-index.json`
+(`--no-sibling` skips it). `tools/x64_index.py` packs, verifies, fetches and loads the format; the maintainer
+rebuilds it from the forks' `x64-msvc1916` branches and publishes a new tag with a new pin.
