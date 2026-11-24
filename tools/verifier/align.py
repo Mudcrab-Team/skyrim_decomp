@@ -247,12 +247,14 @@ def _memory(op):
     return size, seg, base, index, scale, disp
 
 
-def build(rows, start=None, size=None, base=None, symbols=None, candidate=False):
+def build(rows, start=None, size=None, base=None, symbols=None, candidate=False, tls=None):
     """Normalised instructions of one side. `rows` from parse_listing (absolute addresses).
 
     `start` is the function's address in the listing's address space (default: the first row),
     `base` the image base for the target side (address minus base is the RVA), `symbols` a map of
-    name -> RVA for resolving the candidate's relocations.
+    name -> RVA for resolving the candidate's relocations, `tls` a map of thread-local variable
+    name -> TLS-template offset: a SECREL field of the candidate holds only the addend, while the
+    target's code holds the offset plus the addend, so the offset is added to the candidate's value.
     """
     if not rows:
         return []
@@ -261,6 +263,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
     if size is not None:
         end = start + size
     symbols = symbols or {}
+    tls = tls or {}
     out = []
     for idx, (addr, data, text, relocs) in enumerate(rows):
         ins = Insn()
@@ -279,6 +282,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
             rest = nxt[1] if len(nxt) > 1 else ''
         ins.mnem = mnem
         reloc = relocs[0] if relocs else None
+        secrel = tls.get(reloc[2]) if candidate and reloc is not None and reloc[1] == 'SECREL' else None
         next_ip = addr + len(data)
         shapes, regs = [], []
         ops = _split_operands(rest)
@@ -315,7 +319,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
                     else:
                         ins.ref = _targ_ref(next_ip + disp, base)
                 else:
-                    parts_shape.append(disp)
+                    parts_shape.append(disp + secrel if secrel is not None and mbase != 'rip' else disp)
                 shapes.append(tuple(parts_shape))
                 continue
             if _is_num(op):
@@ -334,7 +338,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
                     shapes.append(('imm-ref',))
                     ins.ref = _cand_ref(reloc, value, symbols)
                 else:
-                    shapes.append(('imm', value))
+                    shapes.append(('imm', value + secrel if secrel is not None else value))
                 continue
             shapes.append(('raw', op))
         ins.shape = (mnem, tuple(shapes))
@@ -1285,8 +1289,67 @@ def load_symbols(path):
     return out
 
 
+def load_tls(path):
+    """name -> TLS-template offset for the thread-local entries of a task symbol map."""
+    if path is None or not Path(path).is_file():
+        return {}
+    raw = json.loads(Path(path).read_text())
+    raw = raw.get('symbols', raw) if isinstance(raw, dict) else {}
+    return {name: value['tls_offset'] for name, value in raw.items()
+            if isinstance(value, dict) and value.get('kind') == 'thread-local' and isinstance(value.get('tls_offset'), int)}
+
+
+_TLS_INDEX_RVA = {}
+
+
+def tls_index_rva(image):
+    """RVA of the image's TLS index slot, which a candidate's `_tls_index` reference resolves to; None
+    when the image has no usable TLS directory. Read once per image."""
+    key = str(image)
+    if key not in _TLS_INDEX_RVA:
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+            from pecoff import PeImage
+            _TLS_INDEX_RVA[key] = PeImage(Path(image).read_bytes()).tls_template()[2]
+        except Exception:  # noqa: BLE001 - scoring just leaves the reference unresolved
+            _TLS_INDEX_RVA[key] = None
+    return _TLS_INDEX_RVA[key]
+
+
+def load_scoring(path, image=None):
+    """(name -> RVA, name -> TLS offset) of a task symbol map, with `_tls_index` resolved from the image."""
+    symbols, tls = load_symbols(path), load_tls(path)
+    if image and '_tls_index' not in symbols:
+        index = tls_index_rva(image)
+        if index is not None:
+            symbols['_tls_index'] = index
+    return symbols, tls
+
+
+def unresolved_references(candidate_listing, symbols, tls):
+    """Names of the relocations in a candidate listing that the symbol maps do not resolve, in order of first use.
+
+    A SECREL field resolves through `tls`, anything else through `symbols`; compiler-local labels
+    (`$LN`, `$unwind`) never need a map entry.
+    """
+    out = []
+    for _addr, _data, _text, relocs in _as_rows(candidate_listing):
+        for _field, kind, name in relocs:
+            if name.startswith('$') or name in out:
+                continue
+            if name not in (tls if kind == 'SECREL' else symbols):
+                out.append(name)
+    return out
+
+
+def display_name(name):
+    """A symbol name for logs: a string literal's name spells its text, so only its hash is shown."""
+    m = re.match(r'\?\?_C@_0(?:[0-9]|[A-P]+@)([0-9A-Z]{8})@', name)
+    return f'??_C@..{m.group(1)}' if m else name
+
+
 def summarise(target_listing, candidate_listing, symbols=None, target_rva=None, image_base=None,
-              target_size=None, unwind=None, listing_path=None):
+              target_size=None, unwind=None, listing_path=None, tls=None):
     """(summary text, JSON dict) for one function.
 
     Listings are llvm-objdump text (the candidate with -r) or rows of (address, bytes, text,
@@ -1299,7 +1362,8 @@ def summarise(target_listing, candidate_listing, symbols=None, target_rva=None, 
     if image_base is None and target_rva is not None and t_rows:
         image_base = t_rows[0][0] - target_rva
     T = build(t_rows, size=target_size, base=image_base)
-    C = build(c_rows, symbols=symbols if isinstance(symbols, dict) else load_symbols(symbols), candidate=True)
+    C = build(c_rows, symbols=symbols if isinstance(symbols, dict) else load_symbols(symbols), candidate=True,
+              tls=tls if isinstance(tls, dict) else load_tls(tls))
     lines, data, listing = report(T, C, unwind)
     if listing_path is not None:
         Path(listing_path).write_text(listing)
@@ -1334,7 +1398,7 @@ def unwind_from_diagnostics(fdir):
     return None
 
 
-def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, unwind=None, out_dir=None):
+def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, unwind=None, out_dir=None, tls=None):
     """Align one compiled function against the image; writes align.txt and align.json to `out_dir`.
 
     `fdir` is the attempt's function directory (its diagnostics.json supplies the unwind infos);
@@ -1349,7 +1413,7 @@ def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, u
     out = Path(out_dir) if out_dir is not None else Path(fdir)
     out.mkdir(parents=True, exist_ok=True)
     text, data = summarise(target, candidate, symbols=symbols, image_base=base, target_size=size, unwind=unwind,
-                           listing_path=out / 'align.txt')
+                           listing_path=out / 'align.txt', tls=tls)
     (out / 'align.json').write_text(json.dumps(data, indent=1) + '\n')
     return text, data
 
@@ -1359,8 +1423,9 @@ def attempt_summary(fdir, objdump, image, obj, fn, symbols_path=None):
     try:
         if objdump is None or image is None or not Path(image).is_file() or not Path(obj).is_file():
             return ['aligned: not available (no objdump, image or candidate object)']
+        symbols, tls = load_scoring(symbols_path, image)
         text, _ = align_function(fdir, objdump, image, obj, fn['symbol'], fn['rva'], fn['size'],
-                                 symbols=load_symbols(symbols_path))
+                                 symbols=symbols, tls=tls)
         return text.splitlines() + [f'aligned listing: {Path(fdir) / "align.txt"}']
     except Exception as exc:  # noqa: BLE001 - a broken diagnostic must not hide the comparator's result
         return [f'aligned: not available ({type(exc).__name__}: {exc})']
@@ -1383,7 +1448,7 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
     """
     attempt_dir = Path(attempt_dir)
     task_dir = Path(task_dir) if task_dir else attempt_dir.parent.parent
-    symbols = load_symbols(task_dir / 'symbols.json')
+    symbols, tls = load_scoring(task_dir / 'symbols.json', image)
     for fdir in sorted(p for p in attempt_dir.glob('0x*') if p.is_dir()):
         try:
             rep = json.loads((fdir / 'report.json').read_text())
@@ -1396,7 +1461,7 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
             continue
         try:
             text, data = align_function(fdir, objdump, image, attempt_dir / 'candidate.obj', fn['symbol'],
-                                        fn['rva'], fn['size'], symbols=symbols,
+                                        fn['rva'], fn['size'], symbols=symbols, tls=tls,
                                         out_dir=Path(out_root) / fdir.name if out_root else None)
         except (OSError, ValueError, subprocess.SubprocessError) as exc:
             yield fn.get('rva'), rep.get('reason'), f'aligned: not available ({exc})', None
@@ -1442,8 +1507,9 @@ def main(argv=None):
         if objdump is None or image is None:
             p.error('needs llvm-objdump and the local image')
         out = Path(a.out) if a.out else Path(a.object).parent
+        symbols, tls = load_scoring(a.symbols, image)
         text, data = align_function(out, objdump, image, a.object, a.symbol, a.rva, a.size,
-                                    symbols=load_symbols(a.symbols))
+                                    symbols=symbols, tls=tls)
         print(json.dumps(data, indent=1) if a.json else text)
         return 0
     p.error('give --attempt, or --target and --candidate, or --object, --symbol, --rva and --size')

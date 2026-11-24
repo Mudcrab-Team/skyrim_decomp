@@ -66,6 +66,13 @@ class Config(unittest.TestCase):
         # An ssh host gets units in batches by default; a local host one at a time.
         self.assertEqual((c['hosts']['mac']['batch'], c['hosts']['winpc']['batch']), (1, 8))
 
+    def test_host_objdump_is_optional_and_kept(self):
+        c = runners.validate(config(hosts={'mac': host(objdump='llvm-objdump'),
+                                           'winpc': ssh_host(objdump='C:/example/llvm/llvm-objdump.exe')}), root='/repo')
+        self.assertEqual(c['hosts']['winpc']['objdump'], 'C:/example/llvm/llvm-objdump.exe')
+        self.assertEqual(c['hosts']['mac']['objdump'], 'llvm-objdump')
+        self.assertNotIn('objdump', runners.validate(config(), root='/repo')['hosts']['winpc'])
+
     def test_rejections(self):
         cases = [
             (dict(runners_schema=2), 'runners_schema'),
@@ -79,6 +86,8 @@ class Config(unittest.TestCase):
             (dict(hosts={'mac': host(), 'winpc': ssh_host(batch=True)}), 'batch'),
             (dict(hosts={'mac': host(), 'winpc': ssh_host(msvc='C:/Program Files/msvc')}), 'quoting'),
             (dict(hosts={'mac': host(), 'winpc': ssh_host(image='C:/x;rm -rf')}), 'quoting'),
+            (dict(hosts={'mac': host(), 'winpc': ssh_host(objdump='C:/Program Files/LLVM/bin/llvm-objdump.exe')}), 'quoting'),
+            (dict(hosts={'mac': host(), 'winpc': ssh_host(objdump=3)}), 'objdump'),
             (dict(hosts={'mac': host(), 'winpc': ssh_host(ssh_host=None)}), 'ssh_host'),
             (dict(attempt='nowhere'), 'not a host'),
             (dict(confirm=['boat']), 'runner hosts only'),

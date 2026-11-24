@@ -769,11 +769,19 @@ def summary(units, status, counts, pending_by_rule):
 _ANALYSED = {}
 
 
-def analysed(checkout):
-    """`analyse` of another checkout, once per run."""
-    if checkout not in _ANALYSED:
-        _ANALYSED[checkout] = analyse(checkout)
-    return _ANALYSED[checkout]
+def analysed(checkout, names=None):
+    """`analyse` of another checkout, once per run; only `names` when given."""
+    key = (checkout, tuple(sorted(names)) if names is not None else None)
+    if key not in _ANALYSED:
+        _ANALYSED[key] = analyse(checkout, names)
+    return _ANALYSED[key]
+
+
+def is_source(checkout, name):
+    """True when `name` is a .h or .cpp file the analysis reads (under reconstruction/, not a skipped root)."""
+    path = Path(checkout) / name
+    return (path.suffix in ('.h', '.cpp') and path.is_file() and name.startswith(SOURCE_ROOT.rstrip('/') + '/')
+            and not name.startswith(SKIPPED_ROOTS))
 
 
 def locate(arg, root, cwd=None):
@@ -810,18 +818,34 @@ def main(argv=None):
     parser.add_argument('--root', default=str(ROOT), help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     root = Path(args.root)
-    units = analyse(root)
-    status = unit_status(units)
+    here = root.resolve()
     located = [locate(f, root) for f in args.files]
     named = [name for _checkout, name in located]
-    here = root.resolve()
-    unknown = [f for f, (checkout, name) in zip(args.files, located) if name not in (units if checkout == here else analysed(checkout))]
+    # With files named and no totals asked for, only those files are read: the whole-tree scan is
+    # about a minute and the findings of a file do not depend on the rest of the tree except for the
+    # cross-file rows (a type defined differently elsewhere), which need the full run.
+    narrow = bool(named) and not args.json_path
+    unknown = [f for f, (checkout, name) in zip(args.files, located) if not is_source(checkout, name)]
     if unknown:
         print('not a source file under reconstruction/: ' + ', '.join(unknown), file=sys.stderr)
         return 2
+    if narrow:
+        by_checkout = {}
+        for checkout, name in located:
+            by_checkout.setdefault(checkout, []).append(name)
+        found_in = {c: analysed(c, sorted(set(names_))) for c, names_ in by_checkout.items()}
+        units = found_in.get(here, {})
+        status = {}
+    else:
+        units = analyse(root)
+        status = unit_status(units)
+        found_in = {here: units}
+        for checkout, _name in located:
+            if checkout != here:
+                found_in[checkout] = analysed(checkout)
     failed = False
     for checkout, name in located:
-        found = units if checkout == here else analysed(checkout)
+        found = found_in[checkout]
         for line, rule, code, message, function in found[name].findings:
             matching = is_match(rule, code)
             failed = failed or matching

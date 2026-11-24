@@ -807,6 +807,46 @@ class ThreadLocalBindTests(unittest.TestCase):
         self.assertNotIn(hint, symbols)
         self.assertIn(f'bind hint {hint} -> tls:0x40 ignored', '\n'.join(bind.describe(report, self.task_dir)))
 
+    def test_undecorated_name_binds_a_thread_local(self):
+        report, symbols = self.run_bind({'tSyntheticGuard': hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+        self.assertEqual(report['unbound_thread_locals'], [])
+        self.assertEqual(report['ignored_hints'], [])
+        self.assertEqual(symbols[fx.TLS_VAR]['tls_offset'], fx.TLS_OFFSET)
+
+    def test_member_name_of_a_scoped_variable_binds_when_unique(self):
+        old = fx.TLS_VAR
+        fx.TLS_VAR = '?tSyntheticGuard@Scope@@2HA'
+        try:
+            self.tearDown()
+            self.setUp()
+            report, symbols = self.run_bind({'tSyntheticGuard': hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+            self.assertEqual(report['unbound_thread_locals'], [])
+            self.assertEqual(symbols[fx.TLS_VAR]['tls_offset'], fx.TLS_OFFSET)
+            # The qualified spelling binds the same symbol.
+            self.run_bind({'Scope::tSyntheticGuard': hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+        finally:
+            fx.TLS_VAR = old
+
+    def test_unused_hint_is_listed_by_name(self):
+        report, _ = self.run_bind({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x'), 'MissingThing': '0x1234'})
+        self.assertEqual(report['unused_hints'], ['MissingThing'])
+        self.assertIn('MissingThing', '\n'.join(bind.describe(report, self.task_dir)))
+
+    def test_describe_names_every_unbound_reference_and_pastes_a_hint_object(self):
+        report = {'functions': [], 'references': [], 'renamed': [], 'unbound_functions': [],
+                  'unbound_references': ['?a@@3HA', '?b@@3HA', '??_C@_01ABCDEFGH@x@'],
+                  'unbound_thread_locals': ['?t@@3HA']}
+        lines = bind.describe(report, self.task_dir)
+        text = '\n'.join(lines)
+        for name in report['unbound_references'] + report['unbound_thread_locals']:
+            self.assertIn(f'UNBOUND', text)
+            self.assertIn(name, text)
+        paste = [line for line in lines if 'paste into' in line]
+        self.assertEqual(len(paste), 1)
+        self.assertEqual(json.loads(paste[0].split(': ', 1)[1]),
+                         {'?a@@3HA': '0x<rva>', '?b@@3HA': '0x<rva>', '??_C@_01ABCDEFGH@x@': '0x<rva>',
+                          '?t@@3HA': 'tls:0x<offset>'})
+
     def test_used_tls_hint_stays_used_once_bound(self):
         hints = {fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')}
         self.run_bind(hints)
@@ -851,6 +891,34 @@ class ThreadLocalBindTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'stale.*thread-local entry'):
             bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
         self.assertEqual(path.read_bytes(), blob)
+
+
+class PoolConstantTests(unittest.TestCase):
+    """Compiler-made float and vector literals bind by the value the symbol name spells."""
+
+    def test_bytes_follow_the_name(self):
+        self.assertEqual(bind.pool_constant_bytes('__real@3f800000'), bytes.fromhex('0000803f'))
+        self.assertEqual(bind.pool_constant_bytes('__real@3ff0000000000000'), bytes.fromhex('000000000000f03f'))
+        self.assertEqual(len(bind.pool_constant_bytes('__xmm@' + '0' * 24 + '80000000')), 16)
+        self.assertIsNone(bind.pool_constant_bytes('__real@3f80'))
+        self.assertIsNone(bind.pool_constant_bytes('?g@@3HA'))
+
+    def test_string_literal_names_spell_their_text(self):
+        self.assertEqual(bind.string_literal_bytes('??_C@_0BA@KBMLLPJE@Scroll?5Sequence@'), (b'Scroll Sequence\0', True))
+        self.assertEqual(bind.string_literal_bytes('??_C@_05BHEJOJJF@Shout@'), (b'Shout\0', True))
+        self.assertEqual(bind.string_literal_bytes('??_C@_0BL@EIDEOLFC@?$CIUninitialized?5event?5node?$CJ@'),
+                         (b'(Uninitialized event node)\0', True))
+        self.assertEqual(bind.string_literal_bytes('??_C@_04ABCDEFGH@ab?$AAc@')[0], b'ab\0c\0')
+        self.assertIsNone(bind.string_literal_bytes('??_C@_1BA@ABCDEFGH@x@'))
+        self.assertIsNone(bind.string_literal_bytes('??_C@_05BHEJOJJF@Sho@'))  # length disagrees with the text
+
+    def test_image_must_hold_those_bytes(self):
+        class Image:
+            def read(self, rva, size, what):
+                return rva, (b'\x00\x00\x80?' + b'\x00' * 12)[:size]
+        want = bind.pool_constant_bytes('__real@3f800000')
+        self.assertTrue(bind.constant_at(Image(), 0x100, want))
+        self.assertFalse(bind.constant_at(Image(), 0x100, bind.pool_constant_bytes('__real@40000000')))
 
 
 class DeclaredTlsNameTests(unittest.TestCase):

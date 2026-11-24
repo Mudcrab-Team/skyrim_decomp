@@ -343,7 +343,10 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     progress = attempt_progress.update(current, history, counted)
     lines += [attempt_progress.describe(rva, metric, patience) for rva, metric in progress.items()]
     lines.append(attempt_progress.guidance(patience))
+    lines += pipeline.compile_warnings(dest / 'compile.log')
     if code == 1 and error is None:
+        lines.append('scored, not exact: the unit compiled and was compared; exit status 1 only says not every '
+                     'function passed, it is not a tool failure.')
         lines.append('Next: revise the source using the aligned differences and retry; keep going while matching bytes rise.')
     elif code != 0:
         problem = 'compile failed' if code == 3 else (error or {}).get('detail', 'host input failed')

@@ -443,5 +443,32 @@ class TreeNoinlineDebt(unittest.TestCase):
         self.assertEqual(set(), found - self.KNOWN, 'noinline without a `// noinline:` note')
 
 
+class NamedFilesOnlyTest(unittest.TestCase):
+    def test_list_reads_only_the_files_given(self):
+        import contextlib
+        import io
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'reconstruction' / 'a').mkdir(parents=True)
+            (root / 'reconstruction' / 'a' / 'One.cpp').write_text('int One() { return 1; }\n')
+            (root / 'reconstruction' / 'a' / 'Two.cpp').write_text('int Two() { return 2; }\n')
+            seen = []
+            real = rules.analyse
+
+            def spy(checkout, names=None):
+                seen.append(names)
+                return real(checkout, names)
+            out = io.StringIO()
+            with mock.patch.object(rules, 'analyse', spy), contextlib.redirect_stdout(out):
+                code = rules.main(['--list', 'reconstruction/a/One.cpp', '--root', str(root)])
+            self.assertEqual(code, 0)
+            self.assertEqual(seen, [['reconstruction/a/One.cpp']])
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                self.assertEqual(rules.main(['--list', 'reconstruction/a/Missing.cpp', '--root', str(root)]), 2)
+            self.assertIn('not a source file', err.getvalue())
+
+
 if __name__ == '__main__':
     unittest.main()

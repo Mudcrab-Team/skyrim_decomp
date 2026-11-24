@@ -48,6 +48,12 @@ FINDING_FILE = re.compile(r'findings/[A-Za-z0-9._-]+\.md\Z')
 DIGEST = re.compile(r'(?<![0-9A-Za-z@])(?:[0-9a-fA-F]{64}|[0-9a-fA-F]{40})(?![0-9A-Za-z])')
 DIGEST_CONTEXT = re.compile(r'sha|digest|hash|revision|commit|pin', re.I)
 MAX_FINDING_DIGESTS = 16
+# A recipe pins its compiler binary by SHA-256; that line is provenance, not a byte dump. Narrow like the
+# finding exemption: a recipe file only, a JSON member whose key says it is a digest, one exact 64-digit
+# value, a few per file.
+RECIPE_FILE = re.compile(r'reconstruction/recipes/[A-Za-z0-9._-]+\.json\Z')
+RECIPE_DIGEST_LINE = re.compile(r'\s*"[A-Za-z0-9_]*(?:sha256|digest|hash)[A-Za-z0-9_]*"\s*:\s*"[0-9a-fA-F]{64}"\s*,?\s*\Z', re.I)
+MAX_RECIPE_DIGESTS = 4
 INCLUDE = re.compile(r'^\s*#\s*include\s*([<"])([^>"]*)[>"]')
 
 
@@ -104,7 +110,11 @@ def scan_diff(diff, private=()):
     found, aliases, used = [], {}, {}
     for name, number, text in added_lines(diff):
         digests_ok = False
-        if FINDING_FILE.fullmatch(name) and DIGEST_CONTEXT.search(text):
+        if RECIPE_FILE.fullmatch(name) and RECIPE_DIGEST_LINE.fullmatch(text):
+            if used.get(name, 0) < MAX_RECIPE_DIGESTS:
+                used[name] = used.get(name, 0) + 1
+                digests_ok = True
+        elif FINDING_FILE.fullmatch(name) and DIGEST_CONTEXT.search(text):
             count = len(DIGEST.findall(text))
             if count and used.get(name, 0) + count <= MAX_FINDING_DIGESTS:
                 used[name] = used.get(name, 0) + count

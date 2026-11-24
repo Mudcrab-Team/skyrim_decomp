@@ -518,6 +518,27 @@ def compile_errors(log_path, limit=5):
     return out
 
 
+def compile_warnings(log_path, code='C4714', limit=8):
+    """Lines naming the functions a compiler warning is about (default C4714: marked `__forceinline`, not inlined).
+
+    The warning means the source's inline request was refused, so the object has a call where the
+    target may have none; it appears only in compile.log, which nobody reads while the comparison
+    result is on screen.
+    """
+    try:
+        text = Path(log_path).read_text(errors='replace')
+    except OSError:
+        return []
+    names = []
+    for m in re.finditer(r"warning " + re.escape(code) + r": function '([^']*)'", text):
+        if m.group(1) not in names:
+            names.append(m.group(1))
+    if not names:
+        return []
+    shown = ', '.join(names[:limit]) + (f' ... {len(names) - limit} more' if len(names) > limit else '')
+    return [f'  warning {code}: {len(names)} function(s) marked __forceinline were not inlined: {shown}']
+
+
 def lock(task_dir):
     path = Path(task_dir) / '.attempt' / 'lock'
     path.parent.mkdir(parents=True, exist_ok=True)

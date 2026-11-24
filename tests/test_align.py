@@ -484,5 +484,52 @@ class BehaviourMismatches(unittest.TestCase):
         self.assertEqual(data['behaviour']['count'], 0)
 
 
+class ThreadLocalScoring(unittest.TestCase):
+    """A candidate's SECREL field holds only the addend and its `_tls_index` is a symbol; the target
+    holds the resolved offset and slot, so scoring needs the symbol map's thread-local entries."""
+
+    TARGET = ('\n'.join([
+        'Disassembly of section .text:',
+        f'\t{START:x}: 8b 0d ee 0f 00 00\tmov ecx, dword ptr [rip + 0xfee]',
+        f'\t{START + 6:x}: 8b 82 68 07 00 00\tmov eax, dword ptr [rdx + 0x768]',
+        f'\t{START + 12:x}: 05 68 07 00 00\tadd eax, 0x768',
+        f'\t{START + 17:x}: c3\tret', '']))
+    CANDIDATE = ('\n'.join([
+        'Disassembly of section .text:',
+        '\t0: 8b 0d 00 00 00 00\tmov ecx, dword ptr [rip]',
+        '\t\t0000000000000002:  IMAGE_REL_AMD64_REL32\t_tls_index',
+        '\t6: 8b 82 00 00 00 00\tmov eax, dword ptr [rdx]',
+        '\t\t0000000000000008:  IMAGE_REL_AMD64_SECREL\ttGuard',
+        '\tc: 05 00 00 00 00\tadd eax, 0x0',
+        '\t\t000000000000000d:  IMAGE_REL_AMD64_SECREL\ttGuard',
+        '\x11\tc3\tret', '']).replace('\x11', '\t11:'))
+
+    def distance(self, symbols, tls):
+        _, data = align.summarise(self.TARGET, self.CANDIDATE, symbols=symbols, image_base=BASE,
+                                  target_size=18, tls=tls)
+        # `distance` is 0 whenever the bytes agree outside relocated fields; the components still say
+        # whether the referent was resolved.
+        return sum(data['components'].values())
+
+    def test_thread_local_offset_and_index_slot_resolve(self):
+        self.assertEqual(self.distance({'_tls_index': 0x1ff4}, {'tGuard': 0x768}), 0)
+
+    def test_unresolved_thread_local_is_a_difference(self):
+        self.assertGreater(self.distance({'_tls_index': 0x1ff4}, {}), 0)
+        self.assertGreater(self.distance({}, {'tGuard': 0x768}), 0)
+
+    def test_wrong_offset_is_a_difference(self):
+        self.assertGreater(self.distance({'_tls_index': 0x1ff4}, {'tGuard': 0x770}), 0)
+
+    def test_load_scoring_reads_thread_local_entries(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'symbols.json'
+            path.write_text(json.dumps({'schema': 1, 'symbols': {
+                'f': {'rva': 16, 'size': 4}, 'tGuard': {'kind': 'thread-local', 'tls_offset': 0x768, 'size': None}}}))
+            symbols, tls = align.load_scoring(path)
+            self.assertEqual(symbols, {'f': 16})
+            self.assertEqual(tls, {'tGuard': 0x768})
+
+
 if __name__ == '__main__':
     unittest.main()

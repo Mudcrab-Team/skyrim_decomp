@@ -160,9 +160,12 @@ def validate(raw, root=None):
         if not isinstance(batch, int) or isinstance(batch, bool) or not 1 <= batch <= 256:
             raise RunnerError(f'{where}.batch must be an integer from 1 to 256')
         host['batch'] = batch
+        # llvm-objdump on the host itself: the permuter then scores there and returns rows only.
+        if h.get('objdump') is not None and (not isinstance(h['objdump'], str) or not h['objdump']):
+            raise RunnerError(f'{where}.objdump must be a path')
         if backend == 'local':
-            for key in ('msvc', 'work', 'wine_bin', 'wineprefix', 'image'):
-                if h.get(key):
+            for key in ('msvc', 'work', 'wine_bin', 'wineprefix', 'image', 'objdump'):
+                if h.get(key) and (key != 'objdump' or '/' in h[key]):
                     host[key] = str(_local_path(h[key], root))
             if h['loader'] == 'wine' and not host.get('wine_bin') and sys.platform == 'darwin':
                 raise RunnerError(f'{where}.wine_bin is required for Wine on macOS')
@@ -183,7 +186,7 @@ def validate(raw, root=None):
             if wake is not None and not (isinstance(wake, str)
                                          and re.fullmatch(r'[0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5}', wake)):
                 raise RunnerError(f'{where}.wake_mac must be a MAC address such as AA:BB:CC:DD:EE:FF')
-            for token in [h['ssh_host'], h['msvc'], h['image'], h['work'], *python]:
+            for token in [h['ssh_host'], h['msvc'], h['image'], h['work'], *python] + ([h['objdump']] if h.get('objdump') else []):
                 if not isinstance(token, str) or not SAFE_TOKEN.fullmatch(token):
                     raise RunnerError(f'{where}: {token!r} needs quoting on the remote shell; use a path without '
                                       'spaces or shell characters (forward slashes work on Windows)')

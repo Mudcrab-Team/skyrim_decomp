@@ -19,8 +19,20 @@ the compiled file by its community name (`--function Class::Name` overrides it) 
 exactly one definition there. `--source-root DIR` reads `reconstruction/` from a private copy
 instead of the checkout, so a near-miss draft never has to be in the working tree. The run uses
 the runner host that `attempt` uses (`attempt` in `.local/verifier/runners.json`, or
-`SR_RUNNERS_CONFIG`; there is no other backend, and the run stops if none is configured). Scoring
-needs `llvm-objdump` and the local image on the calling machine (`.local/verifier/config.json`).
+`SR_RUNNERS_CONFIG`; there is no other backend, and the run stops if none is configured).
+**Scoring** runs on the host when its runners entry has `"objdump": "<path to llvm-objdump>"` (a path
+without spaces; the host's own image is used): the host compiles and scores in `--jobs` processes and
+returns rows only, so the calling machine only mutates, lints and orchestrates. Without that key the
+objects come back and are scored on the calling machine, which then needs `llvm-objdump` and the local
+image (`.local/verifier/config.json`). The local image is needed in both cases to bind the baseline.
+**Bind hints count.** After the baseline compile the run fetches its object and binds it in a scratch copy
+of the task (never the task directory or the repository map) with the task's `bind-hints.json`, the
+pack and the target image, as `attempt` does. The resulting map, with its thread-local entries (a SECREL
+field is scored as the declared offset plus its addend) and `_tls_index`, is what every candidate is
+scored against, so a referent the hints bind no longer sits in the distance as a floor. The run prints
+the binding result and the names of the references that stay unresolved in the score (`bind-report.txt`
+in the output directory; a string literal is shown by its hash only) and keeps `baseline.obj` there. The
+unit's `// CI hash:` lines and header declarations are read from this checkout, not from `--source-root`.
 The host keeps its files under its work directory for the run and removes them at the end.
 
 Outputs go to `<task-dir>/permute/0x<rva>/` (private): `best.cpp` (the whole unit with the best
@@ -63,8 +75,8 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    them `--jobs` at a time (default: the host's `max_parallel`; the first slot is waited for, the
    others are taken only if free) in per-worker copies of the unit, with the recipe's flags and
    the environment `unit_build.py` uses, and one download of the objects. The host needs no
-   objdump and no Python packages. The objects are disassembled and scored on the calling
-   machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
+   objdump and no Python packages unless it also scores (above). The objects are disassembled and
+   scored on the host, or on the calling machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
    function's code and relocations. Compiler output stays on the host; a failed compile reports
    its error codes only.
 4. **Search.** Greedy hill-climb on (distance, exact edits, instruction-count difference), with
@@ -72,10 +84,12 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    `--restart-after` batches without progress, and a seen-set of object hashes, so a spelling
    that compiles to known code does not count as progress. Stops at distance 0, at `--budget`
    seconds of wall time (time spent waiting out a host outage is not counted), after `--patience`
-   batches without a new best, or as `pool-exhausted`. A round with few new sources (under a
-   quarter of a batch) or no new object code widens the search by one more stacked mutation per
-   candidate, up to 8; four such rounds in a row at that width end the run instead of spending host
-   time on near-empty batches.
+   rounds without a new best (default 30; `0` never stops for that reason, only at the budget), or as
+   `pool-exhausted`. A round with few new sources (under a quarter of a batch) or no new object code
+   widens the search by one more stacked mutation per candidate, up to 8; `--dry-limit` such rounds in a
+   row (default 4) at that width end the run, unless `--reseeds` (default 2) first restarts it from one
+   of the best distinct objects seen with the widening reset, so one exhausted neighbourhood does not
+   cut a long `--patience` short.
    After every round `history.jsonl`, `best.cpp` and a partial `result.json` (status `running`)
    are rewritten, so a run that dies keeps what it found (status `aborted: <error>`). A dropped
    connection repeats the whole batch with a 5 s to 120 s backoff (and starts the host's run

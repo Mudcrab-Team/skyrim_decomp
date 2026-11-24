@@ -485,6 +485,50 @@ class SearchLoop(unittest.TestCase):
         self.assertEqual(search.widen, search.max_steps_cap - search.max_steps)
         self.assertGreater(len(rounds), 1)  # flushed every round, and once after the base
 
+    def test_pool_exhaustion_reseeds_before_ending(self):
+        u = body_unit()
+        n = [0]
+        logs = []
+
+        def score(cands):
+            out = []
+            for c in cands:
+                n[0] += 1
+                out.append({'id': c['id'], 'st': 'ok', 'd': 5, 'ex': 5, 'n': 1, 'nt': 1,
+                            'h': f'h{n[0]}' if n[0] <= 5 else 'same'})
+            return out
+        search = permute.Search(u, score, lambda text: [], random.Random(1), batch=4, patience=0,
+                                budget=10 ** 6, log=logs.append, reseeds=2)
+        result = search.run()
+        self.assertEqual(result['status'], 'pool-exhausted')
+        self.assertEqual(search.reseeds_left, 0)
+        self.assertEqual(sum('reseeding' in m for m in logs), 2)
+
+    def test_patience_zero_means_no_patience_limit(self):
+        u = body_unit()
+        n = [0]
+
+        def score(cands):
+            out = []
+            for c in cands:
+                n[0] += 1
+                out.append({'id': c['id'], 'st': 'ok', 'd': 5, 'ex': 5, 'n': 1, 'nt': 1, 'h': f'h{n[0]}'})
+            return out
+        search = permute.Search(u, score, lambda text: [], random.Random(1), batch=4, patience=0,
+                                budget=10 ** 6, log=lambda m: None)
+        calls = [0]
+        inner = search.scorer
+
+        def counted(c):
+            calls[0] += 1
+            if calls[0] > 40:
+                raise KeyboardInterrupt
+            return inner(c)
+        search.scorer = counted
+        with self.assertRaises(KeyboardInterrupt):
+            search.run()
+        self.assertGreater(calls[0], 40)
+
     def test_fresh_objects_reset_the_dry_count(self):
         u = body_unit()
         n = [0]

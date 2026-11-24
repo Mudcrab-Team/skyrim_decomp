@@ -661,13 +661,16 @@ One line each, with what was done. Costs are the drafters' estimates.
 - `check_code_rules.py` answered "not a source file under reconstruction/" for an absolute path, a path from a
   subdirectory and a path in another checkout or git worktree: it resolves all of them now.
 - `check_code_rules.py --list` reads the whole tree on every call (about 26 s of CPU; eight units in one call hit
-  a two-minute tool timeout): open.
+  a two-minute tool timeout): it now reads only the files named.
 - `near_start.py` does not write the recipe line for an existing unit, and needs `--class` and
   `SR_SKYRIM_EXE` for it (about 2 min a time): open.
 - `attempt` does not print C4714 (forced inline refused) from the compile log, and prints "exit 1" for a
-  scored non-exact attempt (about 3 min on 0x480750): open.
+  scored non-exact attempt (about 3 min on 0x480750): it prints the C4714 functions and says "scored, not
+  exact" (exit status 1 is unchanged).
 - `attempt` could print all `UNBOUND` names as one ready-to-paste hints object with the pack's RVAs, collapse
-  literal-pool lines and filter funclet names from older attempts (the most repetitive manual step): open.
+  literal-pool lines and filter funclet names from older attempts (the most repetitive manual step): float,
+  vector and string literals now bind by the value their name spells, and the unbound names print once more as
+  a paste-ready object (no RVAs yet; funclet filtering is still open).
 - The comparator reason `undeclared-alias` appears after a recipe switch with no real alias: open.
 - A scratch-register and zero-length-behaviour check for quaternion helpers, and a shared header of Havok
   stand-ins in the declaration kit, were asked for twice: open.

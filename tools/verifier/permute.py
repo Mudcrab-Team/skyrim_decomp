@@ -2,7 +2,7 @@
 """Source permuter for one near-miss function: seeded rewrites, batch compiles, no model in the loop.
 
     tools/verifier/permute.py run <task-dir> --rva 0x... [--function Class::Name] [--also Class::Helper]
-        [--source-root DIR] [--budget 600] [--batch 16] [--patience 8] [--seed 1] [--out DIR]
+        [--source-root DIR] [--budget 600] [--batch 16] [--patience 30] [--seed 1] [--out DIR]
         [--jobs N] [--dry-run]
     tools/verifier/permute.py mutate <file.cpp> --function Class::Name [--steps 3] [--seed 1]
 
@@ -50,6 +50,9 @@ import time
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+# Scoring workers on a host start in isolated mode, where the script's folder is not on the path.
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
 REMOTE_TOOLS = ('tools/verifier/permute.py', 'tools/verifier/align.py', 'tools/verifier/disasm.py')
 
 # --------------------------------------------------------------------------------------------
@@ -1314,9 +1317,13 @@ def score_key(row):
 # Search, independent of how candidates are scored (so tests can use a local scorer).
 
 class Search:
-    def __init__(self, unit, scorer, lint, rng, batch=16, patience=8, restart_after=3, budget=600.0,
-                 log=print, clock=time.monotonic, max_steps=3, max_steps_cap=8, dry_limit=4, on_round=None):
+    def __init__(self, unit, scorer, lint, rng, batch=16, patience=30, restart_after=3, budget=600.0,
+                 log=print, clock=time.monotonic, max_steps=3, max_steps_cap=8, dry_limit=4, on_round=None,
+                 reseeds=0):
         self.unit, self.scorer, self.lint, self.rng = unit, scorer, lint, rng
+        # When the pool is exhausted and `patience` has not run out, the search may start again from
+        # another distinct good object (`reseeds` times) instead of ending.
+        self.reseeds_left, self.pool = reseeds, []
         # A round with few new sources or no new object code widens the search (`widen` extra stacked
         # mutations per candidate, up to max_steps_cap); `dry_limit` such rounds in a row at the cap
         # end the run as pool-exhausted instead of spending host time on near-empty batches.
@@ -1383,7 +1390,7 @@ class Search:
             if self.clock() - started >= self.budget:
                 stop = 'budget'
                 break
-            if stale_best >= self.patience:
+            if self.patience and stale_best >= self.patience:
                 stop = 'patience'
                 break
             if stale_current >= self.restart_after:
@@ -1401,8 +1408,11 @@ class Search:
                 self.rounds = rounds
                 dry, stop_now = self._dry(dry, True)
                 if stop_now:
-                    stop = 'pool-exhausted'
-                    break
+                    current = self._reseed(best)
+                    if current is None:
+                        stop = 'pool-exhausted'
+                        break
+                    dry = stale_current = 0
                 continue
             rows = self.scorer(cands)
             rounds += 1
@@ -1418,6 +1428,7 @@ class Search:
                 if c.get('st') != 'ok' or not fresh:
                     continue
                 self.seen_obj[c['h']] = score_key(c)
+                self.pool.append(c)
                 if new_current is None or score_key(c) < score_key(new_current):
                     new_current = c
             if new_current is not None and score_key(new_current) < score_key(best):
@@ -1443,11 +1454,31 @@ class Search:
             if self.on_round:
                 self.on_round(self)
             if stop_now:
-                stop = 'pool-exhausted'
-                break
+                current = self._reseed(best)
+                if current is None:
+                    stop = 'pool-exhausted'
+                    break
+                dry = stale_current = 0
         return {'status': stop, 'start': start, 'best': best, 'rounds': rounds,
                 'candidates': len(self.history), 'lint_rejected': self.lint_rejected,
                 'unique_objects': len(self.seen_obj), 'seconds': round(self.clock() - started, 1)}
+
+    def _reseed(self, best):
+        """A new starting point after the pool ran dry, or None when no reseed is left.
+
+        One of the best distinct objects seen so far other than the current best, with the widening
+        reset, so the next rounds stack few mutations on a different body.
+        """
+        if self.reseeds_left <= 0:
+            return None
+        ranked = sorted((c for c in self.pool if c['id'] != best['id']), key=score_key)[:8]
+        if not ranked:
+            return None
+        self.reseeds_left -= 1
+        self.widen = 0
+        pick = self.rng.choice(ranked)
+        self.log(f'pool exhausted; reseeding from {pick["id"]} ({_fmt(pick)}), {self.reseeds_left} reseeds left')
+        return pick
 
     def _dry(self, dry, thin):
         """(dry-round count, whether the pool is exhausted) after a round that was `thin` or not."""
@@ -1575,8 +1606,16 @@ def host_compiler(msvc, loader, flags):
     return compile_one
 
 
+SCORE_CONTEXT = 'score-context.json'
+
+
 def pc_batch(a):
-    """`pc-batch`: compile an uploaded candidate archive and pack the objects and rows into one archive."""
+    """`pc-batch`: compile an uploaded candidate archive and pack the rows (and, unless the host scores, the objects).
+
+    With `--objdump` and `--image` the host also scores every object it compiled, from the context
+    the caller uploaded as score-context.json (symbol maps and the function), and returns scoring
+    rows only, so the calling machine needs neither llvm-objdump nor the image and no object travels.
+    """
     import io
     import tarfile
     run = Path(a.run).resolve()
@@ -1589,9 +1628,34 @@ def pc_batch(a):
     flags = json.loads((run / 'repo' / spec['recipe']).read_text())['flags']
     t0 = time.monotonic()
     rows, objects = compile_batch(run, sources, a.jobs, host_compiler(a.msvc, a.loader, flags))
-    with tarfile.open(run / a.out, 'w:xz') as tar:
-        blobs = {'rows.json': json.dumps({'rows': rows, 'wall': round(time.monotonic() - t0, 2)}).encode()}
+    compile_wall = round(time.monotonic() - t0, 2)
+    blobs = {}
+    scored_here = bool(getattr(a, 'objdump', None))
+    if scored_here:
+        t1 = time.monotonic()
+        stage = run / 'score-objects'
+        stage.mkdir(exist_ok=True)
+        items = []
+        for cid, data in sorted(objects.items()):
+            path = stage / f'{cid}.obj'
+            path.write_bytes(data)
+            items.append((cid, str(path)))
+        saved = json.loads((run / SCORE_CONTEXT).read_text())
+        ctx = scoring_context(a.objdump, a.image, saved['function'], saved['symbols'], saved['tls'])
+        by_id = {r['id']: r for r in score_all_objects(items, ctx, a.jobs)}
+        for row in rows:
+            if row['st'] == 'compiled':
+                cid = row['id']
+                row.clear()
+                row.update(by_id.get(cid, {'id': cid, 'st': 'lost'}))
+        shutil.rmtree(stage, ignore_errors=True)
+        score_wall = round(time.monotonic() - t1, 2)
+    else:
+        score_wall = 0.0
         blobs.update({f'{cid}.obj': data for cid, data in objects.items()})
+    with tarfile.open(run / a.out, 'w:xz') as tar:
+        blobs['rows.json'] = json.dumps({'rows': rows, 'wall': compile_wall, 'score_wall': score_wall,
+                                         'scored': scored_here}).encode()
         for name, data in sorted(blobs.items()):
             info = tarfile.TarInfo(name)
             info.size, info.mode, info.mtime = len(data), 0o644, int(time.time())
@@ -1615,8 +1679,7 @@ _SCORING = {}
 
 
 def scoring_init(ctx):
-    import align
-    _SCORING.update(ctx, symbols=align.load_symbols(ctx['symbols']))
+    _SCORING.update(ctx)
 
 
 def score_object(item):
@@ -1630,7 +1693,7 @@ def score_object(item):
         if not align.parse_listing(cand):
             return {'id': cid, 'st': 'no-symbol'}
         _text, data = align.summarise(c['listing'], cand, symbols=c['symbols'], image_base=c['base'],
-                                      target_size=c['size'])
+                                      target_size=c['size'], tls=c['tls'])
         comps = data['components']
         return {'id': cid, 'st': 'ok', 'd': data['distance'], 'p': comps['prologue'], 'b': comps['body'],
                 'r': comps['refs'], 'es': data['edits']['shape'], 'ex': data['edits']['exact'],
@@ -1640,12 +1703,74 @@ def score_object(item):
         return {'id': cid, 'st': 'error', 'why': type(exc).__name__}
 
 
-def scoring_context(objdump, image, task, fn):
+def scoring_context(objdump, image, fn, symbols, tls):
+    """What score_object needs: the target's listing, instruction count and the symbol maps.
+
+    `symbols` (name -> RVA, with `_tls_index` resolved) and `tls` (name -> TLS-template offset) come
+    from the baseline object bound with the task's hints (`bound_scoring_maps`), so a reference the
+    hints bind is scored as resolved.
+    """
     import align
     listing, base = align.objdump_target(objdump, image, fn['rva'], fn['size'])
     n_target = len(align.build(align._as_rows(listing), size=fn['size'], base=base))
     return {'objdump': objdump, 'listing': listing, 'base': base, 'size': fn['size'], 'symbol': fn['symbol'],
-            'symbols': str(task['symbols_local']), 'nt': n_target}
+            'symbols': dict(symbols), 'tls': dict(tls), 'nt': n_target}
+
+
+def score_all_objects(items, ctx, jobs):
+    """Score [(candidate id, object path)] in `jobs` processes; rows in the same order."""
+    if not items:
+        return []
+    import concurrent.futures
+    with concurrent.futures.ProcessPoolExecutor(max(1, min(jobs, len(items))), initializer=scoring_init,
+                                                initargs=(ctx,)) as pool:
+        return list(pool.map(score_object, items, chunksize=max(1, len(items) // (4 * jobs))))
+
+
+def bound_scoring_maps(task, host, stage, out, image, objdump, rva, log):
+    """Symbol maps for scoring, from the baseline object bound with the task's bind hints.
+
+    The host's baseline run leaves candidate.obj in its run directory. It is fetched and bound in a
+    scratch copy of the task (private map, the task's bind-hints.json), never in the task directory or
+    the repository map, so thread-local entries and the references the hints and positions name are
+    scored as bound. Returns (symbols, tls, function symbol by rva, report lines); any failure falls
+    back to the task's own map with a line saying so.
+    """
+    import align
+    import bind
+    scratch = Path(out) / 'bind'
+    shutil.rmtree(scratch, ignore_errors=True)
+    scratch.mkdir(parents=True)
+    raw = json.loads((task['dir'] / 'task.json').read_text())
+    raw['symbols'] = 'symbols.json'
+    (scratch / 'task.json').write_text(json.dumps(raw))
+    shutil.copyfile(task['symbols_local'], scratch / 'symbols.json')
+    hints = task['dir'] / bind.HINTS
+    if hints.is_file():
+        shutil.copyfile(hints, scratch / bind.HINTS)
+    lines = []
+    try:
+        tr, remote = host.transport, host._remote(host._run)
+        obj = Path(out) / 'baseline.obj'
+        tr.get(tr.join(remote, 'work', 'permute', 'candidate.obj'), obj)
+        report = bind.bind(scratch, obj, image, objdump)
+        lines = bind.describe(report, task['dir'])
+        lines.insert(0, f'scoring maps: {len(report["references"])} references bound for scoring, '
+                        f'{len(report["unbound_references"])} references and {len(report["unbound_thread_locals"])} '
+                        'thread-locals unbound')
+        if objdump:
+            symbols, tls = align.load_scoring(scratch / 'symbols.json', image)
+            symbol = next((f['symbol'] for f in json.loads((scratch / 'task.json').read_text())['functions']
+                           if int(str(f['rva']), 0) == rva), None)
+            listing = align.objdump_candidate(objdump, obj, symbol) if symbol else ''
+            open_refs = align.unresolved_references(listing, symbols, tls)
+            lines.append(f'scoring: {len(open_refs)} references of the function stay unresolved in the score'
+                         + (': ' + ', '.join(align.display_name(n) for n in open_refs[:40]) if open_refs else ''))
+    except Exception as exc:  # noqa: BLE001 - scoring then uses the task's own map, as before
+        lines.append(f'scoring maps: baseline binding failed ({type(exc).__name__}: {exc}); using the task map as is')
+    symbols, tls = align.load_scoring(scratch / 'symbols.json', image)
+    bound = {f['rva']: f['symbol'] for f in json.loads((scratch / 'task.json').read_text())['functions']}
+    return symbols, tls, bound, lines
 
 
 def retrying(call, timings, log, limit, recover=None, sleep=time.sleep, clock=time.monotonic):
@@ -1679,30 +1804,42 @@ def retrying(call, timings, log, limit, recover=None, sleep=time.sleep, clock=ti
             delay = min(delay * 2, 120)
 
 
-def runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=1800.0, recover=None):
+def runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=1800.0, recover=None, remote_score=None):
     """Score a batch on a runner host (runners.AgentHost with a finished baseline run).
 
     One upload of the candidate sources, one agent command that compiles them `jobs` at a time
     and one download of the objects: three ssh operations per batch however many candidates.
     A dropped connection is retried with backoff (`retrying`), repeating the whole batch.
+
+    `remote_score` ({'context': local JSON file, 'objdump': host path, 'image': host path}) makes the
+    host score what it compiled and return rows only; the context is uploaded once per run
+    directory. Without it the objects come back and `score_all` scores them here.
     """
     import runners
     import tarfile
     counter = [0]
     empty = [0]
+    context_for = [None]
 
     def exchange(tag, local):
         """Upload, compile and download one batch; (exit code, output, objects dir or None, timings)."""
         tr, remote = host.transport, host._remote(host._run)
         t0 = time.monotonic()
         tr.put([local], remote)
+        extra = []
+        if remote_score:
+            if context_for[0] != remote:
+                tr.put([remote_score['context']], remote)
+                context_for[0] = remote
+            extra = ['--objdump', remote_score['objdump'], '--image', remote_score['image']]
         t1 = time.monotonic()
         with runners.slots(host.host['host_id'], host.host['max_parallel'], jobs, log=log) as granted:
             t2 = time.monotonic()
             code, out, err = tr.run(
                 host._python() + ['-I', tr.join(remote, 'repo/tools/verifier/permute.py'), 'pc-batch', '--run', remote,
                                   '--cands', f'cands-{tag}.tar', '--out', f'out-{tag}.tar', '--msvc',
-                                  host.host['msvc'], '--loader', host.host['loader'], '--jobs', str(granted)], 600)
+                                  host.host['msvc'], '--loader', host.host['loader'], '--jobs', str(granted)] + extra,
+                600 if not remote_score else 1200)
         t3 = time.monotonic()
         if code in (124, 255):
             raise runners.TransportError(f'batch {tag}: exit {code}')
@@ -1733,11 +1870,16 @@ def runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=1800.
         if code == 0:
             try:
                 objects = {}
-                for row in json.loads((dest / 'rows.json').read_text())['rows']:
+                packed = json.loads((dest / 'rows.json').read_text())
+                for row in packed['rows']:
                     by_id[row['id']] = row
                     if row['st'] == 'compiled':
                         objects[row['id']] = dest / f'{row["id"]}.obj'
-                scored = {r['id']: r for r in score_all(sorted(objects.items()))}
+                if packed.get('scored'):
+                    scored = {i: r for i, r in by_id.items() if r['st'] in ('ok', 'no-symbol', 'error')}
+                    timings['host_score_seconds'] = timings.get('host_score_seconds', 0) + packed.get('score_wall', 0)
+                else:
+                    scored = {r['id']: r for r in score_all(sorted(objects.items()))}
             except (OSError, ValueError, KeyError, tarfile.TarError) as exc:
                 log(f'batch {tag}: results unreadable ({type(exc).__name__})')
             finally:
@@ -1792,14 +1934,19 @@ def run(args):
                          '(or SR_RUNNERS_CONFIG)')
     objdump = disasm.find_objdump(config.get('objdump'))
     image = config.get('image')
-    if objdump is None or not image or not Path(image).is_file():
-        raise SystemExit('scoring runs here and needs llvm-objdump and the local image (.local/verifier/config.json)')
+    host_objdump = runner.get('objdump')
+    if not image or not Path(image).is_file():
+        raise SystemExit('binding the baseline needs the local image (.local/verifier/config.json "image")')
+    if objdump is None and not host_objdump:
+        raise SystemExit('scoring needs llvm-objdump: set "objdump" on the runner host (scoring there) or '
+                         'install it here (.local/verifier/config.json)')
     log = print
     # The baseline is a real unit_build run of the unchanged unit on the host: it checks the
     # toolchain and image hashes and leaves the run directory the candidate batches compile in.
     host = runners.AgentHost(runner, task, label='permute', log=lambda m: print(m, file=sys.stderr))
     jobs = args.jobs or runner['max_parallel']
-    log(f'permute {task["task_id"]} 0x{rva:x} {qualified}: {runners.describe(runner)}, {jobs} jobs')
+    log(f'permute {task["task_id"]} 0x{rva:x} {qualified}: {runners.describe(runner)}, {jobs} jobs, '
+        f'scoring on {"the host" if host_objdump else "this machine"}')
     stage = out / '.stage'
     stage.mkdir(exist_ok=True)
     t0 = time.monotonic()
@@ -1809,13 +1956,27 @@ def run(args):
         log(f'baseline unit_build exit {code}: ' + ' | '.join(text.splitlines()[-3:]))
         host.clean()
         return 2
+    symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, stage, out, image, objdump, rva, log)
+    for line in bind_lines:
+        log(line)
+    (out / 'bind-report.txt').write_text('\n'.join(bind_lines) + '\n')
+    scored_fn = dict(fn, symbol=bound.get(hex(rva)) or bound.get(rva) or fn['symbol'])
     import concurrent.futures
-    ctx = scoring_context(objdump, image, task, fn)
-    pool = concurrent.futures.ProcessPoolExecutor(min(os.cpu_count() or 2, 8), initializer=scoring_init,
-                                                  initargs=(ctx,))
+    pool = None
+    remote_score = None
+    if host_objdump:
+        context = stage / SCORE_CONTEXT
+        context.write_text(json.dumps({'function': {'rva': rva, 'size': fn['size'], 'symbol': scored_fn['symbol']},
+                                       'symbols': symbols, 'tls': tls}))
+        remote_score = {'context': str(context), 'objdump': host_objdump, 'image': runner.get('image') or image}
+        score_all = None
+    else:
+        ctx = scoring_context(objdump, image, scored_fn, symbols, tls)
+        pool = concurrent.futures.ProcessPoolExecutor(min(os.cpu_count() or 2, 8), initializer=scoring_init,
+                                                      initargs=(ctx,))
 
-    def score_all(items):
-        return list(pool.map(score_object, items)) if items else []
+        def score_all(items):
+            return list(pool.map(score_object, items)) if items else []
 
     def recover():
         """After an outage the host may have lost its run directory: start it again from the unit."""
@@ -1823,7 +1984,8 @@ def run(args):
         code, _text = host.run(files, stage)
         if code not in (0, 1):
             raise runners.RunnerError(f'baseline after the outage: unit_build exit {code}')
-    scorer = runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=args.outage, recover=recover)
+    scorer = runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=args.outage, recover=recover,
+                           remote_score=remote_score)
     summary = {'task': task['task_id'], 'rva': f'0x{rva:x}', 'function': qualified, 'status': 'running',
                'seed': args.seed, 'batch': args.batch, 'jobs': jobs, 'host': runner['host_id']}
     written = [0]
@@ -1846,7 +2008,7 @@ def run(args):
         (out / 'result.json').write_text(json.dumps(part, indent=1) + '\n')
     search = Search(unit, scorer, lint, random.Random(args.seed), batch=args.batch, patience=args.patience,
                     restart_after=args.restart_after, budget=args.budget, log=log, max_steps=args.max_steps,
-                    on_round=flush,
+                    on_round=flush, dry_limit=args.dry_limit, reseeds=args.reseeds,
                     clock=lambda: time.monotonic() - timings.get('outage_seconds', 0))
     try:
         result = search.run()
@@ -1858,10 +2020,12 @@ def run(args):
             host.clean()
         except Exception:  # noqa: BLE001 - the host may be the thing that failed
             pass
-        pool.shutdown(cancel_futures=True)
+        if pool:
+            pool.shutdown(cancel_futures=True)
         pipeline.record_cost(task, 'draft', time.monotonic() - started, time.monotonic() - started)
         raise
-    pool.shutdown()
+    if pool:
+        pool.shutdown()
     host.clean()
     summary['status'] = result['status']
     flush(search)
@@ -1950,7 +2114,12 @@ def main(argv=None):
     r.add_argument('--budget', type=float, default=600.0, help='seconds of wall time (default 600 = 10 min)')
     r.add_argument('--batch', type=int, default=16)
     r.add_argument('--jobs', type=int, help='compiles at once on the host (default: its max_parallel)')
-    r.add_argument('--patience', type=int, default=8, help='batches without a new best before stopping')
+    r.add_argument('--patience', type=int, default=30,
+                   help='rounds without a new best before stopping (default 30; 0 keeps going until the budget)')
+    r.add_argument('--dry-limit', type=int, default=4,
+                   help='rounds with no new object code at the widest search before the pool counts as exhausted')
+    r.add_argument('--reseeds', type=int, default=2,
+                   help='times an exhausted pool restarts from another good object instead of ending the run')
     r.add_argument('--restart-after', type=int, default=3, help='batches without progress before a restart')
     r.add_argument('--max-steps', type=int, default=3, help='most mutations stacked in one candidate')
     r.add_argument('--seed', type=int, default=1)
@@ -1970,6 +2139,8 @@ def main(argv=None):
     pb.add_argument('--msvc', required=True)
     pb.add_argument('--loader', choices=('wine', 'native'), required=True)
     pb.add_argument('--jobs', type=int, required=True)
+    pb.add_argument('--objdump')
+    pb.add_argument('--image')
     a = p.parse_args(argv)
     if a.cmd == 'pc-batch':
         return pc_batch(a)
