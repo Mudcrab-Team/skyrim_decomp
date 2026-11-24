@@ -39,5 +39,30 @@ class PrefetchCompare(unittest.TestCase):
         pr_bot.Bot.prefetch_compare(fake({'compare_prefetch': False}, run), [Path('/t/a')], None)
 
 
+class IncompleteReview(unittest.TestCase):
+    GAVE_UP = '{"functions": {"0x1": {"verdict": "reject", "why": "Required provenance comparison was not completed."}}}'
+    DONE = '{"functions": {"0x1": {"verdict": "approve", "why": "No blocking finding identified."}}}'
+
+    def test_only_a_review_that_judged_nothing_counts_as_incomplete(self):
+        self.assertTrue(pr_bot.review_incomplete(self.GAVE_UP))
+        self.assertFalse(pr_bot.review_incomplete(self.DONE))
+        self.assertFalse(pr_bot.review_incomplete('{"functions": {"0x1": {"verdict": "reject", "why": "Vtable faked."}}}'))
+        self.assertFalse(pr_bot.review_incomplete(''))
+
+    def test_a_chunk_that_gave_up_is_reviewed_again_at_full_effort(self):
+        asked = []
+        answers = [self.GAVE_UP, self.DONE]
+
+        def run_model(prompt, out, effort=None):
+            asked.append(effort)
+            return answers.pop(0)
+        bot = SimpleNamespace(run=lambda *a, **k: SimpleNamespace(stdout=b''), run_model=run_model,
+                              review_context=lambda *a: '', companion_note=lambda c: '', root=Path('/r'),
+                              tree=Path(__file__).resolve().parents[1])
+        text = pr_bot.Bot.review_chunk(bot, 1, 'h', 'b', [1], (False, []), {'u.cpp': [1]}, {}, set(), [], set(),
+                                       Path('/o'), [])
+        self.assertEqual((text, asked), (self.DONE, [None, 'high']))
+
+
 if __name__ == '__main__':
     unittest.main()

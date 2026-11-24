@@ -1613,7 +1613,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         (self.tree / 'data/progress.json').write_text(json.dumps({'functions': [
             {'rva': 0x10, 'status': 'mapped'}, {'rva': 0x20, 'status': 'matched'}]}))
         self.calls, self.bind_code, self.record_ok = [], 0, {0x10: True, 0x20: True}
-        self.confirm_codes = []
+        self.confirm_codes, self.refusals = [], {}
         bot = pr_bot.Bot(root=ROOT, work=self.work)
         bot.tree, bot.run = self.tree, self.fake_run
         self.bot = bot
@@ -1641,7 +1641,10 @@ class NewFunctionRecordTests(unittest.TestCase):
             code = self.confirm_codes.pop(0)
         if argv[1] == '-c':
             rva = json.loads((Path(argv[4]) / 'task.json').read_text())['functions'][0]['rva']
-            if self.record_ok[int(rva, 0)]:
+            if self.refusals.get(int(rva, 0)):
+                self.refusals[int(rva, 0)] -= 1
+                code = 1
+            elif self.record_ok[int(rva, 0)]:
                 dest = Path(argv[5]) / 'b' / f'{rva}.json'
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_text('{}')
@@ -1682,6 +1685,17 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertIn('--confirm', batch[0])
         self.assertEqual(sum(a.endswith('confirm-0x10') or a.endswith('confirm-0x20') for a in batch[0]), 2)
         self.assertLess(self.calls.index(batch[0]), self.calls.index(self.seen('wine_confirm.py')[0]))
+
+    def test_a_record_refused_for_its_kept_confirmation_is_confirmed_again_before_it_counts(self):
+        self.refusals = {0x10: 1}
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertEqual(len(self.seen('wine_confirm.py')), 2)  # the batch's result is not trusted a second time
+
+    def test_a_record_refused_after_a_fresh_confirmation_stays_drafted(self):
+        self.refusals = {0x10: 2}
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, {0x10})
 
     def test_only_the_functions_being_recorded_are_bound_so_a_debt_function_cannot_refuse_them(self):
         out, failed = self.build({0x10})

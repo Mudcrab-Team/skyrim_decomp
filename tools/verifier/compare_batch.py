@@ -119,14 +119,18 @@ def host_for(task, files, runner, config):
     return PrefetchedHost(found[0], task, found, log=lambda m: print(m, file=sys.stderr)), found[0]
 
 
-def confirm_done(task_dir, task, files):
+def confirm_done(task_dir, task, files, host_id=None):
     """The exit code of a finished confirm run in `task_dir` made from exactly these sources, else None.
 
     Lets a record build that restarted skip the functions it already confirmed; the run's own facts
     (fresh toolchain check included) are in the kept result, which is still there to be read.
+    With `host_id` only a run on that host counts: the record's first host is the registered confirm
+    host, so a result another host kept is not a confirmation for it.
     """
     try:
         mark = json.loads((Path(task_dir) / CONFIRM_MARK).read_text())
+        if host_id is not None and mark['host'] != host_id:
+            return None
         done = Path(task_dir) / 'confirm' / mark['host']
         if (mark['key'] == spec_key(task, files, mark['host']) and mark['exit'] in (0, 1)
                 and (done / 'result.json').is_file()):
@@ -154,7 +158,20 @@ def write_entry(task_dir, key, host_id, code):
     tmp.replace(path)
 
 
-def prepare(task_dirs, log, confirm=False):
+def confirm_host(config, name):
+    """True when host `name` is the registered first host of a record (a confirm host that compiles itself).
+
+    The record binds one first host that must differ from the CI hash host in loader and system; a result
+    from any other machine would be refused when the record is built, so it is not worth computing.
+    """
+    try:
+        first = [h['host_id'] for h in runners.for_confirm(config) or [] if h['backend'] != 'ci-hash']
+    except runners.RunnerError:
+        return False
+    return runners.with_image(config['hosts'][name])['host_id'] in first
+
+
+def prepare(task_dirs, log, confirm=False, host_id=None):
     """[(task, files)] for the units the host can take; a unit `attempt` would refuse locally is left to it.
 
     For a confirm run, units whose kept result is current are left out as well."""
@@ -169,7 +186,7 @@ def prepare(task_dirs, log, confirm=False):
             log(f'compare_batch: {d}: left to attempt ({type(exc).__name__})')
             continue
         if confirm:
-            if confirm_done(task['dir'], task, files) is None:
+            if confirm_done(task['dir'], task, files, host_id) is None:
                 out.append((task, files))
             continue
         discard(task['dir'])
@@ -183,7 +200,7 @@ def run(task_dirs, config, name, deadline, batch=None, stage_root=None, log=prin
     With `confirm` each unit is a one-function confirm directory: the toolchain is hashed afresh for every
     unit (as wine_confirm.py does) and the result is kept where wine_confirm.py would have put it."""
     host = runners.with_image(config['hosts'][name])
-    units = prepare(task_dirs, log, confirm)
+    units = prepare(task_dirs, log, confirm, host['host_id'])
     if not units:
         return 0
     size = batch or host['batch']
@@ -250,6 +267,9 @@ def main():
             print(f'compare_batch: WARNING: {w}')
         if name is None:
             print('compare_batch: no compare host is reachable or preferred; units run on the ordinary host')
+            return 0
+        if args.confirm and not confirm_host(config, name):
+            print(f'compare_batch: {name} is not a registered confirm host; records are confirmed on the ordinary host')
             return 0
         kept = run(args.tasks, config, name, started + args.deadline, args.batch, confirm=args.confirm)
     except (runners.RunnerError, pipeline.PipelineError, OSError) as exc:

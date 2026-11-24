@@ -76,13 +76,14 @@ class FallbackTests(unittest.TestCase):
         self.assertEqual(got, [VERDICT])
         self.assertNotIn('reviewer', state.data)
 
-    def test_codex_reviews_at_medium_effort_unless_configured(self):
+    def test_codex_reviews_at_high_effort_unless_configured(self):
+        # Medium effort approved functions that high effort had rejected on the same text.
         self.codex = (0, b'', VERDICT.encode())
         self.bot.run_model('p', self.out)
-        self.assertIn('model_reasoning_effort="medium"', self.calls[0][1])
-        self.bot.config['review_effort'] = 'high'
+        self.assertIn('model_reasoning_effort="high"', self.calls[0][1])
+        self.bot.config['review_effort'] = 'medium'
         self.bot.run_model('p', self.out)
-        self.assertIn('model_reasoning_effort="high"', self.calls[1][1])
+        self.assertIn('model_reasoning_effort="medium"', self.calls[1][1])
 
     def test_review_runs_six_chunks_at_once_by_default(self):
         self.assertEqual(pr_bot.REVIEW_CHUNK_WORKERS, 6)

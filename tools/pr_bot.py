@@ -1470,6 +1470,12 @@ def ci_rows(report, unit_of):
     return rows
 
 
+def review_incomplete(text):
+    """True when every reason in a review says the comparison was not completed (the run stopped, nothing was judged)."""
+    reasons = re.findall(r'"why"\s*:\s*"([^"]*)"', text or '')
+    return bool(reasons) and all('not completed' in r.lower() for r in reasons)
+
+
 def review_chunks(functions, units, size):
     """[[rva]]: `functions` grouped by unit, in unit order, into chunks of at most `size`.
 
@@ -1752,7 +1758,7 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = {**dict(model_timeout=3000, review_effort='medium', review_chunk=REVIEW_CHUNK_FUNCTIONS,
+        self.config = {**dict(model_timeout=3000, review_effort='high', review_chunk=REVIEW_CHUNK_FUNCTIONS,
                             review_workers=REVIEW_CHUNK_WORKERS, compare_workers=COMPARE_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
@@ -1857,7 +1863,7 @@ class Bot:
             raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
 
-    def run_model(self, prompt, out):
+    def run_model(self, prompt, out, effort=None):
         """One review: codex first, the Claude Code CLI on Sonnet when codex fails for an account or capacity reason.
 
         A review verdict or malformed output is never a failure here; only the invocation is judged."""
@@ -1867,7 +1873,7 @@ class Bot:
         if self.clock() >= self.codex_paused_until[0]:
             try:
                 result = self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model',
-                                   REVIEW_MODEL, '-c', f'model_reasoning_effort="{self.config["review_effort"]}"',
+                                   REVIEW_MODEL, '-c', f'model_reasoning_effort="{effort or self.config["review_effort"]}"',
                                    '--sandbox', 'read-only',
                                    '-c', 'approval_policy="never"', '--cd', self.tree, '--output-last-message', out,
                                    '-'], cwd=self.tree, input=prompt.encode(), timeout=self.config['model_timeout'],
@@ -2450,7 +2456,12 @@ class Bot:
                   f'{self.companion_note([c for c in companions if c in set(functions)])}'
                   f'leakgrep: {"HIT " + ",".join(grep[1]) if grep[0] else "clean"}\n\n{context}\n\n'
                   f'UNTRUSTED DIFF DATA:\n{diff}')
-        return self.run_model(prompt, out)
+        text = self.run_model(prompt, out)
+        if review_incomplete(text):
+            # A run that gave up on the provenance comparison rejected the whole chunk for it; that is the
+            # reviewer failing to finish, not a finding, so the chunk is reviewed once more at full effort.
+            text = self.run_model(prompt, out, effort='high')
+        return text
 
     @staticmethod
     def companion_note(companions):
@@ -3204,10 +3215,24 @@ class Bot:
             made.unlink(missing_ok=True)
             if row is None:
                 return rva, False
-            built_run = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
-                dict(run=ci['run'], report=ci['report'], row=row, map_status=ci['map'].get(str(rva))))],
-                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
-            return rva, not built_run.returncode and made.is_file()  # a refusal by the validator leaves it drafted
+            call = [sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
+                dict(run=ci['run'], report=ci['report'], row=row, map_status=ci['map'].get(str(rva))))]
+            built_run = self.run(call, cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            if built_run.returncode or not made.is_file():
+                # The kept confirmation may be unusable here (made on another host, or half fetched). Confirm
+                # again from scratch on the ordinary host before calling the function refused, so a fault of
+                # the tooling never becomes the verdict.
+                shutil.rmtree(dest / 'confirm', ignore_errors=True)
+                (dest / '.confirm-done.json').unlink(missing_ok=True)
+                again = self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
+                                 check=False, timeout=self.config['compare_timeout'])
+                if again.returncode not in (0, 1):
+                    raise Stop('record build did not complete')  # infrastructure, retried on the next tick
+                built_run = self.run(call, cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            if built_run.returncode or not made.is_file():
+                print(f'{stamp()} record 0x{rva:x} refused: {stderr_tail(built_run.stderr)}', file=sys.stderr, flush=True)
+                return rva, False  # the validator's refusal leaves the function drafted
+            return rva, True
         with ThreadPoolExecutor(max_workers=self.record_workers(jobs)) as pool:
             for rva, ok in pool.map(make, jobs):
                 (built if ok else failed).add(rva)

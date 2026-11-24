@@ -858,6 +858,33 @@ class AgentEndToEnd(unittest.TestCase):
         compare_batch.mark_confirm(task['dir'], task, self.files, 'mac-wine', 3)
         self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))
 
+    def test_a_confirmation_made_on_another_host_is_not_this_hosts(self):
+        import compare_batch
+        task = dict(self.task, dir=self.tmp / 'confirm-other')
+        kept = task['dir'] / 'confirm' / 'winpc-native'
+        kept.mkdir(parents=True)
+        (kept / 'result.json').write_text('{}')
+        compare_batch.mark_confirm(task['dir'], task, self.files, 'winpc-native', 0)
+        self.assertEqual(compare_batch.confirm_done(task['dir'], task, self.files), 0)
+        self.assertEqual(compare_batch.confirm_done(task['dir'], task, self.files, 'winpc-native'), 0)
+        # The record's first host is the registered one; the other host's kept result must be redone there.
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files, 'mac-wine'))
+
+    def test_confirmations_run_only_on_a_registered_confirm_host(self):
+        import compare_batch
+        mac = dict(host_id='mac-wine', backend='local', loader='wine', machine='maintainer-mac', os='macos')
+        pc = dict(host_id='winpc-native', backend='ssh', loader='native', machine='pc', os='windows')
+        ci = dict(host_id='github-windows-native', backend='ci-hash', loader='native',
+                  machine='github-hosted-windows', os='windows')
+        cfg = {'hosts': {'mac': mac, 'winpc': pc, 'ghci': ci}, 'confirm': ['mac', 'ghci']}
+        with mock.patch.object(runners, 'with_image', side_effect=lambda h: h), \
+                mock.patch.object(runners, 'for_confirm', return_value=[mac, ci]):
+            self.assertTrue(compare_batch.confirm_host(cfg, 'mac'))
+            self.assertFalse(compare_batch.confirm_host(cfg, 'winpc'))
+        with mock.patch.object(runners, 'with_image', side_effect=lambda h: h), \
+                mock.patch.object(runners, 'for_confirm', side_effect=runners.RunnerError('x')):
+            self.assertFalse(compare_batch.confirm_host(cfg, 'mac'))
+
     def test_a_confirm_batch_keeps_each_result_where_wine_confirm_does_and_marks_it(self):
         import compare_batch
         h = dict(host(msvc=str(self.msvc), work=str(self.tmp / 'work'), image=str(self.image), wine_bin=None,

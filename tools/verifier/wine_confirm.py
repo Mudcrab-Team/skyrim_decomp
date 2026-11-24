@@ -13,10 +13,10 @@ import compare_batch
 def run(directory):
     task = pipeline.load_task(directory)
     files, _ = pipeline.unit_manifest(task)
-    kept = compare_batch.confirm_done(task['dir'], task, files)
+    host = runners.for_attempt()
+    kept = compare_batch.confirm_done(task['dir'], task, files, host and host.get('host_id'))
     if kept is not None:
         return kept  # an earlier run (batched or before a restart) already confirmed these exact sources
-    host = runners.for_attempt()
     if not host or not ((host.get('backend'), host.get('loader'), host.get('host_id')) ==
                         ('local', 'wine', 'mac-wine') or
                         (host.get('backend'), host.get('loader')) == ('ssh', 'native')):
