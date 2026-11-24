@@ -1,0 +1,15 @@
+// Source exposure: mixed (pinned image and cited public declarations).
+// Code origin: original shader controller methods based on the pinned image. Stamped as a twin of matched 0x157c690 (bsshader/BSEffectShaderPropertyColorController_157c340): source copied, names replaced by placeholders. Loose twin: constants differ from the exemplar and follow this function's code.
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// 0x15606d0 Owner15606d0::Function15606d0
+#include "Owner15606d0.h"
+#include "bssystem/NiStream_19e930.h"
+
+extern std::uint32_t gEffectColorOffsets_15606d0[];
+
+// guess: same compiled code as matched 0x157c690 apart from relocated fields; its role here is not established.
+void Owner15606d0::Function15606d0()
+{
+    gEffectColorOffsets_15606d0[0] = 0x0u;
+}
