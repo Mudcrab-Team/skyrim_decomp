@@ -1,134 +1,126 @@
-// Source exposure: mixed (community declarations and the contributor-owned pack).
+// Source exposure: mixed (community declarations and the pinned image).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// TESObjectREFR, TESObjectREFR::GetSaveParentCell, TESObjectREFR::parentCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// TESObjectREFR::Function2f3da0: GUESS(low)
-// TESObjectCELL, TESWorldSpace: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// TESObjectCELL::cellFlags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; byte view of low flag byte
-// TESObjectCELL::worldSpace: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; AE/1.7.104 offset 0x128
-// unk00, unk41, unknown20, unknown68, VSlot3B_96: GUESS(low)
+// TESObjectREFR, TESObjectCELL, TESWorldSpace: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// parentCell, cellFlags, worldSpace, IsInteriorCell, GetSaveParentCell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// TESObjectREFR::IsInInteriorOrOutsideWorld, unk20, unk41: GUESS(low)
+// unk3B..unk96: GUESS(low); unused virtual slots between the base and GetSaveParentCell
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
 #include "declarations/TESForm.h"
 
 class TESWorldSpace;
 
-class TESObjectCELL
+class TESObjectCELL : public TESForm
 {
 public:
-    std::uint8_t unk00[0x40];  // 00
-    std::uint8_t cellFlags;  // 40
-    std::uint8_t unk41[0xE7];  // 41
-    TESWorldSpace* worldSpace;  // 128
+    bool IsInteriorCell() const { return (cellFlags & 1) != 0; }
+
+    std::uint8_t unk20[0x20];
+    std::uint8_t cellFlags;
+    std::uint8_t unk41[0xE7];
+    TESWorldSpace* worldSpace;
 };
-static_assert(offsetof(TESObjectCELL, cellFlags) == 0x40, "cellFlags offset");
-static_assert(offsetof(TESObjectCELL, worldSpace) == 0x128, "worldSpace offset");
 
 class TESObjectREFR : public TESForm
 {
 public:
-    ~TESObjectREFR() override;  // 00
-    virtual void VSlot3B_96_00();  // 3B
-    virtual void VSlot3B_96_01();  // 3C
-    virtual void VSlot3B_96_02();  // 3D
-    virtual void VSlot3B_96_03();  // 3E
-    virtual void VSlot3B_96_04();  // 3F
-    virtual void VSlot3B_96_05();  // 40
-    virtual void VSlot3B_96_06();  // 41
-    virtual void VSlot3B_96_07();  // 42
-    virtual void VSlot3B_96_08();  // 43
-    virtual void VSlot3B_96_09();  // 44
-    virtual void VSlot3B_96_0A();  // 45
-    virtual void VSlot3B_96_0B();  // 46
-    virtual void VSlot3B_96_0C();  // 47
-    virtual void VSlot3B_96_0D();  // 48
-    virtual void VSlot3B_96_0E();  // 49
-    virtual void VSlot3B_96_0F();  // 4A
-    virtual void VSlot3B_96_10();  // 4B
-    virtual void VSlot3B_96_11();  // 4C
-    virtual void VSlot3B_96_12();  // 4D
-    virtual void VSlot3B_96_13();  // 4E
-    virtual void VSlot3B_96_14();  // 4F
-    virtual void VSlot3B_96_15();  // 50
-    virtual void VSlot3B_96_16();  // 51
-    virtual void VSlot3B_96_17();  // 52
-    virtual void VSlot3B_96_18();  // 53
-    virtual void VSlot3B_96_19();  // 54
-    virtual void VSlot3B_96_1A();  // 55
-    virtual void VSlot3B_96_1B();  // 56
-    virtual void VSlot3B_96_1C();  // 57
-    virtual void VSlot3B_96_1D();  // 58
-    virtual void VSlot3B_96_1E();  // 59
-    virtual void VSlot3B_96_1F();  // 5A
-    virtual void VSlot3B_96_20();  // 5B
-    virtual void VSlot3B_96_21();  // 5C
-    virtual void VSlot3B_96_22();  // 5D
-    virtual void VSlot3B_96_23();  // 5E
-    virtual void VSlot3B_96_24();  // 5F
-    virtual void VSlot3B_96_25();  // 60
-    virtual void VSlot3B_96_26();  // 61
-    virtual void VSlot3B_96_27();  // 62
-    virtual void VSlot3B_96_28();  // 63
-    virtual void VSlot3B_96_29();  // 64
-    virtual void VSlot3B_96_2A();  // 65
-    virtual void VSlot3B_96_2B();  // 66
-    virtual void VSlot3B_96_2C();  // 67
-    virtual void VSlot3B_96_2D();  // 68
-    virtual void VSlot3B_96_2E();  // 69
-    virtual void VSlot3B_96_2F();  // 6A
-    virtual void VSlot3B_96_30();  // 6B
-    virtual void VSlot3B_96_31();  // 6C
-    virtual void VSlot3B_96_32();  // 6D
-    virtual void VSlot3B_96_33();  // 6E
-    virtual void VSlot3B_96_34();  // 6F
-    virtual void VSlot3B_96_35();  // 70
-    virtual void VSlot3B_96_36();  // 71
-    virtual void VSlot3B_96_37();  // 72
-    virtual void VSlot3B_96_38();  // 73
-    virtual void VSlot3B_96_39();  // 74
-    virtual void VSlot3B_96_3A();  // 75
-    virtual void VSlot3B_96_3B();  // 76
-    virtual void VSlot3B_96_3C();  // 77
-    virtual void VSlot3B_96_3D();  // 78
-    virtual void VSlot3B_96_3E();  // 79
-    virtual void VSlot3B_96_3F();  // 7A
-    virtual void VSlot3B_96_40();  // 7B
-    virtual void VSlot3B_96_41();  // 7C
-    virtual void VSlot3B_96_42();  // 7D
-    virtual void VSlot3B_96_43();  // 7E
-    virtual void VSlot3B_96_44();  // 7F
-    virtual void VSlot3B_96_45();  // 80
-    virtual void VSlot3B_96_46();  // 81
-    virtual void VSlot3B_96_47();  // 82
-    virtual void VSlot3B_96_48();  // 83
-    virtual void VSlot3B_96_49();  // 84
-    virtual void VSlot3B_96_4A();  // 85
-    virtual void VSlot3B_96_4B();  // 86
-    virtual void VSlot3B_96_4C();  // 87
-    virtual void VSlot3B_96_4D();  // 88
-    virtual void VSlot3B_96_4E();  // 89
-    virtual void VSlot3B_96_4F();  // 8A
-    virtual void VSlot3B_96_50();  // 8B
-    virtual void VSlot3B_96_51();  // 8C
-    virtual void VSlot3B_96_52();  // 8D
-    virtual void VSlot3B_96_53();  // 8E
-    virtual void VSlot3B_96_54();  // 8F
-    virtual void VSlot3B_96_55();  // 90
-    virtual void VSlot3B_96_56();  // 91
-    virtual void VSlot3B_96_57();  // 92
-    virtual void VSlot3B_96_58();  // 93
-    virtual void VSlot3B_96_59();  // 94
-    virtual void VSlot3B_96_5A();  // 95
-    virtual void VSlot3B_96_5B();  // 96
-    virtual TESObjectCELL* GetSaveParentCell() const;  // 97
+    bool IsInInteriorOrOutsideWorld() const;
 
-    bool Function2f3da0() const;  // compared: 0x2f3da0
+    virtual void unk3B();
+    virtual void unk3C();
+    virtual void unk3D();
+    virtual void unk3E();
+    virtual void unk3F();
+    virtual void unk40();
+    virtual void unk41();
+    virtual void unk42();
+    virtual void unk43();
+    virtual void unk44();
+    virtual void unk45();
+    virtual void unk46();
+    virtual void unk47();
+    virtual void unk48();
+    virtual void unk49();
+    virtual void unk4A();
+    virtual void unk4B();
+    virtual void unk4C();
+    virtual void unk4D();
+    virtual void unk4E();
+    virtual void unk4F();
+    virtual void unk50();
+    virtual void unk51();
+    virtual void unk52();
+    virtual void unk53();
+    virtual void unk54();
+    virtual void unk55();
+    virtual void unk56();
+    virtual void unk57();
+    virtual void unk58();
+    virtual void unk59();
+    virtual void unk5A();
+    virtual void unk5B();
+    virtual void unk5C();
+    virtual void unk5D();
+    virtual void unk5E();
+    virtual void unk5F();
+    virtual void unk60();
+    virtual void unk61();
+    virtual void unk62();
+    virtual void unk63();
+    virtual void unk64();
+    virtual void unk65();
+    virtual void unk66();
+    virtual void unk67();
+    virtual void unk68();
+    virtual void unk69();
+    virtual void unk6A();
+    virtual void unk6B();
+    virtual void unk6C();
+    virtual void unk6D();
+    virtual void unk6E();
+    virtual void unk6F();
+    virtual void unk70();
+    virtual void unk71();
+    virtual void unk72();
+    virtual void unk73();
+    virtual void unk74();
+    virtual void unk75();
+    virtual void unk76();
+    virtual void unk77();
+    virtual void unk78();
+    virtual void unk79();
+    virtual void unk7A();
+    virtual void unk7B();
+    virtual void unk7C();
+    virtual void unk7D();
+    virtual void unk7E();
+    virtual void unk7F();
+    virtual void unk80();
+    virtual void unk81();
+    virtual void unk82();
+    virtual void unk83();
+    virtual void unk84();
+    virtual void unk85();
+    virtual void unk86();
+    virtual void unk87();
+    virtual void unk88();
+    virtual void unk89();
+    virtual void unk8A();
+    virtual void unk8B();
+    virtual void unk8C();
+    virtual void unk8D();
+    virtual void unk8E();
+    virtual void unk8F();
+    virtual void unk90();
+    virtual void unk91();
+    virtual void unk92();
+    virtual void unk93();
+    virtual void unk94();
+    virtual void unk95();
+    virtual void unk96();
+    virtual TESObjectCELL* GetSaveParentCell() const;
 
-    std::uint8_t unknown20[0x40];  // 20
-    TESObjectCELL* parentCell;  // 60
-    std::uint8_t unknown68[0x30];  // 68
+    std::uint8_t unk20[0x40];
+    TESObjectCELL* parentCell;
 };
-static_assert(offsetof(TESObjectREFR, parentCell) == 0x60, "parentCell offset");
-static_assert(sizeof(TESObjectREFR) == 0x98, "TESObjectREFR size");

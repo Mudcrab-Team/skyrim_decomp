@@ -63,6 +63,8 @@ class ClaimableTests(Fixture):
     def test_private_table_must_agree_when_present(self):
         ok = {0x200: {'kind': 'ordinary', 'size': 20}}
         self.assertIsNotNone(claimable.resolve(self.repo, BUILD, 0x200, set(), ok))
+        # The on-demand publisher offers static initializers too, so their records must validate.
+        self.assertIsNotNone(claimable.resolve(self.repo, BUILD, 0x200, set(), {0x200: {'kind': 'static-initializer', 'size': 20}}))
         for bad in ({}, {0x200: {'kind': 'thunk', 'size': 20}}, {0x200: {'kind': 'ordinary', 'size': 21}}):
             self.assertIsNone(claimable.resolve(self.repo, BUILD, 0x200, set(), bad))
 

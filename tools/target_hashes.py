@@ -14,6 +14,7 @@ import sys
 
 import claimable
 import compare
+import target_hash_store as store
 from pecoff import CoffObject, PeImage, Reject, Reloc, Section
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -122,16 +123,19 @@ def load_manifest(root):
         raise ValueError('stale target-hash manifest')
     rows = []
     for shard in manifest['shards']:
-        if (not re.fullmatch(r'data/target-hashes/sse-steam-1-7-104-part-[0-9]{3}\.json', shard['path'])
-                or not compare.is_hash(shard['sha256'])):
+        if not store.SHARD.fullmatch(shard['path']) or not compare.is_hash(shard['sha256']):
             raise ValueError('invalid target-hash shard')
         blob = (root / shard['path']).read_bytes()
         if digest(blob) != shard['sha256']:
             raise ValueError('target-hash shard digest differs')
-        part = json.loads(blob)
-        if set(part) != {'functions'} or len(part['functions']) != shard['count']:
+        if store.is_binary(blob) != shard['path'].endswith('.thb'):
             raise ValueError('invalid target-hash shard contents')
-        rows.extend(part['functions'])
+        if not store.is_binary(blob) and set(json.loads(blob)) != {'functions'}:
+            raise ValueError('invalid target-hash shard contents')
+        part = store.rows(blob)
+        if len(part) != shard['count']:
+            raise ValueError('invalid target-hash shard contents')
+        rows.extend(part)
     if len(rows) != manifest['function_count']:
         raise ValueError('target-hash count differs')
     manifest['functions'] = rows
@@ -225,12 +229,19 @@ def main(argv=None):
         a.out.parent.mkdir(parents=True, exist_ok=True)
         rows = report.pop('functions')
         shards = []
-        for i in range(0, len(rows), 2000):
-            path = a.out.with_name(a.out.stem + f'-part-{i // 2000:03d}.json')
-            blob = (json.dumps(dict(functions=rows[i:i + 2000]), indent=2) + '\n').encode()
+        groups = {}
+        for row in rows:
+            groups.setdefault(store.shard_index(row['rva']), []).append(row)
+        for index in sorted(groups):
+            path = a.out.with_name(store.shard_name(a.out.stem, index))
+            blob = store.encode(groups[index])
             path.write_bytes(blob)
-            shards.append(dict(path=path.relative_to(ROOT).as_posix(), sha256=digest(blob),
-                               count=len(rows[i:i + 2000])))
+            shards.append(dict(path=path.relative_to(ROOT).as_posix(), sha256=digest(blob), count=len(groups[index])))
+        # A shard of an earlier layout that no longer belongs to the manifest would be published as a stray file.
+        kept = {(ROOT / s['path']).resolve() for s in shards}
+        for stale in a.out.parent.glob(a.out.stem + '-part-*'):
+            if stale.resolve() not in kept:
+                stale.unlink()
         report.update(shards=shards, function_count=len(rows))
         a.out.write_text(json.dumps(report, indent=2) + '\n')
         print(json.dumps(dict(hashes=len(rows), unsupported=len(unsupported),

@@ -61,6 +61,7 @@ import posixpath
 import re
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import threading
@@ -70,6 +71,7 @@ import traceback
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cookbook_notes  # noqa: E402
 import record_store  # noqa: E402
+import target_hash_store  # noqa: E402
 import drafter_claim  # noqa: E402
 import header_check  # noqa: E402
 from contrib_publication import MAX_FUNCTIONS  # noqa: E402
@@ -160,7 +162,7 @@ RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing i
 
 
 def is_generated(name):
-    return name in GENERATED or (name.startswith(TARGET_HASH_DIR) and name.endswith('.json')
+    return name in GENERATED or (name.startswith(TARGET_HASH_DIR) and name.endswith(('.json', '.thb'))
                                  and '/' not in name[len(TARGET_HASH_DIR):])
 NAME_SOURCE_SHOWN = 240
 PRECHECK_SHOWN = 12
@@ -1723,7 +1725,7 @@ class Bot:
         shared, local = self.root / '.local', self.tree / '.local'
         if not shared.is_dir():
             return
-        local.mkdir(exist_ok=True)
+        local.mkdir(parents=True, exist_ok=True)
         own = {'tasks', 'pr-bot', 'wt', 'flow', 'queue', 'worktrees', 'briefs', 'contrib-autopilot'}
         for entry in shared.iterdir():
             if entry.is_dir() and entry.name not in own and not (local / entry.name).exists():
@@ -2244,17 +2246,18 @@ class Bot:
 
         def read(name):
             if ref is None:
-                return (self.tree / name).read_text()
+                return (self.tree / name).read_bytes()
             shown = self.run(['git', 'show', f'{ref}:{name}'], check=False)
             if shown.returncode:
                 raise Stop('the published target hashes could not be read')
-            return shown.stdout.decode()
+            return shown.stdout
         manifest = json.loads(read('data/target-hashes/sse-steam-1-7-104.json'))
         found = set()
+        unsupported = target_hash_store.EXTRACTIONS.index('unmasked-unsupported')
         for shard in manifest['shards']:
-            for row in json.loads(read(shard['path']))['functions']:
-                if row.get('extraction') != 'unmasked-unsupported':
-                    found.add(row['rva'])
+            for rva, _size, extraction in target_hash_store.facts(read(shard['path'])):
+                if extraction != unsupported:
+                    found.add(rva)
         if ref:
             self.carry_targets[ref] = found  # a revision never changes; the tree's manifest can
         return found
@@ -2581,12 +2584,12 @@ class Bot:
                 self.run(['git', 'fetch', '--quiet', 'origin', revision], check=False)
                 listing = self.run(['git', 'ls-tree', '--name-only', revision, 'data/target-hashes/'], check=False)
             for name in listing.stdout.decode(errors='replace').split():
-                if not re.fullmatch(r'data/target-hashes/sse-steam-1-7-104-part-\d+\.json', name):
+                if not re.fullmatch(r'data/target-hashes/sse-steam-1-7-104-part-\d+\.(?:json|thb)', name):
                     continue
                 shown = self.run(['git', 'show', f'{revision}:{name}'], check=False)
                 try:
-                    found.update(row['rva'] for row in json.loads(shown.stdout)['functions'])
-                except (ValueError, KeyError, TypeError):
+                    found.update(rva for rva, _size, _extraction in target_hash_store.facts(shown.stdout))
+                except (ValueError, KeyError, TypeError, struct.error):
                     continue
         return found
 
@@ -3664,6 +3667,9 @@ class Bot:
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
+            if state.get('merged') and not state.get('compacted'):
+                self.compact_records(number)
+                state.set('compacted', True)
         if not state.get('commented'):
             text = ('Merged: the carried records verified.' if decision['merge'] else carried_comment(decision))
             self.say(number, sticky_body(head, text), create=not decision['merge'])
@@ -3671,6 +3677,32 @@ class Bot:
         self.drop_probe(number)
         state.set('done', True)
         return summary
+
+    def compact_records(self, number):
+        """Fold the loose records a carried PR just landed into their shards, in one follow-up commit on main.
+
+        An owner PR carries one file per record; leaving them loose would regrow reports/ by the file.
+        Only files under reports/ may change, so a stray edit never rides along.
+        """
+        for attempt in range(3):
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+            self.run(['git', 'checkout', '--quiet', '--force', '-B', 'compact', 'origin/main'], cwd=self.tree)
+            self.run(['git', 'clean', '-fdq', 'reports'], cwd=self.tree, check=False)
+            self.run([sys.executable, 'tools/record_store.py', 'pack'], cwd=self.tree, timeout=1800)
+            names = self.run(['git', 'status', '--porcelain', '--untracked-files=all'],
+                             cwd=self.tree).stdout.decode().splitlines()
+            changed = {line[3:] for line in names}
+            if not all(name.startswith('reports/') for name in changed):
+                self.run(['git', 'reset', '--quiet', '--hard', 'origin/main'], cwd=self.tree)
+                raise Stop('record compaction changed files outside reports/')
+            if not changed:
+                return
+            self.run(['git', 'add', '-A', '--', 'reports'], cwd=self.tree)
+            self.run(['git', 'commit', '--quiet', '-m', f'Compact the records carried by PR #{number} into shards'],
+                     cwd=self.tree)
+            if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
+                return
+        raise Stop('push of the compacted records kept losing the race; retry next tick')
 
     def mapping_ci(self, head):
         """The head's `mapping` check conclusion; a missing or running check is a retry, never a verdict."""
@@ -3961,8 +3993,9 @@ class Bot:
     def target_rvas(self):
         """RVAs with a published target hash in the bot's tree; empty when the shards are absent."""
         found = set()
-        for shard in sorted((self.tree / 'data/target-hashes').glob('sse-steam-1-7-104-part-*.json')):
-            found.update(row['rva'] for row in json.loads(shard.read_text())['functions'])
+        for shard in sorted((self.tree / 'data/target-hashes').glob('sse-steam-1-7-104-part-*')):
+            if shard.suffix in ('.json', '.thb'):
+                found.update(rva for rva, _size, _extraction in target_hash_store.facts(shard.read_bytes()))
         return found
 
     def unit_claims(self, files):

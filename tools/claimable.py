@@ -7,6 +7,9 @@ inventory grows only with accepted work. Counts and RVAs only; nothing here read
 import hashlib
 import json
 from pathlib import Path
+import struct
+
+import target_hash_store
 
 MANIFEST = 'data/target-hashes/sse-steam-1-7-104.json'
 OFFERED = 'data/target-hashes/contributor-targets.json'
@@ -78,10 +81,10 @@ def published_sizes(root):
         manifest = json.loads((root / MANIFEST).read_text())
         out = {}
         for shard in manifest['shards']:
-            for row in json.loads((root / shard['path']).read_text())['functions']:
-                out[row['rva']] = row['size']
+            for rva, size, _extraction in target_hash_store.facts((root / shard['path']).read_bytes()):
+                out[rva] = size
         return out
-    except (OSError, ValueError, KeyError):
+    except (OSError, ValueError, KeyError, struct.error):
         return {}
 
 
@@ -118,11 +121,16 @@ def entry(build_id, rva, size, cls=None):
             'owner': 'claim-time', 'evidence': EVIDENCE}
 
 
+# Kinds a PR may claim without an inventory entry. The on-demand publisher and the record validator must agree
+# on this, or a function is published and compared but its record is then refused.
+ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
+
+
 def resolve(root, build_id, rva, inventory_rvas, table=None):
     """An entry for a published function the inventory lacks, or None.
 
     `table` is the private function table's rows by RVA when the caller has it: the function must
-    then be an ordinary function there with the published size.
+    then be of an on-demand kind there with the published size.
     """
     if rva in inventory_rvas:
         return None
@@ -131,7 +139,7 @@ def resolve(root, build_id, rva, inventory_rvas, table=None):
         return None
     if table is not None:
         row = table.get(rva)
-        if not row or row.get('kind') != 'ordinary' or row.get('size') != size:
+        if not row or row.get('kind') not in ON_DEMAND_KINDS or row.get('size') != size:
             return None
     return entry(build_id, rva, size, offered_classes(root).get(rva))
 

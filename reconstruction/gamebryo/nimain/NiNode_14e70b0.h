@@ -1,46 +1,32 @@
-// Source exposure: mixed (community declarations and the contributor-owned pack).
-// Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// NiAVObject, NiNode, BSFadeNode: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// NiAVObject::~NiAVObject, NiAVObject::AsFadeNode, NiAVObject::parent: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// NiAVObject::GetParent: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
-// NiNode::AsBSFadeNode: GUESS(low)
-// unk08, unk38, unknown110, VSlot01, VSlot02, VSlot03, VSlot04: GUESS(low)
+// Source exposure: mixed (community headers; compared functions from the pinned image).
+// Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
+// NiNode, AsBSFadeNode: CRASHLOGGER_PDB(59818@2026.10.24); the PDB name carries an address suffix, dropped here
+// AsFadeNode, parent, BSFadeNode: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// NiNode: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the slots and members used here
+// unk00, unk08, unk10, unk18, unk20, unk08Data, ParentNode: GUESS(low); vtable slots and padding in front of the used ones
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
+#include <cstddef>
 
 class BSFadeNode;
-class NiNode;
 
-class NiAVObject
+class NiNode
 {
 public:
-    virtual ~NiAVObject();  // 00
-    virtual void VSlot01();  // 01
-    virtual void VSlot02();  // 02
-    virtual void VSlot03();  // 03
-    virtual void VSlot04();  // 04
-    virtual BSFadeNode* AsFadeNode();  // 05
+    virtual void unk00();
+    virtual void unk08();
+    virtual void unk10();
+    virtual void unk18();
+    virtual void unk20();
+    virtual BSFadeNode* AsFadeNode();
 
-    NiNode* GetParent() const
-    {
-        return parent;
-    }
+    static BSFadeNode* AsBSFadeNode(NiNode* start);
 
-    std::uint8_t unk08[0x28];  // 08
-    NiNode* parent;  // 30
-    std::uint8_t unk38[0xD8];  // 38
+    unsigned char unk08Data[0x28];
+    NiNode* parent;
+    NiNode* ParentNode() const { return parent; }
 };
-static_assert(offsetof(NiAVObject, parent) == 0x30, "parent offset");
-static_assert(sizeof(NiAVObject) == 0x110, "NiAVObject size");
+static_assert(offsetof(NiNode, parent) == 0x30, "parent offset");
 
-class NiNode : public NiAVObject
-{
-public:
-    BSFadeNode* AsBSFadeNode();  // compared: 0x14e70b0
-
-    std::uint8_t unknown110[0x18];  // 110
-};
-static_assert(sizeof(NiNode) == 0x128, "NiNode size");

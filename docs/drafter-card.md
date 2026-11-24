@@ -84,7 +84,8 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
 - Header comment of each file, kept short (docs/contributor-card.md shows one): `Source exposure:
   <black-box|community-headers|binary-analysis|mixed>`, the one-line `SPDX-License-Identifier: MIT
   (CommonLibSSE-NG ...)` notice when NG declarations are used (never the licence text), and in the .cpp one
-  `// 0x<rva> <Name>` line per compared function. `Recipe:` only when it is not the default. No
+  `// 0x<rva> <Name>` line per compared function. `Recipe: reconstruction/recipes/<name>.json` only when it is not the default; `attempt`, `compare` and CI all
+  build with the recipe the unit names, not the task file's. No
   build id, Task, Labels, Evidence, Drafted by or disclaimer lines; git and the records hold them.
   Label names only on lines of this form (the lint enforces it in every unit file except eight
   legacy ones):

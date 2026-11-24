@@ -42,11 +42,18 @@ class DeployTests(unittest.TestCase):
         git(self.src, 'commit', '-q', '-m', name)
         return git(self.src, 'rev-parse', 'HEAD')
 
-    def deploy(self, sha):
+    def with_origin(self):
+        """Give the source checkout an origin whose main is the newer revision."""
+        origin = self.dir / 'origin.git'
+        git(self.dir, 'init', '-q', '--bare', '-b', 'main', str(origin))
+        git(self.src, 'remote', 'add', 'origin', str(origin))
+        git(self.src, 'push', '-q', 'origin', f'{self.new}:refs/heads/main')
+
+    def deploy(self, sha, *extra):
         env = {**ENV, 'PATH': f'{self.dir / "bin"}:{os.environ["PATH"]}', 'SR_BOT_ROOT': str(self.dir),
                'SR_BOT_SRC': str(self.src), 'SR_BOT_PYTHON': 'python3', 'SR_BOT_LABEL': 'x.bot',
                'SR_BOT_PIN': str(self.dir / 'pin')}
-        return subprocess.run(['sh', str(SCRIPT), sha], capture_output=True, text=True, env=env)
+        return subprocess.run(['sh', str(SCRIPT), sha, *extra], capture_output=True, text=True, env=env)
 
     def test_a_passing_dry_run_checks_the_revision_out_pins_it_and_restarts(self):
         done = self.deploy(self.new)
@@ -63,6 +70,34 @@ class DeployTests(unittest.TestCase):
         self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.old)
         self.assertFalse(self.kicked.exists())
         self.assertFalse((self.dir / 'pin').exists())
+
+    def test_a_revision_behind_origin_main_is_refused(self):
+        self.with_origin()
+        done = self.deploy(self.old)
+        self.assertNotEqual(done.returncode, 0)
+        self.assertIn('origin/main', done.stderr)
+        self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.old)
+        self.assertFalse(self.kicked.exists())
+        self.assertFalse((self.dir / 'pin').exists())
+
+    def test_allow_stale_deploys_a_revision_behind_origin_main(self):
+        self.with_origin()
+        git(self.src, 'checkout', '-q', '--detach', self.new)
+        done = self.deploy(self.old, '--allow-stale')
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.old)
+        self.assertIn('kickstart -k', self.kicked.read_text())
+
+    def test_origin_main_head_deploys_without_the_flag(self):
+        self.with_origin()
+        done = self.deploy(self.new)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual((self.dir / 'pin').read_text().strip(), self.new)
+
+    def test_an_unknown_argument_is_refused(self):
+        done = self.deploy(self.new, '--force')
+        self.assertEqual(done.returncode, 2)
+        self.assertFalse(self.kicked.exists())
 
 
 if __name__ == '__main__':

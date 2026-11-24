@@ -33,6 +33,9 @@ def job_problems(rollup):
     """Why the PR's `check`/`tests` jobs do not allow a merge; empty when every one of them succeeded."""
     jobs = [j for j in rollup if j.get('workflowName') == REQUIRED_WORKFLOW
             and (j.get('name') == 'check' or j.get('name', '').startswith('tests'))]
+    # A skipped job never ran (a docs-only push run skips the aggregate `tests` job while the pull request run
+    # executes the shards), so it neither blocks nor counts as a pass.
+    jobs = [j for j in jobs if j.get('conclusion') != 'SKIPPED']
     problems = [f'{j["name"]}: {j.get("conclusion") or j.get("status") or "unknown"}'
                 for j in jobs if j.get('conclusion') != 'SUCCESS']
     for need in ('check', 'tests'):
