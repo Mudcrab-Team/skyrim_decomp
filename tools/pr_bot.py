@@ -2665,6 +2665,27 @@ class Bot:
         self.check_tag_head(tag, 'pack export')
         return self.compare_on_host(units, tag, lambda: self.check_tag_head(tag, 'compare'))
 
+    def prefetch_compare(self, tasks, progress):
+        """Compile and compare the tasks on the preferred ssh runner in a few batches, if one answers.
+
+        Only a speed-up: each task's own `attempt` run reads its prefetched result when it matches the
+        sources and otherwise compiles on the ordinary host, so a down or failing runner costs nothing
+        but the probe. The runner is never waited for.
+        """
+        if not self.config.get('compare_prefetch', True) or not tasks:
+            return
+        if progress:
+            progress.begin('compare-batch', len(tasks))
+        try:
+            with (progress.heartbeat() if progress else contextlib.nullcontext()):
+                done = self.run([sys.executable, 'tools/verifier/compare_batch.py', '--deadline',
+                                 str(self.config.get('compare_prefetch_wait', 1800)), *map(str, tasks)],
+                                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            tail = done.stdout.decode(errors='replace').strip().splitlines()[-1:] if done.stdout else []
+            print(f'compare prefetch: {tail[0] if tail else "no output"}', flush=True)
+        except (Stop, subprocess.TimeoutExpired, OSError) as exc:
+            print(f'compare prefetch skipped ({type(exc).__name__})', flush=True)
+
     def compare_on_host(self, units, tag, before_attempts=None):
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
         lines, tasks = [], []
@@ -2704,13 +2725,14 @@ class Bot:
         # hundreds of them: one after another they outlast the head's chance to stay unchanged.
         def attempt(task):
             try:
-                ran = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
+                ran = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py', '--no-advisory'],
                                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
             except subprocess.TimeoutExpired:
                 raise HostFailure(f'verifier host timed out ({tid_of(task)})')
             if progress:
                 progress.advance(ran.returncode == 0)
             return ran
+        self.prefetch_compare(tasks, progress)
         workers = max(1, min(self.config.get('compare_workers', COMPARE_WORKERS), len(tasks)))
         if progress:
             progress.begin('compare', len(tasks))

@@ -2,6 +2,7 @@
   "runners_schema": 1,
   "attempt": "mac",
   "attempt_prefer": ["winpc"],
+  "compare_prefer": ["winpc"],
   "confirm": [
     "mac",
     "winpc"
@@ -34,7 +35,8 @@
       "work": "C:/example/verifier/work",
       "max_parallel": 8,
       "max_sessions": 4,
-      "batch": 16
+      "batch": 32,
+      "wake_mac": "AA:BB:CC:DD:EE:FF"
     },
     "ci": {
       "backend": "ci-hash",

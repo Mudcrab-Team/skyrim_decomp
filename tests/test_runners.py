@@ -121,6 +121,34 @@ class Config(unittest.TestCase):
         self.assertTrue(any('winpc is reachable' in w and 'SR_ATTEMPT_HOST' in w for w in warns))
         self.assertEqual(runners.choose_attempt(c, {}, lambda h: False), ('mac', []))
 
+    def test_compare_host_choice_and_wake(self):
+        c = runners.validate(config(compare_prefer=['winpc'], hosts={'mac': host(), 'winpc': ssh_host(
+            wake_mac='AA:BB:CC:DD:EE:FF')}), root='/repo')
+        self.assertEqual(runners.choose_compare(c, {}, lambda h: True), ('winpc', []))
+        with mock.patch.object(runners, 'wake', return_value=True) as sent:
+            name, warns = runners.choose_compare(c, {}, lambda h: False)
+        self.assertIsNone(name)
+        self.assertEqual(sent.call_count, 1)
+        self.assertIn('wake-up packet sent', warns[0])
+        self.assertEqual(runners.choose_compare(c, {'SR_COMPARE_HOST': 'attempt'}, None), (None, []))
+        self.assertEqual(runners.choose_compare(c, {'SR_COMPARE_HOST': 'winpc'}, None), ('winpc', []))
+        with self.assertRaises(runners.RunnerError):
+            runners.choose_compare(c, {'SR_COMPARE_HOST': 'mac'}, None)
+        self.assertEqual(runners.choose_compare(runners.validate(config(), root='/repo'), {}, lambda h: True),
+                         (None, []))
+        for bad in (dict(compare_prefer=['mac']), dict(compare_prefer=['nowhere']),
+                    dict(hosts={'mac': host(), 'winpc': ssh_host(wake_mac='nonsense')})):
+            with self.subTest(bad=bad), self.assertRaises(runners.RunnerError):
+                runners.validate(config(**bad), root='/repo')
+
+    def test_wake_sends_a_magic_packet_only_when_configured(self):
+        self.assertFalse(runners.wake({}))
+        sock = mock.MagicMock()
+        with mock.patch('socket.socket', return_value=sock):
+            self.assertTrue(runners.wake({'wake_mac': 'aa-bb-cc-dd-ee-ff'}))
+        data = sock.__enter__.return_value.sendto.call_args[0][0]
+        self.assertEqual(data, b'\xff' * 6 + bytes.fromhex('aabbccddeeff') * 16)
+
     def test_attempt_prefer_must_name_hosts(self):
         with self.assertRaises(runners.RunnerError):
             runners.validate(config(attempt_prefer=['nowhere']), root='/repo')
@@ -783,6 +811,34 @@ class AgentEndToEnd(unittest.TestCase):
             self.assertNotIn(self.MARKER, ' '.join(c))
         self.assertEqual([p.name for p in (self.tmp / 'work').iterdir() if p.name != '.prep'], [])
         self.assertEqual(list((self.tmp / 'stage').iterdir()), [])
+
+    def test_prefetched_result_is_used_once_and_only_for_the_same_sources(self):
+        import compare_batch
+        results, _ = self.batch(('unit-a',))
+        code, unit, _ = results['unit-a']
+        task = dict(self.task, task_id='unit-a', dir=self.tmp / 'task')
+        (task['dir'] / '.attempt').mkdir(parents=True)
+        h = dict(host(msvc=str(self.msvc), work=str(self.tmp / 'work'), image=str(self.image), wine_bin=None,
+                      wineprefix=None, max_parallel=2), backend='ssh', python=[sys.executable], name='winpc',
+                 ssh_config='x', ssh_host='y')
+        config = {'hosts': {'winpc': h}}
+        unit.rename(task['dir'] / '.attempt' / compare_batch.UNIT_DIR)
+        compare_batch.write_entry(task['dir'], compare_batch.spec_key(task, self.files, h['host_id']), 'winpc', code)
+        found = compare_batch.read_entry(task['dir'], task, self.files, config)
+        self.assertEqual(found[2], 0)
+        worker = compare_batch.PrefetchedHost(found[0], task, found, transport=StubSsh(h))
+        self.assertEqual(worker.run(self.files, self.tmp / 'stage'), (0, ''))
+        dest = worker.fetch(self.tmp / 'task' / 'attempts' / '001')
+        self.assertTrue((dest / 'candidate.obj').is_file())
+        self.assertIsNone(compare_batch.read_entry(task['dir'], task, self.files, config))
+        # Changed sources make a stale result unusable.
+        other = self.tmp / 'edited.cpp'
+        other.write_text('#include "Synth.h"\nint edited;\n')
+        results, _ = self.batch(('unit-a',))
+        results['unit-a'][1].rename(task['dir'] / '.attempt' / compare_batch.UNIT_DIR)
+        compare_batch.write_entry(task['dir'], compare_batch.spec_key(task, self.files, h['host_id']), 'winpc', 0)
+        changed = dict(self.files, **{'reconstruction/synth/Synth.cpp': other})
+        self.assertIsNone(compare_batch.read_entry(task['dir'], task, changed, config))
 
     def test_batch_missing_one_agent_result_affects_only_that_unit(self):
         unpack = runners.unpack

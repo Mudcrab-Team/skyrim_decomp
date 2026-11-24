@@ -19,7 +19,11 @@ caller fetches `work/<host id>/` and the run directory is removed.
 
 The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides). `attempt` names the default attempt host; an optional
 `attempt_prefer` list is tried first (first reachable wins) and SR_ATTEMPT_HOST overrides both;
-tools/verifier/runners.example.json is the tracked example. Without it, or with `"attempt":
+tools/verifier/runners.example.json is the tracked example. An optional `compare_prefer` list
+(ssh hosts) is the PR bot's host for its bulk compare: tools/verifier/compare_batch.py uploads
+the units in batches there when one answers (SR_COMPARE_HOST overrides; `attempt` disables) and the
+ordinary `attempt` host takes over when none does; an ssh host may set `wake_mac` so an unreachable one
+is sent a Wake-on-LAN packet without being waited for. Without it, or with `"attempt":
 "boat"`, everything behaves as before. A host is named in records only by its `host_id`, with
 the OS, loader and compiler hashes it reports; private paths, user names and addresses stay in
 the config.
@@ -175,6 +179,10 @@ def validate(raw, root=None):
             if isinstance(python, str):
                 python = [python]
             host['python'] = python
+            wake = h.get('wake_mac')
+            if wake is not None and not (isinstance(wake, str)
+                                         and re.fullmatch(r'[0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5}', wake)):
+                raise RunnerError(f'{where}.wake_mac must be a MAC address such as AA:BB:CC:DD:EE:FF')
             for token in [h['ssh_host'], h['msvc'], h['image'], h['work'], *python]:
                 if not isinstance(token, str) or not SAFE_TOKEN.fullmatch(token):
                     raise RunnerError(f'{where}: {token!r} needs quoting on the remote shell; use a path without '
@@ -193,7 +201,12 @@ def validate(raw, root=None):
     prefer = raw.get('attempt_prefer', [])
     if not isinstance(prefer, list) or any(p not in out or out[p]['backend'] == 'ci-hash' for p in prefer):
         raise RunnerError('runners config: attempt_prefer must list configured attempt-capable hosts')
-    return {'attempt': attempt, 'attempt_prefer': prefer, 'confirm': confirm, 'hosts': out}
+    # The bot's host-2 compare: ssh hosts only, since a batch upload gains nothing on a local host.
+    compare = raw.get('compare_prefer', [])
+    if not isinstance(compare, list) or any(p not in out or out[p]['backend'] != 'ssh' for p in compare):
+        raise RunnerError('runners config: compare_prefer must list configured ssh hosts')
+    return {'attempt': attempt, 'attempt_prefer': prefer, 'compare_prefer': compare, 'confirm': confirm,
+            'hosts': out}
 
 
 def load(path=None, root=None):
@@ -789,6 +802,50 @@ def choose_attempt(config, environ=None, probe_fn=None):
                                 f'SR_ATTEMPT_HOST={other} or put it in attempt_prefer')
                 break
     return name, warnings
+
+
+def wake(host):
+    """Send a Wake-on-LAN packet to an ssh host that sets `wake_mac`; True when one was sent.
+
+    Fire and forget: the caller never waits for the machine, so a sleeping host costs the current
+    run nothing and is up for the next one.
+    """
+    mac = host.get('wake_mac')
+    if not mac:
+        return False
+    import socket
+    raw = bytes.fromhex(re.sub(r'[:-]', '', mac))
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            sock.sendto(b'\xff' * 6 + raw * 16, ('255.255.255.255', 9))
+    except OSError:
+        return False
+    return True
+
+
+def choose_compare(config, environ=None, probe_fn=None):
+    """(host name or None, warnings): SR_COMPARE_HOST, else the first reachable `compare_prefer` entry.
+
+    None means the caller keeps its ordinary host (the `attempt` one). A preferred host that does not
+    answer gets a wake-up packet and is skipped for this run.
+    """
+    environ = os.environ if environ is None else environ
+    probe_fn = probe_fn or reachable
+    hosts, warnings = config['hosts'], []
+    forced = environ.get('SR_COMPARE_HOST')
+    if forced:
+        if forced == 'attempt':
+            return None, warnings
+        if forced not in hosts or hosts[forced]['backend'] != 'ssh':
+            raise RunnerError(f'SR_COMPARE_HOST={forced!r} is not a configured ssh host')
+        return forced, warnings
+    for cand in config.get('compare_prefer', []):
+        if probe_fn(hosts[cand]):
+            return cand, warnings
+        warnings.append(f'preferred compare host {cand} is not reachable' + (
+            '; wake-up packet sent' if wake(hosts[cand]) else ''))
+    return None, warnings
 
 
 def for_attempt(config=None, report=None):

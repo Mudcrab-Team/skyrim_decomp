@@ -1202,6 +1202,8 @@ class ParallelCompareTests(Replay):
                     task.mkdir(parents=True, exist_ok=True)
                     (task / 'task.json').write_text(json.dumps(dict(task_id=task.name, functions=[dict(rva=hex(r))])))
                 return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if name.endswith('compare_batch.py'):
+                return subprocess.CompletedProcess(argv, 0, b'compare_batch: nothing prefetched\n', b'')
             if name.endswith('attempt'):
                 return attempt(Path(str(argv[2])))
             raise AssertionError(argv)
@@ -1332,6 +1334,8 @@ class IncludeRefusalTests(Replay):
             if name.endswith('export_pack.py'):
                 task.mkdir(parents=True, exist_ok=True)
                 (task / 'task.json').write_text(json.dumps(dict(task_id=task.name, functions=[dict(rva='0x1000')])))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if name.endswith('compare_batch.py'):
                 return subprocess.CompletedProcess(argv, 0, b'', b'')
             if name.endswith('attempt'):  # the refusal is printed on stdout, so stderr is empty
                 return subprocess.CompletedProcess(argv, code, b'REFUSED include (not counted)\n', b'')

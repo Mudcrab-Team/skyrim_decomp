@@ -55,6 +55,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import align  # noqa: E402
 import bind  # noqa: E402
 import boatctl  # noqa: E402
+import compare_batch  # noqa: E402
 import disasm  # noqa: E402
 import pipeline  # noqa: E402
 from pipeline import PipelineError  # noqa: E402
@@ -207,7 +208,7 @@ def fallback_budget(task_dir, qdir, tier='fallback'):
     return entry['attempts_per_function'] * len(wq.unpassed(qdir, unit, tier))
 
 
-def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=()):
+def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True):
     started = time.monotonic()
     task = pipeline.load_task(task_dir)
     import draft_worktrees
@@ -251,7 +252,9 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
                              state_path=task_dir / '.attempt' / 'sync.json', local_image=config.get('image'))
         where = f'machine: {boatctl.STANDING} {how}; it stops itself at its deadline'
     else:
-        host = runners.AgentHost(runner, task, log=lambda m: print(m, file=sys.stderr))
+        # A result prefetched in a batch (tools/verifier/compare_batch.py) is used only while it matches
+        # these exact sources; otherwise this is the plain per-unit run on `runner`.
+        host, runner = compare_batch.host_for(task, files, runner, runners.load())
     dest = attempts / f'{number:03d}'
     code = run_once(task, host, files, task_dir, dest)
     bind_lines = []
@@ -346,8 +349,9 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         problem = 'compile failed' if code == 3 else (error or {}).get('detail', 'host input failed')
         lines.append('Next: ' + agent_advice.next_action(problem, 'attempt'))
     lines += bind_lines
-    lines += label_warnings(closure)
-    lines += origin_lines(closure)
+    if advisory:
+        lines += label_warnings(closure)
+        lines += origin_lines(closure)
     rel = dest.relative_to(Path.cwd()) if dest.is_relative_to(Path.cwd()) else dest
     lines.append(f'private: {rel}/ (0x<rva>/side-by-side.txt, compile.log; read locally, never paste)')
     if runner is not None:
@@ -466,6 +470,8 @@ def main():
     p.add_argument('--profile', choices=sorted(profiles.PROFILES), help='project Drafter profile default')
     p.add_argument('--rule', metavar='N[,M]', help='cookbook rule number(s) that turned a fail into this pass; recorded '
                    'in attempts.jsonl and counted by tools/cookbook_rank.py once the function is accepted')
+    p.add_argument('--no-advisory', action='store_true', help='skip the label and origin warnings (about 7 s of '
+                   'local work per unit); for callers that only need the verdict and run those checks elsewhere')
     p.add_argument('--clean', action='store_true', help="remove the task's files on the machine")
     p.add_argument('--stop', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
@@ -491,7 +497,7 @@ def main():
             rules = sorted({int(n) for n in a.rule.split(',')}) if a.rule else []
         except ValueError:
             p.error('--rule takes cookbook rule numbers such as 48 or 48,12')
-        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules)
+        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory)
     except (PipelineError, boatctl.BoatError, runners.RunnerError, wq.QueueError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f'attempt: {agent_advice.explain(exc, "attempt")}', file=sys.stderr)
         return 2
