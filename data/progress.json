@@ -514795,6 +514795,45 @@
       "owner": "claim-time",
       "evidence": "reports/sse-steam-1-7-104/0x1187f40.json",
       "report": "reports/sse-steam-1-7-104/0x1187f40.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x44df30",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 4513584,
+      "size": 19,
+      "status": "matched",
+      "name": "BGSPackageDataLocation::Function44df30",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x44df30; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x44df30.json",
+      "report": "reports/sse-steam-1-7-104/0x44df30.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x44e0a0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 4513952,
+      "size": 9,
+      "status": "matched",
+      "name": "BGSPackageDataLocation::Function44e0a0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x44e0a0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x44e0a0.json",
+      "report": "reports/sse-steam-1-7-104/0x44e0a0.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0x44e0b0",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 4513968,
+      "size": 9,
+      "status": "matched",
+      "name": "BGSPackageDataLocation::Function44e0b0",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0x44e0b0; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0x44e0b0.json",
+      "report": "reports/sse-steam-1-7-104/0x44e0b0.json"
     }
   ],
   "milestones": [
@@ -514837,7 +514876,7 @@
     "notes": "Inventory and exclusions have not been established. No completion percentage is meaningful yet."
   },
   "target_build_id": "sse-steam-1-7-104",
-  "updated_at": "2026-11-24T07:30:10Z",
+  "updated_at": "2026-11-24T08:57:54Z",
   "work_items": [
     {
       "id": "pin-target",
