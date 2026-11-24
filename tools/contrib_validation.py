@@ -21,7 +21,7 @@ from local_paths import local_path, no_sibling_names
 UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 
 
-def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
+def publication_problems(ctx, base, rows, head=None, merge_method='squash', *, scope=False):
     """Use intake's retained-publication policy on a private snapshot, without changing the index.
 
     The synthetic commit is unreferenced and never pushed. It lets the same Git-based screen see
@@ -29,6 +29,11 @@ def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
     """
     from contrib_publication import PublicationRejected, screen_publication
     def screen(revision):
+        if scope:
+            import scope_check
+            for status, output in scope_check.results(ctx.repo, base, revision):
+                if status:
+                    return output.splitlines()
         try:
             screen_publication(ctx.repo, base, revision, merge_method=merge_method)
         except PublicationRejected as exc:

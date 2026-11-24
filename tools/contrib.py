@@ -35,6 +35,7 @@ Haiku- or Luna-class models) or `full` (full card and cookbook, for Sonnet-class
 changes what counts as a match. `python3 tools/profiles.py` prints a rough cost line for each.
 """
 import argparse
+from bisect import bisect_left
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -345,10 +346,11 @@ def resolve_function(ctx, data, rva):
     fn = find_function(data, rva)
     if fn is not None:
         return fn
-    held = {f['rva'] for f in data['functions']}
-    if rva in held or rva not in claimable.published_sizes(ctx.repo):
+    sizes = claimable.published_sizes(ctx.repo)
+    if rva not in sizes:
         return None
-    return claimable.resolve(ctx.repo, data['target_build_id'], rva, held, function_table_rows(ctx))
+    return claimable.resolve_many(ctx.repo, data['target_build_id'], [rva],
+                                  function_table_rows(ctx), sizes=sizes).get(rva)
 
 
 def community_label(name_source):
@@ -1113,8 +1115,12 @@ def local_claims(ctx):
 
 
 def save_local_claim(ctx, rva, record):
+    save_local_claims(ctx, [rva], record)
+
+
+def save_local_claims(ctx, addresses, record):
     claims = local_claims(ctx)
-    claims[f'0x{rva:x}'] = record
+    claims.update((f'0x{rva:x}', record) for rva in addresses)
     (ctx.private).mkdir(parents=True, exist_ok=True)
     (ctx.private / 'claims.json').write_text(json.dumps(claims, indent=2, sort_keys=True) + '\n')
 
@@ -1815,6 +1821,8 @@ def cmd_next(ctx, args):
 
 
 def claim_selection(ctx, args, data):
+    import claimable
+
     values = getattr(args, 'rva', []) or []
     values = [values] if isinstance(values, str) else list(values)
     for file in getattr(args, 'lists', []) or []:
@@ -1837,39 +1845,48 @@ def claim_selection(ctx, args, data):
         if end <= start:
             raise Stop(USAGE, 'range end must be greater than start')
         ranges.append((start, end))
-        addresses.update(f['rva'] for f in data['functions'] if start <= f['rva'] < end and f['status'] != 'matched')
+    ranged = batch_claims.ClaimIntervals(ranges)
+    if ranges:
+        addresses.update(f['rva'] for f in data['functions'] if f['status'] != 'matched' and f['rva'] in ranged)
     if not addresses:
         if ranges:
             raise Stop(USAGE, 'the range has no unmatched functions, so there is nothing to claim', f'{ctx.cli} next')
         raise Stop(USAGE, 'select RVAs, --class, --list or --range')
-    merged = []
-    for a, b in sorted(ranges):
-        if merged and a <= merged[-1][1]:
-            merged[-1] = (merged[-1][0], max(b, merged[-1][1]))
-        else:
-            merged.append((a, b))
-    ranges = merged
+    by_rva = {}
+    for fn in data['functions']:
+        by_rva.setdefault(fn['rva'], fn)
+    if missing := addresses - by_rva.keys():
+        sizes = claimable.published_sizes(ctx.repo)
+        if offered := missing.intersection(sizes):
+            by_rva.update(claimable.resolve_many(ctx.repo, data['target_build_id'], offered,
+                                                function_table_rows(ctx), sizes=sizes))
+    ordered = sorted(addresses)
     functions = []
-    for address in sorted(addresses):
-        fn = resolve_function(ctx, data, address)
+    for address in ordered:
+        fn = by_rva.get(address)
         if fn is None:
             raise Stop(USAGE, f'0x{address:x} is not in data/progress.json or the published target-hash list')
         if fn['status'] == 'matched':
             raise Stop(USAGE, f'0x{address:x} is already matched', f'{ctx.cli} next')
         functions.append(fn)
-    entries = ranges + [(r, r + 1) for r in sorted(addresses) if not any(a <= r < b for a, b in ranges)]
+    entries = ranged.entries + [(r, r + 1) for r in ordered if r not in ranged]
     return functions, entries
 
 
 def claim_conflicts(index, blocked, addresses):
     """{rva: [claim items]} for each requested address a blocking claim covers."""
+    addresses = sorted(addresses)
     where = {}
-    for address in addresses:
-        for it in blocked:
-            entries = it.get('entries')
-            hit = any(a <= address < b for a, b in entries) if entries else it in index.get(address, [])
-            if hit:
-                where.setdefault(address, []).append(it)
+    for it in blocked:
+        entries = it.get('entries')
+        if entries:
+            for start, end in batch_claims.ClaimIntervals(entries).entries:
+                for address in addresses[bisect_left(addresses, start):bisect_left(addresses, end)]:
+                    where.setdefault(address, []).append(it)
+        else:
+            for address in addresses:
+                if it in index.get(address, []):
+                    where.setdefault(address, []).append(it)
     return where
 
 
@@ -1903,8 +1920,8 @@ def cmd_claim(ctx, args):
         raise Stop(USAGE, str(error)) from None
     save_config(ctx, model=model)
     ctx.say(f'model/agent: {model}')
-    def save_claim(address, record):
-        save_local_claim(ctx, address, dict(record, model=model))
+    def save_claim(addresses, record):
+        save_local_claims(ctx, addresses, dict(record, model=model))
     data = inventory(ctx.repo)
     functions, entries = claim_selection(ctx, args, data)
     build = functions[0]['build_id']
@@ -1917,8 +1934,7 @@ def cmd_claim(ctx, args):
         if not args.offline_ok:
             raise Stop(NETWORK, f'cannot reach GitHub to check claims ({exc})',
                        f'{ctx.cli} claim 0x{first:x} when online, or --offline-ok to start unclaimed')
-        for address in addresses:
-            save_claim(address, {'status': 'unpublished', 'url': None})
+        save_claim(addresses, {'status': 'unpublished', 'url': None})
         ctx.say('WARNING: claim recorded locally only; others cannot see it. Run claim again when online.')
         return OK, {'rva': f'0x{first:x}', 'claim': 'unpublished'}, f'{ctx.cli} start 0x{first:x}'
     if getattr(args, 'github_user', None):
@@ -1961,17 +1977,16 @@ def cmd_claim(ctx, args):
     ranges_covered = all(any(a <= start and end <= b for it in mine for a, b in it.get('entries', []))
                          for start, end in entries if end > start + 1)
     if mine and ranges_covered and all(any(it in mine for it in index.get(address, [])) for address in addresses):
-        for address in addresses:
-            save_claim(address, {'status': 'published', 'url': mine[0]['url']})
+        save_claim(addresses, {'status': 'published', 'url': mine[0]['url']})
         ctx.say(f'already yours: {mine[0]["url"]}')
         return OK, {'rva': f'0x{first:x}', 'claim': mine[0]['url']}, f'{ctx.cli} start 0x{first:x}'
     public = batch_claims.git_json(ctx.repo)
     # Offered functions are not in the inventory yet, so the claimed addresses count as well.
-    known = {f['rva'] for f in data['functions'] if f['build_id'] == build} | set(addresses)
-    counts = {e: sum(e[0] <= r < e[1] for r in known) for e in entries}
+    known = sorted({f['rva'] for f in data['functions'] if f['build_id'] == build} | set(addresses))
+    counts = {(a, b): bisect_left(known, b) - bisect_left(known, a) for a, b in entries}
     if not any(counts.values()):
         raise Stop(USAGE, 'the claim resolves to 0 functions; no issue was opened', f'{ctx.cli} next')
-    giveup_notice(ctx, sorted(a for a in addresses if any(x <= a < y for x, y in entries)))
+    giveup_notice(ctx, addresses)
     plans = batch_claims.parts(build, entries, public, me, counts=counts)
     urls, links = [], []
     for title, text, chunk in plans:
@@ -1993,9 +2008,8 @@ def cmd_claim(ctx, args):
             ctx.private.mkdir(parents=True, exist_ok=True)
             (ctx.private / 'claims.json').write_text(json.dumps(saved) + '\n')
             raise Stop(CLAIMED, f'older claim #{rivals[0]["number"]} won; your claim was withdrawn', claims=rivals)
-        for address in addresses:
-            if any(a <= address < b for a, b in chunk):
-                save_claim(address, {'status': 'published', 'url': url})
+        covered = batch_claims.ClaimIntervals(chunk)
+        save_claim((a for a in addresses if a in covered), {'status': 'published', 'url': url})
         ctx.say(f'claimed: {url}')
     if links:
         ctx.say('gh is not signed in; file these issues, then run claim again:')
@@ -2223,10 +2237,15 @@ def start(ctx, args, quiet=False):
     if given is not None and not PLAIN_NAME.fullmatch(f'{given}::Function'):
         raise Stop(USAGE, f'--class must be a plain class name such as TESObjectCELL, not {given!r}')
     if given:
-        # The class is the contributor's reading and only names the unit; the inventory entry keeps its own
-        # GUESS label. Entries that already carry a class are left as they are.
-        fns = [dict(fn, name=f'{given}::{fn["name"]}') if BARE_PLACEHOLDER.fullmatch(fn.get('name') or '') else fn
-               for fn in fns]
+        # Use the contributor's class spelling consistently in paths, declarations and function names.
+        for i, fn in enumerate(fns):
+            name = fn.get('name') or ''
+            owner, qualified, method = name.rpartition('::')
+            if owner == given or not (qualified or BARE_PLACEHOLDER.fullmatch(method)):
+                continue
+            if qualified and method in (owner, f'~{owner}'):
+                method = f'~{given}' if method.startswith('~') else given
+            fns[i] = dict(fn, name=f'{given}::{method}', name_origin='GUESS')
     m = [PLAIN_NAME.fullmatch(fn.get('name') or '') for fn in fns]
     if not all(m):
         bare = any(BARE_PLACEHOLDER.fullmatch(fn.get('name') or '') for fn in fns)
@@ -2773,13 +2792,11 @@ def cmd_compare(ctx, args):
 
 # ------------------------------------------------------------------ intake rules and submit
 
-def changed_files(ctx, base, head='HEAD'):
-    out = git(ctx, 'diff', '--name-status', '--no-renames', f'{base}...{head}' if head else base)
-    rows = []
-    for line in out.splitlines():
-        status, _, name = line.partition('\t')
-        rows.append((status[:1], name))
-    return rows
+def changed_files(ctx, base, head='HEAD', *, index_tree=False):
+    refs = [base, head] if index_tree else [f'{base}...{head}' if head else base]
+    raw = git(ctx, 'diff', '--name-status', '--no-renames', '-z', *refs, '--')
+    fields = raw.split('\0')
+    return [(status[:1], name) for status, name in zip(fields[::2], fields[1::2])]
 
 
 def git_blob(ctx, ref, name):
@@ -2787,13 +2804,13 @@ def git_blob(ctx, ref, name):
     return proc.stdout if proc.returncode == 0 else None
 
 
-def intake_problems(ctx, base, head='HEAD', files=None, details=None):
+def intake_problems(ctx, base, head='HEAD', files=None, details=None, *, scope=False):
     """Shared deterministic submission checks; acceptance remains the project's separate gate."""
     from contrib_validation import intake_problems as validate, publication_problems
     rows = files if files is not None else changed_files(ctx, base, head)
     problems = validate(ctx, rows, head, details)
     if not problems:
-        problems += publication_problems(ctx, base, rows, head)
+        problems += publication_problems(ctx, base, rows, head, scope=scope)
     return problems
 
 
@@ -2817,18 +2834,21 @@ def submission_files(ctx, base, unit, head='HEAD'):
 def cmd_preflight(ctx, args):
     """Source-only intake checks are useful before the first local comparator pass, too."""
     from contrib_validation import project_reconfirmation
-    picked = select_tasks(ctx, args)
+    picked = select_tasks(ctx, args) if not args.staged or args.task or args.all_dirty else []
     up, _push = upstream_remote(ctx)
     base = args.base or (f'{up}/main' if up else 'origin/main')
     if ctx.run(['git', 'rev-parse', '--verify', '--quiet', base], cwd=ctx.repo, capture_output=True).returncode:
         base = 'HEAD'
-    unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
-    files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
+    head = git(ctx, 'write-tree') if args.staged else None
+    if head:
+        files = changed_files(ctx, git(ctx, 'merge-base', base, 'HEAD'), head, index_tree=True)
+    else:
+        unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
+        files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
     reminders = [line for d_, t_ in picked
                  for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_))]
-    head = git(ctx, 'write-tree') if args.staged else None
     details = {}
-    problems = intake_problems(ctx, base, head=head, files=files, details=details)
+    problems = intake_problems(ctx, base, head=head, files=files, details=details, scope=True)
     reconfirmation = project_reconfirmation(ctx.repo, [n for _status, n in files])
     labels, origin, warnings = (details.get('label_findings', []), details.get('origin_findings', []),
                                 details.get('warnings', []))
@@ -3304,7 +3324,7 @@ def parser():
     s.add_argument('--drafted-by')
     s.add_argument('--area')
     s.add_argument('--class', dest='class_name', metavar='CLASS',
-                   help='owner class for entries still named Function<rva> (your reading; label it GUESS)')
+                   help='use this owner class for the unit and its functions (label inferred names GUESS)')
     s.add_argument('--recipe')
     s.add_argument('--deleting-cleanup', choices=('inline', 'out-of-line'),
                    help='for a scalar deleting destructor identified locally: inline complete cleanup or call out')
@@ -3344,7 +3364,7 @@ def parser():
     s.add_argument('task', nargs='*', help='one or more task names')
     s.add_argument('--all-dirty', action='store_true', help='every unsubmitted task whose unit has uncommitted changes')
     s.add_argument('--base')
-    s.add_argument('--staged', action='store_true', help='validate index source, rather than working files')
+    s.add_argument('--staged', action='store_true', help='check the index against the PR base, including unassigned files')
     s = sub.add_parser('intake')
     s.add_argument('--base', required=True)
     s.add_argument('--head', default='HEAD')

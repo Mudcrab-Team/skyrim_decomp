@@ -221,7 +221,7 @@ class PrereviewUnitTests(unittest.TestCase):
 
 
 class PrereviewCliTests(unittest.TestCase):
-    def test_a_unit_naming_a_missing_recipe_fails_and_nothing_is_written_into_the_checkout(self):
+    def test_a_recipe_must_exist_in_the_base_and_nothing_is_written_into_the_checkout(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
             (repo / 'builds').mkdir()
@@ -239,6 +239,9 @@ class PrereviewCliTests(unittest.TestCase):
             (unit / 'B.cpp').write_text('// Recipe: reconstruction/recipes/nope.json\n#include "B.h"\n')
             git('add', '.')
             git('commit', '-q', '-m', 'head')
+            recipe = repo / 'reconstruction/recipes/nope.json'
+            recipe.parent.mkdir()
+            recipe.write_text('{}')
             before = sorted(p.relative_to(repo).as_posix() for p in repo.rglob('*') if '.git' not in p.parts)
             out = subprocess.run([sys.executable, str(ROOT / 'tools/prereview.py'), '--repo', str(repo),
                                   '--base', 'HEAD~1', '--head', 'HEAD'], capture_output=True, text=True)
@@ -687,12 +690,12 @@ class PoolTests(WorkDir):
                                                                           'next': 9e12, 'posted': True})
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2)
 
-    def test_a_rejected_head_is_not_warmed_or_queued_until_it_is_pushed_again(self):
+    def test_a_head_rejected_by_this_revision_is_not_warmed_or_queued(self):
         bot = self.pool_bot(lambda *a: self.prs(1, 2), lambda pr, tree: self.fail('should not run'))
         warmed = []
         bot.warm = lambda pr: warmed.append(pr['number'])
-        pr_bot.State(self.work / 'state', 1, 'a' * 40).set('rejected', 'header')
-        pr_bot.State(self.work / 'state', 2, 'b' * 40).set('rejected', 'lint')
+        pr_bot.State(self.work / 'state', 1, 'a' * 40).set('rejected', dict(reason='header', code=bot.code_sha))
+        pr_bot.State(self.work / 'state', 2, 'b' * 40).set('rejected', dict(reason='lint', code=bot.code_sha))
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
         self.assertEqual(warmed, [])
 

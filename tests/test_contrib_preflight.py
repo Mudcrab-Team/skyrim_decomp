@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -14,6 +15,7 @@ import contrib
 import contrib_readiness
 import contrib_validation
 import test_contrib as fixtures
+from test_cookbook_notes import NOTE, good
 import test_match_gate as gate
 from source_digest import include_closure
 from digest_v2 import tu_digest
@@ -91,6 +93,46 @@ class Preflight(fixtures.SubmitTests):
         self.assertEqual(code, contrib.FAILED)
         self.assertTrue(any('unsafe-pragma' in p for p in result['blockers']))
         self.assertEqual(self.preflight()[0], contrib.OK)
+
+    def test_staged_preflight_runs_ci_compact_header_check_without_task_metadata(self):
+        cpp = self.repo / self.unit[1]
+        original = cpp.read_text()
+        cpp.write_text(('// Synthetic header comment\n' * 12) + original)
+        self.git('add', *self.unit)
+        cpp.write_text(original)
+        shutil.rmtree(self.tdir)
+
+        code, result = self.preflight('--staged')
+        self.assertEqual(code, contrib.FAILED)
+        self.assertIn('header_check: FAIL (1 problem(s))', result['blockers'])
+        self.git('add', *self.unit)
+        self.assertEqual(self.preflight('--staged')[0], contrib.OK)
+
+    def test_staged_preflight_checks_note_tags_outside_the_current_task(self):
+        note = self.repo / NOTE
+        note.parent.mkdir(parents=True)
+        original = good()
+        note.write_text('\n'.join(line for line in original.splitlines() if not line.startswith('<!-- tags:')) + '\n')
+        self.git('add', NOTE)
+        note.write_text(original)
+
+        code, result = self.preflight('--staged')
+        self.assertEqual(code, contrib.FAILED)
+        self.assertTrue(any('lesson note refused (tags)' in item for item in result['blockers']))
+        self.git('add', NOTE)
+        self.assertEqual(self.preflight('--staged')[0], contrib.OK)
+
+    def test_staged_preflight_refuses_a_duplicate_rva_against_base(self):
+        self.git('add', *self.unit)
+        self.git('commit', '-q', '-m', 'synthetic unit at base')
+        for name in self.unit:
+            other = name.replace('TESActorBaseData', 'TESOther')
+            (self.repo / other).write_text((self.repo / name).read_text().replace('TESActorBaseData', 'TESOther'))
+            self.git('add', other)
+
+        code, result = self.preflight('--staged')
+        self.assertEqual(code, contrib.FAILED)
+        self.assertIn(f'0x{self.RVA:x} is now marked in 2 units', result['blockers'])
 
     def test_transitive_unchanged_header_is_screened(self):
         helper = self.repo / 'reconstruction/other/Helper.h'

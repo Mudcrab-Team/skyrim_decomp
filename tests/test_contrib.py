@@ -929,9 +929,9 @@ class FollowUpTests(Base):
             self.assertEqual(cm.exception.code, contrib.USAGE, bad)
             self.assertIn('--area must be', cm.exception.message)
 
-    def _bare_entry_start(self, *extra):
+    def _bare_entry_start(self, *extra, name='Function2c5ce0'):
         entry = {'id': 'x-0x2c5ce0', 'build_id': TARGET['build_id'], 'rva': 0x2c5ce0, 'size': 29, 'status': 'mapped',
-                 'name': 'Function2c5ce0', 'name_origin': 'GUESS'}
+                 'name': name, 'name_origin': 'GUESS'}
         data = {'target_build_id': TARGET['build_id'], 'functions': [entry]}
         args = contrib.parser().parse_args(['start', '0x2c5ce0', '--no-branch', *extra])
         seen = {}
@@ -941,9 +941,12 @@ class FollowUpTests(Base):
             raise contrib.Stop(contrib.USAGE, 'no executable in this test')
 
         with unittest.mock.patch.object(contrib, 'inventory', return_value=data), \
-                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming):
+                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming), \
+                unittest.mock.patch.object(contrib, 'unit_files', wraps=contrib.unit_files) as unit_files:
             with self.assertRaises(contrib.Stop) as cm:
                 contrib.start(self.ctx(env={'PATH': ''}), args)
+        if unit_files.called:
+            seen['class'] = unit_files.call_args.args[1]
         return cm.exception, seen
 
     def test_start_names_the_class_of_a_bare_placeholder_entry_only_when_given(self):
@@ -955,6 +958,11 @@ class FollowUpTests(Base):
         stop, seen = self._bare_entry_start('--class', 'not a class')
         self.assertIn('--class must be', stop.message)
         self.assertNotIn('named', seen)
+
+    def test_start_explicit_class_overrides_an_existing_name(self):
+        stop, seen = self._bare_entry_start('--class', 'TESObjectCELL', name='TESObjectCell::GetValue')
+        self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'TESObjectCELL')
 
     def test_redact_hides_checkout_and_home(self):
         home = str(self.tmp / 'home')

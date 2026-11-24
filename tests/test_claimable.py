@@ -6,12 +6,15 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
+import time
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import claimable  # noqa: E402
 import contrib  # noqa: E402
+import claims  # noqa: E402
+import target_hash_store  # noqa: E402
 import target_hash_offers  # noqa: E402
 
 BUILD = 'synthetic-fixture'
@@ -77,6 +80,32 @@ class ClaimableTests(Fixture):
         self.assertEqual([f['rva'] for f in functions], [0x100, 0x200])
         with self.assertRaises(contrib.Stop):
             contrib.claim_selection(ctx, argparse.Namespace(rva=['0x999'], lists=[], classes=[], ranges=[]), self.data)
+
+    def test_thousands_of_scattered_claims_finish_within_the_cpu_budget(self):
+        inventory_rvas = range(0x1000, 0x1000 + 20000 * 32, 32)
+        offered_rvas = [rva + 4 for rva in inventory_rvas]
+        self.data['functions'] = [mapped(rva, 4, 'Foo::Bar') for rva in inventory_rvas]
+        shard = 'data/target-hashes/scattered.thb'
+        (self.repo / shard).write_bytes(target_hash_store.encode([row(rva, 4) for rva in offered_rvas]))
+        (self.repo / claimable.MANIFEST).write_text(json.dumps({'shards': [{'path': shard}]}))
+        table = self.repo / 'table.jsonl'
+        table.write_text(''.join(json.dumps(dict(rva=rva, kind='ordinary', size=4)) + '\n' for rva in offered_rvas))
+        wanted = set(inventory_rvas[::13]) | set(offered_rvas[::13])
+        args = argparse.Namespace(rva=[hex(rva) for rva in wanted], lists=[], classes=[], ranges=[])
+        ctx = contrib.Ctx(repo=self.repo, interactive=False, env={'SR_FUNCTION_TABLE': str(table)})
+        other = dict(entries=[(rva, rva + 1) for rva in inventory_rvas[1::2]])
+        index = claims.ClaimIndex([other], BUILD)
+
+        started = time.process_time()
+        functions, entries = contrib.claim_selection(ctx, args, self.data)
+        hits = index.overlaps(entries, active=False)
+        parts = claims.parts(BUILD, entries, self.data, 'drafter')
+        elapsed = time.process_time() - started
+
+        self.assertEqual([fn['rva'] for fn in functions], sorted(wanted))
+        self.assertEqual(hits, [other])
+        self.assertEqual([rva for _, _, chunk in parts for rva, _ in chunk], sorted(wanted))
+        self.assertLess(elapsed, 3, f'scattered claim took {elapsed:.2f} CPU seconds')
 
     def test_next_prefers_small_functions_and_never_invents_an_inventory_entry(self):
         rows = contrib.candidates(self.repo, self.data, published=True)

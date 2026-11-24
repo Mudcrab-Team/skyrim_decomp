@@ -537,6 +537,14 @@ BOT_SIDE_VERDICTS = frozenset({'fail:record', 'fail:missing', 'fail:host1', 'fai
 # Cached stage results a retry recomputes; the review, the leak scan and the hash-run result stay.
 RETRY_DROPS = ('done', 'commented', 'summary', 'decision', 'host2', 'host2_why', 'host2_base', 'precheck', 'records',
                'failure', 'bot_error', 'blocked', 'probe_blocked')
+# Re-run the rejected check after a deploy, leaving successful comparisons and reviews cached.
+REJECTED_STAGE = {'functions': 'units', 'rva-headers': 'units', 'header': 'header', 'lint': 'lint', 'notes': 'notes'}
+
+
+def rejection_info(state):
+    cached = state.get('rejected')
+    # Older state files only stored the reason. Give those heads one check under the new code.
+    return cached if isinstance(cached, dict) else dict(reason=cached)
 
 
 def stale_bot_failure(state, code):
@@ -3419,9 +3427,8 @@ class Bot:
             if not self.dry_run:
                 if exc.text:
                     self.tell_rejection(pr, exc.text)
-                # The head is the only input a rejection depends on; remembering it lets the poll skip the head
-                # instead of rediscovering the same finding every tick.
-                State(self.work / 'state', pr['number'], pr['headRefOid']).set('rejected', str(exc))
+                state = State(self.work / 'state', pr['number'], pr['headRefOid'])
+                state.set('rejected', dict(reason=str(exc), code=self.code_sha))
             raise
 
     def bot_error_blocked(self, pr):
@@ -3456,8 +3463,11 @@ class Bot:
         return True
 
     def already_rejected(self, pr):
-        """True when this head was rejected before; only a push (a new head) gets another look."""
-        return not self.dry_run and bool(State(self.work / 'state', pr['number'], pr['headRefOid']).get('rejected'))
+        """True when the running revision already rejected this head."""
+        if self.dry_run:
+            return False
+        cached = rejection_info(State(self.work / 'state', pr['number'], pr['headRefOid']))
+        return bool(cached['reason']) and cached.get('code') == self.code_sha
 
     def attempt(self, pr, now=None):
         """`process` under the per-PR lock and the head's failure ledger; None when the PR is not due.
@@ -3520,6 +3530,11 @@ class Bot:
         if settled(state, pr, self.code_sha):
             return state.data
         self.progress_by_tag[f'{number}-{head[:8]}'] = Progress(directory, number, head)
+        rejected = rejection_info(state)
+        if rejected['reason'] and rejected.get('code') != self.code_sha:
+            if stage := REJECTED_STAGE.get(rejected['reason']):
+                state.drop(stage)
+            state.drop('rejected')
         if stale_bot_failure(state, self.code_sha):
             # Retry under the deployed code; the stored review stays, so nothing paid is repeated.
             for key in RETRY_DROPS:
@@ -5673,8 +5688,7 @@ def _poll(bot, interval, restart_after, workers, gh, sleep, rounds, refill_every
             for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
-                # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
-                # bot will not look at, and queueing it costs a `gh pr view` per tick.
+                # Rejections by this revision skip warming and queueing to avoid redundant GitHub calls.
                 if (pr['number'] in inflight or settled(state, pr, bot.code_sha) or ledger.get('next', 0) > now
                         or bot.already_rejected(pr) or bot.bot_error_blocked(pr)):
                     continue
