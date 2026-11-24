@@ -17,7 +17,7 @@ Intended recipient: Skyrim Research department lead for boundary review under [d
 
 Name provenance: `TESWorldSpace::GetNoGrass` at `0x30dde0` is a GUESS label with low confidence. The author's run reports that the generated table lists the same spelling at that address. The independent review did not confirm that, so the label stays GUESS. `BSShadowDirectionalLight::InterpolateSunDirection`, `PlayerCharacter::SetParentCell` and `GrassManager::AddCellGrass` are names from the public generated tables and carry the label CRASHLOGGER_PDB(59818@2026.10.24) at each use below. `AddCellGrassTask` is from native type metadata (EXE_RTTI). Setting names come from the image and the INIs. All other descriptive labels are our own and are GUESS.
 
-Addresses are RVAs. **Verified** identifies a result checked against the cited inputs. **Inferred** marks a conclusion from those observations. **Unverified** identifies an open claim. Keep listings of the game files in `.local/`. Nothing game-derived is in this file except counts, worldspace record names, field offsets, addresses and setting values.
+Addresses are RVAs. **Verified** identifies a result checked against the cited inputs. **Inferred** marks a conclusion from those observations. **Unverified** identifies an open claim. Keep listings of the game files in `.local/`. Nothing game-derived is in this file except field offsets, addresses and setting values.
 
 ## Question and method
 
@@ -59,17 +59,9 @@ Trace the flag from `WRLD.DATA` to the manager and its cell callers. Screen the 
 
 ### G04. Shipped worldspaces
 
-**Verified.** The five masters contain 77 `WRLD` records with one-byte `DATA`, representing 49 distinct worldspace identities. Seven records carry the bit.
+**Verified.** The five masters contain `WRLD` records with a one-byte `DATA`. The record counts, the number of distinct worldspace identities, the records that carry bit 7 and their worldspace names are read from the game plugins, not from the executable. They are not given here.
 
-| Master | WRLD records | Records with bit 7 | Names with bit 7 |
-|---|---:|---:|---|
-| Skyrim.esm | 37 | 2 | WhiterunWorld, LabyrinthianWorld03 |
-| Update.esm | 13 | 1 | WhiterunWorld |
-| Dawnguard.esm | 16 | 2 | WhiterunWorld, DLC1VampireCastleCourtyard |
-| HearthFires.esm | 6 | 1 | WhiterunWorld |
-| Dragonborn.esm | 5 | 1 | DLC2ApocryphaWorld |
-
-**Verified.** The three `WhiterunWorld` overrides agree with the base. The remaining flagged entries each represent a different worldspace. Zero other worldspace identities in the scanned masters carry bit 7.
+**Verified.** The override records of a flagged worldspace agree with its base record. Each remaining flagged entry represents a different worldspace. No other worldspace identity in the scanned masters carries bit 7.
 
 **Confidence: high** for these inputs. A changed plugin set can change the effective flag values.
 
@@ -103,7 +95,7 @@ The observations above already include the corrected text. A Claude Sonnet 5.5 w
 | G01. Flag, default, and loader | Corrected | The source and clear default agree. A loaded override with an effective `DATA` byte can set or clear the bit. Omission across the complete override lifecycle remains unverified. |
 | G02. Readers | Confirmed | One direct call and no second behavioral reader identified. The expanded scan distinguishes unrelated terrain and camera fields at the same offset. |
 | G03. Grass cell population | Corrected | The byte gates both cache routes and generation. Queue creation, cancellation, and removal follow separate paths. |
-| G04. Shipped worldspaces | Confirmed | Seven records across exactly four worldspaces carry the bit. The five masters contain 77 records for 49 worldspace identities. |
+| G04. Shipped worldspaces | Confirmed | The flagged records agree across the masters. Record counts and worldspace names come from the game plugin and are not given here. |
 | G05. Sun direction | Corrected | The binary32 defaults and ordinary interpolation comparisons agree. Mode 1 and the sample-and-hold branch selected by the compiled jump setting are now described. |
 
 Summary: 2 groups confirmed, 3 corrected, 0 rejected.
@@ -111,3 +103,5 @@ Summary: 2 groups confirmed, 3 corrected, 0 rejected.
 ## Reviewer and outcome
 
 Reviewed independently on 2026-11-22 by `gpt-6.2-sol` (Codex, high effort, fresh context), separate from the author run. Outcome: 2 confirmed (G02, G04), 3 corrected (G01, G03, G05), 0 rejected. Static only. A review verdict is not match evidence, and transfer eligibility is not decided. Unverified: in-flight and pending scheduling at a transition; the removal and lifetime of grass that already exists; visible effects of either feature; exhaustive indirect consumers of the flag (long aliases, generic copies, computed call targets, plugin code); the lifecycle of an override that omits `DATA`; live reachability of the standalone setter; and effective live sun settings, refresh interval and branch use. No retail process ran. Transfer status is UNREVIEWED.
+
+**Amendment (2026-11-24, UNREVIEWED):** plugin-derived values were replaced by symbolic text (hygiene). Rules and arithmetic are unchanged.
