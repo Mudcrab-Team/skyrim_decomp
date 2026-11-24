@@ -102,6 +102,8 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   `OBSERVED`, and `STANDIN` together with the name's origin (`// TESObjectARMO: STANDIN COMMUNITY(...)`).
   A community name is `COMMUNITY` and a sibling name `SIBLING`, never `GUESS`; `GUESS` is only for
   names you made up. Do not write the label words anywhere else.
+- **Sibling x64 builds.** The FNV and F3 trees also compile as x64 with the recipe compiler; see
+  `docs/sibling-x64.md`. Compiled output is a lead, not evidence.
 - **Sibling source (FNV).** `.local/sources/fnv_decomp` (momusdigital/fnv_decomp at `91e1b6e8`)
   may be read and reused by maintainer decision (`docs/authorizations.md`); its LICENSE grants
   none, so label everything you take. Before drafting, open the file and line your pack's

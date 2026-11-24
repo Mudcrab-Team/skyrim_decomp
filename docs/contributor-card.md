@@ -32,6 +32,8 @@ including adaptations and sources. Community headers are
 hypotheses, not binary proof. Never write `asm`, `##`, `#pragma` (except `once`), byte arrays or
 `\x` strings, and never edit verifier inputs, tools, flags or another unit to force a pass.
 
+Both siblings also exist as x64 ports you can compile locally (`docs/sibling-x64.md`).
+
 For Fallout 3 (`momusdigital/f3_decomp`, CC0-1.0) the same with `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`
 and `Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>`. Read FO3 and FNV first for
 engine-shared classes (names, layouts, vtable order, body shape); both are 32-bit, never byte evidence.

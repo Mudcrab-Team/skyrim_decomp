@@ -29,8 +29,11 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
 - No game files, binary bytes, disassembly, dumps, proprietary symbols/SDKs, leaked code or
   unlicensed copied code in commits, PRs, issues, logs, releases or CI artifacts. Maintainer
   exceptions: names, declarations and code from the FNV decompilation `momusdigital/fnv_decomp@91e1b6e8`
-  may be reused in reconstructions, labelled `SIBLING(...)`, which is itself CC0 1.0 (`LICENSE`)
-  (`docs/authorizations.md`, Notes; `LEGAL.md`). The Fallout 3 decompilation
+  may be reused in reconstructions, labelled `SIBLING(...)`. Upstream relicensed it to CC0 1.0 for the
+  contributors' own work at `42baf49a`; the pin moves to the final release (`2b07cb3e` or later), but
+  labels and the origin check stay on `91e1b6e8` until the tooling moves the pin. Upstream's Xbox 360
+  PDB-derived names and Havok/Gamebryo material are not covered by CC0 (`docs/authorizations.md`, Notes;
+  `LEGAL.md`). The x64 ports of both siblings are described in `docs/sibling-x64.md`. The Fallout 3 decompilation
   `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) is handled the same way, labelled
   `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`. The anonymous private Fallout 4 sibling
   `fo4-private@1b765c70` is also permitted for game-code folders only, with author permission conditional on anonymity, labelled
