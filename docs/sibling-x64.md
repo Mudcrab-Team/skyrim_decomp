@@ -36,3 +36,7 @@ compiled CC0 code only. It holds no Skyrim bytes, results or addresses. `./sr se
 `.local/x64-index/` and refuses a file whose SHA-256 differs from the pin in `data/x64-index.json`
 (`--no-sibling` skips it). `tools/x64_index.py` packs, verifies, fetches and loads the format; the maintainer
 rebuilds it from the forks' `x64-msvc1916` branches and publishes a new tag with a new pin.
+
+**In `./sr start`.** `tools/x64_lookup.py` builds the target function's signature locally (llvm-objdump) and prints
+the top sibling candidates from the downloaded index, also saved as `sibling_x64.json` in the task directory. Names,
+paths and scores only. A missing index or objdump gives one line and never stops `start`.
