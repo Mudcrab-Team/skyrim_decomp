@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -1663,6 +1664,24 @@ class NewFunctionRecordTests(unittest.TestCase):
         sub = json.loads((self.task / 'confirm-0x10/task.json').read_text())
         self.assertTrue(sub['symbols'].startswith('reports/b/unit-symbols/'))
         self.assertEqual(len(self.seen('wine_confirm.py')), 2)
+
+    def test_confirmations_run_in_parallel_after_one_batch_request_for_every_function(self):
+        both = threading.Barrier(2, timeout=5)
+        plain = self.fake_run
+
+        def run(argv, **kw):
+            if str(argv[1]).endswith('wine_confirm.py'):
+                both.wait()  # passes only when the two confirmations overlap
+            return plain(argv, **kw)
+        self.bot.run = run
+        self.bot.config['compare_workers'] = 2
+        out, failed = self.build()
+        self.assertEqual(failed, set())
+        batch = self.seen('compare_batch.py')
+        self.assertEqual(len(batch), 1)
+        self.assertIn('--confirm', batch[0])
+        self.assertEqual(sum(a.endswith('confirm-0x10') or a.endswith('confirm-0x20') for a in batch[0]), 2)
+        self.assertLess(self.calls.index(batch[0]), self.calls.index(self.seen('wine_confirm.py')[0]))
 
     def test_only_the_functions_being_recorded_are_bound_so_a_debt_function_cannot_refuse_them(self):
         out, failed = self.build({0x10})

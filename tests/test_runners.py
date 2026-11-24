@@ -840,6 +840,47 @@ class AgentEndToEnd(unittest.TestCase):
         changed = dict(self.files, **{'reconstruction/synth/Synth.cpp': other})
         self.assertIsNone(compare_batch.read_entry(task['dir'], task, changed, config))
 
+    def test_a_finished_confirm_is_skipped_only_while_its_sources_are_unchanged(self):
+        import compare_batch
+        task = dict(self.task, dir=self.tmp / 'confirm-task')
+        kept = task['dir'] / 'confirm' / 'mac-wine'
+        kept.mkdir(parents=True)
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))
+        compare_batch.mark_confirm(task['dir'], task, self.files, 'mac-wine', 1)
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))  # no kept result yet
+        (kept / 'result.json').write_text('{}')
+        self.assertEqual(compare_batch.confirm_done(task['dir'], task, self.files), 1)
+        other = self.tmp / 'edited.cpp'
+        other.write_text('#include "Synth.h"\nint edited;\n')
+        changed = dict(self.files, **{'reconstruction/synth/Synth.cpp': other})
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, changed))
+        # A run that produced no verdict leaves no mark, and removes an older one.
+        compare_batch.mark_confirm(task['dir'], task, self.files, 'mac-wine', 3)
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))
+
+    def test_a_confirm_batch_keeps_each_result_where_wine_confirm_does_and_marks_it(self):
+        import compare_batch
+        h = dict(host(msvc=str(self.msvc), work=str(self.tmp / 'work'), image=str(self.image), wine_bin=None,
+                      wineprefix=None, max_parallel=2), backend='ssh', python=[sys.executable], name='winpc',
+                 ssh_config='x', ssh_host='y', batch=4)
+        tasks = [dict(self.task, task_id=tid, dir=self.tmp / tid) for tid in ('c-a', 'c-b')]
+        for t in tasks:
+            t['dir'].mkdir()
+        with mock.patch.object(compare_batch.pipeline, 'load_task', side_effect=tasks), \
+                mock.patch.object(compare_batch.pipeline, 'unit_manifest', return_value=(self.files, [])), \
+                mock.patch.object(compare_batch.pipeline, 'compiler_include_problem', return_value=None), \
+                mock.patch.object(compare_batch.pipeline, 'REPO', self.tmp / 'src'), \
+                mock.patch.object(runners, 'transport_for', return_value=StubSsh(h)):
+            kept = compare_batch.run([t['dir'] for t in tasks], {'hosts': {'winpc': h}}, 'winpc',
+                                     time.monotonic() + 600, stage_root=self.tmp / 'cs', confirm=True,
+                                     log=lambda m: None)
+        self.assertEqual(kept, 2)
+        for t in tasks:
+            self.assertTrue((t['dir'] / 'confirm' / h['host_id'] / 'candidate.obj').is_file())
+            self.assertEqual(compare_batch.confirm_done(t['dir'], t, self.files), 0)
+            facts = json.loads((t['dir'] / 'confirm' / h['host_id'] / 'result.json').read_text())['host_facts']
+            self.assertEqual(facts['toolchain_check'], 'checked')
+
     def test_batch_missing_one_agent_result_affects_only_that_unit(self):
         unpack = runners.unpack
 

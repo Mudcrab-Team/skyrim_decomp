@@ -3119,6 +3119,34 @@ class Bot:
             return bound
         return again
 
+    def record_workers(self, jobs):
+        return max(1, min(self.config.get('compare_workers', COMPARE_WORKERS), len(jobs)))
+
+    def confirm_all(self, dests):
+        """Confirm every one-function directory: a few batches on the preferred runner first, then the rest one
+        by one in parallel on the ordinary host. A directory whose kept result is current is not run again, so a
+        restarted record build carries on where it stopped. A run that never completes stops the build."""
+        if not dests:
+            return
+        if self.config.get('compare_prefetch', True):
+            try:
+                self.run([sys.executable, 'tools/verifier/compare_batch.py', '--confirm', '--deadline',
+                          str(self.config.get('compare_prefetch_wait', 1800)), *map(str, dests)],
+                         cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            except (Stop, subprocess.TimeoutExpired, OSError):
+                pass  # only a speed-up; the loop below does the work either way
+
+        def confirm(dest):
+            # A compile that only timed out under host load usually passes on a second try; a repeat is a real fault.
+            for attempt in range(2):
+                if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
+                            check=False, timeout=self.config['compare_timeout']).returncode in (0, 1):
+                    return
+            raise Stop('record build did not complete')
+        with ThreadPoolExecutor(max_workers=self.record_workers(dests)) as pool:
+            for future in [pool.submit(confirm, dest) for dest in dests]:
+                future.result()
+
     def build_records(self, tag, units, rvas, state):
         """Match records for the accepted functions: the Mac's fresh comparator output plus the CI map.
 
@@ -3139,6 +3167,7 @@ class Bot:
         carried -= unchanged
         built |= unchanged
         out.mkdir(parents=True, exist_ok=True)
+        jobs = []  # (rva, confirm directory, unit info) of every function that needs a confirmation
         for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{tag.split("/")[0]}-*')):
             info = json.loads((task / 'task.json').read_text())
             wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas) - carried - unchanged
@@ -3156,26 +3185,23 @@ class Bot:
                 dest.mkdir(exist_ok=True)
                 (dest / 'task.json').write_text(json.dumps(dict(
                     info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn])))
-                # A compile that only timed out under host load usually passes on a second try; a repeat is a real fault.
-                for attempt in range(2):
-                    if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
-                                check=False, timeout=self.config['compare_timeout']).returncode in (0, 1):
-                        break
-                else:
-                    raise Stop('record build did not complete')
-                row = ci['rows'].get(str(rva))
-                made = out / info['build_id'] / f'0x{rva:x}.json'
-                made.unlink(missing_ok=True)
-                if row is None:
-                    failed.add(rva)
-                    continue
-                built_run = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
-                    dict(run=ci['run'], report=ci['report'], row=row, map_status=ci['map'].get(str(rva))))],
-                    cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
-                if not built_run.returncode and made.is_file():
-                    built.add(rva)
-                else:
-                    failed.add(rva)  # the validator refused it: the function stays drafted
+                jobs.append((rva, dest, info))
+        self.confirm_all([dest for _, dest, _ in jobs])
+
+        def make(job):
+            rva, dest, info = job
+            row = ci['rows'].get(str(rva))
+            made = out / info['build_id'] / f'0x{rva:x}.json'
+            made.unlink(missing_ok=True)
+            if row is None:
+                return rva, False
+            built_run = self.run([sys.executable, '-c', RECORD_CALL, self.tree, dest, out, json.dumps(
+                dict(run=ci['run'], report=ci['report'], row=row, map_status=ci['map'].get(str(rva))))],
+                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            return rva, not built_run.returncode and made.is_file()  # a refusal by the validator leaves it drafted
+        with ThreadPoolExecutor(max_workers=self.record_workers(jobs)) as pool:
+            for rva, ok in pool.map(make, jobs):
+                (built if ok else failed).add(rva)
         # A function with no task directory in the tree was never confirmed at all; leaving it out of `failed`
         # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
         if carried:

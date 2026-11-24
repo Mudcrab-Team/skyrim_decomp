@@ -32,6 +32,7 @@ import pipeline  # noqa: E402
 import runners  # noqa: E402
 
 PREFETCH = 'prefetch.json'
+CONFIRM_MARK = '.confirm-done.json'
 UNIT_DIR = 'prefetch-unit'
 # Batches in flight on the host: one transfers while another compiles (BatchHost holds slots only then).
 IN_FLIGHT = 2
@@ -118,6 +119,34 @@ def host_for(task, files, runner, config):
     return PrefetchedHost(found[0], task, found, log=lambda m: print(m, file=sys.stderr)), found[0]
 
 
+def confirm_done(task_dir, task, files):
+    """The exit code of a finished confirm run in `task_dir` made from exactly these sources, else None.
+
+    Lets a record build that restarted skip the functions it already confirmed; the run's own facts
+    (fresh toolchain check included) are in the kept result, which is still there to be read.
+    """
+    try:
+        mark = json.loads((Path(task_dir) / CONFIRM_MARK).read_text())
+        done = Path(task_dir) / 'confirm' / mark['host']
+        if (mark['key'] == spec_key(task, files, mark['host']) and mark['exit'] in (0, 1)
+                and (done / 'result.json').is_file()):
+            return mark['exit']
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    return None
+
+
+def mark_confirm(task_dir, task, files, host_id, code):
+    """Record that the confirm run of `task_dir` finished with `code` on `host_id`; only a verdict counts."""
+    mark = Path(task_dir) / CONFIRM_MARK
+    if code not in (0, 1):
+        mark.unlink(missing_ok=True)
+        return
+    tmp = mark.with_name(f'{CONFIRM_MARK}.{uuid.uuid4().hex[:6]}.tmp')
+    tmp.write_text(json.dumps({'key': spec_key(task, files, host_id), 'host': host_id, 'exit': code}))
+    tmp.replace(mark)
+
+
 def write_entry(task_dir, key, host_id, code):
     path = entry_path(task_dir)
     tmp = path.with_name(f'{PREFETCH}.{uuid.uuid4().hex[:6]}.tmp')
@@ -125,8 +154,10 @@ def write_entry(task_dir, key, host_id, code):
     tmp.replace(path)
 
 
-def prepare(task_dirs, log):
-    """[(task, files)] for the units the host can take; a unit `attempt` would refuse locally is left to it."""
+def prepare(task_dirs, log, confirm=False):
+    """[(task, files)] for the units the host can take; a unit `attempt` would refuse locally is left to it.
+
+    For a confirm run, units whose kept result is current are left out as well."""
     out = []
     for d in task_dirs:
         try:
@@ -137,20 +168,27 @@ def prepare(task_dirs, log):
         except (pipeline.PipelineError, OSError, ValueError, KeyError) as exc:
             log(f'compare_batch: {d}: left to attempt ({type(exc).__name__})')
             continue
+        if confirm:
+            if confirm_done(task['dir'], task, files) is None:
+                out.append((task, files))
+            continue
         discard(task['dir'])
         out.append((task, files))
     return out
 
 
-def run(task_dirs, config, name, deadline, batch=None, stage_root=None, log=print):
-    """Prefetch `task_dirs` on host `name`; returns the number of units whose result was kept."""
+def run(task_dirs, config, name, deadline, batch=None, stage_root=None, log=print, confirm=False):
+    """Prefetch `task_dirs` on host `name`; returns the number of units whose result was kept.
+
+    With `confirm` each unit is a one-function confirm directory: the toolchain is hashed afresh for every
+    unit (as wine_confirm.py does) and the result is kept where wine_confirm.py would have put it."""
     host = runners.with_image(config['hosts'][name])
-    units = prepare(task_dirs, log)
+    units = prepare(task_dirs, log, confirm)
     if not units:
         return 0
     size = batch or host['batch']
     stage_root = Path(stage_root or runners.starts.state_dir() / 'compare-stage' / uuid.uuid4().hex[:12])
-    worker = runners.BatchHost(host, log=log)
+    worker = runners.BatchHost(host, log=log, fresh_prep=confirm)
     down, lock, kept = threading.Event(), threading.Lock(), [0]
     chunks = [units[i:i + size] for i in range(0, len(units), size)]
     log(f'compare_batch: {len(units)} unit(s) in {len(chunks)} batch(es) of up to {size} on '
@@ -160,7 +198,8 @@ def run(task_dirs, config, name, deadline, batch=None, stage_root=None, log=prin
         if down.is_set() or time.monotonic() > deadline:
             return
         started = time.monotonic()
-        dests = {t['task_id']: t['dir'] / '.attempt' / UNIT_DIR for t, _ in chunk}
+        dests = {t['task_id']: t['dir'] / ('confirm' if confirm else '.attempt') / (
+            host['host_id'] if confirm else UNIT_DIR) for t, _ in chunk}
         try:
             results = worker.run(chunk, stage_root / name, dests)
         except Exception as exc:  # the whole batch failed: host trouble, so the rest take the ordinary path
@@ -172,7 +211,10 @@ def run(task_dirs, config, name, deadline, batch=None, stage_root=None, log=prin
         for task, files in chunk:
             got = results.get(task['task_id'])
             if isinstance(got, tuple) and isinstance(got[0], int):
-                write_entry(task['dir'], spec_key(task, files, host['host_id']), name, got[0])
+                if confirm:
+                    mark_confirm(task['dir'], task, files, host['host_id'], got[0])
+                else:
+                    write_entry(task['dir'], spec_key(task, files, host['host_id']), name, got[0])
                 good += 1
             else:
                 shutil.rmtree(dests[task['task_id']], ignore_errors=True)
@@ -193,6 +235,8 @@ def main():
     parser.add_argument('tasks', nargs='+', type=Path)
     parser.add_argument('--deadline', type=float, default=1800,
                         help='seconds after which no new batch starts (default 1800)')
+    parser.add_argument('--confirm', action='store_true',
+                        help='the tasks are one-function confirm directories (the bot\'s record build)')
     parser.add_argument('--batch', type=int, help='units per upload (default: the host\'s `batch`)')
     args = parser.parse_args()
     started = time.monotonic()
@@ -207,7 +251,7 @@ def main():
         if name is None:
             print('compare_batch: no compare host is reachable or preferred; units run on the ordinary host')
             return 0
-        kept = run(args.tasks, config, name, started + args.deadline, args.batch)
+        kept = run(args.tasks, config, name, started + args.deadline, args.batch, confirm=args.confirm)
     except (runners.RunnerError, pipeline.PipelineError, OSError) as exc:
         print(f'compare_batch: {type(exc).__name__}: {str(exc)[:200]}; units run on the ordinary host')
         return 0
