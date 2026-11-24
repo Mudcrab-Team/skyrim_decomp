@@ -97,3 +97,48 @@ class Provenance(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class HeaderRepairText(unittest.TestCase):
+    """The repair writes sibling declarations into the unit's own header, labelled, without a compiler."""
+
+    def setUp(self):
+        import tempfile
+        import sibling_decls
+        self.tmp = tempfile.TemporaryDirectory()
+        root = Path(self.tmp.name)
+        (root / 'clone/include').mkdir(parents=True)
+        (root / 'clone/include/Mid.h').write_text('class Base\n{\n  public:\n    int a;\n};\nclass Mid : public Base\n{\n  public:\n    int b;\n};\n')
+        (root / 'u').mkdir()
+        (root / 'u/U.h').write_text('// leading\n#pragma once\n\nclass User\n{\n  public:\n    Mid* m;\n};\n')
+        (root / 'u/U.cpp').write_text('#include "U.h"\n')
+        self.old = (st.ROOT, dict(st._INDEXES))
+        st.ROOT = root
+        st._INDEXES.clear()
+        st._INDEXES['f3'] = sibling_decls.DeclIndex(root / 'clone', st.SIBLING_LABEL)
+
+    def tearDown(self):
+        st.ROOT = self.old[0]
+        st._INDEXES.clear()
+        st._INDEXES.update(self.old[1])
+        self.tmp.cleanup()
+
+    def test_missing_class_comes_with_its_base_and_is_labelled(self):
+        rep = st.HeaderRepair('u/U.h', 'u/U.cpp')
+        self.assertTrue(rep.fix('', 0, "unknown type name 'Mid'"))
+        self.assertLess(rep.text.index('class Base'), rep.text.index('class Mid'))
+        self.assertLess(rep.text.index('class Mid'), rep.text.index('class User'))
+        self.assertTrue('Base' in rep.label_lines()[0] and 'Mid' in rep.label_lines()[0])
+        self.assertIn(st.SIBLING_LABEL, rep.label_lines()[0])
+
+    def test_name_no_clone_declares_becomes_a_labelled_stand_in(self):
+        rep = st.HeaderRepair('u/U.h', 'u/U.cpp')
+        self.assertTrue(rep.fix('', 0, "unknown type name 'Ghost'"))
+        self.assertIn('struct Ghost;', rep.text)
+        self.assertIn('GUESS(low) STANDIN', rep.label_lines()[-1])
+
+    def test_conflicting_typedef_is_dropped_for_a_class_of_the_same_name(self):
+        rep = st.HeaderRepair('u/U.h', 'u/U.cpp')
+        rep.text = rep.text.replace('class User', 'typedef int Mid;\nclass Mid\n{\n};\nclass User')
+        rep.fix('', 0, "definition of type 'Mid' conflicts with typedef of the same name")
+        self.assertNotIn('typedef int Mid', rep.text)

@@ -15,6 +15,12 @@ facts. The tool never reads image bytes.
     sibling_transplant.py write PLAN.json 0x<rva> [--task-only]
     sibling_transplant.py plan ... --rvas NEAR.json     (plan near pairs that are not identical after masking)
     sibling_transplant.py run PLAN.json 0x<rva>.. --layouts FACTS.json   (stand-in layout for member-offset / vtable-slot pairs)
+
+When the compiler reports a type, template, typedef, global or member the unit lacks, `HeaderRepair` writes it
+into the unit's own header: definitions come from the sibling clones' headers (tools/sibling_decls.py) together
+with what they need and are labelled SIBLING; a name no clone declares becomes a forward declaration labelled
+`GUESS(low) STANDIN`. Shared tracked headers are never edited. SIBLING_PRECHECK_ONLY=1 stops after the syntax
+precheck (no attempt) to see which units are ready.
 """
 import argparse
 import json
@@ -399,7 +405,7 @@ def harvest_declarations(ctx, text, limit=40):
             continue
         if re.search(rf'^(?:extern|typedef|__declspec)[^\n]*\b{re.escape(name)}\b', text, re.M):
             continue
-        if l not in out:
+        if l not in out and not any(re.search(rf'\b{re.escape(name)}\b', o) for o in out):
             out.append(l)
         if len(out) >= limit:
             break
@@ -741,8 +747,8 @@ def undeclared_origin_lines(cpp):
     return out
 
 
-def clang_errors(cpp, limit=3):
-    """Clang errors (message only) for the unit, or [] when clang is missing or the unit parses."""
+def clang_diagnostics(cpp, limit=3):
+    """[(file, line, message)] of the clang errors for the unit, or [] when clang is missing or the unit parses."""
     import subprocess
     clang = Path('/opt/homebrew/opt/llvm/bin/clang++')
     if not clang.exists():
@@ -757,9 +763,18 @@ def clang_errors(cpp, limit=3):
             cmd += ['-isystem', str(inc)]
     r = subprocess.run(cmd + [str(cpp)], capture_output=True, text=True)
     # clang treats the Interlocked family as builtins; cl does not, so those are left to the verifier
-    errs = [l for l in r.stderr.splitlines() if ' error: ' in l and "conflicting types for 'Interlocked" not in l
-            and not re.search(r"declaration of '_?Interlocked\w+' has a different language linkage", l)]
-    return [re.sub(r'^.*? error: ', '', e) for e in errs]
+    out = []
+    for l in r.stderr.splitlines():
+        m = re.match(r'^(.*?):(\d+):\d+: error: (.*)$', l)
+        if not m or "conflicting types for 'Interlocked" in l or re.search(r"declaration of '_?Interlocked\w+' has a different language linkage", l):
+            continue
+        out.append((m.group(1), int(m.group(2)), m.group(3)))
+    return out
+
+
+def clang_errors(cpp, limit=3):
+    """Clang error messages for the unit, or [] when clang is missing or the unit parses."""
+    return [m for _, _, m in clang_diagnostics(cpp, limit)]
 
 
 def syntax_precheck(cpp):
@@ -770,65 +785,219 @@ def syntax_precheck(cpp):
     return errs[0][:140] if errs else None
 
 
-SYSTEM_SNIPPETS = {'MAX_PATH': '#define MAX_PATH 260', '__m128': '#include <intrin.h>', '__m128i': '#include <intrin.h>',
-                   '__m128d': '#include <intrin.h>'}
+_INDEXES = {}
 
 
-def missing_declaration(name, ctx):
-    """Text that declares `name`, taken from the sibling files the unit came from: a (possibly
-    multi-line) typedef, a class definition with its dependencies, or a one-line prototype."""
-    if name in SYSTEM_SNIPPETS:
-        return SYSTEM_SNIPPETS[name]
-    text = '\n'.join(ctx)
-    n = re.escape(name)
-    m = re.search(rf'^typedef\b[^;{{}}]*?(?:\(\s*[*&]?\s*{n}\s*\)[^;{{}}]*|\b{n}\s*(?:\[[^\]]*\])?\s*);', text, re.M)
-    if m:
-        return m.group(0)
-    deps = dependency_classes(ctx, [name], None)
-    if deps:
-        return '\n\n'.join('\n'.join(b) for _, b in deps)
-    m = re.search(rf'^(?:extern\b|[A-Za-z_][^\n;{{}}=]*\b){re.escape(name)}\b[^\n;{{}}]*;', text, re.M)
-    if m:
-        return m.group(0)
-    return None
+def decl_indexes():
+    """Declaration indexes of the clones, the current game's clone first."""
+    import sibling_decls
+    if not _INDEXES:
+        for game, (rev, lic, rel) in GAMES.items():
+            root = next((p for p in (ROOT / rel, MAIN / rel) if p.is_dir()), None)
+            if root:
+                _INDEXES[game] = sibling_decls.DeclIndex(root, f'SIBLING({rev}, {lic})')
+    return sorted(_INDEXES.values(), key=lambda ix: ix.label != SIBLING_LABEL)
 
 
-def repair_header(hpath, cpath, ctx, rounds=12):
+def clone_roots():
+    return [p for _, _, rel in GAMES.values() for p in [next((q for q in (ROOT / rel, MAIN / rel) if q.is_dir()), None)] if p]
+
+
+class HeaderRepair:
+    """Writes the declarations a transplanted body needs into the unit's own header.
+
+    Definitions come from the sibling clones' headers (labelled SIBLING) together with what they need;
+    where no clone declares a name, a forward declaration is a placeholder (labelled GUESS and STANDIN).
+    Shared tracked headers are never touched."""
+
+    NAMED = [r"unknown type name '([\w:]+)'", r"unknown class name '([\w:]+)'", r"use of undeclared identifier '([\w:]+)'",
+             r"no template named '([\w:]+)'", r"no type named '([\w:]+)' in (?:the global namespace|namespace '\w+')",
+             r"(?:field|variable) has incomplete type '(?:struct |class )?([\w:]+)", r"member access into incomplete type '(?:struct |class )?([\w:]+)",
+             r"incomplete type '(?:struct |class )?([\w:]+)", r"implicit instantiation of undefined template '([\w:]+)<",
+             r"no member named '([\w:]+)' in the global namespace", r"no member named '(\w+)' in namespace"]
+    BIG = 25
+
+    def __init__(self, hpath, cpath, source=None):
+        import sibling_decls
+        self.hpath, self.c = ROOT / hpath, ROOT / cpath
+        self.text = self.hpath.read_text()
+        self.indexes = decl_indexes()
+        if source:
+            # the sibling file the function came from (and what it includes) declares more than the headers do: local typedefs, file-level classes
+            self.indexes = [sibling_decls.DeclIndex(ROOT, SIBLING_LABEL, include_context(source), source)] + self.indexes
+        self.sibling = {}
+        self.members = []
+        self.standins = []
+        self.tried = set()
+        self.order_tried = 0
+        self.source = source
+        self.globals = []
+
+    def have(self):
+        import sibling_decls
+        return set(sibling_decls.defined_names(self.text))
+
+    def add_blocks(self, name):
+        import sibling_decls
+        have = self.have()
+        blocks = sibling_decls.closure(self.indexes, name, have)
+        if not blocks or len(blocks) > self.BIG:
+            return False
+        for d, label, deps in reversed(blocks):
+            name = sanitize(d.name)
+            if name in have:
+                continue
+            if d.kind == 'class':
+                self.text = sibling_decls.remove_forward_declarations(self.text, name)
+            if d.kind in ('class', 'enum'):
+                self.text = sibling_decls.remove_typedefs(self.text, name)
+            self.text = sibling_decls.insert_block(self.text, sanitize(sibling_decls.strip_noise(d.text)).strip('\n'), name,
+                                                   [sanitize(x) for x in deps])
+            self.sibling.setdefault(label, []).append(name)
+        return True
+
+    def source_line(self, file, line):
+        try:
+            return Path(file).read_text(errors='replace').split('\n')[line - 1]
+        except (OSError, IndexError):
+            return ''
+
+    def candidates(self, msg, file, line):
+        names = [m.group(1).split('::')[-1] for rx in self.NAMED for m in [re.search(rx, msg)] if m]
+        # decompiler names were renamed on the way in; the sibling still spells them FUN_ / DAT_ / sub_
+        names = names + [re.sub(r'^Func', 'FUN_', re.sub(r'^Data', 'DAT_', re.sub(r'^Routine', 'sub_', n))) for n in names
+                         if re.fullmatch(r'(?:Func|Data|Routine)[0-9a-f]{6,8}', n)]
+        if not names:
+            # the message names nothing (a base class, a missing type specifier): look at the line
+            import sibling_decls
+            have = self.have()
+            names = [n for n in re.findall(IDENT, self.source_line(file, line))
+                     if n in {k for ix in self.indexes for k in ix.by_name} and n not in have and n not in sibling_decls.KEYWORDS]
+        return names
+
+    def fix(self, file, line, msg):
+        """Apply a repair for one compiler error; True when the header changed."""
+        import sibling_decls
+        before = self.text
+        if ("undeclared identifier" in msg and "'std'" in msg) or "in namespace 'std'" in msg:
+            self.text = re.sub(r'\bstd::', '', self.text)
+            return self.text != before
+        if 'include <new>' in msg:
+            return self.include('<new>')
+        named = re.search(r"unknown type name '(\w+)'", msg)
+        order_error = re.search(r"base class has incomplete type|named in nested name specifier|expected class name|field has incomplete type|is not complete|expected '\)'", msg) \
+            or (named and named.group(1) in self.have())
+        if order_error and Path(file).resolve() == self.hpath.resolve() and self.order_tried < 6:
+            # the definitions exist but sit after their users
+            self.order_tried += 1
+            self.text = sibling_decls.reorder_definitions(self.text)
+            for name in dict.fromkeys(self.standins):
+                self.text = sibling_decls.insert_after_pragma(sibling_decls.remove_forward_declarations(self.text, name), f'struct {name};')
+            if self.text != before:
+                return True
+        for name in self.candidates(msg, file, line):
+            inc = sibling_decls.SYSTEM_INCLUDES.get(name)
+            if inc:
+                if self.include(inc):
+                    return True
+                continue
+            key = (name, name in self.have())
+            if key in self.tried or name in self.have():
+                continue
+            self.tried.add(key)
+            if self.add_blocks(name):
+                return True
+            if re.search(r"unknown (?:type|class) name|no template named|no type named", msg) and re.fullmatch(IDENT, name) \
+                    and not any(re.search(rf'template\s*<[^>]*>\s*(?:class|struct)\s+{name}\b', t) for t in [self.text]):
+                self.text = sibling_decls.insert_after_pragma(self.text, f'struct {name};')
+                self.standins.append(name)
+                return True
+        m = re.search(r"use of undeclared identifier '(Data[0-9a-f]{6,8})'", msg)
+        if m and (m.group(1), 'global') not in self.tried:
+            self.tried.add((m.group(1), 'global'))
+            raw = 'DAT_' + m.group(1)[4:]
+            for root in clone_roots():
+                got = sibling_decls.global_declaration(root, raw, self.source)
+                if got:
+                    self.text = sibling_decls.insert_after_pragma(self.text, sanitize(got[0]))
+                    self.globals.append(m.group(1))
+                    return True
+            self.text = sibling_decls.insert_after_pragma(self.text, f'extern char {m.group(1)};')
+            self.standins.append(m.group(1))
+            return True
+        m = re.search(r"use of '(\w+)' with tag type that does not match", msg)
+        if m:
+            self.text = sibling_decls.remove_forward_declarations(self.text, m.group(1))
+            return self.text != before
+        m = re.search(r"redefinition of '(\w+)'$", msg)
+        if m and '#include <windows.h>' in self.text:
+            # the system header now declares it; the sibling's copy of the Windows type goes
+            self.text = sibling_decls.remove_definitions(self.text, m.group(1))
+        elif m:
+            self.text = sibling_decls.remove_later_definitions(self.text, m.group(1))
+        m = re.search(r"redefinition of '(\w+)' as different kind of symbol|definition of type '(\w+)' conflicts with typedef", msg)
+        if m:
+            name = m.group(1) or m.group(2)
+            self.text = sibling_decls.remove_typedefs(self.text, name)
+            self.text = sibling_decls.remove_forward_declarations(self.text, name)
+        m = re.search(r"(?:conflicting types for|redeclaration of|declaration of) '(\w+)'", msg)
+        if m:
+            name = m.group(1)
+            if name in sibling_decls.LIBC:
+                self.text = sibling_decls.remove_declarations(self.text, {name})
+                self.include(sibling_decls.SYSTEM_INCLUDES.get(name, '<string.h>'))
+            else:
+                self.text = sibling_decls.keep_first_declaration(self.text, name)
+        m = re.search(r"no member named '(\w+)' in '(\w+)'$", msg)
+        if m and re.fullmatch(r'Func[0-9a-f]{6,8}', m.group(1)) and (m.group(1), m.group(2)) not in self.tried:
+            self.tried.add((m.group(1), m.group(2)))
+            raw = re.sub(r'^Func', 'FUN_', m.group(1))
+            for root in clone_roots():
+                got = sibling_decls.member_prototype(root, raw)
+                new = got and sibling_decls.add_member(self.text, m.group(2), sanitize(got[0]))
+                if new:
+                    self.text = new
+                    self.members.append(m.group(1))
+                    break
+        return self.text != before
+
+    def include(self, inc):
+        line = f'#include {inc}'
+        if line in self.text:
+            return False
+        self.text = self.text.replace('#pragma once', '#pragma once\n' + line, 1)
+        return True
+
+    def label_lines(self):
+        out = [f'// {", ".join(dict.fromkeys(names))}: {label}; declaration taken from the sibling decompilation, identity with this function unproven'
+               for label, names in self.sibling.items()]
+        if self.globals:
+            out.append(f'// {", ".join(dict.fromkeys(self.globals))}: {SIBLING_LABEL}; global declaration taken from the sibling decompilation')
+        if self.members:
+            out.append(f'// {", ".join(dict.fromkeys(self.members))}: {SIBLING_LABEL}; member prototype taken from the sibling decompilation')
+        if self.standins:
+            out.append(f'// {", ".join(dict.fromkeys(self.standins))}: GUESS(low) STANDIN; forward declaration, no sibling header declares it')
+        return out
+
+
+def repair_header(hpath, cpath, source=None, rounds=60):
     """Add the sibling declarations the compiler reports as missing to the unit's own header (never
     a shared one), until the unit parses or nothing more can be found. Returns the last error."""
-    seen = set()
-    ctx = [sanitize(l) for l in ctx]
+    rep = HeaderRepair(hpath, cpath, source)
+    last = None
     for _ in range(rounds):
-        errs = clang_errors(ROOT / cpath, 12)
-        if not errs:
-            return None
-        add = []
-        for e in errs:
-            m = re.search(r"(?:unknown type name|use of undeclared identifier|incomplete type|no template named) '(?:struct |class )?([\w:]+)'", e)
-            name = m.group(1).split('::')[-1] if m else None
-            if not name or name in seen:
-                continue
-            seen.add(name)
-            raw = name
-            for rx, rep in RENAMES:
-                raw = rx.sub(rep, raw)
-            text = missing_declaration(name, ctx)
-            if 'unknown type name' in e and re.fullmatch(IDENT, name) and (not text or not text.startswith(('typedef', '#'))):
-                # a pointer or reference only needs the name; a complete type is requested by a later error
-                text = f'struct {name};'
-            if text:
-                add.append(text)
-                break  # later errors are often caused by this one
-        if not add:
-            return errs[0][:140]
-        h = (ROOT / hpath).read_text()
-        lines = h.split('\n')
-        k = next((i for i, l in enumerate(lines) if l.strip() == '#pragma once'), 0) + 1
-        add.sort(key=lambda t: not re.fullmatch(r'struct \w+;', t))
-        lines[k:k] = [''] + '\n\n'.join(add).split('\n')
-        (ROOT / hpath).write_text('\n'.join(lines))
-    errs = clang_errors(ROOT / cpath)
-    return errs[0][:140] if errs else None
+        rep.hpath.write_text(rep.text)
+        diags = clang_diagnostics(ROOT / cpath, 40)
+        last = diags[0][2][:140] if diags else None
+        if not diags:
+            break
+        # one repair per compile: later errors are usually caused by the first
+        if not any(rep.fix(file, line, msg) for file, line, msg in diags):
+            break
+    labels = rep.label_lines()
+    text = rep.text.replace('#pragma once', '\n'.join(labels + ['#pragma once']), 1) if labels else rep.text
+    rep.hpath.write_text(text)
+    return last
 
 
 def template_instantiation(sym):
@@ -931,6 +1100,8 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
         # the lint wants the unit's header to declare the class its file is named for
         u['header_decl'] += f'\n\nstruct {fc}\n{{\n}};'
         u['labels'] = u['labels'] + [([fc], 'GUESS')]
+    import sibling_decls
+    u['header_decl'] = sibling_decls.strip_noise(u['header_decl']).strip('\n')
     header, cpp = render(u, rva, u['source'], Path(hpath).stem)
     (ROOT / hpath).write_text(header)
     (ROOT / cpath).write_text(cpp)
@@ -944,10 +1115,18 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
         cpp = cpp.replace('#include "', hint + '\n#include "', 1)
         (ROOT / cpath).write_text(cpp)
     bad = syntax_precheck(ROOT / cpath)
-    if bad and u.get('source'):
-        bad = repair_header(hpath, cpath, include_context(u['source']))
+    if bad:
+        bad = repair_header(hpath, cpath, u.get('source'))
     if bad:
         return 'precheck:' + bad
+    # the repaired header can add helpers check_origin now finds in the sibling files
+    now = (ROOT / cpath).read_text()
+    again = [l for l in undeclared_origin_lines(ROOT / cpath) if l not in now]
+    if again:
+        now = re.sub(r'^// Adapted helpers:[^\n]*\n', '', now, flags=re.M)
+        (ROOT / cpath).write_text(now.replace('#include "', '\n'.join(again) + '\n#include "', 1))
+    if os.environ.get('SIBLING_PRECHECK_ONLY'):
+        return 'ready'
     if u.get('free'):
         # A free function has no class to bind it by; the hint names it by its own symbol.
         (task / 'bind-hints.json').write_text(json.dumps({u['method']: f'0x{rva:x}'}))
