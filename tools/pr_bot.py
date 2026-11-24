@@ -1889,6 +1889,9 @@ class Bot:
             # A bare "git failed" hid which command broke; keep the last stderr line and the subcommand.
             lines = result.stderr.decode(errors='replace').strip().splitlines() if name == 'git' else []
             suffix = f' ({" ".join(str(a) for a in argv[1:3])}: {lines[-1][:200]})' if lines else ''
+            if lines and len(lines) > 1:
+                # git lists the paths it would overwrite before its closing "Aborting"; the last line alone named none.
+                suffix = suffix[:-1] + f' [{"; ".join(l.strip() for l in lines[:-1])[:400]}])'
             if name == 'codex':
                 # codex reports account problems (credits, login) as its last ERROR line; "codex failed" alone hid them.
                 errors = [l for l in result.stderr.decode(errors='replace').splitlines() if l.startswith('ERROR')]
@@ -2044,6 +2047,8 @@ class Bot:
                                      f'repos/{REPOSITORY}/pulls/{number}/files']).stdout)
         return [item for page in pages for item in page]
 
+    CLEAN_DIRS = ('reconstruction', 'reports', 'data/target-hashes', 'docs/cookbook-notes', 'findings')
+
     def prepare_tree(self, base):
         with self.root_lock:
             self._prepare_tree(base)
@@ -2083,7 +2088,9 @@ class Bot:
             # materialise the whole repository here for nothing.
             self.run(['git', 'reset', '--quiet', '--hard'], cwd=self.tree, check=False)
             # data/target-hashes: an untracked shard left by a failed regenerate commit blocks the detach checkout.
-            self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes', 'docs/cookbook-notes'], cwd=self.tree, check=False)
+            # findings: a findings file the bot wrote for a PR and later merged arrives tracked in the next base, and
+            # git refuses to overwrite the stray untracked copy.
+            self.run(['git', 'clean', '-fdq', *self.CLEAN_DIRS], cwd=self.tree, check=False)
         self.run(['git', 'checkout', '--quiet', '--detach', base], cwd=self.tree)
         self._link_local()
 
