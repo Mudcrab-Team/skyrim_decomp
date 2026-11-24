@@ -1,5 +1,7 @@
 # 0x449430 BGSAIWorldLocationInteriorCell::LoadGame
 
+<!-- tags: construct/serialization, wall/inlining, sibling/fo4 -->
+
 - Function: 0x449430 BGSAIWorldLocationInteriorCell::LoadGame
 - Label: GUESS
 - Outcome: fixed

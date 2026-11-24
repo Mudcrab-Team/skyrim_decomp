@@ -1,5 +1,7 @@
 # 0x7a5ac0 MovementHandlerAgentSprintActionTrigger::~MovementHandlerAgentSprintActionTrigger
 
+<!-- tags: construct/destructor, abi/virtual, sibling/fo4 -->
+
 - Function: 0x7a5ac0 MovementHandlerAgentSprintActionTrigger::~MovementHandlerAgentSprintActionTrigger
 - Label: none
 - Outcome: fixed

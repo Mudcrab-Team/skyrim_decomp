@@ -1,5 +1,7 @@
 # 0x9f0650 DebugTextAnimation::AnimEventSink::scalar deleting destructor
 
+<!-- tags: construct/destructor, abi/virtual, sibling/fo4 -->
+
 - Function: 0x9f0650 DebugTextAnimation::AnimEventSink::scalar deleting destructor (also 0x9f0710)
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

@@ -1,5 +1,7 @@
 # 0x4e0060 PathingCell::Write
 
+<!-- tags: wall/register-schedule, construct/serialization, sibling/fo4 -->
+
 - Function: 0x4e0060 PathingCell::Write
 - Label: none
 - Outcome: unsolved

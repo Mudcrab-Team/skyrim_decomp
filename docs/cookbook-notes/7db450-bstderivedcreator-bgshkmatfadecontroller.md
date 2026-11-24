@@ -1,5 +1,7 @@
 # 0x7db450 BSTDerivedCreator<BGShkMatFadeController, BShkNonTransformController>::Create
 
+<!-- tags: wall/register-schedule, construct/constructor, construct/allocation, sibling/fo4 -->
+
 - Function: 0x7db450 BSTDerivedCreator<BGShkMatFadeController, BShkNonTransformController>::Create
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: unsolved

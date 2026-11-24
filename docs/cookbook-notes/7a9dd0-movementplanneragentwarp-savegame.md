@@ -1,5 +1,7 @@
 # 0x7a9dd0 MovementPlannerAgentWarp::SaveGame
 
+<!-- tags: construct/serialization, abi/virtual, sibling/fo4 -->
+
 - Function: 0x7a9dd0 MovementPlannerAgentWarp::SaveGame
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

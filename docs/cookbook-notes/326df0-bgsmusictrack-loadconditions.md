@@ -1,5 +1,7 @@
 # 0x326df0 BGSMusicTrack::LoadConditions
 
+<!-- tags: construct/serialization, construct/allocation, sibling/fo4 -->
+
 - Function: 0x326df0 BGSMusicTrack::LoadConditions
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

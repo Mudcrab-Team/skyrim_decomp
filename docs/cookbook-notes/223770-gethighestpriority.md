@@ -1,5 +1,7 @@
 # 0x223770 GetHighestPriority
 
+<!-- tags: wall/register-schedule, sibling/fo4 -->
+
 - Function: 0x223770 GetHighestPriority
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

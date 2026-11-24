@@ -1,5 +1,7 @@
 # 0x120880 vector constructor and copy constructor iterator helpers
 
+<!-- tags: construct/vector, wall/inlining, sibling/fo4 -->
+
 - Function: 0x120880 vector constructor iterator; 0x812bd0 vector copy constructor iterator
 - Label: GUESS
 - Outcome: fixed

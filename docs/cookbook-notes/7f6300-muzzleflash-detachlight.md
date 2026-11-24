@@ -1,5 +1,7 @@
 # 0x7f6300 MuzzleFlash::DetachLight
 
+<!-- tags: wall/register-schedule, construct/destructor, sibling/fo4 -->
+
 - Function: 0x7f6300 MuzzleFlash::DetachLight
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

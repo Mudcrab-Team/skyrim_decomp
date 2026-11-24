@@ -1,5 +1,7 @@
 # 0x256160 TESRegionNoiseFunction::InterpolatedNoise
 
+<!-- tags: wall/register-schedule, construct/float, sibling/fo4 -->
+
 - Function: 0x256160 TESRegionNoiseFunction::InterpolatedNoise
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

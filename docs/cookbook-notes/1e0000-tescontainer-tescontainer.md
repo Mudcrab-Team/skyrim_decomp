@@ -1,5 +1,7 @@
 # 0x1e0000 TESContainer::~TESContainer
 
+<!-- tags: construct/destructor, abi/exception, sibling/fo4 -->
+
 - Function: 0x1e0000 TESContainer::~TESContainer
 - Label: GUESS
 - Outcome: fixed

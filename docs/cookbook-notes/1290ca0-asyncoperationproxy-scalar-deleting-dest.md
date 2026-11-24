@@ -1,5 +1,7 @@
 # 0x1290ca0 AsyncOperationProxy scalar deleting destructor
 
+<!-- tags: construct/destructor, abi/virtual, sibling/fo4 -->
+
 - Function: 0x1290ca0 AsyncOperationProxy scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed

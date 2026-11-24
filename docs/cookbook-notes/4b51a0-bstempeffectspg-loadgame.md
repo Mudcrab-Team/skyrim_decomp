@@ -1,5 +1,7 @@
 # 0x4b51a0 BSTempEffectSPG::LoadGame
 
+<!-- tags: construct/serialization, wall/inlining, sibling/fo4 -->
+
 - Function: 0x4b51a0 BSTempEffectSPG::LoadGame
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

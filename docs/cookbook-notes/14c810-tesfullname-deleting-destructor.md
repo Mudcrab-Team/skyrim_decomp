@@ -1,5 +1,7 @@
 # 0x14c810 TESFullName::deleting destructor
 
+<!-- tags: construct/destructor, abi/virtual, sibling/fo4 -->
+
 - Function: 0x14c810 TESFullName::deleting destructor
 - Label: COMMUNITY
 - Outcome: fixed
