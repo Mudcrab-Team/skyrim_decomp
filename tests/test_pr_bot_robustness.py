@@ -738,6 +738,38 @@ class PoolTests(WorkDir):
         self.assertEqual(bot.retry_records(state), [])
         self.assertFalse(pr_bot.State(state, 11, 'f' * 40).get('recorded'))
 
+    def test_a_retry_leaves_a_tree_that_a_worker_holds_and_a_worker_waits_for_the_retry(self):
+        state = self.work / 'state'
+        head = 'c' * 40
+        first = pr_bot.State(state, 7, head)
+        first.set('merged', True)
+        first.set('records', '/r')
+        first.set('summary', dict(pr=7, head=head, merge=True, verdicts={'0x10': 'matched'}))
+        (self.work / 'tree-1/.local/tasks/prbot-7-cccccccc-0').mkdir(parents=True)
+        bot = FakeBot(self.work)
+        bot.gh_json = lambda *a: dict(number=7, headRefOid='z', author=dict(login='x'))
+        bot.republish_rows = lambda rvas: []
+        bot.rebind_unit_maps = lambda *a: None
+        seen = []
+        bot.record = lambda pr, st, rvas: (seen.append(bot.task_slot(7, head).tree_lock()._is_owned()), st.set('recorded', True))
+        done = threading.Event()
+        release = threading.Event()
+
+        def worker():
+            with bot.for_slot(1).tree_lock():
+                done.set()
+                release.wait(5)
+        thread = threading.Thread(target=worker)
+        thread.start()
+        done.wait(5)
+        self.assertEqual(bot.retry_records(state), [])  # the worker's run is not disturbed; the retry waits
+        self.assertEqual(seen, [])
+        release.set()
+        thread.join()
+        self.assertEqual(bot.retry_records(state), [7])
+        self.assertEqual(seen, [True])
+        self.assertFalse(bot.for_slot(1).tree_lock()._is_owned())
+
     def test_a_retry_binds_a_dropped_unit_map_again_in_the_tree_that_holds_the_tasks(self):
         bot = FakeBot(self.work)
         task = self.work / 'tree-1/.local/tasks/prbot-7-cccccccc-0'

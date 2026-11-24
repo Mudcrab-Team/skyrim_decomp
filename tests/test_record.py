@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from unittest import mock
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -137,6 +138,17 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.assertEqual(again['refused'][self.fn['rva']], 'already matched')
         self.assertEqual((self.root / 'data/progress.json').read_bytes(), snapshot)
 
+
+    def test_files_that_vanish_before_folding_are_an_error_not_a_commit_without_records(self):
+        real = record_store.fold
+
+        def wiped(root, names):
+            for name in names:
+                (Path(root) / name).unlink(missing_ok=True)  # another run cleaned the untracked records away
+            return real(root, names)
+        with mock.patch.object(record_store, 'fold', wiped):
+            with self.assertRaises(RuntimeError):
+                self.apply()
 
     def test_a_record_pointing_at_an_immutable_unit_map_carries_the_map_and_its_history(self):
         import symbol_map

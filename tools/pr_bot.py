@@ -1773,6 +1773,15 @@ class Bot:
         self.root_lock = threading.RLock()
         self.ghidra_lock = threading.Lock()
         self.land_lock = threading.Lock()
+        # One lock per scratch tree, shared by the slot copies. A PR's worker holds its tree for the whole run
+        # (every start resets and cleans it); the record retry borrows a slot's tree to find the PR's tasks, and a
+        # worker that started in that tree meanwhile wiped the untracked records and unit maps the retry had written.
+        self.tree_locks = {}
+        self.tree_locks_guard = threading.Lock()
+
+    def tree_lock(self):
+        with self.tree_locks_guard:
+            return self.tree_locks.setdefault(str(self.tree), threading.RLock())
 
     @property
     def code_sha(self):
@@ -3216,7 +3225,8 @@ class Bot:
     def process(self, pr, base=None):
         try:
             try:
-                return self._process(pr, base)
+                with self.tree_lock():
+                    return self._process(pr, base)
             finally:
                 live = self.progress_by_tag.pop(f"{pr['number']}-{pr['headRefOid'][:8]}", None)
                 if live:
@@ -4374,18 +4384,27 @@ class Bot:
             pr = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'number,headRefOid,author')
             pr['headRefOid'] = head
             slot = self.task_slot(number, head)
-            try:
-                self.republish_rows(rvas)
-            except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
-                print(f'{stamp()} pr {number}: row republish: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            lock = slot.tree_lock()
+            # The PR's tasks live in a slot's tree. While a worker runs a PR there the retry waits for its next
+            # round instead of having its records cleaned away, and it never waits while holding the push turn.
+            if not lock.acquire(blocking=False):
+                print(f'{stamp()} pr {number}: record retry waits, {slot.tree.name} is busy with a PR', flush=True)
                 continue
-            with self.land_lock:
+            try:
                 try:
-                    slot.rebind_unit_maps(number, head, rvas)
-                    slot.record(pr, State(directory, number, head), rvas)
+                    self.republish_rows(rvas)
                 except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
-                    print(f'{stamp()} pr {number}: record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+                    print(f'{stamp()} pr {number}: row republish: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                     continue
+                with self.land_lock:
+                    try:
+                        slot.rebind_unit_maps(number, head, rvas)
+                        slot.record(pr, State(directory, number, head), rvas)
+                    except (Stop, subprocess.SubprocessError, OSError, ValueError) as exc:
+                        print(f'{stamp()} pr {number}: record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+                        continue
+            finally:
+                lock.release()
             recorded.append(number)
         return recorded
 

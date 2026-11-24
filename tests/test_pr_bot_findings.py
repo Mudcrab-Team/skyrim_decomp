@@ -92,6 +92,32 @@ class Validate(unittest.TestCase):
     def test_short_fenced_formula_is_fine(self):
         self.assertEqual(findings_check.validate(NAME, finding('```\nscale = base * 2\n```\n')), [])
 
+    def fenced(self, lines, label='text'):
+        return finding(f'```{label}\n' + '\n'.join(lines) + '\n```\n')
+
+    def test_a_long_block_of_formulas_is_not_a_listing(self):
+        eqs = ['C   = scene colour (RGB) plus a clamped reflection term from the',
+               '      mask and the reflection texture',
+               'A   = AO factor, d = depth',
+               "d'  = 1.01 x d - 0.01",
+               'z   = 2 x N x F / ((N + F) - (2 x d\' - 1) x (F - N))'] + [f'v{i} = saturate(a{i} x k - b{i})' for i in range(12)]
+        self.assertGreater(len(eqs), findings_check.MAX_CODE_LINES)
+        self.assertEqual(findings_check.validate(NAME, self.fenced(eqs)), [])
+        self.assertEqual(findings_check.validate(NAME, self.fenced(eqs, '')), [])
+
+    def test_a_long_block_that_reads_as_a_listing_is_refused_even_with_equals_signs(self):
+        eq = [f'v{i} = a{i} x k' for i in range(14)]
+        for bad in ('    0x1400a1b20:  48 8b 01  1', 'mad r0.xyz, r1.xyz, cb2[1].xyz, r2.xyz', 'dcl_input v0.xyz',
+                    'x = foo(a, b);', '}', '#include <vector>', '  1400a1b20 48 8b 01 48 89 5c 24 08 57'):
+            self.assertIn('long-code', findings_check.validate(NAME, self.fenced(eq + [bad])), bad)
+
+    def test_a_long_block_that_is_not_mostly_assignments_or_is_labelled_code_is_refused(self):
+        self.assertIn('long-code', findings_check.validate(NAME, self.fenced(['plain words only'] * 14)))
+        self.assertIn('long-code', findings_check.validate(NAME, self.fenced([f'v{i} = a{i}' for i in range(14)], 'cpp')))
+        self.assertIn('long-code', findings_check.validate(
+            NAME, self.fenced([f'v{i} = a{i} x k' for i in range(findings_check.MAX_FORMULA_LINES + 1)])))
+        self.assertIn('long-code', findings_check.validate(NAME, finding('```text\n' + 'words\n' * 14)))
+
 
 class FindingsBot(replay.ReplayBot):
     """The replay bot with the real leak scan, since the digest exemption is the point."""

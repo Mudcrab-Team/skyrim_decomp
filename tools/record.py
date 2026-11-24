@@ -211,6 +211,7 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     target = _load(root, TARGET)
     by_rva = {fn['rva']: (i, fn) for i, fn in enumerate(data['functions']) if fn['build_id'] == build_id}
     out = {'recorded': [], 'refused': {}, 'files': []}
+    expected = []  # what the recorded functions must resolve to once folded
     changed, created = [], set()
     table = []
     for rva in sorted(set(rvas)):
@@ -279,6 +280,7 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
         changed.append(candidate)
         out['recorded'].append(rva)
         out['files'] += [report, review_record_path(fn)]
+        expected += [report, review_record_path(fn), record['symbol_map']['path']]
         # A unit map is immutable and content-addressed, so a record that points at one must carry it.
         for rel in (record['symbol_map']['path'], symbol_map.history_name(record['symbol_map']['path'])):
             if '/unit-symbols/' in rel and record_store.is_file(root / rel) and rel not in out['files']:
@@ -301,6 +303,11 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                 out['files'].append(name)
     # Records are committed as shards; the loose files written above were only the working copy.
     out['files'] = record_store.fold(root, out['files'])
+    # Untracked files can vanish under a shared tree (a reset and clean by another run); folding then packs nothing
+    # while progress.json still says matched. Refuse to hand such a result to a commit.
+    lost = sorted({rel for rel in expected if not record_store.is_file(root / rel)})
+    if lost:
+        raise RuntimeError(f'{len(lost)} recorded file(s) are missing after folding, for example {lost[0]}')
     return out
 
 
