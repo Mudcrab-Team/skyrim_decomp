@@ -541,7 +541,6 @@ def render(u, rva, rel_source, cls_file):
         extra = '; sibling name, identity with this function unproven' if kind == 'SIBLING' else ''
         extra = '; placeholder name' if kind == 'GUESS' else extra
         h.append(f'// {", ".join(dict.fromkeys(names))}: {note[kind]}{extra}')
-    header = '\n'.join(h) + '\n#pragma once\n\n' + u['header_decl'] + '\n'
     if u.get('original'):
         h[0] = '// Source exposure: mixed (names from the community PDB table where labelled; sizes from the pinned image listing).'
         h[1] = '// Code origin: original; a class with a virtual destructor, sized from the target; the sibling decompilation only pointed at the shape.'
@@ -554,8 +553,24 @@ def render(u, rva, rel_source, cls_file):
              f'// Code origin: adapted from the sibling decompilation; adapted bodies: {u["adapted"]}.',
              f'// Sibling source: {SIBLING_REV} {rel_source}:{u["src_line"]}',
              f'// 0x{rva:x} {u["compared"]}']
+    # Built after the original-unit wording is chosen: a header that claims sibling adaptation next to a
+    # source that names none is rejected as a provenance gap.
+    header = '\n'.join(h) + '\n#pragma once\n\n' + u['header_decl'] + '\n'
     cpp = '\n'.join(c) + f'\n#include "{cls_file}.h"\n\n' + u['cpp_body']
     return header, cpp
+
+
+def ci_hash_line(task_dir, rva):
+    """`// CI hash:` line naming the task's decorated symbol, or None.
+
+    The standing compare host rebuilds the task from the community name, which a stand-in class does not
+    carry, so only this line tells it which symbol of the object is the function.
+    """
+    task = json.loads((Path(task_dir) / 'task.json').read_text())
+    for fn in task.get('functions', []):
+        if int(str(fn['rva']), 0) == rva and str(fn.get('symbol', '')).startswith('?'):
+            return f'// CI hash: 0x{rva:x} {fn["symbol"]}'
+    return None
 
 
 def load_facts():
@@ -764,6 +779,10 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
         cpp = cpp.replace('#include "', '\n'.join(extra) + '\n#include "', 1)
         (ROOT / cpath).write_text(cpp)
     task = next((ROOT / '.local/contrib/tasks').glob(f'*-{rva:x}'))
+    hint = ci_hash_line(task, rva)
+    if hint and hint not in cpp:
+        cpp = cpp.replace('#include "', hint + '\n#include "', 1)
+        (ROOT / cpath).write_text(cpp)
     bad = syntax_precheck(ROOT / cpath)
     if bad:
         return 'precheck:' + bad

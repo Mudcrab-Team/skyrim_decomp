@@ -76,5 +76,24 @@ class Rewrites(unittest.TestCase):
         self.assertEqual(unit['compared'], 'Thing::~Thing')
 
 
+class Provenance(unittest.TestCase):
+    def test_original_unit_header_does_not_claim_sibling_adaptation(self):
+        unit = st.sized_thunk_unit({'rva': 0x1000}, {'name': 'Thing::dtor_deleting'}, 0x20)
+        header, cpp = st.render(unit, 0x1000, None, 'Thing_1000')
+        self.assertIn('Code origin: original', header)
+        self.assertNotIn('adapted from the sibling', header)
+        self.assertNotIn('Sibling source', cpp)
+
+    def test_ci_hash_line_comes_from_the_task_symbol(self):
+        import json
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, 'task.json').write_text(json.dumps({'functions': [{'rva': '0x1000', 'symbol': '??_GThing@@UEAAPEAXI@Z'},
+                                                                       {'rva': '0x2000', 'symbol': 'unbound:Thing::f'}]}))
+            self.assertEqual(st.ci_hash_line(tmp, 0x1000), '// CI hash: 0x1000 ??_GThing@@UEAAPEAXI@Z')
+            self.assertIsNone(st.ci_hash_line(tmp, 0x2000))
+            self.assertIsNone(st.ci_hash_line(tmp, 0x3000))
+
+
 if __name__ == '__main__':
     unittest.main()
