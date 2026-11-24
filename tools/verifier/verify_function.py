@@ -28,6 +28,8 @@ import subprocess
 import sys
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / 'tools'))
+import record_store  # noqa: E402
 COMPARE = REPO / 'tools' / 'compare.py'
 PRIVATE_ROOT = REPO / '.local'
 DEFAULT_DIAGNOSTICS = PRIVATE_ROOT / 'verifier' / 'diagnostics'
@@ -205,6 +207,13 @@ def run(task_file, obj, build_record, image, report_path, diagnostics=None, pyth
     flat_task = diagnostics.with_name(diagnostics.stem + '.task.json')
     flat_task.parent.mkdir(parents=True, exist_ok=True)
     flat_task.write_text(json.dumps(task, indent=2, sort_keys=True) + '\n')
+    unpacked = None
+    if not symbols.is_file() and record_store.is_file(symbols):
+        # The comparators take a real file path; a map packed into an xz shard is written out
+        # byte for byte beside the diagnostics, so the recorded symbol-map hash is unchanged.
+        unpacked = diagnostics.with_name(diagnostics.stem + '.symbols.json')
+        unpacked.write_bytes(record_store.read_bytes(symbols))
+        symbols = unpacked
     # Not isolated mode: compare.py imports pecoff from its own directory.
     comparator = COMPARE.with_name('compare_internal.py') if 'internal_identity' in task else COMPARE.with_name('compare_runtime.py')
     cmd = [python, str(comparator), '--task', str(flat_task), '--manifest', str(manifest),
@@ -212,6 +221,8 @@ def run(task_file, obj, build_record, image, report_path, diagnostics=None, pyth
            '--image', str(image), '--symbols', str(symbols), '--report', str(report_path),
            '--diagnostics', str(diagnostics)]
     proc = subprocess.run(cmd, capture_output=True, text=True)
+    if unpacked is not None:
+        unpacked.unlink(missing_ok=True)
     if proc.returncode not in (0, 1) or not report_path.exists():
         record = error_record(task, proc.returncode, proc.stderr)
         report_path.write_text(json.dumps(record, indent=2, sort_keys=True) + '\n')
