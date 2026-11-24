@@ -79,3 +79,20 @@ emitted symbol from an accepted exemplar. Construction and destruction remain or
 definitions. Static startup and shutdown functions that need internal selectors are outside
 the reconstruction-only CI hash route. Failed units are removed from the working tree, and
 verdicts and source revisions come from the verifier's result records.
+
+`stamp --convert-this` repairs a stand-in whose body hands `this` to a parameter of the real
+owner class. It is driven by the compiler's own C2664 diagnostic (read from the attempt's
+`compile.log`, since the attempt summary shortens long lines) and edits only the rejected argument,
+and only when that argument is exactly `this` or `*this`, to `reinterpret_cast<Real*>(this)`. The
+stand-in keeps the real class's layout, so the cast adds no adjustment. It is tried at most twice.
+On the 9 strict twins that failed to compile, 7 then passed the comparator on the Windows host; the
+other two were an undeclared exemplar-local constant and a second argument typed as the stand-in.
+
+Residual strict failures after the 74-twin retry round (36): none is a register or schedule
+difference. 17 differ only in a call or vtable target that the twin's own base or member types
+need distinct declarations for, 9 failed to compile (above), 4 were a size mismatch that the
+include-aware layout reader now resolves, 4 need a distinct base destructor as well, and 2 already
+had a unit. A bounded source-permutation run on the closest near-miss (call target off by one
+reference) scored 459 candidates and stayed at its starting distance, as expected for a reference
+that no spelling can reach.
+

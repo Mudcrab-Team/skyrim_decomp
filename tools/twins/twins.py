@@ -237,6 +237,15 @@ def cmd_stamp(a):
 
     def done(name, res):
         row, twin = built[name]
+        if a.convert_this and res['reason'] == 'compile-failed':
+            import twin_this
+            for _ in range(2):
+                if not twin_this.repair(twin.files, twin_this.latest_log(tasks / name)):
+                    break
+                runner.write_twin(ROOT, twin)
+                res = runner.attempt(ROOT, tasks / name)
+                if res['reason'] != 'compile-failed':
+                    break
         rec = {'rva': row['rva'], 'exemplar': row['exemplar'], 'level': a.level, 'mode': row['mode'], 'stem': twin.stem,
                'status': res['status'], 'reason': res['reason'], 'sizes': res['sizes']}
         if 'source_revision' in res:
@@ -289,6 +298,7 @@ def main():
     s.add_argument('--jobs', type=int, default=4)
     s.add_argument('--redo', action='store_true')
     s.add_argument('--retarget-callees', action='store_true', help='try distinct direct callees for strict relocation twins')
+    s.add_argument('--convert-this', action='store_true', help='read `this` as the real class where the compiler rejects the stand-in')
     s.add_argument('--only', help='file of RVAs (hex) to run')
     s.set_defaults(f=cmd_stamp)
     s = sub.add_parser('status')

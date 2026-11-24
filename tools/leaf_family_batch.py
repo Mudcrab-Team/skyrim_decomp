@@ -100,6 +100,7 @@ def run(description, discover, emit, *, split=None):
     parser.add_argument('--exe', required=True, type=Path)
     parser.add_argument('--out', type=Path, help='new snapshot directory beneath this checkout’s .local/')
     parser.add_argument('--compare', action='store_true', help='run the full local comparator and save reports')
+    parser.add_argument('--only', type=Path, help='file of whitespace-separated hexadecimal RVAs; keep only those members')
     if split:
         parser.add_argument('--split', choices=('development', 'held-out'), help='generate only this validation partition')
     args = parser.parse_args()
@@ -120,6 +121,9 @@ def run(description, discover, emit, *, split=None):
     members = discover(PeImage(image), boundaries(ROOT), inventory)
     if split and args.split:
         members = [m for m in members if split(m) == args.split]
+    if args.only:
+        wanted = {int(word, 16) for word in args.only.read_text().split()}
+        members = [m for m in members if m.rva in wanted]
     print('Candidates:', dict(Counter(m.family for m in members)), flush=True)
     if out is None:
         return 0
