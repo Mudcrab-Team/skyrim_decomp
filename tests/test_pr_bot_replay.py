@@ -836,7 +836,7 @@ class ChunkedReviewTests(Replay):
         small = pr_bot.review_chunks([1, 2, 3], {'a.cpp': [1, 2], 'b.cpp': [3]}, 40)
         self.assertEqual(small, [[1, 2, 3]])
 
-    def test_a_150_function_pr_is_reviewed_in_four_chunks_at_most_three_at_a_time_and_lands(self):
+    def test_a_150_function_pr_is_reviewed_in_four_chunks_at_most_six_at_a_time_and_lands(self):
         self.big_pr()
         seen, live = self.watch()
         log = self.w.poll(self.bot)
@@ -844,7 +844,7 @@ class ChunkedReviewTests(Replay):
         self.assertEqual(len(seen), 4)
         self.assertTrue(all(len(c) <= 40 for c in seen))
         self.assertEqual(sorted(r for c in seen for r in c), self.RVAS)  # one verdict from one chunk each
-        self.assertLessEqual(live['peak'], 3)
+        self.assertLessEqual(live['peak'], pr_bot.REVIEW_CHUNK_WORKERS)
         names = self.w.main_files()
         self.assertTrue(all(f'reports/{BUILD}/0x{r:x}.json' in names for r in self.RVAS))
 

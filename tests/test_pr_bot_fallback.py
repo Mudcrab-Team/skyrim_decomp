@@ -76,6 +76,18 @@ class FallbackTests(unittest.TestCase):
         self.assertEqual(got, [VERDICT])
         self.assertNotIn('reviewer', state.data)
 
+    def test_codex_reviews_at_medium_effort_unless_configured(self):
+        self.codex = (0, b'', VERDICT.encode())
+        self.bot.run_model('p', self.out)
+        self.assertIn('model_reasoning_effort="medium"', self.calls[0][1])
+        self.bot.config['review_effort'] = 'high'
+        self.bot.run_model('p', self.out)
+        self.assertIn('model_reasoning_effort="high"', self.calls[1][1])
+
+    def test_review_runs_six_chunks_at_once_by_default(self):
+        self.assertEqual(pr_bot.REVIEW_CHUNK_WORKERS, 6)
+        self.assertEqual(self.bot.config['review_workers'], 6)
+
     def test_a_missing_codex_binary_falls_back(self):
         self.codex = (FileNotFoundError('codex'), b'', b'')
         self.assertEqual(self.bot.run_model('p', self.out), VERDICT)

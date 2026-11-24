@@ -105,7 +105,7 @@ CLAUDE_REVIEW_MODEL = 'claude-sonnet-5-5'
 # One review call is bounded by the model's context and the call timeout, so a big PR is reviewed in
 # chunks of whole units; every function still gets exactly one verdict from exactly one chunk.
 REVIEW_CHUNK_FUNCTIONS = 40
-REVIEW_CHUNK_WORKERS = 3
+REVIEW_CHUNK_WORKERS = 6
 CODEX_PAUSE = 1800  # seconds codex is skipped after an out-of-credits style failure
 ACCOUNT_FAILURE = re.compile(r'credit|quota|rate.?limit|usage limit|insufficient|billing|capacity|overloaded|'
                              r'too many requests|\b429\b|unauthorized|\b401\b|log ?in|sign ?in|auth|token expired|'
@@ -1683,7 +1683,7 @@ class Bot:
         self.work = Path(work or self.root / '.local/pr-bot')
         self.dry_run = dry_run
         self.host1_mode = host1
-        self.config = {**dict(model_timeout=3000, review_chunk=REVIEW_CHUNK_FUNCTIONS,
+        self.config = {**dict(model_timeout=3000, review_effort='medium', review_chunk=REVIEW_CHUNK_FUNCTIONS,
                             review_workers=REVIEW_CHUNK_WORKERS, compare_workers=COMPARE_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
@@ -1789,7 +1789,8 @@ class Bot:
         if self.clock() >= self.codex_paused_until[0]:
             try:
                 result = self.run(['codex', 'exec', '--ignore-user-config', '--ignore-rules', '--ephemeral', '--model',
-                                   REVIEW_MODEL, '-c', 'model_reasoning_effort="high"', '--sandbox', 'read-only',
+                                   REVIEW_MODEL, '-c', f'model_reasoning_effort="{self.config["review_effort"]}"',
+                                   '--sandbox', 'read-only',
                                    '-c', 'approval_policy="never"', '--cd', self.tree, '--output-last-message', out,
                                    '-'], cwd=self.tree, input=prompt.encode(), timeout=self.config['model_timeout'],
                                   check=False)
@@ -4947,16 +4948,24 @@ def slot_free(running, workers, load=None, cores=None):
     return load <= EXTRA_SLOT_LOAD_FACTOR * (cores or os.cpu_count() or 1)
 
 
-def merge_ready(state, pr):
-    """True for an owner PR whose head already has a merge decision with every function matched.
+# Failures that no rerun of the bot changes, so a head carrying them may still take the merge lane.
+MERGE_LANE_FINAL = frozenset({'fail:review'})
 
-    Such a head needs only the record build and the merge, from cached results, so the poll gives it the
-    merge lane instead of a compile slot. Anything uncached is still computed by `process`, just on that lane.
+
+def merge_ready(state, pr):
+    """True for an owner PR whose head already has a merge decision and nothing left to compute but the merge.
+
+    Every verdict is `matched` or a final failure (a review rejection is a paid judgement that a retry does not
+    redo), with at least one match. Such a head needs only the record build and the merge, from cached results,
+    so the poll gives it the merge lane instead of a compile slot; the lane runs the same `process`, so the
+    records and the merge commit are the slot path's. A bot-side failure can change with a bot fix, so it keeps
+    the head on the slot path. Anything uncached is still computed by `process`, just on that lane.
     """
     decision = state.get('decision') or {}
     verdicts = decision.get('verdicts') or {}
     return (is_owner(pr) and decision.get('merge') is True and not decision.get('blocked') and bool(verdicts)
-            and all(v == 'matched' for v in verdicts.values()) and not state.get('merged') and not state.get('done')
+            and all(v == 'matched' or v in MERGE_LANE_FINAL for v in verdicts.values())
+            and 'matched' in verdicts.values() and not state.get('merged') and not state.get('done')
             and not state.get('rejected') and pr.get('mergeable') == 'MERGEABLE')
 
 
