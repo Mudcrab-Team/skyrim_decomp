@@ -9,9 +9,7 @@ import duplicate_rva  # noqa: E402
 
 # The count may only go down. Lower it when a cleanup lands; raising it means a new unit repeats
 # an RVA that another unit already carries (keep the unit its accepted record binds).
-CEILING = 83
-# Raised by one while the removal of the older BSShaderTextureSet_153b1b0 unit (0x153b1b0, bound by
-# its record to BSShaderTextureSet.cpp) waits behind a red main; lower it to 82 once that removal lands.
+CEILING = 82
 
 
 def write(root, name, text):
