@@ -325,6 +325,7 @@ Third-party skills import (PR #572, recorded by an Engineer). lemiur, author of 
 **Community and sibling source decisions (maintainer decisions by awarebayes, 2026-11-24, recorded here by an Engineer).**
 - Newer revisions of the CC0 siblings (`momusdigital/fnv_decomp`, `momusdigital/f3_decomp`) are adopted by a tooling PR that moves the pin; no per-revision approval is needed.
 - Names from an Xbox 360 development-build PDB are covered in bulk by the PR #572 decision (label `SYMBOLS(<source>)`). Havok and Gamebryo source stays excluded.
+- The siblings' own reconstructions in their Havok and Gamebryo folders (for example F3's `bshavok/` and `gamebryo/` units) are the decomp contributors' work and may be transplanted like any other sibling code, with the same `SIBLING(...)` label (maintainer: "its ok"). What stays excluded is original Havok or Gamebryo SDK source and material the sibling itself tags as taken from it; do not re-raise this for sibling reconstruction folders.
 - A per-class map from Skyrim classes to sibling files may be published.
 - CommonLibF4 (MIT) may be used for names, declarations and bodies, labelled `COMMUNITY(<owner>/<repo>@<pin>, MIT)` with the MIT notice the lint requires.
 - GPL forks of CommonLibF4 and any other community library are allowed, labelled `COMMUNITY(<owner>/<repo>@<pin>, <SPDX>)`. A GPL-licensed label requires the file's leading comment to state the GPL licence; the label check and the lint already accept any repository and SPDX word.
