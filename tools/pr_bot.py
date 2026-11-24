@@ -2102,6 +2102,27 @@ class Bot:
         return all(next(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{int(r):x}/report.json'), None)
                    for r in verdicts)
 
+    def adopt_reports(self, tag, verdicts):
+        """Copy the PR head's comparator tasks from the slot tree that ran them; True when this tree then has them.
+
+        A retry takes whichever slot is free. Dropping the cached verdict because the report files are in another
+        slot's tree repeated a compare of hundreds of units that had already finished.
+        """
+        for index in (*range(POOL_SIZE), 'merge', 'maint', 'conflict'):
+            donor = self.for_slot(index)
+            if donor.tree == self.tree or not donor.reports_present(tag, verdicts):
+                continue
+            target = self.tree / '.local/tasks'
+            target.mkdir(parents=True, exist_ok=True)
+            try:
+                for task in (donor.tree / '.local/tasks').glob(f'prbot-{tag}-*'):
+                    shutil.rmtree(target / task.name, ignore_errors=True)
+                    shutil.copytree(task, target / task.name, symlinks=True)
+            except OSError:
+                return False
+            return self.reports_present(tag, verdicts)
+        return False
+
     def review_evidence(self, tag, functions, host1, host2, state):
         """What each host said about each function, with the Mac comparator report's path in the tree."""
         ci = state.get('ci') or {}
@@ -2667,7 +2688,7 @@ class Bot:
         self.host2_why[tag] = why
         return out
 
-    def host1(self, number, head, functions, state=None, units=None):
+    def host1(self, number, head, functions, state=None, units=None, may_yield=None):
         """{rva: status} from the head's `hash` run; the run's facts are kept in state for the record."""
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
@@ -2738,9 +2759,13 @@ class Bot:
                 raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
                 raise Waiting('hash check has not finished')
-            if self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER:
+            if (self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER
+                    and (may_yield is None or may_yield())):
                 # CI runs on GitHub, not on this slot; holding it for the rest of hash_wait would keep PRs that
-                # are ready to run (outside contributors' first) from starting at all.
+                # are ready to run (outside contributors' first) from starting at all. While the local compare
+                # of the same head is still running the slot is busy anyway, and the caller only sees this
+                # exception once that compare ends, so yielding early would throw away a result that arrives
+                # minutes later and cost the head a tick.
                 raise Waiting('hash check has not finished; slot released for waiting PRs')
             time.sleep(20)
         table = results_from_report(found[0]) if found else {}
@@ -3283,11 +3308,19 @@ class Bot:
 
         tag = f'{number}-{head[:8]}'
 
+        mac_done = threading.Event()
+
         def mac():
+            try:
+                return mac_stage()
+            finally:
+                mac_done.set()
+
+        def mac_stage():
             # A retry can land on another slot whose scratch tree never held this head's comparator
             # reports; the cached verdict would then reach the Reviewer with no report to bind.
             cached = state.get('host2' + sfx)
-            if cached is not None and not self.reports_present(tag, cached):
+            if cached is not None and not self.reports_present(tag, cached) and not self.adopt_reports(tag, cached):
                 state.drop('host2' + sfx)
             got = state.once('host2' + sfx, lambda: {str(k): v for k, v in
                                                      self.mac_compare(check_units, tag).items()})
@@ -3300,7 +3333,7 @@ class Bot:
                 self.check_head(number, head, 'host1')
             return state.once('host1' + sfx, lambda: {str(k): v for k, v in
                                                       self.host1(number, head, everything, state,
-                                                                 check_units).items()})
+                                                                 check_units, mac_done.is_set).items()})
         # Both hosts first: the Reviewer's binding check needs the comparator report and the CI result.
         with ThreadPoolExecutor(max_workers=2) as pool:
             f_mac, f_ci = pool.submit(mac), pool.submit(ci)

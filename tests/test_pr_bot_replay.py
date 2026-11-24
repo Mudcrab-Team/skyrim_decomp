@@ -1279,6 +1279,43 @@ class HeadCheckTests(Replay):
         self.assertEqual(self.w.github.merges, [])
 
 
+class HashYieldAndReportsTests(Replay):
+    """A hash wait must not give up while the same head's local compare is still running, and a retry on another slot keeps its reports."""
+
+    HEAD = 'c' * 40
+
+    def test_the_hash_wait_yields_only_once_the_local_compare_is_done(self):
+        bot = self.bot
+        bot.demand[0] = 1
+        bot.config['hash_wait'] = 600
+        busy = [True, True, False]
+        asked = []
+
+        def may_yield():
+            asked.append(1)
+            return not busy.pop(0)
+        running = dict(id=5, status='in_progress', started_at='2030-01-01T00:00:00Z', details_url='https://ci.invalid/runs/5')
+        with mock.patch.object(pr_bot, 'HASH_YIELD_AFTER', 0), mock.patch.object(bot, 'latest_hash_run', lambda *a: running), \
+                mock.patch.object(pr_bot.time, 'sleep', lambda s: None):
+            with self.assertRaises(pr_bot.Waiting):
+                bot.host1(7, self.HEAD, [0x1000], None, None, may_yield)
+        self.assertEqual(len(asked), 3)  # two refusals while the compare ran, then the yield
+
+    def test_a_retry_on_another_slot_adopts_the_reports_instead_of_dropping_the_verdict(self):
+        tag = '7-cccccccc'
+        donor = self.bot.for_slot(1)
+        report = donor.tree / f'.local/tasks/prbot-{tag}-0/attempts/001/0x1000/report.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{}')
+        self.assertFalse(self.bot.reports_present(tag, {'4096': 'pass'}))
+        self.assertTrue(self.bot.adopt_reports(tag, {'4096': 'pass'}))
+        self.assertTrue(self.bot.reports_present(tag, {'4096': 'pass'}))
+        self.assertTrue(report.exists())  # the donor keeps its copy
+
+    def test_no_slot_holding_the_reports_means_no_adoption(self):
+        self.assertFalse(self.bot.adopt_reports('7-dddddddd', {'4096': 'pass'}))
+
+
 class IncludeRefusalTests(Replay):
     """The verifier refuses a unit whose header its recipe cannot resolve; that is a finding, not a host failure."""
 

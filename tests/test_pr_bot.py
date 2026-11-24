@@ -383,7 +383,7 @@ class FakeBot(pr_bot.Bot):
         self.calls.append(['mac', units])
         return dict(self.h2)
 
-    def host1(self, number, head, functions, state=None, units=None):
+    def host1(self, number, head, functions, state=None, units=None, may_yield=None):
         self.calls.append(['host1', sorted(functions), units])
         return dict(self.h1)
 
