@@ -61,6 +61,7 @@ import posixpath
 import re
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import threading
@@ -69,6 +70,8 @@ import traceback
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cookbook_notes  # noqa: E402
+import record_store  # noqa: E402
+import target_hash_store  # noqa: E402
 import drafter_claim  # noqa: E402
 import header_check  # noqa: E402
 from contrib_publication import MAX_FUNCTIONS  # noqa: E402
@@ -151,6 +154,7 @@ RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')
 REFILL_EVERY = 3600  # seconds between looks at that count
 RECORD_RETRY_EVERY = 600  # seconds between retries of a record step that failed after its merge
 PROBE_COOLDOWN = 1800  # seconds before the same head's hash run is requested again
+ROWS_RERUN_LIMIT = 3  # runs asked for one head because main published rows its run's base lacked
 PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
 PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
 CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
@@ -158,7 +162,7 @@ RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing i
 
 
 def is_generated(name):
-    return name in GENERATED or (name.startswith(TARGET_HASH_DIR) and name.endswith('.json')
+    return name in GENERATED or (name.startswith(TARGET_HASH_DIR) and name.endswith(('.json', '.thb'))
                                  and '/' not in name[len(TARGET_HASH_DIR):])
 NAME_SOURCE_SHOWN = 240
 PRECHECK_SHOWN = 12
@@ -221,6 +225,7 @@ def runbook_checklist(root):
 
 # Runs in the bot's tree so that the records are built with the tools and inventory of the reviewed base.
 # tools/verifier/attempt exit code for a unit whose include the recipe cannot resolve (not counted as an attempt).
+COMPILE_FAILED_EXIT = 3
 REFUSED_INCLUDE_EXIT = 4
 RECORD_CALL = """import json, sys
 sys.path.insert(0, sys.argv[1] + '/tools')
@@ -550,6 +555,40 @@ def is_write(argv):
     if tool == 'git':
         return 'push' in names[1:]
     return '--push' in names
+
+
+MAIN_CHECK_WORKFLOW = 'check.yml'  # "Infrastructure checks"
+MAIN_RED_TTL = 120  # seconds one lookup of main's newest finished run is reused
+
+
+class MainWatch:
+    """Whether the newest finished infrastructure run on main failed, looked up at most once per TTL.
+
+    A merge on a red main can stack a second break on the first, so merges wait until main is green;
+    intake, compile and review go on meanwhile. Shared by every slot (copies of the bot keep the reference).
+    """
+
+    def __init__(self, fetch, clock=time.time, ttl=MAIN_RED_TTL):
+        self.fetch, self.clock, self.ttl = fetch, clock, ttl
+        self.lock = threading.Lock()
+        self.at, self.red = None, None
+
+    def red_sha(self):
+        """The sha of the failing newest run, or None when main is green or has no finished run."""
+        with self.lock:
+            if self.at is None or self.clock() - self.at >= self.ttl:
+                self.red = self.fetch()
+                self.at = self.clock()
+            return self.red
+
+
+def red_run(runs):
+    """The head sha of the newest finished run if it failed. Cancelled and skipped runs say nothing about main."""
+    for run in runs:
+        if run.get('conclusion') in ('cancelled', 'skipped', 'neutral', None):
+            continue
+        return run.get('head_sha') if run['conclusion'] in ('failure', 'timed_out', 'startup_failure') else None
+    return None
 
 
 class GhBackoff:
@@ -885,7 +924,12 @@ UNBOUND_FIX = ('the compiled object had no symbol the compare could bind to that
 INCLUDE_FIX = ('the unit includes a repository header its recipe cannot resolve (nothing was compared); name a '
                '`-root-includes` recipe in the unit (`reconstruction/recipes/<name>.json`) or include the header '
                'relative to the including file')
-CATEGORY_FIX = {'unbound': UNBOUND_FIX, 'include': INCLUDE_FIX}
+COMPILE_FIX = ('the unit did not compile on the compare host, by an error or a timeout (nothing was compared); '
+               'compile it locally with the unit\'s recipe to see the error')
+REFERENCE_FIX = ('a reference in the function resolves to a different address than the game encodes (the other '
+                 'bytes may match); check the global or callee it names')
+CATEGORY_FIX = {'unbound': UNBOUND_FIX, 'include': INCLUDE_FIX, 'compile': COMPILE_FIX,
+                'reference': REFERENCE_FIX}
 HOST_NAMES = {'host1': 'host 1 (CI hash check)', 'host2': 'host 2 (compiled and compared locally)'}
 
 
@@ -898,6 +942,8 @@ def host_category(detail):
     # difference; the contributor's remedy (a `// CI hash:` line for a renamed stand-in) differs.
     if any(word in detail for word in ('no-target', 'unbound', 'bind', 'symbol-missing', 'unresolved-symbol')):
         return 'unbound'
+    if 'relocation-target' in detail:
+        return 'reference'
     return 'bytes differ'
 
 
@@ -1039,6 +1085,18 @@ def added_string_literals(diff):
 def origin_key(hit):
     """What identifies an origin finding across two versions of a unit: the body, the upstream body and how close."""
     return (hit['file'], hit['function'], hit['repo'], hit['path'], hit.get('similarity'))
+
+
+def declared_origin_key(hit):
+    """The base-flag key of a declared finding; kept apart so a label dropped by the PR is not hidden by it."""
+    return ('declared',) + origin_key(hit)
+
+
+def inherited_origin(hit, flags):
+    """True when the merge base already had this finding: undeclared there, or declared there and still declared."""
+    if origin_key(hit) in flags:
+        return True
+    return bool(hit.get('declared')) and declared_origin_key(hit) in flags
 
 
 def dropped_claims_text(rvas):
@@ -1471,10 +1529,12 @@ class Bot:
                             review_workers=REVIEW_CHUNK_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
+        self.main_watch = MainWatch(self.fetch_main_red)
         self.clock = time.time
         self.used = threading.local()  # the reviewer of this thread's latest review
         self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
         self.carry_targets = {}  # revision -> RVAs with a published target hash there, for the comment-only carry
+        self.demand = [0]  # shared by every slot: PRs the poll has ready to run but no free slot for
         self.host2_why = {}  # tag -> {rva: category} for the standing host's failures, kept for the comment
         # The bot's own tools, which may live apart from the checkout that holds .local and the git history.
         self.tools = Path(__file__).resolve().parent
@@ -1601,6 +1661,19 @@ class Bot:
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
 
+    def fetch_main_red(self):
+        out = self.run(['gh', 'api', f'repos/{REPOSITORY}/actions/workflows/{MAIN_CHECK_WORKFLOW}/runs'
+                        '?branch=main&event=push&status=completed&per_page=5']).stdout
+        return red_run((json.loads(out) if out.strip() else {}).get('workflow_runs') or [])
+
+    def merge_pr(self, number, head, subject, body, check=False):
+        """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
+        red = self.main_watch.red_sha()
+        if red:
+            print(f'main red at {red}; holding merges', file=sys.stderr)
+            raise Waiting(f'main red at {red}; holding merges')
+        return self.run(merge_command(number, head, subject, body), check=check)
+
     def bot_comments(self, number):
         """The PR's issue comments the bot wrote: the owner's account, starting with the marker prefix."""
         out = self.run(['gh', 'api', '--paginate', '--jq', '.[] | {id, login: .user.login, body}',
@@ -1641,12 +1714,35 @@ class Bot:
         with self.root_lock:
             self._prepare_tree(base)
 
-    def _prepare_tree(self, base):
+    def _ensure_clone(self):
         if not (self.tree / '.git').exists():
             self.tree.parent.mkdir(parents=True, exist_ok=True)
             self.run(['git', 'clone', '--quiet', '--shared', '--no-checkout', self.root, self.tree])
             url = self.run(['git', 'remote', 'get-url', 'origin']).stdout.decode().strip()
             self.run(['git', 'remote', 'set-url', 'origin', url], cwd=self.tree)
+
+    def _link_local(self):
+        shared, local = self.root / '.local', self.tree / '.local'
+        if not shared.is_dir():
+            return
+        local.mkdir(parents=True, exist_ok=True)
+        own = {'tasks', 'pr-bot', 'wt', 'flow', 'queue', 'worktrees', 'briefs', 'contrib-autopilot'}
+        for entry in shared.iterdir():
+            if entry.is_dir() and entry.name not in own and not (local / entry.name).exists():
+                (local / entry.name).symlink_to(entry, target_is_directory=True)
+
+    def maintenance_tree(self):
+        """The bot for the housekeeping jobs: a scratch tree of their own, so no PR slot's checkout is touched."""
+        if self.dry_run:
+            return self.for_slot(0)  # a dry run refuses the clone; it reads the trees that exist
+        other = self.for_slot('maint')
+        with self.root_lock:
+            other._ensure_clone()
+            other._link_local()
+        return other
+
+    def _prepare_tree(self, base):
+        self._ensure_clone()
         self.run(['git', 'fetch', '--quiet', str(self.root), base], cwd=self.tree, check=False)
         if self.run(['git', 'rev-parse', '-q', '--verify', 'HEAD'], cwd=self.tree, check=False).returncode == 0:
             # Only a tree that was checked out before has anything to undo; a fresh clone would
@@ -1655,12 +1751,7 @@ class Bot:
             # data/target-hashes: an untracked shard left by a failed regenerate commit blocks the detach checkout.
             self.run(['git', 'clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes', 'docs/cookbook-notes'], cwd=self.tree, check=False)
         self.run(['git', 'checkout', '--quiet', '--detach', base], cwd=self.tree)
-        shared, local = self.root / '.local', self.tree / '.local'
-        local.mkdir(exist_ok=True)
-        own = {'tasks', 'pr-bot', 'wt', 'flow', 'queue', 'worktrees', 'briefs', 'contrib-autopilot'}
-        for entry in shared.iterdir():
-            if entry.is_dir() and entry.name not in own and not (local / entry.name).exists():
-                (local / entry.name).symlink_to(entry, target_is_directory=True)
+        self._link_local()
 
     def head_blob(self, head, name):
         """The file's bytes at the PR head, or None when the head has no such path (deleted, or never there).
@@ -1866,7 +1957,7 @@ class Bot:
             if fn['rva'] != rva or not fn.get('report'):
                 continue
             try:
-                record = json.loads((tree / fn['report']).read_text())
+                record = json.loads(record_store.read_text((tree / fn['report'])))
                 report = record['runs'][0]['report']
             except (OSError, ValueError, KeyError, IndexError, TypeError):
                 return None
@@ -1996,7 +2087,7 @@ class Bot:
             elif line.startswith('check_origin: threshold') and ' compared with ' in line:
                 pins = line.split(' compared with ', 1)[1]
         total = len(hits)
-        hits = [h for h in hits if not old_flags or origin_key(h) not in old_flags]
+        hits = [h for h in hits if not old_flags or not inherited_origin(h, old_flags)]
         skipped = (f'; {total - len(hits)} finding(s) identical to ones the unit already had on main are left out '
                    f'(earlier provenance, not introduced by this PR)') if total != len(hits) else ''
         if not hits:
@@ -2084,7 +2175,7 @@ class Bot:
             if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in named or not fn.get('report'):
                 continue
             try:
-                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+                source = json.loads(record_store.read_text((tree / fn['report']))).get('source') or {}
             except (OSError, ValueError):
                 continue
             unit = source.get('compiled')
@@ -2113,7 +2204,7 @@ class Bot:
             if fn['build_id'] != target or fn['status'] != 'matched' or fn['rva'] in present or not fn.get('report'):
                 continue
             try:
-                source = json.loads((tree / fn['report']).read_text()).get('source') or {}
+                source = json.loads(record_store.read_text((tree / fn['report']))).get('source') or {}
             except (OSError, ValueError):
                 continue
             unit = source.get('compiled')
@@ -2155,17 +2246,18 @@ class Bot:
 
         def read(name):
             if ref is None:
-                return (self.tree / name).read_text()
+                return (self.tree / name).read_bytes()
             shown = self.run(['git', 'show', f'{ref}:{name}'], check=False)
             if shown.returncode:
                 raise Stop('the published target hashes could not be read')
-            return shown.stdout.decode()
+            return shown.stdout
         manifest = json.loads(read('data/target-hashes/sse-steam-1-7-104.json'))
         found = set()
+        unsupported = target_hash_store.EXTRACTIONS.index('unmasked-unsupported')
         for shard in manifest['shards']:
-            for row in json.loads(read(shard['path']))['functions']:
-                if row.get('extraction') != 'unmasked-unsupported':
-                    found.add(row['rva'])
+            for rva, _size, extraction in target_hash_store.facts(read(shard['path'])):
+                if extraction != unsupported:
+                    found.add(rva)
         if ref:
             self.carry_targets[ref] = found  # a revision never changes; the tree's manifest can
         return found
@@ -2238,7 +2330,7 @@ class Bot:
         from source_digest import include_closure
         row = next((fn for fn in inventory['functions'] if fn['rva'] == rva and fn.get('report')), None)
         try:
-            source = json.loads((self.tree / row['report']).read_text()).get('source') or {}
+            source = json.loads(record_store.read_text((self.tree / row['report']))).get('source') or {}
             closure = sorted(include_closure(self.tree, unit))
             return (source.get('digest_method') == 'tu-sha256-v2' and source.get('compiled') == unit
                     and sorted(source.get('translation_unit') or ()) == closure
@@ -2251,7 +2343,7 @@ class Bot:
         try:
             inventory = json.loads((self.tree / 'data/progress.json').read_text())
             row = next((fn for fn in inventory['functions'] if fn['rva'] == rva and fn.get('report')), None)
-            unit = json.loads((self.tree / row['report']).read_text())['source']['compiled']
+            unit = json.loads(record_store.read_text((self.tree / row['report'])))['source']['compiled']
         except (OSError, ValueError, KeyError, TypeError):
             return False
         return self.digest_equals_record(rva, unit, inventory)
@@ -2322,13 +2414,20 @@ class Bot:
                     out[int(str(fn['rva']), 0)] = 'fail'
                     why[int(str(fn['rva']), 0)] = 'include'
                 continue
-            if code not in (0, 1, 3):
+            if code == COMPILE_FAILED_EXIT:
+                # No attempt report exists when the compile fails; reading the missing files made every
+                # function look like a byte difference or a missing result.
+                for fn in json.loads((task / 'task.json').read_text())['functions']:
+                    out[int(str(fn['rva']), 0)] = 'fail'
+                    why[int(str(fn['rva']), 0)] = 'compile'
+                continue
+            if code not in (0, 1):
                 # The tool's own last line says why (a bad task row, a missing toolchain); without it every
                 # failure looks the same in the service log.
                 lines = [l for l in done.stderr.decode(errors='replace').splitlines() if l.strip()]
                 raise HostFailure(f'verifier host did not complete (exit {code}, {tid_of(task)}): '
                            f'{(lines[-1] if lines else "no error text")[:200]}')
-            attempts = sorted((task / 'attempts').glob('[0-9]*')) if code != 3 else []
+            attempts = sorted((task / 'attempts').glob('[0-9]*'))
             for fn in json.loads((task / 'task.json').read_text())['functions']:
                 rva = int(str(fn['rva']), 0)
                 try:
@@ -2347,7 +2446,8 @@ class Bot:
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
         skipped = False
-        deadline = time.time() + self.config['hash_wait']
+        waiting_since = time.time()
+        deadline = waiting_since + self.config['hash_wait']
         since = state.get('rows_at') if state is not None else None  # rows published after the head's earlier runs began
         probed_at = None  # UTC time the probe was requested; only runs that started after it can be the probe's
         unusable = set()  # runs that finished without a result, e.g. on a stale base lacking the tools
@@ -2371,17 +2471,24 @@ class Bot:
                     # skipped the compile and uploaded nothing. Waiting for an artifact would re-probe forever; the
                     # empty map lets the carry rule judge each function.
                     break
-                late = [] if not found or state is None or state.get('rows_rerun') else self.late_rows(target, functions)
+                tried = int(state.get('rows_rerun_n') or 0) if state is not None else 0
+                late = [] if not found or state is None or tried >= ROWS_RERUN_LIMIT else self.late_rows(target, functions)
                 if found and not late:
                     break
                 unusable.add(run.get('id', run.get('details_url')))
                 if late:
-                    # The run's base predates rows that main has since published for these functions; ask for a
-                    # run against today's base, once.
+                    # The run's base predates rows that main has since published for these functions. A draft/ready
+                    # cycle or a re-run keeps the PR's recorded base, so a run asked for that way sees the same
+                    # rows again; only a new head (main merged into the branch) moves the base. Each attempt is
+                    # counted, and only a no-target that the run's own base could not have answered is retried.
                     since = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                     state.set('rows_at', since)
                     state.set('rows_rerun', late)
+                    state.set('rows_rerun_n', tried + 1)
                     probed_at = None
+                    if not self.dry_run and self.refresh_base(number, head):
+                        raise Waiting('main merged into the branch so the hash run sees the published target rows; '
+                                      'the new head is checked on the next tick')
                 # The fork's own run used the base it was opened against; a probe on this commit uses today's.
                 # A stale run that finished before the probe was requested says nothing about the probe's run,
                 # which has yet to start or finish; waiting for it is the point of the probe.
@@ -2405,6 +2512,10 @@ class Bot:
                 raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
                 raise Waiting('hash check has not finished')
+            if self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER:
+                # CI runs on GitHub, not on this slot; holding it for the rest of hash_wait would keep PRs that
+                # are ready to run (outside contributors' first) from starting at all.
+                raise Waiting('hash check has not finished; slot released for waiting PRs')
             time.sleep(20)
         table = results_from_report(found[0]) if found else {}
         if run.get('conclusion') != 'success' and 'regressed' not in table.values():
@@ -2434,17 +2545,53 @@ class Bot:
             for step in job.get('steps') or []) for job in jobs)
 
     def late_rows(self, directory, functions):
-        """RVAs the run's own rows call `no-target` although main now publishes a target row for them."""
+        """RVAs the run's own rows call `no-target` although main now publishes a target row for them.
+
+        A function whose row was already published at the base the run compared against is not late: its
+        no-target is the run's own finding, and another run would say the same.
+        """
         reports = sorted(Path(directory).rglob('target-result.json'))
         try:
-            rows = json.loads(reports[0].read_text()).get('functions') or [] if reports else []
+            report = json.loads(reports[0].read_text()) if reports else {}
+            rows = report.get('functions') or []
         except (OSError, ValueError):
             return []
         published = self.target_rvas()
         wanted = {int(r) for r in functions}
         late = {int(row['rva'], 16) for row in rows if isinstance(row, dict) and row.get('result') == 'no-target'
                 and re.fullmatch(r'0[xX][0-9a-fA-F]+', str(row.get('rva')))}
-        return sorted(late & wanted & published)
+        late &= wanted & published
+        base = report.get('base_sha') if isinstance(report, dict) else None
+        if late and isinstance(base, str) and re.fullmatch(r'[0-9a-f]{40}', base):
+            late -= self.target_rvas_at(base)
+        return sorted(late)
+
+    def refresh_base(self, number, head):
+        """True when main was merged into the PR's branch, which gives CI a new head and a current base."""
+        try:
+            return bool(self.merge_main_into_branch(dict(number=number, headRefOid=head)))
+        except (subprocess.SubprocessError, OSError, ValueError) as exc:
+            print(f'{stamp()} pr {number}: merging main to refresh the base failed ({type(exc).__name__}: {exc})',
+                  file=sys.stderr, flush=True)
+            return False
+
+    def target_rvas_at(self, revision):
+        """RVAs with a published target row in the shards of `revision`; empty when they cannot be read."""
+        found = set()
+        with self.root_lock:
+            listing = self.run(['git', 'ls-tree', '--name-only', revision, 'data/target-hashes/'], check=False)
+            if listing.returncode:
+                self.run(['git', 'fetch', '--quiet', 'origin', revision], check=False)
+                listing = self.run(['git', 'ls-tree', '--name-only', revision, 'data/target-hashes/'], check=False)
+            for name in listing.stdout.decode(errors='replace').split():
+                if not re.fullmatch(r'data/target-hashes/sse-steam-1-7-104-part-\d+\.(?:json|thb)', name):
+                    continue
+                shown = self.run(['git', 'show', f'{revision}:{name}'], check=False)
+                try:
+                    found.update(rva for rva, _size, _extraction in target_hash_store.facts(shown.stdout))
+                except (ValueError, KeyError, TypeError, struct.error):
+                    continue
+        return found
 
     def latest_hash_run(self, head, unusable=()):
         return self.latest_check_run(head, HASH_CHECKS, unusable)
@@ -2494,6 +2641,16 @@ class Bot:
             return not state.get('probe_blocked')
         if not self.dry_run:
             state.set('probe_at', time.time())
+        try:
+            return self.request_hash_run(number, head, state)
+        except BaseException:
+            # The cooldown stands for a request that reached GitHub. A `gh` failure before one did (the shared
+            # backoff then holds every call) must not leave the head waiting on a run nobody asked for.
+            if not self.dry_run:
+                state.drop('probe_at')
+            raise
+
+    def request_hash_run(self, number, head, state):
         reasons = []
         live = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'isDraft,state')
         if live.get('state') == 'OPEN' and not live.get('isDraft'):
@@ -2577,7 +2734,7 @@ class Bot:
         """The task's info with its unit symbol map on disk, binding it again when the map is gone; None if bind fails."""
         symbols = str(info.get('symbols', ''))
         # A rebuilt tree drops untracked unit maps, so a task bound earlier must bind again.
-        if symbols.startswith('reports/') and (self.tree / symbols).is_file():
+        if symbols.startswith('reports/') and record_store.is_file(self.tree / symbols):
             return info
         # The record must point at a public symbol map; bind freezes this unit's names into an
         # immutable one without touching the shared map.
@@ -2648,8 +2805,12 @@ class Bot:
                 dest.mkdir(exist_ok=True)
                 (dest / 'task.json').write_text(json.dumps(dict(
                     info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn])))
-                if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
-                            check=False, timeout=self.config['compare_timeout']).returncode not in (0, 1):
+                # A compile that only timed out under host load usually passes on a second try; a repeat is a real fault.
+                for attempt in range(2):
+                    if self.run([sys.executable, 'tools/verifier/wine_confirm.py', dest], cwd=self.tree,
+                                check=False, timeout=self.config['compare_timeout']).returncode in (0, 1):
+                        break
+                else:
                     raise Stop('record build did not complete')
                 row = ci['rows'].get(str(rva))
                 made = out / info['build_id'] / f'0x{rva:x}.json'
@@ -2936,7 +3097,7 @@ class Bot:
                 inherited = self.base_origin_flags(check_units, base, f'{number}-{head[:8]}')
             except (OSError, ValueError, Stop):
                 inherited = set()
-            kept = [h for h in hits if origin_key(h) not in inherited]
+            kept = [h for h in hits if not inherited_origin(h, inherited)]
             if kept or not hits:
                 origin_problems, origin_permitted = origin_findings(kept, headers, unverified)
             if not origin_problems:
@@ -3001,7 +3162,7 @@ class Bot:
         findings = prereview.unit_findings(tree, changed, build)
         hits, headers, _unverified = self.origin_hits(units)
         old_flags = self.base_origin_flags(units, state.get('base_sha'), tag)
-        hits = [h for h in hits if origin_key(h) not in old_flags]
+        hits = [h for h in hits if not inherited_origin(h, old_flags)]
         findings += [(file, f'{file}: {text}') for file, text in prereview.origin_problems(hits, headers)]
         evidence = self.review_evidence(tag, sorted(passed), host1, host2, state)
         out, bot_side = {}, []
@@ -3031,9 +3192,10 @@ class Bot:
         return safe
 
     def base_origin_flags(self, units, base, tag):
-        """Origin findings the units already had at `base`: keys of undeclared, non-trivial similarities there.
+        """Origin findings the units already had at `base`: keys of non-trivial similarities there.
 
-        A body the PR did not touch keeps the same similarity to the same upstream body; the PR neither
+        Declared findings (a labelled upstream body, whatever its licence) are flagged under their own key, so
+        a PR that keeps the declaration inherits them while one that drops the label does not. A body the PR did not touch keeps the same similarity to the same upstream body; the PR neither
         introduced the finding nor can be asked to fix a unit's earlier provenance, which is project debt. A
         body the PR rewrites, or a label it drops, has a different key or no base counterpart and still counts.
         Best effort: a base the clone cannot show, or a missing clone, yields no flags.
@@ -3061,8 +3223,9 @@ class Bot:
                     path.write_bytes(shown.stdout)
                     files.append(path)
                 for hit in check_origin.check_unit(files, clones, root=scratch) if files else ():
-                    if not (hit.get('trivial') or hit.get('fork_of') or hit.get('declared')):
-                        flags.add(origin_key(hit))
+                    if hit.get('trivial') or hit.get('fork_of'):
+                        continue
+                    flags.add(declared_origin_key(hit) if hit.get('declared') else origin_key(hit))
         finally:
             shutil.rmtree(scratch, ignore_errors=True)
         return flags
@@ -3179,7 +3342,7 @@ class Bot:
                 body = ('Lesson notes only: no function is claimed, compared or recorded by this change; the '
                         'template, leak scan, scope check and review passed.\n\n'
                         f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
-                merged = self.run(merge_command(number, head, subject, body), check=False)
+                merged = self.merge_pr(number, head, subject, body, check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
@@ -3283,7 +3446,7 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                merged = self.run(merge_command(number, head, *deletion_squash_message(number, login, uid, len(names))),
+                merged = self.merge_pr(number, head, *deletion_squash_message(number, login, uid, len(names)),
                                   check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
@@ -3459,7 +3622,7 @@ class Bot:
                             'differ and no function is claimed by them; the leak scan and the check and hash jobs on '
                             'the head passed.\n\n'
                             f'Co-authored-by: {login} <{uid}+{login}@users.noreply.github.com>')
-                merged = self.run(merge_command(number, head, subject, body), check=False)
+                merged = self.merge_pr(number, head, subject, body, check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
@@ -3499,11 +3662,14 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                merged = self.run(merge_command(number, head, *carried_squash_message(number, login, uid, rvas)),
+                merged = self.merge_pr(number, head, *carried_squash_message(number, login, uid, rvas),
                                   check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
+            if state.get('merged') and not state.get('compacted'):
+                self.compact_records(number)
+                state.set('compacted', True)
         if not state.get('commented'):
             text = ('Merged: the carried records verified.' if decision['merge'] else carried_comment(decision))
             self.say(number, sticky_body(head, text), create=not decision['merge'])
@@ -3511,6 +3677,32 @@ class Bot:
         self.drop_probe(number)
         state.set('done', True)
         return summary
+
+    def compact_records(self, number):
+        """Fold the loose records a carried PR just landed into their shards, in one follow-up commit on main.
+
+        An owner PR carries one file per record; leaving them loose would regrow reports/ by the file.
+        Only files under reports/ may change, so a stray edit never rides along.
+        """
+        for attempt in range(3):
+            self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+            self.run(['git', 'checkout', '--quiet', '--force', '-B', 'compact', 'origin/main'], cwd=self.tree)
+            self.run(['git', 'clean', '-fdq', 'reports'], cwd=self.tree, check=False)
+            self.run([sys.executable, 'tools/record_store.py', 'pack'], cwd=self.tree, timeout=1800)
+            names = self.run(['git', 'status', '--porcelain', '--untracked-files=all'],
+                             cwd=self.tree).stdout.decode().splitlines()
+            changed = {line[3:] for line in names}
+            if not all(name.startswith('reports/') for name in changed):
+                self.run(['git', 'reset', '--quiet', '--hard', 'origin/main'], cwd=self.tree)
+                raise Stop('record compaction changed files outside reports/')
+            if not changed:
+                return
+            self.run(['git', 'add', '-A', '--', 'reports'], cwd=self.tree)
+            self.run(['git', 'commit', '--quiet', '-m', f'Compact the records carried by PR #{number} into shards'],
+                     cwd=self.tree)
+            if self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree, check=False).returncode == 0:
+                return
+        raise Stop('push of the compacted records kept losing the race; retry next tick')
 
     def mapping_ci(self, head):
         """The head's `mapping` check conclusion; a missing or running check is a retry, never a verdict."""
@@ -3547,7 +3739,7 @@ class Bot:
             if decision['merge'] and not state.get('merged'):
                 login = pr['author']['login']
                 uid = self.gh_json('api', f'users/{login}')['id']
-                merged = self.run(merge_command(number, head, *mapping_squash_message(number, login, uid, count)),
+                merged = self.merge_pr(number, head, *mapping_squash_message(number, login, uid, count),
                                   check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
@@ -3607,9 +3799,11 @@ class Bot:
         count that was seen.
         """
         threshold = WINDOW_LOW_WATER if threshold is None else threshold
-        with self.land_lock:  # the push to main takes its turn with merges and records
-            left = self.offered_open()
-            if left < threshold:
+        # Counting is a fetch and a checkout in this bot's own tree; only a regeneration pushes to main and so
+        # takes its turn with merges and records. Holding the lock for the count made a merge wait behind it.
+        left = self.offered_open()
+        if left < threshold:
+            with self.land_lock:
                 self.regenerate(None)
         return left
 
@@ -3737,7 +3931,7 @@ class Bot:
 
     def task_slot(self, number, head):
         """The slot whose tree still holds the PR's confirm tasks, else this one."""
-        for index in range(POOL_SIZE):
+        for index in (*range(POOL_SIZE), 'merge'):
             slot = self.for_slot(index)
             if next((slot.tree / '.local/tasks').glob(f'prbot-{number}-{head[:8]}-*'), None):
                 return slot
@@ -3799,8 +3993,9 @@ class Bot:
     def target_rvas(self):
         """RVAs with a published target hash in the bot's tree; empty when the shards are absent."""
         found = set()
-        for shard in sorted((self.tree / 'data/target-hashes').glob('sse-steam-1-7-104-part-*.json')):
-            found.update(row['rva'] for row in json.loads(shard.read_text())['functions'])
+        for shard in sorted((self.tree / 'data/target-hashes').glob('sse-steam-1-7-104-part-*')):
+            if shard.suffix in ('.json', '.thb'):
+                found.update(rva for rva, _size, _extraction in target_hash_store.facts(shard.read_bytes()))
         return found
 
     def unit_claims(self, files):
@@ -3915,7 +4110,7 @@ class Bot:
                 state.set('merged', True)
                 state.set('recorded', True)
             else:
-                merged = self.run(merge_command(number, head, subject, body), check=False)
+                merged = self.merge_pr(number, head, subject, body, check=False)
                 if merged.returncode:
                     return self.merge_refused(pr, state, summary)
                 state.set('merged', True)
@@ -3999,9 +4194,10 @@ class Bot:
         """
         number, head = pr['number'], pr['headRefOid']
         info = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json',
-                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,state')
+                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,isCrossRepository,state')
         repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
-        if (info.get('headRefOid') != head or info.get('state') != 'OPEN' or not info.get('maintainerCanModify')
+        if (info.get('headRefOid') != head or info.get('state') != 'OPEN'
+                or not (info.get('maintainerCanModify') or info.get('isCrossRepository') is False)
                 or not repo.get('name') or not owner.get('login') or not info.get('headRefName')):
             return None
         url = branch_url(owner['login'], repo['name'])
@@ -4223,7 +4419,7 @@ class Bot:
         """Whether the function's review record on the checked-out main came from this task."""
         path = self.tree / 'reports' / build / f'0x{rva:x}.review.json'
         try:
-            return json.loads(path.read_text()).get('review_task_id') == task_id
+            return json.loads(record_store.read_text(path)).get('review_task_id') == task_id
         except (OSError, ValueError):
             return False
 
@@ -4302,6 +4498,7 @@ class Bot:
                     return abandon()
             if files:
                 git('add', '--', *files)
+            self.collect_cookbook_hits(number, records)
             if git('commit', '--quiet', '-m', f'{subject}\n\n{body}', check=False).returncode:
                 return abandon()
             now = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json', 'headRefOid,state')
@@ -4315,6 +4512,25 @@ class Bot:
                 return True
             # Lost the race to another push: rebuild on the new main rather than rebasing a record.
         return abandon()
+
+    COOKBOOK_FILES = ('docs/cookbook-hits.json', 'docs/matching-cookbook.md')
+
+    def collect_cookbook_hits(self, number, records):
+        """Stage the cookbook hit table and rank section for the squash being landed; never raises.
+
+        The hits ride in the same commit as the records so main is never ranked from a stale table. The
+        ranking is advisory, so any failure here is logged, the two files are restored and the merge goes on.
+        """
+        tree = self.tree
+        try:
+            done = self.run([sys.executable, 'tools/cookbook_rank.py', '--collect', records, '--repo', tree],
+                            cwd=tree, timeout=300, check=False)
+            if done.returncode:
+                raise ValueError((done.stdout or b'').decode(errors='replace').strip()[-200:] or f'exit {done.returncode}')
+            self.run(['git', 'add', '--', *self.COOKBOOK_FILES], cwd=tree)
+        except Exception as exc:  # noqa: BLE001 - the merge must not depend on the ranking
+            print(f'{stamp()} pr {number}: cookbook hits not collected: {exc}', file=sys.stderr, flush=True)
+            self.run(['git', 'checkout', '--quiet', 'HEAD', '--', *self.COOKBOOK_FILES], cwd=tree, check=False)
 
     def record(self, pr, state, rvas):
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
@@ -4402,7 +4618,12 @@ def pollable(prs):
             and pr['baseRefName'] == 'main' and not pr['isDraft']]
 
 
-POOL_SIZE = 2
+POOL_SIZE = 3
+# A third compile starts only while the machine is not already overloaded by the first two; the 1-minute load
+# is compared with this many times the core count.
+EXTRA_SLOT_LOAD_FACTOR = 2
+BASE_SLOTS = 2
+HASH_YIELD_AFTER = 120  # seconds a PR may hold a slot on the hash check while another PR is ready
 
 
 def mark_owner_reconstruction(bot, prs, known):
@@ -4422,13 +4643,51 @@ def mark_owner_reconstruction(bot, prs, known):
             pr['reconstruction_head'] = pr['headRefOid']
 
 
+def slot_free(running, workers, load=None, cores=None):
+    """True when another PR may take a pool slot.
+
+    The first BASE_SLOTS are always open; each further one only while the 1-minute load average is at most
+    EXTRA_SLOT_LOAD_FACTOR times the core count, so a busy machine keeps running two compiles, not three.
+    """
+    if running >= workers:
+        return False
+    if running < BASE_SLOTS:
+        return True
+    if load is None:
+        try:
+            load = os.getloadavg()[0]
+        except OSError:
+            return False
+    return load <= EXTRA_SLOT_LOAD_FACTOR * (cores or os.cpu_count() or 1)
+
+
+def merge_ready(state, pr):
+    """True for an owner PR whose head already has a merge decision with every function matched.
+
+    Such a head needs only the record build and the merge, from cached results, so the poll gives it the
+    merge lane instead of a compile slot. Anything uncached is still computed by `process`, just on that lane.
+    """
+    decision = state.get('decision') or {}
+    verdicts = decision.get('verdicts') or {}
+    return (is_owner(pr) and decision.get('merge') is True and not decision.get('blocked') and bool(verdicts)
+            and all(v == 'matched' for v in verdicts.values()) and not state.get('merged') and not state.get('done')
+            and not state.get('rejected') and pr.get('mergeable') == 'MERGEABLE')
+
+
+def is_owner(pr):
+    return pr['author']['login'].casefold() == OWNER.casefold()
+
+
 def outside_first(prs):
-    """The PRs with outside contributors' first, each group in the order GitHub listed them.
+    """The PRs with outside contributors' first, in the order GitHub listed them, then the owner's oldest first.
 
     The pool takes work in submission order, so a contributor's PR must not queue behind the owner's own
-    long-running ones.
+    long-running ones. GitHub lists newest first, and every tick refills the free slots from the front, so
+    a newer owner PR that keeps coming back (a head waiting on CI, a new push) would starve an older one
+    for hours; the owner's PRs therefore run in number order.
     """
-    return sorted(prs, key=lambda pr: pr['author']['login'].casefold() == OWNER.casefold())
+    return sorted(prs, key=lambda pr: (pr['author']['login'].casefold() == OWNER.casefold(),
+                                       pr['number'] if pr['author']['login'].casefold() == OWNER.casefold() else 0))
 
 
 def outcome(result, pr):
@@ -4520,14 +4779,60 @@ def window_line(left, claimed, burn):
     return f'{left} claimable left, {claimed} claimed, burn {day}/day (24h), {week:g}/day (7d avg){runway}'
 
 
+def housekeeping(bot, directory, due):
+    """The jobs that need no PR, each failure printed and none fatal; they run on the bot's maintenance tree."""
+    try:
+        _housekeeping(bot, directory, due)
+    except Exception as exc:  # a pool thread's exception would otherwise vanish with its future
+        print(f'{stamp()} housekeeping: unexpected {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+
+
+def _housekeeping(bot, directory, due):
+    try:
+        slot = bot.maintenance_tree()
+    except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
+        print(f'{stamp()} housekeeping: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+        return
+    errors = (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError)
+    if 'refill' in due:
+        try:
+            left = slot.refill_offers()
+            metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
+            print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
+        except errors as exc:
+            print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    if 'records' in due:
+        try:
+            for number in slot.retry_records(directory):
+                print(f'{stamp()} pr {number}: records landed on retry', flush=True)
+        except errors as exc:
+            print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    if 'claims' in due:
+        try:
+            for number in slot.close_done_claims():
+                print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
+        except errors + (RuntimeError,) as exc:
+            print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+    if 'probes' in due:
+        try:
+            for number in slot.sweep_probes():
+                print(f'{stamp()} probe #{number}: done, closed', flush=True)
+        except errors as exc:
+            print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+
+
 def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
-         refill_every=None):
+         refill_every=None, await_housekeeping=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
 
     A PR is never queued twice, and a finished head or one that is backing off costs no worker. After a
     `gh` failure nothing is listed or run until the shared GitHub backoff has passed. `rounds` bounds the
-    loop for tests. With `refill_every`, an idle bot checks the offered window at most that often.
+    loop for tests. With `refill_every`, an idle bot checks the offered window at most that often. That check
+    and the other housekeeping run beside the loop (`housekeeping`), never in it; `await_housekeeping`
+    (default: when `rounds` is set) makes each tick wait for a pass it started, so a test counts exactly.
     """
+    if await_housekeeping is None:
+        await_housekeeping = rounds is not None
     lock = open(bot.work / 'poll.lock', 'a+')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -4540,58 +4845,60 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     for index in range(workers):
         slots.put(bot.for_slot(index))
     inflight = {}  # PR number -> future
+    on_pool = set()  # the inflight PRs that hold one of the `workers` slots (the conflict lane has its own)
+    owner_on_pool = set()  # those of them that are the owner's
     # A conflicting PR is answered from a scratch worktree without touching a slot's tree; its own lane keeps
     # that quick answer from waiting behind compiles that hold every slot.
     conflict_slots = queue.Queue()
     conflict_slots.put(bot.for_slot('conflict'))
+    # An owner PR whose decision is already merge with everything matched lands from cache on its own lane, so it
+    # does not wait for a compile slot that outside PRs and long owner PRs keep busy.
+    merge_slots = queue.Queue()
+    merge_slots.put(bot.for_slot('merge'))
     refilled = None
     retried = None
     swept = None
     probes = None
+    maint = None  # the running housekeeping pass, if any
     reconstruction_heads = {}  # (number, head) -> whether an owner PR changes only reconstruction/
     directory = bot.work / ('dry' if bot.dry_run else 'state')
-    with ThreadPoolExecutor(max_workers=workers) as pool, ThreadPoolExecutor(max_workers=1) as conflict_pool:
+    with (ThreadPoolExecutor(max_workers=workers) as pool, ThreadPoolExecutor(max_workers=1) as conflict_pool,
+          ThreadPoolExecutor(max_workers=1) as merge_pool, ThreadPoolExecutor(max_workers=1) as maint_pool):
         turn = 0
         while rounds is None or turn < rounds:
             turn += 1
             for number in [n for n, f in inflight.items() if f.done()]:
                 del inflight[number]
-            if restart_after and time.time() - started > restart_after and not inflight:
+                on_pool.discard(number)
+                owner_on_pool.discard(number)
+            if restart_after and time.time() - started > restart_after and not inflight and maint is None:
                 return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
             wait = gh.remaining()
             if wait:
                 sleep(min(wait, interval))
                 continue
-            if refill_every and not inflight and (refilled is None or time.time() - refilled >= refill_every):
-                refilled = time.time()  # a failure waits for the next window, not the next tick
-                try:
-                    slot = bot.for_slot(0)
-                    left = slot.refill_offers()
-                    metrics = slot.window_metrics(left) if hasattr(slot, 'window_metrics') else ''
-                    print(f'{stamp()} offered window: {metrics or f"{left} claimable left"}', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                    print(f'{stamp()} offered window: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-            if not bot.dry_run and not inflight and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
-                retried = time.time()
-                try:
-                    for number in bot.for_slot(0).retry_records(directory):
-                        print(f'{stamp()} pr {number}: records landed on retry', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                    print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-            if not bot.dry_run and not inflight and (swept is None or time.time() - swept >= CLAIM_SWEEP_EVERY):
-                swept = time.time()
-                try:
-                    for number in bot.for_slot(0).close_done_claims():
-                        print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError, RuntimeError) as exc:
-                    print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
-            if not bot.dry_run and not inflight and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
-                probes = time.time()
-                try:
-                    for number in bot.for_slot(0).sweep_probes():
-                        print(f'{stamp()} probe #{number}: done, closed', flush=True)
-                except (Stop, subprocess.SubprocessError, OSError, ValueError, KeyError) as exc:
-                    print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+            if maint is not None and maint.done():
+                maint = None
+            if maint is None and not inflight:
+                # Housekeeping runs beside the loop on its own tree, never inside it: a count that hung on a full
+                # disk held every PR that arrived meanwhile for the length of its timeout.
+                due = []
+                if refill_every and (refilled is None or time.time() - refilled >= refill_every):
+                    refilled = time.time()  # a failure waits for the next window, not the next tick
+                    due.append('refill')
+                if not bot.dry_run and (retried is None or time.time() - retried >= RECORD_RETRY_EVERY):
+                    retried = time.time()
+                    due.append('records')
+                if not bot.dry_run and (swept is None or time.time() - swept >= CLAIM_SWEEP_EVERY):
+                    swept = time.time()
+                    due.append('claims')
+                if not bot.dry_run and (probes is None or time.time() - probes >= PROBE_SWEEP_EVERY):
+                    probes = time.time()
+                    due.append('probes')
+                if due:
+                    maint = maint_pool.submit(housekeeping, bot, directory, due)
+                    if await_housekeeping:
+                        maint.result()
             try:
                 prs = bot.gh_json('pr', 'list', '-R', REPOSITORY, '--state', 'open', '--json',
                                   'number,headRefOid,author,baseRefName,isDraft,mergeable,labels')
@@ -4609,6 +4916,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                       file=sys.stderr, flush=True)
                 continue
             now = time.time()
+            bot.demand[0] = 0
             for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
@@ -4628,8 +4936,19 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                     print(f'{stamp()} pr {pr["number"]}: warm: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
                 if pr.get('mergeable') == 'CONFLICTING':
                     inflight[pr['number']] = conflict_pool.submit(work_one, conflict_slots, gh, pr, True)
-                else:
+                elif merge_ready(state, pr):
+                    inflight[pr['number']] = merge_pool.submit(work_one, merge_slots, gh, pr)
+                elif slot_free(len(on_pool), workers) and (not is_owner(pr) or len(owner_on_pool) < max(1, workers - 1)):
+                    # Submitting everything would queue first-come first-served inside the pool, so a contributor's
+                    # PR listed after the owner's would wait behind them; each tick instead fills only free slots,
+                    # in outside-first order. The owner's PRs never take the last slot: they run for hours, and an
+                    # outside PR that arrives meanwhile must start at once, not after one of them finishes.
                     inflight[pr['number']] = pool.submit(work_one, slots, gh, pr)
+                    on_pool.add(pr['number'])
+                    if is_owner(pr):
+                        owner_on_pool.add(pr['number'])
+                else:
+                    bot.demand[0] += 1
             sleep(interval)
         for future in list(inflight.values()):
             future.result()

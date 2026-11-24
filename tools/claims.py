@@ -15,6 +15,7 @@ import sys
 import time
 import tempfile
 
+import record_store
 import agent_advice
 import repo_slug
 
@@ -123,7 +124,7 @@ def live_entries(item, now=None):
 
 def load_json(path, default=None):
     try:
-        return json.loads(Path(path).read_text())
+        return json.loads(record_store.read_text(Path(path)))
     except (OSError, ValueError):
         return {} if default is None else default
 

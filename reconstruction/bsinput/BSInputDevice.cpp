@@ -1,13 +1,18 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"meh321/AddressLibraryDatabase","revision":"0379cb6fdaa0d68e69ef9ad1a2d39caa6611ac91","source":"meh321"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
-// BSInputDevice: EXE_RTTI
-// IsEnabled: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: written for this reconstruction from the listing: vtable store then tail call to base destructor.
+// 0xe7c490 BSInputDevice::Functione7c490
+// Adapted bodies: none.
 // 0xcfc170 BSInputDevice::IsEnabled
+// Drafted by v-macrev, assisted by claude-sonnet-5-5.
 #include "BSInputDevice.h"
+
 // IsEnabled: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 std::uint8_t BSInputDevice::IsEnabled() const
 {
     return 0x1;
+}
+
+void BSInputDevice::Functione7c490()
+{
+    this->BSInputDevice::~BSInputDevice();
 }

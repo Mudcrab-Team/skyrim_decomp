@@ -177,6 +177,44 @@ class DecisionTests(unittest.TestCase):
         self.assertEqual((leak, out), ('no', {0x10: 'approve', 0x30: 'reject'}))
 
 
+class MainRedTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.work = Path(self.tmp.name)
+
+    def test_newest_finished_run_decides_and_cancelled_runs_are_skipped(self):
+        run = lambda c, sha='s': {'conclusion': c, 'head_sha': sha}
+        self.assertEqual(pr_bot.red_run([run('cancelled'), run('failure', 'abc'), run('success')]), 'abc')
+        self.assertIsNone(pr_bot.red_run([run('success'), run('failure', 'abc')]))
+        self.assertIsNone(pr_bot.red_run([]))
+
+    def test_lookup_is_cached_for_the_ttl(self):
+        now, calls = [1000.0], []
+        watch = pr_bot.MainWatch(lambda: calls.append(1) or 'abc', clock=lambda: now[0], ttl=120)
+        self.assertEqual((watch.red_sha(), watch.red_sha()), ('abc', 'abc'))
+        now[0] += 119
+        watch.red_sha()
+        self.assertEqual(len(calls), 1)
+        now[0] += 2
+        watch.red_sha()
+        self.assertEqual(len(calls), 2)
+
+    def test_red_main_holds_the_merge_and_resumes_when_green(self):
+        bot = FakeBot(self.work)
+        state = ['deadbeef']
+        bot.main_watch = pr_bot.MainWatch(lambda: state[0], ttl=0)
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err), self.assertRaises(pr_bot.Waiting):
+            bot.process(PR)
+        self.assertIn('main red at deadbeef; holding merges', err.getvalue())
+        self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
+        state[0] = None
+        out = bot.process(PR)
+        self.assertEqual(out['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(len(bot.seen('gh', 'pr', 'merge')), 1)
+
+
 class ScopeAndMergeTests(unittest.TestCase):
     def test_scope_rejects_anything_outside_reconstruction(self):
         ok = [{'filename': 'reconstruction/a/B.cpp', 'status': 'added'}]
@@ -884,6 +922,7 @@ class CompanionProcessTests(unittest.TestCase):
         self.assertEqual(pr_bot.host_category('function-symbol-missing'), 'unbound')
         self.assertEqual(pr_bot.host_category('unresolved-symbol'), 'unbound')
         self.assertEqual(pr_bot.host_category('mismatch'), 'bytes differ')
+        self.assertEqual(pr_bot.host_category('relocation-target-mismatch'), 'reference')
         self.assertEqual(pr_bot.host_category('code-byte-mismatch'), 'bytes differ')
         d = dict(pr_bot.decide([0x10], {0x10: 'fail'}, {0x10: 'fail'}, {0x10: 'approve'}),
                  host_why={'16': {'host1': 'missing', 'host2': 'unbound'}})
@@ -1389,6 +1428,23 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(calls.count(ready), 1)
         self.assertFalse([c for c in calls if c[:3] == ['gh', 'pr', 'create'] or c[:4] == ['gh', 'api', '-X', 'POST']])
 
+    def test_a_gh_failure_while_asking_for_the_run_leaves_no_cooldown_behind(self):
+        self.job['name'] = 'other'
+        calls = []
+        self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
+        state = pr_bot.State(self.work / 'state', 7, HEAD)
+
+        def failing(*a):
+            raise pr_bot.GhFailure('gh failed')
+        self.bot.gh_json = failing
+        with self.assertRaises(pr_bot.GhFailure):
+            self.bot.probe_hash_run(7, HEAD)
+        self.assertIsNone(state.get('probe_at'))
+        self.bot.gh_json = lambda *a: {'check_runs': [self.job]} if '/check-runs' in a[1] else {'state': 'OPEN', 'isDraft': False}
+        self.assertTrue(self.bot.probe_hash_run(7, HEAD))
+        self.assertIn(['gh', 'pr', 'ready', '7', '-R', pr_bot.REPOSITORY, '--undo'], calls)
+        self.assertIsNotNone(pr_bot.State(self.work / 'state', 7, HEAD).get('probe_at'))
+
     def sweep(self, probes, targets, run_status='in_progress', done=False):
         calls = []
         self.bot.run = lambda argv, **kw: calls.append([str(a) for a in argv]) or subprocess.CompletedProcess(argv, 0, b'', b'')
@@ -1556,6 +1612,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         (self.tree / 'data/progress.json').write_text(json.dumps({'functions': [
             {'rva': 0x10, 'status': 'mapped'}, {'rva': 0x20, 'status': 'matched'}]}))
         self.calls, self.bind_code, self.record_ok = [], 0, {0x10: True, 0x20: True}
+        self.confirm_codes = []
         bot = pr_bot.Bot(root=ROOT, work=self.work)
         bot.tree, bot.run = self.tree, self.fake_run
         self.bot = bot
@@ -1579,6 +1636,8 @@ class NewFunctionRecordTests(unittest.TestCase):
                 (self.tree / public).parent.mkdir(parents=True, exist_ok=True)
                 (self.tree / public).write_text('{}')
                 self.set_task(public)
+        if argv[1].endswith('wine_confirm.py') and self.confirm_codes:
+            code = self.confirm_codes.pop(0)
         if argv[1] == '-c':
             rva = json.loads((Path(argv[4]) / 'task.json').read_text())['functions'][0]['rva']
             if self.record_ok[int(rva, 0)]:
@@ -1610,6 +1669,17 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertEqual((failed, self.bound_rvas), (set(), ['0x10']))
         self.assertEqual([f['rva'] for f in json.loads((self.task / 'task.json').read_text())['functions']],
                          ['0x10', '0x20'])
+
+    def test_a_confirmation_that_times_out_once_is_run_again(self):
+        self.confirm_codes = [3]
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertEqual(len(self.seen('wine_confirm.py')), 2)
+
+    def test_a_confirmation_that_never_completes_stops_the_record_build(self):
+        self.confirm_codes = [3, 3]
+        with self.assertRaises(pr_bot.Stop):
+            self.build({0x10})
 
     def test_an_already_public_map_is_not_rebound(self):
         public = 'reports/b/unit-symbols/' + 'd' * 64 + '.json'

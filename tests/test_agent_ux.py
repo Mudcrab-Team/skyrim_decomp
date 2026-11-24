@@ -176,6 +176,30 @@ class Progress(unittest.TestCase):
             self.assertTrue((directory / 'attempts/001/attempt.txt').read_text().startswith('attempt 1 '))
             self.assertEqual(json.loads((directory / 'task.json').read_text()), dict(drafter_model='synthetic-model'))
 
+    def test_attempt_snapshots_unit_sources_and_local_includes(self):
+        attempt = load_attempt()
+        with tempfile.TemporaryDirectory() as raw:
+            repo = Path(raw)
+            unit = repo / 'reconstruction/area'
+            unit.mkdir(parents=True)
+            (unit / 'Thing_1.cpp').write_text('cpp v1')
+            (unit / 'Thing_1.h').write_text('h v1')
+            (unit / 'Local.h').write_text('local')
+            (repo / 'reconstruction/Shared.h').write_text('shared')
+            closure = ['reconstruction/area/Thing_1.cpp', 'reconstruction/area/Thing_1.h',
+                       'reconstruction/area/Local.h', 'reconstruction/Shared.h']
+            task = dict(compiled='reconstruction/area/Thing_1.cpp')
+            first = repo / 'attempts/001'
+            attempt.snapshot_sources(repo, task, closure, first)
+            (unit / 'Thing_1.cpp').write_text('cpp v2')
+            second = repo / 'attempts/002'
+            attempt.snapshot_sources(repo, task, closure, second)
+            self.assertEqual(sorted(p.name for p in (first / 'src').iterdir()), ['Local.h', 'Thing_1.cpp', 'Thing_1.h'])
+            self.assertEqual((first / 'src/Thing_1.cpp').read_text(), 'cpp v1')
+            self.assertEqual((second / 'src/Thing_1.cpp').read_text(), 'cpp v2')
+            attempt.snapshot_sources(repo, dict(), closure, repo / 'attempts/003')
+            self.assertFalse((repo / 'attempts/003').exists())
+
     def test_attempt_refuses_missing_identity_before_using_a_runner(self):
         attempt = load_attempt()
         with tempfile.TemporaryDirectory() as tmp:

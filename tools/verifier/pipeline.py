@@ -37,6 +37,7 @@ from source_digest import include_closure, recipe_flag_problem  # noqa: E402
 import boatctl  # noqa: E402
 import disasm  # noqa: E402
 import vsession  # noqa: E402
+import record_store  # noqa: E402
 import sparse_checkouts as sparse  # noqa: E402
 try:
     import cost_hooks  # noqa: E402  (optional: the cost ledger may not be installed)
@@ -123,6 +124,26 @@ def resolve_task_dir(arg, repo=REPO):
     return (main_checkout(repo) / path).resolve()
 
 
+UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
+
+
+def unit_recipe(repo, compiled, fallback):
+    """The recipe the unit's own source names (first recipe path in the file), else `fallback`.
+
+    CI and `contrib.py compare` build the unit with the recipe it declares, so a drafter-side attempt that
+    kept the task file's recipe would measure a different compile than the one the project confirms."""
+    try:
+        found = UNIT_RECIPE.search((Path(repo) / compiled).read_text(encoding='utf-8-sig', errors='replace'))
+    except OSError:
+        return fallback
+    if not found:
+        return fallback
+    if not (Path(repo) / found.group(0)).is_file():
+        raise PipelineError(f'{compiled} names recipe {found.group(0)}, which does not exist; '
+                            'name a recipe under reconstruction/recipes/ or drop the Recipe: line')
+    return found.group(0)
+
+
 def load_task(task_dir, repo=REPO):
     task_dir = resolve_task_dir(task_dir, repo)
     private_root(task_dir)
@@ -143,6 +164,7 @@ def load_task(task_dir, repo=REPO):
     recipe = raw.get('recipe') or (f'reconstruction/recipes/{raw["recipe_name"]}.json' if raw.get('recipe_name') else None)
     if not isinstance(recipe, str) or not recipe.startswith('reconstruction/recipes/'):
         raise PipelineError('task.json: recipe must be reconstruction/recipes/<name>.json')
+    recipe = unit_recipe(repo, compiled, recipe)
     symbols = raw.get('symbols', 'symbols.json')
     if not isinstance(symbols, str):
         raise PipelineError('task.json: symbols must be a path')
@@ -150,6 +172,11 @@ def load_task(task_dir, repo=REPO):
     if public_symbols:
         sparse.ensure(repo, [symbols])
     symbols_path = (Path(repo) / symbols) if public_symbols else (task_dir / symbols)
+    if public_symbols and not symbols_path.is_file() and record_store.is_file(symbols_path):
+        # The compilers and the comparator take a real path, so a packed map is unpacked beside the task.
+        copy = Path(task_dir) / 'symbols-unpacked.json'
+        copy.write_bytes(record_store.read_bytes(symbols_path))
+        symbols_path = copy
     if not symbols_path.is_file():
         raise PipelineError(f'symbol map not found: {symbols_path}')
     functions = []
@@ -256,12 +283,15 @@ def compiler_include_problem(task, repo=REPO):
 
 def unit_spec(task, files, host):
     schema = 2 if any('internal_selector' in f for f in task['functions']) else 1
-    return {'unit_spec_schema': schema, 'task_id': task['task_id'], 'host': host, 'build_id': task['build_id'],
+    spec = {'unit_spec_schema': schema, 'task_id': task['task_id'], 'host': host, 'build_id': task['build_id'],
             'compiled': task['compiled'], 'recipe': task['recipe'],
             'symbols': task['symbols_repo'] or PRIVATE_SYMBOLS,
             'functions': [{k: f[k] for k in ('rva', 'size', 'symbol', 'internal_selector') if k in f}
                           for f in task['functions']],
             'files': {name: sha256_file(path) for name, path in sorted(files.items())}}
+    if task.get('pins'):
+        spec['pins'] = task['pins']
+    return spec
 
 
 def changed_files(spec_files, state, machine, remote_dir):

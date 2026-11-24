@@ -7,9 +7,16 @@
 // 0x558f90 TESCamera::SetState
 // 0x558dd0 TESCamera::SetCameraRoot
 // 0x558e70 TESCamera::Update
+// 0x9969f0 TESCamera::Function9969f0
 #include "TESCamera.h"
 
 #include <intrin.h>
+
+void TESCamera::Function9969f0(float a_value)
+{
+    unk4C = a_value;
+    TESCamera::Update();
+}
 
 void TESCamera::SetState(TESCameraState* a_state)
 {

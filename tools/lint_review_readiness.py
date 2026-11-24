@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 
+import record_store
 import lint_reconstruction as existing
 
 
@@ -22,7 +23,9 @@ def origin_statement_problems(name, text):
     explicit = re.search(r'^\s*(?://+|/\*+|\*+)?\s*(?:body origin|implementation origin|code origin|provenance|origin)\s*:\s*\S',
                          header, re.I | re.M)
     if not explicit and not statement:
-        return [f'{name}: missing reconstruction origin statement in leading header']
+        return [f'{name}: missing reconstruction origin statement in leading header; add a line such as '
+                '"// Code origin: original reconstruction from the pinned image listing" (name the sibling or '
+                'community body instead when one was adapted)']
     return []
 
 
@@ -110,7 +113,7 @@ def main(argv=None):
                     raise ValueError(f'{value}: expected exactly one function identity; found {len(matches)}')
                 selected += matches
             for fn in selected:
-                record = json.loads((args.root / fn['report']).read_text())
+                record = json.loads(record_store.read_text(args.root / fn['report']))
                 names += record['source']['translation_unit']
         if not names:
             parser.error('supply files or --functions')

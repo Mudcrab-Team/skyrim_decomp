@@ -111,6 +111,12 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
         run: python tools/header_check.py --base "$BASE_SHA" --head "$PR_HEAD"
+      # Reconstruction PRs skip the infrastructure tests, so the duplicate-RVA ceiling is enforced here.
+      - name: No RVA newly marked in a second unit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: python tools/duplicate_rva.py --base "$BASE_SHA" --head "$PR_HEAD"
       # The source and readiness lints and the recipe names, on the units this PR changes: findings the
       # bot would otherwise spend a review on.
       - name: Mechanical consistency checks on changed units

@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tests'))
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
 import synthetic_pecoff as sp  # noqa: E402
+sys.path.insert(0, str(ROOT / 'tools'))
+import record_store  # noqa: E402
 import verify_function as vf  # noqa: E402
 
 LONG_HEX = re.compile(r'[0-9a-fA-F]{16,}')
@@ -60,6 +62,21 @@ class VerifyFunctionTests(unittest.TestCase):
                 text = text.replace(spelling, '<caller-path>')
         for run in LONG_HEX.findall(text):
             self.fail(f'summary carries a long hex run: {run[:8]}...')
+
+    def test_symbol_map_packed_in_an_xz_shard_is_read_and_the_copy_removed(self):
+        paths = self.write_inputs()
+        build = self.work / 'reports' / 'b1'
+        name = f'unit-symbols/{"ab" * 32}.json'
+        (build / 'unit-symbols').mkdir(parents=True)
+        (build / name).write_bytes(paths['symbols.json'].read_bytes())
+        record_store.pack_build(build)
+        self.assertFalse((build / name).exists())
+        spec = json.loads(paths['task-file'].read_text())
+        spec['symbols'] = f'reports/b1/{name}'
+        paths['task-file'].write_text(json.dumps(spec))
+        status, text, report = self.verify(paths)
+        self.assertEqual((status, report['result']), (0, 'pass'), text)
+        self.assertEqual(list(self.private.glob('*.symbols.json')), [])
 
     def test_byte_check_still_catches_hex_outside_caller_paths(self):
         with self.assertRaises(AssertionError):

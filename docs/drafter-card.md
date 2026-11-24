@@ -15,6 +15,7 @@ warm). It compiles, binds names, compares, and prints one line per function: PAS
 code, first mismatch offset, candidate/target size and matching-byte progress versus the previous attempt.
 Name your actual model at claim time; `attempt` and `done` inherit it. For a standalone task use
 `attempt --model <model-id>` (or `--agent <tool-name>`); project agents may use `--profile <profile>`.
+If a cookbook rule fixed it, pass `--rule N` (or `--rule N,M`) on the attempt that passes.
 Keep going while matching bytes rise, even if the first mismatch stays put. Stop after the brief's
 N counted attempts with no improvement over the best score (default 3, full profile 4), or the existing
 hard attempt cap. Missing progress is unknown, not zero; the score never proves a match. Read locally
@@ -25,7 +26,8 @@ command or start one in the background (shell timeout of 600000 ms, and a second
 "another attempt is running").
 
 **Lesson notes.** Before drafting, `ls docs/cookbook-notes/` and read the notes for your class or cause.
-When you stop on a near-miss, or a pass took 4 or more attempts, write one note in your checkout:
+Write a note only if a spelling fixed something `docs/matching-cookbook.md` does not record, or a near-miss
+has a cause it does not cover (a failure the cookbook already describes gets no note). In your checkout:
 `python3 tools/cookbook_notes.py --new 0x<rva> --name <Class::Method> --outcome fixed|unsolved --score "<best>" --attempts <n>`,
 then finish every `TODO` (format: `docs/cookbook-notes/README.md`). Words and short plain C++ only; never
 bytes, hex, disassembly or listing text. Commit it with your units.
@@ -82,7 +84,8 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
 - Header comment of each file, kept short (docs/contributor-card.md shows one): `Source exposure:
   <black-box|community-headers|binary-analysis|mixed>`, the one-line `SPDX-License-Identifier: MIT
   (CommonLibSSE-NG ...)` notice when NG declarations are used (never the licence text), and in the .cpp one
-  `// 0x<rva> <Name>` line per compared function. `Recipe:` only when it is not the default. No
+  `// 0x<rva> <Name>` line per compared function. `Recipe: reconstruction/recipes/<name>.json` only when it is not the default; `attempt`, `compare` and CI all
+  build with the recipe the unit names, not the task file's. No
   build id, Task, Labels, Evidence, Drafted by or disclaimer lines; git and the records hold them.
   Label names only on lines of this form (the lint enforces it in every unit file except eight
   legacy ones):

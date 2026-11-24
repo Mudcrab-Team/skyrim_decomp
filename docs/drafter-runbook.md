@@ -147,9 +147,10 @@ every other document are optional: an unread document is never a reason to stop.
 
 ## Lesson notes
 
-Read `docs/cookbook-notes/` for the unit's class or cause before step 1. After a unit ends on a
-near-miss, or passes after 4 or more attempts, write one note per such function (`docs/drafter-card.md`,
-"Lesson notes") in the same worktree, so it travels in the unit's PR.
+Read `docs/cookbook-notes/` for the unit's class or cause before step 1. Write a note
+(`docs/drafter-card.md`, "Lesson notes") only for a spelling that fixed something the cookbook does not record, or a
+near-miss cause it does not cover; a failure the cookbook already describes gets none. Put it in the same worktree, so it
+travels in the unit's PR.
 
 ## Finished
 

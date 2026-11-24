@@ -189,6 +189,8 @@ class FakeGitHub:
             rid = int(m[1])
             head = next(h for h, rs in ci.runs.items() if any(r['id'] == rid for r in rs))
             return self.ok({'id': rid, 'head_sha': head, 'run_attempt': 1, 'event': 'pull_request'})
+        if 'workflows/check.yml/runs' in line:
+            return self.ok({'workflow_runs': []})  # main is green: no guarded merge is held
         if 'actions/runs?head_sha' in line:
             return self.ok({'workflow_runs': []})
         if a[:2] == ['run', 'download']:
@@ -592,7 +594,8 @@ class ConcurrentPrTests(Replay):
         self.w.make_pr(8, {unit_path(0x2000): unit(0x2000)}, author='bob')
         log = self.w.poll(self.bot)
         self.assertTrue(self.merged(7) and self.merged(8), log)
-        self.assertEqual({p.name for p in self.bot.work.glob('tree*')}, {'tree', 'tree-1'})
+        # the housekeeping tree is a third
+        self.assertEqual({p.name for p in self.bot.work.glob('tree*')}, {'tree', 'tree-1', 'tree-maint'})
         names = self.w.main_files()
         for rva in (0x1000, 0x2000):
             self.assertIn(unit_path(rva), names)
@@ -1201,6 +1204,15 @@ class IncludeRefusalTests(Replay):
         self.assertEqual(why, {0x1000: 'include'})
         decision = dict(verdicts={0x1000: 'fail:host2'}, host_why={0x1000: {'host2': 'include'}})
         self.assertIn('-root-includes', pr_bot.reason_text(decision, 0x1000, 'host2'))
+
+    def test_a_failed_compile_is_not_reported_as_a_byte_difference(self):
+        result, why = self.compare(pr_bot.COMPILE_FAILED_EXIT)
+        self.assertEqual(result, {0x1000: 'fail'})
+        self.assertEqual(why, {0x1000: 'compile'})
+        decision = dict(verdicts={0x1000: 'fail:host2'}, host_why={0x1000: {'host2': 'compile'}})
+        text = pr_bot.reason_text(decision, 0x1000, 'host2')
+        self.assertIn('did not compile', text)
+        self.assertNotIn('byte', text)
 
     def test_any_other_unexpected_exit_is_still_a_host_failure(self):
         with self.assertRaises(pr_bot.HostFailure):

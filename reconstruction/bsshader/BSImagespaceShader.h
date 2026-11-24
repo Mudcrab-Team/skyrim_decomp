@@ -1,5 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; base classes, sizes and
 // the compared functions from the pinned image).
+// Code origin: Written for this reconstruction from the listing; ImageSpaceRange layout is a guess from the stores, and the range pair is written as one 64-bit store.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // BSImagespaceShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
@@ -14,6 +15,7 @@
 // SubRegionTarget, SubRegionTarget::Dispatch, CopySubRegionRequest, SubRegion, CopySubRegionToTarget: GUESS(low)
 // Renderer, g_renderer, Renderer::SetFlagA, Renderer::SetFlagB, Renderer::SetFlagC, Renderer::SetFlagD, Renderer::SetFlagE, Renderer::SetFlagF, Renderer::CopyBytes: GUESS(low)
 // g_shadowFlags, g_shadowModeA, g_shadowModeB, g_shadowSlotB, g_shadowDirtyB: GUESS(low); the globals are bound by the unit's bind-hints.json
+// ImageSpaceRange: GUESS(low); layout inferred from the stores of Function15410e0
 #pragma once
 
 #include <cstdint>
@@ -22,6 +24,19 @@
 class ImageSpaceEffectParam;
 class ImageSpaceManager;
 class ImageSpaceSlot;
+
+struct ImageSpaceRange
+{
+    void* value;                    // 00
+    bool enabled;                   // 08
+    std::uint8_t unknown09[3];      // 09
+    struct Range
+    {
+        std::uint32_t first;
+        std::uint32_t second;
+    } range;                        // 0c
+};
+static_assert(offsetof(ImageSpaceRange, range) == 0xC, "ImageSpaceRange range offset");
 
 class NiRefObject
 {
@@ -136,6 +151,10 @@ public:
     // m_statesDirty: GUESS(low)
     bool m_statesDirty;            // 1a1
     std::uint8_t unknown1A2[0x6];  // 1a2
+public:
+    std::uint64_t* GetShaderMacros(std::uint64_t* a_out);
+public:
+    static ImageSpaceRange* Function15410e0(ImageSpaceRange* a_result, void* a_value);
 };
 static_assert(sizeof(BSImagespaceShader) == 0x1A8, "BSImagespaceShader size");
 

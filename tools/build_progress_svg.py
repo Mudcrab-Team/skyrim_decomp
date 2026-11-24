@@ -21,6 +21,9 @@ from pathlib import Path
 import re
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_store  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'docs/progress.svg'
 MAP_OUTPUT = ROOT / 'docs/progress-map.svg'
@@ -74,7 +77,7 @@ def load(root):
 def unit_of(fn, root):
     """(area, class) of an accepted function's unit, read from its match record."""
     try:
-        record = json.loads((root / fn['report']).read_text())
+        record = json.loads(record_store.read_text(root / fn['report']))
         parts = record['source']['compiled'].split('/')
         if parts[0] == 'reconstruction' and len(parts) > 2:
             # A second unit of a split class is `<Class>_<lowest rva>`; it counts for the class.

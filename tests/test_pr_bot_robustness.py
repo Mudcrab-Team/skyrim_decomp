@@ -113,7 +113,22 @@ class PrecheckTests(WorkDir):
         found = self.run_precheck(self.evidence(), origin=[hit])
         self.assertIn('does not name it with that file', found[0x10][0])
 
-    def test_base_flags_come_from_the_units_text_at_base_and_skip_declared_and_trivial_hits(self):
+    def test_a_declared_non_mit_hit_at_base_is_inherited_but_a_new_one_still_blocks(self):
+        gpl = {'function': 'B::f', 'file': 'reconstruction/a/B.cpp', 'repo': 'x/ng', 'path': 'src/B.cpp',
+               'trivial': False, 'declared': 'yes', 'licence': 'GPL-3.0', 'fork_of': None, 'similarity': 0.91}
+        flags = {pr_bot.declared_origin_key(gpl)}
+        self.assertTrue(pr_bot.inherited_origin(gpl, flags))
+        self.assertFalse(pr_bot.inherited_origin(dict(gpl, function='B::g'), flags))
+        self.assertFalse(pr_bot.inherited_origin(dict(gpl, declared=None), flags))
+        self.bot.base_origin_flags = lambda units, base, tag: flags
+        self.assertEqual(self.run_precheck(self.evidence(), origin=[gpl]), {})
+        added = dict(gpl, function='B::g', declared=None)
+        found = self.run_precheck(self.evidence(), origin=[gpl, added])
+        self.assertIn('does not name it with that file', found[0x10][0])
+        problems, _ = pr_bot.origin_findings([added], {})
+        self.assertEqual(problems, [('reconstruction/a/B.cpp', 'unpermitted-source')])
+
+    def test_base_flags_come_from_the_units_text_at_base_and_skip_trivial_hits(self):
         import check_origin
         shown = {'base:reconstruction/a/B.cpp': b'int B::f() { return 1; }\n'}
 
@@ -133,7 +148,7 @@ class PrecheckTests(WorkDir):
                 mock.patch.object(check_origin, 'check_unit', check_unit):
             flags = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, 'base', '7-aaaaaaaa')
             none = self.bot.base_origin_flags({'reconstruction/a/B.cpp': [0x10]}, None, '7-aaaaaaaa')
-        self.assertEqual(flags, {pr_bot.origin_key(base)})
+        self.assertEqual(flags, {pr_bot.origin_key(base), pr_bot.declared_origin_key(hits[1])})
         self.assertEqual(seen, [['B.cpp']])
         self.assertEqual(none, set())
 
@@ -492,6 +507,120 @@ class PoolTests(WorkDir):
         self.assertEqual(calls.count(1), 1)
         self.assertEqual(calls.count(2), 1)
 
+    def test_the_owners_prs_leave_one_slot_for_an_outside_pr_that_arrives_later(self):
+        release, calls, listing = threading.Event(), [], []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            release.wait(5)
+        rows = self.prs(1, 2, 3)
+        for row in rows[:2]:
+            row['author'] = {'login': pr_bot.OWNER}
+        rows[2]['author'] = {'login': 'carol'}
+        listing.extend(rows[:2])
+        bot = self.pool_bot(lambda *a: listing + ([rows[2]] if len(ticks) >= 2 else []), arrived)
+        bot.demand = [0]
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 4:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] in (1, 2)]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=5)
+        self.assertEqual(calls[:2], [1, 3])
+        self.assertNotIn(2, calls[:2])
+
+    def test_free_slots_go_to_outside_prs_before_the_owners_even_when_listed_last(self):
+        release, calls = threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            release.wait(5)
+        rows = self.prs(1, 2, 3)
+        for row in rows[:2]:
+            row['author'] = {'login': pr_bot.OWNER}
+        rows[2]['author'] = {'login': 'carol'}
+        bot = self.pool_bot(lambda *a: rows, arrived)
+        bot.demand = [0]
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 2:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] in (1, 2)]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=3)
+        self.assertEqual(calls[0], 3)
+        self.assertEqual(sorted(calls[:2]), [1, 3])
+
+    def test_the_third_slot_opens_only_while_the_machine_is_not_overloaded(self):
+        self.assertEqual(pr_bot.POOL_SIZE, 3)
+        self.assertTrue(pr_bot.slot_free(0, 3, load=99, cores=8))
+        self.assertTrue(pr_bot.slot_free(1, 3, load=99, cores=8))
+        self.assertTrue(pr_bot.slot_free(2, 3, load=16, cores=8))
+        self.assertFalse(pr_bot.slot_free(2, 3, load=16.5, cores=8))
+        self.assertFalse(pr_bot.slot_free(3, 3, load=0, cores=8))
+        self.assertFalse(pr_bot.slot_free(2, 2, load=0, cores=8))
+
+    def test_an_owner_pr_with_a_matched_merge_decision_lands_without_a_compile_slot(self):
+        release, calls = threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append((pr['number'], tree.name))
+            if pr['number'] != 9:
+                release.wait(5)
+        rows = self.prs(1, 2, 9)
+        for row in rows[:2]:
+            row['author'] = {'login': 'carol'}
+        rows[2].update(author={'login': pr_bot.OWNER}, mergeable='MERGEABLE')
+        bot = self.pool_bot(lambda *a: rows, arrived)
+        bot.demand = [0]
+        pr_bot.State(self.work / 'state', 9, rows[2]['headRefOid']).set(
+            'decision', dict(merge=True, blocked=None, verdicts={'16': 'matched', '32': 'matched'}))
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            time.sleep(0.2)
+            if len(ticks) == 2:
+                release.set()
+        with mock.patch.object(pr_bot, 'mark_owner_reconstruction',
+                               lambda bot, prs, known: [row.update(reconstruction_head=row['headRefOid'])
+                                                        for row in prs if row['number'] == 9]):
+            pr_bot.poll(bot, 0, workers=2, sleep=sleep, rounds=3)
+        self.assertEqual(dict(calls)[9], 'tree-merge')
+        self.assertEqual(sorted(n for n, _ in calls[:3]), [1, 2, 9])
+
+    def test_merge_ready_needs_every_function_matched_and_an_open_head(self):
+        owner = {'author': {'login': pr_bot.OWNER}, 'mergeable': 'MERGEABLE'}
+        state = pr_bot.State(self.work / 'state', 5, 'b' * 40)
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched', '32': 'fail:host2'}))
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched'}))
+        self.assertTrue(pr_bot.merge_ready(state, owner))
+        self.assertFalse(pr_bot.merge_ready(state, dict(owner, author={'login': 'carol'})))
+        self.assertFalse(pr_bot.merge_ready(state, dict(owner, mergeable='CONFLICTING')))
+        state.set('merged', True)
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+
+    def test_a_pr_waiting_on_the_hash_check_gives_its_slot_up_when_another_pr_is_ready(self):
+        bot = FakeBot(self.work)
+        bot.demand = [1]
+        bot.config['hash_wait'] = 3600
+        bot.latest_hash_run = lambda head, unusable: {'status': 'in_progress', 'id': 1, 'started_at': 'z'}
+        with mock.patch.object(pr_bot, 'HASH_YIELD_AFTER', 0), mock.patch.object(pr_bot.time, 'sleep'):
+            with self.assertRaises(pr_bot.Waiting) as caught:
+                pr_bot.Bot.host1(bot, 5, 'a' * 40, [0x10], pr_bot.State(self.work / 'state', 5, 'a' * 40))
+        self.assertIn('slot released', str(caught.exception))
+
     def test_a_gh_outage_lists_nothing_and_waits_out_the_shared_backoff(self):
         now, naps, listed = [0.0], [], []
 
@@ -679,6 +808,55 @@ class PoolTests(WorkDir):
         bot.gh_json = lambda *a: listed.append(1) or []
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600)
         self.assertEqual(len(listed), 2)
+
+    def test_a_hung_refill_does_not_hold_back_a_pr_that_arrives(self):
+        started, seen = threading.Event(), []
+
+        class Hanging(PoolTests.PoolBot):
+            def refill_offers(self):
+                started.set()
+                seen.append(self.release.wait(10))  # False if no PR was worked while this was still running
+                return 2000
+
+            def attempt(self, pr, now=None):
+                started.wait(10)
+                self.release.set()
+                return super().attempt(pr, now)
+        bot = Hanging(self.work)
+        bot.release = threading.Event()
+        bot.arrived = lambda pr, tree: seen.append(('pr', pr['number']))
+        bot.gh_json = lambda *a: self.prs(3) if a[:2] == ('pr', 'list') else dict(
+            self.prs(3)[0], state='OPEN', mergeable='MERGEABLE')
+        pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2, refill_every=3600, await_housekeeping=False)
+        self.assertIn(('pr', 3), seen)
+        self.assertIn(True, seen)
+
+    def test_housekeeping_has_its_own_tree_and_a_dry_run_keeps_slot_zero(self):
+        bot = FakeBot(self.work)
+        other = bot.maintenance_tree()
+        self.assertEqual(other.tree, self.work / 'tree-maint')
+        self.assertNotEqual(other.tree, bot.for_slot(0).tree)
+        self.assertTrue(any(c[:2] == ['git', 'clone'] for c in bot.calls))
+        dry = FakeBot(self.work, dry_run=True)
+        self.assertEqual(dry.maintenance_tree().tree, dry.for_slot(0).tree)
+        self.assertFalse(any(c[:2] == ['git', 'clone'] for c in dry.calls))
+
+    def test_counting_the_window_does_not_hold_the_land_lock_but_regenerating_does(self):
+        seen = []
+
+        class Counting(FakeBot):
+            def offered_open(self):
+                seen.append(('count', self.land_lock.locked()))
+                return left[0]
+
+            def regenerate(self, number, extra=()):
+                seen.append(('regenerate', self.land_lock.locked()))
+        left = [2500]
+        bot = Counting(self.work)
+        self.assertEqual(bot.refill_offers(), 2500)
+        left[0] = 10
+        self.assertEqual(bot.refill_offers(), 10)
+        self.assertEqual(seen, [('count', False), ('count', False), ('regenerate', True)])
 
     def test_idle_poll_sweeps_finished_claims_once_per_period_and_survives_a_failure(self):
         calls = []

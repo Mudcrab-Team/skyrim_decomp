@@ -272,6 +272,18 @@ class ReviewerFollowUpTests(LintTests):
         self.assert_problem('belong in the leading comment', source=SOURCE + '// Sibling source: momusdigital/'
                             'fnv_decomp@91e1b6e8 src/a.cpp\n')
 
+    def test_sibling_source_path_may_hold_spaces(self):
+        cases = {
+            'src/Game Data/Widget File.cpp:12 (body adapted)': ('src/Game Data/Widget File.cpp', '12'),
+            'src/Game Data/Widget File.cpp': ('src/Game Data/Widget File.cpp', None),
+            'src/widget.cpp:7 see also other.h': ('src/widget.cpp', '7'),
+            'src/widget.cpp, then notes': ('src/widget.cpp', None),
+        }
+        for tail, expected in cases.items():
+            with self.subTest(tail):
+                m = lint.SIBLING_HEADER.search(f'// Sibling source: momusdigital/fnv_decomp@91e1b6e8 {tail}')
+                self.assertEqual((m.group(3), m.group(4)), expected)
+
     def test_free_form_labels_pass_only_for_the_listed_legacy_files(self):
         free = HEADER.replace('Widget, Get, value: GUESS(low)', 'Names are GUESS names; COMMUNITY (NG b93280e, MIT).')
         self.write(header=free)

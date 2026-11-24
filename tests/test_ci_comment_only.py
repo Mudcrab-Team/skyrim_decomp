@@ -82,6 +82,15 @@ class CommentOnlyTests(unittest.TestCase):
         tree, changed = ci.prepare(self.root, self.base, head, Path(self.tmp.name) / 'work-tool')
         self.assertEqual((tree, changed), (self.root, []))
 
+    def test_the_note_pattern_matches_the_notes_module(self):
+        import cookbook_notes
+        self.assertEqual(ci.NOTE_FILE.pattern, cookbook_notes.NOTE_FILE.pattern)
+
+    def test_a_lesson_note_beside_a_unit_does_not_fail_intake(self):
+        head = self.commit_files(**{'docs/cookbook-notes/abc123-a-note.md': 'note\n'},
+                                 reconstruction__misc__Widget_cpp=SOURCE.replace('return value', 'return value + 1'))
+        self.assertEqual(ci.prepare(self.root, self.base, head, Path(self.tmp.name) / 'work-note')[1], [CPP])
+
     def test_a_pr_mixing_units_and_tooling_is_still_refused(self):
         head = self.commit_files(tools__x_py='print(1)\n', reconstruction__misc__Widget_cpp=SOURCE + '\n')
         with self.assertRaises(ValueError):

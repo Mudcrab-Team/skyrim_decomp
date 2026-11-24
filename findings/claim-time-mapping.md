@@ -24,10 +24,12 @@ An entry created this way is named `Function<rva>` (or `Class::Function<rva>` wh
 that already has a layout unit or a generated CrashLogger layout header), labelled GUESS(low), owner `claim-time`, and cites this file as evidence.
 Placeholder names are expected to be replaced when a reconstruction settles them.
 
-Offers are limited to classes with a layout: a real unit, or a generated header under
+Every ordinary function the local analysis supports (`supported` or `caution`) can be offered, in address-range
+chunks. The row names a class only when it has a layout: a real unit, or a generated header under
 `reconstruction/generated/crashlogger_pdb/` (`CRASHLOGGER_PDB(59818@2026.10.24)`), which ranks after real units. The
-header is a community reconstruction and counts only as the reason to offer the function. The local-support verdict
-(`supported` or `caution`) is a property of the function's own analysis and is required for both kinds of class.
+header is a community reconstruction and counts only as the reason to name the class. A row with no class is offered
+as `Function<rva>` and started with `--class`. The local-support verdict is a property of the function's own analysis
+and is required throughout.
 
 ## Negative results and limitations
 

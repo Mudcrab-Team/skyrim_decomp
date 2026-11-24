@@ -1,6 +1,6 @@
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
-// Code origin: brown-room reconstruction from disassembly
+// Code origin: written for this reconstruction from the listing; ImageSpaceRange range pair is written as one 64-bit store.
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none
 // 0x15651e0 BSImagespaceShader::Unk_0D
@@ -16,7 +16,10 @@
 // SPDX-License-Identifier: CC0-1.0
 // 0x1541630 ISShaderInitA::Initialize
 // 0x15410e0 ISShaderInitB::Initialize
+// 0x150ac20 BSImagespaceShader::GetShaderMacros
+// Drafted by v-macrev, assisted by claude-sonnet-5-5.
 #include "BSImagespaceShader.h"
+#include <cstring>
 
 // RVA 0x150b490, 3 bytes: an empty slot body.
 void BSImagespaceShader::Unk_0B()
@@ -178,4 +181,20 @@ ISShaderInitB* ISShaderInitB::Initialize(ISShaderInitB* a_self, void* a_p0)
     a_self->flag = true;
     *reinterpret_cast<long long*>(reinterpret_cast<char*>(a_self) + 0xc) = -1;
     return a_self;
+}
+
+std::uint64_t* BSImagespaceShader::GetShaderMacros(std::uint64_t* a_out)
+{
+    *a_out = 0;
+    a_out[1] = 0;
+    return a_out;
+}
+
+ImageSpaceRange* BSImagespaceShader::Function15410e0(ImageSpaceRange* a_result, void* a_value)
+{
+    a_result->value = a_value;
+    a_result->enabled = true;
+    // both halves of the range are set to -1 with a single 64-bit store
+    *reinterpret_cast<long long*>(&a_result->range) = -1;
+    return a_result;
 }

@@ -96,7 +96,8 @@ def prepare(repo, out, revision):
             if fn['build_id'] != target['build_id']:
                 raise ValueError('matched function belongs to a different target')
             try:
-                rec = json.loads((repo / relative(fn['report'])).read_text())
+                import record_store
+                rec = json.loads(record_store.read_text(repo / relative(fn['report'])))
             except FileNotFoundError:
                 key = ('missing-record', fn['rva'])
                 groups[key] = {'compiled': None, 'functions': [{'rva': fn['rva'], 'size': fn['size']}],

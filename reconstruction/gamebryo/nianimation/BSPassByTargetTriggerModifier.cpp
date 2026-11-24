@@ -1,12 +1,20 @@
-// Source exposure: mixed (local binary analysis and public names).
-// Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
-// Adapted bodies: none. Body synthesized from the bounded leaf template.
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: Written for this reconstruction from the listing; names from the header.
+// Adapted bodies: none.
 // BSPassByTargetTriggerModifier: EXE_RTTI
 // Unk_0A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// member, padding: GUESS(low); storage names invented for the measured member offset
+// flag90: GUESS(low); name invented for the measured offset 0x90
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// 0xbbb3e0 BSPassByTargetTriggerModifier::Functionbbb3e0
 // 0xbbb380 BSPassByTargetTriggerModifier::Unk_0A
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSPassByTargetTriggerModifier.h"
+
+void BSPassByTargetTriggerModifier::Functionbbb3e0()
+{
+    flag90 = 0x1;
+}
+
 // Unk_0A: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 std::uint8_t BSPassByTargetTriggerModifier::Unk_0A() const
 {

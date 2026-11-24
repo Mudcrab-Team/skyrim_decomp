@@ -1,4 +1,5 @@
 // Source exposure: mixed (local binary analysis and public names).
+// Code origin: Written for this reconstruction from the listing; names from the existing header and the public CommonLibSSE-NG layout.
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
 // Adapted bodies: none. Body synthesized from the bounded leaf template.
 // BSLightingShaderProperty: EXE_RTTI
@@ -7,6 +8,7 @@
 // pad08, pad40: GUESS(low); storage names invented for the measured member offsets
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // QMaterialAlpha, material, unk80, materialAlpha: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// baseTexture: GUESS(low); offset 0x48 measured from the getter listing
 #pragma once
 #include <cstdint>
 
@@ -17,12 +19,14 @@ struct PropertyFlagHolder
     std::uint8_t unk61;
 };
 
-// BSLightingShaderMaterialBase: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to materialAlpha at 0x80
+// BSLightingShaderMaterialBase: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to baseTexture at 0x48 and materialAlpha at 0x80
 class BSLightingShaderMaterialBase
 {
 public:
-    std::uint8_t pad00[0x80];  // 00
-    float materialAlpha;  // 80
+    std::uint8_t pad00[0x48];  // 00
+    void* baseTexture;         // 48
+    std::uint8_t pad50[0x30];  // 50
+    float materialAlpha;       // 80
 };
 
 class BSLightingShaderProperty
@@ -40,4 +44,9 @@ public:
     std::uint8_t    pad40[0x38];  // 40
     BSLightingShaderMaterialBase* material;  // 78
     std::uint64_t   unk80;        // 80
+public:
+    // compared: 0x151d520
+    void* GetBaseTexture() const;
+public:
+    void SetMaterialAlpha(float a_alpha);
 };

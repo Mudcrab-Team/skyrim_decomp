@@ -5,6 +5,7 @@
 // TESCamera, TESCamera::~TESCamera, ::SetCameraRoot, ::Update, ::rotationInput, ::translationInput, ::zoomInput, ::cameraRoot, ::currentState, ::enabled, ::pad31, ::pad32, ::pad34: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESCamera::SetState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESCamera::GetNode: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission); signature from the pinned image
+// TESCamera::Function9969f0, TESCamera::unk4C, TESCamera::pad38: GUESS(low); the body is written from the listing
 // NiPointer, NiPointer::operator=, NiRefObject, NiRefObject::DeleteThis, NiRefObject::_refCount, NiNode, BSTPoint2, BSTPoint3, BSTSmartPointer, TESCameraState: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); reduced to the members the code needs, NiNode only as a reference-counted target
 // NiRefObject::pad0C: GUESS(low)
 #pragma once
@@ -130,9 +131,11 @@ class TESCamera
 public:
     virtual ~TESCamera();  // 00
     virtual void SetCameraRoot(NiPointer<NiNode> a_root);  // 01
-    virtual void Update();  // 02
+    // noinline: kept out of line so Function9969f0 tail-jumps to Update as the game does, not an inlined copy.
+    __declspec(noinline) virtual void Update();  // 02
     bool GetNode(NiPointer<NiNode>& a_out);  // compared: 0x558e10
     void SetState(TESCameraState* a_state);  // compared: 0x558f90
+    void Function9969f0(float a_value);  // compared: 0x9969f0
 
     BSTPoint2                       rotationInput;     // 08
     BSTPoint3                       translationInput;  // 10
@@ -143,6 +146,9 @@ public:
     std::uint8_t                    pad31;             // 31
     std::uint16_t                   pad32;             // 32
     std::uint32_t                   pad34;             // 34
+    std::uint8_t                    pad38[0x14];       // 38 (unused filler)
+    float                           unk4C;             // 4C
 };
-static_assert(sizeof(TESCamera) == 0x38, "TESCamera size");
+static_assert(sizeof(TESCamera) == 0x50, "TESCamera size");
 static_assert(offsetof(TESCamera, cameraRoot) == 0x20, "TESCamera::cameraRoot offset");
+

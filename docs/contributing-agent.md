@@ -8,8 +8,9 @@ verifier hosts.
 
 1. Draft the reconstruction locally and get a local comparator PASS.
 2. Open a pull request that touches only `reconstruction/**` and `docs/cookbook-notes/**`. Read the notes there
-   for your function's class or cause before drafting; after a batch, write a note for each near-miss and each
-   hard-won pass with `./sr note <task>` (format: `docs/cookbook-notes/README.md`) and include it in the PR.
+   for your function's class or cause before drafting; write a note with `./sr note <task>` only for a spelling that fixed
+   something the cookbook does not record, or a near-miss cause it does not cover (format:
+   `docs/cookbook-notes/README.md`), and include it in the PR. Merged notes are folded into the cookbook at the next round.
 3. Checks run on the PR: a path and leak scan, and a Windows compile whose hashes are compared to
    the published target hashes (host 1). The project's bot compares on a second host, reviews the
    source once and squash-merges the PR with its own message. Nothing else is needed from you.
@@ -35,6 +36,9 @@ equivalent). Cheaper models are fine for drafting.
 4. Each subagent loops `compare` on its tasks until PASS and gives up on a function after a few tries.
 5. The lead merges the passing branches into one, runs `submit --dry-run`, and opens one PR with
    `submit --all-dirty`.
+6. Every subagent brief asks it to report bottlenecks and suspicious behaviour, one line each with a
+   time cost (AGENTS.md, "Report bottlenecks"). The lead lists them under "Bottlenecks" in the PR
+   description, or opens a `tooling.yml` issue for a step that costs more than about 5 minutes per function.
 
 **Subagent batches are a drafting split, not a PR split.** Never open one PR per subagent, worktree or
 batch of 10 to 15. Subagents never open PRs or run `submit`; only the lead does, once, for the whole

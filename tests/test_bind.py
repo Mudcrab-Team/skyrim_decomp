@@ -133,6 +133,17 @@ class BindTests(unittest.TestCase):
         self.assertIn(f'UNBOUND reference {fx.COUNTER}', text)
         self.assertIn(bind.HINTS, text)
 
+    def test_reference_stored_with_a_member_offset_binds_the_symbol_itself(self):
+        # A store to a member of a global puts the member offset in the object's field; the image
+        # encodes symbol plus offset, and the comparator adds the offset back to the bound RVA.
+        code = bytearray(fx.CODE)
+        code[0x0D:0x11] = (8).to_bytes(4, 'little')
+        (self.root / 'obj').write_bytes(fx.coff_object(code=bytes(code)))
+        (self.root / 'image').write_bytes(fx.pe_image(code=bytes(code), link_addresses={fx.BASE: fx.LAYOUT[fx.BASE] + 8}))
+        report, symbols = self.run_bind()
+        self.assertEqual(symbols[fx.BASE]['rva'], fx.LAYOUT[fx.BASE])
+        self.assertEqual({r['symbol']: r['how'] for r in report['references']}[fx.BASE], 'position')
+
     def test_hint_binds_unlisted_reference(self):
         self.write_task('unbound:x', {}, hints={fx.COUNTER: hex(fx.LAYOUT[fx.COUNTER])})
         report, symbols = self.run_bind()

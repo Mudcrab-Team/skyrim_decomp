@@ -78,7 +78,9 @@ def diagnostic(problem):
         problem = problem[:match.end()] + '1:' + problem[match.end():]
     fix = 'resolve the reported source/header requirement'
     if 'origin statement' in problem:
-        fix = 'add a truthful Code origin: declaration to the leading header; disclose any adaptation'
+        fix = ('add a truthful Code origin: declaration to the leading comment of the .cpp, one line of the form '
+               '"// Code origin: <original reconstruction from the pinned listing, or the sibling/community body adapted>"; '
+               'disclose any adaptation')
     elif 'include' in problem.lower():
         fix = 'use the own-header name or a reconstruction-root header path; never a host/private path'
     elif 'decompiler identifier' in problem:

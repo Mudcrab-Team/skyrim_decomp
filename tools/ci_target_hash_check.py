@@ -15,6 +15,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
+import record_store
 import ci_hash_check as public
 import contrib
 import pdb_types
@@ -38,6 +39,9 @@ SHA = re.compile(r'[0-9a-f]{40}')
 UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.
 MAX_CLAIMS_PER_UNIT = 200
+# Same pattern as cookbook_notes.NOTE_FILE (a test keeps them equal); that module pulls in POSIX-only imports
+# that this job's Windows runner cannot load.
+NOTE_FILE = re.compile(r'docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]{0,60}\.md\Z')
 CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
              'tools/target_hashes.py', 'tools/contrib.py', 'tools/contributor_standing.py',
              'tools/build_leaderboard.py', 'tools/build_model_trend.py', '.gitattributes',
@@ -106,16 +110,18 @@ def prepare(root, base, head, work):
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only, deleted, carried = [], set(), [], []
-    # Generated CrashLogger PDB output is neither a unit nor read by this job: it is never compiled.
+    # Generated CrashLogger PDB output and lesson notes are neither units nor read by this job: never compiled.
+    # A lesson note is a file a function PR may carry (the scope check admits it), so it must not fail intake.
     names = [n for i in range(0, len(diff) - 1, 2)
-             if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n))]
+             if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n)
+                     or NOTE_FILE.fullmatch(n))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
         return root, []
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
-        if pdb_types.is_generated(name):
+        if pdb_types.is_generated(name) or NOTE_FILE.fullmatch(name):
             continue
         if CARRIED.fullmatch(name):
             carried.append(name)
@@ -205,9 +211,9 @@ def bindings(root):
     inventory = json.loads((root / 'data/progress.json').read_text())
     result = {}
     for fn in inventory['functions']:
-        if not fn.get('report') or not (root / fn['report']).is_file():
+        if not fn.get('report') or not record_store.is_file(root / fn['report']):
             continue
-        record = json.loads((root / fn['report']).read_text())
+        record = json.loads(record_store.read_text(root / fn['report']))
         if not record.get('source', {}).get('compiled') or not record.get('runs'):
             continue
         report = record['runs'][0]['report']

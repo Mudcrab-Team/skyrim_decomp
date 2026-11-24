@@ -1,4 +1,5 @@
 // Source exposure: mixed (authorized target analysis and anonymous permitted sibling source).
+// Code origin: written for this reconstruction from the listing; the field at 0x28 is a guess.
 // Origin: adapted from the cited game-code body under anonymous author permission.
 // Licence: fo4-private reused with author permission conditional on anonymity.
 // BSFixedString: STANDIN GUESS(low)
@@ -7,4 +8,13 @@
 // MovementHandlerAgentStairsHelper, QClassAgentType: SIBLING(fo4-private@1b765c70, author-permission)
 #pragma once
 struct BSFixedString { const char* data; BSFixedString(const char*); ~BSFixedString(); };
-class MovementHandlerAgentStairsHelper { public: static const BSFixedString &QClassAgentType(); };
+class MovementHandlerAgentStairsHelper
+{
+public:
+    static const BSFixedString &QClassAgentType();
+
+    void Function7a6750();
+
+    char _unk00[0x28];  // 00, not accessed by these functions
+    void* _field28;    // 28
+};

@@ -47,6 +47,7 @@ class Preflight(fixtures.SubmitTests):
         finding = next(p for p in result['blockers'] if 'missing reconstruction origin' in p)
         self.assertIn(self.unit[1] + ':1:', finding)
         self.assertIn('fix: add a truthful Code origin:', finding)
+        self.assertIn('// Code origin: <', finding)
         _code, submit = self.submit()
         self.assertIn(finding, submit['blockers'])
 

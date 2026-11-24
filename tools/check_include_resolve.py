@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_store
 import sparse_checkouts as sparse
 from check_source_digest import include_closure, source_digest_cache
 from verifier.pipeline import recipe_include_roots
@@ -30,7 +31,7 @@ def accepted_units(root):
         if fn.get('status') != 'matched' or not fn.get('report'):
             continue
         try:
-            record = json.loads((root / fn['report']).read_text())
+            record = json.loads(record_store.read_text(root / fn['report']))
             key = (record['source']['compiled'], record['recipe']['path'])
         except (OSError, ValueError, KeyError, TypeError):
             key = (None, fn['report'])

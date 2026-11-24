@@ -7,7 +7,12 @@
 // names: GUESS(low); original source names are uncertain.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x5bb070 ActiveEffect::GetVisualsTarget
-// 0x5bcda0
+// 0x5d3e00 ActiveEffect::Function5d3e00
+// Code origin: written for this reconstruction from the listing; names and layout from the unit header.
+// Adapted bodies: none
+// Drafted by v-macrev, assisted by claude-sonnet-5-5.
 #include "ActiveEffect.h"
 void* ActiveEffect::GetVisualsTarget() { return target ? target->GetTargetStatsObject() : nullptr; }
 bool ActiveEffect::CanFinish() const { if (!(flags & 0x60) || (flags & 0x8000) || spell->IsPermanent()) return true; return false; }
+
+void* ActiveEffect::Function5d3e00() { return VirtualSlot12(); }

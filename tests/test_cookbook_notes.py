@@ -162,7 +162,8 @@ class NoteCommand(fixtures.SubmitTests):
         lines = contrib.note_reminders(self.ctx(repo=self.repo), self.tdir, self.task,
                                        self.summary['functions'], contrib.task_attempts(self.tdir))
         self.assertEqual(len(lines), 1)
-        self.assertIn('hard-won pass', lines[0])
+        self.assertIn('pass after', lines[0])
+        self.assertIn('matching-cookbook.md', lines[0])
 
     def test_preflight_reminds_and_accepts_a_finished_note_in_the_submission(self):
         self.fail_the_function()

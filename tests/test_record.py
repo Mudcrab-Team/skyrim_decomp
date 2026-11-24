@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / 'tests'))
 sys.path.insert(0, str(ROOT / 'tools'))
 import build_index  # noqa: E402
 import record  # noqa: E402
+import record_store  # noqa: E402
 from check import validate  # noqa: E402
 from check import DIGEST_METHOD  # noqa: E402
 from digest_v2 import tu_digest  # noqa: E402
@@ -47,7 +48,7 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.assertEqual((row['status'], row['report'], row['evidence']), ('matched', RECORD, RECORD))
         self.assertEqual(data['functions'][1], OTHER)
         validate(data, self.target, self.root)
-        review = json.loads((self.root / REVIEW).read_text())
+        review = json.loads(record_store.read_text((self.root / REVIEW)))
         self.assertEqual((review['verdict'], review['review_kind'], review['reviewer_model']),
                          ('approve', 'full', 'gpt-6.1-terra'))
 
@@ -55,14 +56,14 @@ class RecordTests(GateFixture, unittest.TestCase):
         out = self.apply(drafter='claude-sonnet-5-5')
         self.assertEqual(out['recorded'], [self.fn['rva']])
         record_path = self.root / RECORD
-        self.assertEqual(json.loads(record_path.read_text())['drafter_model'], 'claude-sonnet-5-5')
+        self.assertEqual(json.loads(record_store.read_text(record_path))['drafter_model'], 'claude-sonnet-5-5')
         validate(json.loads((self.root / 'data/progress.json').read_text()), self.target, self.root)
-        stored = json.loads(record_path.read_text())
+        stored = json.loads(record_store.read_text(record_path))
         stored['drafter_model'] = 'gpt-6.2-sol'
         record_path.write_text(json.dumps(stored))
         # A second claim on an already-held record is refused as a repeat before it could replace the first.
         self.apply(drafter='claude-opus-5-5')
-        self.assertEqual(json.loads(record_path.read_text())['drafter_model'], 'gpt-6.2-sol')
+        self.assertEqual(json.loads(record_store.read_text(record_path))['drafter_model'], 'gpt-6.2-sol')
 
     def test_index_patch_equals_full_render(self):
         self.apply()
@@ -151,17 +152,19 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.save_record(keep_build=True)
         out = self.apply()
         self.assertEqual(out['recorded'], [self.fn['rva']])
-        self.assertIn(name, out['files'])
-        self.assertIn(symbol_map.history_name(name), out['files'])
+        # Records and unit maps are committed as shards; the map and its history share one.
+        self.assertIn('reports/synthetic-fixture/packs/sym-' + name.rsplit('/', 1)[1][:2] + '.xz', out['files'])
+        self.assertTrue(record_store.is_file(self.root / name))
+        self.assertTrue(record_store.is_file(self.root / symbol_map.history_name(name)))
         self.assertNotIn(MAP, out['files'])
 
     def test_grown_unit_rebinds_an_already_matched_function_and_a_failure_restores_it(self):
         self.apply()
         # A later stacked PR grows the unit: the digest changes, the old approval is stale.
-        old_review = (self.root / REVIEW).read_bytes()
+        old_review = record_store.read_bytes(self.root / REVIEW)
         self.write('reconstruction/synthetic/SyntheticSum.h', 'int SyntheticAddOne(int);\n')
         self.assertEqual(self.apply()['refused'][self.fn['rva']], 'already matched')
-        self.assertEqual((self.root / REVIEW).read_bytes(), old_review)
+        self.assertEqual(record_store.read_bytes(self.root / REVIEW), old_review)
 
 
 class PushRetryTests(unittest.TestCase):
@@ -219,7 +222,7 @@ class CarriedRecordTests(GateFixture, unittest.TestCase):
         return record.build_carried_record(self.root, 'synthetic-fixture', self.fn['rva'], self.out, 'carried note')
 
     def test_a_provenance_only_edit_gives_a_record_the_validator_accepts_with_the_old_runs(self):
-        old = json.loads((self.root / RECORD).read_text())
+        old = json.loads(record_store.read_text((self.root / RECORD)))
         self.write(HDR, '// SyntheticAddOne: OBSERVED; confirmed in the table\nint SyntheticAddOne(int);\n')
         made = self.carry()
         new = json.loads(made.read_text())
@@ -264,10 +267,10 @@ class CarriedRecordTests(GateFixture, unittest.TestCase):
         self.carry_edited()
         out = self.record_carried()
         self.assertEqual((out['recorded'], out['refused']), ([self.fn['rva']], {}))
-        new = json.loads((self.root / RECORD).read_text())
+        new = json.loads(record_store.read_text((self.root / RECORD)))
         self.assertEqual(new['source']['digest'], tu_digest(self.root, [CPP, HDR], DIGEST_METHOD))
-        self.assertIn(RECORD, out['files'])
-        review = json.loads((self.root / REVIEW).read_text())
+        self.assertIn('reports/synthetic-fixture/packs/match-000.xz', out['files'])
+        review = json.loads(record_store.read_text((self.root / REVIEW)))
         self.assertEqual(review['source_digest'], new['source']['digest'])
         validate(json.loads((self.root / 'data/progress.json').read_text()), self.target, self.root)
 

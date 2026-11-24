@@ -51,6 +51,7 @@ import json
 from pathlib import Path
 import sys
 
+import record_store
 from compare import IMAGE_BASE, THREAD_LOCAL, TLS_INDEX, load_symbol_map
 from pecoff import EH_HANDLERS, Reject
 
@@ -231,9 +232,9 @@ _CACHE = {}
 
 def load_state(root, map_name):
     """MapState from files under `root`; cached per content for one check run."""
-    map_bytes = (root / map_name).read_bytes()
+    map_bytes = record_store.read_bytes(root / map_name)
     hist_path = root / history_name(map_name)
-    hist_bytes = hist_path.read_bytes() if hist_path.is_file() else None
+    hist_bytes = record_store.read_bytes(hist_path) if record_store.is_file(hist_path) else None
     key = (str(root), map_name, sha256(map_bytes), None if hist_bytes is None else sha256(hist_bytes))
     if key not in _CACHE:
         history = None if hist_bytes is None else strict_loads(hist_bytes, history_name(map_name))
@@ -344,15 +345,15 @@ def record_problem(state, record):
 def match_records(root, map_name):
     """(path, record) for every match record under reports/ that pins `map_name`."""
     out = []
-    for path in sorted((root / 'reports').glob('*/*.json')):
-        if path.name.endswith(('.review.json', '.history.json')):
-            continue
-        try:
-            record = json.loads(path.read_text())
-        except (OSError, ValueError):
-            continue
-        if isinstance(record, dict) and (record.get('symbol_map') or {}).get('path') == map_name:
-            out.append((path.relative_to(root).as_posix(), record))
+    for build in record_store.build_dirs(root):
+        for name in record_store.names(build, 'match'):
+            path = build / name
+            try:
+                record = json.loads(record_store.read_text(path))
+            except (OSError, ValueError):
+                continue
+            if isinstance(record, dict) and (record.get('symbol_map') or {}).get('path') == map_name:
+                out.append((path.relative_to(root).as_posix(), record))
     return out
 
 
@@ -540,8 +541,8 @@ def create(root, map_name, smap):
     check_map(smap)
     blob = serialize(smap)
     path = root / map_name
-    if path.exists():
-        require(path.read_bytes() == blob, 'immutable unit symbol map differs')
+    if record_store.exists(path):
+        require(record_store.read_bytes(path) == blob, 'immutable unit symbol map differs')
         load_state(root, map_name)
         return
     history = {'schema': 1, 'map': map_name,
@@ -561,9 +562,10 @@ def apply_change(root, map_name, incoming, remove=(), allow_change=False, other_
     """
     state = load_state(root, map_name)
     hist_path = root / history_name(map_name)
-    history = strict_loads(hist_path.read_bytes(), history_name(map_name)) if hist_path.is_file() else None
+    history = strict_loads(record_store.read_bytes(hist_path), history_name(map_name)) \
+        if record_store.is_file(hist_path) else None
     # The first version is the file as it is now, and a version must rebuild byte for byte.
-    require(history is not None or serialize(state.current) == (root / map_name).read_bytes(),
+    require(history is not None or serialize(state.current) == record_store.read_bytes(root / map_name),
             f'{map_name} is not in canonical form, so records pinned to it could not be carried; '
             'rewrite it canonically and re-confirm those records first')
     result = plan(state.current, incoming, remove, allow_change)

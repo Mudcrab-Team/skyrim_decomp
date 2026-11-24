@@ -1,0 +1,21 @@
+{
+  "compiler": {
+    "binary_sha256": "e7d1801b1f76f312bae47f80500f8200d1ff552accdf4e2eec0ce2e025c3722e",
+    "version": "19.13.26132 for x64 (toolset dir 14.13.26128, VS 2017 15.6 side-by-side toolset of the 15.9.85 manifest)"
+  },
+  "flags": [
+    "/nologo",
+    "/c",
+    "/O2",
+    "/MD",
+    "/GS-",
+    "/EHsc",
+    "/GR",
+    "/fp:precise",
+    "/Gy",
+    "/I",
+    "reconstruction"
+  ],
+  "sdk": "10.0.19041.0",
+  "host": "wine-9.0 (Ubuntu 9.0~repack-4build3), Ubuntu 24.04 x86-64"
+}

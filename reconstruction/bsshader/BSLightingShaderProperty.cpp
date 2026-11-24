@@ -1,5 +1,6 @@
 // Source exposure: mixed (local binary analysis and public names).
 // Origin: {"generator_family":"const-return","generator_version":"2","name_source":{"confidence":"medium","kind":"public","repository":"CharmedBaryon/CommonLibSSE-NG","revision":"b93280e832f263dbef44e44cbe2936622a02f91a","source":"ng-slot"},"template_digest":"df32415c55896040a11705484c0f0da5801925ec042c4cc3a23c954179756459"}
+// Code origin: written for this reconstruction from the listing; names from the existing header and the public CommonLibSSE-NG layout.
 // Adapted bodies: none. QShader is synthesized from the bounded leaf template; the other bodies are written from the local listing.
 // BSLightingShaderProperty: EXE_RTTI
 // QShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -10,6 +11,9 @@
 // 0x1519130 BSLightingShaderProperty::QShader
 // 0x151d550 BSLightingShaderProperty::QMaterialAlpha
 // QMaterialAlpha: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// 0x151d520 BSLightingShaderProperty::GetBaseTexture
+// 0x151d560 BSLightingShaderProperty::SetMaterialAlpha
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSLightingShaderProperty.h"
 // QShader: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 std::uint32_t BSLightingShaderProperty::QShader() const
@@ -39,4 +43,15 @@ bool BSLightingShaderProperty::Function14e8350(const PropertyFlagHolder* a_other
 float BSLightingShaderProperty::QMaterialAlpha()
 {
     return material->materialAlpha;
+}
+
+void* BSLightingShaderProperty::GetBaseTexture() const
+{
+    BSLightingShaderMaterialBase* const mat = material;
+    return mat->baseTexture;
+}
+
+void BSLightingShaderProperty::SetMaterialAlpha(float a_alpha)
+{
+    material->materialAlpha = a_alpha;
 }

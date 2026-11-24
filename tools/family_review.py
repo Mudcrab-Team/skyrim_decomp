@@ -10,6 +10,7 @@ import math
 from pathlib import Path
 import re
 import subprocess
+import record_store
 from digest_v2 import run_revision
 from validation_reads import read_bytes, read_text
 
@@ -42,7 +43,7 @@ def unique_fields(pairs):
 
 def read(root, name):
     name = Path(name).as_posix()
-    if name.startswith('reports/') and not (Path(root) / name).is_file():
+    if name.startswith('reports/') and not record_store.is_file(Path(root) / name):
         from sparse_checkouts import ensure
         ensure(root, [name])
     return json.loads(read_text(Path(root) / name), object_pairs_hook=unique_fields)

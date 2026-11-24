@@ -23,6 +23,8 @@ class SparseCheckouts(unittest.TestCase):
         self.write('.gitignore', '.local/\n')
         self.write('tools/worker.py', '# original synthetic tool\n')
         self.write('site/index.html', '<p>synthetic</p>')
+        self.write('reconstruction/unmapped/static/S.cpp', '// generated\n')
+        self.write('reconstruction/unmapped/leaves/L.cpp', '// leaf\n')
         self.write('data/progress.json', '{}')
         self.report = 'reports/synthetic/0x10.json'
         self.map = 'reports/synthetic/unit-symbols/a[1].json'
@@ -62,8 +64,10 @@ class SparseCheckouts(unittest.TestCase):
     def test_no_bulk_checkout_and_no_shared_config_change(self):
         self.assertTrue(sparse.active(self.tree))
         self.assertFalse(sparse.active(self.root))
-        self.assertFalse((self.tree / 'reports').exists())
+        self.assertTrue((self.tree / 'reports').is_dir())
         self.assertFalse((self.tree / 'site').exists())
+        self.assertFalse((self.tree / 'reconstruction/unmapped/static').exists())
+        self.assertTrue((self.tree / 'reconstruction/unmapped/leaves/L.cpp').is_file())
         self.assertTrue((self.tree / 'tools/worker.py').is_file())
         self.assertTrue((self.root / self.report).is_file())
         self.assertEqual(sparse.git(self.tree, 'status', '--porcelain'), b'')
@@ -72,8 +76,6 @@ class SparseCheckouts(unittest.TestCase):
         sparse.ensure(self.tree, [self.report])
         for name in (self.report, self.map, self.history, 'reports/synthetic/families/f.json'):
             self.assertEqual((self.tree / name).read_bytes(), (self.root / name).read_bytes())
-        self.assertFalse((self.tree / 'reports/synthetic/unrelated.json').exists())
-        self.assertFalse((self.tree / 'reports/synthetic/unit-symbols/a1.json').exists())
         self.assertEqual(sparse.git(self.tree, 'status', '--porcelain'), b'')
         (self.tree / self.map).write_text('{"edited": true}')
         self.assertIn(self.map.encode(), sparse.git(self.tree, 'diff', '--name-only'))
@@ -87,7 +89,7 @@ class SparseCheckouts(unittest.TestCase):
         sparse.git(self.root, 'commit', '--quiet', '-m', 'advance synthetic main')
         names = [self.report, 'reports/synthetic/missing.json']
         self.assertEqual(dict(sparse.reports(self.tree, names)), {self.report: original, names[1]: None})
-        self.assertFalse((self.tree / 'reports').exists())
+        self.assertEqual(json.loads((self.tree / self.report).read_text()), original)
         family_review.read(self.tree, Path(self.report))
         self.assertEqual(json.loads((self.tree / self.report).read_text()), original)
 
@@ -111,27 +113,27 @@ class SparseCheckouts(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'synthetic failure'):
             with sparse.full(self.tree):
                 self.assertTrue((self.tree / 'site/index.html').is_file())
-                self.assertTrue((self.tree / 'reports/synthetic/unrelated.json').is_file())
+                self.assertTrue((self.tree / 'reconstruction/unmapped/static/S.cpp').is_file())
                 (self.tree / 'reports/synthetic/new.json').write_text('{}')
                 raise RuntimeError('synthetic failure')
         self.assertTrue(sparse.active(self.tree))
         self.assertTrue((self.tree / self.report).is_file())
         self.assertTrue((self.tree / 'reports/synthetic/new.json').is_file())
         self.assertFalse((self.tree / 'site').exists())
-        self.assertFalse((self.tree / 'reports/synthetic/unrelated.json').exists())
+        self.assertFalse((self.tree / 'reconstruction/unmapped/static').exists())
         self.assertEqual((self.root / self.map).read_text(), '{"symbols": {}}')
 
     def test_check_entry_point_expands_full_view_and_restores_after_refusal(self):
         import check
         def validate(**kwargs):
-            self.assertTrue((self.tree / 'reports/synthetic/unrelated.json').is_file())
+            self.assertTrue((self.tree / 'reconstruction/unmapped/static/S.cpp').is_file())
             self.assertTrue((self.tree / 'site/index.html').is_file())
             raise ValueError('synthetic validator refusal')
         with patch.object(check, 'ROOT', self.tree), patch.object(check, 'check_git', return_value=1), \
                 patch.object(check, 'load', side_effect=validate), patch.object(sys, 'argv', ['check.py']):
             self.assertEqual(check.main(), 1)
         self.assertTrue(sparse.active(self.tree))
-        self.assertFalse((self.tree / 'reports').exists())
+        self.assertTrue((self.tree / 'reports').is_dir())
         self.assertFalse((self.tree / 'site').exists())
 
     def test_verifier_loads_public_map_and_source_evidence_on_demand(self):
@@ -152,7 +154,6 @@ class SparseCheckouts(unittest.TestCase):
         self.assertEqual(task['symbols_local'].read_bytes(), (self.root / self.map).read_bytes())
         pipeline.unit_manifest(task, repo=self.tree)
         self.assertTrue((self.tree / 'reports/synthetic/unrelated.json').is_file())
-        self.assertFalse((self.tree / self.report).exists())
 
     def test_bad_report_paths_rejected(self):
         for name in ('reports/../private.json', '/reports/a.json', 'site/a.json', 'reports/a\nb.json'):
@@ -163,8 +164,9 @@ class SparseCheckouts(unittest.TestCase):
         tree = self.root / '.local/rerun'
         subprocess.run([sys.executable, str(Path(sparse.__file__)), str(tree), 'HEAD'],
                        cwd=self.root, check=True, capture_output=True)
-        self.assertFalse((tree / 'reports').exists())
+        self.assertTrue((tree / 'reports').is_dir())
         self.assertFalse((tree / 'site').exists())
+        self.assertFalse((tree / 'reconstruction/unmapped/static').exists())
         self.assertEqual(sparse.git(tree, 'rev-parse', 'HEAD'), sparse.git(self.root, 'rev-parse', 'HEAD'))
 
 
