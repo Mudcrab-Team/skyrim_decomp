@@ -246,7 +246,7 @@ class ReviewerFollowUpTests(LintTests):
     def test_sibling_citations_must_name_the_allowed_sibling_at_its_pin(self):
         cases = {
             'SIBLING(other/decomp@91e1b6e8, no-licence)': 'not an allowed sibling source',
-            'SIBLING(momusdigital/fnv_decomp@1234567, no-licence)': 'pinned at 91e1b6e8',
+            'SIBLING(momusdigital/fnv_decomp@1234567, no-licence)': 'pinned at 2b07cb3e',
             'SIBLING(momusdigital/fnv_decomp@91e1b6e8, MIT)': 'licence word "no-licence"',
             'SIBLING (momusdigital/fnv_decomp@91e1b6e8, no-licence)': 'label outside the v2 grammar',
             'SIBLING(momusdigital/fnv_decomp, no-licence)': 'label outside the v2 grammar',
@@ -263,7 +263,7 @@ class ReviewerFollowUpTests(LintTests):
         bad = {
             '// Sibling source: fnv ninode.cpp': 'write "Sibling source:',
             '// Sibling source: other/decomp@91e1b6e8 src/a.cpp': 'not an allowed sibling source',
-            '// Sibling source: momusdigital/fnv_decomp@abcdef0 src/a.cpp': 'pinned at 91e1b6e8',
+            '// Sibling source: momusdigital/fnv_decomp@abcdef0 src/a.cpp': 'pinned at 2b07cb3e',
             '// Sibling source: momusdigital/fnv_decomp@91e1b6e8 build/units.json': 'write "Sibling source:',
         }
         for line, needle in bad.items():

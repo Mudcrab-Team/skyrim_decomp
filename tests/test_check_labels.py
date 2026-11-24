@@ -307,6 +307,19 @@ public:
         findings = self.run_sibling(header, ok.replace(':3', ':300'))
         self.assertTrue(any('past the end of the file' in f for f in findings), findings)
 
+    def test_retired_pin_citation_is_not_read_against_the_newer_checkout(self):
+        siblings, rev = self.sibling()
+        header = '// Widget::Tick: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)\n'
+        cite = '// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/old/moved.cpp:9000\nint x;\n'
+        # The clone stands in for the current pin; the retired pin's path and line belong to another revision.
+        pins = {'momusdigital/fnv_decomp': (rev, 'CC0-1.0')}
+        with patch.dict(check_labels.SIBLING_SOURCES, pins):
+            findings = self.run_sibling(header, cite)
+        self.assertEqual([f for f in findings if 'moved.cpp' in f or 'checkout of' in f], [], findings)
+        # An unknown pin is still read as is and reported.
+        findings = self.run_sibling(header.replace('91e1b6e8', 'abcdef12'), cite.replace('91e1b6e8', 'abcdef12'))
+        self.assertTrue(any('moved.cpp' in f or 'checkout of' in f for f in findings), findings)
+
     def test_missing_sibling_clone_is_reported(self):
         h = self.root / 'reconstruction/area/Widget.h'
         h.write_text('// Labels: v2\n// Widget::Tick: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)\n')

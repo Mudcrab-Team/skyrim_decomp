@@ -38,7 +38,7 @@ REQUEST = re.compile(r'^// CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S+)\s*$', re.M)
 SHA = re.compile(r'[0-9a-f]{40}')
 UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.
-MAX_CLAIMS_PER_UNIT = 200
+MAX_CLAIMS_PER_UNIT = 1000
 # Same pattern as cookbook_notes.NOTE_FILE (a test keeps them equal); that module pulls in POSIX-only imports
 # that this job's Windows runner cannot load.
 NOTE_FILE = re.compile(r'docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]{0,60}\.md\Z')

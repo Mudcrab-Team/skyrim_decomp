@@ -7,11 +7,12 @@ names labelled by origin in `reconstruction/` (`PROVENANCE.md`). Reported upstre
 have not been independently reproduced here. `tools/check_origin.py` lists, for local use, every
 reconstruction body close to a same-named body in the pinned community or FNV checkouts.
 
-- [momusdigital/fnv_decomp](https://github.com/momusdigital/fnv_decomp), reviewed at
-  `91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6`: reconstruction and comparison workflow.
-  Its LICENSE grants no license. By maintainer decision (`docs/authorizations.md`, Notes) its
-  names, declarations and code at that revision may be reused in reconstructions, labelled
-  `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)`, with each reused body cited by a
+- [momusdigital/fnv_decomp](https://github.com/momusdigital/fnv_decomp), pinned at
+  `2b07cb3ec4b7aa11be96c7567914e11731aebeaf` (pinned; earlier pin `91e1b6e8`, kept valid for merged units):
+  reconstruction and comparison workflow. CC0 1.0 for the contributors' own work from `42baf49a`;
+  Xbox 360 PDB-derived names and Havok/Gamebryo material are excluded. By maintainer decision
+  (`docs/authorizations.md`, Notes) its names, declarations and code at the current pin may be reused in reconstructions, labelled
+  `SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)`, with each reused body cited by a
   `Sibling source:` line in the unit header; its tools are not copied and its tree is not
   vendored. Units with such lines: `netimmerse/NiPSysModifier` (LinkObject, RegisterStreamables,
   ProcessClone) and `bsengine/BSLightingShaderMaterialBase` (NiRefObject reference counting); both

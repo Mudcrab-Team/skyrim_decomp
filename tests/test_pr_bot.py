@@ -2301,21 +2301,21 @@ class StickyCommentTests(unittest.TestCase):
         self.assertIn('2 functions, over the limit of 1', bot.comments[0]['body'])
         self.assertTrue(bot.comments[0]['body'].startswith(pr_bot.STICKY))
 
-    def test_the_default_cap_is_200_and_scales_the_step_timeouts_with_it(self):
+    def test_the_default_cap_is_1000_and_scales_the_step_timeouts_with_it(self):
         bot = FakeBot(self.work)
-        self.assertEqual(bot.config['max_functions'], 200)
+        self.assertEqual(bot.config['max_functions'], 1000)
         self.assertEqual((bot.config['model_timeout'], bot.config['compare_timeout'], bot.config['hash_wait']),
                          (3000, 5400, 1800))
         self.assertIn('50 to 200 functions', pr_bot.BATCH_LINE)
 
     def test_a_pr_at_the_default_cap_is_not_rejected_and_one_over_is(self):
         bot = FakeBot(self.work)
-        bot.new_functions = lambda base, units: set(range(201))
+        bot.new_functions = lambda base, units: set(range(1001))
         with self.assertRaises(pr_bot.Rejected):
             bot.process(PR)
-        self.assertIn('201 functions, over the limit of 200', bot.comments[0]['body'])
+        self.assertIn('1001 functions, over the limit of 1000', bot.comments[0]['body'])
         bot = FakeBot(self.work)
-        bot.new_functions = lambda base, units: set(range(200))
+        bot.new_functions = lambda base, units: set(range(1000))
         try:
             bot.process(PR)
         except pr_bot.Rejected as exc:

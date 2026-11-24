@@ -11,7 +11,7 @@ If a cookbook rule fixed a function, add one header line to its unit, `// Cookbo
 not count against the header budget, and it feeds the rule ranking at the top of the cookbook.
 Stuck or unsure? Ask in [Discussions (Q&A)](https://github.com/Mudcrab-Team/skyrim_decomp/discussions/categories/q-a).
 
-Aim for 50 to 200 functions per PR (200 is the per-PR cap); more is fine, and one PR per family or
+Aim for 50 to 200 functions per PR (1000 is the per-PR cap); more is fine, and one PR per family or
 class is ideal. A single large function is also a fine PR on its own. Classes can be mixed. Fewer,
 bigger PRs help most: each PR costs a full verification and merge cycle, and large batches have
 merged cleanly in about an hour. Thank you, don't be shy.
@@ -32,11 +32,13 @@ including adaptations and sources. Community headers are
 hypotheses, not binary proof. Never write `asm`, `##`, `#pragma` (except `once`), byte arrays or
 `\x` strings, and never edit verifier inputs, tools, flags or another unit to force a pass.
 
+Both siblings also exist as x64 ports you can compile locally (`docs/sibling-x64.md`).
+
 For Fallout 3 (`momusdigital/f3_decomp`, CC0-1.0) the same with `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`
 and `Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>`. Read FO3 and FNV first for
 engine-shared classes (names, layouts, vtable order, body shape); both are 32-bit, never byte evidence.
-For FNV reuse use `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` and cite each reused
-body in a `Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>` header line. Another
+For FNV reuse use `SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)` and cite each reused
+body in a `Sibling source: momusdigital/fnv_decomp@2b07cb3e <path>:<line>` header line. Another
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.
 
 Skills in `.claude/skills/` (adapted from lemiur's Game-Decompilation-Skill, CC-BY-4.0, see each
@@ -63,7 +65,7 @@ equivalent). Cheaper models are fine for drafting.
 
 **Subagent batches are a drafting split, not a PR split.** Never open one PR per subagent, worktree or
 batch of 10 to 15. Subagents never open PRs or run `submit`; only the lead does, once, for the whole
-run. Split only above the 200 cap, and never open extra PRs just to trigger checks.
+run. Split only above the 1000 cap, and never open extra PRs just to trigger checks.
 
 Worktree and storage setup for this is in [contributor-parallel.md](contributor-parallel.md).
 

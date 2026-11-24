@@ -165,7 +165,7 @@ which over-reports for functions that never touch the flagged declaration.
 ### Naming style
 
 Evidence for the original style: class names recorded by the image's RTTI, and the FNV sibling
-(`momusdigital/fnv_decomp@91e1b6e8`), which is the same studio's code and tags its own name
+(`momusdigital/fnv_decomp@2b07cb3e`), which is the same studio's code and tags its own name
 origins. The sibling is a hypothesis about style, not about this binary. Community names are
 what the units use; follow the unit you are in (R8) and do not restyle a unit to another's.
 
