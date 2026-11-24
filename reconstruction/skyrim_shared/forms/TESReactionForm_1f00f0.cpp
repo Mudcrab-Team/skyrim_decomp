@@ -3,7 +3,6 @@
 // Code origin: original reconstruction from the pinned image listing; names as labelled below.
 // 0x1f0370 TESReactionForm::GetFactionCombatRelation
 // 0x1f00f0 TESReactionForm::GetReaction
-// TESReactionForm::GetReaction: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "TESReactionForm_1f00f0.h"
 
 std::int32_t TESReactionForm::GetFactionCombatRelation(TESForm* a_form)

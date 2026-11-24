@@ -4,7 +4,7 @@
 // Adapted bodies: none
 // 0x1002700 BSMultiBoundCapsule::BSMultiBoundCapsule
 // 0x1002740 BSMultiBoundCapsule::GetType
-// 0x1002760 BSMultiBoundCapsule::CheckBound
+// 0x1002760 BSMultiBoundCapsule::Function1002760
 // 0x1002830 BSMultiBoundCapsule::~BSMultiBoundCapsule
 // 0x1002880 BSMultiBoundCapsule::Function1002880
 #include "BSMultiBoundCapsule.h"
@@ -22,7 +22,7 @@ std::uint32_t BSMultiBoundCapsule::GetType() const
     return 0x4;
 }
 
-std::uint32_t BSMultiBoundCapsule::CheckBound(BoundCapsuleArg* a_arg)
+std::uint32_t BSMultiBoundCapsule::Function1002760(BoundCapsuleArg* a_arg)
 {
     a_arg->target->Slot25();
     return 0u;

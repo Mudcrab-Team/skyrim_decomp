@@ -2,8 +2,7 @@
 // Code origin: existing unit plus original reconstruction of constructor, destructor, and radius getter.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSMultiBoundCapsule, BSMultiBoundShape, NiRefObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
-// GetType, BoundCapsuleTarget, BoundCapsuleArg, Function1002880, g_niRefObjectCount, unk08, shapeData, centerData, radius, pad34, unknown00, target: GUESS(low)
-// BSMultiBoundCapsule::CheckBound: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
+// GetType, BoundCapsuleTarget, BoundCapsuleArg, Function1002760, Function1002880, g_niRefObjectCount, unk08, shapeData, centerData, radius, pad34, unknown00, target: GUESS(low)
 #pragma once
 #include <cstdint>
 #include <intrin.h>
@@ -86,7 +85,7 @@ public:
     BSMultiBoundCapsule();
     ~BSMultiBoundCapsule() override = default;
     virtual std::uint32_t GetType() const;
-    std::uint32_t CheckBound(BoundCapsuleArg* a_arg);
+    std::uint32_t Function1002760(BoundCapsuleArg* a_arg);
     float Function1002880() const;
 
     std::uint64_t centerData[3];  // 18

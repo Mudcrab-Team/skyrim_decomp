@@ -1,8 +1,7 @@
 // Source exposure: mixed (target listing, anonymous sibling and unverified names).
 // Origin: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/Magic/EnhanceWeaponEffect.cpp:67 (EnhanceWeaponEffect::Start)
-// EnhanceWeaponEffect: GUESS(low)
-// EnhanceWeaponEffect::Start: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
+// EnhanceWeaponEffect, Start: GUESS(low)
 // 0x64d0b0 EnhanceWeaponEffect::Start
 // Code origin: original from the listing and community declarations, except EnhanceWeaponEffect::Start, adapted from the sibling named above
 // 0x64d400 EnhanceWeaponEffect::Function64d400

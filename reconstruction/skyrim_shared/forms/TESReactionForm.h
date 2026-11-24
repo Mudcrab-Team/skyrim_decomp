@@ -56,7 +56,7 @@ public:
 	};
 	static_assert(sizeof(BSSimpleList<GROUP_REACTION*>) == 0x10, "layout");
 
-	std::uint32_t GetFactionCombatRelation(const void* a_faction) const;
+	std::uint32_t Function1f0370(const void* a_faction) const;
 
 	BSSimpleList<GROUP_REACTION*> reactions;  // 08
 	// groupFormType: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG declares stl::enumeration<FormType, std::uint8_t>, a plain byte here
