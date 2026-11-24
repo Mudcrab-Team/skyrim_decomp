@@ -10,6 +10,9 @@ Each rule ends with an `Evidence:` line (the functions it closed) and, where som
 the table below ranks the rules from those lines and from recorded hits. Do not edit the table: run
 `python3 tools/cookbook_rank.py` (`docs/internal-agent-workflow.md`, fold step).
 
+**Before drafting by hand, check [generators.md](generators.md):** a family generator may already emit the function's shape and
+verify it locally, and each family's findings note says why it matches.
+
 Newer lessons that are not rules yet are one file each in [cookbook-notes/](cookbook-notes/README.md); read the ones for your class or cause too.
 Lessons from drafting large, near-matching functions (measured by a similarity score, none closed by a comparator pass yet) are in
 [near-tier-lessons.md](near-tier-lessons.md): each maps to the rules here and says whether the evidence agrees, or is a candidate rule. Read it for a function over about 1,000 bytes or a first score under 80 percent.

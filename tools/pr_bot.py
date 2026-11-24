@@ -48,6 +48,7 @@ Each PR gets at most one bot comment, marked with STICKY, which is edited in pla
 head or verdict and never posted again.
 """
 import argparse
+import collections
 from concurrent.futures import ThreadPoolExecutor
 import contextlib
 import copy
@@ -1112,13 +1113,55 @@ LESSON_THANKS = ('Lesson note merged with this PR. Thank you; it is folded into 
                  'round, and you are listed as co-author of the merge commit.')
 
 
+GENERATOR_FILE = re.compile(r'tools/[a-z0-9_]+_generate(?:_v[0-9]+)?\.py\Z')
+FAMILY_MIN = 50
+FAMILY_ASK = ('Family note: this PR %s. Please add a short note for the family (the shape, why it matches, the '
+              'pitfalls): `./sr lesson` writes the template, and the format is in docs/cookbook-notes/README.md; a '
+              'findings/ note is fine for a whole family. It is optional and never blocks a merge.')
+FAMILY_REASON_GENERATOR = 'adds or changes a family generator (tools/*_generate.py)'
+FAMILY_REASON_BULK = 'lands %d functions from one reconstruction area, which is a family at generator scale'
+
+
+def family_note_present(files):
+    """True if the PR (GitHub API rows) adds or edits a lesson note or a findings/ note."""
+    return any((NOTE_FILE.fullmatch(item.get('filename', '')) or findings_check.FINDING_FILE.fullmatch(item.get('filename', '')))
+               and item.get('status') != 'removed' for item in files)
+
+
+def generator_changed(files):
+    """True if the PR (GitHub API rows) adds or edits a tools/*_generate.py family generator."""
+    return any(GENERATOR_FILE.fullmatch(item.get('filename', '')) and item.get('status') != 'removed' for item in files)
+
+
+def family_size(decision):
+    """The most matched functions the PR lands in one reconstruction area directory; the area is the family."""
+    areas = collections.Counter()
+    units = {str(r): u for r, u in (decision.get('unit_files') or {}).items()}
+    for rva, verdict in (decision.get('verdicts') or {}).items():
+        unit = units.get(str(rva))
+        if verdict == 'matched' and unit:
+            areas[str(unit).rsplit('/', 1)[0]] += 1
+    return max(areas.values(), default=0)
+
+
+def family_lines(decision):
+    """One advisory line asking for a family note when the PR adds or changes a family generator, or lands
+    FAMILY_MIN or more functions from one area, and no lesson or findings note comes with it."""
+    if decision.get('family_note'):
+        return []
+    if decision.get('generator'):
+        return [FAMILY_ASK % FAMILY_REASON_GENERATOR]
+    size = family_size(decision)
+    return [FAMILY_ASK % (FAMILY_REASON_BULK % size)] if size >= FAMILY_MIN else []
+
+
 def lesson_lines(decision):
-    """One line about lesson notes: an ask when a function mismatched on a host and the PR has no note, a thank-you
-    when a note came along and the PR merged. Advisory only."""
+    """Lines about lesson notes: an ask when a function mismatched on a host and the PR has no note, a thank-you
+    when a note came along and the PR merged, and a family-note ask for generator or bulk PRs. Advisory only."""
     mismatched = any(v in ('fail:host1', 'fail:host2') for v in decision.get('verdicts', {}).values())
     if decision.get('lesson_note'):
         return [LESSON_THANKS] if decision.get('merge') and not decision.get('blocked') else []
-    return [LESSON_ASK] if mismatched else []
+    return ([LESSON_ASK] if mismatched else []) + family_lines(decision)
 
 
 def removed_lines(decision):
@@ -3492,7 +3535,7 @@ class Bot:
         if findings_lane(files):
             return self.process_findings(pr, state, files, started)
         if tooling_lane(files):
-            return self.process_tooling(pr, state, started)
+            return self.process_tooling(pr, state, started, files)
         if pr['author']['login'].casefold() == OWNER.casefold() and carried_lane(files):
             return self.process_carried(pr, state, files, started)
         if scope_problem(files) not in (None, 'empty'):
@@ -3667,6 +3710,8 @@ class Bot:
         decision['pdb_advisory'] = self.pdb_advisory(check_units)
         decision['lesson_note'] = any(NOTE_FILE.fullmatch(item['filename']) and item.get('status') != 'removed'
                                       for item in files)
+        decision['family_note'] = family_note_present(files)
+        decision['generator'] = generator_changed(files)
         decision['notes'] = notes  # in memory only: the comment is built in this run from the cached review
         if decision['merge'] and not self.dry_run:
             matched = [r for r, v in decision['verdicts'].items() if v == 'matched']
@@ -4804,7 +4849,7 @@ class Bot:
         self.mark_done(state)
         return summary
 
-    def process_tooling(self, pr, state, started):
+    def process_tooling(self, pr, state, started, files=()):
         """A PR with no reconstruction/ file: label it for the maintainer agent and say so; never merge it."""
         decision = dict(blocked='tooling', merge=False, verdicts={})
         state.set('decision', decision)
@@ -4812,7 +4857,8 @@ class Bot:
             state.once('labelled', lambda: self.run(
                 ['gh', 'pr', 'edit', str(pr['number']), '-R', REPOSITORY, '--add-label', TOOLING_LABEL],
                 check=False).returncode == 0)
-        return self.finish(pr, state, decision, started, comment=TOOLING_COMMENT)
+        ask = family_lines(dict(family_note=family_note_present(files), generator=generator_changed(files)))
+        return self.finish(pr, state, decision, started, comment='\n\n'.join([TOOLING_COMMENT, *ask]))
 
     def conflicting(self, pr, state):
         """A PR that cannot merge is not worth a review and two host compares.

@@ -5,7 +5,9 @@ Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, 
 Open a PR that touches only `reconstruction/**` and `docs/cookbook-notes/**`; checks run; the bot reviews and merges.
 A PR that touches only `findings/*.md` (static research prose: settings, values and rules in words, no bytes,
 disassembly or decompiler text) takes the same bot route after a leak scan, the `check` job and one review.
-Before drafting, read `docs/cookbook-notes/` for your function's class or cause.
+Before drafting, read `docs/cookbook-notes/` for your function's class or cause, and look the shape up in
+`docs/generators.md`: a family generator may already emit it. When you add or change a generator, or land 50 or more
+functions from one family, add a short family note (shape, why it matches, pitfalls) in `findings/` or as a lesson note.
 **Send your lessons.** Next to your functions, send what you learned: a near-miss (what differed, what you tried), a
 pass that took four or more compares (the spelling that closed it) or a compiler shape you solved. `./sr lesson <rva>`
 writes the template pre-filled from your task; finish every `TODO` (fields, causes and a worked example in

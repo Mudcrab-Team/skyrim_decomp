@@ -21,6 +21,13 @@ class is ideal. A single large function is also a fine PR on its own. Classes ca
 bigger PRs help most: each PR costs a full verification and merge cycle, and large batches have
 merged cleanly in about an hour. Thank you, don't be shy.
 
+## Check the generators first
+
+Many functions fall into a shape that a family generator already emits and checks locally. Look the shape up in
+[docs/generators.md](generators.md) before drafting by hand; it lists each generator's command, how it verifies, its
+author and its findings note. If you add or change a generator, or land 50 or more functions from one family, add a
+short family note (shape, why it matches, pitfalls) as `findings/<family>.md` or a lesson note.
+
 ## Send your lessons
 
 A note is how the next drafter learns from your attempt, and it is credited to you as co-author of the merge commit.
