@@ -1,5 +1,6 @@
 // Source exposure: mixed (community headers, sibling game code, the pinned image listing).
 // SPDX-License-Identifier: CC0-1.0
+// Code origin: adapted from the sibling bodies named in the header; names and prototypes as labelled there
 // 0x3637f0 Script::PreloadMagicEffect
 // Sibling source: fo4-private@1b765c70 src/Shared/TESForms/Gameplay/TESScriptFunctions.cpp:5836
 #include "Script_3637f0.h"
