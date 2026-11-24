@@ -673,8 +673,9 @@ class PublicMapBindTests(BindTests):
         (self.task_dir / 'task.json').write_text(json.dumps(task))
         path = self.root / self.MAP
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({'schema': 1, 'build_id': 'synthetic-fixture', 'symbols': symbols,
-                                    'folds': []}, indent=2) + '\n')
+        # Bytes: the tool's canonical form ends in a bare LF, which text mode would turn into CRLF on Windows.
+        path.write_bytes((json.dumps({'schema': 1, 'build_id': 'synthetic-fixture', 'symbols': symbols,
+                                      'folds': []}, indent=2) + '\n').encode())
 
     def run_bind(self):
         report = bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
@@ -866,7 +867,7 @@ class ThreadLocalBindTests(unittest.TestCase):
                                                                        for n in smap['symbols']]}
         path = self.root / self.PUBLIC
         path.parent.mkdir(parents=True)
-        path.write_text(json.dumps(smap, indent=2) + '\n')
+        path.write_bytes((json.dumps(smap, indent=2) + '\n').encode())
         (self.task_dir / bind.HINTS).write_text(json.dumps({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')}))
         return path
 

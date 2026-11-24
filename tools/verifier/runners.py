@@ -28,15 +28,18 @@ is sent a Wake-on-LAN packet without being waited for. Without it, or with `"att
 the OS, loader and compiler hashes it reports; private paths, user names and addresses stay in
 the config.
 
+Orchestrator-only machine: a top-level `local_max_heavy` (default: no cap) limits the heavy local jobs of
+every checkout sharing this state directory (tools/local_load.py); `attempt` then prefers a reachable
+ssh host over a local one, and a run that still has to compile here waits for one of those slots first.
+
 Concurrency: each local or ssh host has `max_parallel` slots (file locks under
 .local/verifier/runner-slots/); a run waits for a free slot, so Drafters queue instead of
 overloading the host. SSH operations also share `max_sessions` transport slots (default 4)
 under .local/verifier/runner-sessions/, including transfers, probes and cleanup.
 """
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import errno
-import fcntl
 import io
 import json
 import os
@@ -55,6 +58,8 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(1, str(HERE.parent))
+import file_lock as fcntl  # noqa: E402
+import local_load  # noqa: E402
 import repo_slug  # noqa: E402
 import starts  # noqa: E402
 
@@ -76,6 +81,11 @@ TRANSPORT_ATTEMPTS = 3
 
 class RunnerError(Exception):
     pass
+
+
+# Ids of the local hosts of every config validated in this process: a compile slot of one of them
+# also takes a machine-wide heavy-job slot (tools/local_load.py), whoever asks for the slot.
+LOCAL_HOST_IDS = set()
 
 
 class TransportError(RunnerError):
@@ -164,6 +174,7 @@ def validate(raw, root=None):
         if h.get('objdump') is not None and (not isinstance(h['objdump'], str) or not h['objdump']):
             raise RunnerError(f'{where}.objdump must be a path')
         if backend == 'local':
+            LOCAL_HOST_IDS.add(hid)
             for key in ('msvc', 'work', 'wine_bin', 'wineprefix', 'image', 'objdump'):
                 if h.get(key) and (key != 'objdump' or '/' in h[key]):
                     host[key] = str(_local_path(h[key], root))
@@ -208,8 +219,13 @@ def validate(raw, root=None):
     compare = raw.get('compare_prefer', [])
     if not isinstance(compare, list) or any(p not in out or out[p]['backend'] != 'ssh' for p in compare):
         raise RunnerError('runners config: compare_prefer must list configured ssh hosts')
+    # Set on a machine that only orchestrates: caps the heavy local jobs machine-wide (tools/local_load.py).
+    try:
+        cap = local_load.parse(raw.get(local_load.KEY), f'runners config: {local_load.KEY}')
+    except ValueError as exc:
+        raise RunnerError(str(exc)) from None
     return {'attempt': attempt, 'attempt_prefer': prefer, 'compare_prefer': compare, 'confirm': confirm,
-            'hosts': out}
+            'hosts': out, local_load.KEY: cap}
 
 
 def load(path=None, root=None):
@@ -240,6 +256,16 @@ def slot_dir():
     return starts.state_dir() / 'runner-slots'
 
 
+def _heavy_guard(host_id, want, directory, log):
+    """The machine-wide heavy-job cap around a compile slot of a local host; nothing for other slot pools.
+
+    A caller-chosen `directory` is a private pool (tests, ssh sessions), never the host's compile slots.
+    """
+    if directory is not None or host_id not in LOCAL_HOST_IDS:
+        return nullcontext(want)
+    return local_load.heavy(f'compile on {host_id}', want=want, log=log)
+
+
 @contextmanager
 def slot(host_id, limit, wait=DEFAULT_SLOT_WAIT, log=None, directory=None, poll=0.5):
     """Hold one of `limit` slots of a host for the duration of the block; wait for one if all are taken.
@@ -247,30 +273,31 @@ def slot(host_id, limit, wait=DEFAULT_SLOT_WAIT, log=None, directory=None, poll=
     The locks are flock()ed files, released by the kernel if the holder dies, so a crashed
     attempt never blocks a host. Yields the seconds spent waiting.
     """
-    directory = Path(directory) if directory else slot_dir()
-    directory.mkdir(parents=True, exist_ok=True)
-    started = time.monotonic()
-    said = False
-    while True:
-        for i in range(limit):
-            handle = open(directory / f'{host_id}.{i}.lock', 'w')
-            try:
-                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except OSError:
-                handle.close()
-                continue
-            try:
-                yield time.monotonic() - started
-            finally:
-                fcntl.flock(handle, fcntl.LOCK_UN)
-                handle.close()
-            return
-        if time.monotonic() - started > wait:
-            raise RunnerError(f'{host_id}: all {limit} slots stayed busy for {wait} s')
-        if not said and log:
-            log(f'{host_id}: all {limit} slots busy; waiting for one')
-            said = True
-        time.sleep(poll)
+    with _heavy_guard(host_id, 1, directory, log):
+        directory = Path(directory) if directory else slot_dir()
+        directory.mkdir(parents=True, exist_ok=True)
+        started = time.monotonic()
+        said = False
+        while True:
+            for i in range(limit):
+                handle = open(directory / f'{host_id}.{i}.lock', 'w')
+                try:
+                    fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except OSError:
+                    handle.close()
+                    continue
+                try:
+                    yield time.monotonic() - started
+                finally:
+                    fcntl.flock(handle, fcntl.LOCK_UN)
+                    handle.close()
+                return
+            if time.monotonic() - started > wait:
+                raise RunnerError(f'{host_id}: all {limit} slots stayed busy for {wait} s')
+            if not said and log:
+                log(f'{host_id}: all {limit} slots busy; waiting for one')
+                said = True
+            time.sleep(poll)
 
 
 @contextmanager
@@ -280,6 +307,14 @@ def slots(host_id, limit, want, wait=DEFAULT_SLOT_WAIT, log=None, directory=None
     Yields how many are held. Extra slots are taken only without waiting, so two callers that
     each want several can never hold part of a set and wait on each other.
     """
+    with _heavy_guard(host_id, want, directory, log) as granted:
+        want = min(want, granted)
+        with _held_slots(host_id, limit, want, wait, log, directory, poll) as held:
+            yield held
+
+
+@contextmanager
+def _held_slots(host_id, limit, want, wait, log, directory, poll):
     directory = Path(directory) if directory else slot_dir()
     with slot(host_id, limit, wait=wait, log=log, directory=directory, poll=poll):
         extra = []
@@ -799,6 +834,17 @@ def choose_attempt(config, environ=None, probe_fn=None):
             '; wake-up packet sent' if wake(hosts[cand]) else ''))
     if name is None:
         name = config['attempt']
+    cap = local_load.limit(environ, config.get(local_load.KEY))
+    if cap and hosts[name]['backend'] == 'local':
+        # An orchestrator-only machine sends the work away first and runs it here only when no runner answers.
+        for other, h in hosts.items():
+            if h['backend'] == 'ssh' and probe_fn(h):
+                warnings.append(f'this machine is capped at {cap} heavy local jobs (local_max_heavy); the attempt '
+                                f'goes to {other} instead of {name}')
+                name = other
+                break
+        else:
+            warnings.append(f'no remote runner answers; the attempt runs here on {name}, one of {cap} heavy local slots')
     if hosts[name].get('loader') == 'wine':
         for other, h in hosts.items():
             if other != name and h['backend'] == 'ssh' and probe_fn(h):
@@ -958,6 +1004,9 @@ def status(config=None, log=print, probe_fn=probe):
         log(f'runners: no config at {config_path()}; attempt and confirm use Boat')
         return 0
     log(f'runners: attempt on {config["attempt"]}; confirm on {", ".join(config["confirm"]) or "(Boat session)"}')
+    cap = local_load.limit(configured=config.get(local_load.KEY))
+    if cap:
+        log(f'  this machine: at most {cap} heavy local jobs at once ({local_load.busy(cap)} held now)')
     bad = 0
     for name, host in config['hosts'].items():
         if host['backend'] == 'boat':

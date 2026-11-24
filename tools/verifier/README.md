@@ -36,6 +36,16 @@ for one fetch and deletes the run. `result.json` carries the host's OS, loader a
 the compiler binaries it ran, and the seconds each phase took. Each host has `max_parallel` slots (file locks under
 `.local/verifier/runner-slots/`); attempts beyond that wait in turn.
 
+A machine that only orchestrates sets a top-level `"local_max_heavy": N` in the same file (default: no
+cap, so contributors and CI are unaffected). Every heavy local job of every checkout sharing that
+`.local/verifier` then holds one of N machine-wide slots (file locks under `.local/verifier/local-heavy/`,
+no daemon, released when the process dies): a compile on a local host, `attempt`'s binding and
+diagnostics, the permuter's local scoring pool, the generators' probe compiles and the `check.py` fan-out
+(which gets no more workers than the slots it was granted). A job that has to wait prints one
+`local load guard: ... waits for a free slot` line. `attempt` also prefers a reachable ssh host over a
+local one while the cap is set. `SR_LOCAL_MAX_HEAVY` overrides the file for one process tree (a number,
+or `0` to lift the cap); `python3 tools/local_load.py` shows the cap and the slots held.
+
 ```sh
 python3 tools/verifier/runners.py status                    # each host: toolchain, image, CPUs, busy slots
 python3 tools/verifier/reproduce_records.py --host <name>   # recompile every recorded unit there; equal/different

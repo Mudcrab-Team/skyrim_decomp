@@ -1956,7 +1956,9 @@ def run(args):
         log(f'baseline unit_build exit {code}: ' + ' | '.join(text.splitlines()[-3:]))
         host.clean()
         return 2
-    symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, stage, out, image, objdump, rva, log)
+    import local_load
+    with local_load.heavy('permute baseline binding'):
+        symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, stage, out, image, objdump, rva, log)
     for line in bind_lines:
         log(line)
     (out / 'bind-report.txt').write_text('\n'.join(bind_lines) + '\n')
@@ -1972,11 +1974,17 @@ def run(args):
         score_all = None
     else:
         ctx = scoring_context(objdump, image, scored_fn, symbols, tls)
-        pool = concurrent.futures.ProcessPoolExecutor(min(os.cpu_count() or 2, 8), initializer=scoring_init,
-                                                      initargs=(ctx,))
+        size = min(os.cpu_count() or 2, 8)
+        pool = concurrent.futures.ProcessPoolExecutor(size, initializer=scoring_init, initargs=(ctx,))
 
         def score_all(items):
-            return list(pool.map(score_object, items)) if items else []
+            if not items:
+                return []
+            # Scoring processes run only while their slots are held, in waves no wider than the grant.
+            with local_load.heavy('permute scoring', want=size) as granted:
+                width = len(items) if granted >= size else granted
+                waves = [items[i:i + width] for i in range(0, len(items), width)]
+                return [row for wave in waves for row in pool.map(score_object, wave)]
 
     def recover():
         """After an outage the host may have lost its run directory: start it again from the unit."""

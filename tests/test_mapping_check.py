@@ -180,6 +180,7 @@ class MappingCheckTests(unittest.TestCase):
     def test_a_reformatted_file_is_refused(self):
         self.assertEqual(self.codes(self.doc(entry(0x3000)), canonical=False), ['json'])
 
+    @unittest.skipIf(sys.platform == 'win32', 'the workflow filter is awk, which a Windows host does not have')
     def test_workflow_shape_filter_agrees_with_the_python_shape(self):
         """The awk that picks the lane in both workflows must accept exactly what shape() accepts."""
         text = (ROOT / '.github/workflows/pr-check.yml').read_text()

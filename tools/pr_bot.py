@@ -51,7 +51,6 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 import contextlib
 import copy
-import fcntl
 import hashlib
 import json
 import os
@@ -69,6 +68,7 @@ import time
 import traceback
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import file_lock as fcntl  # noqa: E402
 import cookbook_notes  # noqa: E402
 import findings_check  # noqa: E402
 import record_store  # noqa: E402
@@ -1606,7 +1606,15 @@ def write_json_atomic(path, data):
     path = Path(path)
     tmp = path.with_name(f'{path.name}.{os.getpid()}.{threading.get_ident()}.tmp')
     tmp.write_text(json.dumps(data, indent=1, sort_keys=True))
-    os.replace(tmp, path)
+    for attempt in range(100):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            # Windows refuses to replace a file another thread has open for reading; it is closed in a moment.
+            if os.name != 'nt' or attempt == 99:
+                raise
+            time.sleep(0.05)
 
 
 class Progress:

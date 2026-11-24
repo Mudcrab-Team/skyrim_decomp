@@ -32,6 +32,7 @@ class BackgroundChecks(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'first'):
                     self.run_with(jobs, [(ok, ()), (refuse, ('first',)), (refuse, ('second',))])
 
+    @unittest.skipIf(sys.platform == 'win32', 'without fork the check runs in this process, so a child that dies would end the test run itself')
     def test_a_child_that_dies_without_reporting_fails_the_load(self):
         with self.assertRaises(ValueError):
             self.run_with('2', [(die, ())])

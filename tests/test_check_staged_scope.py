@@ -119,6 +119,7 @@ class ScopedStagedTests(unittest.TestCase):
         self.stage()
         self.assertEqual(check.check_git(self.root, staged=True, only=[UNIT + '.cpp', UNIT + '.h']), 2)
 
+    @unittest.skipIf(sys.platform == 'win32', 'Windows file names cannot hold the special characters this test creates')
     def test_special_characters_in_a_path_are_literal(self):
         self.put('docs/a*b.txt', 'text\n')
         self.put('docs/axb.txt', 'bin\0\n')

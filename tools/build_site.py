@@ -109,7 +109,7 @@ def render(data, revision, costs=None, trends=None):
     phase_blurb = phase_summary(data, counts, tasks)
     scope_note = ('Scope remains unknown; no completion percentage' if data['scope']['functions'] is None
                   else f'{data["scope"]["functions"]:,} functions in measured scope')
-    return Template((ROOT / 'site/index.html').read_text()).substitute(
+    return Template((ROOT / 'site/index.html').read_text(encoding='utf-8')).substitute(
         costs=cost_section(data, costs), trends=trend_section(trends or {}),
         phase=escape(data['phase']), phase_blurb=escape(phase_blurb), updated=escape(data['updated_at']), revision=escape(revision),
         target=escape(data['target_build_id'] or 'Not pinned'), inventory=len(data['functions']),
@@ -122,8 +122,8 @@ def render(data, revision, costs=None, trends=None):
 def render_join(data, revision):
     """The join page; every number comes from the validated inventory, like the report."""
     counts = Counter(fn['status'] for fn in data['functions'])
-    target = json.loads((ROOT / 'builds/target.json').read_text())
-    return Template((ROOT / 'site/join.html').read_text()).substitute(
+    target = json.loads((ROOT / 'builds/target.json').read_text(encoding='utf-8'))
+    return Template((ROOT / 'site/join.html').read_text(encoding='utf-8')).substitute(
         matched=counts['matched'], mapped=counts['mapped'], inventory=len(data['functions']),
         target=escape(data['target_build_id'] or 'Not pinned'), version=escape(target.get('version') or 'unknown'),
         updated=escape(data['updated_at']), revision=escape(revision))
@@ -153,7 +153,7 @@ def build(data, trends_file=None):
     output = ROOT / 'dist'
     output.mkdir(exist_ok=True)
     ledger = ROOT / 'data/costs.json'
-    costs = json.loads(ledger.read_text()) if ledger.exists() else None
+    costs = json.loads(ledger.read_text(encoding='utf-8')) if ledger.exists() else None
     if trends_file:
         trends = build_model_trend.load_rows(trends_file)
     else:
@@ -162,18 +162,18 @@ def build(data, trends_file=None):
             trends, _ = build_model_trend.history('HEAD', blobs)
         finally:
             blobs.close()
-    (output / 'index.html').write_text(render(data, revision, costs, trends))
-    (output / 'join.html').write_text(render_join(data, revision))
+    (output / 'index.html').write_text(render(data, revision, costs, trends), encoding='utf-8')
+    (output / 'join.html').write_text(render_join(data, revision), encoding='utf-8')
     leaderboard = build_leaderboard.standings(ROOT, data)
-    (output / 'leaderboard.html').write_text(build_leaderboard.html(leaderboard, build_leaderboard.window_counts(ROOT)))
-    (output / 'style.css').write_text((ROOT / 'site/style.css').read_text())
-    (output / 'model-trend.svg').write_text(build_model_trend.render(trends))
-    (output / 'progress-trend.svg').write_text(build_model_trend.render_cumulative(trends))
+    (output / 'leaderboard.html').write_text(build_leaderboard.html(leaderboard, build_leaderboard.window_counts(ROOT)), encoding='utf-8')
+    (output / 'style.css').write_text((ROOT / 'site/style.css').read_text(encoding='utf-8'))
+    (output / 'model-trend.svg').write_text(build_model_trend.render(trends), encoding='utf-8')
+    (output / 'progress-trend.svg').write_text(build_model_trend.render_cumulative(trends), encoding='utf-8')
     for name in ('progress.svg', 'progress-map.svg'):
         graphic = ROOT / 'docs' / name
         if graphic.exists():
-            (output / name).write_text(graphic.read_text())
-    (output / 'progress.json').write_text(json.dumps(data, indent=2) + '\n')
+            (output / name).write_text(graphic.read_text(encoding='utf-8'))
+    (output / 'progress.json').write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
     (output / '.nojekyll').touch()
     print(f'Built {output / "index.html"}; source {revision}; no game data included.')
 

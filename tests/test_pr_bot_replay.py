@@ -706,6 +706,7 @@ class ConflictRecheckTests(Replay):
 
 
 class ExportGroupTests(unittest.TestCase):
+    @unittest.skipIf(sys.platform == 'win32', 'process groups (os.killpg) exist only on POSIX')
     def test_ending_the_bot_kills_a_running_export_and_its_children(self):
         marker = Path(tempfile.mkdtemp()) / 'child.pid'
         script = ("import subprocess, sys, time\n"

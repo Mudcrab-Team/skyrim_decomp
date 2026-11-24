@@ -550,7 +550,9 @@ queue bookkeeping. It never changes progress or reports green for the original c
 `SKYRIM_LANE_PYTHON` may select the interpreter, but it must be Python 3.13 with working pyexpat.
 The complete standard unittest discovery inventory runs via `tools/test_suite.py` in isolated
 module processes, preserving module/class fixtures and reporting every test. Existing unittest
-environment decorators retain their usual meaning; no tests are excluded by the runner.
+environment decorators retain their usual meaning; no tests are excluded by the runner. Tests that need a POSIX
+facility (a bash fake compiler, process groups, symlinks, awk) carry a `skipIf(sys.platform == 'win32', reason)` so the
+same command completes on the Windows verifier host.
 CI uses the same Python 3.13 runner. Infrastructure performs diff hygiene, metadata/lint, the full
 suite and the site build; Pages consumes only its successful artifact for the exact same SHA,
 then deploys. This removes duplicated work across workflows, with no check removed.

@@ -14,6 +14,7 @@ class PackExportTimeout(unittest.TestCase):
         self.assertGreaterEqual(pr_bot.pack_export_timeout(1), 1800)
         self.assertGreater(pr_bot.pack_export_timeout(300), pr_bot.pack_export_timeout(120))
 
+    @unittest.skipIf(sys.platform == 'win32', 'process groups, pgrep and sleep are POSIX; the Windows bot has no process-group kill')
     def test_timeout_kills_grandchildren(self):
         code = "import subprocess,time;subprocess.Popen(['sleep','61']);time.sleep(61)"
         with self.assertRaises(subprocess.TimeoutExpired):

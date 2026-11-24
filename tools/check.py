@@ -22,6 +22,7 @@ from check_source_digest import include_closure, source_digest_cache
 import source_moves
 from lint_reconstruction import lint_tree
 import cost_ledger
+import local_load
 import revision_cache
 from validation_reads import read_bytes, read_text, read_once
 import record_store
@@ -765,16 +766,22 @@ def _check_functions(entries, target, root):
             yield _check_function(fn, target, root)
         return
     global _WORK
-    _WORK = (target, root)
-    try:
-        with multiprocessing.get_context('fork').Pool(jobs) as pool:
-            memo = _STALE_MEMO.get()
-            for outcome, learned in pool.imap(_work, entries, chunksize=_CHUNK):
-                if memo is not None and learned is not None and learned[1] is not None:
-                    memo[learned[0]] = learned[1]
-                yield outcome
-    finally:
-        _WORK = None
+    # A machine capped by local_max_heavy gets no more workers than the slots it was granted.
+    with local_load.heavy('check', want=jobs) as granted:
+        if granted < 2:
+            for fn in entries:
+                yield _check_function(fn, target, root)
+            return
+        _WORK = (target, root)
+        try:
+            with multiprocessing.get_context('fork').Pool(granted) as pool:
+                memo = _STALE_MEMO.get()
+                for outcome, learned in pool.imap(_work, entries, chunksize=_CHUNK):
+                    if memo is not None and learned is not None and learned[1] is not None:
+                        memo[learned[0]] = learned[1]
+                    yield outcome
+        finally:
+            _WORK = None
 
 
 def validate(data, target, root=None, stale_ok=False):
@@ -953,34 +960,43 @@ def background(calls):
         for call, args in calls:
             call(*args)
         return
-    ctx = multiprocessing.get_context('fork')
-    started = []
-    try:
-        # Forked before the validation pool starts any thread, so no child inherits a held lock.
-        for call, args in calls:
-            receive, send = ctx.Pipe(duplex=False)
-            process = ctx.Process(target=_child, args=(send, call, args))
-            process.start()
-            send.close()
-            started.append((process, receive))
-        yield
-        failure = None
-        for process, receive in started:
-            try:
-                kind, value = receive.recv()
-            except EOFError:
-                kind, value = 'err', ValueError('a parallel check ended without a result')
-            process.join()
-            if kind == 'err' and failure is None:
-                failure = value
-        if failure is not None:
-            raise failure
-    finally:
-        for process, receive in started:
-            if process.is_alive():
-                process.terminate()
-            process.join()
-            receive.close()
+    # The body and each forked check are processes: all of them must fit the machine's heavy-job slots,
+    # otherwise the checks run in order after the body, in this one process.
+    with local_load.heavy('check', want=1 + len(calls)) as granted:
+        if granted < 1 + len(calls):
+            yield
+            for call, args in calls:
+                call(*args)
+            return
+        ctx = multiprocessing.get_context('fork')
+        started = []
+        try:
+            # Forked before the validation pool starts any thread, so no child inherits a held lock.
+            for call, args in calls:
+                receive, send = ctx.Pipe(duplex=False)
+                process = ctx.Process(target=_child, args=(send, call, args))
+                process.start()
+                send.close()
+                started.append((process, receive))
+            with local_load.reserved(len(started)):
+                yield
+            failure = None
+            for process, receive in started:
+                try:
+                    kind, value = receive.recv()
+                except EOFError:
+                    kind, value = 'err', ValueError('a parallel check ended without a result')
+                process.join()
+                if kind == 'err' and failure is None:
+                    failure = value
+            if failure is not None:
+                raise failure
+        finally:
+            for process, receive in started:
+                if process.is_alive():
+                    process.terminate()
+                process.join()
+                receive.close()
 
 
 @read_once()

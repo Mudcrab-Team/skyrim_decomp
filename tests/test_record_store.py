@@ -26,8 +26,8 @@ class RecordStoreTests(unittest.TestCase):
         for name, text in self.files.items():
             path = self.build / name
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(text)
-        (self.build / 'symbol-map.json').write_text('{}\n')
+            path.write_text(text, newline='\n')
+        (self.build / 'symbol-map.json').write_text('{}\n', newline='\n')
 
     def test_names_map_to_shards_by_rva_range_and_digest_prefix(self):
         self.assertEqual(rs.shard_of('0x1000.json'), ('match', '000'))
@@ -48,7 +48,7 @@ class RecordStoreTests(unittest.TestCase):
 
     def test_loose_file_overrides_its_shard_and_fold_replaces_it(self):
         rs.pack_build(self.build)
-        (self.build / '0x1000.json').write_text('{"a": 2}\n')
+        (self.build / '0x1000.json').write_text('{"a": 2}\n', newline='\n')
         self.assertEqual(json.loads(rs.read_text(self.build / '0x1000.json')), {'a': 2})
         out = rs.fold(self.root, ['reports/b1/0x1000.json', 'data/progress.json'])
         self.assertEqual(sorted(out), ['data/progress.json', 'reports/b1/packs/match-000.xz'])
@@ -59,7 +59,7 @@ class RecordStoreTests(unittest.TestCase):
         rs.pack_build(self.build)
         pack = self.build / 'packs/match-000.xz'
         before = pack.read_bytes()
-        (self.build / '0x1000.json').write_text(self.files['0x1000.json'])
+        (self.build / '0x1000.json').write_text(self.files['0x1000.json'], newline='\n')
         rs.fold(self.root, ['reports/b1/0x1000.json'])
         self.assertEqual(pack.read_bytes(), before)
 
@@ -72,7 +72,7 @@ class RecordStoreTests(unittest.TestCase):
 
     def test_names_lists_loose_and_packed_once(self):
         rs.pack_build(self.build)
-        (self.build / '0x30000.json').write_text('{}\n')
+        (self.build / '0x30000.json').write_text('{}\n', newline='\n')
         self.assertEqual(rs.names(self.build, 'match'), ['0x1000.json', '0x20000.json', '0x30000.json'])
         self.assertEqual(rs.names(self.build, 'review'), ['0x1000.review.json'])
         self.assertEqual(rs.names(self.build, 'history'), [f'unit-symbols/{DIGEST}.history.json'])

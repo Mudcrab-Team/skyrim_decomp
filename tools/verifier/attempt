@@ -66,6 +66,7 @@ import profiles  # noqa: E402
 import agent_advice  # noqa: E402
 import agent_identity  # noqa: E402
 import attempt_progress  # noqa: E402
+import local_load  # noqa: E402
 
 LABEL = 'standing'
 
@@ -113,7 +114,7 @@ def missing_source_message(task, repo=None):
         return None
     header = cpp[:-len('.cpp')] + '.h'
     tdir = Path(task['dir'])
-    shown = tdir.relative_to(repo) if tdir.is_relative_to(repo) else tdir
+    shown = (tdir.relative_to(repo) if tdir.is_relative_to(repo) else tdir).as_posix()
     also = '' if (repo / header).exists() else f' (nor does {header})'
     return (f'{cpp} does not exist yet{also}, so there is nothing to compile; this run was not counted. '
             f'Create {cpp} and {header} first. To get starting files with every header line, the labels and '
@@ -268,8 +269,9 @@ def retry_alternatives(task, host, task_dir, dest, image, objdump=None, force=Fa
             if fn in won:
                 continue
             before = (attempt_progress.read_json(dest / f'0x{fn["rva"]:x}' / 'align.json') or {}).get('distance')
-            align.attempt_summary(adest / f'0x{fn["rva"]:x}', disasm.find_objdump(objdump), image,
-                                  adest / 'candidate.obj', fn, task['symbols_local'])
+            with local_load.heavy('attempt alignment'):
+                align.attempt_summary(adest / f'0x{fn["rva"]:x}', disasm.find_objdump(objdump), image,
+                                      adest / 'candidate.obj', fn, task['symbols_local'])
             after = (attempt_progress.read_json(adest / f'0x{fn["rva"]:x}' / 'align.json') or {}).get('distance')
             if before is not None and after is not None:
                 shifts.append(f'0x{fn["rva"]:x} {before} -> {after}')
@@ -343,7 +345,8 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     if (not internal and code in (0, 1, COMPARATOR_ERROR_EXIT) and not (dest / 'error.json').is_file()
             and (dest / 'candidate.obj').is_file() and (code != COMPARATOR_ERROR_EXIT or comparator_errored(task, dest))):
         try:
-            report = bind.bind(task_dir, dest / 'candidate.obj', config.get('image'), config.get('objdump'))
+            with local_load.heavy('attempt binding'):
+                report = bind.bind(task_dir, dest / 'candidate.obj', config.get('image'), config.get('objdump'))
         except (OSError, ValueError) as exc:
             report = None
             bind_lines.append('  ' + agent_advice.explain(f'binding failed: {exc}', 'attempt'))
@@ -385,20 +388,22 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     else:
         objdump = disasm.find_objdump(config.get('objdump'))
         rows, outcome = [], []
-        for fn in task['functions']:
-            fdir = dest / f'0x{fn["rva"]:x}'
-            line, result = pipeline.function_line(fn, fdir, dest / 'candidate.obj')
-            rows.append('  ' + line)
-            outcome.append(result)
-            if result == 'fail' and 'internal_selector' not in fn:  # aligned diagnostics (align.py): distance and classes under the function's line
-                rows[-1] += ''.join(f'\n      {s}' for s in align.attempt_summary(
-                    fdir, objdump, config.get('image'), dest / 'candidate.obj', fn, task['symbols_local']))
-            if 'internal_selector' in fn:
-                continue  # Name-only disassembly helpers cannot select TU-bound internal symbols.
-            sbs, why = disasm.write_side_by_side(fdir / 'side-by-side.txt', objdump, config.get('image'),
-                                                 dest / 'candidate.obj', fn['symbol'], fn['rva'], fn['size'])
-            if sbs is None and why and not any('side-by-side' in r for r in rows):
-                rows.append(f'  (no side-by-side: {why})')
+        # The aligned diagnostics and side-by-side listings run objdump over the image for every function.
+        with local_load.heavy('attempt diagnostics'):
+            for fn in task['functions']:
+                fdir = dest / f'0x{fn["rva"]:x}'
+                line, result = pipeline.function_line(fn, fdir, dest / 'candidate.obj')
+                rows.append('  ' + line)
+                outcome.append(result)
+                if result == 'fail' and 'internal_selector' not in fn:  # aligned diagnostics (align.py): distance and classes under the function's line
+                    rows[-1] += ''.join(f'\n      {s}' for s in align.attempt_summary(
+                        fdir, objdump, config.get('image'), dest / 'candidate.obj', fn, task['symbols_local']))
+                if 'internal_selector' in fn:
+                    continue  # Name-only disassembly helpers cannot select TU-bound internal symbols.
+                sbs, why = disasm.write_side_by_side(fdir / 'side-by-side.txt', objdump, config.get('image'),
+                                                     dest / 'candidate.obj', fn['symbol'], fn['rva'], fn['size'])
+                if sbs is None and why and not any('side-by-side' in r for r in rows):
+                    rows.append(f'  (no side-by-side: {why})')
         passed = sum(r == 'pass' for r in outcome)
         lines.append(f'{head}: {passed}/{len(outcome)} pass; includes = closure ({len(closure)} repo files)')
         all_rows = rows

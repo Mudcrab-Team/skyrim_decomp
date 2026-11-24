@@ -72,6 +72,7 @@ class Pure(unittest.TestCase):
         self.assertEqual(opened, ['/r/a.h', '/m/x'])
         self.assertEqual(rest, ['A.cpp', 'warning C4100: y'])
 
+    @unittest.skipIf(sys.platform == 'win32', 'classify_includes is the POSIX loader path logic and these fixtures are POSIX absolute paths')
     def test_classify_includes(self):
         repo, tool, out = ub.classify_includes(
             ['/w/repo/reconstruction/a/B.h', 'z:\\m\\include\\cstdint', '/m/include/x', '/w/repo/../evil.h',
@@ -80,6 +81,7 @@ class Pure(unittest.TestCase):
         self.assertEqual(tool, 2)
         self.assertEqual(out, ['/w/repo/../evil.h', 'c:\\windows\\x.h', '/w/repository/x.h'])
 
+    @unittest.skipIf(sys.platform == 'win32', 'classify_includes is the POSIX loader path logic and these fixtures are POSIX absolute paths')
     def test_relative_includes_have_the_same_closure_on_both_loaders(self):
         paths = ['reconstruction/a/B.h', r'.\reconstruction\a\B.h', 'reconstruction/a/../C.h']
         expected = (['reconstruction/C.h', 'reconstruction/a/B.h'], 0, [])
@@ -107,6 +109,7 @@ class Pure(unittest.TestCase):
             r'\\host\share\repo', r'\\host\share\msvc'),
             (['a.h'], 0, [r'\\host\share\other\x.h']))
 
+    @unittest.skipIf(sys.platform == 'win32', 'the test stands in for ntpath.realpath with the POSIX one, which on Windows is the same function')
     def test_links_and_link_dotdot_escapes_are_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp).resolve()
@@ -128,6 +131,7 @@ class Pure(unittest.TestCase):
                 self.assertEqual(ub.classify_includes_windows(win_paths, 'C:' + str(repo), 'C:' + str(tool)),
                                  ([], 0, win_paths))
 
+    @unittest.skipIf(sys.platform == 'win32', 'classify_includes is the POSIX loader path logic and these fixtures are POSIX absolute paths')
     def test_relative_case_fold_only_accepts_the_closure(self):
         paths = [r'reconstruction\a\b.h', r'reconstruction\a\c.h', r'..\repo2\b.h']
         self.assertEqual(ub.fold_case_includes(paths, '/w/repo', ['reconstruction/a/B.h'], []),
@@ -145,6 +149,7 @@ class Pure(unittest.TestCase):
         self.assertEqual(ub.mismatch_offset('candidate function is 3 bytes'), '-')
 
 
+@unittest.skipIf(sys.platform == 'win32', 'the fake msvc-wine compiler is a bash script, which the native Windows host path cannot run')
 class HostRun(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp()).resolve()

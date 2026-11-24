@@ -59,8 +59,8 @@ class Config(unittest.TestCase):
     def test_valid_config_resolves_local_paths_against_the_checkout(self):
         c = runners.validate(config(hosts={'mac': host(msvc='.local/toolchains/msvc', work='.local/w'),
                                            'winpc': ssh_host()}), root='/repo')
-        self.assertEqual(c['hosts']['mac']['msvc'], '/repo/.local/toolchains/msvc')
-        self.assertEqual(c['hosts']['winpc']['ssh_config'], '/repo/.local/winpc/ssh_config')
+        self.assertEqual(c['hosts']['mac']['msvc'], str(Path('/repo/.local/toolchains/msvc')))
+        self.assertEqual(c['hosts']['winpc']['ssh_config'], str(Path('/repo/.local/winpc/ssh_config')))
         self.assertEqual(c['hosts']['winpc']['msvc'], 'C:/example/verifier/msvc')
         self.assertEqual(c['attempt'], 'mac')
         # An ssh host gets units in batches by default; a local host one at a time.
@@ -646,6 +646,7 @@ class StubSsh(runners.LocalTransport):
         return '/'.join(p.rstrip('/') for p in parts)
 
 
+@unittest.skipIf(sys.platform == 'win32', 'the fake msvc-wine compiler is a bash script, which the native Windows host path cannot run')
 class AgentEndToEnd(unittest.TestCase):
     """attempt's host interface (run, fetch) through host_agent.py and unit_build.py."""
 
@@ -1002,6 +1003,7 @@ class LoaderPaths(unittest.TestCase):
         self.assertEqual(tool, 1)
         self.assertEqual(len(out), 3)
 
+    @unittest.skipIf(sys.platform == 'win32', 'classify_includes is the POSIX loader path logic and these fixtures are POSIX absolute paths')
     def test_fold_case_accepts_only_closure_files(self):
         closure = ['reconstruction/a/B.cpp', 'reconstruction/a/B.h']
         files, rest = ub.fold_case_includes(['/w/repo/reconstruction/a/b.h', '/w/repo/reconstruction/a/c.h',

@@ -123,7 +123,7 @@ class LocalDirectoryTests(Base):
     def test_redact_hides_shared_storage_outside_checkout(self):
         ctx = contrib.Ctx(repo=ROOT, env={'SR_LOCAL_DIR': str(self.tmp)}, as_json=True)
         ctx.redact = True
-        self.assertEqual(ctx.scrub(str(ctx.local / 'contrib/config.json')), '<local>/contrib/config.json')
+        self.assertEqual(ctx.scrub(str(ctx.local / 'contrib/config.json')).replace('\\', '/'), '<local>/contrib/config.json')
 
     def test_source_fetch_uses_shared_storage_and_passes_environment(self):
         calls = []
@@ -169,7 +169,7 @@ class ExecutableTests(Base):
 
     def test_missing_executable(self):
         self.assertEqual(contrib.inspect_exe(self.tmp / 'nope.exe', TARGET)['status'], 'missing')
-        ctx = self.ctx(env={'PATH': '', 'HOME': str(self.tmp)})
+        ctx = self.ctx(env={'PATH': '', 'HOME': str(self.tmp), 'ProgramFiles': str(self.tmp), 'ProgramFiles(x86)': str(self.tmp)})
         with self.assertRaises(contrib.Stop) as cm:
             contrib.require_exe(ctx, TARGET)
         self.assertEqual(cm.exception.code, contrib.MISSING)
@@ -207,6 +207,7 @@ class ToolchainTests(Base):
         self.assertEqual(state['status'], 'mismatch')
         self.assertEqual(sorted(state['differing']), ['c1xx.dll', 'c2.dll', 'cl.exe', 'link.exe'])
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_doctor_names_one_next_step(self):
         ctx = self.ctx(env={'SR_MSVC': str(self.tmp / 'msvc'), 'PATH': '/usr/bin:/bin', 'HOME': str(self.tmp),
                             'SR_SKYRIM_EXE': str(self.tmp / 'none.exe')}, platform='linux')
@@ -245,6 +246,7 @@ class ToolchainTests(Base):
         self.assertEqual(contrib.classify_windows(outside, 'C:/repo', ['C:/msvc']),
                          ([], 0, outside))
 
+    @unittest.skipIf(sys.platform == 'win32', 'the test stands in for ntpath.realpath with the POSIX one, which on Windows is the same function')
     def test_classify_windows_link_escapes(self):
         repo, tool, outside = (self.tmp / name for name in ('repo', 'msvc', 'outside'))
         for root in (repo, tool, outside / 'child'):
@@ -269,6 +271,7 @@ class ToolchainTests(Base):
         self.assertIn('--yes', cm.exception.next_action)
         self.assertTrue(self.ctx(assume_yes=True).ask('Install wine?', '--yes'))
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_setup_without_yes_does_not_install_when_not_a_terminal(self):
         bin_dir = self.tmp / 'bin'
         bin_dir.mkdir()
@@ -899,6 +902,7 @@ class FollowUpTests(Base):
         found = contrib.exe_candidates(ctx, exists=lambda p: p == str(exe), dir_exists=lambda p: False)
         self.assertEqual(found, [str(exe)])
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_apt_steamcmd_is_left_to_the_person(self):
         bin_dir = self.tmp / 'bin'
         bin_dir.mkdir()
@@ -954,9 +958,9 @@ class FollowUpTests(Base):
 
     def test_redact_hides_checkout_and_home(self):
         home = str(self.tmp / 'home')
-        ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home})
+        ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home, 'USERPROFILE': home})
         ctx.redact = True
-        text = ctx.scrub(f'{self.tmp}/home/src/skyrim-research/.local/x and {home}/Games/SkyrimSE.exe')
+        text = ctx.scrub(f'{self.tmp.as_posix()}/home/src/skyrim-research/.local/x and {Path(home).as_posix()}/Games/SkyrimSE.exe')
         self.assertEqual(text, '<repo>/.local/x and ~/Games/SkyrimSE.exe')
 
     def test_practice_tasks_have_their_own_id_and_are_not_picked_by_default(self):

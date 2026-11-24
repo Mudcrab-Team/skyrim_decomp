@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +16,7 @@ def git(cwd, *args):
     return subprocess.run(['git', *args], cwd=cwd, capture_output=True, text=True, check=True, env=ENV).stdout.strip()
 
 
+@unittest.skipIf(sys.platform == 'win32', 'the deploy script is POSIX sh, run on the bot host')
 class DeployTests(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()

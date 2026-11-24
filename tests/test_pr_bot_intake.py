@@ -105,7 +105,7 @@ class AutofixTests(WorkDir):
         functions = [dict(build_id='sse-test', rva=0x1000, name=n, status='matched') for n in (accepted or [])]
         (tree / 'data/progress.json').write_text(json.dumps({'functions': functions}))
         (tree / self.NAME).parent.mkdir(parents=True)
-        (tree / self.NAME).write_text(text)
+        (tree / self.NAME).write_text(text, newline='\n')
         bot = FakeBot(self.dir, files=[{'filename': self.NAME, 'status': 'modified'}])
         bot.tree = tree
         bot.pushed = []
@@ -175,7 +175,7 @@ class PushToBranchTests(WorkDir):
         clone = self.dir / 'clone'
         git(self.dir, 'clone', '-q', str(fork), str(clone))
         (clone / 'reconstruction/a').mkdir(parents=True)
-        (clone / 'reconstruction/a/B.cpp').write_text('// old\n' + BODY)
+        (clone / 'reconstruction/a/B.cpp').write_text('// old\n' + BODY, newline='\n')
         git(clone, 'add', '-A')
         git(clone, 'commit', '-q', '-m', 'work')
         git(clone, 'push', '-q', 'origin', 'HEAD:feature')
@@ -235,13 +235,13 @@ class LandWithRecordsTests(WorkDir):
         (self.root / 'data').mkdir()
         (self.root / 'data/progress.json').write_text(json.dumps({'functions': []}))
         (self.root / 'reconstruction').mkdir()
-        (self.root / 'reconstruction/U.cpp').write_text('// base\n' + BODY)
+        (self.root / 'reconstruction/U.cpp').write_text('// base\n' + BODY, newline='\n')
         git(self.root, 'add', '-A')
         git(self.root, 'commit', '-q', '-m', 'base')
         git(self.root, 'push', '-q', 'origin', 'HEAD:main')
         self.base = git(self.root, 'rev-parse', 'HEAD')
         git(self.root, 'checkout', '-q', '-b', 'pr')
-        (self.root / 'reconstruction/U.cpp').write_text('// changed\n' + BODY)
+        (self.root / 'reconstruction/U.cpp').write_text('// changed\n' + BODY, newline='\n')
         git(self.root, 'commit', '-qam', 'pr work')
         self.head = git(self.root, 'rev-parse', 'HEAD')
         git(self.root, 'checkout', '-q', 'main')
@@ -352,7 +352,7 @@ class LandWithRecordsTests(WorkDir):
         self.assertEqual(git(self.origin, 'rev-parse', 'main'), self.base)
 
     def test_a_pr_that_conflicts_with_main_falls_back_and_leaves_main_alone(self):
-        (self.root / 'reconstruction/U.cpp').write_text('// other\n' + BODY)
+        (self.root / 'reconstruction/U.cpp').write_text('// other\n' + BODY, newline='\n')
         git(self.root, 'commit', '-qam', 'main moved')
         git(self.root, 'push', '-q', 'origin', 'HEAD:main')
         moved = git(self.root, 'rev-parse', 'HEAD')

@@ -23,7 +23,7 @@ class PrefetchCompare(unittest.TestCase):
         pr_bot.Bot.prefetch_compare(fake({}, run), [Path('/t/a'), Path('/t/b')], None)
         self.assertEqual(len(calls), 1)
         self.assertEqual(calls[0][1:2], ['tools/verifier/compare_batch.py'])
-        self.assertEqual(calls[0][-2:], ['/t/a', '/t/b'])
+        self.assertEqual(calls[0][-2:], [str(Path('/t/a')), str(Path('/t/b'))])
 
     def test_a_failing_or_timed_out_batch_is_not_an_error(self):
         for exc in (subprocess.TimeoutExpired('x', 1), OSError('gone'), pr_bot.Stop('no')):

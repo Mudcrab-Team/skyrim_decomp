@@ -320,7 +320,7 @@ class FamilyReviewTests(GateFixture, unittest.TestCase):
     def test_public_cache_does_not_hide_duplicate_fields_or_changed_paths(self):
         fn, record, review = self.public_review_inputs()
         fr.validate_public_review(self.root, fn, record, review)
-        other_path = str(Path(self.family_path).with_name('other.json'))
+        other_path = Path(self.family_path).with_name('other.json').as_posix()
         self.write(other_path, (self.root / self.family_path).read_text())
         changed_review = copy.deepcopy(review)
         changed_review['family_evidence']['family_path'] = other_path

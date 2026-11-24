@@ -748,7 +748,7 @@ def compile_unit(ctx, root, compiled, recipe_rel, out_dir, tool):
         errors = [line.strip() for line in rest if re.search(r'\berror [A-Z]+\d+', line)][:8]
         raise Stop(COMPILE, 'compile failed', 'fix the errors and run compare again',
                    errors=errors, log=str(out_dir / 'compile.log'))
-    if flavour == 'native':
+    if flavour == 'native' or (flavour == 'override' and ctx.windows):
         repo_files, tool_count, outside = classify_windows(opened, root, roots)
     else:
         repo_files, tool_count, outside = unit_build.classify_includes(opened, root, Path(roots[0]) if roots
@@ -780,7 +780,10 @@ def fold_case_includes(outside, root, closure, repo_files):
     case. Only an exact case-insensitive match to a file of the derived closure is accepted, and
     only when the reported path opens that very file (same device and inode), so a file outside the
     repository, or a different file whose name merely folds to a closure name, still fails."""
-    prefix = str(root).rstrip('/').lower() + '/'
+    base = str(root).replace('\\', '/')
+    if len(base) > 2 and base[1] == ':':
+        base = base[2:]
+    prefix = base.rstrip('/').lower() + '/'
     by_lower = {c.lower(): c for c in closure}
     rest = []
     for raw in outside:
@@ -1210,7 +1213,7 @@ def symbol_map_path(repo, build_id):
     """The public symbol map, or a Stop that names the file and the sparse-checkout fix."""
     path = Path(repo) / 'reports' / build_id / 'symbol-map.json'
     if not path.is_file():
-        raise Stop(MISSING, f'{path} is missing; a sparse checkout that excludes reports/ does not have it',
+        raise Stop(MISSING, f'{path.relative_to(repo).as_posix()} is missing; a sparse checkout that excludes reports/ does not have it',
                    "git sparse-checkout set --no-cone '/*' '!/site/'   (then run the command again)")
     return path
 
@@ -2728,14 +2731,14 @@ def cmd_note(ctx, args):
         name = fn.get('community_name') or fn.get('symbol') or f'sub_{rva:x}'
         path = ctx.repo / (args.path or cookbook_notes.note_path(rva, args.slug or name))
         if path.exists() and not args.force:
-            ctx.say(f'{path.relative_to(ctx.repo)} exists; kept (--force replaces it)')
-            written.append(str(path.relative_to(ctx.repo)))
+            ctx.say(f'{path.relative_to(ctx.repo).as_posix()} exists; kept (--force replaces it)')
+            written.append(path.relative_to(ctx.repo).as_posix())
             continue
         outcome = 'fixed' if row.get('result') == 'pass' else 'unsolved'
         text = cookbook_notes.render(rva, name, fn.get('label'), outcome, score, attempts)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
-        written.append(str(path.relative_to(ctx.repo)))
+        written.append(path.relative_to(ctx.repo).as_posix())
         ctx.say(f'wrote {written[-1]}: finish every TODO in words and short plain C++ (never bytes, hex or listings)')
     return OK, {'notes': written}, f'finish the TODO lines, then `{ctx.cli} preflight` and submit; the note goes in the same PR'
 

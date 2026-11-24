@@ -386,7 +386,10 @@ def project_alias(ctx, project):
             yield alias
         finally:
             if ctx.windows:
-                alias.rmdir()
+                try:
+                    alias.rmdir()
+                except FileNotFoundError:
+                    pass
             else:
                 alias.unlink()
 
