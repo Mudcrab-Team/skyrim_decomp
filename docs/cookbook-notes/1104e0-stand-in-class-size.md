@@ -1,5 +1,7 @@
 # 0x1104e0 scalar deleting destructor of a sibling-shaped stand-in class
 
+<!-- tags: wall/layout -->
+
 - Function: 0x1104e0 Owner1104e0::~Owner1104e0 (same shape at 0x12dd70, 0x58f0a0, 0x15832a0)
 - Label: GUESS(low) (the sibling decompilation only pointed at the shape)
 - Outcome: fixed

@@ -81,15 +81,6 @@ std::uint32_t Widget::GetMode() const
 """
 
 
-def fixture(files):
-    tmp = tempfile.TemporaryDirectory()
-    for rel, text in files.items():
-        path = Path(tmp.name) / 'reconstruction' / rel
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
-    return tmp
-
-
 class SourceTests(unittest.TestCase):
     def test_segments_and_names(self):
         segs = S.segments(STAMPED_CPP.split('#include "Leaf111111.h"')[1])
@@ -108,8 +99,17 @@ class SourceTests(unittest.TestCase):
 
 
 class UnitTests(unittest.TestCase):
+    def fixture(self, files):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        for rel, text in files.items():
+            path = Path(tmp.name) / 'reconstruction' / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text)
+        return tmp
+
     def test_stamped_slices_other_functions_and_renames_hex(self):
-        tmp = fixture({'unmapped/Leaf111111.h': STAMPED_H, 'unmapped/Leaf111111.cpp': STAMPED_CPP})
+        tmp = self.fixture({'unmapped/Leaf111111.h': STAMPED_H, 'unmapped/Leaf111111.cpp': STAMPED_CPP})
         ex = U.load_exemplar(tmp.name, 0x111111, 'unmapped/Leaf111111')
         twin = U.build(tmp.name, ex, 0x444444)
         cpp, header = twin.files['unmapped/Leaf444444.cpp'], twin.files['unmapped/Leaf444444.h']
@@ -121,7 +121,7 @@ class UnitTests(unittest.TestCase):
         self.assertIn('#include "Leaf444444.h"', cpp)
 
     def test_standin_clones_the_owner(self):
-        tmp = fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
+        tmp = self.fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
         ex = U.load_exemplar(tmp.name, 0x333333, 'unmapped/Widget')
         twin = U.build(tmp.name, ex, 0x555555)
         cpp, header = twin.files['unmapped/Owner555555.cpp'], twin.files['unmapped/Owner555555.h']
@@ -133,7 +133,7 @@ class UnitTests(unittest.TestCase):
         self.assertNotIn('Widget::', cpp)
 
     def test_constants_substitute_in_the_function_only(self):
-        tmp = fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
+        tmp = self.fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
         ex = U.load_exemplar(tmp.name, 0x333333, 'unmapped/Widget')
         twin = U.build(tmp.name, ex, 0x555555)
         U.apply_constants(twin, {5: (9, 4)})
@@ -145,20 +145,20 @@ class UnitTests(unittest.TestCase):
         cpp = REAL_CPP.replace('std::uint32_t Widget::GetMode() const',
                                'constexpr auto defaultMode = 5u;\n\nstd::uint32_t Widget::GetMode() const')
         cpp = cpp.replace('mode + 5 +', 'mode + defaultMode +')
-        with fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': cpp}) as root:
-            twin = U.build(root, U.load_exemplar(root, 0x333333, 'unmapped/Widget'), 0x555555)
-            U.apply_constants(twin, {5: (9, 4)})
-            self.assertIn('constexpr auto defaultMode = 9u;', twin.files[twin.stem + '.cpp'])
+        tmp = self.fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': cpp})
+        twin = U.build(tmp.name, U.load_exemplar(tmp.name, 0x333333, 'unmapped/Widget'), 0x555555)
+        U.apply_constants(twin, {5: (9, 4)})
+        self.assertIn('constexpr auto defaultMode = 9u;', twin.files[twin.stem + '.cpp'])
 
     def test_community_name_updates_the_definition_and_label(self):
-        with fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP}) as root:
-            ex = U.load_exemplar(root, 0x333333, 'unmapped/Widget')
-            twin = U.build(root, ex, 0x555555)
-            binding = {'name': 'Gadget::ReadMode', 'label': 'CRASHLOGGER_PDB(59818@2026.10.24)', 'arity': 0}
-            names.apply(twin, binding, headers=[REAL_H])
-            self.assertIn('Gadget::ReadMode() const', twin.files[twin.stem + '.cpp'])
-            self.assertIn('// Gadget::ReadMode: CRASHLOGGER_PDB', twin.files[twin.stem + '.h'])
-            self.assertEqual(twin.name, binding['name'])
+        tmp = self.fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
+        ex = U.load_exemplar(tmp.name, 0x333333, 'unmapped/Widget')
+        twin = U.build(tmp.name, ex, 0x555555)
+        binding = {'name': 'Gadget::ReadMode', 'label': 'CRASHLOGGER_PDB(59818@2026.10.24)', 'arity': 0}
+        names.apply(twin, binding, headers=[REAL_H])
+        self.assertIn('Gadget::ReadMode() const', twin.files[twin.stem + '.cpp'])
+        self.assertIn('// Gadget::ReadMode: CRASHLOGGER_PDB', twin.files[twin.stem + '.h'])
+        self.assertEqual(twin.name, binding['name'])
 
     def test_direct_member_callee_gets_its_own_symbol(self):
         twin = U.Twin(0x555555, 0x333333, 'unmapped/Owner555555', 'standin')
@@ -169,7 +169,7 @@ class UnitTests(unittest.TestCase):
         self.assertIn('CallReset555555(&member);', twin.files[twin.stem + '.cpp'])
 
     def test_layout_moves_the_member(self):
-        tmp = fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
+        tmp = self.fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
         ex = U.load_exemplar(tmp.name, 0x333333, 'unmapped/Widget')
         twin = U.build(tmp.name, ex, 0x555555)
         U.apply_layout(twin, [(0x10, 0x20)])

@@ -350,9 +350,9 @@ def build(root, ex, rva, note=None):
         if s.kind == 'function' and s.name == ex.name and not s.lead.strip():
             s.lead = '// guess: same compiled code as matched 0x%x apart from relocated fields; its role here is not established.' % ex.rva
     new_hex = '%x' % rva
-    unit_dir = Path(ex.stem).parent.as_posix()
+    unit_dir = Path(ex.stem).parent
     mode = 'stamped' if is_stamped(ex) else 'standin'
-    stem = twin_stem(ex, rva) if mode == 'stamped' else (Path(ex.stem).parent / ('Owner%s' % new_hex)).as_posix()
+    stem = twin_stem(ex, rva) if mode == 'stamped' else (unit_dir / ('Owner%s' % new_hex)).as_posix()
     twin = Twin(rva, ex.rva, stem, mode)
     note = note or ' Stamped as a twin of matched 0x%x (%s): source copied, names replaced by placeholders.' % (ex.rva, ex.stem)
     kept_text = S.render(keep)

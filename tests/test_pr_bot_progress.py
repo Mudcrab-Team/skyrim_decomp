@@ -1,4 +1,5 @@
 """A long stage leaves a progress entry a watcher can read: atomic, throttled, monotonic, ageing."""
+from concurrent.futures import ThreadPoolExecutor
 import json
 from pathlib import Path
 import subprocess
@@ -65,23 +66,32 @@ class ProgressTests(unittest.TestCase):
     def test_no_temp_file_is_left_and_the_file_is_always_whole_json(self):
         self.progress.begin('compare', 200)
         stop = threading.Event()
+        ready = threading.Event()
         seen = []
 
         def read():
             while not stop.is_set():
                 try:
                     seen.append(json.loads(self.progress.path.read_text()))
-                except FileNotFoundError:
+                    ready.set()
+                except (FileNotFoundError, PermissionError):
+                    # Windows can refuse an open briefly while the writer replaces the file.
                     pass
-        t = threading.Thread(target=read)
-        t.start()
-        for _ in range(200):
-            self.progress.advance(True)
-        stop.set()
-        t.join()
+                stop.wait(0.001)
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            reader = pool.submit(read)
+            try:
+                self.assertTrue(ready.wait(5), 'reader did not see the initial progress entry')
+                for _ in range(200):
+                    self.progress.advance(True)
+            finally:
+                stop.set()
+                reader.result()
         self.assertEqual([p.name for p in self.dir.iterdir()], [self.progress.path.name])
         done = [e['done'] for e in seen]
         self.assertEqual(done, sorted(done))
+        self.assertEqual(self.entry()['done'], 200)
 
     def test_status_line_shows_age_and_flags_a_stale_entry(self):
         self.progress.begin('compare', 40)

@@ -4047,6 +4047,7 @@ class Bot:
                 state.set('merged', True)
         if not state.get('commented'):
             text = 'Merged: findings added.' if decision['merge'] else findings_comment(decision)
+            text += '\n\nA red `scope` check is expected for findings PRs.'
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
@@ -5567,14 +5568,19 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     taking new work, lets the running PRs finish and returns, so a busy queue (which is never idle at the
     `restart_after` check) still moves onto the newly pinned revision when the supervisor restarts it.
     """
+    with open(bot.work / 'poll.lock', 'a+') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            print('another pr_bot --poll holds the lock', file=sys.stderr)
+            return 1
+        return _poll(bot, interval, restart_after, workers, gh, sleep, rounds,
+                     refill_every, await_housekeeping, restart_on)
+
+
+def _poll(bot, interval, restart_after, workers, gh, sleep, rounds, refill_every, await_housekeeping, restart_on):
     if await_housekeeping is None:
         await_housekeeping = rounds is not None
-    lock = open(bot.work / 'poll.lock', 'a+')
-    try:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
-        print('another pr_bot --poll holds the lock', file=sys.stderr)
-        return 1
     started = time.time()
     marker_at_start = marker_text(restart_on) if restart_on else None
     draining = False
