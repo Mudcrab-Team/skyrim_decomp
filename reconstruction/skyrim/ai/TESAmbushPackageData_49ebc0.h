@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // TESAmbushPackageData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESPackageData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) STANDIN
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // PackageDataPayload, TESAmbushPackageData::payload: GUESS(low)
 #pragma once
 

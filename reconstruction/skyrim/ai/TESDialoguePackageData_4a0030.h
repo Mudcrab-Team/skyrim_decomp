@@ -1,6 +1,6 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: fo4-private@1b765c70 src/Shared/AI/PackageDataDialogue.cpp:57
 // TESDialoguePackageData, TESDialoguePackageData::TESDialoguePackageData: SIBLING(fo4-private@1b765c70, author-permission)
 // TESDialoguePackageData::fFov, TESDialoguePackageData::ptopic, TESDialoguePackageData::pTargetLocation, TESDialoguePackageData::bNOHeadtracking, TESDialoguePackageData::bDoNotControlTarget, TESDialoguePackageData::bSayTo, TESDialoguePackageData::fDistanceStartTalking, TESDialoguePackageData::eTriggerType: SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0); the same names stand in the sibling constructor body, layout read from the listing

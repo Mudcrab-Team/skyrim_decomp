@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Sibling source: fo4-private@1b765c70 src/Game/Script/BGSGameScriptUtils.cpp:120
 // GameScript::ReadFormIDFromSaveNoRemap: SIBLING(fo4-private@1b765c70, author-permission)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSNumericIDIndex: SIBLING(fo4-private@1b765c70, author-permission) STANDIN
 // BSStorage, BSStorage::Read, BSStorage::Write, BGSNumericIDIndex::SetNumericID, BGSNumericIDIndex::GetNumericID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) STANDIN OBSERVED; the parameter lists follow the listing
 // BGSNumericIDIndex::cData1: GUESS(low); the name is the one the sibling body uses

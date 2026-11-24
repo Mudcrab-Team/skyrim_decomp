@@ -1,5 +1,5 @@
 // Source exposure: mixed (community headers, sibling game code, the pinned image listing).
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Stand-in declarations: NiAVObject.
 // NiAVObject: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // GetObjectIndexInSceneGraph, RecurseAndGetObjectIndexInSceneGraph: SIBLING(fo4-private@1b765c70, author-permission)

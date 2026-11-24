@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // BaseFormComponent, TESFullName, BSFixedString, fullName: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) STANDIN
 // BSFixedString::value: GUESS(low)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 #pragma once
 
 class BaseFormComponent

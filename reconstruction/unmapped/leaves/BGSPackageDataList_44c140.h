@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; CrashLogger layout; the pinned image listing).
 // BGSPackageDataList: SIBLING(fo4-private@1b765c70, author-permission) CRASHLOGGER_PDB(59818@2026.10.24)
 // BGSPackageDataList::InitItems, BGSPackageDataList::GetByUID, BGSPackageDataList::GetUIDForData, BGSPackageDataList::FindData: SIBLING(fo4-private@1b765c70, author-permission)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // IPackageData, IPackageData::InitPackage: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) STANDIN OBSERVED; NG declares InitPackage without a parameter, the listing passes the owner form
 // BGSPackageDataList::data, BGSPackageDataList::uids, BGSPackageDataList::dataSize, BGSPackageDataList::nextUID: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once

@@ -1,6 +1,7 @@
 // Source exposure: mixed (sibling game-code declarations; the pinned image listing).
 // Code origin: adapted from the sibling list header, then checked against the image listing.
 // Sibling source: fo4-private@1b765c70 src/BSCore/BSSimpleList.h:210
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSSimpleList, m_item, m_pkNext, AddTail: SIBLING(fo4-private@1b765c70, author-permission)
 // TESPackage: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MemMgrGuard_369ac98, MemMgrInst_369a810, MemMgrEnsure_cde810, MemMgrAlloc_cde250: GUESS(low); the heap singleton, its init guard and its allocation call

@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Sibling source: fo4-private@1b765c70 src/Shared/AI/BGSAIWorldLocationCell.cpp:102
 // BGSAIWorldLocationInteriorCell, BGSAIWorldLocationInteriorCell::LoadGame, BGSLoadFormBuffer: SIBLING(fo4-private@1b765c70, author-permission) STANDIN
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESForm, TESObjectCELL: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) STANDIN
 // TESForm::LookupByID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BGSLoadFormBuffer::LoadFormID, BGSLoadFormBuffer::LoadDataEndian: GUESS(low); the names are the ones the sibling body calls

@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Sibling source: fo4-private@1b765c70 src/Game/SaveGame/BGSSaveLoadInitialData.cpp:171
 // BGSSaveLoadInitialData::LoadInitialDataStruct: SIBLING(fo4-private@1b765c70, author-permission)
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSLoadFormBuffer::LoadDataEndian: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; the listing passes a count of one as a third argument
 // BGSSaveLoadInitialData, BGSSaveLoadInitialData::iInitialDataTypeData, INITIAL_DATA_TYPE, INITIAL_DATA_NONE, BGSLoadFormBuffer: GUESS(low); the names are the ones the sibling body uses, the layouts come from the listing
 // InitialDataTypeData, InitialDataTypeData::cSize: GUESS(low)

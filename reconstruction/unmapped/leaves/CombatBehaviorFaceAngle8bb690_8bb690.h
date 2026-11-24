@@ -1,6 +1,6 @@
 // Source exposure: mixed (sibling source; compared function from the pinned image).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatBehaviorMisc.cpp:136
 // CombatObject, fAngle, spAimController, LoadDataEndian, LoadGame, BGSLoadFormBuffer: SIBLING(fo4-private@1b765c70, author-permission) STANDIN
 // DeleteThis: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

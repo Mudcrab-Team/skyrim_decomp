@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // BGSProcedureTreeProcedure, BGSProcedureTreeConditionalItem: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // IProcedureTreeItem: STANDIN EXE_RTTI
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESCondition: STANDIN COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // TESCondition::head: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; kept as a plain 8-byte value, only its size matters here
 // TESCondition::~TESCondition, BGSProcedureTreeConditionalItem::condition, BGSProcedureTreeProcedure::child: GUESS(low)

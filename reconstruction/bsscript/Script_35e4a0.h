@@ -1,5 +1,5 @@
 // Source exposure: mixed (community headers, CrashLogger names, sibling game code, the pinned image listing).
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Stand-in declarations: Script, ScriptLocals, SCRIPT_PARAMETER, TESObjectREFR, TESWeather, TaskQueueInterface.
 // Script, SCRIPT_PARAMETER, ScriptLocals, TESObjectREFR, TESWeather, TaskQueueInterface: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // Script::ParseParameters, TaskQueueInterface::QueueForceWeather: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; ParseParameters takes the compiled-parameter bytes here, NG takes a script-data pointer

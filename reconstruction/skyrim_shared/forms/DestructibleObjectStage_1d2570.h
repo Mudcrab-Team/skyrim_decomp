@@ -1,6 +1,6 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: fo4-private@1b765c70 src/Shared/FormComponents/BGSDestructibleObjectForm.cpp:45
 // DestructibleObjectStage, DestructibleObjectStage::CheckReplacementModel: SIBLING(fo4-private@1b765c70, author-permission)
 // BSFixedString::QLength: GUESS(low); name from the sibling call site

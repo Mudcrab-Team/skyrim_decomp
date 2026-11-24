@@ -1,6 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Sibling source: fo4-private@1b765c70 src/Shared/AI/BGSPackageDataTopic.cpp:47
 // BGSPackageDataTopic::Copy: SIBLING(fo4-private@1b765c70, author-permission); the Skyrim slot is Assign
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSPackageDataTopic, IPackageData, IPackageData::Assign: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) STANDIN OBSERVED; NG declares Assign with a non-const parameter
 // BGSTopicSubtypeUnion, BGSTopicSubtypeUnion::Copy: SIBLING(fo4-private@1b765c70, author-permission) STANDIN; only its size and Copy are used
 // BGSPackageDataTopic::nameAndFlags, BGSPackageDataTopic::data: GUESS(low)

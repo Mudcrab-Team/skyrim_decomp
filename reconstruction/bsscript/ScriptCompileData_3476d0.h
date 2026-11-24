@@ -1,5 +1,5 @@
 // Source exposure: mixed (community headers, sibling game code, the pinned image listing).
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Stand-in declarations: ScriptCompileData, ScriptCompiler, SCRIPT_REFERENCED_OBJECT, BSString, BSSimpleList, TESForm.
 // SCRIPT_REFERENCED_OBJECT, BSString, BSSimpleList, TESForm, ScriptCompileData: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SCRIPT_REFERENCED_OBJECT::editorID, SCRIPT_REFERENCED_OBJECT::form, SCRIPT_REFERENCED_OBJECT::variableID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

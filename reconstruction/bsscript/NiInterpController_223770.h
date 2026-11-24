@@ -1,5 +1,5 @@
 // Source exposure: mixed (community headers, CrashLogger layouts, sibling game code, the pinned image listing).
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Stand-in declarations: NiRTTI, NiObjectNET, NiAVObject, NiTimeController, NiInterpController, NiMultiTargetTransformController.
 // NiRTTI, NiObjectNET, NiAVObject, NiTimeController, NiInterpController, NiMultiTargetTransformController, NiBlendTransformInterpolator, NiObjectNET::GetController: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiMultiTargetTransformController::blendInterps, NiMultiTargetTransformController::targets, NiMultiTargetTransformController::numInterps: CRASHLOGGER_PDB(59818@2026.10.24)

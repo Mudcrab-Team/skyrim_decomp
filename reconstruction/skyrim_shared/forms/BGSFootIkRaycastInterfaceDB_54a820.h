@@ -1,6 +1,6 @@
 // Source exposure: mixed (the pinned image listing; names from the sibling).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Sibling source: fo4-private@1b765c70 src/Shared/Animation/BGSFootIkRaycastInterfaceDB.cpp:152
 // BGSFootIkRaycastInterfaceDB, BGSFootIkRaycastInterfaceDB::KillSDM, BSIFootIkRaycastInterfaceDB: SIBLING(fo4-private@1b765c70, author-permission)
 // BSTSingletonSDM: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); a minimal single-parameter stand-in
