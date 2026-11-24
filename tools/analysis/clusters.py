@@ -427,12 +427,12 @@ def choose_exemplar(row, exemplars):
     return row['member_list'][0], None
 
 
-MIDDLEWARE = ('std::', 'stdext::', 'Concurrency::', 'bnet', 'hk', 'Scaleform', 'GFx', 'GAS', 'type_info')
+MIDDLEWARE = ('Concurrency::', 'bnet', 'hk', 'Scaleform', 'GFx', 'GAS', 'type_info')
 
 
 def is_middleware(row):
-    """Most owned or named members are CRT/STL, Havok, Scaleform or Bethesda.net classes, which the
-    decision table of docs/resource-guidelines.md puts out of scope."""
+    """Most owned or named members are Concurrency runtime, Havok, Scaleform or Bethesda.net classes, which the
+    decision table of docs/resource-guidelines.md puts out of scope. `std::` instances are game code there."""
     names = [m['owner'] or m['name'] for m in row['member_list'] if m['owner'] or m['name']]
     if not names:
         return False

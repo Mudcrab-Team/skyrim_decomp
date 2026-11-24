@@ -47,8 +47,8 @@ instantiations of the standard headers the compiler ships (containers, smart poi
 small wrapper functions) over scalar, pointer, plain-struct and nested element types; `build.py` compiles each as
 its own unit natively on Windows (at most four jobs); `index.py sigs`/`leads` and the `tools/f3x64` match, score and
 `cmp_run.py --tag msvclib` steps find unmatched target functions of the same shape. The sources copy no library
-text. `docs/resource-guidelines.md` lists CRT/STL as out of scope for drafting and counting, so a pass here is a lead
-list, not a reconstruction unit, until that row is changed by the maintainer.
+text. `docs/resource-guidelines.md` counts `std::` template instances that the game's own code instantiated as game code, so a
+pass here becomes a reconstruction unit labelled `OBSERVED`; plain C runtime functions and import thunks stay out of scope.
 
 **Checking the cookbook against the compiler.** `tools/f3x64/lab_experiments.py` compiles toy spelling variants on the Windows
 runner with the recipe and judges a stated claim per experiment (`lab_compile.py` is the transport and listing parser);

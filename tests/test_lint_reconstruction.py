@@ -63,6 +63,18 @@ class LintTests(unittest.TestCase):
     def test_good_unit_passes(self):
         self.assertEqual(self.problems(), [])
 
+    def test_standard_instantiation_unit_passes(self):
+        header = ("// Source exposure: binary-analysis\n"
+                  "// Labels: v2\n"
+                  "// Template from the compiler's standard headers; the source is our own instantiation.\n"
+                  "// Widget, Get, value: GUESS(low)\n"
+                  "// vector, Widget_vector: OBSERVED\n"
+                  "#pragma once\n#include <vector>\n\n"
+                  "class Widget {\npublic:\n    int Get() const;\n    int value;\n};\n"
+                  "template class std::vector<Widget*>;\n")
+        self.write(header, SOURCE)
+        self.assertEqual(self.problems(), [])
+
     def test_banned_constructs(self):
         body = SOURCE.replace('{ return value; }', '{{ {} return value; }}')
         cases = {
