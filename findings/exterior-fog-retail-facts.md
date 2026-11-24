@@ -106,6 +106,8 @@ Here `M` is an intermediate. The native slot-12 writer supplies `S=0` when bit 1
 
 **Confidence: high** for the checked shader expressions and the static slot-12 flag mapping. Runtime flag choices, scene constants, exceptional power inputs, and later frame processing remain **unverified**.
 
+**Amendment (2026-11-24, UNREVIEWED).** **Scope.** G04 covers the Lighting vertex and pixel records only. At (S,T) = (1,0) the pixel tail returns `L` in every channel where `k × M ≤ B`, so it does not write the fogged colour `M` there. A separate image-space composite pass applies fog per pixel from the depth texture, using the same scene fog property ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md), G04 and G05). Static only.
+
 ### G05. Object and terrain LOD
 
 **Verified, static only.** The pinned image binds Lighting to package group 6. The technique table names 13 and 15 `LODOBJECTS` and `LODOBJECTSHD`. The following list covers every entry for those two techniques in group 6. Each prefix combines with each suffix to give a checked key.
@@ -140,6 +142,8 @@ For these object vertices and the two ordinary comparison vertices, the fog leng
 
 **Verified, static only.** The `bSAOApplyFog` value reaches a separate flag and shader setup at `0x141541f0a–0x141541f11` and `0x141542cf8`. **Unverified.** A link from these three booleans to the checked exterior Lighting expressions.
 
+**Amendment (2026-11-24, UNREVIEWED).** This supersedes the unverified statement about `bSAOApplyFog` in the paragraph above. **Verified, static only.** `bSAOApplyFog` is not linked to the checked Lighting expressions. Its cached byte (`0x343639b`, also flipped by the console command `ToggleFog`, short `tfog`, handler `0x37d490`) decides whether the image-space SAO composite pass receives the scene fog property ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G04). **Unverified.** A link from `bFogEnabled:Weather` and `bDo30VFog:Display` to the checked Lighting expressions.
+
 **Verified, static only.** None of `Skyrim_Default.ini`, `Low.ini`, `Medium.ini`, `High.ini`, or `Ultra.ini` contains a case-insensitive match for fog, clip, sunrise, sunset, `NoLODFarDistance`, `WeatherTrans`, `DaytimeColorExtension`, or `fLightingOutputColourClampPostLit`. An ASCII setting-name scan of `.data` and `.rdata` found no floating-point setting with literal form `f…Fog…:Section`. **Unverified.** Other names, indirect consumers, and overrides in user INIs.
 
 **Confidence: high** for the byte gate, the arithmetic, the compiled values, and the five template scans. Runtime setting coverage remains **unverified**.
@@ -151,6 +155,8 @@ For these object vertices and the two ordinary comparison vertices, the fog leng
 ## Interpretation and alternatives
 
 The checked Lighting path evaluates a projection-dependent curve at vertices and interpolates both fog strength and fog RGB for the pixel calculation. A per-pixel depth or world-space radial calculation would change this input. The weather max limits vertex fog strength. The gated scene far override can change CPU endpoints before the shader ramp.
+
+**Amendment (2026-11-24, UNREVIEWED).** That statement concerns the Lighting path. The image-space composite pass is a per-pixel depth calculation of that kind, applied after the Lighting draws ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G05).
 
 ## Negative results and limits
 
@@ -178,3 +184,5 @@ Summary: 2 groups confirmed, 5 corrected, 0 rejected.
 ## Reviewer and outcome
 
 Reviewed independently on 2026-11-22 by `gpt-6.2-sol` (Codex, high effort, fresh context), separate from the author. Outcome: 2 confirmed (G01, G07), 5 corrected (G02 to G06), 0 rejected. Static only. A review verdict is not match evidence, and transfer eligibility is not decided. Unverified: live draw bindings and bound values, including the active scene, shader key pairing and per-draw constants; visible and rendered results, including degenerate endpoints and final frame output; the sky, cloud, sun and moon fog paths; other Lighting techniques, shader groups and packages beyond the enumerated records; the runtime producer of the far-override gate byte and the configurations that open it; forced and interrupted weather transition routing, cache timing at a climate change, and coincident or unordered endpoints; other `NAM0` formats and record overrides; any link from `bFogEnabled`, `bDo30VFog` and `bSAOApplyFog` to the checked Lighting expressions; indirect settings consumers, other setting names and user INI overrides; runtime slot-12 flag choices and exceptional power inputs; the active interior draw binding.
+
+**Amendment (2026-11-24, UNREVIEWED).** Later note (2026-11-24): the `bSAOApplyFog` item in the unverified list is resolved by [exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G04 (gate of the composite fog, not of the Lighting expressions).

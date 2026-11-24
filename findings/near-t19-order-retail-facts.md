@@ -65,6 +65,8 @@ The diffuse light accumulator includes directional and point lights, directional
 
 **Verified.** Per RGB channel define `E(X) = PS b12[42].y × (X − PS b0[0].w × lerp(X, COLOR1.rgb, COLOR1.a))` and `D = min(E(L) + PS b0[1].x, L)`. The three keys without highlights emit `D − PS b12[42].z × E(L)`. The 15 highlight keys form `U = D + H` and emit `min(E(U) + PS b0[1].z, U) − PS b12[42].z × E(U)`. Here `H` is the enabled standard or layer-dependent highlight, the rim term, or their sum. Each term is added after the diffuse bound. No `COLOR0` component enters `H` directly. At full weight the same tail uses `L(1)` and evaluates any enabled highlights with their own inputs. The bound is an upper minimum. It is not a lower clamp and not a saturation of the final target value. Fog is not only a terminal linear interpolation.
 
+**Amendment (2026-11-24, UNREVIEWED).** At (S,T) = (1,0), `D` equals `L` in every channel where `PS b0[0].w × lerp(L, COLOR1.rgb, COLOR1.a) ≤ PS b0[1].x`. With the compiled defaults (`0.8333333` and `1.0`) that means `lerp ≤ 1.2`. There the stage limits overflow and does not write the fogged colour. The second bound uses `PS b0[1].z` in the same way (compiled default 1.0). See [object-lod-frame-flags-retail-facts.md](object-lod-frame-flags-retail-facts.md) G05. Fog is applied later in the frame by an image-space composite pass ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G04).
+
 **Evidence.** All 18 technique 19 keys. The review confirmed both equations. This includes the rim-only keys and keys whose highlight evaluates to zero. **Confidence: high.** A draw trace would establish the live inputs to these terms.
 
 ### G03. Target 0 alpha
