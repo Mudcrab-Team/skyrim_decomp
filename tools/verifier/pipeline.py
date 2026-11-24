@@ -543,12 +543,11 @@ def lock(task_dir):
     path = Path(task_dir) / '.attempt' / 'lock'
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = open(path, 'w')
-    # Imported here: the module is also loaded by Windows CI tools that never take the lock, and
-    # fcntl does not exist there.
-    import fcntl
+    import file_lock
     try:
-        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        file_lock.flock(handle, file_lock.LOCK_EX | file_lock.LOCK_NB)
     except OSError:
+        handle.close()
         raise PipelineError('another attempt or confirm is running for this task') from None
     return handle
 

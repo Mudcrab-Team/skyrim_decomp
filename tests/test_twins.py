@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'twins'))
 sys.path.insert(0, str(ROOT / 'tools'))
 import twin_layout as layout  # noqa: E402
+import twin_callees as callees  # noqa: E402
+import twin_names as names  # noqa: E402
 import twin_shapes as shapes  # noqa: E402
 import twin_source as S  # noqa: E402
 import twin_subst as subst  # noqa: E402
@@ -139,6 +141,33 @@ class UnitTests(unittest.TestCase):
         with self.assertRaises(U.Unsupported):
             U.apply_constants(twin, {77: (1, 4)})
 
+    def test_named_constant_changes_its_own_declaration(self):
+        cpp = REAL_CPP.replace('std::uint32_t Widget::GetMode() const',
+                               'constexpr auto defaultMode = 5u;\n\nstd::uint32_t Widget::GetMode() const')
+        cpp = cpp.replace('mode + 5 +', 'mode + defaultMode +')
+        with fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': cpp}) as root:
+            twin = U.build(root, U.load_exemplar(root, 0x333333, 'unmapped/Widget'), 0x555555)
+            U.apply_constants(twin, {5: (9, 4)})
+            self.assertIn('constexpr auto defaultMode = 9u;', twin.files[twin.stem + '.cpp'])
+
+    def test_community_name_updates_the_definition_and_label(self):
+        with fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP}) as root:
+            ex = U.load_exemplar(root, 0x333333, 'unmapped/Widget')
+            twin = U.build(root, ex, 0x555555)
+            binding = {'name': 'Gadget::ReadMode', 'label': 'CRASHLOGGER_PDB(59818@2026.10.24)', 'arity': 0}
+            names.apply(twin, binding, headers=[REAL_H])
+            self.assertIn('Gadget::ReadMode() const', twin.files[twin.stem + '.cpp'])
+            self.assertIn('// Gadget::ReadMode: CRASHLOGGER_PDB', twin.files[twin.stem + '.h'])
+            self.assertEqual(twin.name, binding['name'])
+
+    def test_direct_member_callee_gets_its_own_symbol(self):
+        twin = U.Twin(0x555555, 0x333333, 'unmapped/Owner555555', 'standin')
+        twin.files[twin.stem + '.h'] = 'class Owner555555 { Field member; };'
+        twin.files[twin.stem + '.cpp'] = '#include "Owner555555.h"\nvoid Owner555555::Run() { member.Reset(); }'
+        callees.retarget(twin, [('Reset', 'Field', 'Q')])
+        self.assertIn('void CallReset555555(Field* object);', twin.files[twin.stem + '.cpp'])
+        self.assertIn('CallReset555555(&member);', twin.files[twin.stem + '.cpp'])
+
     def test_layout_moves_the_member(self):
         tmp = fixture({'unmapped/Widget.h': REAL_H, 'unmapped/Widget.cpp': REAL_CPP})
         ex = U.load_exemplar(tmp.name, 0x333333, 'unmapped/Widget')
@@ -153,10 +182,34 @@ class LayoutTests(unittest.TestCase):
     CLS = 'class A {\npublic:\n    virtual void F();\n    std::uint8_t pad08[0x8];\n    std::uint32_t value;\n};'
 
     def test_offsets_with_vptr(self):
-        _head, members, virtual, bases = layout.parse(self.CLS)
-        layout.assign_offsets(members, virtual)
-        self.assertEqual([(m.name, m.offset) for m in members], [('pad08', 8), ('value', 16)])
-        self.assertFalse(bases)
+        owner, computed = layout.compute(self.CLS, ())
+        self.assertEqual(computed.offsets, {'pad08': 8, 'value': 16})
+        self.assertFalse(owner.bases)
+
+    def test_included_base_class_member_and_enum(self):
+        types = ('struct Base { virtual ~Base(); int tag; };\n'
+                 'struct Value { std::uint64_t payload[0x2]; };\n'
+                 'enum class Kind : unsigned char { Ready };')
+        owner = ('struct Child : Base { unsigned char pad10[8]; '
+                 'Value value; Kind kind; };')
+        checks = ['static_assert(sizeof(Child) == 0x30);']
+        text, delta, assertions = layout.relocate(owner, [(0x18, 0x10)], checks, headers=[types])
+        _, computed = layout.compute(text, [types])
+        self.assertEqual(computed.offsets, {'value': 0x10, 'kind': 0x20})
+        self.assertEqual(delta, -8)
+        self.assertIn('== 0x28', assertions[0])
+
+    def test_exemplar_assertions_must_agree(self):
+        with self.assertRaisesRegex(U.Unsupported, 'layout-exemplar-assertion'):
+            layout.relocate(self.CLS, [(16, 24)], ['static_assert(sizeof(A) == 0x28);'])
+
+    def test_namespaced_bases_and_interior_member_offsets(self):
+        header = ('namespace Types { struct Payload { int first; int second; }; '
+                  'struct Primary { virtual ~Primary(); }; struct Secondary { int id; }; }')
+        cls = ('struct Widget : ::Types::Primary, Types::Secondary { '
+               'Types::Payload value; };')
+        text, _, _ = layout.relocate(cls, [(12, 20), (16, 24)], headers=[header])
+        self.assertIn('padTwinC[8]', text)
 
     def test_unknown_member_type_is_refused(self):
         with self.assertRaises(U.Unsupported):

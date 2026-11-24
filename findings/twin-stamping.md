@@ -52,3 +52,30 @@ Static initializers, teardowns and thunks use the internal-linkage comparator co
 ## Reviewer and outcome
 
 Tooling and stand-in units only; no function is accepted by this finding.
+
+## Extended generator
+
+The layout reader resolves declared bases, class-typed fields and integral enum widths from the
+exemplar's repository include closure. It uses the sibling layout engine with community size
+fallbacks disabled. A move edits padding in the stand-in's own declaration. An interior
+displacement can move with its containing member when all requested offsets into that member
+agree on the move. Inherited members stay in their original bases. The reader checks existing
+size and offset assertions against the exemplar before adjusting them for the twin.
+
+A loose constant can also come from a distinct integral `constexpr` declared in the
+translation unit and used once in the selected function. The generator edits its initializer
+and preserves its literal type. Expressions, shared definitions and ambiguous uses remain
+unsupported.
+
+`plan --community-names` can use unique, build-specific CrashLogger names with compatible
+bounds and prototype evidence. It also accepts a unique Address Library name corroborated by
+the authorized symbol sources and labels both origins. The name has to fit an isolated
+declaration and the source still describes a stand-in layout.
+
+`stamp --retarget-callees` can give a direct call its own external declaration when a
+strict twin changes the reference target. The supported member signature has a void return
+and takes only the receiver. Scalar deleting destructors can be selected by the externally
+emitted symbol from an accepted exemplar. Construction and destruction remain ordinary C++
+definitions. Static startup and shutdown functions that need internal selectors are outside
+the reconstruction-only CI hash route. Failed units are removed from the working tree, and
+verdicts and source revisions come from the verifier's result records.

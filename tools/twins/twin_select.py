@@ -107,7 +107,7 @@ def claim_rvas(issue_numbers, cwd=None):
 
 
 class Planner:
-    def __init__(self, root, index, table, skip=(), skip_names=None, level='strict'):
+    def __init__(self, root, index, table, skip=(), skip_names=None, level='strict', names=None):
         self.root = Path(root)
         self.index = index
         self.table = table
@@ -116,6 +116,7 @@ class Planner:
         self.skip = set(skip)
         self.skip_names = re.compile(skip_names) if skip_names else None
         self.level = level
+        self.names = names
         self._exemplars = {}
 
     def exemplar(self, rva):
@@ -139,7 +140,7 @@ class Planner:
             return 'kind:' + row['kind']
         if row['v2'] == 'unsupported':
             return 'contract-unsupported'
-        if strong_name(row['names']):
+        if strong_name(row['names']) and self.community_name(rva) is None:
             return 'community-named'
         if rva in self.skip:
             return 'skipped-claim-or-open-pr'
@@ -151,6 +152,9 @@ class Planner:
             if any(self.skip_names.search(x) for x in labels):
                 return 'skipped-name'
         return None
+
+    def community_name(self, rva):
+        return self.names.get(rva, self.index[rva]['size']) if self.names is not None else None
 
     def run(self, probe=True):
         """(plan rows, stats). A row: {rva, exemplar, group, mode}; `probe` builds one twin per exemplar to test support."""
@@ -203,5 +207,8 @@ class Planner:
             for t in twins:
                 plan.append({'rva': t, 'exemplar': chosen.rva, 'stem': chosen.stem, 'level': self.level,
                              'mode': 'stamped' if U.is_stamped(chosen) else 'standin', 'size': self.index[t]['size']})
+                name = self.community_name(t)
+                if name:
+                    plan[-1]['community_name'] = name
         stats['twins-planned'] = len(plan)
         return plan, stats

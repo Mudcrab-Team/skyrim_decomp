@@ -25,6 +25,7 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / 'tools'))
 import local_paths  # noqa: E402
+import duplicate_rva  # noqa: E402
 import twin_runner as runner  # noqa: E402
 import twin_select as T  # noqa: E402
 import twin_shapes as shapes  # noqa: E402
@@ -110,7 +111,17 @@ def cmd_plan(a):
     index = load_index()
     table = T.load_table(private('analysis/functions.jsonl'))
     skip = skips(a)
-    planner = T.Planner(ROOT, index, table, skip=skip, skip_names=a.skip_names, level=a.level)
+    names = None
+    if a.community_names:
+        from twin_names import Names
+        metadata_path = private('analysis/table-meta.json')
+        metadata = json.loads(metadata_path.read_text(encoding='utf-8')) if metadata_path.is_file() else {}
+        target = json.loads((ROOT / 'builds/target.json').read_text(encoding='utf-8'))
+        inputs = metadata.get('inputs', {})
+        if metadata.get('build_id') != T.BUILD or inputs.get('image_sha256') != target['image_sha256']:
+            inputs = {}
+        names = Names(ROOT, table, inputs)
+    planner = T.Planner(ROOT, index, table, skip=skip, skip_names=a.skip_names, level=a.level, names=names)
     plan, stats = planner.run(probe=not a.no_probe)
     if a.supported_only:
         plan = [r for r in plan if table[r['rva']]['v2'] == 'supported']
@@ -132,6 +143,16 @@ def load_results(path):
     return out
 
 
+def tracked_rvas(root):
+    proc = subprocess.run(['git', 'grep', '--cached', '-I', '-E', '--no-color', '-e',
+                           r'^// 0x[0-9a-fA-F]+ ', '--', 'reconstruction/*.cpp'],
+                          cwd=root, capture_output=True, text=True)
+    if proc.returncode not in (0, 1):
+        proc.check_returncode()
+    return {int(match[1], 16) for line in proc.stdout.splitlines()
+            if (match := duplicate_rva.MARKER.match(line.partition(':')[2]))}
+
+
 def cmd_stamp(a):
     import contrib
     index = load_index()
@@ -144,11 +165,17 @@ def cmd_stamp(a):
         todo = [r for r in todo if r['rva'] in wanted]
     if a.limit:
         todo = todo[:a.limit]
-    tracked = set(subprocess.run(['git', 'ls-files', 'reconstruction'], cwd=ROOT, capture_output=True, text=True).stdout.split('\n'))
+    tracked = set(subprocess.run(['git', 'ls-files', 'reconstruction'], cwd=ROOT,
+                                 capture_output=True, text=True, check=True).stdout.splitlines())
+    claimed = tracked_rvas(ROOT)
     ctx = contrib.Ctx()
     exe = contrib.require_exe(ctx, contrib.target_manifest(ctx.repo))['path']
+    image = Path(exe).read_bytes()
+    symbols = (json.loads(contrib.symbol_map_path(ROOT, T.BUILD).read_text(encoding='utf-8'))['symbols']
+               if a.retarget_callees else None)
     tasks = ctx.local / 'tasks'
     planner = T.Planner(ROOT, index, {}, level=a.level)
+    headers = {}
     built = {}
     log = results_path.open('a')
 
@@ -166,6 +193,9 @@ def cmd_stamp(a):
             continue
         try:
             twin = U.build(ROOT, ex, rva)
+            if 'moves' in row or 'community_name' in row:
+                if ex.rva not in headers:
+                    headers[ex.rva] = U.included_headers(ROOT, ex)
             if a.level == 'loose':
                 if 'imap' not in row and 'moves' not in row:
                     raise U.Unsupported('loose-' + '+'.join(row.get('kinds', ['?'])))
@@ -173,8 +203,16 @@ def cmd_stamp(a):
                     U.apply_constants(twin, {int(k): tuple(v) for k, v in row['imap'].items()})
                     U.mark_loose(twin, 'constants')
                 if 'moves' in row:
-                    U.apply_layout(twin, [tuple(m) for m in row['moves']])
+                    U.apply_layout(twin, [tuple(m) for m in row['moves']], headers=headers[ex.rva])
                     U.mark_loose(twin, 'member offsets')
+            if 'community_name' in row:
+                import twin_names
+                twin_names.apply(twin, row['community_name'], headers[ex.rva])
+            if symbols is not None and a.level == 'strict':
+                import twin_callees
+                members = twin_callees.changed_members(index[ex.rva], index[rva], symbols)
+                if members:
+                    twin_callees.retarget(twin, members)
         except U.Unsupported as exc:
             record({'rva': rva, 'exemplar': row['exemplar'], 'status': 'unsupported', 'reason': exc.reason})
             continue
@@ -182,11 +220,17 @@ def cmd_stamp(a):
             record({'rva': rva, 'exemplar': row['exemplar'], 'status': 'unsupported', 'reason': 'error:' + type(exc).__name__})
             continue
         clash = [rel for rel in twin.files if 'reconstruction/' + rel in tracked]
-        if clash:
+        if clash or rva in claimed:
             record({'rva': rva, 'exemplar': row['exemplar'], 'status': 'unsupported', 'reason': 'unit-exists'})
             continue
+        if any((ROOT / 'reconstruction' / path).exists()
+               and (ROOT / 'reconstruction' / path).read_text(encoding='utf-8') != text
+               for path, text in twin.files.items()):
+            record({'rva': rva, 'exemplar': row['exemplar'], 'status': 'unsupported', 'reason': 'unit-path-conflict'})
+            continue
         runner.write_twin(ROOT, twin)
-        tdir = runner.make_task(ctx, exe, ROOT, twin, row['size'], tasks)
+        claimed.add(rva)
+        tdir = runner.make_task(ctx, image, twin, row['size'], tasks)
         built[tdir.name] = (row, twin)
         pending.append(tdir)
     print('written %d units; comparing on the runner host with %d jobs' % (len(pending), a.jobs), flush=True)
@@ -195,11 +239,15 @@ def cmd_stamp(a):
         row, twin = built[name]
         rec = {'rva': row['rva'], 'exemplar': row['exemplar'], 'level': a.level, 'mode': row['mode'], 'stem': twin.stem,
                'status': res['status'], 'reason': res['reason'], 'sizes': res['sizes']}
+        if 'source_revision' in res:
+            rec['source_revision'] = res['source_revision']
         record(rec)
         print('0x%x %s %s' % (row['rva'], res['status'], res['reason']), flush=True)
         if res['status'] != 'pass':
             (state_dir() / 'logs').mkdir(exist_ok=True)
             (state_dir() / 'logs' / ('%x.txt' % row['rva'])).write_text(res['output'][-6000:])
+            for path in twin.files:
+                (ROOT / 'reconstruction' / path).unlink()
 
     runner.run_many(ROOT, pending, jobs=a.jobs, on_result=done)
     cmd_status(a)
@@ -232,6 +280,7 @@ def main():
     s.add_argument('--skip-names', help='regex over the inventory name; matching functions are skipped')
     s.add_argument('--skip-file', help='file of RVAs (hex, whitespace separated) to skip')
     s.add_argument('--supported-only', action='store_true', help='contract-v2 verdict supported only')
+    s.add_argument('--community-names', action='store_true', help='use validated build-specific CrashLogger names')
     s.add_argument('--no-probe', action='store_true')
     s.set_defaults(f=cmd_plan)
     s = sub.add_parser('stamp')
@@ -239,6 +288,7 @@ def main():
     s.add_argument('--limit', type=int)
     s.add_argument('--jobs', type=int, default=4)
     s.add_argument('--redo', action='store_true')
+    s.add_argument('--retarget-callees', action='store_true', help='try distinct direct callees for strict relocation twins')
     s.add_argument('--only', help='file of RVAs (hex) to run')
     s.set_defaults(f=cmd_stamp)
     s = sub.add_parser('status')
