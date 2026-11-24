@@ -31,6 +31,15 @@ import time
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+
+
+def class_dirname(cls):
+    """Directory name for a class's shared material. Instantiated template classes can have names
+    longer than a file name may be, so a long or unusual name is cut and given a digest suffix."""
+    if len(cls) <= 100 and re.fullmatch(r'[A-Za-z0-9_:.~-]+', cls):
+        return cls
+    return re.sub(r'[^A-Za-z0-9_]+', '_', cls)[:80] + '-' + hashlib.sha1(cls.encode()).hexdigest()[:10]
+
 sys.path.insert(0, str(REPO / 'tools'))
 sys.path.insert(0, str(HERE))
 from pecoff import (EH_HANDLERS, EH_LAYOUTS, FUNCINFO_MAGIC, TYPE_DESCRIPTOR_NAME, UNW_FLAG_CHAININFO,  # noqa: E402
@@ -1134,7 +1143,7 @@ def drafter_aids(pack_dir, img, addrlib, comms, ident, listing_text, excerpt, bu
     lines += ['', 'Virtual slots: `' + files.get('vtables', 'none (no community vtable id)') + '`; types in the '
               'signature: `' + files.get('signature_types', 'none') + '`.', '']
     if cls and build_id:
-        class_dir = REPO / '.local/packs' / build_id / 'class' / cls
+        class_dir = REPO / '.local/packs' / build_id / 'class' / class_dirname(cls)
         if (class_dir / 'README.md').is_file():
             lines += [f'Class material shared by every function of `{cls}` in this batch (vtables, offsets '
                       f'observed across all of them, declarations): `{class_dir.relative_to(REPO)}/README.md`.', '']
@@ -1868,7 +1877,7 @@ def write_class_material(task_dirs, target, img, addrlib, comms, shared_name='_s
                     .read_text() for p in packs
                     if (REPO / '.local/packs' / target['build_id'] / p['rva_hex'] / 'listing.txt').is_file()}
         files, facts = class_material(cls, packs, listings, img, addrlib, comms)
-        d = root / cls
+        d = root / class_dirname(cls)
         if d.is_dir():
             for old in d.iterdir():
                 old.unlink()  # a re-run must not leave a stale file from an earlier selection
@@ -2162,7 +2171,7 @@ def shared_headers(cls, packs, headers, classes=None):
     repository headers of its RTTI ancestors and of the classes its functions reference."""
     wanted = list((classes or {}).get(cls, {}).get('ancestors') or [])
     build = packs[0]['build_id'] if packs else None
-    material = REPO / '.local/packs' / (build or '-') / 'class' / cls / 'class.json'
+    material = REPO / '.local/packs' / (build or '-') / 'class' / class_dirname(cls) / 'class.json'
     if material.is_file():
         # Signature and reference types found by the class material (write_class_material).
         wanted += json.loads(material.read_text()).get('referenced_classes', [])

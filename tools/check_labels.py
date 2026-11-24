@@ -45,7 +45,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lint_reconstruction import LABEL_LINE, label_grammar_applies, SIBLING_HEADER, SIBLING_SOURCES, SIBLING_ID  # noqa: E402
+from lint_reconstruction import LABEL_LINE, label_grammar_applies, SIBLING_HEADER, SIBLING_SOURCES, SIBLING_LEGACY_PINS, SIBLING_ID  # noqa: E402
 from build_fnv_index import split_symbol  # noqa: E402
 import pdb_types  # noqa: E402
 
@@ -350,6 +350,18 @@ def label_lines(text):
         yield number, names, m.group('labels')
 
 
+def at_pin(repo, rev, head):
+    """The checkout satisfies a citation of `rev`: it is at that revision, or the citation is a retired pin
+    that stays valid and the checkout is at the current one (merged units keep the label they were merged with)."""
+    if head is None:
+        return False
+    if head.startswith(rev):
+        return True
+    current = SIBLING_SOURCES.get(repo)
+    retired = any(rev.startswith(p) or p.startswith(rev) for p, _ in SIBLING_LEGACY_PINS.get(repo, ()))
+    return bool(retired and current and head.startswith(current[0]))
+
+
 def checkout_head(path):
     out = subprocess.run(['git', '-C', str(path), 'rev-parse', 'HEAD'], capture_output=True, text=True)
     return out.stdout.strip() if out.returncode == 0 else None
@@ -398,7 +410,7 @@ class Checker:
                                 f'(set .local/verifier/config.json "{config}_checkouts")')
             return None
         head = checkout_head(path)
-        if head is None or not head.startswith(rev):
+        if not at_pin(repo, rev, head):
             key = ('rev', repo, rev)
             if key not in self.reported:
                 self.reported.add(key)
@@ -508,11 +520,13 @@ class Checker:
                 if head != REVISION:
                     out.append(f'{rel}: fo4-private checkout revision differs from the approved pin; not read')
                     continue
-            if head is None or not head.startswith(rev):
+            if not at_pin(repo, rev, head):
                 key = ('rev', repo, rev)
                 if key not in self.reported:
                     self.reported.add(key)
                     out.append(f'{rel}: checkout of {repo} is at {head or "an unknown revision"}, the unit cites {rev}')
+            if head and not head.startswith(rev) and at_pin(repo, rev, head):
+                continue  # a retired pin: its paths and lines belong to a revision this checkout no longer holds
             target = (root / path).resolve()
             # The lint refuses `..`; a symlink in the clone could still lead out, so the resolved
             # path must stay inside the clone before anything is read.

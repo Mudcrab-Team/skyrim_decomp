@@ -189,6 +189,9 @@ the start of each session; push fixes to the same branch and never force-push ov
 symbol files (label `SYMBOLS(tesv-2013-map|fo4-pdb|fnv-x360-pdb)`; a name hint, never identity
 evidence); see `findings/sibling-symbol-files.md`. Contributed by lemiur (#572).
 
+For the register of sibling and community sources, their labels and the traps when reading them, see
+`docs/secondary-research.md`.
+
 ## Optional: 2013 map and Fallout 4 PDB (full use)
 
 The maintainer authorized using the Skyrim 2013 linker map and the Fallout 4 PDBs to any extent: decorated names

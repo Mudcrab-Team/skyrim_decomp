@@ -62,7 +62,7 @@ LICENSE is CC0 1.0, so no permission exception is involved; labels read `SIBLING
 (`docs/authorizations.md`, Notes). It is another game, so it is never evidence about the Skyrim binary.
 
 **Sibling decompilation (FNV): maintainer decision.** The maintainer (awarebayes) has decided
-that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `91e1b6e8` may be
+that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `2b07cb3e` (earlier pin `91e1b6e8` stays valid for merged units) may be
 read by Engineers and Drafters and that its names, declarations and code may be reused in
 reconstructions, including published ones, where they fit the Skyrim target
 (`docs/authorizations.md`, Notes). The facts the maintainer weighed are stated plainly here: that

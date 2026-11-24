@@ -1,0 +1,23 @@
+{
+ "version": 1,
+ "tag": "x64-index-v1",
+ "note": "Release assets of the forks: shape signatures of the CC0 sibling sources compiled as x64. No game data. setup refuses a download whose SHA-256 differs.",
+ "assets": {
+  "f3": {
+   "repo": "awarebayes/f3_decomp",
+   "name": "x64-index-v1-f3.json.gz",
+   "sha256": "93dc004b13125d52c0ccf9091eff08dcfa8185df507e4714a5170087310db65b",
+   "bytes": 3396694,
+   "fork_commit": "33d336030df7bc725916c27270f8061914bce11a",
+   "source": "momusdigital/f3_decomp@f5bac1b54fc8fde16294c1d6779f27407d0a117b"
+  },
+  "fnv": {
+   "repo": "awarebayes/fnv_decomp",
+   "name": "x64-index-v1-fnv.json.gz",
+   "sha256": "34d7c1ac1e50c7f7a3a3136c231bc2f2b88dc14313158946bb7aa3a5811a0630",
+   "bytes": 3265885,
+   "fork_commit": "2a8d04ac97265f19e594e0abc2d5e277dbcc1d50",
+   "source": "momusdigital/fnv_decomp@2b07cb3ec4b7aa11be96c7567914e11731aebeaf"
+  }
+ }
+}

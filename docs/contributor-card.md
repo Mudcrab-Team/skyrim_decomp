@@ -37,8 +37,8 @@ Both siblings also exist as x64 ports you can compile locally (`docs/sibling-x64
 For Fallout 3 (`momusdigital/f3_decomp`, CC0-1.0) the same with `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`
 and `Sibling source: momusdigital/f3_decomp@f5bac1b5 <path>:<line>`. Read FO3 and FNV first for
 engine-shared classes (names, layouts, vtable order, body shape); both are 32-bit, never byte evidence.
-For FNV reuse use `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` and cite each reused
-body in a `Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>` header line. Another
+For FNV reuse use `SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)` and cite each reused
+body in a `Sibling source: momusdigital/fnv_decomp@2b07cb3e <path>:<line>` header line. Another
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.
 
 Skills in `.claude/skills/` (adapted from lemiur's Game-Decompilation-Skill, CC-BY-4.0, see each
