@@ -1679,25 +1679,33 @@ _SCORING = {}
 
 
 def scoring_init(ctx):
+    _SCORING.clear()
     _SCORING.update(ctx)
 
 
 def score_object(item):
-    """The scoring row for one compiled object, using the context set by scoring_init."""
+    """The scoring row for one compiled object, using the context set by scoring_init.
+
+    Only the alignment and its distance are needed, so this runs `align.analyse` directly (no
+    report, rules, behaviour tally or listing) and builds the target's instructions once per process.
+    """
     import align
     cid, obj = item
     c = _SCORING
     t0 = time.monotonic()
     try:
         cand = align.objdump_candidate(c['objdump'], obj, c['symbol'])
-        if not align.parse_listing(cand):
+        rows = align.parse_listing(cand)
+        if not rows:
             return {'id': cid, 'st': 'no-symbol'}
-        _text, data = align.summarise(c['listing'], cand, symbols=c['symbols'], image_base=c['base'],
-                                      target_size=c['size'], tls=c['tls'])
-        comps = data['components']
-        return {'id': cid, 'st': 'ok', 'd': data['distance'], 'p': comps['prologue'], 'b': comps['body'],
-                'r': comps['refs'], 'es': data['edits']['shape'], 'ex': data['edits']['exact'],
-                'n': data['candidate_instructions'], 'nt': c['nt'], 'h': function_hash(cand),
+        if '_target' not in c:
+            c['_target'] = align.build(align._as_rows(c['listing']), size=c['size'], base=c['base'])
+        C = align.build(rows, symbols=c['symbols'], candidate=True, tls=c['tls'])
+        result = align.analyse(c['_target'], C)
+        comps = result['components']
+        return {'id': cid, 'st': 'ok', 'd': result['distance'], 'p': comps['prologue'], 'b': comps['body'],
+                'r': comps['refs'], 'es': result['shape_edits'], 'ex': result['exact_edits'],
+                'n': len(C), 'nt': c['nt'], 'h': function_hash(cand),
                 't': round(time.monotonic() - t0, 2)}
     except Exception as exc:  # noqa: BLE001 - one broken candidate must not lose the batch
         return {'id': cid, 'st': 'error', 'why': type(exc).__name__}

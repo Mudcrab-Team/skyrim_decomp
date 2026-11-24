@@ -481,37 +481,124 @@ def _ref_state(t, c):
     return 'unknown'
 
 
+def _cost_rows(T, C, mapping, band=None):
+    """(row index, first column, costs) per target row: substitution costs against the candidate, as `_cost` gives them.
+
+    Instructions of equal shape cost 0, plus 0.3 when their references disagree and 0.2 when they
+    break the register map; others 1.2 when their mnemonics are related, else 2.0. The part that
+    depends only on the two shapes is built once per distinct target shape, so the alignment's
+    quadratic loop never calls back into the classification. With `band`, only the columns of
+    1..m within `band` of the diagonal are produced: costs[k] belongs to candidate instruction
+    first + k (zero-based).
+    """
+    m = len(C)
+    c_mnems = [c.mnem for c in C]
+    same_at = {}
+    for j, c in enumerate(C):
+        same_at.setdefault(c.shape, []).append(j)
+    mnem_set = set(c_mnems)
+    related = {}
+    base = {}
+    for i, t in enumerate(T):
+        shape = t.shape
+        lo, hi = (0, m) if band is None else (max(0, i + 1 - band - 1), min(m, i + 1 + band))
+        if lo >= hi:
+            yield i, lo, []
+            continue
+        row = base.get(shape)
+        if row is None:
+            rel = related.setdefault(t.mnem, {})
+            for cm in mnem_set:
+                if cm not in rel:
+                    rel[cm] = 1.2 if _related(t.mnem, cm) else 2.0
+            row = [rel[cm] for cm in c_mnems]
+            for j in same_at.get(shape, ()):
+                row[j] = 0.0
+            base[shape] = row
+        out = row[lo:hi]
+        same = same_at.get(shape)
+        if same:
+            for j in same[bisect.bisect_left(same, lo):bisect.bisect_left(same, hi)]:
+                c = C[j]
+                cost = 0.0 if _ref_state(t, c) != 'wrong' else 0.3
+                if mapping is not None and not _regs_agree(t, c, mapping):
+                    cost += 0.2
+                out[j - lo] = cost
+        yield i, lo, out
+
+
+def _banded_costs(T, C, mapping, band):
+    """(total cost, back pointers) of the weighted edit alignment restricted to |i - j| <= band.
+
+    back[i * (m + 1) + j] is 0 (pair), 1 (target instruction unpaired) or 2 (candidate
+    instruction unpaired) for every cell of the band; cells outside it keep the value 0 and are
+    never read by the traceback of an exact band (see `_edit_align`).
+    """
+    n, m = len(T), len(C)
+    INF = float('inf')
+    width = m + 1
+    prev = [float(j) if j <= band else INF for j in range(width)]
+    back = bytearray((n + 1) * width)
+    for j in range(1, min(m, band) + 1):
+        back[j] = 2
+    for i, first, costs in _cost_rows(T, C, mapping, band):
+        i += 1
+        cur = [INF] * width
+        row = i * width
+        lo = first + 1
+        if i <= band:
+            cur[0] = left = float(i)
+            back[row] = 1
+        else:
+            left = INF
+        if costs:
+            j = lo - 1
+            for diag, up, sub in zip(prev[lo - 1:], prev[lo:], costs):
+                j += 1
+                best, how = diag + sub, 0
+                if up + 1 < best:
+                    best, how = up + 1, 1
+                if left + 1 < best:
+                    best, how = left + 1, 2
+                cur[j] = left = best
+                if how:
+                    back[row + j] = how
+        prev = cur
+    return prev[m], back
+
+
 def _edit_align(T, C, mapping=None):
     """[('pair', i, j) | ('del', i) | ('ins', j)] minimising the weighted edit cost.
 
     With a register map, same-shape pairs that break it cost a little, so that of two identical
     shapes the one holding the corresponding value is paired.
+
+    The table is filled only within a band of diagonals. A path that reaches diagonal d (i - j)
+    has paid at least |d| gaps and pays at least |n - m - d| more to get back to the corner, so
+    when the best path found inside the band is cheaper than that bound for the first diagonal
+    outside it, no path through the outside is cheaper or ties, and the traceback (which only
+    meets cells of optimal paths) is the one the full table gives, tie-breaking included.
+    Otherwise the band is widened to the cost found, which always satisfies the bound.
     """
     n, m = len(T), len(C)
     if n * m > 6_000_000:
         return _difflib_align(T, C)
-    INF = float('inf')
-    prev = [float(j) for j in range(m + 1)]
-    back = bytearray((n + 1) * (m + 1))
-    for j in range(1, m + 1):
-        back[j] = 2
-    for i in range(1, n + 1):
-        cur = [INF] * (m + 1)
-        cur[0] = float(i)
-        back[i * (m + 1)] = 1
-        ti = T[i - 1]
-        for j in range(1, m + 1):
-            best, how = prev[j - 1] + _cost(ti, C[j - 1], mapping), 0
-            if prev[j] + 1 < best:
-                best, how = prev[j] + 1, 1
-            if cur[j - 1] + 1 < best:
-                best, how = cur[j - 1] + 1, 2
-            cur[j] = best
-            back[i * (m + 1) + j] = how
-        prev = cur
+    gap = n - m
+    band = abs(gap) + 16
+    while True:
+        if band >= max(n, m):
+            band = max(n, m)
+            total, back = _banded_costs(T, C, mapping, band)
+            break
+        total, back = _banded_costs(T, C, mapping, band)
+        out = band + 1
+        if total < out + min(abs(gap - out), abs(gap + out)):
+            break
+        band = max(band + 1, int(total) + 1)
+    width = m + 1
     ops, i, j = [], n, m
     while i or j:
-        how = back[i * (m + 1) + j]
+        how = back[i * width + j]
         if i and j and how == 0:
             i, j = i - 1, j - 1
             if _cost(T[i], C[j]) >= 2.0:

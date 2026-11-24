@@ -531,5 +531,102 @@ class ThreadLocalScoring(unittest.TestCase):
             self.assertEqual(tls, {'tGuard': 0x768})
 
 
+def _reference_edit_align(T, C, mapping=None):
+    """The unbanded table: every cell filled, costs from `align._cost`."""
+    n, m = len(T), len(C)
+    INF = float('inf')
+    prev = [float(j) for j in range(m + 1)]
+    back = bytearray((n + 1) * (m + 1))
+    for j in range(1, m + 1):
+        back[j] = 2
+    for i in range(1, n + 1):
+        cur = [INF] * (m + 1)
+        cur[0] = float(i)
+        back[i * (m + 1)] = 1
+        for j in range(1, m + 1):
+            best, how = prev[j - 1] + align._cost(T[i - 1], C[j - 1], mapping), 0
+            if prev[j] + 1 < best:
+                best, how = prev[j] + 1, 1
+            if cur[j - 1] + 1 < best:
+                best, how = cur[j - 1] + 1, 2
+            cur[j] = best
+            back[i * (m + 1) + j] = how
+        prev = cur
+    ops, i, j = [], n, m
+    while i or j:
+        how = back[i * (m + 1) + j]
+        if i and j and how == 0:
+            i, j = i - 1, j - 1
+            if align._cost(T[i], C[j]) >= 2.0:
+                ops += [('ins', j), ('del', i)]
+            else:
+                ops.append(('pair', i, j))
+        elif i and (how == 1 or not j):
+            i -= 1
+            ops.append(('del', i))
+        else:
+            j -= 1
+            ops.append(('ins', j))
+    return ops[::-1]
+
+
+class BandedAlignment(unittest.TestCase):
+    """The banded table must give exactly the alignment of the full table, ties included."""
+
+    VOCAB = ['mov eax, ecx', 'mov ecx, eax', 'mov ebx, dword ptr [rdi + 0x10]', 'mov rbx, rsi', 'mov rsi, rbx',
+             'add eax, 0x1', 'add eax, 0x2', 'sub rsp, 0x20', 'add rsp, 0x20', 'test rdi, rdi', 'cmp ecx, ebx',
+             'xor eax, eax', 'lea rax, [rdi + 0x8]', 'movzx eax, byte ptr [rdi]', 'movsx eax, byte ptr [rdi]',
+             'shl eax, 0x2', 'shr eax, 0x2', 'imul eax, ecx', 'nop', 'push rbx', 'pop rbx', 'ret']
+
+    def instructions(self, texts):
+        rows, at = [], 0
+        for text in texts:
+            rows.append([at, ['90'], text, []])
+            at += 1
+        return align.build(rows, candidate=True)
+
+    def edit(self, rng, texts, edits):
+        texts = list(texts)
+        for _ in range(edits):
+            kind = rng.choice(('del', 'ins', 'sub', 'swap', 'move'))
+            k = rng.randrange(max(1, len(texts) - 1))
+            if kind == 'del' and len(texts) > 2:
+                del texts[k]
+            elif kind == 'ins':
+                texts.insert(k, rng.choice(self.VOCAB))
+            elif kind == 'sub':
+                texts[k] = rng.choice(self.VOCAB)
+            elif kind == 'swap' and k + 1 < len(texts):
+                texts[k], texts[k + 1] = texts[k + 1], texts[k]
+            elif kind == 'move':
+                texts.insert(rng.randrange(len(texts)), texts.pop(k))
+        return texts
+
+    def test_matches_the_full_table(self):
+        import random
+        rng = random.Random(5)
+        maps = (None, {'rbx': 'rsi', 'rsi': 'rbx'})
+        checked = 0
+        for size in (3, 12, 40, 90, 200):
+            for edits in (0, 1, 4, 15, 60):
+                for _ in range(3):
+                    base = [rng.choice(self.VOCAB) for _ in range(size)]
+                    T = self.instructions(base)
+                    C = self.instructions(self.edit(rng, base, edits))
+                    for mapping in maps:
+                        self.assertEqual(align._edit_align(T, C, mapping), _reference_edit_align(T, C, mapping),
+                                         (size, edits, mapping))
+                        checked += 1
+        self.assertEqual(checked, 150)
+
+    def test_unrelated_and_empty_sequences(self):
+        import random
+        rng = random.Random(9)
+        for n, m in ((0, 0), (0, 5), (7, 0), (1, 1), (60, 5), (5, 60), (80, 80)):
+            T = self.instructions([rng.choice(self.VOCAB) for _ in range(n)])
+            C = self.instructions([rng.choice(self.VOCAB) for _ in range(m)])
+            self.assertEqual(align._edit_align(T, C), _reference_edit_align(T, C), (n, m))
+
+
 if __name__ == '__main__':
     unittest.main()

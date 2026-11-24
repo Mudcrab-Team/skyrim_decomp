@@ -599,5 +599,43 @@ class LintRoot(unittest.TestCase):
             self.assertTrue(any('inline assembly' in p for p in problems), problems)
 
 
+class ScoreRows(unittest.TestCase):
+    """`score_object` reads the alignment directly; its row must equal what `summarise` reports."""
+
+    TARGET = '\n'.join(['Disassembly of section .text:'] + [
+        f'\t{0x140001000 + k:x}: 90\t{text}' for k, text in enumerate(
+            ['mov eax, ecx', 'add eax, 0x1', 'test rdi, rdi', 'xor eax, eax', 'shl eax, 0x2', 'nop', 'ret'])] + [''])
+    CANDIDATE = '\n'.join(['Disassembly of section .text:'] + [
+        f'\t{k:x}: 90\t{text}' for k, text in enumerate(
+            ['mov eax, ecx', 'add eax, 0x2', 'xor eax, eax', 'test rdi, rdi', 'nop', 'nop', 'ret'])] + [''])
+
+    def test_row_matches_summarise(self):
+        import align
+        from unittest import mock
+        ctx = {'objdump': 'x', 'listing': self.TARGET, 'base': 0x140000000, 'size': 7, 'symbol': 'f',
+               'symbols': {}, 'tls': {}, 'nt': 7}
+        permute.scoring_init(ctx)
+        with mock.patch.object(align, 'objdump_candidate', return_value=self.CANDIDATE):
+            first = permute.score_object(('v00001', 'unused.obj'))
+            second = permute.score_object(('v00002', 'unused.obj'))
+        _text, data = align.summarise(self.TARGET, self.CANDIDATE, symbols={}, image_base=0x140000000,
+                                      target_size=7, tls={})
+        self.assertEqual(first['st'], 'ok')
+        self.assertEqual((first['d'], first['p'], first['b'], first['r']),
+                         (data['distance'], data['components']['prologue'], data['components']['body'],
+                          data['components']['refs']))
+        self.assertEqual((first['es'], first['ex'], first['n'], first['nt']),
+                         (data['edits']['shape'], data['edits']['exact'], data['candidate_instructions'], 7))
+        self.assertGreater(first['d'], 0)
+        for key in ('d', 'p', 'b', 'r', 'es', 'ex', 'n', 'h'):
+            self.assertEqual(first[key], second[key])
+
+    def test_init_forgets_the_previous_target(self):
+        permute.scoring_init({'listing': 'a', 'nt': 1})
+        permute._SCORING['_target'] = ['stale']
+        permute.scoring_init({'listing': 'b', 'nt': 2})
+        self.assertNotIn('_target', permute._SCORING)
+
+
 if __name__ == '__main__':
     unittest.main()

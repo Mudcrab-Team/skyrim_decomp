@@ -78,7 +78,12 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    objdump and no Python packages unless it also scores (above). The objects are disassembled and
    scored on the host, or on the calling machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
    function's code and relocations. Compiler output stays on the host; a failed compile reports
-   its error codes only.
+   its error codes only. A score row needs only the alignment (`align.analyse`), not the report, so
+   the rule hints, behaviour tally and listing are not built, and the target's instructions are built
+   once per scoring process. The alignment fills its table only within a band of diagonals and widens
+   the band until the cost found is below the bound for any path outside it, which gives the full
+   table's alignment, ties included (`tests/test_align.py` compares the two). A large function's
+   score was 3 to 5 s of Python; it is now about 0.15 s.
 4. **Search.** Greedy hill-climb on (distance, exact edits, instruction-count difference), with
    sideways moves to new objects of equal score, a random restart from the best after
    `--restart-after` batches without progress, and a seen-set of object hashes, so a spelling
