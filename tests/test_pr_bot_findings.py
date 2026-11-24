@@ -199,6 +199,7 @@ class Landing(replay.Replay):
         self.pr(check='failure')
         self.w.poll(self.bot)
         self.assertEqual((self.merged(7), self.blocked(), self.prompts), (False, 'check-ci', []))
+        self.assertIn('A red `scope` check is expected for findings PRs.', self.w.sticky(7)[0].splitlines())
 
     def test_an_unfinished_check_job_waits(self):
         self.pr(check='running')
