@@ -3,6 +3,8 @@
 Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, assisted by
 <model>"`, edit the two source files it creates, `compare`, then `submit --dry-run` and `submit`.
 Open a PR that touches only `reconstruction/**` and `docs/cookbook-notes/**`; checks run; the bot reviews and merges.
+A PR that touches only `findings/*.md` (static research prose: settings, values and rules in words, no bytes,
+disassembly or decompiler text) takes the same bot route after a leak scan, the `check` job and one review.
 Before drafting, read `docs/cookbook-notes/` for your function's class or cause. Write a note
 (`./sr note <task>`) only for a spelling that fixed something the cookbook does not record, or a near-miss
 cause it does not cover; submit it in the same PR (words and plain C++ only, never bytes or listings).

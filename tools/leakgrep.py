@@ -40,6 +40,14 @@ RULES = (
 # A 40-digit revision or 64-digit digest in a comment is a provenance pin, not a byte dump.
 PINNED_REVISION = re.compile(r'(?<![0-9A-Za-z])[0-9a-f]{40}(?:[0-9a-f]{24})?(?![0-9A-Za-z])')
 COMMENT = re.compile(r'^\s*(?://|\*|/\*)')
+# A finding pins the files it read by SHA-256 digest or commit; that is provenance, not a byte dump. The
+# exemption is narrow so it cannot carry data out: a prose finding file only, the line must say what the
+# token is, only exact 64- or 40-digit tokens go, and a file past the budget loses the exemption on its
+# remaining lines.
+FINDING_FILE = re.compile(r'findings/[A-Za-z0-9._-]+\.md\Z')
+DIGEST = re.compile(r'(?<![0-9A-Za-z@])(?:[0-9a-fA-F]{64}|[0-9a-fA-F]{40})(?![0-9A-Za-z])')
+DIGEST_CONTEXT = re.compile(r'sha|digest|hash|revision|commit|pin', re.I)
+MAX_FINDING_DIGESTS = 16
 INCLUDE = re.compile(r'^\s*#\s*include\s*([<"])([^>"]*)[>"]')
 
 
@@ -62,8 +70,10 @@ def include_problem(line, path=None, headers=STANDARD_HEADERS):
     return not target.endswith('.h')
 
 
-def scan_line(line, private=(), path=None):
+def scan_line(line, private=(), path=None, digests_ok=False):
     scanned = PINNED_REVISION.sub('', line) if COMMENT.match(line) else line
+    if digests_ok:
+        scanned = DIGEST.sub('', scanned)
     hits = [code for code, rx in RULES if rx.search(scanned)]
     if include_problem(line, path):
         hits.append('include-outside-roots')
@@ -91,9 +101,15 @@ def added_lines(diff):
 
 def scan_diff(diff, private=()):
     """Return sorted (file, line, code); file names that are not plain paths are replaced by an index."""
-    found, aliases = [], {}
+    found, aliases, used = [], {}, {}
     for name, number, text in added_lines(diff):
-        for code in scan_line(text, private, name):
+        digests_ok = False
+        if FINDING_FILE.fullmatch(name) and DIGEST_CONTEXT.search(text):
+            count = len(DIGEST.findall(text))
+            if count and used.get(name, 0) + count <= MAX_FINDING_DIGESTS:
+                used[name] = used.get(name, 0) + count
+                digests_ok = True
+        for code in scan_line(text, private, name, digests_ok):
             if not re.fullmatch(r'[A-Za-z0-9_./-]+', name):
                 name = '<file %d>' % aliases.setdefault(name, len(aliases) + 1)
             found.append((name, number, code))
