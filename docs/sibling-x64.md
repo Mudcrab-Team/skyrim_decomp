@@ -40,3 +40,11 @@ rebuilds it from the forks' `x64-msvc1916` branches and publishes a new tag with
 **In `./sr start`.** `tools/x64_lookup.py` builds the target function's signature locally (llvm-objdump) and prints
 the top sibling candidates from the downloaded index, also saved as `sibling_x64.json` in the task directory. Names,
 paths and scores only. A missing index or objdump gives one line and never stops `start`.
+
+**Checking the cookbook against the compiler.** `tools/f3x64/lab_experiments.py` compiles toy spelling variants on the Windows
+runner with the recipe and judges a stated claim per experiment (`lab_compile.py` is the transport and listing parser);
+`corpus.py` counts a source pattern's effect over the sibling listings (line effects, the UnwindHelp store with and without a handler, vftable
+thunks, tail calls, source-identical twins); `cluster.py` groups the hunks of near pairs into width, register, offset, immediate and
+instruction-only kinds. Results are in the "Sibling x64 verification" section of [the cookbook](matching-cookbook.md). All of it
+reads only compiled sibling code and toy sources; the near-pair score files stay under `.local/`.
+
