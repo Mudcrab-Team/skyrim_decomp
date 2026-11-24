@@ -146,6 +146,27 @@ class Heavy(unittest.TestCase):
                 t.join(5)
                 self.assertEqual(got, [3])
 
+    def test_staged_check_does_not_overtake_a_waiting_binding(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            order, queued_check, queued_bind = [], threading.Event(), threading.Event()
+
+            def run(label, foreground, queued, poll):
+                with local_load.heavy(label, cap=1, directory=tmp, foreground=foreground,
+                                      log=lambda _: queued.set(), wait=3, poll=poll):
+                    order.append(label)
+
+            with local_load.heavy('active compile', cap=1, directory=tmp):
+                check_thread = threading.Thread(target=run, args=('staged check', False, queued_check, 0.001))
+                check_thread.start()
+                self.assertTrue(queued_check.wait(3))
+                bind_thread = threading.Thread(target=run, args=('binding', True, queued_bind, 0.1))
+                bind_thread.start()
+                self.assertTrue(queued_bind.wait(3))
+            bind_thread.join(5)
+            check_thread.join(5)
+            self.assertEqual(order, ['binding', 'staged check'])
+            self.assertEqual(local_load.busy(1, tmp), 0)
+
     def test_the_wait_ends_with_an_error(self):
         with tempfile.TemporaryDirectory() as tmp:
             with local_load.heavy('a', cap=1, directory=tmp):
@@ -292,6 +313,23 @@ class CheckFanOut(unittest.TestCase):
                         entries = [{'id': f'f{i}'} for i in range(5)]
                         self.assertEqual(list(check._check_functions(entries, {}, None)), [f'f{i}' for i in range(5)])
                 self.assertEqual(local_load.busy(1, Path(tmp) / 'local-heavy'), 0)
+
+    def test_full_staged_validation_releases_its_single_slot_between_groups(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env = {'SR_LOCAL_MAX_HEAVY': '2', 'SR_VERIFIER_STATE': tmp, 'SR_CHECK_JOBS': '4'}
+            slot_dir = Path(tmp) / 'local-heavy'
+
+            def validate_one(fn, target, root):
+                self.assertEqual(local_load.busy(2, slot_dir), 1)
+                return fn
+
+            entries = list(range(5))
+            with mock.patch.dict(os.environ, env), mock.patch.object(check, '_CHUNK', 2), \
+                    mock.patch.object(check, '_check_function', validate_one), \
+                    mock.patch.object(local_load, 'heavy', wraps=local_load.heavy) as hold:
+                self.assertEqual(list(check._check_functions(entries, {}, None, staged=True)), entries)
+            self.assertEqual(hold.call_args_list, [mock.call('staged check', foreground=False)] * 3)
+            self.assertEqual(local_load.busy(2, slot_dir), 0)
 
 
 if __name__ == '__main__':

@@ -131,6 +131,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / 'tools'))
 from pecoff import CoffObject, PeImage, Reject, SCN_CNT_CODE, STORAGE_EXTERNAL, SYM_UNDEFINED  # noqa: E402
+import local_load  # noqa: E402
 import symbol_map as symbol_maps  # noqa: E402
 
 UNBOUND = 'unbound:'
@@ -1208,6 +1209,7 @@ def resolve_destructor(fn, spec, defined, taken, size_of, matcher):
     return out
 
 
+@local_load.heavy('binding')
 def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     """Update task.json and symbols.json in place; returns a report dict (see `describe`)."""
     task_dir = Path(task_dir)
