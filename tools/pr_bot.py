@@ -1452,6 +1452,129 @@ def merge_review_texts(texts):
     return json.dumps({'leak': leak, 'leak_evidence': sorted(kinds), 'functions': rows}, indent=1)
 
 
+PROGRESS_INTERVAL = 60  # seconds between progress writes inside one stage
+PROGRESS_EVERY = 25  # ...or this many finished units, whichever comes first
+PROGRESS_STUCK_AFTER = 600  # a watcher treats an entry this old as stuck
+
+
+def write_json_atomic(path, data):
+    """Readers (a watcher polling the file) never see half of it: write beside it, then rename over it."""
+    path = Path(path)
+    tmp = path.with_name(f'{path.name}.{os.getpid()}.{threading.get_ident()}.tmp')
+    tmp.write_text(json.dumps(data, indent=1, sort_keys=True))
+    os.replace(tmp, path)
+
+
+class Progress:
+    """`pr<N>-<sha12>.progress.json` beside the state file: where a long stage has got to.
+
+    The state file only changes when a stage completes, so a compare of hundreds of units looks the same
+    slow or stuck. Counts here only grow within a stage; a new stage starts again from zero.
+    """
+
+    def __init__(self, directory, number, head, clock=time.time, interval=PROGRESS_INTERVAL,
+                 every=PROGRESS_EVERY, say=None):
+        self.number, self.head = number, head
+        self.path = Path(directory) / f'pr{number}-{head[:12]}.progress.json'
+        self.clock, self.interval, self.every = clock, interval, every
+        self.say = say if say is not None else (lambda line: print(line, flush=True))
+        self.lock = threading.Lock()
+        self.entry = None
+        self.last_write = 0.0
+        self.since_write = 0
+
+    def begin(self, stage, total):
+        with self.lock:
+            now = self.clock()
+            self.entry = dict(pr=self.number, head=self.head[:12], stage=stage, done=0, total=total,
+                              passed=0, failed=0, started_at=now, updated_at=now)
+            self._write(now)
+
+    def advance(self, ok=None, count=1):
+        """One more unit finished (`ok` None when it has no pass/fail meaning); writes when due."""
+        with self.lock:
+            if self.entry is None:
+                return
+            self.entry['done'] = min(self.entry['total'], self.entry['done'] + count)
+            if ok is True:
+                self.entry['passed'] += count
+            elif ok is False:
+                self.entry['failed'] += count
+            self.since_write += count
+            now = self.clock()
+            if (self.entry['done'] >= self.entry['total'] or self.since_write >= self.every
+                    or now - self.last_write >= self.interval):
+                self._write(now)
+
+    def touch(self):
+        """Still alive inside a stage that has no countable parts (the pack export)."""
+        with self.lock:
+            if self.entry is not None:
+                self._write(self.clock())
+
+    def _write(self, now):
+        self.entry['updated_at'] = now
+        self.last_write, self.since_write = now, 0
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            write_json_atomic(self.path, self.entry)
+        except OSError:
+            return  # progress is advisory; it must never fail the stage it reports on
+        e = self.entry
+        self.say(f'progress pr{e["pr"]} {e["head"]} {e["stage"]} {e["done"]}/{e["total"]} '
+                 f'pass={e["passed"]} fail={e["failed"]}')
+
+    @contextlib.contextmanager
+    def heartbeat(self, period=None):
+        """Touch the entry every `period` seconds while the block runs (one opaque child process)."""
+        stop = threading.Event()
+        period = period or self.interval
+
+        def beat():
+            while not stop.wait(period):
+                self.touch()
+        thread = threading.Thread(target=beat, daemon=True)
+        thread.start()
+        try:
+            yield
+        finally:
+            stop.set()
+            thread.join(timeout=5)
+
+    def clear(self):
+        with self.lock:
+            self.entry = None
+        try:
+            self.path.unlink()
+        except OSError:
+            pass
+
+
+def read_json(path):
+    try:
+        data = json.loads(Path(path).read_text())
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def progress_lines(directory, now=None):
+    """One line per in-flight PR head: stage, done/total and the age of the last update."""
+    now = time.time() if now is None else now
+    lines = []
+    for path in sorted(Path(directory).glob('pr*-*.progress.json')):
+        entry = read_json(path)
+        state = read_json(path.with_name(path.name.replace('.progress.json', '.json'))) or {}
+        if entry is None or state.get('done') or state.get('merged'):
+            continue
+        age = max(0, int(now - entry.get('updated_at', now)))
+        flag = ' STUCK' if age > PROGRESS_STUCK_AFTER else ''
+        lines.append(f'pr{entry.get("pr")} {entry.get("head")} {entry.get("stage")} '
+                     f'{entry.get("done")}/{entry.get("total")} pass={entry.get("passed", 0)} '
+                     f'fail={entry.get("failed", 0)} age={age}s{flag}')
+    return lines
+
+
 # ---- state ----------------------------------------------------------------------------------
 
 class State:
@@ -1482,9 +1605,7 @@ class State:
                 self._save()
 
     def _save(self):
-        tmp = self.path.with_suffix('.tmp')
-        tmp.write_text(json.dumps(self.data, indent=1, sort_keys=True))
-        os.replace(tmp, self.path)
+        write_json_atomic(self.path, self.data)
 
     def once(self, key, fn):
         return self.data[key] if key in self.data else self.set(key, fn())
@@ -1564,6 +1685,7 @@ class Bot:
         self.tree = self.work / 'tree'
         self.main_watch = MainWatch(self.fetch_main_red)
         self.clock = time.time
+        self.progress_by_tag = {}  # tag -> Progress of the PR head being worked, shared by every slot
         self.used = threading.local()  # the reviewer of this thread's latest review
         self.codex_paused_until = [0.0]  # shared by every slot: one dead account is skipped by all of them
         self.carry_targets = {}  # revision -> RVAs with a published target hash there, for the comment-only carry
@@ -1591,6 +1713,9 @@ class Bot:
                 self.code_sha_cache = ''
             self.code_sha_cache = self.code_sha_cache or 'unknown'
         return self.code_sha_cache
+
+    def progress_of(self, tag):
+        return getattr(self, 'progress_by_tag', {}).get(tag)
 
     def mark_done(self, state):
         """Finish a head, stamped with the code revision that did, so a later deploy can tell a stale failure."""
@@ -2155,6 +2280,10 @@ class Bot:
         keys = [f'review_chunk{sfx}:' + hashlib.sha256(','.join(map(str, c)).encode()).hexdigest()[:16]
                 for c in chunks]
 
+        progress = self.progress_of(f'{number}-{head[:8]}')
+        if progress:
+            progress.begin('review', len(chunks))
+
         def one(i):
             self.used.reviewer = None
             mine = {owner.get(r) for r in chunks[i]}
@@ -2163,6 +2292,8 @@ class Bot:
             run = lambda: self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
                                             companions, old_flags, path, others)
             text = state.once(keys[i], run) if state is not None else run()
+            if progress:
+                progress.advance()
             return text, self.used.reviewer
 
         with ThreadPoolExecutor(max_workers=max(1, min(self.config['review_workers'], len(chunks)))) as pool:
@@ -2429,8 +2560,11 @@ class Bot:
             # A task directory reused from an earlier compare keeps its attempt count, and the verifier
             # refuses a task whose attempt budget is spent (exit 5) however often it is asked again.
             shutil.rmtree(task, ignore_errors=True)
+        progress = self.progress_of(tag)
+        if progress:
+            progress.begin('pack-export', len(tasks))
         try:
-            with self.ghidra_lock:
+            with self.ghidra_lock, (progress.heartbeat() if progress else contextlib.nullcontext()):
                 self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree,
                          timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
@@ -2447,11 +2581,16 @@ class Bot:
         # hundreds of them: one after another they outlast the head's chance to stay unchanged.
         def attempt(task):
             try:
-                return self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
-                                cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+                ran = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
+                               cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
             except subprocess.TimeoutExpired:
                 raise HostFailure(f'verifier host timed out ({tid_of(task)})')
+            if progress:
+                progress.advance(ran.returncode == 0)
+            return ran
         workers = max(1, min(self.config.get('compare_workers', COMPARE_WORKERS), len(tasks)))
+        if progress:
+            progress.begin('compare', len(tasks))
         with ThreadPoolExecutor(max_workers=workers) as pool:
             futures = [pool.submit(attempt, task) for task in tasks]
             try:
@@ -2901,7 +3040,12 @@ class Bot:
     # ---- one PR head ----
     def process(self, pr, base=None):
         try:
-            return self._process(pr, base)
+            try:
+                return self._process(pr, base)
+            finally:
+                live = self.progress_by_tag.pop(f"{pr['number']}-{pr['headRefOid'][:8]}", None)
+                if live:
+                    live.clear()
         except Rejected as exc:
             if not self.dry_run:
                 if exc.text:
@@ -3002,9 +3146,11 @@ class Bot:
 
     def _process(self, pr, base=None):
         number, head = pr['number'], pr['headRefOid']
-        state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
+        directory = self.work / ('dry' if self.dry_run else 'state')
+        state = State(directory, number, head)
         if settled(state, pr, self.code_sha):
             return state.data
+        self.progress_by_tag[f'{number}-{head[:8]}'] = Progress(directory, number, head)
         if stale_bot_failure(state, self.code_sha):
             # Retry under the deployed code; the stored review stays, so nothing paid is repeated.
             for key in RETRY_DROPS:
@@ -5062,7 +5208,7 @@ def dry_run_open_prs(bot, seed=None):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('command', nargs='?', choices=['pr'])
+    p.add_argument('command', nargs='?', choices=['pr', 'status'])
     p.add_argument('number', nargs='?', type=int)
     p.add_argument('--poll', action='store_true')
     p.add_argument('--interval', type=int, default=60)
@@ -5079,6 +5225,10 @@ def main(argv=None):
     a = p.parse_intermixed_args(argv)
     if a.host1 == 'assume-pass' and not a.dry_run:
         p.error('--host1 assume-pass is for dry-run replays only; a live run needs the hash check')
+    if a.command == 'status':
+        for line in progress_lines(Path(a.work or a.root / '.local/pr-bot') / 'state'):
+            print(line)
+        return 0
     bot = Bot(root=a.root, work=a.work, dry_run=a.dry_run, host1=a.host1)
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
