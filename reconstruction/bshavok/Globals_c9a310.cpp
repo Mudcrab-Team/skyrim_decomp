@@ -2,7 +2,6 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: ReleaseAllEntries.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/havok/physics/internal/collide/gjk/gskmanifold/hkpgskmanifoldutil.cpp:32
 // 0xc9a310 ReleaseAllEntries
-// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/havok/physics/internal/collide/gjk/gskmanifold/hkpgskmanifoldutil.cpp:72
 #include "Globals_c9a310.h"
 
 void ReleaseAllEntries(S_00dad640_Set* set, S_00dad640_Target* target, void* arg)

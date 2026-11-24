@@ -2,7 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: NiTransformController::IsTargetOfType.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nianimation/niviscontroller.cpp:106
 // 0xf7f040 NiTransformController::IsTargetOfType
-// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nianimation/niviscontroller.cpp:88
+// Sibling source: momusdigital/fnv_decomp@2b07cb3e src/gamebryo2.2/corelibs/nianimation/niviscontroller.cpp:92
 #include "NiLightDimmerController_f7f040.h"
 
 bool NiTransformController::IsTargetOfType(NiObjectNET* pkTarget) const

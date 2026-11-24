@@ -2,7 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: VersionedDataBlock::ReadBytes.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/havok/common/base/system/io/reader/hkstreamreader.cpp:16
 // 0xaa6000 VersionedDataBlock::ReadBytes
-// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/havok/common/base/system/io/reader/hkstreamreader.cpp:17
+// Sibling source: momusdigital/fnv_decomp@2b07cb3e src/havok/common/base/system/io/reader/hkstreamreader.cpp:20
 #include "VersionedDataBlock_aa6000.h"
 
 int VersionedDataBlock::ReadBytes(int size)

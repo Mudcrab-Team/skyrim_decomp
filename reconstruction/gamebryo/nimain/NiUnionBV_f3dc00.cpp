@@ -2,6 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: E9E8C0Array::Func00e9e8c0.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nicollision/niunionbv_o2_noo1_nooy_variant.cpp:260
 // 0xf3dc00 E9E8C0Array::Func00e9e8c0
+// Adapted helpers: GetAt
 #include "NiUnionBV_f3dc00.h"
 
 bool E9E8C0Array::Func00e9e8c0(E9E8C0Array* pkOther)

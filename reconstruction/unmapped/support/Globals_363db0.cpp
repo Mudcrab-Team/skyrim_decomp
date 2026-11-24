@@ -2,6 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: f3m_0051e2f0::Func0051e2f0.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_00500000_o2.cpp:4942
 // 0x363db0 f3m_0051e2f0::Func0051e2f0
+// Adapted helpers: Token
 #include "Globals_363db0.h"
 
 namespace f3m_0051e2f0 {

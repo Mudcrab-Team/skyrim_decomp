@@ -2,7 +2,6 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: SaveKeyArray.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/staging/blk_00a20000_o2.cpp:1047
 // 0xf8e630 SaveKeyArray
-// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/staging/blk_00a20000_o2.cpp:1186
 #include "Globals_f8e630.h"
 
 void SaveKeyArray(NiStream& kStream, A28260Key* pkKeys, unsigned int uiNumKeys)

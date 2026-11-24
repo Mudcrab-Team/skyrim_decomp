@@ -2,7 +2,6 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: Partition::GetStripIndexCount.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nimain/niskinpartition.cpp:11
 // 0xf08160 Partition::GetStripIndexCount
-// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nimain/niskinpartition.cpp:24
 #include "Partition_f08160.h"
 
 unsigned int NiSkinPartition::Partition::GetStripIndexCount()

@@ -2,7 +2,8 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: ComputeBarycentric.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nicollision/niobbleaf.cpp:373
 // 0xf41930 ComputeBarycentric
-// Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/nicollision/niobbleaf.cpp:668
+// Sibling source: momusdigital/fnv_decomp@2b07cb3e src/gamebryo2.2/corelibs/nicollision/niobbleaf.cpp:683
+// Adapted helpers: Dot
 #include "Globals_f41930.h"
 
 void ComputeBarycentric(const Vec3f* apVertex0, const Vec3f* apVertex1, const Vec3f* apVertex2, const Vec3f* apPoint,

@@ -2,6 +2,9 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: Func00a3cd40_cls::Func00a3cd40.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nianimation/nifloatdata.cpp:290
 // 0xf61da0 Func00a3cd40_cls::Func00a3cd40
+// Sibling source: momusdigital/fnv_decomp@2b07cb3e src/gamebryo2.2/corelibs/nianimation/nifloatdata.cpp:159
+// Sibling source: momusdigital/fnv_decomp@2b07cb3e src/gamebryo2.2/corelibs/nianimation/nifloatdata.cpp:165
+// Adapted helpers: Write, GetWriter
 #include "NiColorData_f61da0.h"
 
 bool Func00a3cd40_cls::Func00a3cd40(NiFloatData* other)
