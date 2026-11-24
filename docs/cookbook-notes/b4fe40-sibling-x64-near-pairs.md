@@ -1,5 +1,7 @@
 # 0xb4fe40 hkpPrismaticConstraintData::Routine140A71580
 
+<!-- tags: abi/calling-convention, abi/exception, abi/virtual, construct/destructor, method/diagnostic, method/sibling, wall/constant, wall/inlining, wall/layout -->
+
 - Function: 0xb4fe40 hkpPrismaticConstraintData::Routine140A71580
 - Label: GUESS
 - Outcome: fixed

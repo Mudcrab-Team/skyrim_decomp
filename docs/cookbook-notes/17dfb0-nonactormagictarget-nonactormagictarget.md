@@ -1,5 +1,7 @@
 # 0x17dfb0 NonActorMagicTarget::~NonActorMagicTarget
 
+<!-- tags: abi/virtual, construct/constructor, construct/destructor, method/diagnostic, method/sibling, wall/register-schedule -->
+
 - Function: 0x17dfb0 NonActorMagicTarget::~NonActorMagicTarget
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

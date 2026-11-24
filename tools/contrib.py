@@ -2824,23 +2824,30 @@ def cmd_preflight(ctx, args):
         base = 'HEAD'
     unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
     files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
-    for d_, t_ in picked:
-        for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_)):
-            ctx.say(line)
+    reminders = [line for d_, t_ in picked
+                 for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_))]
     head = git(ctx, 'write-tree') if args.staged else None
     details = {}
     problems = intake_problems(ctx, base, head=head, files=files, details=details)
     reconfirmation = project_reconfirmation(ctx.repo, [n for _status, n in files])
     labels, origin, warnings = (details.get('label_findings', []), details.get('origin_findings', []),
                                 details.get('warnings', []))
-    for warning in warnings:
-        ctx.say('warning: ' + warning)
-    for problem in problems:
-        ctx.say('BLOCKED: ' + problem)
-    for item in reconfirmation:
-        ctx.say(f'{item["file"]}:1: {item["rva"]}: {item["status"]}')
-    for label in labels:
-        ctx.say('label: ' + label)
+    details_lines = ([f'BLOCKED: {item}' for item in problems] +
+                     [f'label: {item}' for item in labels] +
+                     [f'{item["file"]}:1: {item["rva"]}: {item["status"]}' for item in reconfirmation] +
+                     [f'warning: {item}' for item in warnings] + reminders)
+    if getattr(args, 'verbose', False) or args.staged or ctx.as_json or ctx.env.get('CI'):
+        for line in (reminders + [f'warning: {item}' for item in warnings] +
+                     [f'BLOCKED: {item}' for item in problems] +
+                     [f'{item["file"]}:1: {item["rva"]}: {item["status"]}' for item in reconfirmation] +
+                     [f'label: {item}' for item in labels]):
+            ctx.say(line)
+    else:
+        ctx.say(f'preflight: {"BLOCKED" if problems else "PASS"}; '
+                f'{len(problems)} blocker(s), {len(labels)} label finding(s), '
+                f'{len(warnings)} warning(s)')
+        if details_lines:
+            ctx.say(details_lines[0] + (' (use --verbose for all findings)' if len(details_lines) > 1 else ''))
     return (FAILED if problems else OK), dict(problems=problems, blockers=problems, label_findings=labels,
                                             project_reconfirmation=reconfirmation, origin_findings=origin, warnings=warnings), \
         'fix the listed findings' if problems else f'{ctx.cli} compare'
@@ -3191,6 +3198,41 @@ def cmd_go(ctx, args):
 
 # ------------------------------------------------------------------ main
 
+def cmd_sheet(ctx, args):
+    import drafter_sheet
+    rva = parse_rva(args.rva)
+    if args.task:
+        matches = [Path(args.task)]
+    else:
+        matches = drafter_sheet.task_for([ctx.local / 'tasks', ctx.private / 'tasks'], rva)
+    if not matches:
+        raise Stop(MISSING, f'no prepared task for 0x{rva:x}', f'{ctx.cli} start 0x{rva:x} or pass --task <task-dir>')
+    if len(matches) > 1:
+        raise Stop(USAGE, f'multiple prepared tasks for 0x{rva:x}; pass --task', errors=[str(p) for p in matches])
+    import drafter_lessons
+    fn = resolve_function(ctx, inventory(ctx.repo), rva)
+    tags = drafter_lessons.tags_for(ctx.repo, ctx.local, rva, fn, matches[0])
+    result = drafter_sheet.render(ctx.repo, matches[0], rva) + 'Lesson tags: ' + (', '.join(sorted(tags)) or 'none known') + '\n'
+    ctx.say(result.rstrip())
+    return OK, {'sheet': result}, None
+
+
+def cmd_lessons(ctx, args):
+    import drafter_lessons
+    rva = parse_rva(args.rva) if args.rva else None
+    if rva is None and not args.tag:
+        raise Stop(USAGE, 'give an RVA or at least one --tag')
+    fn = resolve_function(ctx, inventory(ctx.repo), rva) if rva is not None else None
+    if rva is not None and not fn and not args.task:
+        raise Stop(USAGE, f'{args.rva} is not in the function inventory or published target hashes; use --task')
+    tags = set(args.tag)
+    if rva is not None:
+        tags.update(drafter_lessons.tags_for(ctx.repo, ctx.local, rva, fn, args.task))
+    result = drafter_lessons.select(ctx.repo, rva, tags, args.max_chars)
+    ctx.say(result.rstrip())
+    return OK, {'lessons': result, 'tags': sorted(tags)}, None
+
+
 def parser():
     p = agent_advice.ArgumentParser(prog='contrib.py', description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--json', action='store_true', help='one JSON object on stdout; never prompts')
@@ -3198,6 +3240,14 @@ def parser():
     p.add_argument('--redact', action='store_true',
                    help='replace the checkout and home paths in all output; use it for anything you post publicly')
     sub = p.add_subparsers(dest='command', required=True)
+    s = sub.add_parser('sheet')
+    s.add_argument('rva')
+    s.add_argument('--task', help='prepared task directory, when more than one exists')
+    s = sub.add_parser('lessons')
+    s.add_argument('rva', nargs='?')
+    s.add_argument('--task', help='prepared task directory')
+    s.add_argument('--tag', action='append', default=[], help='additional tag from docs/lesson-tags.md; repeat as needed')
+    s.add_argument('--max-chars', type=int, default=12000)
     s = sub.add_parser('doctor')
     s.add_argument('--exe')
     s = sub.add_parser('facts')
@@ -3290,6 +3340,7 @@ def parser():
     s.add_argument('--drafted-by')
     s.add_argument('--ack-collision', action='store_true')
     s = sub.add_parser('preflight')
+    s.add_argument('--verbose', action='store_true', help='show every finding')
     s.add_argument('task', nargs='*', help='one or more task names')
     s.add_argument('--all-dirty', action='store_true', help='every unsubmitted task whose unit has uncommitted changes')
     s.add_argument('--base')
@@ -3316,7 +3367,7 @@ def parser():
     return p
 
 
-COMMANDS = {'doctor': cmd_doctor, 'setup': cmd_setup, 'next': cmd_next, 'claim': cmd_claim, 'release': cmd_release,
+COMMANDS = {'sheet': cmd_sheet, 'lessons': cmd_lessons, 'doctor': cmd_doctor, 'setup': cmd_setup, 'next': cmd_next, 'claim': cmd_claim, 'release': cmd_release,
             'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'note': cmd_note, 'lesson': cmd_lesson, 'submit': cmd_submit,
             'preflight': cmd_preflight, 'intake': cmd_intake, 'go': cmd_go, 'feedback': cmd_feedback}
 

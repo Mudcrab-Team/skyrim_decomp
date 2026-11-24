@@ -1,5 +1,7 @@
 # 0x237a20 TESObjectREFR::RemoveFavorite
 
+<!-- tags: abi/exception, construct/bitfield, construct/destructor, method/diagnostic, method/sibling, sibling/f3, wall/callee, wall/control-flow, wall/flag-fold, wall/register-schedule -->
+
 - Function: 0x237a20 TESObjectREFR::RemoveFavorite
 - Label: none
 - Outcome: unsolved

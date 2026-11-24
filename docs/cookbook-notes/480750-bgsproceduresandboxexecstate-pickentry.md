@@ -1,5 +1,7 @@
 # 0x480750 BGSProcedureSandboxExecState::PickEntry
 
+<!-- tags: abi/calling-convention, abi/exception, abi/virtual, construct/destructor, construct/loop, construct/switch, method/diagnostic, wall/callee, wall/control-flow, wall/inlining, wall/layout, wall/register-schedule -->
+
 - Function: 0x480750 BGSProcedureSandboxExecState::PickEntry
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

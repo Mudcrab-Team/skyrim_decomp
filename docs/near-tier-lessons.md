@@ -96,6 +96,7 @@ usually such a pair. A clean count is not a proof of a behaviour match.
 ## Working method
 
 <a id="lesson-1"></a>
+<!-- tags: wall/constant -->
 **L1. Run the stop rule literally; a round that gained is not a reason to stop.** (repeated)
 Status: candidate. Found by: Sonnet, Opus, Sol. Rules: none.
 Symptom: a draft sits at 70 to 75 percent after two to nine minutes, the last round gained, and the note
@@ -107,6 +108,7 @@ drafts by 11 to 33 points.
 Evidence: 0x381250 +17.1 (Opus); 0xcdf660 +12.6 (Opus); 0x4b10e0 +32.7 (Opus); 0x97a2e0 +11.2 (Opus); 0x5ca670 +20.5 (Sol).
 
 <a id="lesson-2"></a>
+<!-- tags: abi/virtual, construct/vector, method/binding, method/diagnostic, wall/callee, wall/constant -->
 **L2. Bind every callee, data symbol, thread-local and literal in one pass, before judging structure.** (repeated)
 Status: candidate. Found by: Sonnet, Sol, Opus. Rules: none.
 Symptom: the first score is meaningless: unbound callees count as missing and extra calls and hide the real
@@ -118,6 +120,7 @@ namespace: its decorated name changes with every edit. Also [toolkit step 5](dra
 Evidence: 0x1e37d0 callees (Sonnet); 0x4ab410 +1.1 (Sonnet); 0x6cd850 +0.4 (Sonnet); 0x381250 flat (Sonnet); 0x87a740 +10.0 (Sonnet).
 
 <a id="lesson-3"></a>
+<!-- tags: abi/exception, method/binding, method/diagnostic, wall/callee, wall/constant -->
 **L3. A binding the tool accepts without an `UNBOUND` line can still point at the wrong symbol.** (repeated)
 Status: candidate. Found by: Sonnet, Sol. Rules: none.
 Symptom: a callee stays missing with no diagnostic, or a numeric global compares as a different value.
@@ -130,6 +133,7 @@ with the pack's reference table; an exact-name hint overrides the automatic one.
 Evidence: 0x97a2e0 callees (Sol); 0x381250 callees (Sonnet); 0x7e6850 callees (Sol); 0xbbf5c0 callees (Sol); 0x6b0650 callees (Sol).
 
 <a id="lesson-4"></a>
+<!-- tags: abi/calling-convention, construct/float, method/diagnostic, wall/callee, wall/register-schedule -->
 **L4. Full callee agreement does not check receivers, argument counts, argument widths or returned storage.** (repeated)
 Status: mapped. Found by: Sol, Opus, Sonnet. Rules: 5 agrees, 33 agrees, 70 agrees.
 Symptom: the callee set is equal and sim is flat or low. Cause: the decompiler drops trailing register
@@ -141,6 +145,7 @@ itself be wrong (0xbbf5c0 returns a float and takes a fifth argument).
 Evidence: 0x480750 +11.2 (Sol); 0x4ab410 +4.4 (Sol); 0x6b0650 +1.1 (Sol); 0x6cd850 +0.8 (Sonnet); 0xcd9b60 +0.3 (Opus); 0xbbf5c0 +46.5 (Opus).
 
 <a id="lesson-5"></a>
+<!-- tags: abi/calling-convention, construct/float, construct/switch, wall/callee, wall/register-schedule -->
 **L5. A value left in an argument register can be a spill, not an argument: confirm liveness before adding a parameter.** (single)
 Status: mapped. Found by: Sol. Rules: 5 qualifies.
 Symptom: after a call the listing shows four extra floats in registers and a rewrite adds four parameters.
@@ -151,6 +156,7 @@ the pilot found a case where it is not.
 Evidence: 0x1240a20 flat (Sol).
 
 <a id="lesson-6"></a>
+<!-- tags: abi/virtual, method/diagnostic, wall/layout -->
 **L6. Rewrite a structurally wrong draft instead of patching it.** (repeated)
 Status: candidate. Found by: Opus, Sol, Sonnet. Rules: none.
 Symptom: padding members, a wrong element stride, "slot ladders" of fake virtual calls, scalar arithmetic
@@ -161,6 +167,7 @@ points, more than all later tuning together.
 Evidence: 0x7e6850 +20.5 (Opus); 0x4ab410 +25.5 (Opus); 0xbbf5c0 +46.6 (Opus); 0xbbf5c0 +47.9 (Sol); 0x5caca0 +19.6 (Opus).
 
 <a id="lesson-7"></a>
+<!-- tags: abi/calling-convention, construct/destructor, construct/loop, method/diagnostic, wall/control-flow -->
 **L7. Read the size ratio after the first score and fix what it points to first.** (repeated)
 Status: candidate. Found by: Sonnet. Rules: none.
 Symptom and fix: above about 1.10 the candidate holds an unrolled or duplicated loop or early returns that
@@ -171,6 +178,7 @@ there is; do not skip it as boilerplate.
 Evidence: 0x31b8b0 +10.2 (Sonnet); 0x87a740 +5.4 (Sonnet); 0x5ca670 +2.8 (Sonnet); 0x7e6850 flat (Sonnet).
 
 <a id="lesson-8"></a>
+<!-- tags: abi/calling-convention, construct/allocation, construct/bitfield, construct/constructor, construct/destructor, wall/constant, wall/control-flow, wall/flag-fold -->
 **L8. Never add state, parameters, flags or bodies the listing does not show.** (repeated)
 Status: candidate. Found by: Opus, Sonnet, Sol. Rules: none.
 Symptom: a drafted "found" flag, a single `result` variable with one return, an extra constructor parameter
@@ -182,6 +190,7 @@ cost 1.4 points on 0x3409a0.
 Evidence: 0xcdf660 +8.5 (Opus); 0x3409a0 -1.4 (Sonnet); 0x7fd020 flat (Opus); 0x123a7f0 flat (Sol).
 
 <a id="lesson-9"></a>
+<!-- tags: construct/allocation, construct/constructor, construct/loop, method/diagnostic, wall/callee, wall/constant -->
 **L9. A scored draft is not a reviewed draft: read your own constants, initialisers and header before the last round.** (repeated)
 Status: candidate. Found by: Opus, Sonnet, Sol. Rules: none.
 Symptom: sim moves by a fraction of a point for a real behaviour bug. Seen: a tree realignment that adds 0x10
@@ -195,6 +204,7 @@ pair unrelated instructions.
 Evidence: 0xcdf660 behaviour (Opus); 0x1e37d0 behaviour (Sol); 0x7fd020 behaviour (Sonnet); 0x29b960 behaviour (Sonnet).
 
 <a id="lesson-10"></a>
+<!-- tags: method/binding, method/diagnostic, wall/callee -->
 **L10. Sim is not faithfulness: keep the faithful version, report both numbers, and do not count callee gains as sim gains.** (repeated)
 Status: candidate. Found by: Opus, Sol. Rules: none.
 Symptom: a change that makes the frame size or the lifetimes exact lowers sim by a point; another leaves sim
@@ -207,6 +217,7 @@ to 65 faithful and no unit whose score overstated it: sim understates faithfulne
 Evidence: 0x5caca0 flat (Opus); 0x7e6850 -1.0 (Opus); 0x6cd850 -0.4 (Sol).
 
 <a id="lesson-11"></a>
+<!-- tags: wall/layout -->
 **L11. One change per round, or independent structural changes together: the pilot is split.** (single)
 Status: contested. Found by: Sonnet, Opus, Sol. Rules: none.
 Symptom: a +10 round with three edits in it and no attribution (0x97a2e0, Sonnet); a retry whose first round
@@ -218,6 +229,7 @@ source before each experiment either way.
 Evidence: 0x97a2e0 +10.1 (Sonnet); 0x5caca0 +19.6 (Opus); 0x6cd850 -0.4 (Sol).
 
 <a id="lesson-12"></a>
+<!-- tags: construct/loop -->
 **L12. Read the cookbook, the lesson notes and the function's failure record before the first draft.** (single)
 Status: candidate. Found by: Sonnet. Rules: none.
 Symptom: rounds spent on a loop-shape rewrite that a note or an earlier failure had already ruled out: 0xf012f0
@@ -228,6 +240,7 @@ Evidence: 0xf012f0 -1.4 (Sonnet).
 ## Compiler recipe and floating point
 
 <a id="lesson-13"></a>
+<!-- tags: construct/float, construct/switch, method/binding, wall/callee, wall/control-flow, wall/inlining -->
 **L13. Choose the recipe on the first look: a library square-root or floor call in the first compile is the sign.** (repeated)
 Status: mapped. Found by: Sonnet, Opus, Sol. Rules: 48 agrees.
 Symptom: the first compile shows a `sqrtf` or `floor` call (or a double round-trip) the target does inline,
@@ -242,6 +255,7 @@ called it a compiler-mode artefact that no source could close.
 Evidence: 0x123a7f0 +17.7 (Sonnet); 0xcd9b60 +5.2 (Sonnet); 0x6cd850 +1.1 (Sonnet); 0x54e9c0 +1.5 (Opus); 0x7e6850 callees (Opus).
 
 <a id="lesson-14"></a>
+<!-- tags: construct/float, construct/switch, wall/control-flow, wall/inlining -->
 **L14. A recipe is not all-or-nothing: the target mixes precise divides with inline square roots and absolute values.** (repeated)
 Status: contradicted. Found by: Opus, Sol, Sonnet. Rules: 48 contradicts.
 Symptom: under `o2-fpfast` the target's single-precision divides become reciprocal multiplies (0x7fd020), or
@@ -254,6 +268,7 @@ The rule holds when every symptom points the same way (L13).
 Evidence: 0x4b10e0 +1.1 (Opus); 0x7fd020 +6.6 (Opus); 0x4b10e0 +4.5 (Sol).
 
 <a id="lesson-15"></a>
+<!-- tags: construct/float, wall/control-flow -->
 **L15. `std::fabs` on a float resolves to the double overload; write `fabsf` or a branch-select absolute value.** (repeated)
 Status: mapped. Found by: Opus, Sonnet. Rules: 48 agrees.
 Symptom: conversions to double and back and a 64-bit mask around an absolute value, under either recipe.
@@ -263,6 +278,7 @@ without it.
 Evidence: 0x4b10e0 +0.8 (Sonnet); 0xbbf5c0 +0.1 (Opus); 0x4b10e0 +1.1 (Opus).
 
 <a id="lesson-16"></a>
+<!-- tags: wall/constant, wall/layout -->
 **L16. Aligned moves through `__m128` pointers are not reproduced: the target folds loads into memory operands, MSVC 19.16 emits unaligned moves.** (repeated)
 Status: open. Found by: Opus, Sonnet. Rules: 51 qualifies.
 Symptom: structs read with unaligned loads cannot fold into packed arithmetic; the same candidate with
@@ -276,6 +292,7 @@ Still failing: 0xbbf5c0, 0x54e9c0.
 ## Packed arithmetic
 
 <a id="lesson-17"></a>
+<!-- tags: construct/vector, method/diagnostic -->
 **L17. Havok, quaternion and vector code is packed even when the decompiler prints scalars: look at the instruction mix before writing the maths.** (repeated)
 Status: mapped. Found by: Sonnet, Sol, Opus. Rules: 51 extends.
 Symptom: size ratio 1.35 to 1.65 or 0.87 with scalar helpers, a transposed matrix or a quaternion store
@@ -288,6 +305,7 @@ batch and in the animation update.
 Evidence: 0xbbf5c0 +46.5 (Opus); 0xbbf5c0 +42.0 (Sol); 0xbb8930 +23.2 (Opus); 0xbb8930 +8.0 (Sol); 0x54e9c0 +16.9 (Sonnet).
 
 <a id="lesson-18"></a>
+<!-- tags: construct/vector -->
 **L18. Classify the width by region: scalar arithmetic with packed storage stays scalar.** (repeated)
 Status: candidate. Found by: Sol. Rules: none.
 Symptom: after L17 a function with scalar arithmetic and packed moves gets worse when the arithmetic is
@@ -297,6 +315,7 @@ expressions where the target computes scalars.
 Evidence: 0x1240a20 +4.5 (Sol); 0x5def30 -4.2 (Sol); 0x4ab410 +7.8 (Sol).
 
 <a id="lesson-19"></a>
+<!-- tags: construct/float, construct/vector -->
 **L19. Keep the target's floating-point grouping and lane convention: the accumulation order of a dot product moves several points.** (single)
 Status: candidate. Found by: Sol, Opus. Rules: none.
 Symptom: packed code of the right shape scores 80 and stops. Cause: the target adds the second and first
@@ -306,6 +325,7 @@ real-lane convention from a call site, and keep a zero-length behaviour that mat
 Evidence: 0xbbf5c0 +4.3 (Sol); 0xbbf5c0 +1.8 (Sol).
 
 <a id="lesson-20"></a>
+<!-- tags: construct/constructor, construct/vector, wall/inlining, wall/register-schedule -->
 **L20. A 36-byte matrix stored as two vector stores and a dword is a by-value helper result assigned to the member.** (single)
 Status: mapped. Found by: Opus, Sol. Rules: 50 extends, 51 extends.
 Symptom: shuffles around stores of 16, 16 and 4 bytes look like hand-written SIMD, and scalar code writing
@@ -317,6 +337,7 @@ point, transform and matrix types lost 0.5 to 9.8 points.
 Evidence: 0x1004350 +7.8 (Opus); 0x1004350 +4.7 (Sol); 0x1004350 -9.8 (Opus).
 
 <a id="lesson-21"></a>
+<!-- tags: construct/loop, construct/vector -->
 **L21. A small matrix product: copy the target's order, which differs between functions.** (repeated)
 Status: contested. Found by: Opus. Rules: none.
 Symptom: a hand-hoisted 3x3 product against a member `operator*` written as a column loop (target reads the
@@ -327,6 +348,7 @@ nine statements in the library's column-major order (+1.0 on 0x4ab410).
 Evidence: 0x4b10e0 +15.7 (Opus); 0x4ab410 +1.0 (Opus).
 
 <a id="lesson-22"></a>
+<!-- tags: construct/destructor, method/binding, wall/constant -->
 **L22. Define `NDEBUG` before an assert-bearing header such as DirectXMath: the shipped image is a release build.** (single)
 Status: candidate. Found by: Opus. Rules: none.
 Symptom: assertion helper calls and file-path string literals among the unbound references of a unit that
@@ -336,6 +358,7 @@ Evidence: 0x4ab410 +3.0 (Opus).
 ## Structure and control flow
 
 <a id="lesson-23"></a>
+<!-- tags: abi/calling-convention, construct/allocation, construct/destructor, wall/inlining -->
 **L23. A helper the target expands in place must expand in place; shared scratch buffers are passed in.** (repeated)
 Status: candidate. Found by: Sonnet, Opus, Sol. Rules: none.
 Symptom: size ratio under 0.9, calls to small helpers the target does not make (argument push, reference
@@ -348,6 +371,7 @@ grows it. A comparator reads a call to an out-of-line helper as a missing region
 Evidence: 0x232ac0 +16.8 (Sonnet); 0x97a2e0 +19.0 (Sonnet); 0xbb8930 +7.0 (Sonnet); 0x87a740 +5.4 (Sonnet); 0xbbf5c0 -1.4 (Sonnet).
 
 <a id="lesson-24"></a>
+<!-- tags: abi/calling-convention, construct/switch, wall/callee, wall/inlining -->
 **L24. A helper the target keeps out of line at only some call sites was not reproduced by any spelling.** (single)
 Status: open. Found by: Sonnet, Sol, Opus. Rules: 27 qualifies.
 Symptom: the target copies a value out of line at two of about 25 sites and inline at the rest; with the
@@ -359,6 +383,7 @@ Evidence: 0x97a2e0 -0.7 (Sol); 0x97a2e0 flat (Opus).
 Still failing: 0x97a2e0.
 
 <a id="lesson-25"></a>
+<!-- tags: construct/switch, method/diagnostic, wall/callee, wall/inlining -->
 **L25. Do not factor the cases of one huge flat function into helpers: MSVC will not inline helpers of that size.** (single)
 Status: candidate. Found by: Opus. Rules: none.
 Symptom: after splitting a form loader's per-type read sequences into `Load...` functions "for readability",
@@ -367,6 +392,7 @@ case cost nothing.
 Evidence: 0x1e37d0 -57.0 (Opus).
 
 <a id="lesson-26"></a>
+<!-- tags: abi/exception, construct/allocation, wall/control-flow -->
 **L26. Exit shape: early returns with a scope guard where the target has unwind state, one result local where it has not.** (repeated)
 Status: mapped. Found by: Opus, Sol, Sonnet. Rules: 34 qualifies, 67 extends.
 Symptom: the target has one shared exit block for every return, an unwind-state store and a saved value in a
@@ -378,6 +404,7 @@ gave +7.8).
 Evidence: 0x4b10e0 +12.5 (Opus); 0x4b10e0 +7.3 (Sol); 0x3409a0 +4.1 (Sonnet); 0x3409a0 +3.7 (Sonnet).
 
 <a id="lesson-27"></a>
+<!-- tags: abi/exception, construct/constructor, construct/destructor, construct/loop, construct/vector, method/diagnostic, wall/register-schedule -->
 **L27. Unwind-state stores and constructor or destructor calls at no-op rows mean a local with a destructor; compare `max_state`.** (repeated)
 Status: mapped. Found by: Opus, Sol. Rules: 13 extends, 67 extends.
 Symptom: an eager save of vector registers, an unwind-state store and a frame built from a copy of the stack
@@ -390,6 +417,7 @@ Evidence: 0x381250 +11.3 (Opus); 0x381250 +12.6 (Sol); 0x5caca0 +19.6 (Opus); 0x
 Still failing: 0x381250.
 
 <a id="lesson-28"></a>
+<!-- tags: abi/exception, abi/virtual, construct/destructor, construct/vector, wall/callee, wall/register-schedule -->
 **L28. Mark engine and Havok callees `noexcept` and release through a virtual destructor, or MSVC builds a frame the target lacks.** (single)
 Status: mapped. Found by: Opus. Rules: 67 extends.
 Symptom: a cast handle released by a raw function-pointer virtual call gives a full unwind frame, a state
@@ -399,6 +427,7 @@ lever removes a state.
 Evidence: 0xbb8930 +3.3 (Opus).
 
 <a id="lesson-29"></a>
+<!-- tags: abi/calling-convention, abi/exception, wall/callee, wall/inlining, wall/register-schedule -->
 **L29. After a handle lookup the target keeps the pointer in a register with an unwind no-op; every spelling here reloads it from the stack.** (repeated)
 Status: open. Found by: Opus. Rules: 13 qualifies.
 Symptom: the same residue in two functions that look up a reference by handle and hold it in a smart pointer.
@@ -408,6 +437,7 @@ Evidence: 0x7fd020 flat (Opus); 0x480750 flat (Opus).
 Still failing: 0x7fd020, 0x480750.
 
 <a id="lesson-30"></a>
+<!-- tags: construct/bitfield, construct/destructor, wall/flag-fold, wall/inlining -->
 **L30. Reject paths each set the weight and `continue`; the accept path is one shared tail.** (repeated)
 Status: mapped. Found by: Opus. Rules: 2 extends.
 Symptom: every reject ends in its own continue and the accept path too, or the candidate nests the checks and
@@ -418,6 +448,7 @@ last-block and tree stages replaced an invented flag on 0xcdf660.
 Evidence: 0x480750 +6.9 (Opus); 0xcdf660 +8.5 (Opus); 0x7e6850 -3.4 (Opus).
 
 <a id="lesson-31"></a>
+<!-- tags: construct/switch, wall/control-flow, wall/layout -->
 **L31. Write each test in the target's order and polarity: the fall-through case is the `if` body, and one condition stays one condition.** (repeated)
 Status: mapped. Found by: Sonnet, Opus. Rules: 2 agrees, 42 extends.
 Symptom: branch layout and compare operand order differ with the same instructions: a ternary that falls
@@ -428,6 +459,7 @@ fall-through case first; try both polarities of each two-way test in one round; 
 Evidence: 0x3409a0 +3.7 (Sonnet); 0xcd9b60 +3.7 (Opus); 0x7fd020 +4.1 (Opus); 0x480750 +4.9 (Opus); 0x1007b70 +0.8 (Sonnet).
 
 <a id="lesson-32"></a>
+<!-- tags: construct/bitfield, construct/loop, wall/callee, wall/control-flow, wall/flag-fold, wall/layout -->
 **L32. Loop form pays more than anything else once the callees agree: index or pointer, down-counter with a separate index, guarded do-while, found-flag iterator, post-test walk.** (repeated)
 Status: mapped. Found by: Sonnet, Opus. Rules: 35 agrees, 44 agrees.
 Symptom: size ratio 1.19 (an unrolled for-with-break), a count the target walks down while it indexes by
@@ -439,6 +471,7 @@ count instead of `break` (+4.6), a `for` whose bound is re-read each pass (+0.7)
 Evidence: 0x31b8b0 +10.2 (Sonnet); 0x29b960 +13.8 (Sonnet); 0x381250 +10.6 (Sonnet); 0x480750 +4.6 (Opus); 0x5ca670 +0.7 (Sonnet).
 
 <a id="lesson-33"></a>
+<!-- tags: abi/exception, construct/bitfield, construct/loop, wall/control-flow, wall/flag-fold -->
 **L33. Spellings MSVC canonicalises are not levers: declaration order, commutative operand order, independent store placement, found-flag against branchy loops, reorder-only experiments.** (repeated)
 Status: mapped. Found by: Opus, Sonnet. Rules: 42 agrees.
 Symptom: rounds with identical code or identical scores. Seen: swapping operands inside a cross product, moving
@@ -449,6 +482,7 @@ loop index to `size_t` cost 3.7 on 0x31b8b0.
 Evidence: 0x54e9c0 flat (Opus); 0xcd9b60 flat (Opus); 0x381250 flat (Opus); 0x5ca670 flat (Sonnet); 0x31b8b0 -3.7 (Sonnet).
 
 <a id="lesson-34"></a>
+<!-- tags: construct/switch, wall/control-flow -->
 **L34. Record-tag dispatch is a switch; the selector's signedness matters; do not flatten a switch into a chain.** (repeated)
 Status: mapped. Found by: Sonnet, Sol. Rules: 6 agrees.
 Symptom: an if-chain over four-character tags, or over a value the target reduces by successive subtraction,
@@ -459,6 +493,7 @@ because the decompiler printed one cost 17.9 points on 0x1e37d0.
 Evidence: 0x3409a0 +21.9 (Sonnet); 0x27c210 +2.0 (Sol); 0x5caca0 +10.4 (Sol); 0x1e37d0 -17.9 (Sol).
 
 <a id="lesson-35"></a>
+<!-- tags: construct/loop, wall/constant -->
 **L35. Hoist what the target hoists, re-read what it re-reads, and copy an aggregate into a local when the target loads it once.** (repeated)
 Status: mapped. Found by: Sonnet, Opus. Rules: 4 agrees, 1 extends.
 Symptom: a value computed once before a loop in the listing but inside it in the draft (a squared radius, a
@@ -469,6 +504,7 @@ loop the target re-creates each pass cost 0.7 points, hoisting a constant 0.5.
 Evidence: 0x480750 +5.3 (Sonnet); 0x31b8b0 +3.0 (Sonnet); 0x123a7f0 +5.0 (Opus); 0x381250 -0.7 (Opus); 0xcdf660 -0.5 (Opus).
 
 <a id="lesson-36"></a>
+<!-- tags: abi/calling-convention, construct/constructor, construct/float, construct/vector, wall/layout -->
 **L36. Small value types and temporaries: element-wise or block copy, a stack slot per temporary or one shared local; the pilot is split.** (repeated)
 Status: contested. Found by: Sonnet, Opus, Sol. Rules: 50 qualifies.
 Symptom: stack offsets differ across a whole function because temporaries share or do not share slots, and a
@@ -480,6 +516,7 @@ try the copy shape once, with the target's per-statement slot count in hand, and
 Evidence: 0x4b10e0 +6.0 (Sonnet); 0x123a7f0 +4.4 (Sonnet); 0x97a2e0 +9.1 (Opus); 0x1004350 -9.8 (Opus).
 
 <a id="lesson-37"></a>
+<!-- tags: construct/loop, wall/inlining -->
 **L37. Singletons: a pointer variable loaded at each use, or a call to an inline `GetSingleton()` in the expression, not an object at a fixed address.** (repeated)
 Status: candidate. Found by: Sonnet, Opus. Rules: none.
 Symptom: the load of the singleton differs: the target loads a pointer variable every iteration, or loads it as
@@ -489,6 +526,7 @@ value from the symbol or takes its address.
 Evidence: 0x5ca670 +3.7 (Sonnet); 0x381250 +3.2 (Opus).
 
 <a id="lesson-38"></a>
+<!-- tags: abi/virtual, construct/allocation, construct/destructor, method/binding, wall/callee -->
 **L38. A concrete global object devirtualizes calls on it; reach an allocator through a base pointer to keep the target's vtable call.** (repeated)
 Status: candidate. Found by: Sonnet, Opus, Sol. Rules: none.
 Symptom: one callee missing: the target calls an allocator's release through the vtable, the candidate
@@ -498,6 +536,7 @@ and the allocator storage separately.
 Evidence: 0x7fd020 +1.5 (Opus); 0x7fd020 +0.3 (Sonnet); 0x7e6850 flat (Sol); 0xbb8930 +2.8 (Sol).
 
 <a id="lesson-39"></a>
+<!-- tags: abi/virtual, construct/bitfield, construct/destructor, wall/flag-fold, wall/layout -->
 **L39. Shared counts are locked increments and decrements: use the interlocked intrinsics, not an atomic template, and release through the embedded handle.** (repeated)
 Status: mapped. Found by: Sonnet, Opus, Sol. Rules: 29 agrees, 39 extends.
 Symptom: an exchange-and-add where the target has a locked increment; a release that decrements through the
@@ -509,6 +548,7 @@ virtual delete; scoped ownership for the handle and one shared final selection i
 Evidence: 0x6b0650 +7.0 (Sonnet); 0x480750 +1.8 (Sonnet); 0x5ca670 +3.2 (Sonnet); 0x5ca670 +19.7 (Sol); 0x5def30 +7.9 (Sol).
 
 <a id="lesson-40"></a>
+<!-- tags: construct/allocation, construct/constructor, construct/destructor -->
 **L40. One-expression construction with a class allocation function that returns null reproduces the target's null checks and the temporary's lifetime.** (single)
 Status: candidate. Found by: Sonnet. Rules: none.
 Symptom: a channel constructed in a block with a named temporary string; the target keeps the temporary alive
@@ -519,6 +559,7 @@ constructor" for stateless classes.
 Evidence: 0x6b0650 +1.7 (Sonnet).
 
 <a id="lesson-41"></a>
+<!-- tags: construct/loop, wall/constant, wall/inlining -->
 **L41. A run of N identical constant-index updates means the original was unrolled; a plain loop is not unrolled at this optimisation level.** (single)
 Status: candidate. Found by: Sonnet. Rules: none.
 Symptom: sixteen stage updates with an immediate each, a draft loop at size ratio 0.76. Fix: a compile-time
@@ -529,6 +570,7 @@ Evidence: 0x1007b70 +29.0 (Sonnet).
 ## Types, layout and data
 
 <a id="lesson-42"></a>
+<!-- tags: abi/virtual, construct/constructor, construct/destructor, method/diagnostic, wall/layout, wall/register-schedule -->
 **L42. Check every offset, vptr position and member width against the listing before the first score: a wrong offset looks like register noise.** (repeated)
 Status: mapped. Found by: Opus, Sonnet, Sol. Rules: 69 agrees, 68 agrees.
 Symptom: a displacement loss across every access through one member (a skill pointer eight bytes high, a data
@@ -540,6 +582,7 @@ class with a vptr needs a virtual destructor in the stand-in or the whole layout
 Evidence: 0x97a2e0 +1.4 (Opus); 0x4b10e0 +2.0 (Sonnet); 0x4ab410 +0.5 (Sonnet); 0x123a7f0 flat (Sol); 0x7fd020 +1.0 (Opus).
 
 <a id="lesson-43"></a>
+<!-- tags: construct/loop -->
 **L43. Counters, tables and indices take their width from the compare and store widths.** (repeated)
 Status: mapped. Found by: Sonnet. Rules: 68 agrees.
 Symptom: a table the draft gave 32-bit entries is 64-bit in the target (the compare and store widths show it);
@@ -549,6 +592,7 @@ without a listing reason (the reverse cost 3.7).
 Evidence: 0x1007b70 +6.2 (Sonnet); 0x232ac0 +2.0 (Sonnet); 0x29b960 +0.4 (Sonnet); 0x31b8b0 -3.7 (Sonnet).
 
 <a id="lesson-44"></a>
+<!-- tags: abi/calling-convention, construct/constructor, wall/callee, wall/layout -->
 **L44. Take engine and SDK types instead of hand-built stand-ins: their constructors explain long runs of stores and their out-of-line members are real callees.** (repeated)
 Status: candidate. Found by: Opus, Sonnet, Sol. Rules: none.
 Symptom: a hand-made argument struct whose field order, defaults and size are guesses (a decal-creation block
@@ -559,6 +603,7 @@ community headers and the SDK for the type, include it, and label what you take.
 Evidence: 0x7e6850 +20.5 (Opus); 0x5caca0 +19.6 (Opus); 0x4ab410 +25.5 (Opus); 0xcd9b60 +2.3 (Sol).
 
 <a id="lesson-45"></a>
+<!-- tags: construct/switch, method/diagnostic -->
 **L45. A four-term shift-and-mask is a byte swap: use the intrinsic, in place through a reference.** (repeated)
 Status: candidate. Found by: Sonnet, Opus. Rules: none.
 Symptom: a 15-instruction run at each swap site where the decompiler printed shifts and masks. Fix:
@@ -568,6 +613,7 @@ moved sim by 0.1 only.
 Evidence: 0x27c210 +14.7 (Sonnet); 0x27c210 +9.5 (Opus); 0x1e37d0 +0.1 (Sonnet); 0x1e37d0 +0.1 (Opus).
 
 <a id="lesson-46"></a>
+<!-- tags: construct/bitfield, construct/float, wall/constant, wall/flag-fold -->
 **L46. A float operand the comparison flags as a reference mismatch is usually a literal, not a named global.** (single)
 Status: candidate. Found by: Opus, Sol. Rules: none.
 Symptom: constants declared `extern const` so the target's operand reads as a different reference; three
@@ -576,6 +622,7 @@ literal; use an extern only when the address is shared or written.
 Evidence: 0xcd9b60 +5.3 (Opus); 0xbbf5c0 flat (Sol).
 
 <a id="lesson-47"></a>
+<!-- tags: abi/calling-convention, construct/constructor, wall/callee -->
 **L47. Zeroing a whole aggregate adds a bulk-clear call: initialise only the members the target writes, and leave callee-filled outputs alone.** (repeated)
 Status: mapped. Found by: Sol, Opus. Rules: 9 agrees.
 Symptom: one extra callee (a memory-clear call) and extra zero stores, or padding fields the target never
@@ -585,6 +632,7 @@ type, which leaves its members uninitialised.
 Evidence: 0x7e6850 +3.2 (Sol); 0x54e9c0 +0.4 (Opus); 0x97a2e0 +0.2 (Opus); 0x123a7f0 +0.2 (Opus); 0x5caca0 callees (Sol).
 
 <a id="lesson-48"></a>
+<!-- tags: construct/bitfield, wall/flag-fold -->
 **L48. Flag tests: a by-value bit helper, a bit-field stand-in, or an if/else assignment of the flag.** (repeated)
 Status: mapped. Found by: Opus, Sonnet. Rules: 16 agrees, 52 agrees.
 Symptom: a masked compare where the target loads, shifts and tests a bit, or a compound boolean where the target
@@ -592,6 +640,7 @@ assigns the flag in two arms. Fix: rule 16's helper, a bit-field for adjacent fl
 Evidence: 0x7e6850 +0.5 (Opus); 0x5def30 +1.9 (Sonnet); 0x27c210 +0.4 (Opus).
 
 <a id="lesson-49"></a>
+<!-- tags: abi/virtual, wall/callee -->
 **L49. Placeholder virtual slots are an off-by-one risk: one too many shows as one missing and one extra virtual callee.** (single)
 Status: mapped. Found by: Sonnet. Rules: 11 agrees.
 Symptom: the comparison reports one missing and one extra virtual callee on one call. Fix: number the
@@ -602,6 +651,7 @@ Evidence: 0x6cd850 callees (Sonnet).
 ## Residues the pilot could not close
 
 <a id="lesson-50"></a>
+<!-- tags: construct/loop, wall/constant, wall/control-flow, wall/register-schedule -->
 **L50. What was left at 85 to 98 percent was schedule, register and placement: send it to the permuter instead of spending rounds.** (repeated)
 Status: mapped. Found by: Opus, Sol, Sonnet. Rules: 12 agrees, 55 agrees, 58 agrees.
 Symptom: alignment padding before two loop heads, block placement (an early-return block at the start where
@@ -613,6 +663,7 @@ Evidence: 0x4b10e0 flat (Opus); 0xcdf660 flat (Opus); 0x29b960 flat (Sonnet); 0x
 Still failing: 0x4b10e0, 0xcdf660, 0x29b960, 0x6cd850.
 
 <a id="lesson-51"></a>
+<!-- tags: construct/bitfield, construct/switch, method/diagnostic, wall/flag-fold, wall/register-schedule -->
 **L51. A target that stores each field, tests a byte-swap flag from memory and reloads before swapping is not reproduced by any reader spelling.** (single)
 Status: open. Found by: Sonnet, Sol, Opus. Rules: none.
 Symptom: about 180 aligned instructions "missing" in a 6 KB loader: the target keeps its reader temporaries in

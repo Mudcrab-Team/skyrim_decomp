@@ -1,5 +1,7 @@
 # 0x5bb750 ActiveEffect::ShouldUpdate
 
+<!-- tags: construct/bitfield, construct/switch, method/diagnostic, method/sibling, sibling/fo4, wall/constant, wall/control-flow, wall/flag-fold, wall/layout, wall/register-schedule -->
+
 - Function: 0x5bb750 ActiveEffect::ShouldUpdate
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

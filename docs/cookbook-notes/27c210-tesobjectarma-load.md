@@ -1,5 +1,7 @@
 # 0x27c210 TESObjectARMA::Load
 
+<!-- tags: construct/allocation, construct/bitfield, construct/constructor, construct/destructor, construct/switch, method/diagnostic, wall/callee, wall/control-flow, wall/flag-fold, wall/inlining, wall/layout -->
+
 - Function: 0x27c210 TESObjectARMA::Load
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

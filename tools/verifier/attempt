@@ -51,6 +51,7 @@ nothing `matched`.
 """
 import argparse
 import json
+import os
 from pathlib import Path
 import shlex
 import sys
@@ -342,7 +343,7 @@ def alias_lines(task, dest, results):
 
 
 def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True, retry=True, force_retry=False,
-            auto=True, correct=False):
+            auto=True, correct=False, verbose=True):
     started = time.monotonic()
     task = pipeline.load_task(task_dir)
     import draft_worktrees
@@ -379,7 +380,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         print(f'attempt {number} {task["task_id"]}: REFUSED include (not counted)\n    {agent_advice.explain(problem, "attempt")}')
         return 4
     config = pipeline.load_config(task_dir)
-    runner = runners.for_attempt(report=print)
+    runner = runners.for_attempt(report=print if verbose else lambda _line: None)
     if runner is None:
         machine, how = pipeline.ensure_standing()
         host = pipeline.Host(machine, LABEL, f'{boatctl.REMOTE_HOME}/tasks/{task["task_id"]}', task,
@@ -551,7 +552,19 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
                               'seconds': round(time.monotonic() - started, 1),
                               'runner': runner['host_id'] if runner else 'boat',
                               'source_revision': _revision(dest)}) + '\n')
-    print(text)
+    if verbose:
+        print(text)
+    else:
+        print(lines[0])
+        actionable = next((line.strip() for line in bind_lines if 'UNBOUND' in line), None)
+        if not actionable and code == 3:
+            actionable = next((line.strip() for line in lines[1:] if 'error' in line.lower()), None)
+        if not actionable and code:
+            actionable = next((line.strip() for line in lines if line.startswith('Next:')), None)
+        if not actionable and all_rows:
+            actionable = all_rows[0].splitlines()[0].strip()
+        if actionable:
+            print(actionable + f' (details: {rel}/attempt.txt; --verbose for full output)')
     if runner is None:
         # The standing machine is billed while the attempt runs, so wall time is the draft's compute.
         wall = time.monotonic() - started
@@ -648,6 +661,7 @@ def main():
     p.add_argument('task_dir', nargs='?')
     p.add_argument('--tier', choices=('first', 'fallback', 'strong'), default='first')
     p.add_argument('--queue-dir', type=Path)
+    p.add_argument('--verbose', action='store_true', help='print the full attempt output')
     p.add_argument('--model', help='actual model id; normally inherited from the queue claim')
     p.add_argument('--agent', help='agent/tool name when no model is used')
     p.add_argument('--profile', choices=sorted(profiles.PROFILES), help='project Drafter profile default')
@@ -689,7 +703,7 @@ def main():
         except ValueError:
             p.error('--rule takes cookbook rule numbers such as 48 or 48,12')
         return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory, not a.no_retry, a.retry_any,
-                       not a.no_auto_hints, a.hints_by_alignment)
+                       not a.no_auto_hints, a.hints_by_alignment, a.verbose or bool(os.environ.get('CI')))
     except (PipelineError, boatctl.BoatError, runners.RunnerError, wq.QueueError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f'attempt: {agent_advice.explain(exc, "attempt")}', file=sys.stderr)
         return 2

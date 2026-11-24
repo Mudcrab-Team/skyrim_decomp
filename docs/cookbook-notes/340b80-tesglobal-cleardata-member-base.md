@@ -1,5 +1,7 @@
 # 0x340b80 TESGlobal scalar deleting destructor
 
+<!-- tags: abi/virtual, construct/destructor, method/diagnostic, method/sibling, sibling/fnv, wall/inlining -->
+
 - Function: 0x340b80 TESGlobal scalar deleting destructor
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 - Outcome: fixed

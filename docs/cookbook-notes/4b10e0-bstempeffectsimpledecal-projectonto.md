@@ -1,5 +1,7 @@
 # 0x4b10e0 BSTempEffectSimpleDecal::ProjectOnto
 
+<!-- tags: abi/exception, construct/allocation, construct/float, construct/loop, construct/switch, construct/vector, method/diagnostic, wall/control-flow, wall/register-schedule -->
+
 - Function: 0x4b10e0 BSTempEffectSimpleDecal::ProjectOnto
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

@@ -1,5 +1,7 @@
 # 0x10485f0 bhkWorldObject scalar deleting destructor
 
+<!-- tags: abi/virtual, construct/destructor, method/diagnostic, method/sibling, sibling/fnv, wall/inlining -->
+
 - Function: 0x10485f0 bhkWorldObject scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed

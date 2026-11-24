@@ -1,5 +1,7 @@
 # 0x12db40 UI_Text3 scalar deleting destructor
 
+<!-- tags: abi/virtual, construct/constructor, construct/destructor, method/diagnostic, method/sibling, wall/inlining -->
+
 - Function: 0x12db40 UI_Text3 scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed

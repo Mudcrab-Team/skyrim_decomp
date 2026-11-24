@@ -1,5 +1,7 @@
 # 0x3279b0 BGSMusicType::DoUpdate
 
+<!-- tags: construct/bitfield, method/diagnostic, method/sibling, sibling/fo4, wall/flag-fold, wall/register-schedule -->
+
 - Function: 0x3279b0 BGSMusicType::DoUpdate
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

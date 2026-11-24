@@ -1,5 +1,7 @@
 # 0xbbf5c0 BSLookAtModifier::sub
 
+<!-- tags: abi/calling-convention, construct/float, construct/vector, method/binding, method/diagnostic, wall/callee, wall/constant, wall/layout, wall/register-schedule -->
+
 - Function: 0xbbf5c0 BSLookAtModifier::sub
 - Label: CRASHLOGGER_PDB(59818@2026.10.24)
 - Outcome: fixed

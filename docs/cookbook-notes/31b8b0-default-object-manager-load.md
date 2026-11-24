@@ -1,5 +1,7 @@
 # 0x31b8b0 default object manager load
 
+<!-- tags: construct/allocation, construct/loop, construct/switch, method/diagnostic, wall/callee, wall/constant, wall/control-flow, wall/register-schedule -->
+
 - Function: 0x31b8b0 default object manager load
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

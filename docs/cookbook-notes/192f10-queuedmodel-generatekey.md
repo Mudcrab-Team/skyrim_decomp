@@ -1,5 +1,7 @@
 # 0x192f10 QueuedModel::GenerateKey
 
+<!-- tags: method/diagnostic, method/sibling, sibling/fo4, wall/constant, wall/layout -->
+
 - Function: 0x192f10 QueuedModel::GenerateKey
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

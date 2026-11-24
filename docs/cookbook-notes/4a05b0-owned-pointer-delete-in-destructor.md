@@ -1,5 +1,7 @@
 # 0x4a05b0 TESDialoguePackageData scalar deleting destructor
 
+<!-- tags: abi/virtual, construct/bitfield, construct/destructor, method/diagnostic, wall/control-flow, wall/flag-fold, wall/inlining -->
+
 - Function: 0x4a05b0 TESDialoguePackageData scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed

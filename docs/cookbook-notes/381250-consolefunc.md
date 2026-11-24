@@ -1,5 +1,7 @@
 # 0x381250 ConsoleFunc
 
+<!-- tags: abi/calling-convention, abi/exception, construct/bitfield, construct/destructor, construct/loop, construct/switch, construct/vector, method/binding, method/diagnostic, wall/control-flow, wall/flag-fold, wall/inlining, wall/register-schedule -->
+
 - Function: 0x381250 ConsoleFunc
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

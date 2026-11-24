@@ -1,5 +1,7 @@
 # 0x7c66b0 DetectionState::Clear
 
+<!-- tags: construct/allocation, construct/bitfield, construct/constructor, construct/float, method/binding, method/diagnostic, method/sibling, wall/constant, wall/flag-fold, wall/layout, wall/register-schedule -->
+
 - Function: 0x7c66b0 DetectionState::Clear
 - Label: COMMUNITY
 - Outcome: unsolved

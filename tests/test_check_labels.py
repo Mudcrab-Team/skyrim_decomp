@@ -356,7 +356,7 @@ public:
                             contextlib.redirect_stdout(out):
                         code = check_labels.main((["--no-sibling-names"] if mode == 'flag' else []) + [str(h)])
                     text = out.getvalue()
-                    results.append((code, text.splitlines()[-1]))
+                    results.append((code, next(line for line in text.splitlines() if line.startswith('check_labels: ') and (' finding(s))' in line))))
                     if mode != 'plain':
                         for identifier in ('Widget', 'Rebuild', 'Tick', 'Flush', 'secret.cpp', 'widget.cpp',
                                            'momusdigital/fnv_decomp', rev):

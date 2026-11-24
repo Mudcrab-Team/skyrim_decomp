@@ -1,5 +1,7 @@
 # 0x30dad0 TESWorldSpace::GetClimate
 
+<!-- tags: abi/calling-convention, construct/bitfield, construct/loop, method/diagnostic, method/sibling, sibling/fnv, wall/flag-fold, wall/inlining -->
+
 - Function: 0x30dad0 TESWorldSpace::GetClimate
 - Label: SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)
 - Outcome: fixed

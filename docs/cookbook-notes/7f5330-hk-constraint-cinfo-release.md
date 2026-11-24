@@ -1,5 +1,7 @@
 # 0x7f5330 hkHingeConstraintCinfo scalar deleting destructor
 
+<!-- tags: abi/calling-convention, abi/virtual, construct/destructor, method/diagnostic, wall/inlining -->
+
 - Function: 0x7f5330 hkHingeConstraintCinfo scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed

@@ -144,6 +144,7 @@ Notes on the verdicts that change advice:
 ## Control flow and redundancy
 
 <a id="rule-1"></a>
+<!-- tags: construct/switch -->
 **1. A null test the candidate lacks: re-read the pointer.** (high)
 Symptom: the target tests a pointer for null after it was already dereferenced; the candidate
 drops the test, so it is shorter with an early mismatch. Cause: the original re-reads the member
@@ -155,6 +156,7 @@ worn-item test in VisitWornItems 0x237300.
 Evidence: 0x2e73a0, 0x237300.
 
 <a id="rule-2"></a>
+<!-- tags: abi/calling-convention, construct/bitfield, wall/control-flow, wall/flag-fold -->
 **2. A shared conditional jump merged in the wrong place: reorder a two-way check.** (high)
 Symptom: in an "already open?" check over two fields, the candidate merges the two tests' jumps
 or puts the arguments of the following call in a different order. Fix: test the non-thread-safe
@@ -166,6 +168,7 @@ TESFile::Seek 0x1cd860 and Duplicate 0x1ce7e0, which share the helper.
 Evidence: 0x1cd860, 0x1ce7e0.
 
 <a id="rule-3"></a>
+<!-- tags: construct/loop, wall/inlining -->
 **3. A dead loop or a redundant test in a loop: an inlined helper was called twice.** (medium)
 Symptom: the target has a loop that is not rotated, a computed value that is never used, and a
 null test that repeats. Cause: a null-checking helper is called in both the loop condition and the
@@ -178,6 +181,7 @@ BSMasterParticleSystem::IsMasterParticleSystem 0xffbcf0.
 Evidence: 0x1ce7e0, 0xffbcf0.
 
 <a id="rule-4"></a>
+<!-- tags: construct/bitfield, wall/flag-fold -->
 **4. A computation hoisted above a check: the source computed it first, or the predicate is a
 helper called twice.** (medium)
 Symptom: in the target a load or an address computation comes before a flag test, and the same
@@ -188,6 +192,7 @@ SeekNextSubrecord 0x1cdc60.
 Evidence: 0x1cdc60.
 
 <a id="rule-5"></a>
+<!-- tags: abi/calling-convention, wall/callee, wall/layout, wall/register-schedule -->
 **5. A live argument register at a call means the callee takes that argument.** (high)
 Symptom: argument registers are shuffled at one call (for example `this` in r8, an offset in
 ecx), and a register the candidate does not set (here edx) still holds an earlier value. Fix:
@@ -198,6 +203,7 @@ argument setup differs for a value the target leaves in rdx, r8 or r9.
 Evidence: 0x2e5a60.
 
 <a id="rule-6"></a>
+<!-- tags: abi/calling-convention, construct/allocation, construct/switch, wall/register-schedule -->
 **6. Register differences in a switch: change the width of the switch operand.** (medium)
 `switch (static_cast<std::uint32_t>(byteField))` and switching on a byte enum give different
 register allocation and different zero-extension placement. Try both. Closed VisitWornItems. A selector parameter declared `std::int32_t` rather
@@ -206,6 +212,7 @@ than unsigned closed ActorProcess 0x700180.
 Evidence: 0x237300, 0x700180.
 
 <a id="rule-7"></a>
+<!-- tags: construct/switch, wall/constant, wall/control-flow -->
 **7. A missing shared constant: put the value-producing branch in its own helper.** (medium)
 Symptom: the target materialises `-1` once and reuses it for both the compare and the result.
 Fix: `int32 mask = -1; if (slot != -1 && slot < 10) mask = table[slot]; return mask;` in a helper.
@@ -215,6 +222,7 @@ absorb it. Closed VisitWornItems.
 Evidence: 0x237300.
 
 <a id="rule-8"></a>
+<!-- tags: method/diagnostic -->
 **8. A jump that skips the caller's fallback: an early `return false` inside a bool helper.**
 (medium)
 Symptom: one target path jumps straight past a fallback test (`|| object->type == kLight`) that
@@ -226,6 +234,7 @@ Evidence: 0x237300.
 ## Data and calls
 
 <a id="rule-9"></a>
+<!-- tags: construct/destructor, wall/callee -->
 **9. Uninitialised locals are part of the source.** (medium)
 Symptom: the candidate has an extra zero store to a stack slot that is later passed by address.
 Fix: drop the initialiser (`char* message;`) when a callee fills it and the value is only
@@ -234,6 +243,7 @@ released. Closed Seek 0x1cd860.
 Evidence: 0x1cd860.
 
 <a id="rule-10"></a>
+<!-- tags: construct/allocation, construct/bitfield, construct/destructor, method/binding, wall/callee, wall/flag-fold -->
 **10. `delete p` called through the scalar deleting destructor with flag 1: the class has its
 own operator new/delete.** (high)
 Symptom: the target calls one function with edx = 1 where the candidate calls the destructor and
@@ -242,6 +252,7 @@ heap classes have them) and bind the deleting destructor to the target's callee.
 region MSVC splits the call again. Seen in RemoveFavorite 0x237a20.
 
 <a id="rule-11"></a>
+<!-- tags: abi/virtual -->
 **11. Missing virtual slots shift every virtual call.** (high)
 A call through slot N needs N - 1 earlier virtuals in the stand-in, including the inherited
 TESForm slots; add placeholders labelled GUESS. Used for CanBeMoved (slot 0x42).
@@ -249,6 +260,7 @@ TESForm slots; add placeholders labelled GUESS. Used for CanBeMoved (slot 0x42).
 Evidence: 0x2e73a0.
 
 <a id="rule-14"></a>
+<!-- tags: abi/calling-convention, abi/virtual, construct/constructor, construct/destructor, method/binding, wall/inlining -->
 **14. A vtable slot 0 destructor is the deleting destructor, `??_G` (or `??_E`), not `??1`.**
 (high)
 Symptom: `function-size-mismatch` on `X::~X`, the target larger than the candidate, its listing
@@ -261,6 +273,7 @@ it; a bind hint it cannot use is printed as a WARNING. Closed TESGrass 0x270890.
 Evidence: 0x270890.
 
 <a id="rule-15"></a>
+<!-- tags: abi/calling-convention, wall/inlining -->
 **15. An inlined map lookup matches through a bool helper that writes its out-parameter only on
 a hit.** (medium)
 Symptom: the target's inlined lookup leaves the caller's local untouched on a miss, where a
@@ -268,6 +281,7 @@ candidate returning the value (or a default) stores on both paths. Fix: write th
 `bool Find(key, T& out)` that assigns `out` only when found and returns whether it did.
 
 <a id="rule-16"></a>
+<!-- tags: abi/calling-convention, construct/bitfield, wall/callee, wall/flag-fold, wall/inlining, wall/register-schedule -->
 **16. A flag bit tested as load, `shr`, `test al,1`: a by-value bit-index helper.** (high)
 Symptom: the target reads a flag word into a register, shifts it right by the bit number and
 tests the low byte (`mov eax,[rcx+0x10]; shr eax,3; test al,1`); the candidate has
@@ -302,11 +316,13 @@ so which of the two changed the register is not isolated.
 Evidence: 0x67eab0, 0x2bb180, 0xee2cc0, 0x3299f0, 0x3bfc00, 0xf9e760.
 
 <a id="rule-17"></a>
+<!-- tags: method/diagnostic -->
 **17. `static_assert` needs a message.** (high)
 The recipe compiles as C++14 (no `/std:c++17`), so `static_assert(sizeof(X) == 0x10);` is a
 compile error. Write `static_assert(sizeof(X) == 0x10, "size");`.
 
 <a id="rule-18"></a>
+<!-- tags: abi/virtual, construct/destructor, method/binding, wall/callee, wall/inlining -->
 **18. A deleting destructor that calls the plain one: declare `~X();` and do not define it.**
 (medium)
 Symptom: the target's `??_G` calls the plain destructor; the candidate's `??_G` inlines a vptr
@@ -318,6 +334,7 @@ inline it into `??_G`. Fix: declare the destructor out of line without a definit
 Evidence: 0x73abc0.
 
 <a id="rule-21"></a>
+<!-- tags: abi/exception, construct/bitfield, construct/destructor, construct/loop, method/binding, wall/callee, wall/constant, wall/flag-fold, wall/inlining, wall/layout, wall/register-schedule -->
 **21. A read through `gs:[0x58]` indexed by `_tls_index` is a `__declspec(thread)` variable.**
 (medium)
 Symptom: the target loads `_tls_index`, reads the TLS array at `gs:[0x58]`, indexes it and adds a
@@ -358,6 +375,7 @@ Evidence: 0x391fe0, 0x6d9f20.
 Still failing: 0x1e6930, 0x1e5b30.
 
 <a id="rule-22"></a>
+<!-- tags: abi/calling-convention, construct/bitfield, wall/callee, wall/flag-fold -->
 **22. A callee's out-parameter below an 8-byte temporary in the home slots is a small type.**
 (medium)
 Symptom: the target passes the addresses of two locals to a call and the one the callee writes
@@ -371,6 +389,7 @@ attempt (not yet confirmed on two hosts).
 Evidence: 0xedca00.
 
 <a id="rule-23"></a>
+<!-- tags: wall/register-schedule -->
 **23. A member the target loads after a null test is read after the test.** (medium)
 Symptom: the candidate loads a field into a register before a null test of another value; the
 target loads it only on the path after the test. Fix: read the member inside the `&&` or the
@@ -382,6 +401,7 @@ confirmed on two hosts).
 Evidence: 0x310ff0.
 
 <a id="rule-24"></a>
+<!-- tags: wall/inlining -->
 **24. An inlined 3-byte copy: two `memcpy` calls, 2 bytes then 1, from one source pointer.**
 (medium, one observation)
 Symptom: the target copies three bytes out of a buffer as a 16-bit move and a byte move, both
@@ -394,6 +414,7 @@ attempt (not yet confirmed on two hosts).
 Evidence: 0x637ab0.
 
 <a id="rule-25"></a>
+<!-- tags: abi/virtual, construct/constructor, construct/destructor, method/binding, wall/layout -->
 **25. A `??_E<Class>@@W<n>@...` destructor is an adjustor thunk: give the unit the whole base set.**
 (medium, one observation)
 Symptom: the compared destructor is a few bytes that adjust `this` by a secondary base's offset and
@@ -408,6 +429,7 @@ one-host attempt (not yet confirmed on two hosts).
 Evidence: 0x264444.
 
 <a id="rule-26"></a>
+<!-- tags: abi/exception, construct/constructor, construct/destructor, wall/callee -->
 **26. `eh-funclet-extent`, `eh-funclet-entry-inside` and `FuncInfo.n_ip_map`.** (medium)
 From comparator 0.6.0 a funclet packed against another function's funclet passes when its bytes
 match: the image's own `.pdata` or the other FuncInfo proves where it ends. So
@@ -425,6 +447,7 @@ Get3D2, which the unit also defines (not yet closed).
 Still failing: 0x2fd4f0.
 
 <a id="rule-27"></a>
+<!-- tags: wall/callee, wall/inlining, wall/layout -->
 **27. `__declspec(noinline)` stands in for a translation-unit boundary, nothing else.** (policy)
 The one-unit-per-class layout puts functions in one file that the image built in separate units,
 so the compiler may inline a callee the image calls. `__declspec(noinline)` is acceptable only
@@ -436,6 +459,7 @@ call and no attribute is needed. An attribute whose callee no longer has a calle
 is removed. Using it to change the caller's code in any other way is "to match" and is rejected.
 
 <a id="rule-28"></a>
+<!-- tags: abi/exception, abi/virtual, construct/constructor, construct/destructor, construct/switch, method/binding, wall/inlining, wall/layout -->
 **28. Destructor vptr stores need typed component subobjects.** (medium)
 Several stores to different offsets of `this` identify separate polymorphic subobjects. Use RTTI
 and declarations to distinguish bases from polymorphic members. Preserve the bases, their order,
@@ -465,6 +489,7 @@ constructor instead of emitting a partial local version.
 Evidence: 0x3b32b0, 0x3b2fc0.
 
 <a id="rule-29"></a>
+<!-- tags: abi/exception, construct/destructor, construct/loop, method/binding, wall/callee, wall/constant, wall/inlining, wall/register-schedule -->
 **29. Callee-saved stores that skip the first home slot: name the decremented reference count.** (high)
 Symptom: the prologue saves callee-saved registers from the second home slot on and never uses
 the first, while the rest of the body matches; the function inlines an intrusive reference-count
@@ -494,6 +519,7 @@ inlined releases store null and `this` and the -1 constant swap registers, see r
 Evidence: 0xce3360, 0x153b3d0, 0x14ec0a0.
 
 <a id="rule-30"></a>
+<!-- tags: abi/calling-convention, construct/destructor, wall/callee, wall/constant, wall/register-schedule -->
 **30. Releases that store null with `this` and the -1 constant swapped: assign a raw null pointer
 through the generic assignment.** (medium)
 Symptom: a run of smart-pointer clears (`ClearTextures`) matches except that `this` and the -1
@@ -510,6 +536,7 @@ release then store, and store then release, all kept the swap.
 Evidence: 0x1523e50.
 
 <a id="rule-31"></a>
+<!-- tags: abi/calling-convention, abi/virtual, construct/bitfield, construct/constructor, construct/float, construct/loop, wall/constant, wall/flag-fold, wall/inlining, wall/register-schedule -->
 **31. Immediate versus xor-zero stores, or a constant store scheduled above the vptr store: default-construct
 smart-pointer members.** (medium)
 Symptom: a constructor that zeroes pointer members and stores float constants differs only in
@@ -541,6 +568,7 @@ members; `volatile` destinations and bit-field destinations did not). Closed BSI
 Evidence: 0x1524b80, 0x1524a60, 0x15281a0, 0xf99cb0, 0xf769a0, 0x80a250, 0x18c280, 0xbb8550.
 
 <a id="rule-32"></a>
+<!-- tags: construct/bitfield, wall/constant, wall/flag-fold, wall/register-schedule -->
 **32. One 16-bit immediate store over two members: two adjacent bytes.** (medium)
 Symptom: the target clears a 16-bit field with `mov word ptr [m], 0`, and the candidate writes it from
 a zeroed register (`xor eax, eax; mov word ptr [m], ax`), so it is shorter. Cause: a 16-bit member
@@ -551,6 +579,7 @@ Fix: declare two byte members. Closed BGSSceneActionTimer::Unk_0D 0x3ad170 in a 
 Evidence: 0x3ad170.
 
 <a id="rule-33"></a>
+<!-- tags: abi/calling-convention, construct/constructor, wall/callee -->
 **33. The argument of the next call comes from `rax` after a constructor-like call: a by-value return.**
 (medium)
 Symptom: the target builds a temporary in a stack slot (`lea rcx, [rsp+n]; call X`), then passes
@@ -564,6 +593,7 @@ because the image function may be the type's constructor. Closed BGSKeyword::Set
 Evidence: 0x29e720.
 
 <a id="rule-19"></a>
+<!-- tags: construct/float -->
 **19. A struct copy whose last store moves one slot earlier: read the scalar first, copy the
 sub-object through references.** (medium, one observation)
 Symptom: copying a bound (three floats then a float radius), the target loads the radius early
@@ -581,6 +611,7 @@ Evidence: 0x1570240.
 Still failing: 0xee24d0.
 
 <a id="rule-34"></a>
+<!-- tags: abi/virtual, construct/float, construct/switch, wall/callee, wall/constant, wall/control-flow, wall/register-schedule -->
 **34. Exits that differ only in register choice, select form or epilogue sharing: one result local,
 one return.** (high)
 Symptom: the instruction set is the same or one off, and the target ends in a conditional move or a
@@ -617,6 +648,7 @@ a constant true had stayed in a callee-saved register.
 Evidence: 0x86aa30, 0x8f1bd0, 0xa00860, 0x152340, 0x8f26a0, 0x868df0, 0x6cb940, 0x6767e0, 0x6af050, 0x301a20, 0x6744d0, 0x6c6380, 0x184ab0, 0x448d10, 0x9ff790, 0x2f3da0.
 
 <a id="rule-35"></a>
+<!-- tags: abi/virtual, construct/bitfield, construct/loop, wall/control-flow, wall/flag-fold, wall/inlining -->
 **35. A loop that stops on a found result: put the result in the loop condition; clear flags with
 `if`.** (medium, two observations)
 Symptom: the candidate rotates the loop with a pre-test where the target tests the index at the
@@ -634,6 +666,7 @@ loop's common test; a direct parent read in a `while` or `do`-`while` exited dir
 Evidence: 0x14b570, 0x183b40, 0x1d89e0, 0x14e70b0.
 
 <a id="rule-36"></a>
+<!-- tags: abi/calling-convention, construct/loop -->
 **36. Walking a linked list: take a reference to the element, advance, then use it.** (medium)
 Symptom: the loop matches except for one missing instruction and the order of an argument move.
 Cause: the target keeps the element address computed before the position advances. A helper
@@ -646,6 +679,7 @@ NiParticleSystem 0xf999c0 (promoted from idea A below). The same order closed a 
 Evidence: 0xf999c0, 0xfce420.
 
 <a id="rule-37"></a>
+<!-- tags: abi/calling-convention, abi/virtual, construct/bitfield, wall/callee, wall/control-flow, wall/flag-fold, wall/register-schedule -->
 **37. A flag word loaded, edited in a register and stored once.** (low, two observations)
 Symptom: the target does one load and one store of the word; the candidate emits two read-modify-write
 operations with another load between, or hoists the load above a branch. Two spellings each closed
@@ -661,6 +695,7 @@ Evidence: 0xfddba0, 0x14e77b0.
 Still failing: 0x14ef80.
 
 <a id="rule-38"></a>
+<!-- tags: construct/bitfield, wall/constant, wall/control-flow, wall/flag-fold, wall/layout, wall/register-schedule -->
 **38. A compare whose width or sign decides the branch form.** (medium)
 Symptom: size off by a few bytes with the same control flow, a mask kept in a wider register, or a
 condition inverted. Fixes that each closed one function, each after other spellings failed:
@@ -681,6 +716,7 @@ computed inside the branch, where an unsigned-offset spelling let the compiler s
 Evidence: 0x674250, 0x1519980, 0x868df0, 0x41efc0, 0x3299f0, 0x151ca80, 0x14e69c0, 0x11df780, 0x21cc10, 0x3c7460.
 
 <a id="rule-39"></a>
+<!-- tags: construct/destructor, wall/inlining -->
 **39. `delete` after an inlined release adds a null test: delete a local copy.** (medium)
 Symptom: the candidate has an extra null test before the operator delete that the target lacks.
 Cause: `if (ptr && ptr->DecRef() == 1) delete ptr;` re-reads the member, and a reload is a new
@@ -691,6 +727,7 @@ the release at 0x7aa7e0.
 Evidence: 0x18ed10, 0x7aa7e0.
 
 <a id="rule-40"></a>
+<!-- tags: wall/control-flow, wall/inlining -->
 **40. A null path threaded straight to the exit, where the target keeps a zero and tests it again:
 pass the value through an inline accessor with its own null test.** (low, one observation)
 Symptom: the candidate sends the null-process and null-entry paths directly to the zero return.
@@ -704,6 +741,7 @@ Evidence: 0x6cc700.
 Still failing: 0x64d060, 0x722210, 0x64d290.
 
 <a id="rule-47"></a>
+<!-- tags: abi/calling-convention, construct/constructor, wall/control-flow, wall/inlining -->
 **47. A pick between a pointer and a fallback: write the null test as `p == nullptr ? fallback : p`.**
 (low, one observation)
 Symptom: the select of a pointer or its fallback gives a different jump shape from the target.
@@ -717,6 +755,7 @@ output reference and the selection inside the cell member alone merged the null 
 Evidence: 0x2f3d30, 0x2f0b70.
 
 <a id="rule-48"></a>
+<!-- tags: construct/bitfield, construct/float, construct/switch, wall/control-flow, wall/flag-fold, wall/register-schedule -->
 **48. Float code with a parity branch or a double round-trip: switch the unit to `o2-fpfast`.**
 (medium)
 Symptom: under the default recipe a compare of a float against zero (`delta != 0.0f`) gains a
@@ -730,6 +769,7 @@ register or load order: 0x18a8c0 lost its parity branch and stayed open (rule 45
 Evidence: 0xbbc170, 0x448d90, 0x6b57f0, 0x6ca4c0, 0x7ec6d0, 0x301a50.
 
 <a id="rule-49"></a>
+<!-- tags: abi/calling-convention, construct/serialization, wall/callee, wall/constant -->
 **49. A parameter reused as the address-taken local.** (low, two functions)
 Symptom: the target passes a pointer to a stack slot that holds a small constant to a stream-like
 call, in a home slot of an incoming argument; the candidate declares a new local and the slot or the
@@ -741,6 +781,7 @@ the parameter and pass its address:
 Evidence: 0xef6c60, 0xef6dd0.
 
 <a id="rule-50"></a>
+<!-- tags: construct/vector, wall/layout -->
 **50. A struct assignment that merges tail scalars into one vector copy: copy the prefix, then each
 scalar.** (low, one observation)
 Symptom: copying a 0x34-byte state, `dst = src` is lowered with the
@@ -751,6 +792,7 @@ rule 19.
 Evidence: 0x12329c0.
 
 <a id="rule-51"></a>
+<!-- tags: construct/float, construct/vector -->
 **51. A copy of 16-byte-aligned float rows: use `__m128` members.** (low, one observation)
 Symptom: the target copies a 48-byte block with three vector moves and the candidate cannot
 reproduce the aligned moves with plain float members. Fix: declare the block as `__m128 rows[3]`
@@ -760,6 +802,7 @@ the block as a struct. Closed 0xbbc110.
 Evidence: 0xbbc110.
 
 <a id="rule-52"></a>
+<!-- tags: construct/bitfield, construct/loop, wall/flag-fold, wall/layout -->
 **52. Adjacent flag bits tested separately: declare them as bit-fields in the stand-in.** (low, two
 observations)
 Symptom: `a && !b` over two neighbouring bits of one byte is folded into one mask compare, and rule
@@ -771,6 +814,7 @@ records Character 0x6a1120, where bit-fields did not help on three masks of a st
 Evidence: 0x3a95d0.
 
 <a id="rule-53"></a>
+<!-- tags: construct/float -->
 **53. Clamping two members to a value: read both members first, the later one first.** (low, one
 observation)
 Symptom: in `member1 = max(member1, v); member2 = min(member2, v)` the candidate loads and stores
@@ -780,6 +824,7 @@ one member before it loads the next. Fix: `float b = p->m2; float a = p->m1;` th
 Evidence: 0x6f5e40.
 
 <a id="rule-54"></a>
+<!-- tags: abi/calling-convention, method/sibling -->
 **54. Both arms assign a smart-pointer out-parameter: write `else out = nullptr` and test the
 result.** (low, one observation)
 Symptom: the candidate returns early on the null source, so the null store of the out-parameter is
@@ -790,6 +835,7 @@ Closed ActorProcess 0x7217e0. The sibling 0x721710 matched with the other form: 
 Evidence: 0x7217e0, 0x721710.
 
 <a id="rule-59"></a>
+<!-- tags: construct/bitfield, wall/control-flow, wall/flag-fold -->
 **59. One flag snapshot tested bit by bit in separate branches: a byte-truncating remainder helper.**
 (low, one observation)
 Symptom: the target copies a flag word and tests two of its bits in separate branches before testing a
@@ -803,6 +849,7 @@ Closed TESObjectREFR::CanUseWorldSpace 0x2e5060.
 Evidence: 0x2e5060.
 
 <a id="rule-60"></a>
+<!-- tags: abi/calling-convention, abi/virtual, construct/constructor, wall/register-schedule -->
 **60. A 16-byte value the target loads before the vtable store: take it by value in the constructor.**
 (medium, two observations)
 Symptom: after the base constructor call the target already holds the value in a register and stores the
@@ -815,6 +862,7 @@ and NiQuaternionInterpolator 0xf857d0.
 Evidence: 0xf62740, 0xf857d0.
 
 <a id="rule-61"></a>
+<!-- tags: wall/control-flow, wall/inlining, wall/register-schedule -->
 **61. A chain of member reads whose scratch register or exit shape differs: read through small inline
 accessors.** (low, three functions)
 Symptom: the pointer chain keeps the middle pointer in another scratch register, or a visitor chain's last
@@ -833,6 +881,7 @@ source-shape observation: its original presence is unknown.
 Evidence: 0x152ce50, 0x418510, 0x4b4d40.
 
 <a id="rule-62"></a>
+<!-- tags: construct/loop, wall/control-flow, wall/inlining, wall/register-schedule -->
 **62. Two stores of one count at a shared exit: read the global once there.** (low, one observation)
 Symptom: the teardown of a cached-entry array duplicates the stores and the register restores on each
 path, because the count was kept in a local across the empty-array and teardown branches (also when an
@@ -843,6 +892,7 @@ that value to both fields. Closed IngredientItem::ClearCachedEntries 0x14f320.
 Evidence: 0x14f320.
 
 <a id="rule-63"></a>
+<!-- tags: wall/constant, wall/register-schedule -->
 **63. A zero stored from a register into a member the function returns: `memset` the member.** (low, one
 observation)
 Symptom: the candidate stores a zero immediate where the target stores a register that already holds
@@ -852,6 +902,7 @@ zero. Direct assignment, value-initialisation and a local zero returned did not 
 Evidence: 0x1540f70.
 
 <a id="rule-64"></a>
+<!-- tags: method/diagnostic -->
 **64. Stores that the compiler reorders around an address computation: write them through a moving
 output pointer.** (low, one observation)
 Symptom: the candidate computes the third pointer before storing the second. Indexed stores in source order,
@@ -861,6 +912,7 @@ moving the empty-string store and naming the repeated pointer did not help. Fix:
 Evidence: 0x150a0a0.
 
 <a id="rule-65"></a>
+<!-- tags: construct/bitfield, wall/control-flow, wall/flag-fold -->
 **65. A runtime-type-cast result selected in place: compute the flag in a null-checking branch, then
 `if (matches) return object; return nullptr;`.** (low, two observations)
 Symptom: the target selects in place on the saved pointer and re-tests after a following flag test; the
@@ -871,6 +923,7 @@ returns of rule 38.
 Evidence: 0x21cba0.
 
 <a id="rule-66"></a>
+<!-- tags: abi/virtual, construct/bitfield, wall/constant, wall/flag-fold, wall/register-schedule -->
 **66. A bool-returning function whose target builds the result in a full register: return
 `std::uint32_t`.** (low, one observation)
 Symptom: the candidate compares the stored flag against a constant directly; the target initialises a
@@ -882,6 +935,7 @@ Evidence: 0x3a9e40.
 Still failing: 0x1002a50.
 
 <a id="rule-67"></a>
+<!-- tags: abi/exception, abi/virtual, construct/allocation, construct/constructor, construct/destructor, method/binding, wall/control-flow, wall/inlining -->
 **67. A prologue with exception state and no visible throwing cleanup: keep the cleanup state alive
 through the construction or the guard.** (low, two observations)
 Symptom: the target stores the exception-state slot and unwinds through a base or a member, although the
@@ -899,6 +953,7 @@ duplicated the state. Closed Explosion 0x7e9ad0.
 Evidence: 0x4aa240, 0x7e9ad0.
 
 <a id="rule-68"></a>
+<!-- tags: abi/calling-convention, construct/allocation, method/sibling, wall/callee, wall/register-schedule -->
 **68. An operand width that differs on otherwise identical instructions is an integer type: widen the parameter or member.**
 (medium)
 Symptom: the instructions match, but a copy of a parameter into a saved register, a stack-passed parameter's home-slot copy, a zero test or
@@ -912,6 +967,7 @@ helper in [the note](cookbook-notes/eaca90-param-width.md) (4 of 4 differing ins
 the same family for a `bool` argument.
 
 <a id="rule-69"></a>
+<!-- tags: abi/virtual, construct/allocation, construct/destructor, method/sibling, wall/constant, wall/inlining, wall/layout -->
 **69. A single numeric difference is a layout fact, and layout facts close about half of them.** (medium)
 Symptom: a near pair differs only in member offsets, vtable slots or an allocation-size constant. Fix: give the stand-in the target's offsets with padding
 before the first used member, `vslot_N_` placeholders at the target's slots, and the target's class size for a `new` or a deleting-destructor thunk;
@@ -922,6 +978,7 @@ but are member offsets (17 pairs). A template instance of a one-byte type agains
 the integer type of that size, and take the instance from the symbol, not from the listing's source line, which can belong to another template.
 
 <a id="rule-70"></a>
+<!-- tags: abi/calling-convention, construct/destructor, construct/loop, method/binding, wall/callee, wall/constant, wall/inlining, wall/layout, wall/register-schedule -->
 **70. One differing constant is usually a call argument or a member offset in an add, not a layout.** (medium)
 Symptom: the one differing instruction loads a constant that feeds a call (a registration helper's type code) or adds a constant to a base register.
 Fix: take the call argument from the target (10 registration helpers passed) or the add as a member offset (4 passed). Without this, 36
@@ -961,6 +1018,7 @@ register move) before you rewrite the logic.
 ## Unsolved patterns
 
 <a id="rule-12"></a>
+<!-- tags: abi/calling-convention, abi/exception, construct/allocation, construct/bitfield, construct/loop, method/sibling, wall/callee, wall/control-flow, wall/flag-fold, wall/inlining, wall/layout, wall/register-schedule -->
 **12. A pure callee-saved register swap with the same instructions.** (low)
 Symptom: every instruction matches except which callee-saved registers hold `this` and a loop
 counter. The comparator reports unwind-info-mismatch at +0x0 with equal sizes. In this recipe,
@@ -1002,6 +1060,7 @@ near pairs, 13 differ only in register choice and none is a callee-saved swap, s
 Still failing: 0xce3250, 0xce32d0, 0x2bccc0, 0x6d6820, 0x6ff0e0, 0x727bf0, 0x32c260, 0x3c62f0, 0x14e81f0, 0x4682f0, 0x3a9420, 0x15286c0.
 
 <a id="rule-13"></a>
+<!-- tags: abi/exception, construct/bitfield, construct/constructor, construct/destructor, method/sibling, wall/callee, wall/control-flow, wall/flag-fold, wall/layout, wall/register-schedule -->
 **13. A -2 store to the UnwindHelp stack slot, eager saves of callee-saved registers, and no EH handler.** (low)
 Symptom: the prologue stores the C++ EH UnwindHelp slot and saves rbx/rbp/rsi/rdi before any
 early return, yet the unwind info has flags 0. Because shrink wrapping is off, every register
@@ -1035,6 +1094,7 @@ spelling and no flag in the sweep gives the store alone, so stop searching for a
 Still failing: 0x237a20, 0x346700, 0x346780, 0x346800, 0x3244a0, 0x14c550, 0x346880, 0x395320, 0x1f0840, 0x7e99a0.
 
 <a id="rule-20"></a>
+<!-- tags: construct/constructor, construct/loop, method/sibling, wall/callee, wall/inlining, wall/register-schedule -->
 **20. A pointer loop that the compiler turns into a counted loop.** (low)
 Symptom: the target walks an array with `it != end` (two callee-saved registers, no trip count);
 the candidate computes a trip count with `lea`/`shr`/`cmova` and needs two more callee-saved
@@ -1061,6 +1121,7 @@ index in the container's iterator); try the plain pointer loop with the containe
 Still failing: 0x3bbf50, 0x397810, 0x3a9420, 0x75ceb0.
 
 <a id="rule-41"></a>
+<!-- tags: abi/calling-convention, construct/bitfield, construct/float, construct/loop, construct/switch, wall/control-flow, wall/flag-fold, wall/inlining -->
 **41. Repeated tests of one value folded into a single test.** (low, six functions)
 Symptom: the target tests the same loaded word or pointer more than once (three separate masks of a
 state word, three form-type compares, a parent null test plus a use-flag test repeated through an
@@ -1080,6 +1141,7 @@ Evidence: 0x14e7f40, 0x7e9020.
 Still failing: 0x6a1120, 0x1e9fc0, 0x30dad0, 0x30e140, 0x52cf60.
 
 <a id="rule-42"></a>
+<!-- tags: abi/calling-convention, abi/virtual, construct/constructor, construct/loop -->
 **42. Two operands loaded or stored in the other order.** (low, six functions)
 Symptom: every instruction matches except that two loads or two stores come in the opposite order,
 or a compare's operands flip. Local-variable orderings, direct stores, a `const` and a non-const
@@ -1094,6 +1156,7 @@ Evidence: 0xfcf0a0.
 Still failing: 0x1812d0, 0x1892e0, 0x449390, 0x639a20.
 
 <a id="rule-43"></a>
+<!-- tags: construct/bitfield, construct/loop, wall/control-flow, wall/flag-fold -->
 **43. A set-on-condition where the target uses a conditional move, and the bare-return idiom.**
 (low, five functions)
 Symptom: the target returns from a both-null path with an unshared return and shares one true block
@@ -1110,6 +1173,7 @@ Evidence: 0x186420, 0x186670, 0x186370.
 Still failing: 0x18b1c0, 0x41f410, 0x329980.
 
 <a id="rule-44"></a>
+<!-- tags: construct/bitfield, construct/loop, wall/control-flow, wall/flag-fold, wall/layout, wall/register-schedule -->
 **44. A find loop whose index increment and found register differ.** (low, five functions)
 Symptom: the target copies the index before incrementing, tests a found flag at the loop top and
 re-compares the last element after the loop; the candidate strength-reduces to a pointer, hoists the
@@ -1128,6 +1192,7 @@ Evidence: 0x387e20, 0x3ee220.
 Still failing: 0x3cc660, 0x727bf0, 0x6ff0e0, 0x3e8380.
 
 <a id="rule-45"></a>
+<!-- tags: construct/allocation, construct/float, wall/register-schedule -->
 **45. Float code: loads of the operands before the first compare.** (low, five functions)
 Symptom: the target loads all the source floats (or computes both centres) before the first compare,
 the candidate loads them one at a time and the operand order follows the source order; the
@@ -1142,6 +1207,7 @@ Evidence: 0xfcf150.
 Still failing: 0x518a30, 0x191710, 0x18a8c0, 0xbafa60, 0xf02f60, 0xffed40, 0x14e7120.
 
 <a id="rule-46"></a>
+<!-- tags: construct/allocation, construct/destructor, method/sibling, wall/callee, wall/register-schedule -->
 **46. A tail call where the target calls, or the reverse.** (low, two functions)
 Symptom: the final call of the candidate becomes a jump where the target keeps a normal call
 (BSWaterShaderProperty::ForEachTexture 0x152ce50, closed by rule 61), or the target jumps to the sink's slot although a
@@ -1157,6 +1223,7 @@ intrinsics and allocator calls). When the target calls where the candidate jumps
 Still failing: 0x7a3ec0, 0x3c62f0.
 
 <a id="rule-55"></a>
+<!-- tags: abi/calling-convention, abi/virtual, construct/bitfield, construct/switch, wall/flag-fold, wall/inlining, wall/register-schedule -->
 **55. Scratch register choice in a call or null-checked chain.** (low, four functions)
 Symptom: same instructions and sizes, one scratch register differs. For a virtual call the target
 loads the vtable pointer into r10 or rdx where the candidate uses rax (0x5e70e0, a spell-type call; 0x9ff790 closed with rule 34). For a null-checked chain the target
@@ -1168,6 +1235,7 @@ by-value `Set`/`TestBit` helper, an unused extra parameter, a virtual declaratio
 Still failing: 0x5e70e0, 0x32c260, 0xee45e0.
 
 <a id="rule-56"></a>
+<!-- tags: construct/bitfield, wall/flag-fold, wall/register-schedule -->
 **56. A runtime type cast whose select form differs.** (closed, see rule 65)
 Symptom: a geometry-to-skin-instance RTTI cast; the target selects in place on the saved pointer
 and keeps a null re-test after a following flag test, where the candidate selects into a fresh zeroed
@@ -1175,6 +1243,7 @@ register or folds the cast away. Tried: bool locals, if/else orders, a helper re
 pointer. Seen in 0x21cba0 (best 70 of 103 bytes) and 0x21cc10.
 
 <a id="rule-57"></a>
+<!-- tags: construct/constructor, construct/loop, construct/vector -->
 **57. A local zero-filled by a rolled loop.** (low, two functions)
 Symptom: the target clears a five-quadword local plus a trailing dword with a loop; aggregate
 initialisation, a constructor loop and an element class with a constructor all give unrolled or
@@ -1184,6 +1253,7 @@ clear sequence).
 Still failing: 0x11d6760, 0x11d67b0.
 
 <a id="rule-58"></a>
+<!-- tags: abi/calling-convention, abi/exception, construct/allocation, construct/bitfield, construct/loop, construct/switch, method/diagnostic, wall/control-flow, wall/flag-fold, wall/inlining, wall/register-schedule -->
 **58. A shared tail the candidate duplicates, or stores scheduled around a compare.** (low, four
 functions)
 Symptom: the target has one store or epilogue block shared by two paths (0x833510, a two-way select

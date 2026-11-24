@@ -1,5 +1,7 @@
 # 0x145690 ConcreteFormFactory<AlchemyItem, 46> scalar deleting destructor
 
+<!-- tags: abi/exception, abi/virtual, construct/destructor, construct/switch, family/form-factory, method/diagnostic -->
+
 - Function: 0x145690 ConcreteFormFactory<AlchemyItem, 46> scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed

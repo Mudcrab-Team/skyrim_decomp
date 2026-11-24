@@ -1,5 +1,7 @@
 # 0xeaca90 InlMalloc
 
+<!-- tags: abi/calling-convention, abi/virtual, construct/allocation, method/diagnostic, method/sibling, wall/callee, wall/inlining, wall/register-schedule -->
+
 - Function: 0xeaca90 InlMalloc
 - Label: SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)
 - Outcome: fixed

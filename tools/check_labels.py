@@ -37,6 +37,7 @@ far as their tokens appear in the class body.
 """
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -701,6 +702,7 @@ def check(files, checkouts=None, root=ROOT, siblings=None, no_sibling_names=None
 def main(argv):
     p = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     p.add_argument('files', nargs='*')
+    p.add_argument('--verbose', action='store_true', help='show every finding')
     p.add_argument('--checkout', action='append', default=[], metavar='OWNER/REPO=PATH')
     p.add_argument('--no-sibling-names', action='store_true', default=hide_sibling_names(),
                    help='omit sibling identifiers from findings (or set SR_NO_SIBLING_NAMES=1); checks are unchanged')
@@ -712,9 +714,14 @@ def main(argv):
     siblings.update(dict(c.split('=', 1) for c in args.sibling))
     findings = check(args.files or default_files(), checkouts, siblings=siblings,
                      no_sibling_names=args.no_sibling_names)
-    for f in findings:
-        print(f'check_labels: {f}')
-    print(f'check_labels: {"PASS" if not findings else "WARN"} ({len(findings)} finding(s))')
+    if args.verbose or not args.files or os.environ.get('CI'):
+        for f in findings:
+            print(f'check_labels: {f}')
+        print(f'check_labels: {"PASS" if not findings else "WARN"} ({len(findings)} finding(s))')
+    else:
+        print(f'check_labels: {"PASS" if not findings else "WARN"} ({len(findings)} finding(s))')
+        if findings:
+            print(f'check_labels: {findings[0]}')
     return 1 if findings else 0
 
 

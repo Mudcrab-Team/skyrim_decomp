@@ -1,5 +1,7 @@
 # 0x29b960 BGSLocation::LoadGame
 
+<!-- tags: abi/calling-convention, construct/allocation, construct/loop, construct/serialization, method/diagnostic, wall/constant, wall/control-flow, wall/layout, wall/register-schedule -->
+
 - Function: 0x29b960 BGSLocation::LoadGame
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

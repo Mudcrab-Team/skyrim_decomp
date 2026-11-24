@@ -1,5 +1,7 @@
 # 0x1d84c0 BGSIdleCollection::~BGSIdleCollection
 
+<!-- tags: abi/exception, construct/allocation, construct/destructor, method/diagnostic, wall/constant, wall/inlining, wall/register-schedule -->
+
 - Function: 0x1d84c0 BGSIdleCollection::~BGSIdleCollection
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

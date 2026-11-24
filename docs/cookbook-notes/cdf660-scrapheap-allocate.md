@@ -1,5 +1,7 @@
 # 0xcdf660 ScrapHeap::Allocate
 
+<!-- tags: construct/allocation, construct/bitfield, construct/loop, construct/switch, method/diagnostic, wall/constant, wall/control-flow, wall/flag-fold, wall/layout, wall/register-schedule -->
+
 - Function: 0xcdf660 ScrapHeap::Allocate
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: fixed

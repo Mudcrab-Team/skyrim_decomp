@@ -1,5 +1,7 @@
 # 0x153b250 BSShaderTextureSet::SaveBinary
 
+<!-- tags: abi/exception, construct/serialization, method/diagnostic, wall/callee, wall/layout, wall/register-schedule -->
+
 - Function: 0x153b250 BSShaderTextureSet::SaveBinary
 - Label: none
 - Outcome: fixed

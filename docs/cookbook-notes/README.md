@@ -50,6 +50,8 @@ A complete small example (names and RVAs only; the function is synthetic):
 ```markdown
 # 0x123abc Example::Helper
 
+<!-- tags: wall/inlining -->
+
 - Function: 0x123abc Example::Helper
 - Label: GUESS(low)
 - Outcome: fixed
@@ -81,3 +83,5 @@ make a concrete claim (what differed, what was tried, what fixed it), not only s
 register-allocation, instruction-order, operand-order, inlining, loop-shape, branch-layout,
 constant-folding, integer-width-or-cast, calling-convention, struct-layout, vtable-or-virtual,
 float-codegen, prologue-epilogue, switch-lowering, other.
+
+Every note needs one `<!-- tags: ... -->` line using the closed vocabulary in [lesson-tags.md](../lesson-tags.md). Review the template tags and replace generic tags with the known cause, construct, family or sibling; the note validator checks the vocabulary.

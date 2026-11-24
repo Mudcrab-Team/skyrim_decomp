@@ -1,5 +1,7 @@
 # 0x738120 BSPlayerDistanceCheckController::Update
 
+<!-- tags: abi/virtual, construct/bitfield, construct/float, construct/loop, method/diagnostic, method/sibling, sibling/fo4, wall/callee, wall/control-flow, wall/flag-fold, wall/inlining, wall/layout, wall/register-schedule -->
+
 - Function: 0x738120 BSPlayerDistanceCheckController::Update
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: unsolved

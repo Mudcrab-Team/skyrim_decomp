@@ -1,5 +1,7 @@
 # 0x17dcf0 ExtraTextDisplayData scalar deleting destructor
 
+<!-- tags: abi/virtual, construct/destructor, method/binding, method/diagnostic, wall/inlining -->
+
 - Function: 0x17dcf0 ExtraTextDisplayData scalar deleting destructor
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 - Outcome: fixed

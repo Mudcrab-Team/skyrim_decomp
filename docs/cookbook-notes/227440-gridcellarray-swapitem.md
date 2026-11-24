@@ -1,5 +1,7 @@
 # 0x227440 GridCellArray::SwapItem
 
+<!-- tags: abi/virtual, construct/allocation, method/diagnostic, method/sibling, wall/constant, wall/control-flow, wall/inlining, wall/register-schedule -->
+
 - Function: 0x227440 GridCellArray::SwapItem
 - Label: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)
 - Outcome: unsolved

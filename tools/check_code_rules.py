@@ -812,6 +812,7 @@ def locate(arg, root, cwd=None):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('files', nargs='*', help='repository-relative files to report on (default: totals only)')
+    parser.add_argument('--verbose', action='store_true', help='show every finding')
     parser.add_argument('--list', action='store_true', help='print one line per finding in the named files')
     parser.add_argument('--strict', action='store_true', help='exit 1 when a named file has a [match] finding')
     parser.add_argument('--json', dest='json_path', help='write counts and per-unit status to this path')
@@ -844,14 +845,23 @@ def main(argv=None):
             if checkout != here:
                 found_in[checkout] = analysed(checkout)
     failed = False
+    finding_lines = []
     for checkout, name in located:
         found = found_in[checkout]
         for line, rule, code, message, function in found[name].findings:
             matching = is_match(rule, code)
             failed = failed or matching
-            if args.list or args.strict:
+            if named:
                 where = f' in {function.name}' if function is not None else ''
-                print(f"{name}:{line}: {rule} {code} [{'match' if matching else 'advisory'}]{where}: {message}")
+                finding_lines.append(f"{name}:{line}: {rule} {code} [{'match' if matching else 'advisory'}]{where}: {message}")
+    if named and (args.list or args.strict or (not args.json_path and not os.environ.get('CI'))):
+        if args.verbose or os.environ.get('CI'):
+            for finding in finding_lines:
+                print(finding)
+        else:
+            print(f'check_code_rules: {len(finding_lines)} finding(s); {"match finding" if failed else "advisory only"}')
+            if finding_lines:
+                print(next((line for line in finding_lines if '[match]' in line), finding_lines[0]))
     if not named or args.json_path:
         counts, pending_by_rule = totals(root, status)
         if not named:

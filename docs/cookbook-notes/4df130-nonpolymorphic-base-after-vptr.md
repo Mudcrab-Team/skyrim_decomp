@@ -1,5 +1,7 @@
 # 0x4df130 PathingCoverLocation scalar deleting destructor
 
+<!-- tags: abi/virtual, construct/destructor, method/diagnostic, wall/inlining, wall/layout -->
+
 - Function: 0x4df130 PathingCoverLocation scalar deleting destructor
 - Label: EXE_RTTI
 - Outcome: fixed
