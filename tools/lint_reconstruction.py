@@ -158,9 +158,12 @@ LABEL = (r'(?:COMMUNITY\([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{7,40}, [A-Za-z
 # names, declarations and code (docs/authorizations.md, Notes): repository -> (pinned revision
 # prefix, the licence word its labels must carry). A SIBLING label or `Sibling source:` line
 # citing anything else is refused, so a new sibling needs a recorded decision and an entry here.
-SIBLING_SOURCES = {'momusdigital/fnv_decomp': ('91e1b6e8', 'no-licence'),
+SIBLING_SOURCES = {'momusdigital/fnv_decomp': ('2b07cb3e', 'CC0-1.0'),
                    'momusdigital/f3_decomp': ('f5bac1b5', 'CC0-1.0'),
                    'fo4-private': ('1b765c70', 'author-permission')}
+# Earlier pins whose labels stay valid: merged units are never rewritten when a pin moves, and each
+# pin carries the licence word it was recorded with.
+SIBLING_LEGACY_PINS = {'momusdigital/fnv_decomp': (('91e1b6e8', 'no-licence'),)}
 SIBLING_ID = r'(?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|fo4-private)'
 SIBLING_LABEL = re.compile(rf'SIBLING\(({SIBLING_ID})@([0-9a-f]{{7,40}}), ([A-Za-z0-9.+-]+)\)')
 # Header line of a unit that reuses a body, or a substantial part of one, from a sibling:
@@ -271,12 +274,15 @@ def sibling_problems(where, repo, rev, licence=None):
                 'a new one needs a maintainer decision in docs/authorizations.md)']
     pin, word = allowed
     out = []
-    valid_pin = rev.startswith(pin) or pin.startswith(rev)
+    pins = [allowed, *SIBLING_LEGACY_PINS.get(repo, ())]
+    match = next((p for p in pins if rev.startswith(p[0]) or p[0].startswith(rev)), None)
     if repo == 'fo4-private':
         from fo4_private import REVISION
-        valid_pin = rev in (pin, REVISION)
-    if not valid_pin:
+        match = allowed if rev in (pin, REVISION) else None
+    if match is None:
         out.append(f'{where}: {repo} is pinned at {pin}, the citation gives {rev}')
+    else:
+        word = match[1]
     if licence is not None and licence != word:
         out.append(f'{where}: a {repo} label carries the recorded permission/licence word "{word}", not "{licence}"')
     return out

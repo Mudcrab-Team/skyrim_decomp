@@ -97,7 +97,7 @@ COMMUNITY_SOURCES = {
 # Drafters (docs/authorizations.md, Notes; LEGAL.md): SIBLING(...) labels, a `Sibling source:` line
 # for a reused body, never evidence about the Skyrim binary. Optional: setup skips it with
 # --no-sibling, and nothing else depends on it.
-SIBLING_SOURCE = ('momusdigital/fnv_decomp', '.local/sources/fnv_decomp', '91e1b6e8d8bb0f9a33e8cf88e77268757449e0a6')
+SIBLING_SOURCE = ('momusdigital/fnv_decomp', '.local/sources/fnv_decomp', '2b07cb3ec4b7aa11be96c7567914e11731aebeaf')
 # The Fallout 3 decompilation (CC0-1.0), fetched with the FNV one on the same terms; the origin
 # check reads it, but no name index is built from it.
 SIBLING_EXTRA_SOURCES = {
@@ -1675,7 +1675,7 @@ def cmd_setup(ctx, args):
     if not args.no_sources and not getattr(args, 'no_sibling', False):
         repo, rel, rev = SIBLING_SOURCE
         try:
-            fetched = fetch_sources(ctx, {repo: (rel, rev, 'no-licence'), **SIBLING_EXTRA_SOURCES})
+            fetched = fetch_sources(ctx, {repo: (rel, rev, 'CC0-1.0'), **SIBLING_EXTRA_SOURCES})
             joined = build_sibling_index(ctx)
             step('sibling source', 'ok', f'{repo}@{rev[:8]} ' + ('fetched' if fetched else 'present')
                  + f'; index joins {joined} inventory functions by name')

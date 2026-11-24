@@ -91,7 +91,7 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   legacy ones):
   `// <names>: <LABEL> [<LABEL>...][; note]`, LABEL one of
   `COMMUNITY(<owner>/<repo>@<rev>, <licence>)` (e.g. `COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)`),
-  `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` (a name or declaration taken from the
+  `SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)` (a name or declaration taken from the
   Fallout: New Vegas decompilation, below),
   `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)` (the same for the Fallout 3 decompilation),
   `SIBLING(fo4-private@1b765c70, author-permission)` (anonymous permitted game-code sibling),
@@ -104,14 +104,14 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   names you made up. Do not write the label words anywhere else.
 - **Sibling x64 builds.** The FNV and F3 trees also compile as x64 with the recipe compiler; see
   `docs/sibling-x64.md`. Compiled output is a lead, not evidence.
-- **Sibling source (FNV).** `.local/sources/fnv_decomp` (momusdigital/fnv_decomp at `91e1b6e8`)
-  may be read and reused by maintainer decision (`docs/authorizations.md`); its LICENSE grants
-  none, so label everything you take. Before drafting, open the file and line your pack's
+- **Sibling source (FNV).** `.local/sources/fnv_decomp` (momusdigital/fnv_decomp at `2b07cb3e`)
+  may be read and reused by maintainer decision (`docs/authorizations.md`); it is CC0 1.0 apart from the
+  Xbox 360 PDB-derived names and Havok/Gamebryo material, which stay excluded, so label everything you take. Before drafting, open the file and line your pack's
   "Sibling source" section gives for the same-named method and for the class's accessors and
   helpers. Adapt, do not assume: it is a 32-bit build of an older engine, most game units there
   are `/Od`, and its layouts, offsets and vtable slots do not carry over, so take shapes and
   names, then check every offset against your listing. If your unit reuses a body or a
-  substantial part of one, add `// Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>`
+  substantial part of one, add `// Sibling source: momusdigital/fnv_decomp@2b07cb3e <path>:<line>`
   to the header comment (one line per body). `check_labels.py` verifies `SIBLING` names and the
   path; the Reviewer rejects undeclared reuse.
 - **Sibling source (Fallout 3).** `.local/sources/f3_decomp` (momusdigital/f3_decomp at `f5bac1b5`,
