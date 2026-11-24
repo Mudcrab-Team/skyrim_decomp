@@ -33,7 +33,8 @@ merged cleanly in about an hour. Thank you, don't be shy.
 `next --class REGEX` ranks only classes whose name matches, and `claim ... --skip-conflicts` claims
 the functions nobody holds and names the others with their claim issues.
 `next` offers callee-ready functions first (every callee already matched; `data/ready-queue.json`,
-regenerated with `tools/ready_queue.py`); the ordering is advisory.
+regenerated with `tools/ready_queue.py`); the 500 ready functions that unblock the most callers per byte
+(`unlock_rank`) come before the rest. The ordering is advisory.
 `data/target-hashes/contributor-target-facts.json` (from `tools/target_facts.py`) lists the committed PDB name,
 prototype, size and alignment proposal per offered target, as hints only. The file is an index; the entries are in
 `contributor-target-facts-part-NNN.json` beside it (`tools/target_facts.py` reads them back together).

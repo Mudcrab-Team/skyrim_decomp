@@ -45,6 +45,33 @@ class Ranking(unittest.TestCase):
         self.assertEqual((by[1]['blocks'], by[1]['unlocks']), (2, 1))
         self.assertEqual((by[2]['blocks'], by[2]['unlocks']), (1, 0))
 
+    def test_import_thunks_are_not_blockers_but_other_unmatched_kinds_are(self):
+        rows = [row(1, 8, callees=[50]), row(2, 8, callees=[51]), row(50, 8, kind='import-thunk'),
+                row(51, 8, kind='thunk')]
+        entries, _ = ready_queue.rank(rows, matched=set())
+        self.assertEqual([e['rva'] for e in entries], [1])
+
+    def test_unlock_splits_a_callers_credit_across_its_missing_callees_and_skips_unsupported(self):
+        rows = [row(1, 8), row(2, 8), row(3, 8), row(10, 8, callees=[1]), row(11, 8, callees=[1, 2]),
+                row(12, 8, callees=[1, 2, 3]), row(13, 8, callees=[1], verdict='unsupported')]
+        entries, _ = ready_queue.rank(rows, matched=set())
+        by = {e['rva']: e['unlock'] for e in entries}
+        self.assertEqual(by[1], round(1 + 1 / 2 + 1 / 3, 2))
+        self.assertEqual(by[2], round(1 / 2 + 1 / 3, 2))
+        self.assertEqual(by[3], round(1 / 3, 2))
+
+    def test_unlock_rank_puts_the_most_unblocking_per_byte_first_and_needs_a_floor(self):
+        # 1: three sole-callee callers in 8 bytes; 2: the same three callers in 600 bytes; 3: one caller only
+        rows = [row(1, 8), row(2, 600), row(3, 4), row(4, 8),
+                row(10, 8, callees=[1]), row(11, 8, callees=[1]), row(12, 8, callees=[1]),
+                row(20, 8, callees=[2]), row(21, 8, callees=[2]), row(22, 8, callees=[2]),
+                row(30, 8, callees=[3])]
+        entries, _ = ready_queue.rank(rows, matched=set())
+        ranked = [(e['rva'], e['unlock_rank']) for e in entries if 'unlock_rank' in e]
+        self.assertEqual(ranked, [(1, 1), (2, 2)])
+        self.assertEqual([e['rva'] for e in entries[:2]], [1, 2])
+        self.assertNotIn('unlock_rank', next(e for e in entries if e['rva'] == 3))
+
     def test_unsupported_matched_and_other_kinds_are_not_queued(self):
         rows = [row(1, 8, verdict='unsupported'), row(2, 8), row(3, 8, kind='static-initializer'), row(4, 8)]
         entries, counts = ready_queue.rank(rows, matched={2})
@@ -90,6 +117,12 @@ class Feeding(unittest.TestCase):
         rows = contrib.candidates(self.root, self.data, ready=ready_queue.load_queue(self.root))
         self.assertEqual([c['rva'] for c in rows], ['0x2000', '0x1000'])
         self.assertEqual([c['callee_ready'] for c in rows], [True, False])
+
+    def test_unlock_rank_beats_size_band_among_ready_functions(self):
+        self.data['functions'] += [dict(rva=0x3000, name='TESNew::Big', size=400, status='mapped', name_origin='GUESS')]
+        ready = {0x2000: {'blocks': 9}, 0x3000: {'blocks': 1, 'unlock_rank': 1}}
+        rows = contrib.candidates(self.root, self.data, ready=ready)
+        self.assertEqual([c['rva'] for c in rows], ['0x3000', '0x2000', '0x1000'])
 
 
 if __name__ == '__main__':

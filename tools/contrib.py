@@ -415,7 +415,8 @@ def unit_files(repo, cls, area=None, index=None):
 
 def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None,
                ready=None, symbol_map=None):
-    """Unclaimed targets ordered by callee readiness, binding cautions, size band, existing layout,
+    """Unclaimed targets ordered by callee readiness, binding cautions, unlock rank (the ready queue's
+    functions that unblock the most callers per byte first), size band, existing layout,
     advisory declaration readiness, blocked callers, size and RVA.
 
     With `published`, functions of the target-hash list that have no inventory entry are included when
@@ -466,6 +467,7 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
                     'size_band': claimable.band(fn['size']), 'has_layout': bool(headers[header]),
                     'callee_ready': callee_ready,
                     '_key': (not m or area is None, not callee_ready, bool(caution),
+                             (ready.get(fn['rva']) or {}).get('unlock_rank', float('inf')),
                              claimable.band(fn['size']), not headers[header], rank,
                              -ready.get(fn['rva'], {}).get('blocks', 0), fn['size'], fn['rva'])})
     out.sort(key=lambda c: c.pop('_key'))
