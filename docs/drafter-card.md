@@ -37,6 +37,11 @@ has a cause it does not cover (a failure the cookbook already describes gets no 
 then finish every `TODO` (format: `docs/cookbook-notes/README.md`). Words and short plain C++ only; never
 bytes, hex, disassembly or listing text. Commit it with your units.
 
+**Large or low-scoring functions.** For a function over about 1,000 bytes, or a first score under 80 percent, read
+`docs/near-tier-lessons.md` before drafting (measured moves per lesson; bind everything first, check the recipe, the
+instruction mix and the size ratio, rewrite rather than patch). At the end write the reflection the toolkit describes
+(`docs/drafter-toolkit.md`, "Reflections and lessons"); the integration step folds it into the lessons.
+
 **Names and binding.** Your class and function names may differ from the community names; the
 decorated name is read from your object. `attempt` binds functions and references itself and
 compares again in the same run; a run that compared nothing because of binding does not count

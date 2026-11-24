@@ -351,6 +351,73 @@ class TotalsTest(unittest.TestCase):
             self.assertEqual(unknown.returncode, 2)
 
 
+class PathResolutionTest(unittest.TestCase):
+    """Paths on the command line may be absolute, relative to a subdirectory or live in a git worktree."""
+    SOURCE = '// 0x1000 Widget::Run\n#include "Widget.h"\nvoid Widget::Run()\n{\n    count = count;\n}\n'
+    NAME = 'reconstruction/area/Widget.cpp'
+
+    def run_tool(self, root, *args, cwd=None):
+        return subprocess.run([sys.executable, str(TOOL), '--root', str(root), '--list', *args],
+                              capture_output=True, text=True, cwd=cwd)
+
+    def make_checkout(self, root):
+        write(root, self.NAME, self.SOURCE)
+        write(root, 'reconstruction/area/Widget.h', HEADER)
+
+    def test_absolute_and_subdirectory_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            self.make_checkout(root)
+            for arg, cwd in ((str(root / self.NAME), None), ('Widget.cpp', root / 'reconstruction/area'),
+                             ('../area/Widget.cpp', root / 'reconstruction/area'), ('./' + self.NAME, root),
+                             (self.NAME, root)):
+                done = self.run_tool(root, arg, cwd=cwd)
+                self.assertEqual(done.returncode, 0, (arg, done.stderr))
+                self.assertIn(self.NAME + ':5: R17 self-assignment', done.stdout, arg)
+
+    def test_symlinked_checkout_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve() / 'real'
+            self.make_checkout(root)
+            link = Path(tmp).resolve() / 'link'
+            try:
+                link.symlink_to(root, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest('no symlinks here')
+            done = self.run_tool(root, str(link / self.NAME))
+            self.assertEqual(done.returncode, 0, done.stderr)
+            self.assertIn(self.NAME + ':5: R17 self-assignment', done.stdout)
+
+    def test_git_worktree_paths(self):
+        git = ['git', '-c', 'user.name=t', '-c', 'user.email=t@example.invalid']
+        with tempfile.TemporaryDirectory() as tmp:
+            main, tree = Path(tmp).resolve() / 'main', Path(tmp).resolve() / 'tree'
+            self.make_checkout(main)
+            try:
+                for cmd in (['init', '-q'], ['add', '-A'], ['commit', '-q', '-m', 'x'], ['worktree', 'add', '-q', str(tree), '-b', 'w']):
+                    subprocess.run(git + cmd, cwd=main, check=True, capture_output=True)
+            except (OSError, subprocess.CalledProcessError):
+                self.skipTest('git worktree unavailable')
+            # The worktree's file, named by its absolute path, with the tool run from the worktree and from the main checkout.
+            for root in (tree, main):
+                done = self.run_tool(root, str(tree / self.NAME), cwd=tree)
+                self.assertEqual(done.returncode, 0, done.stderr)
+                self.assertIn(self.NAME + ':5: R17 self-assignment', done.stdout)
+            # The finding belongs to the file that was named: an edit only the worktree has is seen.
+            write(tree, self.NAME, self.SOURCE.replace('count = count;', 'count = 1;'))
+            self.assertNotIn('self-assignment', self.run_tool(main, str(tree / self.NAME)).stdout)
+            self.assertIn('self-assignment', self.run_tool(main, str(main / self.NAME)).stdout)
+
+    def test_missing_and_foreign_files_are_still_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            self.make_checkout(root)
+            for arg in ('reconstruction/area/Nothing.cpp', str(root / 'tools/check.py'), '/nonexistent/x.cpp'):
+                done = self.run_tool(root, arg)
+                self.assertEqual(done.returncode, 2, arg)
+                self.assertIn('not a source file under reconstruction/', done.stderr)
+
+
 class TreeNoinlineDebt(unittest.TestCase):
     # Files that still carry an R38 finding; the list only shrinks. A file whose note is fixed
     # must leave it, so a regrown finding anywhere else fails here.

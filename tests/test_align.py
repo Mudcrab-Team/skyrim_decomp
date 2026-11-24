@@ -402,5 +402,87 @@ class Output(unittest.TestCase):
             self.assertIsNone(align.unwind_from_diagnostics(tmp))
 
 
+SMALL = [
+    (None, '48 8b 41 08', 'mov rax, qword ptr [rcx + 0x8]', None),
+    (None, '48 83 c0 20', 'add rax, 0x20', None),
+    (None, '48 89 41 08', 'mov qword ptr [rcx + 0x8], rax', None),
+    (None, 'c3', 'ret', None),
+]
+
+
+def behaviour(target_rows, cand_rows, symbols=None):
+    """align.behaviour_mismatches over the alignment of two synthetic listings."""
+    t_rows, c_rows = align.parse_listing(listing(target_rows)), align.parse_listing(
+        listing(cand_rows, candidate=True, symbols=symbols))
+    T = align.build(t_rows, base=BASE)
+    C = align.build(c_rows, symbols=SYMBOLS if symbols is None else symbols, candidate=True)
+    return align.behaviour_mismatches(T, C, align.analyse(T, C)['ops'])
+
+
+class BehaviourMismatches(unittest.TestCase):
+    def test_identical_and_renamed_code_has_none(self):
+        for cand in (BASE_ROWS, swapped(BASE_ROWS)):
+            found = behaviour(BASE_ROWS, cand)
+            self.assertEqual(found['count'], 0)
+            self.assertEqual(found['multiset']['missing'] + found['multiset']['extra'], 0)
+            self.assertEqual(align.behaviour_summary(found), '')
+
+    def test_immediate_that_differs_by_one_constant(self):
+        cand = replace(SMALL, 1, (None, '48 83 c0 10', 'add rax, 0x10', None))
+        found = behaviour(SMALL, cand)
+        self.assertEqual(found['count'], 1)
+        self.assertEqual(found['by_kind'], {'immediate': 1})
+        diff = found['pairs'][0]['differences'][0]
+        self.assertEqual((diff['target'], diff['candidate']), ('0x20', '0x10'))
+        self.assertEqual((found['pairs'][0]['t'], found['pairs'][0]['c']), (4, 4))
+        self.assertEqual((found['multiset']['missing'], found['multiset']['extra']), (1, 1))
+
+    def test_member_displacement_that_differs(self):
+        cand = replace(BASE_ROWS, 13, ('store', '89 47 18', 'mov dword ptr [rdi + 0x18], eax', None))
+        found = behaviour(BASE_ROWS, cand)
+        self.assertEqual(found['by_kind'], {'displacement': 1})
+        self.assertEqual(found['count'], 1)
+
+    def test_call_target_and_global_reference(self):
+        symbols = dict(SYMBOLS)
+        call = replace(BASE_ROWS, 10, (None, 'e8 ?? ?? ?? ??', 'call {T}', ('sym', '?Other@@YAXH@Z')))
+        self.assertEqual(behaviour(BASE_ROWS, call, symbols)['by_kind'], {'call-target': 1})
+        glob = replace(BASE_ROWS, 4, (None, '8b 1d ?? ?? ?? ??', 'mov ebx, dword ptr [{T}]', ('rip', 'g_other')))
+        self.assertEqual(behaviour(BASE_ROWS, glob, symbols)['by_kind'], {'global-ref': 1})
+
+    def test_unresolved_reference_is_not_a_mismatch(self):
+        call = replace(BASE_ROWS, 10, (None, 'e8 ?? ?? ?? ??', 'call {T}', ('sym', '?Missing@@YAXH@Z')))
+        found = behaviour(BASE_ROWS, call, {k: v for k, v in SYMBOLS.items() if k != '?Missing@@YAXH@Z'})
+        self.assertEqual(found['count'], 0)
+        self.assertEqual(found['unresolved'], 1)
+
+    def test_stack_frame_values_are_layout_not_behaviour(self):
+        cand = replace(BASE_ROWS, 2, (None, '48 83 ec 30', 'sub rsp, 0x30', None))
+        cand = replace(cand, 14, ('out', '48 8b 5c 24 40', 'mov rbx, qword ptr [rsp + 0x40]', None))
+        cand = replace(cand, 15, (None, '48 83 c4 30', 'add rsp, 0x30', None))
+        found = behaviour(BASE_ROWS, cand)
+        self.assertEqual(found['count'], 0)
+        self.assertEqual(found['multiset']['missing'] + found['multiset']['extra'], 0)
+
+    def test_value_missing_where_the_alignment_cannot_pair_it(self):
+        cand = SMALL[:1] + SMALL[2:]
+        found = behaviour(SMALL, cand)
+        self.assertEqual(found['count'], 0)
+        self.assertEqual(found['multiset']['largest'][0]['value'], '0x20')
+        self.assertEqual(found['multiset']['largest'][0]['difference'], -1)
+
+    def test_report_carries_counts_and_offsets_but_no_values(self):
+        cand = replace(SMALL, 1, (None, '48 83 c0 10', 'add rax, 0x10', None))
+        text, data = run(SMALL, cand)
+        self.assertEqual(data['behaviour']['count'], 1)
+        self.assertEqual(data['behaviour']['pairs'], [{'t': 4, 'c': 4, 'mnemonic': 'add', 'kinds': ['immediate']}])
+        self.assertIn('behaviour: 1 aligned pairs', text)
+        self.assertNotIn('0x20', json.dumps(data['behaviour']))
+        self.assertNotIn('0x20', text)
+        same, data = run(SMALL, SMALL)
+        self.assertNotIn('behaviour', same)
+        self.assertEqual(data['behaviour']['count'], 0)
+
+
 if __name__ == '__main__':
     unittest.main()

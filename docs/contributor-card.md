@@ -8,7 +8,8 @@ disassembly or decompiler text) takes the same bot route after a leak scan, the 
 Before drafting, read `docs/cookbook-notes/` for your function's class or cause. Write a note
 (`./sr note <task>`) only for a spelling that fixed something the cookbook does not record, or a near-miss
 cause it does not cover; submit it in the same PR (words and plain C++ only, never bytes or listings).
-Merged notes are folded into the cookbook at the next round.
+Merged notes are folded into the cookbook at the next round. For a function over about 1,000 bytes, or a first score
+under 80 percent, also read `docs/near-tier-lessons.md`.
 If a cookbook rule fixed a function, add one header line to its unit, `// Cookbook: 0x<rva> N` (or `N, M`); it does
 not count against the header budget, and it feeds the rule ranking at the top of the cookbook.
 **Check the sibling x64 hint first.** `./sr start` prints the closest compiled Fallout siblings (needs `./sr setup`

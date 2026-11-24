@@ -17,7 +17,9 @@ Do these in order before the first `attempt`. Each step is a few seconds of read
    [the cookbook](matching-cookbook.md), then `ls docs/cookbook-notes/` and read the notes for your
    class. For a function that already has failures, search its RVA:
    `grep -n '0x<rva>' docs/matching-cookbook.md docs/cookbook-notes/*.md` (the `Evidence:` and
-   `Still failing:` lines name the RVAs each rule closed or left open).
+   `Still failing:` lines name the RVAs each rule closed or left open). For a function over about 1,000 bytes or a first
+   score under 80 percent, also read [the near-tier lessons](near-tier-lessons.md): measured moves, what each cost and which
+   cookbook rule it supports or contradicts.
 3. **Sibling source and x64 hints.** Open the file and line in the task's `sibling.md`, then
    `sibling_x64.json` (closest compiled Fallout functions by code shape). An `exact_shape` candidate
    goes through `tools/sibling_transplant.py` before you draft by hand. Search the community
@@ -54,11 +56,12 @@ directory (`.local/tasks/<id>` or `.local/contrib/tasks/<id>`).
 | Unit sheets | `python3 tools/sheet.py <task>/<unit dir> --function 0x<rva>` (`--page N`) | A compact page of one function: listing, callees, prototype hints, in tool-output-sized pages |
 | Skeleton | `python3 tools/skeleton.py <task>` (`./sr start` does it) | Starting `.h`/`.cpp` with the header and one stub per compared function |
 | Attempt loop | `tools/verifier/attempt <task>` (`--rule N` on the passing run, `--model <id>`) | Every compile and compare; prints PASS/FAIL, first mismatch, matching-byte progress |
-| Side-by-side and align | `<task>/attempts/<NNN>/0x<rva>/side-by-side.txt`, `tools/verifier/align.py --attempt <task>/attempts/<NNN>` | Reading why a function fails: `*` rows differ outside relocations; align prints the weighted distance and moved blocks |
+| Side-by-side and align | `<task>/attempts/<NNN>/0x<rva>/side-by-side.txt`, `tools/verifier/align.py --attempt <task>/attempts/<NNN>` | Reading why a function fails: `*` rows differ outside relocations; align prints the weighted distance, moved blocks and the `behaviour:` line (values that differ on same-shape pairs) |
 | Bind hints | `<task>/bind-hints.json` (format in the [card](drafter-card.md), "Names and binding") | `UNBOUND` lines, string literals, thread-locals, vftable thunks |
 | Matching cookbook | [docs/matching-cookbook.md](matching-cookbook.md): ranking table first, rule by `#rule-N` | Before the first draft, and for any near-miss. Ranking: `python3 tools/cookbook_rank.py --check` |
 | Cookbook hits | [docs/cookbook-hits.json](cookbook-hits.json), the "Which rules matter most" table | Deciding which rule to try first: fixed and still-failing counts per rule |
 | Lesson notes | `ls docs/cookbook-notes/`; write one with `python3 tools/cookbook_notes.py --new 0x<rva> ...` | Reading: your class or cause. Writing: only a fix or cause the cookbook does not record |
+| Near-tier lessons | [docs/near-tier-lessons.md](near-tier-lessons.md); `python3 tools/near_lessons.py --summary` | Large or low-scoring functions: working method, recipe, packed maths, structure, layout; each lesson has measured moves and RVAs |
 | Sibling source: FNV, F3 | `.local/sources/fnv_decomp`, `.local/sources/f3_decomp`; the task's `sibling.md` lists same-named methods and small accessors | Helper boundaries, argument order, accessor forms, names. Label what you take `SIBLING(...)` and add the `Sibling source:` header line |
 | Sibling source: FO4 private | `.local/sources/fo4-private-index` (exact qualified-name hints in `sibling.md` variants), game-code folders only | Same as above for FO4 game code; anonymity rules in the [card](drafter-card.md); never name its origin in tracked files |
 | Sibling x64 hints | `sibling_x64.json` in the task; `python3 tools/x64_lookup.py --index-dir .local/contrib/x64-index --exe <image> --objdump <llvm-objdump> <rva>:<size>`; index fetched by `./sr setup` or `python3 tools/x64_index.py fetch --dest .local/contrib/x64-index` | First check for every function: the closest compiled Fallout function by code shape and its source line |
@@ -99,6 +102,40 @@ Export `SR_SKYRIM_EXE` (the path of your own game executable) in the same shell 
 tool that reads the image; the exported variable does not persist between separate commands in some
 shells. If your shell does not split an unquoted variable into words (zsh), define a function for a
 repeated command instead of storing it in a variable.
+
+## Reflections and lessons
+
+Every drafter run writes a reflection and every round folds the new lessons into
+[near-tier-lessons.md](near-tier-lessons.md). The loop keeps the lessons current and keeps them honest.
+
+**The drafter writes a reflection, once per function and run.** A file `reflection-<batch>-<model>.md` in the run's
+private folder (not committed), with, per function: the first and best score and the model; each change that moved the
+score, one line `0x<rva>: <what changed> <sim before> -> <sim after>`, with a bundle of edits said to be a bundle;
+what the draft got wrong; what was tried and did not help; the stop condition that fired; and a "Bottlenecks"
+list (one line per slow step with its time cost). Words and plain C++ only, never bytes or listing text. A drafter that
+changed the code should say which cookbook rule or lesson it applied, and whether it helped.
+
+**The integration step folds, after each batch.** The engineer who integrates a batch (the round's fold step,
+[internal workflow](internal-agent-workflow.md)) reads the new reflections and, for each lesson in them:
+
+1. Searches `near-tier-lessons.md` and the cookbook for it. A lesson already there gets its `Found by` and `Evidence:`
+   entries extended (one entry per function: `0x<rva> <+points|flat|callees|behaviour> (<model>)`); never a duplicate.
+2. Maps a new one to the cookbook rule that covers it and writes whether the evidence agrees, extends, qualifies or
+   contradicts the rule (`Rules:` line); with no covering rule it is a `candidate`. Gains and losses from the same idea
+   make it `contested`; a residue nobody closed is `open`, with what was tried.
+3. Marks a lesson whose new evidence contradicts an older one `contested` or `contradicted` instead of deleting either.
+4. Moves a lesson into the cookbook (a numbered rule with an `Evidence:` line, `tools/cookbook_rank.py`) only when
+   a comparator pass closes a function with it; the lesson then points to the rule number. A recipe for one function
+   ("for 0x<rva> do Y") goes to a lesson note (`python3 tools/cookbook_notes.py --new`), not here.
+5. Runs `python3 tools/near_lessons.py` (exit 1 on a lesson with no evidence, an unknown rule, a model it does not
+   credit, a status that disagrees with its rules, or a leak pattern) and `python3 tests/test_near_lessons.py`, and ships
+   the change with the batch's PR; it is a docs and tooling change and takes the normal route.
+
+`python3 tools/near_lessons.py --summary` prints the counts by status and the lessons per cookbook rule for the report.
+`tools/verifier/align.py` prints a `behaviour:` line: aligned pairs of the same shape with a different member displacement,
+immediate, call target or global reference, and the values one side holds more often than the other (`behaviour_mismatches`).
+It is the check for what a similarity score cannot see (one constant off by 0x10 costs a fraction of a percent); read it
+before a round that reports a near-final score. A pair can be unrelated instructions the alignment paired, so it is a lead.
 
 ## Reporting
 

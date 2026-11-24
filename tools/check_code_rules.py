@@ -60,6 +60,7 @@ import bisect
 import collections
 import hashlib
 import json
+import os
 import posixpath
 import re
 import sys
@@ -765,6 +766,41 @@ def summary(units, status, counts, pending_by_rule):
     return '\n'.join(lines)
 
 
+_ANALYSED = {}
+
+
+def analysed(checkout):
+    """`analyse` of another checkout, once per run."""
+    if checkout not in _ANALYSED:
+        _ANALYSED[checkout] = analyse(checkout)
+    return _ANALYSED[checkout]
+
+
+def locate(arg, root, cwd=None):
+    """(checkout, repository-relative name) of a path given on the command line.
+
+    A relative path is read from the current directory when it exists there, else from the checkout, so
+    the tool works from a subdirectory; an absolute path may sit under the checkout or under another
+    checkout or git worktree (the nearest parent holding a reconstruction/ directory). A path that
+    matches nothing comes back unchanged and is reported as not a source file.
+    """
+    root = Path(root).resolve()
+    path = Path(arg)
+    if not path.is_absolute():
+        here = (Path(cwd) if cwd else Path.cwd()) / path
+        path = here if here.exists() else root / path
+    path = Path(os.path.normpath(path))
+    real = path.resolve()
+    try:
+        return root, real.relative_to(root).as_posix()
+    except ValueError:
+        pass
+    for parent in real.parents:
+        if (parent / SOURCE_ROOT).is_dir():
+            return parent, real.relative_to(parent).as_posix()
+    return root, Path(arg).as_posix()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('files', nargs='*', help='repository-relative files to report on (default: totals only)')
@@ -776,14 +812,17 @@ def main(argv=None):
     root = Path(args.root)
     units = analyse(root)
     status = unit_status(units)
-    named = [Path(f).as_posix() for f in args.files]
-    unknown = [f for f in named if f not in units]
+    located = [locate(f, root) for f in args.files]
+    named = [name for _checkout, name in located]
+    here = root.resolve()
+    unknown = [f for f, (checkout, name) in zip(args.files, located) if name not in (units if checkout == here else analysed(checkout))]
     if unknown:
         print('not a source file under reconstruction/: ' + ', '.join(unknown), file=sys.stderr)
         return 2
     failed = False
-    for name in named:
-        for line, rule, code, message, function in units[name].findings:
+    for checkout, name in located:
+        found = units if checkout == here else analysed(checkout)
+        for line, rule, code, message, function in found[name].findings:
             matching = is_match(rule, code)
             failed = failed or matching
             if args.list or args.strict:

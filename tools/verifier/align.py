@@ -1012,6 +1012,164 @@ SUGGEST = {
 }
 
 
+# Behaviour mismatches. The shape comparison ignores which callee, global or table slot an
+# instruction names and the instruction's own constants are part of it only for the weighted
+# distance, so a candidate that adds 0x10 where the target adds 0x20 loses a fraction of a percent.
+# These helpers count the pairs that keep mnemonic and operand shape but name a different value,
+# and compare the two sides' multisets of values, which also covers regions the alignment missed.
+BEHAVIOUR_KINDS = ('displacement', 'immediate', 'call-target', 'global-ref')
+# Values that every function holds in bulk: counted in an aligned pair, ignored in the multiset.
+COMMON_VALUES = frozenset((0, 1, -1))
+_MASK64 = (1 << 64) - 1
+
+
+def _operand_bases(ins):
+    """Base register names of the instruction's memory operands, in operand order."""
+    body = re.sub(r'\s*<[^>]*>', '', ins.text.split(' # ')[0]).strip()
+    words = body.split(' ', len(ins.mnem.split()))
+    rest = words[-1] if len(words) > len(ins.mnem.split()) else ''
+    out = []
+    for op in _split_operands(rest):
+        mem = _memory(op)
+        if mem is not None:
+            out.append(mem[2])
+    return out
+
+
+def _is_frame(ins, base):
+    """A stack-frame adjustment or a stack-slot address: layout of locals, not behaviour."""
+    if base in ('rsp', 'rbp'):
+        return True
+    return ins.mnem in ('add', 'sub') and ins.shape[1] and ins.shape[1][0][:2] == ('reg', 'rsp')
+
+
+def _value_slots(ins):
+    """[(kind, operand position, value, frame)] of the operands that carry a value of their own.
+
+    The value is a signed displacement or immediate, or an RVA tuple for a call target and a global
+    reference (None when the reference does not resolve to an RVA). `frame` marks stack-frame values.
+    """
+    slots, bases, mem_at = [], _operand_bases(ins), 0
+    for pos, op in enumerate(ins.shape[1]):
+        kind = op[0]
+        if kind == 'mem':
+            base = bases[mem_at] if mem_at < len(bases) else None
+            mem_at += 1
+            if op[-1] == 'ref':
+                slots.append(('global-ref', pos, ins.ref, False))
+            else:
+                slots.append(('displacement', pos, op[-1], _is_frame(ins, base)))
+        elif kind == 'imm':
+            slots.append(('immediate', pos, op[1], _is_frame(ins, None)))
+        elif kind == 'ext' and (ins.is_call or ins.is_branch):
+            slots.append(('call-target', pos, ins.ref, False))
+        elif kind == 'imm-ref':
+            slots.append(('global-ref', pos, ins.ref, False))
+    return slots
+
+
+def _blank(ins):
+    """The instruction's shape with every value-carrying operand reduced to its kind."""
+    out = []
+    for op in ins.shape[1]:
+        if op[0] == 'mem':
+            out.append(op[:-1] + ('ref' if op[-1] == 'ref' else 'disp',))
+        elif op[0] == 'imm':
+            out.append(('imm',))
+        else:
+            out.append(op)
+    return (ins.mnem, tuple(out))
+
+
+def _norm_value(kind, value):
+    if kind in ('call-target', 'global-ref'):
+        return value[1] if value and value[0] == 'rva' else None
+    return value & _MASK64 if isinstance(value, int) else value
+
+
+def _show(kind, value):
+    if value is None:
+        return 'unresolved'
+    if kind in ('call-target', 'global-ref'):
+        return f'rva {value:#x}'
+    return f'{value:#x}' if value < (1 << 63) else f'-{(1 << 64) - value:#x}'
+
+
+def behaviour_mismatches(T, C, ops, limit=12):
+    """Pairs whose mnemonic and operand shape agree but whose value differs, plus the value multisets.
+
+    `ops` is the alignment from `analyse` (`result['ops']`). Returns a dict:
+
+    - `pairs`: aligned pairs (paired or moved) with the same mnemonic and shape and a different member
+      displacement, immediate, call target or global reference, one entry per pair with its offsets and
+      each differing value; stack-frame displacements and stack-pointer adjustments are not counted
+      (they are the layout of locals) and a reference that does not resolve to an RVA on one side is
+      counted under `unresolved`, not as a mismatch;
+    - `count`: the number of such pairs, and `by_kind` the number of differing values per kind;
+    - `multiset`: the values (member displacements and immediates other than 0, 1 and -1, outside
+      stack-frame operands) that one side holds more often than the other, over the whole function,
+      with `missing` and `extra` totals and the largest differences first.
+    """
+    pairs, unresolved, by_kind = [], 0, Counter()
+    for op in ops:
+        if op[0] not in ('pair', 'move'):
+            continue
+        t, c = T[op[1]], C[op[2]]
+        if _blank(t) != _blank(c):
+            continue
+        diffs = []
+        for (kind, pos, tv, tf), (_k, _p, cv, cf) in zip(_value_slots(t), _value_slots(c)):
+            if tf or cf:
+                continue
+            a, b = _norm_value(kind, tv), _norm_value(kind, cv)
+            if kind in ('call-target', 'global-ref') and (a is None or b is None):
+                unresolved += tv != cv
+                continue
+            if a != b:
+                diffs.append({'kind': kind, 'target': _show(kind, a), 'candidate': _show(kind, b)})
+                by_kind[kind] += 1
+        if diffs:
+            pairs.append({'t': t.off, 'c': c.off, 'mnemonic': t.mnem, 'differences': diffs})
+    tally = {'t': Counter(), 'c': Counter()}
+    for side, insns in (('t', T), ('c', C)):
+        for ins in insns:
+            for kind, _pos, value, frame in _value_slots(ins):
+                if frame or kind not in ('displacement', 'immediate') or not isinstance(value, int):
+                    continue
+                if value in COMMON_VALUES:
+                    continue
+                tally[side][(kind, value & _MASK64)] += 1
+    only_t, only_c = tally['t'] - tally['c'], tally['c'] - tally['t']
+    spread = []
+    for key in set(only_t) | set(only_c):
+        spread.append({'kind': key[0], 'value': _show(key[0], key[1]), 'target': tally['t'][key],
+                       'candidate': tally['c'][key], 'difference': tally['c'][key] - tally['t'][key]})
+    spread.sort(key=lambda r: (-abs(r['difference']), r['kind'], r['value']))
+    return {'count': len(pairs), 'by_kind': {k: by_kind[k] for k in BEHAVIOUR_KINDS if by_kind[k]},
+            'unresolved': unresolved, 'pairs': pairs,
+            'multiset': {'missing': sum(only_t.values()), 'extra': sum(only_c.values()),
+                         'distinct': len(spread), 'largest': spread[:limit]}}
+
+
+def behaviour_public(found):
+    """The part of `behaviour_mismatches` that carries no values: offsets, kinds and counts."""
+    return {'count': found['count'], 'by_kind': found['by_kind'], 'unresolved': found['unresolved'],
+            'pairs': [{'t': p['t'], 'c': p['c'], 'mnemonic': p['mnemonic'],
+                       'kinds': [d['kind'] for d in p['differences']]} for p in found['pairs']],
+            'multiset': {k: found['multiset'][k] for k in ('missing', 'extra', 'distinct')}}
+
+
+def behaviour_summary(found):
+    """One line for the aligned summary; '' when nothing differs."""
+    ms = found['multiset']
+    if not found['count'] and not ms['missing'] and not ms['extra']:
+        return ''
+    kinds = ', '.join(f'{n} {k}' for k, n in found['by_kind'].items())
+    return (f'behaviour: {found["count"]} aligned pairs with a different value' + (f' ({kinds})' if kinds else '')
+            + f'; values only in the target {ms["missing"]}, only in the candidate {ms["extra"]}')
+
+
+
 def report(T, C, unwind=None):
     """(summary lines, JSON dict, aligned listing text) for two normalised instruction lists."""
     result = analyse(T, C, unwind)
@@ -1021,6 +1179,7 @@ def report(T, C, unwind=None):
         costs[d.cls] += d.weight
     hunks = _hunks(result['rows'])
     rules = _rules(T, C, result, counts)
+    behaviour = behaviour_mismatches(T, C, result['ops'])
     comps = result['components']
     lines = [f'aligned: distance {result["distance"]:g} (prologue {comps["prologue"]:g}, body {comps["body"]:g}, '
              f'refs {comps["refs"]:g}); edits shape {result["shape_edits"]}, exact {result["exact_edits"]} '
@@ -1034,6 +1193,8 @@ def report(T, C, unwind=None):
     if counts:
         top = sorted(counts, key=lambda k: (-costs[k], k))
         lines.append('classes: ' + ', '.join(f'{k} {counts[k]} ({costs[k]:g})' for k in top[:6]))
+    if behaviour_summary(behaviour):
+        lines.append(behaviour_summary(behaviour))
     shown = [h for h in hunks if set(h['classes']) - {'register-renaming'}][:4]
     if shown:
         def span(h):
@@ -1077,7 +1238,7 @@ def report(T, C, unwind=None):
         'classes': {k: {'count': counts[k], 'cost': round(costs[k], 2)} for k in sorted(counts)},
         'hunks': [{'target': h['t'], 'candidate': h['c'], 'classes': dict(h['classes'])} for h in hunks],
         'unwind': {'fields': result['unwind_fields'], 'explained_by_register_map': result['unwind_explained']},
-        'cookbook_rules': rules, 'suggestion': suggestion,
+        'cookbook_rules': rules, 'suggestion': suggestion, 'behaviour': behaviour_public(behaviour),
         'alignment': [_op_json(op, T, C) for op in result['ops']],
     }
     return lines, data, _listing(result, T, C, lines)
