@@ -102,3 +102,24 @@ class Canonical(unittest.TestCase):
         self.assertEqual(pf.canonical('Widget::ctor'), pf.canonical('Widget::Widget'))
         self.assertEqual(pf.canonical('Widget::Dtor'), pf.canonical('Widget::~Widget'))
         self.assertNotEqual(pf.canonical('Widget::Poke'), pf.canonical('Widget::Prod'))
+
+
+class Fo4Cache(unittest.TestCase):
+    def test_the_database_is_parsed_once_however_many_functions_ask(self):
+        import symbol_corroboration
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'db.pdb'
+            path.write_bytes(b'x')
+            model = mock.Mock(variants={})
+            pf._FO4_CACHE.clear()
+            with (mock.patch.object(pf.pdb_types, 'Msf') as msf, mock.patch.object(pf.pdb_types, 'Tpi'),
+                  mock.patch.object(pf.pdb_types, 'Model', return_value=model) as build,
+                  mock.patch.object(symbol_corroboration, 'pdb_publics', return_value=[('?Poke@Widget@@QEAAXXZ', None)]) as publics,
+                  mock.patch.object(pf.symbol_align, 'member_of', return_value=('Widget', 'Poke'))):
+                first = pf.fo4_facts(path, 'Widget::Poke')
+                second = pf.fo4_facts(path, 'Widget::Poke')
+                other = pf.fo4_facts(path, 'Widget::Prod')
+            self.assertEqual((msf.call_count, build.call_count, publics.call_count), (1, 1, 1))
+            self.assertEqual(first, second)
+            self.assertIsNotNone(first)
+            self.assertIsNone(other)

@@ -22,6 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -157,6 +158,10 @@ def _undname(decorated):
 
 
 _MAP_CACHE = {}  # one parse of the map per process: a review asks about many functions
+# The Fallout 4 database is parsed once per process too: its type model costs seconds and about a gigabyte, and a
+# review asks about every function of a PR from several threads at once.
+_FO4_CACHE = {}
+_FO4_LOCK = threading.Lock()
 
 
 def map_facts(path, rva, name, inventory):
@@ -193,23 +198,36 @@ def map_facts(path, rva, name, inventory):
             'tier': hit[2] if hit else None, 'label': 'SYMBOLS(tesv-2013-map)'}
 
 
+def _fo4_parsed(path):
+    """({(class, member): [decorated names]}, type model) of the database, parsed once per file version."""
+    stat = Path(path).stat()
+    key = (str(path), stat.st_size, stat.st_mtime_ns)
+    with _FO4_LOCK:
+        if key not in _FO4_CACHE:
+            import symbol_corroboration
+            _FO4_CACHE.clear()
+            msf = pdb_types.Msf(Path(path).read_bytes())
+            members = {}
+            for dec, _home in symbol_corroboration.pdb_publics(path):
+                m = symbol_align.member_of(dec)
+                if m:
+                    members.setdefault((m[0], m[1]), []).append(dec)
+            _FO4_CACHE[key] = (members, pdb_types.Model(pdb_types.Tpi(msf.stream(2))))
+        return _FO4_CACHE[key]
+
+
 def fo4_facts(path, name):
     """Layout and method prototypes for the Fallout 4 class of the same name, when the class is shared."""
     cls, _, method = (name or '').rpartition('::')
     if not cls:
         return None
-    import symbol_corroboration
-    protos = []
-    for dec, _home in symbol_corroboration.pdb_publics(path):
-        m = symbol_align.member_of(dec)
-        if m and m[0] == cls and m[1] == method:
-            protos.append(dec)
+    members, model = _fo4_parsed(path)
+    protos = list(members.get((cls, method), ()))
     layout = None
-    msf = pdb_types.Msf(Path(path).read_bytes())
-    model = pdb_types.Model(pdb_types.Tpi(msf.stream(2)))
     if cls in model.variants:
         _key, index = model.variants[cls][0]
-        layout = pdb_types.Renderer(model).render(index).text.rstrip('\n').split('\n')
+        with _FO4_LOCK:  # the renderer memoises into the shared model
+            layout = pdb_types.Renderer(model).render(index).text.rstrip('\n').split('\n')
     if not protos and not layout:
         return None
     return {'prototypes': _undname(protos[:4]) if protos else [], 'layout': layout, 'class': cls,

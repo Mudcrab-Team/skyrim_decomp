@@ -101,6 +101,14 @@ class Config(unittest.TestCase):
             chosen = runners.for_attempt(runners.load(path, root=tmp))
             self.assertEqual((chosen['host_id'], chosen['backend']), ('mac-wine', 'local'))
 
+    def test_an_unreachable_preferred_attempt_host_is_woken_and_the_fallback_runs(self):
+        c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
+        with mock.patch.object(runners, 'wake', return_value=True) as woken:
+            name, warns = runners.choose_attempt(c, {}, lambda h: False)
+        self.assertEqual(name, 'mac')
+        woken.assert_called_once()
+        self.assertIn('wake-up packet sent', warns[0])
+
     def test_attempt_host_choice(self):
         c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
         up, down = (lambda h: True), (lambda h: False)
