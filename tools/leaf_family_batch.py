@@ -54,8 +54,8 @@ def indexed_callee(image, member, starts):
         return False
 
 
-def write_unit(root, family, build_id, header, source, symbols, functions):
-    unit = Path('reconstruction/leaves') / family
+def write_unit(root, family, build_id, header, source, symbols, functions, *, area='leaves'):
+    unit = Path('reconstruction') / area / family
     directory = root / 'tasks' / family
     directory.mkdir(parents=True)
     (root / unit.parent).mkdir(parents=True, exist_ok=True)

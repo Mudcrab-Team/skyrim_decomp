@@ -214,7 +214,7 @@ def cleanup_target(image, rva, size, form_type, base, interface, delete, extents
     return call.near_branch_target
 
 
-def select(image, extents, inventory, blocked, symbols, terminate):
+def isolated_extents(image, extents):
     pdata = defaultdict(list)
     for begin, end, _ in image.runtime_functions():
         pdata[begin].append(end)
@@ -228,9 +228,14 @@ def select(image, extents, inventory, blocked, symbols, terminate):
         if previous_end <= rva and (i + 1 == len(starts) or ends[rva] <= starts[i + 1]):
             isolated.add(rva)
         previous_end = max(previous_end, ends[rva])
+    return pdata, starts, isolated
+
+
+def select(image, extents, inventory, blocked, symbols, terminate):
+    pdata, starts, isolated = isolated_extents(image, extents)
     by_name = defaultdict(list)
     owners = Counter()
-    for table in tables(image, ends):
+    for table in tables(image, set(starts)):
         owners[table.slot] += 1
         by_name[table.name].append(table)
 
@@ -275,10 +280,7 @@ def select(image, extents, inventory, blocked, symbols, terminate):
     return sorted(result, key=lambda m: m.rva)
 
 
-def discover(image, extents, inventory):
-    ctx = contrib.Ctx()
-    build = contrib.target_manifest(ctx.repo)['build_id']
-    symbols = json.loads((ctx.repo / 'reports' / build / 'symbol-map.json').read_text())['symbols']
+def occupied_ranges(ctx, build, extents, inventory):
     claims = ctx.github().open_items()
     claimed = contrib.batch_claims.ClaimIndex(claims.records, build)
     marked = set(duplicate_rva.marked(ctx.repo))
@@ -290,6 +292,14 @@ def discover(image, extents, inventory):
         return (any(a < rva + size and rva < b for a, b in occupied)
                 or claimed.overlaps([(rva, rva + size)]))
 
+    return blocked
+
+
+def discover(image, extents, inventory):
+    ctx = contrib.Ctx()
+    build = contrib.target_manifest(ctx.repo)['build_id']
+    symbols = json.loads((ctx.repo / 'reports' / build / 'symbol-map.json').read_text())['symbols']
+    blocked = occupied_ranges(ctx, build, extents, inventory)
     thunk = compare_runtime.termination_thunk(image)
     return select(image, extents, inventory, blocked, symbols, thunk['rva'])
 
