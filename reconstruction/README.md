@@ -34,7 +34,7 @@ Read `LEGAL.md`, `PROVENANCE.md` and `docs/verification.md` before adding source
   `bshavok`, `bsscript`, `bsscaleform`), `skyrim_shared/` (data shared by the game's systems:
   forms, actors, extra data, conditions, magic, pathfinding, world, quests and the like),
   `skyrim/` (game logic: `ai`, `ai/combat`, `ai/movement`, `camera`, `controls`, `interface`,
-  `magic`, `papyrus`) and `thirdparty/` (middleware, kept apart). `place(class)` in
+  `magic`, `papyrus`) `std/` (explicit instantiations of the compiler's standard templates that the game's code instantiated; counted as game code, `docs/resource-guidelines.md`) and `thirdparty/` (middleware, kept apart). `place(class)` in
   `tools/unit_paths.py` picks the area from the class name by ordered prefix rules; the few classes
   it does not decide are listed in `data/unit-areas.json`. A class with no rule is not filed
   anywhere by default: add a rule or an entry first. There is no `misc/`.
