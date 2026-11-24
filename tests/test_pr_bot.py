@@ -1712,6 +1712,28 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertEqual((failed, asked), (set(), [({0x10}, 'b')]))
         self.assertEqual(len(self.seen('wine_confirm.py')), 1)
 
+    def test_a_digest_carried_function_whose_record_is_current_needs_no_record(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON_DIGEST}
+        self.state.data['ci']['rows'].pop('16')
+        self.bot.record_is_current = lambda rva: rva == 0x10
+        self.bot.carried_records = lambda *a, **k: self.fail('a current record is not rebuilt')
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertTrue(out.is_dir())
+        self.assertFalse((out / 'b/0x10.json').exists())
+
+    def test_a_digest_carried_function_whose_record_is_not_current_is_still_carried(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON_DIGEST}
+        self.bot.record_is_current = lambda rva: False
+        asked = []
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (asked.append(set(rvas)), (self.work, set()))[1]
+        out, failed = self.build({0x10})
+        self.assertEqual((failed, asked), (set(), [{0x10}]))
+
     def test_a_carried_record_that_cannot_be_built_refuses_only_that_function(self):
         (self.tree / 'builds').mkdir()
         (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))

@@ -2814,10 +2814,18 @@ class Bot:
             raise Stop('no hash run evidence to build records from')
         out, failed, built = self.work / 'records' / tag, set(), set()
         # A carried function has no hash row to build a record from; its own accepted record moves to the new text.
-        carried = {int(r) for r in {**(state.get('carried') or {}), **(state.get('carried-c') or {})}} & set(rvas)
+        reasons = {**(state.get('carried') or {}), **(state.get('carried-c') or {})}
+        carried = {int(r) for r in reasons} & set(rvas)
+        # A digest-carried function's accepted record already binds this exact unit text, so there is nothing to
+        # write and nothing to move; its record on main stays as it is (a record that kept a CI confirmation
+        # cannot be carried to new text at all, and does not need to be).
+        unchanged = {r for r in carried if reasons.get(str(r)) == CARRY_REASON_DIGEST and self.record_is_current(r)}
+        carried -= unchanged
+        built |= unchanged
+        out.mkdir(parents=True, exist_ok=True)
         for task in sorted((self.tree / '.local/tasks').glob(f'prbot-{tag.split("/")[0]}-*')):
             info = json.loads((task / 'task.json').read_text())
-            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas) - carried
+            wanted = {int(str(fn['rva']), 0) for fn in info['functions']} & set(rvas) - carried - unchanged
             if not wanted:
                 continue
             info = self.bind_unit_map(task, info, wanted)
@@ -2856,7 +2864,6 @@ class Bot:
         # let a merge go ahead with nothing to record, and the record step then stopped after the PR had landed.
         if carried:
             target = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
-            reasons = {**(state.get('carried') or {}), **(state.get('carried-c') or {})}
             _, unmade = self.carried_records(tag, carried, target, reasons)
             built |= carried - unmade
             failed |= unmade
@@ -4454,6 +4461,10 @@ class Bot:
         except (OSError, ValueError):
             return False
 
+    def settled(self, build, rva, task_id):
+        """Whether main already holds this function's record for this unit text, from this task or an earlier one."""
+        return self.recorded_by(build, rva, task_id) or self.record_is_current(rva)
+
     def drafter_args(self, number):
         """`--drafter <claim>` for tools/record.py from the PR's own summary; [] when it states none.
 
@@ -4509,7 +4520,7 @@ class Bot:
             build = json.loads((tree / 'builds/target.json').read_text())['build_id']
             inventory = json.loads((tree / 'data/progress.json').read_text())
             matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
-            todo = [r for r in rvas if r not in matched or not self.recorded_by(build, r, task_id)]
+            todo = [r for r in rvas if r not in matched or not self.settled(build, r, task_id)]
             files = []
             if todo:
                 # The clean above removed the untracked unit symbol maps the records name; without them every
@@ -4572,7 +4583,7 @@ class Bot:
         task_id = f'pr-bot-{pr["number"]}-{pr["headRefOid"][:8]}'
         inventory = json.loads((self.tree / 'data/progress.json').read_text())
         matched = {fn['rva'] for fn in inventory['functions'] if fn['build_id'] == build and fn['status'] == 'matched'}
-        rvas = [r for r in rvas if r not in matched or not self.recorded_by(build, r, task_id)]
+        rvas = [r for r in rvas if r not in matched or not self.settled(build, r, task_id)]
         if not rvas:
             state.set('recorded', True)
             return
