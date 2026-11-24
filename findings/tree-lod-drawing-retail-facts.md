@@ -69,20 +69,20 @@ Both techniques create the pass with category byte 7 (`0x1558d95`). `GetRenderDe
 
 ### G02. The eight shader records
 
-**Verified, high.** The shader file holds four vertex and four pixel records for the tree shader. All eight were decoded and compared with the saved decoded copies. They are byte-identical to the earlier copies. Their start offsets and sizes agree with the saved record table.
+**Verified, high.** The shader file holds four vertex and four pixel records for the tree shader. All eight were decoded and compared with the saved decoded copies. The decoded text of each record is the same as in the earlier copies. Their start offsets and sizes agree with the saved record table.
 
 | Key | VS record start, DXBC bytes | PS record start, DXBC bytes | Notes |
 |---|---|---|---|
 | `0` | 2728, 1152 | 7032, 940 | Colour. The PS has no alpha discard. |
 | `1` | 3924, 912 | 8052, 1016 | Coverage: stipple discard, alpha discard, writes `clip.z / clip.w`. |
-| `0x10000` | 4880, 1152 | 9148, 1032 | The VS is identical to key 0. The PS adds the alpha discard. |
-| `0x10001` | 6076, 912 | 10260, 1016 | Both are identical to key 1. |
+| `0x10000` | 4880, 1152 | 9148, 1032 | The VS decodes to the same text as key 0. The PS adds the alpha discard. |
+| `0x10001` | 6076, 912 | 10260, 1016 | Both decode to the same text as key 1. |
 
 Bit 16 changes only the colour pixel record: it adds the alpha discard. The stipple pixel records and the vertex records are the same with and without it.
 
 **Verified.** The outputs of the colour PS (keys `0` and `0x10000`) are: target 0 RGB = atlas RGB × tint, alpha 1. Target 1 xy = the difference of two projected positions, each divided by w, times (−0.5, +0.5). This is a motion-vector form (**inferred** role, by comparison with the Lighting PS outputs in earlier findings). Target 2 = the constant (0.5, 0.5, 0, 0). The stipple records write one target: `clip.z / clip.w` in RGB and 0 in alpha.
 
-**Confidence: high.** The basis is decoded text and bytes. Static only.
+**Confidence: high.** The basis is decoded text and record sizes. Static only. No byte-level comparison of records is claimed.
 
 ### G03. Vertex layout, packing and facing
 
