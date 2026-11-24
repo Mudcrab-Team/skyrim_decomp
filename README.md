@@ -102,6 +102,8 @@ A: The [FNV](https://www.fnvdecomp.com) and [FO3](https://f3decomp.com/) decomps
 
 ## More
 
+[Project milestones](docs/milestones.md)
+
 [How matching is verified](docs/verification.md)
 [Internal agent workflow](docs/internal-agent-workflow.md)
 
