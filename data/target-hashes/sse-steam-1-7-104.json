@@ -6,8 +6,8 @@
   "hash_algorithm": "SHA-256",
   "comparator_sha256": "a9bc14136d2f69195e5062cf3a2652b8caf1b948b2cf9ae57d94502978828b55",
   "normalizer_sha256": "2b24058b7228aec8803d01d8a841d6ccfb059587e549bfe4a71ac5f5d26d4c36",
-  "inventory_sha256": "249295568ffcba53addc5e05e6096408b8e76e9b2ceb758981b9654819cb85e3",
-  "offered_inventory_sha256": "f35e42fdb5db174f742e2a972cef2416daa05d555bb26b723012a40bf7057314",
+  "inventory_sha256": "ad0277ec4dbf0352d0b2745d647746ae926ca007b40b786fc58d508b591a31b6",
+  "offered_inventory_sha256": "97308cf2b3e0815426ad8e36f06bc7198b7738327ab15fd958fbcf2e64e0290a",
   "compiler_pins_sha256": "af2c665cb3fc79c2b267bb1a72f0555412e7e22b8d74bb7d13e19539b5aaebcf",
   "recipe_sha256": {
     "reconstruction/recipes/msvc-19.00.24247-o2-reconstruction.json": "3e5b59e0b98ca9f8eed9b9dce9c16f60a3583ab11c215e7b5b8e30d8fa7bcbf7",
@@ -48,8 +48,8 @@
   "shards": [
     {
       "path": "data/target-hashes/sse-steam-1-7-104-part-000.thb",
-      "sha256": "e93039d6d70ae85490f536e6a859b72f3aab68bdfdea693b3d4f944bfa5725d8",
-      "count": 8259
+      "sha256": "4eb51fdbbaa32475c47c9a076f0972c14358036f71258fd4dd8871a6c0de5819",
+      "count": 8359
     },
     {
       "path": "data/target-hashes/sse-steam-1-7-104-part-001.thb",
@@ -172,5 +172,5 @@
       "count": 2
     }
   ],
-  "function_count": 104129
+  "function_count": 104229
 }
