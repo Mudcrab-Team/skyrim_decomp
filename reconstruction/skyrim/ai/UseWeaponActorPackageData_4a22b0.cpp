@@ -1,0 +1,14 @@
+// Build sse-steam-1-7-104. Source exposure: binary-analysis (class names and bases from the image's
+// RTTI; the object size and the inlined destructor body from the pinned image listing).
+// Labels: v2
+// SPDX-License-Identifier: CC0-1.0
+// RVA 0x4a22b0, 62 bytes: UseWeaponActorPackageData scalar deleting destructor; the inline destructors chain to the out-of-line ActorPackageData destructor.
+// Code origin: original reconstruction from the pinned image listing
+// Adapted bodies: none
+// CI hash: 0x4a22b0 ??_GUseWeaponActorPackageData@@UEAAPEAXI@Z
+#include "UseWeaponActorPackageData_4a22b0.h"
+
+// The constructor emits the vftable and with it the deleting destructor in this object.
+UseWeaponActorPackageData::UseWeaponActorPackageData()
+{
+}

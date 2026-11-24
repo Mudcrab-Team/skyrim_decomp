@@ -9,6 +9,9 @@ version restarts the sampling safeguard's first-20 count for Drafter prompts (`d
 directory `.local/tasks/<task-id>/` with `task.json` (build id, RVA, size, compiled file, recipe,
 attempt budget) and the symbol map. Work in the checkout you are given; do not create worktrees.
 
+**Check the sibling x64 hint first.** The task directory holds `sibling_x64.json` (sibling repo@commit, file:line, name,
+score). For an `exact_shape` candidate transplant the body with `tools/sibling_transplant.py` before drafting by hand.
+
 **The loop.** Write or edit `reconstruction/<area>/<Class>.h` and `.cpp`, then run
 `tools/verifier/attempt .local/tasks/<task-id>` from the repository root (about 5 to 10 s when
 warm). It compiles, binds names, compares, and prints one line per function: PASS/FAIL, reason

@@ -1,17 +1,24 @@
-// Source exposure: mixed (names and declarations from the sibling decompilation; the pinned image listing).
-// Code origin: adapted from the sibling decompilation named in the .cpp; stand-in declarations come from it too.
-// SPDX-License-Identifier: CC0-1.0
-// IMovementMessageInterface, IMovementMessageInterface::~IMovementMessageInterface: CRASHLOGGER_PDB(59818@2026.10.24)
+// Build sse-steam-1-7-104. Source exposure: binary-analysis (class names and bases from the image's
+// RTTI; the object size and the inlined destructor body from the pinned image listing).
+// Labels: v2
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// IMovementMessageInterface, IMovementInterface: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// IMovementInterface: STANDIN EXE_RTTI; only its out-of-line destructor is declared
+// IMovementInterface::~IMovementInterface: CRASHLOGGER_PDB(59818@2026.10.24)
 #pragma once
 
-namespace fnv_009cc220 {
+struct IMovementInterface
+{
+public:
+    IMovementInterface();
+    virtual ~IMovementInterface();
+};
 
-struct Func009ca6c0_shell
+class IMovementMessageInterface : public IMovementInterface
 {
-    virtual ~Func009ca6c0_shell();
+public:
+    IMovementMessageInterface();
+    ~IMovementMessageInterface() override {}
+
 };
-struct IMovementMessageInterface : Func009ca6c0_shell
-{
-    virtual ~IMovementMessageInterface();
-};
-}
+static_assert(sizeof(IMovementMessageInterface) == 0x8, "IMovementMessageInterface size from the deleting destructor");

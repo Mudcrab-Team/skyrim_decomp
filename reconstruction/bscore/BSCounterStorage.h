@@ -11,4 +11,8 @@ class BSCounterStorage
 {
 public:
     virtual std::uint32_t ReadFile() const;
+    std::uint32_t Functionec18f0(std::uint32_t delta);
+    std::uint8_t gap_08[0x18];
+    std::uint32_t limit_20;
+    std::uint32_t count_24;
 };

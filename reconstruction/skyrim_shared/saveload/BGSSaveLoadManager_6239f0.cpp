@@ -1,6 +1,7 @@
 // Source exposure: mixed (labelled community declarations and the pinned image listing).
 // Code origin: original typed reconstruction; layouts retained or adapted from the labelled declaration sources.
 // Adapted bodies: none
+// PDB note: 0x623910 uses a provisional name because CrashLogger labels it sub_140587F00, an address-based name that does not establish semantics.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // New function names, signatures and helper names: GUESS(low); unknown semantics remain unnamed.
@@ -22,7 +23,7 @@
 namespace ReconstructedBGSSaveLoadManager {
 
 // Return the save-game list.
-BSTArray_RE__BGSSaveLoadFileEntry_de5d1f14* BGSSaveLoadManager::Function6239f0()
+SaveGameArray* BGSSaveLoadManager::Function6239f0()
 {
     return &saveGameList;
 }

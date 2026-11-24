@@ -1,17 +1,23 @@
-// Source exposure: mixed (names and declarations from the sibling decompilation; the pinned image listing).
-// Code origin: adapted from the sibling decompilation named in the .cpp; stand-in declarations come from it too.
-// SPDX-License-Identifier: CC0-1.0
-// IMovementQueryDeltas, IMovementQueryDeltas::~IMovementQueryDeltas: CRASHLOGGER_PDB(59818@2026.10.24)
+// Build sse-steam-1-7-104. Source exposure: binary-analysis (class names and bases from the image's
+// RTTI; the object size and the inlined destructor body from the pinned image listing).
+// Labels: v2
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
+// IMovementQueryDeltas: EXE_RTTI
+// IMovementInterface: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
+// IMovementInterface: STANDIN EXE_RTTI; only the members and destructors the function needs
 #pragma once
 
-namespace fnv_009cc220 {
+struct IMovementInterface
+{
+public:
+    IMovementInterface();
+    virtual ~IMovementInterface();
+};
 
-struct Func009ca6c0_shell
+class IMovementQueryDeltas : public IMovementInterface
 {
-    virtual ~Func009ca6c0_shell();
+public:
+    IMovementQueryDeltas();
+    ~IMovementQueryDeltas() override {}
 };
-struct IMovementQueryDeltas : Func009ca6c0_shell
-{
-    virtual ~IMovementQueryDeltas();
-};
-}
+static_assert(sizeof(IMovementQueryDeltas) == 0x8, "IMovementQueryDeltas size from the deleting destructor");

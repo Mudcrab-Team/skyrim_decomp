@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -383,7 +384,7 @@ class FakeBot(pr_bot.Bot):
         self.calls.append(['mac', units])
         return dict(self.h2)
 
-    def host1(self, number, head, functions, state=None, units=None):
+    def host1(self, number, head, functions, state=None, units=None, may_yield=None):
         self.calls.append(['host1', sorted(functions), units])
         return dict(self.h1)
 
@@ -1664,6 +1665,24 @@ class NewFunctionRecordTests(unittest.TestCase):
         self.assertTrue(sub['symbols'].startswith('reports/b/unit-symbols/'))
         self.assertEqual(len(self.seen('wine_confirm.py')), 2)
 
+    def test_confirmations_run_in_parallel_after_one_batch_request_for_every_function(self):
+        both = threading.Barrier(2, timeout=5)
+        plain = self.fake_run
+
+        def run(argv, **kw):
+            if str(argv[1]).endswith('wine_confirm.py'):
+                both.wait()  # passes only when the two confirmations overlap
+            return plain(argv, **kw)
+        self.bot.run = run
+        self.bot.config['compare_workers'] = 2
+        out, failed = self.build()
+        self.assertEqual(failed, set())
+        batch = self.seen('compare_batch.py')
+        self.assertEqual(len(batch), 1)
+        self.assertIn('--confirm', batch[0])
+        self.assertEqual(sum(a.endswith('confirm-0x10') or a.endswith('confirm-0x20') for a in batch[0]), 2)
+        self.assertLess(self.calls.index(batch[0]), self.calls.index(self.seen('wine_confirm.py')[0]))
+
     def test_only_the_functions_being_recorded_are_bound_so_a_debt_function_cannot_refuse_them(self):
         out, failed = self.build({0x10})
         self.assertEqual((failed, self.bound_rvas), (set(), ['0x10']))
@@ -1711,6 +1730,28 @@ class NewFunctionRecordTests(unittest.TestCase):
         out, failed = self.build()
         self.assertEqual((failed, asked), (set(), [({0x10}, 'b')]))
         self.assertEqual(len(self.seen('wine_confirm.py')), 1)
+
+    def test_a_digest_carried_function_whose_record_is_current_needs_no_record(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON_DIGEST}
+        self.state.data['ci']['rows'].pop('16')
+        self.bot.record_is_current = lambda rva: rva == 0x10
+        self.bot.carried_records = lambda *a, **k: self.fail('a current record is not rebuilt')
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertTrue(out.is_dir())
+        self.assertFalse((out / 'b/0x10.json').exists())
+
+    def test_a_digest_carried_function_whose_record_is_not_current_is_still_carried(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON_DIGEST}
+        self.bot.record_is_current = lambda rva: False
+        asked = []
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (asked.append(set(rvas)), (self.work, set()))[1]
+        out, failed = self.build({0x10})
+        self.assertEqual((failed, asked), (set(), [{0x10}]))
 
     def test_a_carried_record_that_cannot_be_built_refuses_only_that_function(self):
         (self.tree / 'builds').mkdir()

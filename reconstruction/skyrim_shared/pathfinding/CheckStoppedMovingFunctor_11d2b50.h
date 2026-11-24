@@ -1,17 +1,23 @@
-// Source exposure: mixed (names and declarations from the sibling decompilation; the pinned image listing).
-// Code origin: adapted from the sibling decompilation named in the .cpp; stand-in declarations come from it too.
+// Build sse-steam-1-7-104. Source exposure: binary-analysis (class names and bases from the image's
+// RTTI; the object size and the inlined destructor body from the pinned image listing).
+// Labels: v2
 // SPDX-License-Identifier: CC0-1.0
-// CheckStoppedMovingFunctor, CheckStoppedMovingFunctor::~CheckStoppedMovingFunctor: CRASHLOGGER_PDB(59818@2026.10.24)
+// CheckStoppedMovingFunctor, ICheckEndReachedFunctor: EXE_RTTI
+// ICheckEndReachedFunctor: STANDIN EXE_RTTI; only its out-of-line destructor is declared
 #pragma once
 
-namespace fnv_009cc220 {
+struct ICheckEndReachedFunctor
+{
+public:
+    ICheckEndReachedFunctor();
+    virtual ~ICheckEndReachedFunctor();
+};
 
-struct Func009ca6c0_shell
+struct CheckStoppedMovingFunctor : public ICheckEndReachedFunctor
 {
-    virtual ~Func009ca6c0_shell();
+public:
+    CheckStoppedMovingFunctor();
+    ~CheckStoppedMovingFunctor() override {}
+
 };
-struct CheckStoppedMovingFunctor : Func009ca6c0_shell
-{
-    virtual ~CheckStoppedMovingFunctor();
-};
-}
+static_assert(sizeof(CheckStoppedMovingFunctor) == 0x8, "CheckStoppedMovingFunctor size from the deleting destructor");

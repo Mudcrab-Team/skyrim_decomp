@@ -75,6 +75,7 @@ class FakeGitHub:
         self.prs = {}  # number -> dict
         self.comments = {}  # number -> [{id, login, body}]
         self.calls = []
+        self.head_reads = []  # one entry per cheap head re-read
         self.merges = []
         self.merge_failures = 0
         self.created = []  # every `gh pr create` the bot issued
@@ -104,6 +105,11 @@ class FakeGitHub:
     def route(self, a):
         w, ci = self.world, self.world.ci
         line = ' '.join(a)
+        m = re.search(r'pulls/(\d+)( --jq .head.sha)?$', line)
+        if m and a[0] == 'api':
+            head = self.prs[int(m[1])]['head']
+            self.head_reads.append(int(m[1]))
+            return self.ok((head + '\n').encode())
         m = re.search(r'pulls/(\d+)/files', line)
         if m:
             return self.ok([w.files_of(int(m[1]))])
@@ -532,7 +538,7 @@ class ReplayBot(pr_bot.Bot):
         records.mkdir(parents=True, exist_ok=True)
         return records, set(self.world.refused_records) & set(rvas)
 
-    def compare_on_host(self, units, tag):
+    def compare_on_host(self, units, tag, before_attempts=None):
         """The compile host: leaves the comparator reports and the task's unit symbol map where the real one does."""
         world = self.world
         number, head8 = tag.split('-')[:2]
@@ -830,7 +836,7 @@ class ChunkedReviewTests(Replay):
         small = pr_bot.review_chunks([1, 2, 3], {'a.cpp': [1, 2], 'b.cpp': [3]}, 40)
         self.assertEqual(small, [[1, 2, 3]])
 
-    def test_a_150_function_pr_is_reviewed_in_four_chunks_at_most_three_at_a_time_and_lands(self):
+    def test_a_150_function_pr_is_reviewed_in_four_chunks_at_most_six_at_a_time_and_lands(self):
         self.big_pr()
         seen, live = self.watch()
         log = self.w.poll(self.bot)
@@ -838,7 +844,7 @@ class ChunkedReviewTests(Replay):
         self.assertEqual(len(seen), 4)
         self.assertTrue(all(len(c) <= 40 for c in seen))
         self.assertEqual(sorted(r for c in seen for r in c), self.RVAS)  # one verdict from one chunk each
-        self.assertLessEqual(live['peak'], 3)
+        self.assertLessEqual(live['peak'], pr_bot.REVIEW_CHUNK_WORKERS)
         names = self.w.main_files()
         self.assertTrue(all(f'reports/{BUILD}/0x{r:x}.json' in names for r in self.RVAS))
 
@@ -1174,6 +1180,144 @@ class StaleRecordedHintTests(Replay):
         self.assertEqual(json.loads((task / 'bind-hints.json').read_text()), {self.OLD_NAME: '0x1000'})
 
 
+class ParallelCompareTests(Replay):
+    """A PR near the function cap has hundreds of units; their attempts must overlap, and one failure ends the compare."""
+
+    def compare(self, count, attempt, workers=4):
+        rvas = [0x1000 + 0x10 * i for i in range(count)]
+        units = {unit_path(r): [r] for r in rvas}
+        tag = '7-abcdef13'
+        (self.bot.tree / 'builds').mkdir(parents=True, exist_ok=True)
+        (self.bot.tree / 'builds/target.json').write_text(json.dumps(dict(build_id=BUILD)))
+        for cpp, rs in units.items():
+            (self.bot.tree / cpp).parent.mkdir(parents=True, exist_ok=True)
+            (self.bot.tree / cpp).write_text(unit(rs[0]))
+        self.bot.config['compare_workers'] = workers
+
+        def run(argv, **kw):
+            name = str(argv[1])
+            if name.endswith('export_pack.py'):
+                for i, r in enumerate(rvas):
+                    task = self.bot.tree / '.local/tasks' / f'prbot-{tag}-{i}'
+                    task.mkdir(parents=True, exist_ok=True)
+                    (task / 'task.json').write_text(json.dumps(dict(task_id=task.name, functions=[dict(rva=hex(r))])))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if name.endswith('compare_batch.py'):
+                return subprocess.CompletedProcess(argv, 0, b'compare_batch: nothing prefetched\n', b'')
+            if name.endswith('attempt'):
+                return attempt(Path(str(argv[2])))
+            raise AssertionError(argv)
+        with mock.patch.object(self.bot, 'run', run):
+            return pr_bot.Bot.compare_on_host(self.bot, units, tag), rvas
+
+    def test_attempts_overlap_and_every_function_gets_its_own_verdict(self):
+        gate, seen = threading.Barrier(3, timeout=20), []
+
+        def attempt(task):
+            gate.wait()  # only passes when three attempts are in flight at once
+            report = task / 'attempts/0' / f'0x{int(json.loads((task / "task.json").read_text())["functions"][0]["rva"], 0):x}'
+            report.mkdir(parents=True)
+            seen.append(task.name)
+            (report / 'report.json').write_text(json.dumps(dict(result='pass' if len(seen) % 2 else 'fail')))
+            return subprocess.CompletedProcess([], 0, b'', b'')
+        result, rvas = self.compare(3, attempt, workers=3)
+        self.assertEqual(sorted(result), rvas)
+        self.assertEqual(sorted(result.values()), ['fail', 'pass', 'pass'])
+
+    def test_one_host_failure_ends_the_compare(self):
+        def attempt(task):
+            return subprocess.CompletedProcess([], 5, b'', b'boom\n')
+        with self.assertRaises(pr_bot.HostFailure):
+            self.compare(6, attempt)
+
+
+class HeadCheckTests(Replay):
+    """A push mid-run drops the old head before the next expensive stage instead of after it."""
+
+    OLD, NEW = 'a' * 40, 'b' * 40
+
+    def setUp(self):
+        super().setUp()
+        self.w.github.prs[7] = dict(head=self.OLD, author='x', mergeable='MERGEABLE', state='OPEN', branch='b')
+
+    def test_unmoved_head_passes_with_one_call(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.bot.check_head(7, self.OLD, 'review')
+        self.assertEqual(self.w.github.head_reads, [7])
+
+    def test_moved_head_stops_with_one_line_and_does_not_count_as_an_error(self):
+        self.w.github.prs[7]['head'] = self.NEW
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            with self.assertRaises(pr_bot.HeadMoved) as caught:
+                self.bot.check_head(7, self.OLD, 'host1')
+        self.assertIsInstance(caught.exception, pr_bot.Waiting)
+        self.assertEqual(len(out.getvalue().strip().splitlines()), 1)
+        self.assertIn('aaaaaaaa -> bbbbbbbb', out.getvalue())
+
+    def test_tag_keeps_eight_characters_and_still_matches(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.bot.check_tag_head(f'7-{self.OLD[:8]}', 'pack export')
+            self.w.github.prs[7]['head'] = self.NEW
+            with self.assertRaises(pr_bot.HeadMoved):
+                self.bot.check_tag_head(f'7-{self.OLD[:8]}', 'compare')
+
+    def test_unreadable_head_lets_the_stage_go_on(self):
+        with mock.patch.object(self.bot, 'run', side_effect=pr_bot.GhFailure('down')):
+            self.bot.check_head(7, self.OLD, 'review')
+
+    def test_compare_checks_before_export_and_before_attempts(self):
+        stages = []
+        with mock.patch.object(self.bot, 'check_tag_head', lambda tag, stage: stages.append(stage)), \
+                mock.patch.object(self.bot, 'compare_on_host',
+                                  lambda units, tag, before=None: (before(), {})[1]):
+            self.bot.mac_compare({}, '7-aaaaaaaa')
+        self.assertEqual(stages, ['pack export', 'compare'])
+
+    def test_merge_checks_before_asking_main_watch(self):
+        self.w.github.prs[7]['head'] = self.NEW
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(pr_bot.HeadMoved):
+            self.bot.merge_pr(7, self.OLD, 's', 'b')
+        self.assertEqual(self.w.github.merges, [])
+
+
+class HashYieldAndReportsTests(Replay):
+    """A hash wait must not give up while the same head's local compare is still running, and a retry on another slot keeps its reports."""
+
+    HEAD = 'c' * 40
+
+    def test_the_hash_wait_yields_only_once_the_local_compare_is_done(self):
+        bot = self.bot
+        bot.demand[0] = 1
+        bot.config['hash_wait'] = 600
+        busy = [True, True, False]
+        asked = []
+
+        def may_yield():
+            asked.append(1)
+            return not busy.pop(0)
+        running = dict(id=5, status='in_progress', started_at='2030-01-01T00:00:00Z', details_url='https://ci.invalid/runs/5')
+        with mock.patch.object(pr_bot, 'HASH_YIELD_AFTER', 0), mock.patch.object(bot, 'latest_hash_run', lambda *a: running), \
+                mock.patch.object(pr_bot.time, 'sleep', lambda s: None):
+            with self.assertRaises(pr_bot.Waiting):
+                bot.host1(7, self.HEAD, [0x1000], None, None, may_yield)
+        self.assertEqual(len(asked), 3)  # two refusals while the compare ran, then the yield
+
+    def test_a_retry_on_another_slot_adopts_the_reports_instead_of_dropping_the_verdict(self):
+        tag = '7-cccccccc'
+        donor = self.bot.for_slot(1)
+        report = donor.tree / f'.local/tasks/prbot-{tag}-0/attempts/001/0x1000/report.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{}')
+        self.assertFalse(self.bot.reports_present(tag, {'4096': 'pass'}))
+        self.assertTrue(self.bot.adopt_reports(tag, {'4096': 'pass'}))
+        self.assertTrue(self.bot.reports_present(tag, {'4096': 'pass'}))
+        self.assertTrue(report.exists())  # the donor keeps its copy
+
+    def test_no_slot_holding_the_reports_means_no_adoption(self):
+        self.assertFalse(self.bot.adopt_reports('7-dddddddd', {'4096': 'pass'}))
+
+
 class IncludeRefusalTests(Replay):
     """The verifier refuses a unit whose header its recipe cannot resolve; that is a finding, not a host failure."""
 
@@ -1190,6 +1334,8 @@ class IncludeRefusalTests(Replay):
             if name.endswith('export_pack.py'):
                 task.mkdir(parents=True, exist_ok=True)
                 (task / 'task.json').write_text(json.dumps(dict(task_id=task.name, functions=[dict(rva='0x1000')])))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if name.endswith('compare_batch.py'):
                 return subprocess.CompletedProcess(argv, 0, b'', b'')
             if name.endswith('attempt'):  # the refusal is printed on stdout, so stderr is empty
                 return subprocess.CompletedProcess(argv, code, b'REFUSED include (not counted)\n', b'')

@@ -197,18 +197,18 @@ Read the table with these limits:
 - The counts are files, not functions. A join with `reconstruction/INDEX.md` would give a share
   of matched functions. This guide does not provide that join.
 
-## 7. Open decisions for the maintainer
+## 7. Decisions of the maintainer
 
-These are questions. This guide takes no position and records no answer.
+All five questions that stood here are closed. The decisions are recorded in
+`docs/authorizations.md` ("Community and sibling source decisions") and apply to any worker.
 
-1. Upstream FNV is at `2b07cb3e`. Will the maintainer decide each later upstream revision
-   (and each later F3 revision) when it appears, or set a rule for newer CC0 revisions?
-2. At the current FNV pin, `AGENTS.md` keeps names tagged as from an Xbox 360 development-build
-   PDB, Havok source or Gamebryo source excluded. The 2026-11-12 decision for the earlier pin says
-   neither bars use. May an agent take such names in bulk, or must it skip every tagged name?
-3. May the repository publish a per-class map from Skyrim classes to sibling files? Today units
-   cite a file and line only. A map would put sibling class lists next to Skyrim RVAs.
-4. May CommonLibF4 (MIT) be used for names, declarations or bodies? If yes, which pin and which
-   label?
-5. May `libxse/commonlibf4` (GPL-3.0) or a GPL fork of CommonLibF4 be read or reused? The
-   2026-11-12 GPL decision covers the powerof3 CommonLibSSE fork only.
+1. Newer CC0 sibling revisions (FNV, F3) are adopted by a tooling PR that moves the pin; there is
+   no per-revision ask. Labels on an older pin stay valid with their own licence word.
+2. Names tagged as taken from an Xbox 360 PDB are authorized in bulk (PR #572, label
+   `SYMBOLS(<source>)`). Havok and Gamebryo source stays excluded.
+3. A per-class map from Skyrim classes to sibling files may be published.
+4. CommonLibF4 (MIT) may be used for names, declarations and bodies, labelled
+   `COMMUNITY(CommonLibF4@<pin>, MIT)` (written with the `<owner>/<repo>` the label grammar needs).
+5. GPL forks of CommonLibF4 (for example `libxse/commonlibf4`) and any other community library
+   are allowed, labelled `COMMUNITY(<owner>/<repo>@<pin>, <SPDX>)`. A GPL label needs the file's
+   leading comment to state the GPL licence (`tools/lint_reconstruction.py`).

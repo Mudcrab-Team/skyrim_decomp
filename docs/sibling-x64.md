@@ -36,3 +36,24 @@ compiled CC0 code only. It holds no Skyrim bytes, results or addresses. `./sr se
 `.local/x64-index/` and refuses a file whose SHA-256 differs from the pin in `data/x64-index.json`
 (`--no-sibling` skips it). `tools/x64_index.py` packs, verifies, fetches and loads the format; the maintainer
 rebuilds it from the forks' `x64-msvc1916` branches and publishes a new tag with a new pin.
+
+**In `./sr start`.** `tools/x64_lookup.py` builds the target function's signature locally (llvm-objdump) and prints
+the top sibling candidates from the downloaded index, also saved as `sibling_x64.json` in the task directory. Names,
+paths and scores only. A missing index or objdump gives one line and never stops `start`.
+
+**Library-shape index (`tools/msvclib`).** CRT/STL-heavy leftovers have no sibling source to transplant, so a third
+index is built from code we write and compile ourselves with the same recipe: `catalog.py gen` writes explicit
+instantiations of the standard headers the compiler ships (containers, smart pointers, `std::function`, algorithms,
+small wrapper functions) over scalar, pointer, plain-struct and nested element types; `build.py` compiles each as
+its own unit natively on Windows (at most four jobs); `index.py sigs`/`leads` and the `tools/f3x64` match, score and
+`cmp_run.py --tag msvclib` steps find unmatched target functions of the same shape. The sources copy no library
+text. `docs/resource-guidelines.md` counts `std::` template instances that the game's own code instantiated as game code, so a
+pass here becomes a reconstruction unit labelled `OBSERVED`; plain C runtime functions and import thunks stay out of scope.
+
+**Checking the cookbook against the compiler.** `tools/f3x64/lab_experiments.py` compiles toy spelling variants on the Windows
+runner with the recipe and judges a stated claim per experiment (`lab_compile.py` is the transport and listing parser);
+`corpus.py` counts a source pattern's effect over the sibling listings (line effects, the UnwindHelp store with and without a handler, vftable
+thunks, tail calls, source-identical twins); `cluster.py` groups the hunks of near pairs into width, register, offset, immediate and
+instruction-only kinds. Results are in the "Sibling x64 verification" section of [the cookbook](matching-cookbook.md). All of it
+reads only compiled sibling code and toy sources; the near-pair score files stay under `.local/`.
+

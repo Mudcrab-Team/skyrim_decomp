@@ -5,9 +5,21 @@
 // ReadFile: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 // 0xec18e0 BSCounterStorage::ReadFile
+// Code origin: written for this reconstruction from the listing; names from the header.
+// SPDX-License-Identifier: CC0-1.0
+// 0xec18f0 BSCounterStorage::Functionec18f0
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSCounterStorage.h"
 // ReadFile: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 std::uint32_t BSCounterStorage::ReadFile() const
 {
     return 0x2;
+}
+
+std::uint32_t BSCounterStorage::Functionec18f0(std::uint32_t delta)
+{
+    count_24 += delta;
+    if (!(count_24 < limit_20))
+        limit_20 = count_24 + 1;
+    return 0;
 }

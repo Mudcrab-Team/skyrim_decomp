@@ -22,5 +22,22 @@ class PackExportTimeout(unittest.TestCase):
         self.assertEqual(subprocess.run(['pgrep', '-f', 'sleep 61'], capture_output=True).stdout, b'')
 
 
+class ExporterFailureText(unittest.TestCase):
+    def test_tail_names_the_error_and_hides_host_paths(self):
+        raw = b"Traceback\nOSError: [Errno 63] File name too long: '/Users/someone/work/packs/x'\n"
+        tail = pr_bot.stderr_tail(raw)
+        self.assertIn('File name too long', tail)
+        self.assertNotIn('/Users', tail)
+        self.assertEqual(pr_bot.stderr_tail(b''), '')
+
+    def test_failed_helper_status_carries_the_tail(self):
+        bot = pr_bot.Bot.__new__(pr_bot.Bot)
+        bot.dry_run, bot.root, bot.blocked_writes = False, Path('.'), []
+        code = "import sys;sys.stderr.write('OSError: boom\\n');sys.exit(2)"
+        with self.assertRaises(pr_bot.Stop) as ctx:
+            bot.run([sys.executable, '-c', code])
+        self.assertIn('boom', str(ctx.exception))
+
+
 if __name__ == '__main__':
     unittest.main()

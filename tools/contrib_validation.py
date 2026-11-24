@@ -10,6 +10,7 @@ import tempfile
 import check_code_rules
 import cookbook_notes
 import contrib_screen
+import leakgrep
 import lint_reconstruction
 import lint_review_readiness
 import unit_paths
@@ -111,6 +112,19 @@ def screen_diagnostics(blob, name, *, headers=contrib_screen.STANDARD_HEADERS, c
                'remove the refused construct or reduce the reported resource use') for code in codes]
 
 
+def leakgrep_diagnostics(blob, name):
+    """The rules the bot's leakgrep applies to added lines (decompiler-style names such as `param_1`,
+    asm lines, byte runs), run here so a contributor finds them before the push. Include and path
+    findings are the deterministic screen's and are not repeated."""
+    out = []
+    for number, line in enumerate(blob.decode('utf-8', 'replace').splitlines(), 1):
+        for code in leakgrep.scan_line(line, path=name):
+            if code != 'include-outside-roots':
+                out.append(diagnostic(f'{name}:{number}: leakgrep: {code}; fix: remove or rename it; '
+                                      'the intake bot refuses this line'))
+    return out
+
+
 def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEADERS, guard=None,
                     companions=()):
     """Screen exactly the changed files and their complete compiler input closures."""
@@ -152,6 +166,8 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
                 problems.append(diagnostic(f'{name}: publication guard: {exc}'))
                 continue
         problems += screen_diagnostics(blob, name, headers=headers, changed=name in all_names_changed)
+        if name in all_names_changed:
+            problems += leakgrep_diagnostics(blob, name)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
             problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]

@@ -2292,7 +2292,13 @@ def start(ctx, args, quiet=False):
         found = pdb.suggest(fn['rva']) if pdb else None
         if found:
             suggestions[f'0x{fn["rva"]:x}'] = {'name': found.name, 'label': found.label, 'source': found.source}
+    import x64_lookup
+    x64_record, x64_lines = x64_lookup.hints(ctx.private / 'x64-index', ctx.repo / 'data/x64-index.json',
+                                             ctx.local / 'sources', find_objdump(ctx), exe, fns)
+    x64_lookup.write_record(tdir, x64_record)
     if not quiet:
+        for line in x64_lines:
+            ctx.say(line)
         for rva, found in suggestions.items():
             ctx.say(f'CrashLogger PDB name for {rva}: {found["name"]} (a suggestion, not evidence; '
                     f'if you use it, label it {found["label"]})')
@@ -2314,7 +2320,8 @@ def start(ctx, args, quiet=False):
                 + f' Hard cap: {prof["contrib_max_tries"]} compare runs. {prof["cost"]}')
     return OK, {'task': tdir.name, 'unit': [header, cpp], 'created': created, 'packs': packs, 'branch': branch,
                 'practice': bool(args.practice), 'declarations': declaration_advice,
-                'sibling': str(tdir / 'sibling.md') if sibling else None, 'pdb': pdb_hints(ctx.repo, fns),
+                'sibling': str(tdir / 'sibling.md') if sibling else None, 'sibling_x64': str(tdir / 'sibling_x64.json'),
+                 'pdb': pdb_hints(ctx.repo, fns),
                 'pdb_facts': pdb_fact_lines(ctx, fns),
                 'profile': prof['name'], 'read': prof['contrib_docs'], 'max_tries': prof['contrib_max_tries'],
                 'cost': prof['cost'], **({'pdb_names': suggestions} if suggestions else {})}, \

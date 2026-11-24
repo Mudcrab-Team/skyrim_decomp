@@ -17,8 +17,13 @@ the unit's include closure, the comparator and the host scripts, a spec file and
 travels in a command), the host compiles and compares with tools/verifier/unit_build.py, the
 caller fetches `work/<host id>/` and the run directory is removed.
 
-The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides);
-tools/verifier/runners.example.json is the tracked example. Without it, or with `"attempt":
+The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides). `attempt` names the default attempt host; an optional
+`attempt_prefer` list is tried first (first reachable wins) and SR_ATTEMPT_HOST overrides both;
+tools/verifier/runners.example.json is the tracked example. An optional `compare_prefer` list
+(ssh hosts) is the PR bot's host for its bulk compare: tools/verifier/compare_batch.py uploads
+the units in batches there when one answers (SR_COMPARE_HOST overrides; `attempt` disables) and the
+ordinary `attempt` host takes over when none does; an ssh host may set `wake_mac` so an unreachable one
+is sent a Wake-on-LAN packet without being waited for. Without it, or with `"attempt":
 "boat"`, everything behaves as before. A host is named in records only by its `host_id`, with
 the OS, loader and compiler hashes it reports; private paths, user names and addresses stay in
 the config.
@@ -80,6 +85,18 @@ class TransportError(RunnerError):
 def config_path():
     configured = os.environ.get('SR_RUNNERS_CONFIG')
     return Path(configured) if configured else starts.state_dir() / 'runners.json'
+
+
+def config_origin():
+    """Where config_path() came from: 'SR_RUNNERS_CONFIG', 'this checkout' or 'another checkout'.
+
+    A fresh worktree has no .local of its own, so the config of the main checkout is used; a
+    drafter there silently inherits that machine's choice of host.
+    """
+    if os.environ.get('SR_RUNNERS_CONFIG'):
+        return 'SR_RUNNERS_CONFIG'
+    here = Path(__file__).resolve().parents[2]
+    return 'this checkout' if here == main_root().resolve() else 'another checkout'
 
 
 def main_root():
@@ -162,6 +179,10 @@ def validate(raw, root=None):
             if isinstance(python, str):
                 python = [python]
             host['python'] = python
+            wake = h.get('wake_mac')
+            if wake is not None and not (isinstance(wake, str)
+                                         and re.fullmatch(r'[0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5}', wake)):
+                raise RunnerError(f'{where}.wake_mac must be a MAC address such as AA:BB:CC:DD:EE:FF')
             for token in [h['ssh_host'], h['msvc'], h['image'], h['work'], *python]:
                 if not isinstance(token, str) or not SAFE_TOKEN.fullmatch(token):
                     raise RunnerError(f'{where}: {token!r} needs quoting on the remote shell; use a path without '
@@ -177,7 +198,15 @@ def validate(raw, root=None):
         raise RunnerError('runners config: confirm must list configured hosts')
     if any(out[c]['backend'] == 'boat' for c in confirm):
         raise RunnerError('runners config: confirm lists runner hosts only; Boat confirms through the session')
-    return {'attempt': attempt, 'confirm': confirm, 'hosts': out}
+    prefer = raw.get('attempt_prefer', [])
+    if not isinstance(prefer, list) or any(p not in out or out[p]['backend'] == 'ci-hash' for p in prefer):
+        raise RunnerError('runners config: attempt_prefer must list configured attempt-capable hosts')
+    # The bot's host-2 compare: ssh hosts only, since a batch upload gains nothing on a local host.
+    compare = raw.get('compare_prefer', [])
+    if not isinstance(compare, list) or any(p not in out or out[p]['backend'] != 'ssh' for p in compare):
+        raise RunnerError('runners config: compare_prefer must list configured ssh hosts')
+    return {'attempt': attempt, 'attempt_prefer': prefer, 'compare_prefer': compare, 'confirm': confirm,
+            'hosts': out}
 
 
 def load(path=None, root=None):
@@ -728,12 +757,115 @@ def probe(host, transport=None, timeout=300):
 # ------------------------------------------------------------------ selection
 
 
-def for_attempt(config=None):
-    """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host)."""
+def reachable(host, timeout=8):
+    """True when the host can take an attempt now: a local host always, an ssh host if it answers."""
+    if host['backend'] == 'local':
+        return True
+    if host['backend'] != 'ssh':
+        return False
+    try:
+        proc = subprocess.run(['ssh', '-F', host['ssh_config'], '-o', 'BatchMode=yes',
+                               '-o', f'ConnectTimeout={timeout}', host['ssh_host'], 'echo ok'],
+                              capture_output=True, text=True, timeout=timeout + 5)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return proc.returncode == 0 and 'ok' in proc.stdout
+
+
+def choose_attempt(config, environ=None, probe_fn=None):
+    """(host name, warnings): SR_ATTEMPT_HOST, else the first reachable attempt_prefer entry, else `attempt`.
+
+    A Wine pick while a configured ssh host answers is warned about: that host is usually the
+    faster one and a long drafting session on the slow one is easy to miss.
+    """
+    environ = os.environ if environ is None else environ
+    probe_fn = probe_fn or reachable
+    hosts, warnings = config['hosts'], []
+    forced = environ.get('SR_ATTEMPT_HOST')
+    if forced:
+        if forced not in hosts or hosts[forced]['backend'] == 'ci-hash':
+            raise RunnerError(f'SR_ATTEMPT_HOST={forced!r} is not a configured attempt host '
+                              f'({", ".join(n for n, h in hosts.items() if h["backend"] != "ci-hash")})')
+        return forced, warnings
+    name = None
+    for cand in config.get('attempt_prefer', []):
+        if hosts[cand]['backend'] == 'boat' or probe_fn(hosts[cand]):
+            name = cand
+            break
+        warnings.append(f'preferred attempt host {cand} is not reachable')
+    if name is None:
+        name = config['attempt']
+    if hosts[name].get('loader') == 'wine':
+        for other, h in hosts.items():
+            if other != name and h['backend'] == 'ssh' and probe_fn(h):
+                warnings.append(f'attempt runs on {name} (Wine, slow) but {other} is reachable; set '
+                                f'SR_ATTEMPT_HOST={other} or put it in attempt_prefer')
+                break
+    return name, warnings
+
+
+def wake(host):
+    """Send a Wake-on-LAN packet to an ssh host that sets `wake_mac`; True when one was sent.
+
+    Fire and forget: the caller never waits for the machine, so a sleeping host costs the current
+    run nothing and is up for the next one.
+    """
+    mac = host.get('wake_mac')
+    if not mac:
+        return False
+    import socket
+    raw = bytes.fromhex(re.sub(r'[:-]', '', mac))
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            sock.sendto(b'\xff' * 6 + raw * 16, ('255.255.255.255', 9))
+    except OSError:
+        return False
+    return True
+
+
+def choose_compare(config, environ=None, probe_fn=None):
+    """(host name or None, warnings): SR_COMPARE_HOST, else the first reachable `compare_prefer` entry.
+
+    None means the caller keeps its ordinary host (the `attempt` one). A preferred host that does not
+    answer gets a wake-up packet and is skipped for this run.
+    """
+    environ = os.environ if environ is None else environ
+    probe_fn = probe_fn or reachable
+    hosts, warnings = config['hosts'], []
+    forced = environ.get('SR_COMPARE_HOST')
+    if forced:
+        if forced == 'attempt':
+            return None, warnings
+        if forced not in hosts or hosts[forced]['backend'] != 'ssh':
+            raise RunnerError(f'SR_COMPARE_HOST={forced!r} is not a configured ssh host')
+        return forced, warnings
+    for cand in config.get('compare_prefer', []):
+        if probe_fn(hosts[cand]):
+            return cand, warnings
+        warnings.append(f'preferred compare host {cand} is not reachable' + (
+            '; wake-up packet sent' if wake(hosts[cand]) else ''))
+    return None, warnings
+
+
+def for_attempt(config=None, report=None):
+    """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host).
+
+    `report`, if given, receives the config path, its origin and the chosen host, plus warnings.
+    """
     config = config if config is not None else load()
     if config is None:
         return None
-    host = config['hosts'][config['attempt']]
+    name, warnings = choose_attempt(config)
+    host = config['hosts'][name]
+    if report:
+        origin = config_origin()
+        report(f'runners config: {config_path()} ({origin}); attempt host: {name}')
+        if origin == 'another checkout':
+            warnings.insert(0, "this checkout has no runners config of its own; the main checkout's is used "
+                               '(set SR_RUNNERS_CONFIG to choose another)')
+        for w in warnings:
+            report(f'WARNING: {w}')
     if host['backend'] == 'boat':
         return None
     return with_image(host)

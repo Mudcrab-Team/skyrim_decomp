@@ -63,6 +63,18 @@ class LintTests(unittest.TestCase):
     def test_good_unit_passes(self):
         self.assertEqual(self.problems(), [])
 
+    def test_standard_instantiation_unit_passes(self):
+        header = ("// Source exposure: binary-analysis\n"
+                  "// Labels: v2\n"
+                  "// Template from the compiler's standard headers; the source is our own instantiation.\n"
+                  "// Widget, Get, value: GUESS(low)\n"
+                  "// vector, Widget_vector: OBSERVED\n"
+                  "#pragma once\n#include <vector>\n\n"
+                  "class Widget {\npublic:\n    int Get() const;\n    int value;\n};\n"
+                  "template class std::vector<Widget*>;\n")
+        self.write(header, SOURCE)
+        self.assertEqual(self.problems(), [])
+
     def test_banned_constructs(self):
         body = SOURCE.replace('{ return value; }', '{{ {} return value; }}')
         cases = {
@@ -453,6 +465,12 @@ class CompactHeaderTests(LintTests):
         self.assertTrue(any('header states GPL' in p for p in self.problems()))
         self.write(header=HEADER.replace('// Widget', f'{gpl}// Widget'))
         self.assertFalse(any('header states GPL' in p for p in self.problems()))
+
+    def test_gpl_and_mit_labels_for_unlisted_community_repositories_are_accepted(self):
+        for label in ('COMMUNITY(libxse/commonlibf4@0123abc, GPL-3.0)', 'COMMUNITY(Someone/CommonLibF4@0123abc, MIT)',
+                      'COMMUNITY(Fork/CommonLibF4@0123abc, AGPL-3.0-only)'):
+            self.write(header=HEADER.replace('GUESS(low)', label))
+            self.assertFalse(any('COMMUNITY' in p for p in self.problems()), label)
 
     def test_gpl_spdx_line_is_not_flagged(self):
         self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))

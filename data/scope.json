@@ -74,12 +74,12 @@
     },
     {
       "id": "std",
-      "label": "std and CRT",
+      "label": "CRT and unsplit std",
       "functions": 5883,
       "bytes": 1078377,
       "basis": "estimated",
       "treatment": "out_of_scope",
-      "method": "Nearest vftable-labelled neighbour is a std or Concurrency class."
+      "method": "Nearest vftable-labelled neighbour is a std or Concurrency class. Not split: std:: template instances the game instantiated are game code and counted when matched (docs/resource-guidelines.md); plain C runtime functions stay out of scope. This estimate has no measured split, so it stays a denominator estimate and is never edited by hand to follow matches."
     },
     {
       "id": "init",

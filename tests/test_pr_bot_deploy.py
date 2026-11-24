@@ -62,6 +62,14 @@ class DeployTests(unittest.TestCase):
         self.assertEqual((self.dir / 'pin').read_text().strip(), self.new)
         self.assertIn('kickstart -k', self.kicked.read_text())
 
+    def test_a_pin_without_a_label_leaves_the_running_checkout_alone(self):
+        env = {**ENV, 'PATH': f'{self.dir / "bin"}:{os.environ["PATH"]}', 'SR_BOT_ROOT': str(self.dir),
+               'SR_BOT_SRC': str(self.src), 'SR_BOT_PYTHON': 'python3', 'SR_BOT_PIN': str(self.dir / 'pin')}
+        done = subprocess.run(['sh', str(SCRIPT), self.new], capture_output=True, text=True, env=env)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual((self.dir / 'pin').read_text().strip(), self.new)
+        self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.old)
+
     def test_a_failing_dry_run_changes_nothing(self):
         bad = self.commit('bad')
         git(self.src, 'checkout', '-q', '--detach', self.old)

@@ -7,11 +7,15 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pipeline
 import runners
+import compare_batch
 
 
 def run(directory):
     task = pipeline.load_task(directory)
     files, _ = pipeline.unit_manifest(task)
+    kept = compare_batch.confirm_done(task['dir'], task, files)
+    if kept is not None:
+        return kept  # an earlier run (batched or before a restart) already confirmed these exact sources
     host = runners.for_attempt()
     if not host or not ((host.get('backend'), host.get('loader'), host.get('host_id')) ==
                         ('local', 'wine', 'mac-wine') or
@@ -20,6 +24,7 @@ def run(directory):
     worker = runners.AgentHost(host, task, log=print, fresh_prep=True)
     code, _ = worker.run(files, task['dir'] / '.confirm-stage' / host['host_id'])
     worker.fetch(task['dir'] / 'confirm' / host['host_id'])
+    compare_batch.mark_confirm(task['dir'], task, files, host['host_id'], code)
     return code
 
 
