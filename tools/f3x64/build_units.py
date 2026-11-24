@@ -5,7 +5,7 @@ Private inputs only: the sibling clone and toolchain live under .local/, objects
 there too. A thin force-included shim absorbs 32-bit assumptions so the bodies reach the
 x64 code generator; failures are recorded with their first error lines so the causes can be counted.
 """
-import argparse, json, os, random, re, subprocess, sys, time
+import argparse, hashlib, json, os, random, re, subprocess, sys, time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -16,7 +16,8 @@ FLAGS = ['/nologo', '/c', '/O2', '/MD', '/GS-', '/EHsc', '/GR', '/fp:precise', '
 
 def compile_unit(env, root, shim, cl, unit, out, timeout):
     src = Path(unit['source'])
-    stem = re.sub(r'[^A-Za-z0-9_]', '_', str(src.with_suffix('')))
+    # a digest suffix keeps stems distinct on case-insensitive disks and when separators collapse to the same name
+    stem = re.sub(r'[^A-Za-z0-9_]', '_', str(src.with_suffix(''))) + '_' + hashlib.sha1(str(src).encode()).hexdigest()[:6]
     obj = out / 'obj' / (stem + '.obj')
     log = out / 'logs' / (stem + '.log')
     cmd = [str(cl)] + FLAGS + ['/FI', str(shim), '/I', str(INC or root / 'include'), '/I', str(root / src.parent),
@@ -46,6 +47,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--inc', help='shadow include dir that replaces the sibling include dir')
     ap.add_argument('--listings', action='store_true', help='also write source-annotated listings (/FAs)')
+    ap.add_argument('--retry', help='build_results.json whose failed units are rebuilt')
     ap.add_argument('--n', type=int, default=200)
     ap.add_argument('--seed', type=int, default=1)
     ap.add_argument('--jobs', type=int, default=6)
@@ -63,7 +65,11 @@ def main():
     if a.max_lines:
         units = [u for u in units if sum(1 for _ in open(root / u['source'], errors='replace')) <= a.max_lines]
     random.Random(a.seed).shuffle(units)
-    units = units[a.skip:a.skip + a.n]
+    if a.retry:
+        again = {r['source'] for r in json.load(open(a.retry)) if not r['ok']}
+        units = [u for u in units if u['source'] in again]
+    else:
+        units = units[a.skip:a.skip + a.n]
     env = dict(os.environ, WINEPREFIX=a.wineprefix, WINEDEBUG='-all',
                PATH=a.wine_bin + os.pathsep + os.environ['PATH'])
     cl = Path(a.msvc).resolve() / 'bin' / 'x64' / 'cl'

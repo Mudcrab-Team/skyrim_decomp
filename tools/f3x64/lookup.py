@@ -6,7 +6,7 @@
     lookup.py idiom  --idiom 'xor eax, eax; ret' [--max 8] sibling functions whose instruction stream contains the idiom
 
 Each idiom item is a regular expression matched at the start of one listing instruction ("mov eax, DWORD PTR [rcx+48]"),
-consecutive items must be consecutive instructions. Output names the sibling unit, line numbers and the source text
+consecutive items must be consecutive instructions; an item `..` allows up to 8 other instructions. Output names the sibling unit, line numbers and the source text
 (sibling source is CC0); it never prints target bytes. Private: .local/ only.
 """
 import argparse, collections, pickle, re, sys
@@ -51,11 +51,12 @@ def build_index(asmdir):
 
 
 def show(key, f, hit=None, width=6):
+    # hit is a list of matched instruction indexes, or None for the head of the function
     lines = sorted(f['lines'])
     head = f'{key[1][:70]}  unit={f["unit"]}  file={f["file"]}  lines {lines[0] if lines else "?"}-{lines[-1] if lines else "?"}'
     out = [head]
     if hit is not None:
-        sel = sorted({ln for _, ln in f['ins'][hit:hit + width] if ln})
+        sel = sorted({f['ins'][j][1] for j in hit if f['ins'][j][1]})
     else:
         sel = lines[:14]
     for ln in sel:
@@ -63,17 +64,36 @@ def show(key, f, hit=None, width=6):
     return '\n'.join(out)
 
 
+GAP = 8
+
+
+def match_at(ins, pats, i, k, picked):
+    """Match pats[k:] with pats[k] at ins[i]; an item '..' lets up to GAP other instructions pass."""
+    if k == len(pats):
+        return picked
+    if pats[k] is None:
+        for skip in range(0, GAP + 1):
+            r = match_at(ins, pats, i + skip, k + 1, picked)
+            if r:
+                return r
+        return None
+    if i < len(ins) and pats[k].match(ins[i][0]):
+        return match_at(ins, pats, i + 1, k + 1, picked + [i])
+    return None
+
+
 def idiom(idx, items, limit):
-    pats = [re.compile(i.strip()) for i in items]
+    pats = [None if i.strip() in ('..', '...') else re.compile(i.strip()) for i in items]
     seen, res = set(), []
     for key, f in idx.items():
         ins = f['ins']
-        for i in range(len(ins) - len(pats) + 1):
-            if all(p.match(ins[i + k][0]) for k, p in enumerate(pats)):
-                text = tuple(f['lines'].get(ln, '') for _, ln in ins[i:i + len(pats)])
+        for i in range(len(ins)):
+            hit = match_at(ins, pats, i, 0, [])
+            if hit:
+                text = tuple(f['lines'].get(ins[j][1], '') for j in hit)
                 if text not in seen:
                     seen.add(text)
-                    res.append((key, f, i))
+                    res.append((key, f, hit))
                 break
     return res[:limit], len(res)
 
@@ -100,8 +120,8 @@ def main():
     if a.cmd == 'idiom':
         res, total = idiom(idx, a.idiom.split(';'), a.max)
         print(f'{total} distinct spellings; showing {len(res)}')
-        for key, f, i in res:
-            print(show(key, f, i, len(a.idiom.split(';'))))
+        for key, f, hit in res:
+            print(show(key, f, hit))
         return
     H = pickle.load(open(f'{a.root}/hits_full.pkl', 'rb'))
     if a.rva not in H:
