@@ -2,6 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: NiPSysModifierBoolCtlr::SynchronizePoseInterpolator.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_00ac0000_o2.cpp:1693
 // 0xfc18f0 NiPSysModifierBoolCtlr::SynchronizePoseInterpolator
+// Adapted helpers: IsKindOfType
 #include "NiPSysModifierBoolCtlr_fc18f0.h"
 
 void NiPSysModifierBoolCtlr::SynchronizePoseInterpolator(PObjAD24* pkInterp, unsigned short usIndex)

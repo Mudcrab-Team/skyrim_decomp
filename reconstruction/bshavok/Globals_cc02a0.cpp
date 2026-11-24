@@ -2,6 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: fnv_00e05030::hkObjectResource::Routine140BE4200.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/havok/common/serialize/resource/hkobjectresource.cpp:393
 // 0xcc02a0 fnv_00e05030::hkObjectResource::Routine140BE4200
+// Adapted helpers: hkBoolD46D
 #include "Globals_cc02a0.h"
 
 namespace fnv_00e05030 {

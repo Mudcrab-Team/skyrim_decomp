@@ -2,6 +2,8 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: fnv_00a7fa20::NiBinaryExtraData::SaveBinary_140C83D50.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nimain/nibinaryextradata.cpp:290
 // 0xf0fa90 fnv_00a7fa20::NiBinaryExtraData::SaveBinary_140C83D50
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/gamebryo2.2/corelibs/nicollision/nicollisiondata.cpp:1345
+// Adapted helpers: BinaryRead, Read
 #include "NiBinaryExtraData_f0fa90.h"
 
 namespace fnv_00a7fa20 {

@@ -3,6 +3,7 @@
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/havok/common/base/memory/allocator/freelist/hkfreelist.cpp:665
 // 0xabbcb0 hkFreeList::incrementalFindGarbage
 // Sibling source: momusdigital/fnv_decomp@2b07cb3e src/havok/common/base/memory/allocator/freelist/hkfreelist.cpp:456
+// Adapted helpers: hkBoolDD7C
 #include "Globals_abbcb0.h"
 
 hkBoolDD7C hkFreeList::incrementalFindGarbage(int iMaxBlocks, int& iNumBlocksOut) throw()

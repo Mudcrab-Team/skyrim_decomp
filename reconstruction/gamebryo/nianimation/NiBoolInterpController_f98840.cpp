@@ -2,6 +2,7 @@
 // Code origin: adapted from the sibling decompilation; adapted bodies: NiBoolInterpController::SynchronizePoseInterpolator.
 // Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_00ac0000_o2.cpp:1693
 // 0xf98840 NiBoolInterpController::SynchronizePoseInterpolator
+// Adapted helpers: IsKindOfType
 #include "NiBoolInterpController_f98840.h"
 
 void NiBoolInterpController::SynchronizePoseInterpolator(PObjAD24* pkInterp, unsigned short usIndex)
