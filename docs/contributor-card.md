@@ -24,7 +24,7 @@ once) and writes them to `sibling_x64.json` in the task folder. An `EXACT SHAPE`
 transplanted with `tools/sibling_transplant.py`, which writes the `SIBLING(...)` labels; only `compare` decides.
 Stuck or unsure? Ask in [Discussions (Q&A)](https://github.com/Mudcrab-Team/skyrim_decomp/discussions/categories/q-a).
 
-Aim for 50 to 200 functions per PR (1000 is the per-PR cap); more is fine, and one PR per family or
+Aim for 50 to 200 functions per PR (2000 is the per-PR cap); more is fine, and one PR per family or
 class is ideal. A single large function is also a fine PR on its own. Classes can be mixed. Fewer,
 bigger PRs help most: each PR costs a full verification and merge cycle, and large batches have
 merged cleanly in about an hour. Thank you, don't be shy.
@@ -78,7 +78,7 @@ equivalent). Cheaper models are fine for drafting.
 
 **Subagent batches are a drafting split, not a PR split.** Never open one PR per subagent, worktree or
 batch of 10 to 15. Subagents never open PRs or run `submit`; only the lead does, once, for the whole
-run. Split only above the 1000 cap, and never open extra PRs just to trigger checks.
+run. Split only above the 2000 cap, and never open extra PRs just to trigger checks.
 
 Worktree and storage setup for this is in [contributor-parallel.md](contributor-parallel.md).
 
