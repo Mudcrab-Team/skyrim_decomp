@@ -257,6 +257,10 @@ class WouldSpend(Exception):
     """A dry run reached a stage that costs a compile or a review; it stops there instead of paying."""
 
 
+class HeadMoved(Waiting):
+    """The PR's head changed under a running head; the old one is dropped and the new one starts next tick."""
+
+
 class HostFailure(Stop):
     """A verifier host did not complete a compare. Repeats of it on one head back off and are said once."""
 
@@ -1829,6 +1833,26 @@ class Bot:
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
 
+    def check_head(self, number, head, stage):
+        """Raise HeadMoved when the PR's head is no longer `head`; one REST call, made before an expensive stage.
+
+        `head` may be a prefix (the compare tag keeps eight characters). A failed read says nothing about the
+        head, so the stage goes ahead: the merge still pins the head with --match-head-commit.
+        """
+        try:
+            now = self.run(['gh', 'api', f'repos/{REPOSITORY}/pulls/{number}', '--jq', '.head.sha']).stdout
+        except (Stop, subprocess.SubprocessError, OSError):
+            return
+        now = now.decode(errors='replace').strip() if isinstance(now, bytes) else str(now).strip()
+        if re.fullmatch(r'[0-9a-f]{40}', now) and not now.startswith(head):
+            message = f'pr{number} head moved {head[:8]} -> {now[:8]} before {stage}; dropping the old head'
+            print(message, flush=True)
+            raise HeadMoved(message)
+
+    def check_tag_head(self, tag, stage):
+        number, _, short = tag.partition('-')
+        self.check_head(int(number), short, stage)
+
     def fetch_main_red(self):
         out = self.run(['gh', 'api', f'repos/{REPOSITORY}/actions/workflows/{MAIN_CHECK_WORKFLOW}/runs'
                         '?branch=main&event=push&status=completed&per_page=5']).stdout
@@ -1836,6 +1860,7 @@ class Bot:
 
     def merge_pr(self, number, head, subject, body, check=False):
         """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
+        self.check_head(number, head, 'merge')
         red = self.main_watch.red_sha()
         if red:
             print(f'main red at {red}; holding merges', file=sys.stderr)
@@ -2269,6 +2294,7 @@ class Bot:
         With a `state`, every chunk's answer is cached under its own key, so a retry after one chunk failed
         runs only the chunks without an answer.
         """
+        self.check_head(number, head, 'review')
         old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
         chunks = review_chunks(functions, units, self.config['review_chunk']) if units else [sorted(functions)]
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
@@ -2289,8 +2315,11 @@ class Bot:
             mine = {owner.get(r) for r in chunks[i]}
             others = [f for cpp in units if cpp not in mine for f in (cpp, cpp[:-4] + '.h')]
             path = out.with_name(f'{out.stem}-c{i}.txt')
-            run = lambda: self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
-                                            companions, old_flags, path, others)
+
+            def run():
+                self.check_head(number, head, f'review chunk {i + 1}/{len(chunks)}')
+                return self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
+                                         companions, old_flags, path, others)
             text = state.once(keys[i], run) if state is not None else run()
             if progress:
                 progress.advance()
@@ -2542,9 +2571,10 @@ class Bot:
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
         if self.dry_run:
             raise WouldSpend('local compare')
-        return self.compare_on_host(units, tag)
+        self.check_tag_head(tag, 'pack export')
+        return self.compare_on_host(units, tag, lambda: self.check_tag_head(tag, 'compare'))
 
-    def compare_on_host(self, units, tag):
+    def compare_on_host(self, units, tag, before_attempts=None):
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
         lines, tasks = [], []
         for index, (cpp, rvas) in enumerate(sorted(units.items())):
@@ -2569,6 +2599,8 @@ class Bot:
                          timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
             raise HostFailure(f'pack export did not complete ({type(exc).__name__}{": " + str(exc) if isinstance(exc, Stop) and str(exc) else ""})')
+        if before_attempts:
+            before_attempts()
         out, why = {}, {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
@@ -3264,6 +3296,8 @@ class Bot:
             return got
 
         def ci():
+            if state.get('host1' + sfx) is None:
+                self.check_head(number, head, 'host1')
             return state.once('host1' + sfx, lambda: {str(k): v for k, v in
                                                       self.host1(number, head, everything, state,
                                                                  check_units).items()})
@@ -4317,6 +4351,7 @@ class Bot:
             login = pr['author']['login']
             uid = self.gh_json('api', f'users/{login}')['id']
             subject, body = squash_message(number, login, uid, matched, again)
+            self.check_head(number, head, 'merge')
             if self.land_with_records(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'],
                                       subject, body):
                 state.set('merged', True)

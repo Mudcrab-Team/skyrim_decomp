@@ -388,6 +388,8 @@ class VerifierHostTests(WorkDir):
 
         def run(argv, **kw):
             argv = [str(a) for a in argv]
+            if argv[0] == 'gh':  # the head re-read before a stage
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
             seen.append((argv[1:3], stale.exists()))
             code, err = (5, b'attempt budget exhausted') if 'attempt' in argv[1] else (0, b'')
             return subprocess.CompletedProcess(argv, code, b'', err)
