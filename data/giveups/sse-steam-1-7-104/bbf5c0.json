@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0xbbf5c0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "used a packed vector representation with the corrected steering cross product",
+        "added the caller's angle limit and the float arguments to the axis-angle calls",
+        "rebound three numeric globals to the observed references",
+        "broadcast the squared length and used one packed product for the quaternion terms",
+        "accumulated the dot product y and x first and then added z (+4.3)",
+        "delayed interpolation normalisation, split the rotate expression and returned a quaternion by value (no gain)",
+        "tried aligned load and store helpers (2.3 worse) and fabsf instead of std::fabs"
+      ],
+      "still_differs": "Quaternion temporary loads, shuffle scheduling and the frame layout still differ.",
+      "suspected_cause": "Not determined; another run saw the target homing a bool argument and scalar results through the stack and keeping Newton constants in registers.",
+      "best_similarity": 84.38,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/bbf5c0/1"
+      }
+    }
+  ]
+}

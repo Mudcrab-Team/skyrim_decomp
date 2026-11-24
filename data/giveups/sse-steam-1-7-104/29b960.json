@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x29b960",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "added a thread-local save and restore guard and an array resize helper",
+        "flipped the grow and shrink branches and the version test",
+        "wrote the final read loop with a separate 64-bit down-counter and an index",
+        "made the zero-fill loop counter 64-bit with a non-empty guard in front",
+        "gave the buffer read call its third parameter (same size passed twice)"
+      ],
+      "still_differs": "Register allocation in the zero-fill loop of the keyword array resize, operand order in the capacity comparison and a thread-local offset constant differ.",
+      "suspected_cause": "Probably a register-only permutation that a permuter search could close; not confirmed.",
+      "best_similarity": 93.33,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/29b960/1"
+      }
+    }
+  ]
+}

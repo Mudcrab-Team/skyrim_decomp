@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x7fd020",
+  "records": [
+    {
+      "category": "eh-frame",
+      "tried": [
+        "used the precise recipe with an NiSqrt intrinsic helper",
+        "typed the world bounds as hkVector4 and used a three-lane AllEqual3 test",
+        "held the shooter in an NiPointer released by its destructor",
+        "modelled the hit collector as hkArray and hkInplaceArray with a forced-inline destructor",
+        "freed the buffer through a local allocator pointer so the virtual call stays",
+        "made the TESForm base destructor virtual so the vtable pointer sits first",
+        "added a water-check bool helper and a single player singleton load"
+      ],
+      "still_differs": "The draft still differs around the shooter smart pointer, whose register and unwind-frame shape do not match; clipping and water-check temporaries are also copied differently.",
+      "suspected_cause": "Not determined; the last gap sits at the shooter NiPointer register and unwind shape and the notes name no source spelling for it.",
+      "best_similarity": 73.07,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/7fd020/1"
+      }
+    }
+  ]
+}

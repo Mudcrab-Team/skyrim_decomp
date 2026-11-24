@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x1e37d0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "split each form type into its own Load function (not inlined, sim fell to 20, reverted)",
+        "kept per-struct reader bodies inside the switch cases",
+        "added a size-dispatched SwapBytes with a template Swap (+0.1) and tried byteswap and memcpy spellings (no gain)",
+        "removed the stored end pointer and widened the form-ID read inside the bounds branch",
+        "replaced the switch with a chain (17.9 points worse, reverted)",
+        "used alignment-safe loads, computed the reader bound locally and bound both RTTI descriptors"
+      ],
+      "still_differs": "The target keeps each byte-swapped value and the swap flag in memory with a reload after every store and gives each case its own reader slot, so its frame is about 0x130 against 0x60 in the draft.",
+      "suspected_cause": "Possibly a property of the original reader type (a non-inlined member, an aliasing barrier or cross-unit inlining); no honest spelling moved it in 8 rounds.",
+      "best_similarity": 77.18,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/1e37d0/1"
+      }
+    }
+  ]
+}

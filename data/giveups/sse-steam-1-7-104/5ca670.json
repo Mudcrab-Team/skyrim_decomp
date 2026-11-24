@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x5ca670",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "used scoped handle ownership and kept the count read before the atomic release",
+        "removed the finished flag and used a shared final selection",
+        "typed the handle array and ended each candidate's lifetime before the index increment",
+        "wrote a guarded for loop (510 to 550 bytes, lower sim, restored)",
+        "templated separate actor and reference handle types (tied)",
+        "treated the process-list singleton as a pointer variable and released through the embedded handle sub-object"
+      ],
+      "still_differs": "Saved registers, stack slots and branch scheduling differ, and the draft's compiler-generated cleanup reference has no verified external binding.",
+      "suspected_cause": "Not determined; an earlier run suspects register-level mismatches that declaration reordering did not cure.",
+      "best_similarity": 88.72,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/5ca670/1"
+      }
+    }
+  ]
+}

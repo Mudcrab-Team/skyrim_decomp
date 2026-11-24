@@ -147,6 +147,44 @@ destructors and their adjustor thunks, and overrides named for their base class.
   line `compare` prints. Both are read by every host; `bind-hints.json` stays on your machine.
 - A thread-local: name the variable `..._tls_0x<offset>` (or a local `tls:` hint).
 
+## If you can't match it
+
+Stop on the profile's numbers (the card above), then keep what you learned instead of losing it:
+`./sr release 0x<rva> --reason "<one line>" --category <control-flow|register-schedule|inline-set|layout-unknown|eh-frame|callee-missing|signature-wrong|other> --tried "<one short try>" --tried "..." --still-differs "<in words>" --suspected-cause "<one sentence>"`
+releases the claim and writes `data/giveups/<build id>/<rva>.json` with those words, the best similarity of your last compare, your model and `./sr`. The file is committed by your next `submit`
+(a PR may carry it with units or notes, or alone); it is words and numbers only, and the leak scan and `tools/giveup.py check` refuse instructions, bytes and paths.
+The best source stays in your task folder. If the near-miss has a cause the cookbook does not cover, write a lesson note (`./sr note`) and add `--note docs/cookbook-notes/<file>.md`, so the record points at it.
+The next person who runs `./sr next`, `claim`, `start` or `facts` for that function sees the records first and does not repeat your tries; `python3 tools/giveup.py show 0x<rva>` prints them.
+A record is a lead, never evidence.
+
+If `compare` fails on a function whose image has no exception frame, it also retries the unit without `/EHsc` and prints `MATCH (under <flags>)` with the `Recipe:` line to add;
+the verdict stays a failure until the unit names that recipe (`docs/verification.md`, "Alternative flag sets"). `--no-retry` skips it.
+
+## Verdicts
+
+The bot's one sticky comment on your PR ends with a table that names a verdict per function that was not
+accepted, so you can see whose move it is. Accepted functions and ones that already failed before your PR are
+not named. A strike is recorded only by a maintainer, from a completed CI hash comparison that contradicts a
+function your PR explicitly claims; three active strikes stop automatic intake (`tools/contributor_standing.py`).
+The table below is generated from `tools/verdicts.py`.
+
+<!-- verdicts:start -->
+| Verdict | What happened | Strike | Next step |
+| --- | --- | --- | --- |
+| `matched` | Byte match on both hosts and one approved review. | none | Merged and recorded; nothing to do. |
+| `mismatch` | The compiled function differs from the game's bytes on a host that finished the comparison. | counts when an explicit claim is contradicted by the completed CI hash comparison | Run `./sr compare`, read the first mismatch and the hint, change the source and push. |
+| `compile_error` | Nothing was compared: the unit did not compile, an include did not resolve, or no symbol bound to the RVA. | contributor's fault, no ledger entry today (the strike ledger excludes compile and setup errors) | Compile it locally with the unit's recipe (`./sr compare`), fix the error, include or binding and push. |
+| `unfit` | Both hosts byte-matched the function on its own, but not as part of its unit file or the others in the PR: a mechanical check on the unit (lint, undeclared adapted body, or a binding that does not equal the unit as pushed) refused it before any review. | none | Keep the function in a unit of its own or fix the finding the comment names; merge main if the branch is behind. Left alone, it goes back to the pool unclaimed. |
+| `needs_review` | A failure on our side: toolchain, verifier host, CI hash infrastructure, or a record that could not be written. The function was not judged. | none | Nothing to do: the bot re-verifies the head automatically, and a maintainer looks if it repeats. |
+| `refused_rules` | The unit breaks a mechanical source rule (R38 codegen steering, R39 decompiler leftovers, R40 comment contents) and was refused before any compare. | counts only if the rule was in docs/code-rules.md at the PR's base; none for a newer rule | Fix the line the finding names and push. |
+| `review_rejected` | Both hosts byte-matched, but the review did not approve the source. | none | Read the notes under the function, fix the ground they name and push. |
+| `debt` | The function already failed to match before this PR; it never blocks, is not recorded and is not named in the comment. | none | Nothing is asked of this PR. |
+| `held` | The whole PR was held (a leak finding or a regression of an accepted function); this function was not judged. | none | Read the message above the table, fix what it names and push. |
+<!-- verdicts:end -->
+
+The comment's own lines under "Not accepted yet" keep their wording; the table adds the verdict, the strike
+effect and the next step. A PR held before any compile for an R38-R40 finding says the same for `refused_rules`.
+
 ## Recommended: CrashLogger PDB names
 
 `reconstruction/generated/crashlogger_pdb/` holds names and layouts generated from the community "CrashLogger PDBs"

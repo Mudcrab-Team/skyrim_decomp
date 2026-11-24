@@ -62,6 +62,7 @@ import attempt_progress
 import ready_queue
 import crashlogger_pdb
 import cookbook_notes
+import giveup
 from local_paths import local_dir, local_path, main_checkout_local, main_worktree_local, no_sibling_names
 
 REPO = Path(__file__).resolve().parents[1]
@@ -1801,7 +1802,8 @@ def cmd_next(ctx, args):
                                                                                    else '  (existing unit)')
                 + f'  — {c["reason"]}'
                 + (f'  [pdb: {hint.name[:80]}]' if (hint := pdb and pdb.suggest(parse_rva(c['rva']))) else '')
-                + (f'  [{brief}]' if (brief := pdb_facts.brief(ctx.repo, parse_rva(c['rva']), c.get('name'))) else ''))
+                + (f'  [{brief}]' if (brief := pdb_facts.brief(ctx.repo, parse_rva(c['rva']), c.get('name'))) else '')
+                + (f'  [{earlier}; `{ctx.cli} facts {c["rva"]}`]' if (earlier := giveup.brief(ctx.repo, c['rva'])) else ''))
     if not online:
         ctx.say('note: GitHub not reachable; claims by others are not excluded')
     if not rows:
@@ -1874,6 +1876,18 @@ def describe_conflicts(where, extra=()):
     if not parts:
         parts = [f'#{i["number"]} {i["url"]} by {i["author"]}' for i in extra]
     return ', '.join(parts)
+
+
+def giveup_notice(ctx, rvas, cap=10):
+    """Say what earlier drafters learned about these functions (tools/giveup.py); at most `cap` functions."""
+    import giveup
+    found = [r for r in rvas if giveup.load(ctx.repo, f'0x{r:x}')]
+    lines = giveup.lines_for(ctx.repo, [f'0x{r:x}' for r in found[:cap]])
+    for line in lines:
+        ctx.say(line)
+    if len(found) > cap:
+        ctx.say(f'... and {len(found) - cap} more function(s) with earlier give-ups: python3 tools/giveup.py list')
+    return lines
 
 
 def cmd_claim(ctx, args):
@@ -1954,6 +1968,7 @@ def cmd_claim(ctx, args):
     counts = {e: sum(e[0] <= r < e[1] for r in known) for e in entries}
     if not any(counts.values()):
         raise Stop(USAGE, 'the claim resolves to 0 functions; no issue was opened', f'{ctx.cli} next')
+    giveup_notice(ctx, sorted(a for a in addresses if any(x <= a < y for x, y in entries)))
     plans = batch_claims.parts(build, entries, public, me, counts=counts)
     urls, links = [], []
     for title, text, chunk in plans:
@@ -2013,7 +2028,42 @@ def cmd_release(ctx, args):
     if (ctx.private / 'claims.json').exists():
         (ctx.private / 'claims.json').write_text(json.dumps(claims, indent=2) + '\n')
     ctx.say('released' + (': ' + ', '.join(closed) if closed else ' locally (close the claim issue on GitHub if any)'))
-    return OK, {'rva': f'0x{rva:x}', 'closed': closed}, f'{ctx.cli} next'
+    filed = None
+    if args.category:
+        filed = file_giveup(ctx, rva, args)
+    elif args.reason and args.reason != 'giving the function back':
+        ctx.say(f'to keep what you learned for the next drafter, add --category <{"|".join(giveup.CATEGORIES)}> '
+                '--tried "..." --still-differs "..." --suspected-cause "..." (the record is words and numbers only)')
+    return OK, {'rva': f'0x{rva:x}', 'closed': closed, 'giveup': filed}, \
+        (f'{ctx.cli} submit --dry-run (the give-up record goes in the same PR)' if filed else f'{ctx.cli} next')
+
+
+def file_giveup(ctx, rva, args):
+    """Write the give-up record for a released function from the arguments and the task's last compare."""
+    similarity, model = None, None
+    for task_dir in sorted((ctx.private / 'tasks').glob('*')) if (ctx.private / 'tasks').is_dir() else ():
+        last = attempt_progress.read_json(task_dir / 'last-compare.json')
+        for fn in last.get('functions', []):
+            if fn.get('rva') == f'0x{rva:x}':
+                measured = (last.get('progress') or {}).get(f'0x{rva:x}') or {}
+                if measured.get('total'):
+                    similarity = round(100 * measured['value'] / measured['total'], 2)
+                model = last.get('model')
+    config = load_config(ctx)
+    model = model or config.get('model') or config.get('drafted_by') or 'unknown'
+    rec = dict(category=args.category, tried=args.tried or [], still_differs=args.still_differs or '',
+               suspected_cause=args.suspected_cause or '', model=str(model)[:59], harness=ctx.cli.lstrip('./'),
+               lane='contributor', best_code=dict(kind='note', ref=args.note) if args.note else dict(kind='none'))
+    if similarity is not None:
+        rec['best_similarity'] = similarity
+        rec['similarity_basis'] = 'aligned matching bytes of the last compare'
+    try:
+        path, added = giveup.add(ctx.repo, f'0x{rva:x}', {k: rec[k] for k in giveup.KEYS if k in rec})
+    except ValueError as exc:
+        raise Stop(USAGE, f'give-up record not written: {exc}', f'fix the words and run {ctx.cli} release again') from None
+    ctx.say(('give-up record written: ' if added else 'give-up record already there: ') + path.relative_to(ctx.repo).as_posix()
+            + ' (it is committed with your next submit; the source stays in your task folder)')
+    return path.relative_to(ctx.repo).as_posix()
 
 
 def write_source(path, text):
@@ -2297,6 +2347,7 @@ def start(ctx, args, quiet=False):
                                              ctx.local / 'sources', find_objdump(ctx), exe, fns)
     x64_lookup.write_record(tdir, x64_record)
     if not quiet:
+        giveup_notice(ctx, [parse_rva(fn['rva']) for fn in fns])
         for line in x64_lines:
             ctx.say(line)
         for rva, found in suggestions.items():
@@ -2344,7 +2395,8 @@ def cmd_facts(ctx, args):
     lines = pdb_fact_lines(ctx, [{'rva': rva}])
     for line in lines:
         ctx.say(line)
-    return OK, {'rva': f'0x{rva:x}', 'pdb_facts': lines}, f'{ctx.cli} start 0x{rva:x}'
+    earlier = giveup_notice(ctx, [rva])
+    return OK, {'rva': f'0x{rva:x}', 'pdb_facts': lines, 'giveups': earlier}, f'{ctx.cli} start 0x{rva:x}'
 
 
 def cmd_start(ctx, args):
@@ -2411,7 +2463,84 @@ def unit_recipe(root, compiled, fallback):
     return found.group(0)
 
 
-def run_compare(ctx, ident=None, root=None):
+def compare_function(ctx, root, tdir, task, fn, built, recipe_rel, exe, target, fdir):
+    """Compare one function of a compiled unit with the comparator; the report is written to `fdir`."""
+    import verify_function
+    rva = parse_rva(fn['rva'])
+    vtask = {'task_id': f'{task["task_id"]}-{rva:x}', 'build_id': task['build_id'],
+             'target_image_sha256': target['image_sha256'], 'rva': rva, 'size': fn['size'],
+             'symbol': fn['symbol'], 'source_revision': built['digest'], 'source_path': task['compiled'],
+             'recipe_sha256': built['recipe_sha256']}
+    (fdir / 'task-file.json').write_text(json.dumps({
+        'verify_task_schema': 1, 'task': vtask, 'recipe': str(root / recipe_rel),
+        'symbols': str(tdir / 'symbols.json'), 'manifest': str(root / 'builds/target.json')}, indent=2))
+    diag_root = ctx.local if ctx.env.get('SR_LOCAL_DIR') else verify_function.PRIVATE_ROOT
+    diag = diag_root / 'contrib' / 'diagnostics' / f'{task["task_id"]}-{rva:x}.json'
+    if ctx.env.get('SR_LOCAL_DIR'):
+        compare_with_local_dir(ctx, fdir / 'task-file.json', built, exe, fdir / 'report.json', diag)
+    else:
+        verify_function.run(fdir / 'task-file.json', built['object'], built['build_record'], exe,
+                            fdir / 'report.json', diag)
+    return json.loads((fdir / 'report.json').read_text())
+
+
+def retry_under_alternatives(ctx, root, tdir, task, recipe, results, exe, target, tool, out):
+    """Retry the failed functions of a unit under each alternative flag set of its recipe (accept_also).
+
+    Advisory: `results` keep the verdict under the unit's own recipe; a function that byte-matches under
+    an alternative gets `also_matches` naming the recipe and flags, because it is accepted under them
+    only once the unit's `Recipe:` line names that recipe (the CI hash job and the second host compile
+    with the recipe the unit names). One compile per alternative covers every function of the unit, so
+    the answer also says whether the functions that already pass keep passing under it.
+    """
+    import recipe_alternatives as alts
+    from pecoff import Reject
+    from bind import BINDING_REASONS
+    # A function nothing was compared for (an unbound symbol) says nothing about the flags.
+    failed = [r for r in results if r['result'] != 'pass' and r['reason'] not in BINDING_REASONS]
+    notes = []
+    if not failed:
+        return notes
+    try:
+        frames = alts.EhFrames.from_bytes(Path(exe).read_bytes()) if any(
+            a['requires'] == 'target-no-eh-frame' for a in alts.alternatives(root, recipe)) else None
+    except (OSError, ValueError, Reject):
+        frames = None
+    for alt in alts.alternatives(root, recipe):
+        wanted = [r for r in failed if 'also_matches' not in r
+                  and alts.applies(alt, frames, parse_rva(r['rva']), r['target_size'])]
+        if not wanted:
+            continue
+        alt_out = out / ('alt-' + alt['id'])
+        try:
+            built = compile_unit(ctx, root, task['compiled'], alt['recipe'], alt_out, tool)
+        except Stop as exc:
+            notes.append(f'retry {alt["id"]} ({alts.change_text(alt)}): not compiled ({exc.message})')
+            continue
+        passing = {}
+        for fn in task['functions']:
+            rva = parse_rva(fn['rva'])
+            fdir = alt_out / f'0x{rva:x}'
+            fdir.mkdir(parents=True, exist_ok=True)
+            passing[f'0x{rva:x}'] = compare_function(ctx, root, tdir, task, fn, built, alt['recipe'], exe, target,
+                                                     fdir).get('result') == 'pass'
+        won = [r['rva'] for r in wanted if passing.get(r['rva'])]
+        for r in results:
+            if r['rva'] in won:
+                r['also_matches'] = dict(id=alt['id'], recipe=alt['recipe'], recipe_sha256=built['recipe_sha256'],
+                                         flags=alts.flags_of(root, alt['recipe']), change=alts.change_text(alt),
+                                         unit_passes_all=all(passing.values()))
+        if won:
+            line = alts.match_line(root, alt)
+            others = [rva for rva, ok in passing.items() if not ok]
+            if others:
+                line += (' Under these flags ' + ', '.join(others) + ' would not pass, so a unit that holds them '
+                         'too needs them in a unit of their own.')
+            notes.append(f'{", ".join(won)}: {line}')
+    return notes
+
+
+def run_compare(ctx, ident=None, root=None, retry=True):
     """Compile the task's unit and compare each function; returns (code, data, next)."""
     import bind
     import verify_function
@@ -2444,21 +2573,7 @@ def run_compare(ctx, ident=None, root=None):
         rva = parse_rva(fn['rva'])
         fdir = out / f'0x{rva:x}'
         fdir.mkdir(parents=True, exist_ok=True)
-        vtask = {'task_id': f'{task["task_id"]}-{rva:x}', 'build_id': task['build_id'],
-                 'target_image_sha256': target['image_sha256'], 'rva': rva, 'size': fn['size'],
-                 'symbol': fn['symbol'], 'source_revision': built['digest'], 'source_path': task['compiled'],
-                 'recipe_sha256': built['recipe_sha256']}
-        (fdir / 'task-file.json').write_text(json.dumps({
-            'verify_task_schema': 1, 'task': vtask, 'recipe': str(root / task['recipe']),
-            'symbols': str(tdir / 'symbols.json'), 'manifest': str(root / 'builds/target.json')}, indent=2))
-        diag_root = ctx.local if ctx.env.get('SR_LOCAL_DIR') else verify_function.PRIVATE_ROOT
-        diag = diag_root / 'contrib' / 'diagnostics' / f'{task["task_id"]}-{rva:x}.json'
-        if ctx.env.get('SR_LOCAL_DIR'):
-            status = compare_with_local_dir(ctx, fdir / 'task-file.json', built, exe, fdir / 'report.json', diag)
-        else:
-            status, _text = verify_function.run(fdir / 'task-file.json', built['object'], built['build_record'], exe,
-                                                fdir / 'report.json', diag)
-        report = json.loads((fdir / 'report.json').read_text())
+        report = compare_function(ctx, root, tdir, task, fn, built, recipe, exe, target, fdir)
         m = re.search(r'at \+0x([0-9a-f]+)', report.get('detail') or '')
         cov = report.get('coverage') or {}
         results.append({'rva': f'0x{rva:x}', 'name': fn.get('community_name'), 'result': report.get('result'),
@@ -2482,6 +2597,7 @@ def run_compare(ctx, ident=None, root=None):
             import disasm
             disasm.write_side_by_side(fdir / 'side-by-side.txt', objdump, exe, built['object'], fn['symbol'],
                                       rva, fn['size'])
+    retry_notes = retry_under_alternatives(ctx, root, tdir, task, recipe, results, exe, target, tool, out) if retry else []
     first = json.loads((out / f'0x{parse_rva(task["functions"][0]["rva"]):x}' / 'report.json').read_text())
     prof = contrib_profile(ctx, task.get('contrib', {}).get('profile'))
     history = [attempt_progress.read_json(path / 'summary.json') for path in sorted(runs.glob('[0-9][0-9][0-9]')) if path != out]
@@ -2491,7 +2607,7 @@ def run_compare(ctx, ident=None, root=None):
                'compiler': 'pinned' if built['compiler'] in ('wine', 'native') else 'override',
                'image_sha256_pinned': True, 'comparator': first.get('comparator'),
                'contract_version': first.get('contract_version'), 'functions': results,
-               'bind': [line.strip() for line in bind_lines], 'practice': task.get('contrib', {}).get('practice', False),
+               'bind': [line.strip() for line in bind_lines], 'retry': retry_notes, 'practice': task.get('contrib', {}).get('practice', False),
                'private_dir': str(out)}
     passed = sum(r['result'] == 'pass' for r in results)
     ctx.say(f'run {number}: {passed}/{len(results)} pass ({summary["compiler"]} compiler)')
@@ -2500,6 +2616,8 @@ def run_compare(ctx, ident=None, root=None):
         ctx.say(f'  {r["rva"]} {r["name"]}: {r["result"].upper()} {r["reason"]} {r["first_mismatch"] or ""} {size}')
         if r['result'] != 'pass':
             ctx.say(f'    hint: {r["hint"]}')
+    for line in retry_notes:
+        ctx.say('  ' + line)
     for line in bind_lines:
         ctx.say(line)
     if objdump:
@@ -2578,7 +2696,8 @@ def last_results(tdir):
 
 def pending_notes(ctx):
     """Lesson notes with uncommitted changes, which a submission carries along with the unit."""
-    return sorted(n for n in changed_paths(ctx) if cookbook_notes.NOTE_FILE.fullmatch(n) and (ctx.repo / n).is_file())
+    return sorted(n for n in changed_paths(ctx) if (cookbook_notes.NOTE_FILE.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n))
+                  and (ctx.repo / n).is_file())
 
 
 def cmd_note(ctx, args):
@@ -2621,7 +2740,7 @@ def cmd_note(ctx, args):
 
 
 def cmd_compare(ctx, args):
-    return run_compare(ctx, args.task)
+    return run_compare(ctx, args.task, retry=not args.no_retry)
 
 
 # ------------------------------------------------------------------ intake rules and submit
@@ -3095,6 +3214,12 @@ def parser():
     s = sub.add_parser('release')
     s.add_argument('rva')
     s.add_argument('--reason')
+    s.add_argument('--category', choices=giveup.CATEGORIES,
+                   help='also file a give-up record (docs/contributor-card.md, "If you can\'t match it")')
+    s.add_argument('--tried', action='append', help='one short try; repeat for each')
+    s.add_argument('--still-differs', help='in words, no instructions')
+    s.add_argument('--suspected-cause')
+    s.add_argument('--note', help='lesson note holding the near-miss, docs/cookbook-notes/<rva>-<slug>.md')
     s = sub.add_parser('start')
     s.add_argument('--model', '--agent', help='actual model id or agent/tool name')
     s.add_argument('rva', nargs='+')
@@ -3113,6 +3238,8 @@ def parser():
     s.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
     s = sub.add_parser('compare')
     s.add_argument('task', nargs='?')
+    s.add_argument('--no-retry', action='store_true',
+                   help='skip the advisory retry of failed functions under the recipe\'s alternative flag sets')
     s = sub.add_parser('note')
     s.add_argument('task', nargs='?')
     s.add_argument('--rva', help='write a note for this function even when it is not a near-miss')

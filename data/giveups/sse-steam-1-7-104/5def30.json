@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x5def30",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "removed an extra last-root guard before the attachment calls",
+        "modelled scoped handle ownership and typed transpose storage",
+        "retained the transpose's returned reference and used a nullable node cast",
+        "wrote the matrix product as a column loop",
+        "selected the node controller-first and fixed the offset component order",
+        "aggregated the rotation and position math into helpers (4 points worse, reverted)",
+        "forced the per-frame handle destructor inline (dropped)"
+      ],
+      "still_differs": "Matrix scheduling and the stack slots of the resolved handles differ, and the draft's cleanup relies on a synthesised cleanup symbol with no verified binding.",
+      "suspected_cause": "Not determined; the drafters point at float scheduling, callee-saved vector register use and where the handle lookup out-parameters live.",
+      "best_similarity": 75.76,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/5def30/1"
+      }
+    }
+  ]
+}

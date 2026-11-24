@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0xcd9b60",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "replaced extern const globals with plain float literals",
+        "wrote the falloff as an else-if chain with Lerp and AmplitudeToDecibels helpers",
+        "flipped the distance-test polarity in both paths and hoisted the channel count",
+        "initialised the submix levels as one array",
+        "assigned the target position in each branch and wrote the projection test as lengthSquared above projection",
+        "made DecibelsToLevel static",
+        "copied the old position as an X3DAUDIO_VECTOR struct (7.2 points worse, reverted)"
+      ],
+      "still_differs": "The old listener position is held in different registers than in the target, and the target loads the volume for the final ApplyVolume after the restore stores while the draft hoists that load.",
+      "suspected_cause": "Register allocation and load order of float temporaries; reordering declarations compiled identically, so no source lever was found.",
+      "best_similarity": 93.9,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/cd9b60/1"
+      }
+    }
+  ]
+}

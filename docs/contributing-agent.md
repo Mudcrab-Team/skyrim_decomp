@@ -116,6 +116,12 @@ into a commit, PR, issue or comment. A PR containing disassembly or decompiler n
 that reports only rule codes and line numbers. Squash merging replaces your commit messages with the
 bot's, so your history is not published.
 
+## If you can't match it
+
+Release the function with a give-up record, `./sr release 0x<rva> --reason "..." --category <wall> --tried "..."
+--still-differs "..." --suspected-cause "..."`, so the next drafter starts from what you learned
+([contributor card](contributor-card.md), "If you can't match it").
+
 ## Getting help
 
 If the helper or a check blocks you and the docs do not say why, open an issue instead of guessing:

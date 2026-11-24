@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x31b8b0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "wrote the search loop in the decompiler's do-while shape with the exit test at the top (+10.2)",
+        "computed the pair count before the allocation and walked a pair pointer (+3.0)",
+        "moved the byte swap into a helper (no change)",
+        "used a for loop with a combined condition (MSVC unrolled it six times, reverted)",
+        "changed the loop index to size_t (-3.7, reverted)"
+      ],
+      "still_differs": "The table-slot pointer is strength-reduced in the draft while the target recomputes it for each pair, the table size sits in a register in the target, and the byte-swap pairs are scheduled differently; size ratio 1.03.",
+      "suspected_cause": "not determined; the drafter records no hypothesis beyond scheduling and register differences.",
+      "best_similarity": 88.06,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/31b8b0/1"
+      }
+    }
+  ]
+}

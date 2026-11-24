@@ -1003,6 +1003,11 @@ def function_sheet(unit, fn, sibling=False, repo=None):
     cautions = (fn.get('pack_json') or {}).get('cautions') or []
     if cautions:
         out.append('Cautions: ' + '; '.join(cautions) + '.')
+    # Earlier give-ups come first: they are what the last drafters learned, and a repeat of their tries is wasted.
+    import giveup
+    earlier = giveup.lines_for(repo, [rva])
+    if earlier:
+        out += [''] + earlier
     conv = readme_section(readme, 'Calling and return convention')
     conv = '\n'.join(line for line in conv.splitlines() if line.startswith('- '))
     out += ['', '## Signature and registers', conv or '- No community declaration; derive the signature from the listing.']
@@ -1103,6 +1108,11 @@ def overview(task_dir, cap=SHEET_CAP, repo=None):
     for f in unit['functions']:
         n = len(paginate(function_sheet(unit, f, repo=repo), cap - FOOTER_ROOM))
         lines.append(f'| {f["rva"]} | {f["size"]} | {f.get("community_name")} | {n} |')
+    import giveup
+    earlier = [(f['rva'], giveup.brief(repo, f['rva'])) for f in unit['functions']]
+    earlier = [f'- {rva}: {text}' for rva, text in earlier if text]
+    if earlier:
+        lines += ['', 'Earlier give-ups (the sheet of each function lists them first):'] + earlier
     lines += ['', f'Read one function: python3 tools/sheet.py {d} --function <rva> [--page N]']
     return '\n'.join(lines) + '\n'
 

@@ -718,6 +718,19 @@ leaderboard, cost ledger or percentage is displayed without real supporting reco
 Add those only when there is data and a reviewed metric definition. Every record has an owner
 and outcome criteria. Update `updated_at` when the data changes. Git history is the audit trail.
 
+### Alternative flag sets (`accept_also`)
+
+A failed compare is retried under the alternative flag sets `data/recipe-alternatives.json` lists for the unit's
+recipe (`tools/recipe_alternatives.py`; `./sr compare` and `tools/verifier/attempt`, `--no-retry` skips it). Each
+alternative is a recipe file of its own, the base recipe's flags with the declared change (today `-noeh`: no `/EHsc`),
+tried in order for a function the pinned image's unwind data gives no exception handler. A pass prints
+`MATCH (under <flags>)` and the `Recipe:` line to add. The retry is advisory and never a match: the verdict under the
+unit's recipe stands. The unit is accepted under the other flags only when its own `Recipe:` line names the alternative
+recipe, because the CI hash job and the second host compile with the recipe the unit names and the target-hash manifest
+approves each recipe file by hash. The record therefore names the flags used, both hosts compile with them, and the
+match floor is unchanged: a byte match under named flags is a byte match. A new alternative needs its recipe file, a
+registry row (`python3 tools/recipe_alternatives.py generate`, `check`) and a manifest entry.
+
 ### CI hash check as the second host (p148)
 
 Date: 2026-11-15. Grantor: awarebayes.
