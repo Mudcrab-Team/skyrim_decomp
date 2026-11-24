@@ -699,8 +699,18 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
         if not any(re.search(rf'\b{o}\b', header) for o in NAME_ORIGINS):
             problems.append(f'{name}: header comment must label name origin ({", ".join(NAME_ORIGINS)})')
         declared = (cls, SPLIT_TAG.sub('', cls))
+        # An address-derived filename may house a class whose name came from a sibling.
+        if re.fullmatch(r'Unk[0-9a-fA-F]+', declared[-1]):
+            for line in header.splitlines():
+                label = LABEL_LINE.match(line)
+                if label and 'SIBLING(' in label.group('labels'):
+                    declared += tuple(n.strip() for n in label.group('names').split(',')
+                                      if re.fullmatch(r'[A-Za-z_]\w*', n.strip()))
         if not any(re.search(rf'\b(?:class|struct)\s+{re.escape(c)}\b(?!\s*;)', spliced) for c in declared):
-            problems.append(f'{name}: header must declare class {declared[-1]}')
+            message = f'{name}: header must declare class {SPLIT_TAG.sub("", cls)}'
+            if re.fullmatch(r'Unk[0-9a-fA-F]+', SPLIT_TAG.sub('', cls)):
+                message += '; an Unk<RVA> unit may instead declare its explicitly SIBLING-labelled class'
+            problems.append(message)
     return problems
 
 

@@ -386,6 +386,17 @@ def definition_name(text, candidates):
     raise ValueError('no definition found for any of: ' + ', '.join(n for n, _ in tried or [('no name', None)]))
 
 
+def sole_definition(text):
+    """Infer a target only when the unit has exactly one qualified definition."""
+    names = set(re.findall(r'\b([A-Za-z_]\w*::(?:~?[A-Za-z_]\w*))\s*\(', text))
+    found = []
+    for name in sorted(names):
+        found.extend((name, params) for _start, _end, params in find_bodies(text, name))
+    if len(found) != 1:
+        raise ValueError('unit does not contain exactly one qualified definition')
+    return found[0][0], None
+
+
 def target_names(repo, task, entry, rva, objdump=None):
     """[(qualified name, parameter list or None)] naming the target's definition, most trusted first.
 
@@ -2021,8 +2032,13 @@ def run(args):
         try:
             qualified, params = definition_name(text, names)
         except ValueError as exc:
-            raise SystemExit(f'{exc}; give --function Class::Name') from None
-        print(f'permute: mutating {qualified} (from the unit header, community name or bound symbol)')
+            try:
+                if len(task['functions']) != 1:
+                    raise ValueError('multiple target functions')
+                qualified, params = sole_definition(text)
+            except ValueError:
+                raise SystemExit(f'{exc}; give --function Class::Name') from None
+        print(f'permute: mutating {qualified} (from the unit, community name or bound symbol)')
     unit = Unit(text, qualified, args.also or (), params)
     from source_digest import include_closure
     closure = include_closure(source_root, compiled)

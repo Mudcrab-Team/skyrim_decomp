@@ -7,6 +7,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
 import pipeline  # noqa: E402
+from importlib.machinery import SourceFileLoader
+attempt = SourceFileLoader('attempt_output_test', str(ROOT / 'tools/verifier/attempt')).load_module()
 
 
 class CompileWarnings(unittest.TestCase):
@@ -25,6 +27,22 @@ class CompileWarnings(unittest.TestCase):
         self.assertEqual(len(lines), 1)
         self.assertIn('2 function(s)', lines[0])
         self.assertIn('Other', lines[0])
+
+    def test_verdict_repeated_after_advice(self):
+        self.assertEqual(attempt.verdict_lines('attempt: 1/1 pass', ['  0x123 PASS\n      detail']),
+                         ['attempt: 1/1 pass', '  0x123 PASS'])
+
+    def test_publication_warnings_cover_unit(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'reconstruction').mkdir()
+            (root / 'reconstruction/Toy.cpp').write_text('void FUN_12345678();\n')
+            (root / 'reconstruction/Toy.h').write_text('// Toy: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@abc, MIT)\n')
+            from unittest.mock import patch
+            with patch.object(attempt.pipeline, 'REPO', root):
+                lines = attempt.publication_warnings({'compiled': 'reconstruction/Toy.cpp'})
+            self.assertTrue(any('decompiler' in line for line in lines), lines)
+            self.assertTrue(any('SPDX' in line for line in lines), lines)
 
     def test_no_warning_no_line(self):
         self.assertEqual(pipeline.compile_warnings(self.log('a.cpp(1): warning C4100: unused\n')), [])

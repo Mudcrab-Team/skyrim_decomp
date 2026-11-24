@@ -136,6 +136,19 @@ class ContributorRenderer(unittest.TestCase):
         self.assertIn('class BaseWidget', h)
         self.assertNotIn('../', h + cpp)
 
+    @unittest.skipUnless(shutil.which('clang++'), 'clang++ required for header compile')
+    def test_reference_virtuals_compile_without_missing_overrides(self):
+        self.facts['Widget']['virtuals'].append(
+            dict(slot=4, name='Extra', declaration='int Extra() override;'))
+        hp, h, _cp, _cpp, _hints, _recipe = self.files()
+        path = self.root / hp
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(h)
+        result = subprocess.run(['clang++', '-std=c++14', '-fsyntax-only', '-x', 'c++',
+                                 '-I', str(self.root / 'reconstruction'), str(path)],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_signature_conflict_is_explicit_and_unpublishable(self):
         self.facts['Widget']['virtuals'].append(dict(slot=1, name='Ready', declaration='bool Ready(int a_mode) const override;'))
         _hp, h, _cp, _cpp, hints, _recipe = self.files()

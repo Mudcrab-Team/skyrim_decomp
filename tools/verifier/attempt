@@ -535,6 +535,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     if advisory:
         lines += label_warnings(closure)
         lines += origin_lines(closure)
+        lines += publication_warnings(task)
     rel = dest.relative_to(Path.cwd()) if dest.is_relative_to(Path.cwd()) else dest
     lines.append(f'private: {rel}/ (0x<rva>/side-by-side.txt, compile.log; read locally, never paste)')
     if runner is not None:
@@ -542,6 +543,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
                                                           if host.waited >= 1 else '')
     lines.append(where)
     lines.append(f'time {time.monotonic() - started:.1f} s')
+    lines.extend(verdict_lines(lines[0], all_rows))
     text = '\n'.join(lines)
     (dest / 'attempt.txt').write_text(text + '\n' + ''.join(f'{r}\n' for r in all_rows))
     with open(task_dir / 'attempts.jsonl', 'a') as log:
@@ -594,6 +596,32 @@ def label_warnings(closure):
     if not findings:
         return ['  label check: no findings']
     return [f'  label warning: {f}' for f in findings]
+
+
+def verdict_lines(head, rows):
+    """Repeat the verdict after advice so it remains visible at the end of the output."""
+    return [head] + [row.split('\n', 1)[0] for row in rows if row.startswith('  0x')]
+
+
+def publication_warnings(task):
+    """Report per-unit intake and compact-header findings without changing the verdict."""
+    try:
+        import contrib_validation
+        import lint_reconstruction
+        cpp = task['compiled']
+        names = [cpp, str(Path(cpp).with_suffix('.h'))]
+        findings = []
+        for name in names:
+            path = pipeline.REPO / name
+            if not path.is_file():
+                continue
+            blob = path.read_bytes()
+            findings += contrib_validation.leakgrep_diagnostics(blob, name)
+            header = lint_reconstruction.leading_comment(blob.decode('utf-8', 'replace'))
+            findings += lint_reconstruction.header_budget_problems(name, header)
+        return [f'  publication warning: {f}' for f in findings] or ['  publication check: no findings']
+    except Exception as exc:  # noqa: BLE001 - advisory must not hide the comparison
+        return [f'  publication check: not run ({type(exc).__name__}: {exc})']
 
 
 def origin_lines(closure):

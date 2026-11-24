@@ -705,6 +705,13 @@ class DefinitionName(unittest.TestCase):
         unit = permute.Unit(OVERLOADED, name, params=params)
         self.assertIn('a_slot > 0', OVERLOADED[unit.start:unit.end])
 
+    def test_single_definition_fallback_rejects_ambiguity(self):
+        self.assertEqual(permute.sole_definition('int Toy::Probe() { return 1; }')[0], 'Toy::Probe')
+        with self.assertRaises(ValueError):
+            permute.sole_definition(UNIT)
+        with self.assertRaises(ValueError):
+            permute.sole_definition(OVERLOADED)
+
     def test_unresolved_overload_still_fails(self):
         with self.assertRaises(ValueError):
             permute.definition_name(OVERLOADED, [('Toy::Load', None)])

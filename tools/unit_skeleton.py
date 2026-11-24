@@ -749,7 +749,10 @@ def render_unit(unit, drafted_by=None, repo=None):
                 remaining.remove(selected)
                 ordered.append(selected + f'  // slot {entry["slot"]:02X}')
             else:
-                ordered.append(entry['declaration'] + f'  // {entry["slot"]:02X}')
+                declaration = re.sub(r'\b(?:override|final)\b\s*', '', entry['declaration'])
+                if not re.search(r'\bvirtual\b', declaration):
+                    declaration = 'virtual ' + declaration
+                ordered.append(declaration + f'  // {entry["slot"]:02X}')
                 add(f'{name}::{method}', info['label'])
             # Reference declarations for non-compared slots need the same preparation too.
             parts = split_declaration(entry['declaration'])

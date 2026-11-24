@@ -152,6 +152,17 @@ class LintTests(unittest.TestCase):
         (self.root / 'reconstruction/Engine/widget.cpp').write_text(SOURCE)
         self.assertTrue(any('reconstruction/<area>/<Class>' in p for p in self.problems()))
 
+    def test_address_named_unit_accepts_only_an_explicit_sibling_class_label(self):
+        name = 'reconstruction/misc/Unk1234.h'
+        path = self.root / name
+        header = ('// Source exposure: mixed\n// Labels: v2\n'
+                  '// Widget, Widget::Get: SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)\n'
+                  '#pragma once\nclass Widget {};\n')
+        path.write_text(header)
+        self.assertFalse(any('header must declare' in p for p in lint.lint_file(self.root, name, BUILD)))
+        path.write_text(header.replace('Widget, Widget::Get:', 'Widget::Get:'))
+        self.assertTrue(any('explicitly SIBLING-labelled class' in p for p in lint.lint_file(self.root, name, BUILD)))
+
     def test_include_style(self):
         self.assert_problem('must be included as "misc/Widget.h"', source=SOURCE.replace('"Widget.h"', '<misc/Widget.h>'))
         self.assert_problem('block comment', source=SOURCE + '/*\n#include "Widget.h"\n*/\n')
