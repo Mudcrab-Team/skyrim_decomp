@@ -252,3 +252,15 @@ After the review, a third run applied the corrections and re-read items in the p
 Source exposure of the review: pinned native binary and shipped shader bytecode. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by a Sonnet 5.5 run. Outcome: 4 confirmed, 4 corrected, 1 unverified, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-24, UNREVIEWED)
+
+**Scope.** Only the distant-tree statements. The fog-composite arithmetic and the call order are unchanged. The source is [tree-lod-drawing-retail-facts.md](tree-lod-drawing-retail-facts.md), G06, G07 and G09. **Verified, high. Static only.**
+
+- **Answer row 11, last sentence.** "Distant tree, particle, sky and utility shaders were not shown to add or to omit fog." now reads: the decoded distant-tree records (group 1, eight records) apply no fog. Neither the vertex nor the pixel shader reads a fog value. Particle, sky and utility shaders were not shown to add or to omit fog.
+- **Answer row 12 (c) and the line "Distant tree, sky and particle shaders could add their own fog…".** Remove "distant tree" from both. The tree records were decoded.
+- **G07 prose on group 1.** "a vertex-driven tint that may carry fog. Its constants were not traced." now reads: a per-draw tint, `atlas.rgb × (−dir.z × sun diffuse + ambient)`, from the scene sun light. It is not fog.
+- **Row `0x1559058`.** "Reads the property. Details not decoded." now reads: reads the fog property and the scene sun light. It writes three fog vectors that no tree record reads, and the light constants that the pixel shader uses.
+- **Not-traced list and the G07 row of the review summary.** "Use of the fog property by distant tree" is removed from the not-traced list. "The distant tree record carries a vertex tint" now reads: the distant tree record carries a per-draw sun tint and no fog.
+
+The original text above stays unchanged. The amendment supersedes it for these statements only.

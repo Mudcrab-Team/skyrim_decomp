@@ -295,3 +295,13 @@ Verdict: **8 confirmed, 3 corrected, 1 unverified and cut.** The reviewer checke
 Source exposure of the review: mixed. The reviewer used the local pinned executable, the shipped shader archive, the shipped INI files and generated name layouts. It did not open the game plugin. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by a separate fresh-context `claude-sonnet-5-5` run. Outcome: 8 confirmed, 3 corrected, 1 unverified and cut, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-24, UNREVIEWED)
+
+**Scope.** Only the statements that the sun source or the light read of the distant-tree shader is unverified. No other row changes. The source is [tree-lod-drawing-retail-facts.md](tree-lod-drawing-retail-facts.md), G06 and G09. **Verified, high. Static only.**
+
+- **Answer row 3, last sentence.** "Particle and distant-tree sun sources are **unverified** (G09)." now reads: the particle sun source is **unverified** (G09). The distant-tree setup reads the raw `NiLight` ambient (`+0x110`), diffuse (`+0x11c`) and negated direction (`+0x140..+0x148`) of the scene sun light (`[[0x20d68b0]+0x200]+0x48`). It reads no SunlightScale and no light fade.
+- **G09 prose.** "A scan of the distant-tree shader range found no light-colour read." The first scan of the distant-tree range missed the light read. The tree setup at `0x1558fd0` reads the raw ambient, diffuse and direction of the scene sun light. This is corrected by the tree LOD finding.
+- **Open list.** "The sun source of the particle and distant-tree shaders" now reads "the sun source of the particle shader".
+
+The original text above stays unchanged. The amendment supersedes it for these three statements only.
