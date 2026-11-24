@@ -53,6 +53,23 @@ class Rewrites(unittest.TestCase):
         self.assertNotIn('__thiscall', text)
         self.assertIn('operator new(size_t n)', text)
 
+    def test_other_allocation_spellings_and_sized_delete_are_adapted(self):
+        text = st.sanitize('void* operator new(unsigned long n); void* operator new[](UInt32 n);\n'
+                           'void operator delete(void* p, unsigned int n); void g() { operator delete(this, 0x10); }')
+        self.assertIn('operator new(size_t n)', text)
+        self.assertIn('operator new[](size_t n)', text)
+        self.assertIn('operator delete(void* p, size_t n)', text)
+        self.assertIn('operator delete(this)', text)
+
+    def test_crt_redeclarations_and_size_asserts_are_removed(self):
+        text = st.sanitize('extern "C" void* __cdecl memcpy(void*, const void*, unsigned int);\n'
+                           'STATIC_ASSERT(sizeof(Thing) == 0x20);\nstatic_assert(offsetof(Thing, x) == 4, "x");\n'
+                           'typedef char check_1[(sizeof(Thing) == 8) ? 1 : -1];\nint keep;\n')
+        self.assertNotIn('memcpy', text)
+        self.assertNotIn('sizeof', text)
+        self.assertNotIn('offsetof', text)
+        self.assertIn('int keep;', text)
+
     def test_stub_class_keeps_one_default_constructor(self):
         lines = ['class Thing', '{', '  public:', '    Thing(int a, int b)', '    {', '        x = a;', '    }', '    virtual ~Thing();', '    int x;', '};']
         stub = st.stub_class(lines, 'Thing', 'Thing')

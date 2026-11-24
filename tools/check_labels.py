@@ -45,6 +45,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fo4_verbatim  # noqa: E402
 from lint_reconstruction import LABEL_LINE, label_grammar_applies, SIBLING_HEADER, SIBLING_SOURCES, SIBLING_LEGACY_PINS, SIBLING_ID  # noqa: E402
 from build_fnv_index import split_symbol  # noqa: E402
 import pdb_types  # noqa: E402
@@ -693,6 +694,7 @@ def check(files, checkouts=None, root=ROOT, siblings=None, no_sibling_names=None
         if full.is_relative_to(root) and pdb_types.is_generated(full.relative_to(root).as_posix()):
             continue  # generated names carry the CRASHLOGGER_PDB label by construction (lint checks it)
         findings += checker.check_file(full)
+    findings += fo4_verbatim.check_files([Path(f) if Path(f).is_absolute() else root / f for f in files], root, env)
     return findings
 
 

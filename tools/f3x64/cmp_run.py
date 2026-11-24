@@ -5,13 +5,13 @@ A symbol map is derived from the target itself: every candidate relocation is de
 offset in the target bytes and must resolve to one RVA per symbol. A pair whose references disagree
 is reported as unresolvable rather than forced. Inputs and reports stay under .local/.
 """
-import argparse, hashlib, json, re, struct, subprocess, sys
+import argparse, hashlib, json, os, re, struct, subprocess, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / 'tools'))
 
-OBJDUMP = '/opt/homebrew/opt/llvm/bin/llvm-objdump'
+OBJDUMP = os.environ.get('LLVM_OBJDUMP', '/opt/homebrew/opt/llvm/bin/llvm-objdump')
 FRAME_HANDLER = 22714324  # image-wide RVA of the C++ EH personality routine, from the project symbol map
 TAIL = {'REL32': 0, 'REL32_1': 1, 'REL32_2': 2, 'REL32_3': 3, 'REL32_4': 4, 'REL32_5': 5}
 

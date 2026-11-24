@@ -10,10 +10,10 @@ target image); outputs go under .local/ only.
     shape.py imgsigs  --image EXE --table functions.jsonl --out F.pkl   signatures of image functions
     shape.py match    --a F3.pkl --b IMG.pkl --out hits.json            shingle-index lead search
 """
-import argparse, bisect, collections, json, pickle, re, struct, subprocess, sys
+import argparse, bisect, collections, json, os, pickle, re, struct, subprocess, sys
 from pathlib import Path
 
-OBJDUMP = '/opt/homebrew/opt/llvm/bin/llvm-objdump'
+OBJDUMP = os.environ.get('LLVM_OBJDUMP', '/opt/homebrew/opt/llvm/bin/llvm-objdump')
 HEXNUM = re.compile(r'(?<![\w+])-?0x[0-9a-f]+\b')
 SKIP = {'int3', 'nop', 'nopw', 'nopl', 'xchg ax, ax'}
 K = 3

@@ -132,6 +132,15 @@ Scope is game-code folders only: `src/BSAnimation`, `src/BSAudio`, `src/BSCompan
 SDK and Gamebryo folders, mixed generated aggregates (`src/_gen`), and vendor-derived material
 wherever located. No executables, PDBs, SDKs or middleware source may be acquired under this decision.
 
+Gamebryo study reference (maintainer decision by awarebayes, 2026-11-24): the `fo4-private` `src/Gamebryo`
+folder, including SDK-installed bodies, may be read as a study reference and compiled locally to identify
+which Skyrim function is which Ni* method. Units written from it are rewritten, never pasted: no copied
+comments or blocks, no SDK formatting, our own structure and naming within the code rules, label unchanged.
+Direct transplant stays limited to the game-code folders above; nothing SDK-derived, and nothing from
+`src/_gen`, is ever copied into a unit. A local-only check in the label check (`tools/fo4_verbatim.py`)
+flags a unit when a verbatim run of more than 8 normalized lines matches those files; it reads
+`.local/sources/fo4-private`, is skipped when that clone is absent or `CI` is set, and never runs in CI.
+
 Everything taken carries `SIBLING(fo4-private@1b765c70, author-permission)`; each reused body
 also has `Sibling source: fo4-private@1b765c70 <allowed path>:<line>` in the unit header.
 Use only `fo4-private` as the source identity: never put the upstream repository name,

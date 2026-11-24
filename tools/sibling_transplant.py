@@ -49,15 +49,31 @@ CALLCONV = re.compile(r'\b__(?:fastcall|stdcall|cdecl|thiscall)\b\s*')
 DELETING = {'dtor_deleting', 'scalar_deleting_destructor', '`scalar_deleting_destructor\''}
 
 
-# The siblings are 32-bit builds: allocation operators take an unsigned int size there.
-OPERATOR_SIZE = re.compile(r'operator\s+(new|new\[\])\s*\(\s*unsigned(?:\s+int)?\b')
+# The siblings are 32-bit builds: allocation operators take a 32-bit size there.
+SIZE_TYPES = r'(?:unsigned(?:\s+(?:int|long))?|size_t|uint|UInt32|u32|DWORD|unsigned\s+__int32|__w64\s+unsigned(?:\s+int)?|hk_size_t)'
+OPERATOR_SIZE = re.compile(rf'operator\s+(new|new\[\]|delete|delete\[\])\s*\(\s*((?:void\s*\*\s*\w*\s*,\s*)?){SIZE_TYPES}\b')
+OPERATOR_DELETE_SIZE = re.compile(r'operator\s+delete\(((?:\(void\*\))?this),\s*(?:0x)?[0-9a-fA-F]+\)')
 LIBC_NAMES = re.compile(r'\b(?:memcpy|memmove|memset|memcmp|strlen|strcmp|strcpy|strncpy|strncmp|strcat)\b')
+# Declarations of C runtime functions that the siblings spell out themselves; the standard headers supply them.
+CRT_NAMES = (r'memcpy|memmove|memset|memcmp|_alloca|strcpy_s|strlen|strcmp|memcpy_s|sprintf_s|__security_cookie|'
+             r'__security_check_cookie|__readfsdword|__RTDynamicCast|strrchr|strcat_s|_strnicmp|_ReadWriteBarrier')
+CRT_DECLARATION = re.compile(rf'^[ \t]*extern\s+"C"\s+[^;{{}}\n]*?\b(?:{CRT_NAMES})\b[^;{{}}\n]*;[ \t]*$', re.M)
+# Size and offset asserts of the sibling's 32-bit layouts; they cannot hold for the stand-in classes.
+STATIC_ASSERTS = [
+    re.compile(r'^[ \t]*\w*ASSERT\w*\((?:[^;\n]*sizeof|[^;\n]*offsetof)[^;\n]*\);[ \t]*$', re.M),
+    re.compile(r'^[ \t]*static_assert\s*\([^;\n]*(?:sizeof|offsetof)[^;\n]*\);[ \t]*$', re.M),
+    re.compile(r'^[ \t]*typedef\s+char\s+\w+\s*\[[^;\n]*\?\s*1\s*:\s*-1\s*\];[ \t]*$', re.M),
+]
 
 
 def sanitize(text):
     for rx, rep in RENAMES:
         text = rx.sub(rep, text)
-    text = OPERATOR_SIZE.sub(r'operator \1(size_t', text)
+    text = OPERATOR_SIZE.sub(lambda m: f'operator {m.group(1)}({m.group(2)}size_t', text)
+    text = OPERATOR_DELETE_SIZE.sub(r'operator delete(\1)', text)
+    text = CRT_DECLARATION.sub('', text)
+    for rx in STATIC_ASSERTS:
+        text = rx.sub('', text)
     text = re.sub(r'\b__forceinline\b', 'inline', text)
     text = re.sub(r'__declspec\(\s*noinline\s*\)\s*', '', text)
     return CALLCONV.sub('', text)

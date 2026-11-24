@@ -109,7 +109,7 @@ on condition of anonymity (author's terms quoted: 'no attribution. or credit ano
 Its game-code names, declarations and bodies may be read and reused on the same reconstruction
 and publication terms as the FNV decision above, within the exact game-code folder allowlist
 and pin in `docs/authorizations.md`. Its Havok, HavokLib, Scaleform, SDK and Gamebryo folders,
-vendor-derived material elsewhere and mixed generated aggregates are excluded. Everything
+vendor-derived material elsewhere and mixed generated aggregates are excluded from reuse, except that its Gamebryo folder may be read as a study reference with rewrite-only units (`docs/authorizations.md`). Everything
 reused is labelled `SIBLING(fo4-private@1b765c70, author-permission)` and each reused body has
 an anonymous unit-header source/path/line citation. This permission is not a general licence
 or a grant of third-party rights, and is not dedicated under this repository's CC0 licence (`LICENSE`).
