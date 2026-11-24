@@ -95,11 +95,13 @@ def compare_members(ctx, root, manifest, image, tasks, build):
     return counts
 
 
-def run(description, discover, emit):
+def run(description, discover, emit, *, split=None):
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--exe', required=True, type=Path)
     parser.add_argument('--out', type=Path, help='new snapshot directory beneath this checkout’s .local/')
     parser.add_argument('--compare', action='store_true', help='run the full local comparator and save reports')
+    if split:
+        parser.add_argument('--split', choices=('development', 'held-out'), help='generate only this validation partition')
     args = parser.parse_args()
     private = ROOT / '.local'
     out = args.out.resolve() if args.out else None
@@ -116,6 +118,8 @@ def run(description, discover, emit):
     progress = json.loads((ROOT / 'data/progress.json').read_text())
     inventory = {f['rva']: f for f in progress['functions'] if f['build_id'] == manifest['build_id']}
     members = discover(PeImage(image), boundaries(ROOT), inventory)
+    if split and args.split:
+        members = [m for m in members if split(m) == args.split]
     print('Candidates:', dict(Counter(m.family for m in members)), flush=True)
     if out is None:
         return 0
