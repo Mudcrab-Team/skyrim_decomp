@@ -28,8 +28,6 @@ import subprocess
 import sys
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / 'tools'))
-import record_store  # noqa: E402
 COMPARE = REPO / 'tools' / 'compare.py'
 PRIVATE_ROOT = REPO / '.local'
 DEFAULT_DIAGNOSTICS = PRIVATE_ROOT / 'verifier' / 'diagnostics'
@@ -208,7 +206,15 @@ def run(task_file, obj, build_record, image, report_path, diagnostics=None, pyth
     flat_task.parent.mkdir(parents=True, exist_ok=True)
     flat_task.write_text(json.dumps(task, indent=2, sort_keys=True) + '\n')
     unpacked = None
-    if not symbols.is_file() and record_store.is_file(symbols):
+    record_store = None
+    if not symbols.is_file():
+        # Imported here because the unit hosts carry this file without record_store.py; their maps are loose.
+        sys.path.insert(0, str(REPO / 'tools'))
+        try:
+            import record_store
+        except ImportError:
+            pass
+    if record_store is not None and not symbols.is_file() and record_store.is_file(symbols):
         # The comparators take a real file path; a map packed into an xz shard is written out
         # byte for byte beside the diagnostics, so the recorded symbol-map hash is unchanged.
         unpacked = diagnostics.with_name(diagnostics.stem + '.symbols.json')
