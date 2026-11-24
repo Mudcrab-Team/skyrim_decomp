@@ -1559,7 +1559,7 @@ class Bot:
         self.dry_run = dry_run
         self.host1_mode = host1
         self.config = {**dict(model_timeout=3000, review_chunk=REVIEW_CHUNK_FUNCTIONS,
-                            review_workers=REVIEW_CHUNK_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
+                            review_workers=REVIEW_CHUNK_WORKERS, compare_workers=COMPARE_WORKERS, compare_timeout=5400, hash_wait=1800, max_functions=MAX_FUNCTIONS),
                        **(config or {})}
         self.tree = self.work / 'tree'
         self.main_watch = MainWatch(self.fetch_main_red)
@@ -2443,12 +2443,24 @@ class Bot:
             hints = {**recorded_symbol_hints(json.loads(made.read_text()) if made.is_file() else {}, rvas), **hints}
             if hints:
                 (task / 'bind-hints.json').write_text(json.dumps(hints, indent=1) + '\n')
-        for task in tasks:
+        # Units are independent (each task directory has its own lock), and a PR near the function cap has
+        # hundreds of them: one after another they outlast the head's chance to stay unchanged.
+        def attempt(task):
             try:
-                done = self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
+                return self.run([sys.executable, 'tools/verifier/attempt', task, '--agent', 'tools/pr_bot.py'],
                                 cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
             except subprocess.TimeoutExpired:
                 raise HostFailure(f'verifier host timed out ({tid_of(task)})')
+        workers = max(1, min(self.config.get('compare_workers', COMPARE_WORKERS), len(tasks)))
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = [pool.submit(attempt, task) for task in tasks]
+            try:
+                finished = [future.result() for future in futures]
+            except BaseException:
+                for future in futures:
+                    future.cancel()
+                raise
+        for task, done in zip(tasks, finished):
             code = done.returncode
             if code == REFUSED_INCLUDE_EXIT:
                 # The verifier refuses before compiling when a header cannot be found with the unit's recipe. That
@@ -4677,6 +4689,8 @@ def pollable(prs):
 
 
 POOL_SIZE = 3
+# Parallel verifier attempts inside one PR's compare; the pool already runs PRs side by side, so this stays small.
+COMPARE_WORKERS = 4
 # A third compile starts only while the machine is not already overloaded by the first two; the 1-minute load
 # is compared with this many times the core count.
 EXTRA_SLOT_LOAD_FACTOR = 2

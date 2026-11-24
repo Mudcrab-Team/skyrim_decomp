@@ -1174,6 +1174,55 @@ class StaleRecordedHintTests(Replay):
         self.assertEqual(json.loads((task / 'bind-hints.json').read_text()), {self.OLD_NAME: '0x1000'})
 
 
+class ParallelCompareTests(Replay):
+    """A PR near the function cap has hundreds of units; their attempts must overlap, and one failure ends the compare."""
+
+    def compare(self, count, attempt, workers=4):
+        rvas = [0x1000 + 0x10 * i for i in range(count)]
+        units = {unit_path(r): [r] for r in rvas}
+        tag = '7-abcdef13'
+        (self.bot.tree / 'builds').mkdir(parents=True, exist_ok=True)
+        (self.bot.tree / 'builds/target.json').write_text(json.dumps(dict(build_id=BUILD)))
+        for cpp, rs in units.items():
+            (self.bot.tree / cpp).parent.mkdir(parents=True, exist_ok=True)
+            (self.bot.tree / cpp).write_text(unit(rs[0]))
+        self.bot.config['compare_workers'] = workers
+
+        def run(argv, **kw):
+            name = str(argv[1])
+            if name.endswith('export_pack.py'):
+                for i, r in enumerate(rvas):
+                    task = self.bot.tree / '.local/tasks' / f'prbot-{tag}-{i}'
+                    task.mkdir(parents=True, exist_ok=True)
+                    (task / 'task.json').write_text(json.dumps(dict(task_id=task.name, functions=[dict(rva=hex(r))])))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            if name.endswith('attempt'):
+                return attempt(Path(str(argv[2])))
+            raise AssertionError(argv)
+        with mock.patch.object(self.bot, 'run', run):
+            return pr_bot.Bot.compare_on_host(self.bot, units, tag), rvas
+
+    def test_attempts_overlap_and_every_function_gets_its_own_verdict(self):
+        gate, seen = threading.Barrier(3, timeout=20), []
+
+        def attempt(task):
+            gate.wait()  # only passes when three attempts are in flight at once
+            report = task / 'attempts/0' / f'0x{int(json.loads((task / "task.json").read_text())["functions"][0]["rva"], 0):x}'
+            report.mkdir(parents=True)
+            seen.append(task.name)
+            (report / 'report.json').write_text(json.dumps(dict(result='pass' if len(seen) % 2 else 'fail')))
+            return subprocess.CompletedProcess([], 0, b'', b'')
+        result, rvas = self.compare(3, attempt, workers=3)
+        self.assertEqual(sorted(result), rvas)
+        self.assertEqual(sorted(result.values()), ['fail', 'pass', 'pass'])
+
+    def test_one_host_failure_ends_the_compare(self):
+        def attempt(task):
+            return subprocess.CompletedProcess([], 5, b'', b'boom\n')
+        with self.assertRaises(pr_bot.HostFailure):
+            self.compare(6, attempt)
+
+
 class IncludeRefusalTests(Replay):
     """The verifier refuses a unit whose header its recipe cannot resolve; that is a finding, not a host failure."""
 
