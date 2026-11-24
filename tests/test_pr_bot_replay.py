@@ -1687,6 +1687,42 @@ class RecordBlockRetryTests(Replay):
         self.assertTrue(pr_bot.settled(state))
 
 
+class StaleRejectionTests(Replay):
+    def test_same_head_is_checked_again_when_the_function_limit_changes(self):
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000), unit_path(0x1010): unit(0x1010)})
+        old = self.w.bot(code_sha='a' * 40, max_functions=1)
+        self.w.poll(old)
+        self.assertEqual(self.w.state(old, 7).get('rejected'), dict(reason='functions', code='a' * 40))
+        self.assertIn('over the limit of 1 per PR', self.w.sticky(7)[0])
+        self.w.poll(self.w.bot(code_sha='a' * 40, max_functions=2))
+        self.assertFalse(self.merged(7))
+        self.assertEqual(self.w.compiled, [])
+
+        new = self.w.bot(code_sha='b' * 40, max_functions=2)
+        log = self.w.poll(new)
+        self.assertTrue(self.merged(7), log)
+        self.assertIsNone(self.w.state(new, 7).get('rejected'))
+        self.assertEqual(len(self.w.compiled), 1)
+
+    def test_legacy_rejection_recomputes_its_failed_stage_and_keeps_comparisons(self):
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        state = self.w.state(self.bot, 7)
+        state.set('rejected', 'header')
+        state.set('header', ['stale problem'])
+        state.set('host1', {'4096': 'pass'})
+        state.set('host2', {'4096': 'pass'})
+        self.bot.reports_present = lambda *args: True
+        with mock.patch.object(self.bot, 'precheck', side_effect=pr_bot.WouldSpend('stop after comparisons')):
+            log = self.w.poll(self.bot)
+        with self.subTest(log=log):
+            state = self.w.state(self.bot, 7)
+            self.assertIsNone(state.get('rejected'))
+            self.assertEqual(state.get('header'), [])
+            self.assertEqual(state.get('host1'), {'4096': 'pass'})
+            self.assertEqual(state.get('host2'), {'4096': 'pass'})
+            self.assertEqual(self.w.compiled, [])
+
+
 class StaleBotFailureTests(Replay):
     """A head that ended on a bot-side failure is looked at again once the bot's code revision changes."""
 

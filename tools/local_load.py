@@ -16,6 +16,7 @@ more that are free right now, never waiting for them, so two callers can never h
 A job that has to wait prints one line saying so. Holding is re-entrant: a block nested inside a held
 block in the same thread, or in a child process that inherits SR_LOCAL_HEAVY_HELD, takes no further
 slot, so a heavy tool calling another heavy tool cannot deadlock itself.
+Foreground jobs waiting for a slot are admitted before background checks.
 
 Callers that can run on a remote runner should prefer it (`runners.choose_attempt` does when a cap is
 set); the cap only bounds what still has to run here.
@@ -129,6 +130,16 @@ def _take(directory, cap):
     return None
 
 
+def _available(directory, cap, want):
+    handles = []
+    while len(handles) < want:
+        handle = _take(directory, cap)
+        if not handle:
+            break
+        handles.append(handle)
+    return handles
+
+
 def busy(cap, directory=None):
     """How many of the `cap` slots are held right now."""
     directory = Path(directory) if directory else slot_dir()
@@ -179,7 +190,7 @@ def _say(message):
 
 
 @contextmanager
-def heavy(label, want=1, log=None, wait=DEFAULT_WAIT, directory=None, cap=UNSET, poll=0.25):
+def heavy(label, want=1, log=None, wait=DEFAULT_WAIT, directory=None, cap=UNSET, poll=0.25, *, foreground=True):
     """Hold a heavy-job slot for the block; yields how many slots are held (the caller sizes its pool to it).
 
     The first slot is waited for, up to `wait` seconds (LoadGuardError after that); the others up to
@@ -202,26 +213,38 @@ def heavy(label, want=1, log=None, wait=DEFAULT_WAIT, directory=None, cap=UNSET,
     directory = Path(directory) if directory else slot_dir()
     directory.mkdir(parents=True, exist_ok=True)
     started = time.monotonic()
-    handles = []
     said = False
-    while True:
-        handle = _take(directory, cap)
-        if handle:
-            handles.append(handle)
-            break
-        if time.monotonic() - started > wait:
-            raise LoadGuardError(f'{label}: all {cap} heavy local slots stayed busy for {wait} s')
-        if not said:
-            log(f'local load guard: {label} waits for a free slot ({busy(cap, directory)} of {cap} heavy local '
-                'slots busy)')
-            said = True
-        time.sleep(poll)
-    while len(handles) < want:
-        handle = _take(directory, cap)
-        if not handle:
-            break
-        handles.append(handle)
     file_lock = _lock()
+    # The shared lock marks a foreground waiter. A background job can try the slots only
+    # while holding this lock exclusively, so it cannot overtake a sleeping foreground waiter.
+    with (directory / 'priority.lock').open('a') as queue:
+        if foreground:
+            file_lock.flock(queue, file_lock.LOCK_SH)
+        while True:
+            handles = []
+            if foreground:
+                handles = _available(directory, cap, want)
+            else:
+                try:
+                    file_lock.flock(queue, file_lock.LOCK_EX | file_lock.LOCK_NB)
+                except BlockingIOError:
+                    pass
+                else:
+                    try:
+                        handles = _available(directory, cap, want)
+                    finally:
+                        file_lock.flock(queue, file_lock.LOCK_UN)
+            if handles:
+                break
+            if time.monotonic() - started > wait:
+                raise LoadGuardError(f'{label}: all {cap} heavy local slots stayed busy for {wait} s')
+            if not said:
+                detail = f'{busy(cap, directory)} of {cap} heavy local slots busy'
+                if not foreground:
+                    detail += ' or foreground work is queued'
+                log(f'local load guard: {label} waits for a free slot ({detail})')
+                said = True
+            time.sleep(poll)
     _held.held, _held.reserved = len(handles), 0
     _mark(len(handles))
     try:

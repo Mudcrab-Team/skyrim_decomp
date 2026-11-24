@@ -106,6 +106,7 @@ def against_main(root, main, head):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
+    parser.add_argument('--repo', type=Path, default=ROOT)
     parser.add_argument('--count', action='store_true')
     parser.add_argument('--base')
     parser.add_argument('--head')
@@ -114,7 +115,7 @@ def main(argv=None):
     if args.against_main:
         if not args.head:
             parser.error('--against-main needs --head')
-        clash = against_main(ROOT, args.against_main, args.head)
+        clash = against_main(args.repo, args.against_main, args.head)
         for rva, units in list(clash.items())[:20]:
             print(f'0x{rva:x} is also marked in {len(units) - 1} unit(s) on main')
         print(f'duplicate_rva: {"FAIL" if clash else "PASS"} ({len(clash)} RVA(s) repeated from main)')
@@ -122,12 +123,12 @@ def main(argv=None):
     if args.base or args.head:
         if not (args.base and args.head):
             parser.error('--base and --head go together')
-        added = new_duplicates(ROOT, args.base, args.head)
+        added = new_duplicates(args.repo, args.base, args.head)
         for rva, units in list(added.items())[:20]:
             print(f'0x{rva:x} is now marked in {len(units)} units')
         print(f'duplicate_rva: {"FAIL" if added else "PASS"} ({len(added)} newly duplicated RVA(s))')
         return 1 if added else 0
-    found = duplicates()
+    found = duplicates(args.repo)
     if args.count:
         print(len(found))
         return 0

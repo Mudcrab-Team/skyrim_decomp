@@ -169,8 +169,9 @@ class Scope(unittest.TestCase):
         self.assertFalse(pr_bot.notes_lane(rows + [dict(filename='tools/x.py', status='added')]))
 
     def test_the_scope_job_regex_matches_the_bot_rule(self):
-        text = (ROOT / '.github/workflows/pr-check.yml').read_text()
-        self.assertIn(r'^data/giveups/[a-z0-9][a-z0-9-]*/[0-9a-f]{3,8}\.json$', text)
+        import scope_check
+        for name in (f'data/giveups/{BUILD}/1004350.json', f'data/giveups/{BUILD}/1004350.txt'):
+            self.assertEqual(bool(scope_check.OUTSIDE_RECONSTRUCTION.fullmatch(name)), pr_bot.in_scope(name))
 
     def test_the_bot_validates_a_record_in_the_notes_checks(self):
         class Bot:

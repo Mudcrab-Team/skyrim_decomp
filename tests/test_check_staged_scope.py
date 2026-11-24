@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 import check  # noqa: E402
@@ -98,16 +99,44 @@ class ScopedStagedTests(unittest.TestCase):
             self.scoped()
         self.assertIn(expected[0], str(caught.exception))
 
-    def test_only_new_unit_sources_take_the_scoped_path(self):
+    def test_existing_unit_edits_and_metadata_keep_full_validation(self):
         self.stage()
         git(self.root, 'commit', '-qm', 'unit')
         self.put(UNIT + '.h', self.h + '\n')
         git(self.root, 'add', UNIT + '.h')
         self.assertIsNone(check.scoped_staged_paths(self.root))
         git(self.root, 'reset', '-q', '--hard')
-        self.put('tools/other.py', 'x = 1\n')
-        git(self.root, 'add', 'tools/other.py')
+        self.put('data/progress.json', '{}\n')
+        git(self.root, 'add', 'data/progress.json')
         self.assertIsNone(check.scoped_staged_paths(self.root))
+
+    def test_prose_and_findings_need_no_export_or_heavy_checks(self):
+        self.put('docs/draft.md', 'Initial text.\n')
+        git(self.root, 'add', 'docs/draft.md')
+        git(self.root, 'commit', '-qm', 'prose')
+        self.put('docs/draft.md', 'Revised text.\n')
+        self.put('findings/synthetic.md', 'Synthetic finding.\n')
+        git(self.root, 'add', 'docs/draft.md', 'findings/synthetic.md')
+        with mock.patch.object(check, 'ROOT', self.root), \
+                mock.patch.object(check.sparse, 'full', side_effect=AssertionError('whole tree')), \
+                mock.patch.object(check.local_load, 'heavy', side_effect=AssertionError('heavy slot')):
+            self.assertEqual(check.run(staged=True), (2, None))
+        self.assertFalse((self.root / '.local/check-exports').exists())
+        git(self.root, 'rm', '-f', 'docs/draft.md')
+        self.assertIsNone(check.scoped_staged_paths(self.root))
+
+    def test_tooling_scan_checks_staged_blobs_without_a_full_check(self):
+        name = 'tools/other.py'
+        self.put(name, 'x = 1\n')
+        git(self.root, 'add', name)
+        with mock.patch.object(check, 'ROOT', self.root), \
+                mock.patch.object(check.sparse, 'full', side_effect=AssertionError('whole tree')):
+            self.assertEqual(check.run(staged=True), (1, None))
+            self.put(name, 'x\0y')
+            git(self.root, 'add', name)
+            self.put(name, 'x = 1\n')
+            with self.assertRaisesRegex(ValueError, 'binary content'):
+                check.run(staged=True)
 
     def test_nothing_staged_is_not_scoped(self):
         self.assertIsNone(check.scoped_staged_paths(self.root))

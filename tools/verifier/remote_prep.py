@@ -147,7 +147,7 @@ class Prep:
 
     def put(self, files):
         self.transport.prepare()
-        self.transport.run(['mkdir', self.root.replace('/', '\\') if ':' in self.root else self.root], 60)
+        self.transport.mkdir(self.root)
         self.transport.put(files, self.root)
 
     def upload_agent(self):

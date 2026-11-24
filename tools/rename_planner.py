@@ -221,7 +221,7 @@ def reference_files(token, root=ROOT):
     for path in glob.glob(str(Path(root) / 'reconstruction' / '**' / '*'), recursive=True):
         if os.path.isfile(path) and path.endswith(('.h', '.cpp')):
             if rx.search(Path(path).read_text(encoding='utf-8-sig', errors='replace')):
-                out.append(str(Path(path).relative_to(root)))
+                out.append(Path(path).relative_to(root).as_posix())
     return out
 
 
@@ -335,7 +335,7 @@ def unit_claims(root=ROOT):
         for line in leading_lines(head):
             m = HEADER_LINE.match(line.rstrip())
             if m:
-                claims[int(m.group(1), 16)].add(str(path.relative_to(base).with_suffix('')))
+                claims[int(m.group(1), 16)].add(path.relative_to(base).with_suffix('').as_posix())
     return claims
 
 

@@ -46,7 +46,7 @@ counts exclude those and unreported claims. One KiB is
 | Other models | 8,762 |
 | Contributors (human / unstated) | 4,289 |
 | Scripts and tools | 1,440,901 |
-| Not reported | 509,816 |
+| Not reported | 515,110 |
 <!-- /model-trend-totals -->
 
 Regenerate from tracked first-parent history in a full checkout with
@@ -101,6 +101,8 @@ A: The [FNV](https://www.fnvdecomp.com) and [FO3](https://f3decomp.com/) decomps
 [Progress site](https://mudcrab-team.github.io/skyrim_decomp/) · [Reconstruction index](reconstruction/INDEX.md) · [Issues](https://github.com/Mudcrab-Team/skyrim_decomp/issues) · [Leaderboard](LEADERBOARD.md)
 
 ## More
+
+[Project milestones](docs/milestones.md)
 
 [How matching is verified](docs/verification.md)
 [Internal agent workflow](docs/internal-agent-workflow.md)

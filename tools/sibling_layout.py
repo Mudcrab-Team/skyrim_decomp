@@ -164,7 +164,8 @@ def community_sizes():
     if not path:
         return {}
     if path not in _COMMUNITY:
-        data = json.load(open(path))
+        with open(path, encoding='utf-8') as handle:
+            data = json.load(handle)
         _COMMUNITY[path] = {n: next(iter(v.values())) for n, v in data.items() if len(set(v.values())) == 1 and next(iter(v.values())) > 0}
     return _COMMUNITY[path]
 
