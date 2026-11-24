@@ -128,6 +128,28 @@ class FindingsBot(replay.ReplayBot):
         return bool(hits), [c for _n, _l, c in hits]
 
 
+class ChangedLines(unittest.TestCase):
+    def test_a_new_file_is_all_added(self):
+        self.assertIn('every line is added', pr_bot.changed_lines({'status': 'added', 'patch': '@@ -0,0 +1 @@\n+x'}))
+
+    def test_an_edit_lists_only_the_added_lines_as_spans(self):
+        patch = '@@ -3,2 +3,3 @@\n keep\n-old\n+new a\n+new b\n@@ -20 +21 @@\n+tail'
+        self.assertEqual(pr_bot.changed_lines({'status': 'modified', 'patch': patch}),
+                         'added or changed lines: 4-5, 21')
+
+    def test_a_missing_patch_says_the_whole_file_is_to_be_read(self):
+        self.assertIn('read the whole file', pr_bot.changed_lines({'status': 'modified'}))
+
+    def test_a_pure_removal_has_no_added_lines(self):
+        self.assertEqual(pr_bot.changed_lines({'status': 'modified', 'patch': '@@ -4,2 +4 @@\n keep\n-gone'}),
+                         'no added lines')
+
+    def test_the_prompt_judges_changes_and_separates_structure_from_listings(self):
+        text = pr_bot.FINDINGS_PREAMBLE
+        for phrase in ('Judge what this pull request adds or changes', 'never a leak', 'dp4', 'one instruction per line'):
+            self.assertIn(phrase, text)
+
+
 class Landing(replay.Replay):
     def setUp(self):
         super().setUp()
@@ -160,6 +182,7 @@ class Landing(replay.Replay):
         self.assertEqual(self.w.github.merges, [7])
         self.assertEqual(self.w.reviewers.calls and len(self.prompts), 1)
         self.assertIn('findings/*.md', self.prompts[0])
+        self.assertIn(f'file: {NAME} (new file: every line is added)', self.prompts[0])
         self.assertEqual(self.w.compiled, [])
         self.assertEqual(self.w.github.prs[7]['head'], head)
 
