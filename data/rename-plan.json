@@ -1,0 +1,3760 @@
+{
+ "schema_version": 1,
+ "note": "Verdicts of tools/rename_planner.py on matched GUESS entries that have a CrashLogger name and a member of that class and name in the 2013 map. Hypotheses, not evidence of identity. No map address.",
+ "labels": [
+  "CRASHLOGGER_PDB(59818@2026.10.24)",
+  "SYMBOLS(tesv-2013-map)"
+ ],
+ "sources": {
+  "tesv-2013-map": "fed7f0b964ea752f-e677f4c413c37c97-b5cad21541755c69-c701a66423b288b2"
+ },
+ "summary": {
+  "guess_with_crashlogger_name": 7798,
+  "corroborated": 390,
+  "corroborated_with_prototype": 288,
+  "verdicts": {
+   "ambiguous": 224,
+   "label-source": 18,
+   "rename": 7,
+   "sync-inventory": 141
+  },
+  "ambiguous_reasons": {
+   "alias-or-overload": 26,
+   "generated-family": 112,
+   "namespace-differs": 7,
+   "no-class-claim": 3,
+   "no-source-name": 24,
+   "ownership-conflict": 16,
+   "placeholder-name": 3,
+   "prototype-arity": 17,
+   "source-name-differs": 7,
+   "this-differs": 9
+  }
+ },
+ "rows": [
+  {
+   "rva": "0xc3e80",
+   "unit": "unmapped/static/Staticc3e80",
+   "inventory": "Staticc3e80::initializer",
+   "source": "Staticc3e80::initializer",
+   "crashlogger": "TESShout::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc43b0",
+   "unit": "unmapped/static/Staticc43b0",
+   "inventory": "Staticc43b0::initializer",
+   "source": "Staticc43b0::initializer",
+   "crashlogger": "TESShout::GetKnown",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc60f0",
+   "unit": "unmapped/static/StringStaticc60f0",
+   "inventory": "StringStaticc60f0::initializer",
+   "source": "StringStaticc60f0::initializer",
+   "crashlogger": "TESSound::InitializeData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc61b0",
+   "unit": "unmapped/static/StringStaticc61b0",
+   "inventory": "StringStaticc61b0::initializer",
+   "source": "StringStaticc61b0::initializer",
+   "crashlogger": "TESSound::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc6c60",
+   "unit": "unmapped/static/StringStaticc6c60",
+   "inventory": "StringStaticc6c60::initializer",
+   "source": "StringStaticc6c60::initializer",
+   "crashlogger": "TESSound::GetFormEditorID",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc6ce0",
+   "unit": "unmapped/static/StringStaticc6ce0",
+   "inventory": "StringStaticc6ce0::initializer",
+   "source": "StringStaticc6ce0::initializer",
+   "crashlogger": "TESSound::SetFormEditorID",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc6fd0",
+   "unit": "unmapped/static/StringStaticc6fd0",
+   "inventory": "StringStaticc6fd0::initializer",
+   "source": "StringStaticc6fd0::initializer",
+   "crashlogger": "TESSound::Clone3D",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc7050",
+   "unit": "unmapped/static/StringStaticc7050",
+   "inventory": "StringStaticc7050::initializer",
+   "source": "StringStaticc7050::initializer",
+   "crashlogger": "TESSound::UnClone3D",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xc8430",
+   "unit": "unmapped/static/StringStaticc8430",
+   "inventory": "StringStaticc8430::initializer",
+   "source": "StringStaticc8430::initializer",
+   "crashlogger": "TESWordOfPower::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xcc760",
+   "unit": "leaves/ClassDescriptorInitializers1",
+   "inventory": "Functioncc760",
+   "source": "ClassDescriptorInitializers1::Initcc760",
+   "crashlogger": "BGSAssociationType::Load",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xd2820",
+   "unit": "leaves/ClassDescriptorInitializers4",
+   "inventory": "Functiond2820",
+   "source": "ClassDescriptorInitializers4::Initd2820",
+   "crashlogger": "BGSBodyPartData::ClearData",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xd2910",
+   "unit": "unmapped/static/TypeInfoDescriptorInitializers3",
+   "inventory": "Functiond2910",
+   "source": "TypeInfoDescriptorInitializers3::Initd2910",
+   "crashlogger": "BGSBodyPartData::Load",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xd6270",
+   "unit": "leaves/ClassDescriptorInitializers6",
+   "inventory": "Functiond6270",
+   "source": "ClassDescriptorInitializers6::Initd6270",
+   "crashlogger": "BGSDialogueBranch::Load",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xd63b0",
+   "unit": "leaves/ClassDescriptorInitializers6",
+   "inventory": "Functiond63b0",
+   "source": "ClassDescriptorInitializers6::Initd63b0",
+   "crashlogger": "BGSDialogueBranch::ClearData",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xdcfa0",
+   "unit": "leaves/ClassDescriptorInitializers9",
+   "inventory": "Functiondcfa0",
+   "source": "ClassDescriptorInitializers9::Initdcfa0",
+   "crashlogger": "BGSEntryPointFunctionDataSpellItem::InitItem",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe17d0",
+   "unit": "leaves/ClassDescriptorInitializers11",
+   "inventory": "Functione17d0",
+   "source": "ClassDescriptorInitializers11::Inite17d0",
+   "crashlogger": "BGSEntryPointFunctionData::GetID",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe18b0",
+   "unit": "leaves/ClassDescriptorInitializers11",
+   "inventory": "Functione18b0",
+   "source": "ClassDescriptorInitializers11::Inite18b0",
+   "crashlogger": "BGSEntryPointFunctionData::GetParentPerk",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe1980",
+   "unit": "leaves/ClassDescriptorInitializers11",
+   "inventory": "Functione1980",
+   "source": "ClassDescriptorInitializers11::Inite1980",
+   "crashlogger": "BGSEntryPointFunctionDataOneValue::GetType",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe1cd0",
+   "unit": "leaves/ClassDescriptorInitializers11",
+   "inventory": "Functione1cd0",
+   "source": "ClassDescriptorInitializers11::Inite1cd0",
+   "crashlogger": "BGSEntryPointFunctionDataText::GetType",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe2000",
+   "unit": "leaves/ClassDescriptorInitializers11",
+   "inventory": "Functione2000",
+   "source": "ClassDescriptorInitializers11::Inite2000",
+   "crashlogger": "BGSEntryPointFunctionDataActivateChoice::SetParentPerk",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe2530",
+   "unit": "leaves/ClassDescriptorInitializers12",
+   "inventory": "Functione2530",
+   "source": "ClassDescriptorInitializers12::Inite2530",
+   "crashlogger": "BGSEntryPointFunctionDataSpellItem::InitItem",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe35b0",
+   "unit": "leaves/ClassDescriptorInitializers12",
+   "inventory": "Functione35b0",
+   "source": "ClassDescriptorInitializers12::Inite35b0",
+   "crashlogger": "BGSEntryPointFunctionDataActivateChoice::GetType",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe3680",
+   "unit": "leaves/ClassDescriptorInitializers12",
+   "inventory": "Functione3680",
+   "source": "ClassDescriptorInitializers12::Inite3680",
+   "crashlogger": "BGSEntryPointFunctionDataActivateChoice::InitItem",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe4c00",
+   "unit": "unmapped/static/Statice4c00",
+   "inventory": "Statice4c00::initializer",
+   "source": "Statice4c00::initializer",
+   "crashlogger": "BGSEquipSlot::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe8ff0",
+   "unit": "unmapped/static/Statice8ff0",
+   "inventory": "Statice8ff0::initializer",
+   "source": "Statice8ff0::initializer",
+   "crashlogger": "BGSIdleMarker::UnClone3D",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xebea0",
+   "unit": "unmapped/static/Staticebea0",
+   "inventory": "Staticebea0::initializer",
+   "source": "Staticebea0::initializer",
+   "crashlogger": "BGSKeyword::SetFormEditorID",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xebf20",
+   "unit": "unmapped/static/Staticebf20",
+   "inventory": "Staticebf20::initializer",
+   "source": "Staticebf20::initializer",
+   "crashlogger": "BGSKeyword::GetFormEditorID",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf1360",
+   "unit": "unmapped/static/Staticf1360",
+   "inventory": "Staticf1360::initializer",
+   "source": "Staticf1360::initializer",
+   "crashlogger": "BGSNote::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf13e0",
+   "unit": "unmapped/static/Staticf13e0",
+   "inventory": "Staticf13e0::initializer",
+   "source": "Staticf13e0::initializer",
+   "crashlogger": "BGSNote::ClearData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf1560",
+   "unit": "unmapped/static/Staticf1560",
+   "inventory": "Staticf1560::initializer",
+   "source": "Staticf1560::initializer",
+   "crashlogger": "BGSNote::InitializeData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf1840",
+   "unit": "unmapped/static/Staticf1840",
+   "inventory": "Staticf1840::initializer",
+   "source": "Staticf1840::initializer",
+   "crashlogger": "BGSNote::LoadGame",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf2990",
+   "unit": "unmapped/static/Staticf2990",
+   "inventory": "Staticf2990::initializer",
+   "source": "Staticf2990::initializer",
+   "crashlogger": "BGSNote::Activate",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x100d80",
+   "unit": "unmapped/static/Static100d80",
+   "inventory": "Static100d80::initializer",
+   "source": "Static100d80::initializer",
+   "crashlogger": "BGSRagdoll::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x100e40",
+   "unit": "unmapped/static/Static100e40",
+   "inventory": "Static100e40::initializer",
+   "source": "Static100e40::initializer",
+   "crashlogger": "BGSRagdoll::ClearData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x100f30",
+   "unit": "unmapped/static/Static100f30",
+   "inventory": "Static100f30::initializer",
+   "source": "Static100f30::initializer",
+   "crashlogger": "BGSRagdoll::InitializeData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x103820",
+   "unit": "unmapped/static/Static103820",
+   "inventory": "Static103820::initializer",
+   "source": "Static103820::initializer",
+   "crashlogger": "BGSRefAlias::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x103890",
+   "unit": "unmapped/static/Static103890",
+   "inventory": "Static103890::initializer",
+   "source": "Static103890::initializer",
+   "crashlogger": "BGSRefAlias::QType",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x103900",
+   "unit": "unmapped/static/Static103900",
+   "inventory": "Static103900::initializer",
+   "source": "Static103900::initializer",
+   "crashlogger": "BGSRefAlias::InitItem",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x106fb0",
+   "unit": "unmapped/static/Static106fb0",
+   "inventory": "Static106fb0::initializer",
+   "source": "Static106fb0::initializer",
+   "crashlogger": "BGSRelationship::SaveGame",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x107110",
+   "unit": "unmapped/static/Static107110",
+   "inventory": "Static107110::initializer",
+   "source": "Static107110::initializer",
+   "crashlogger": "BGSRelationship::InitializeData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x107190",
+   "unit": "unmapped/static/Static107190",
+   "inventory": "Static107190::initializer",
+   "source": "Static107190::initializer",
+   "crashlogger": "BGSRelationship::Load",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x107210",
+   "unit": "unmapped/static/Static107210",
+   "inventory": "Static107210::initializer",
+   "source": "Static107210::initializer",
+   "crashlogger": "BGSRelationship::LoadGame",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x107290",
+   "unit": "unmapped/static/Static107290",
+   "inventory": "Static107290::initializer",
+   "source": "Static107290::initializer",
+   "crashlogger": "BGSRelationship::InitLoadGame",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x14b570",
+   "unit": "skyrim_shared/magic/EffectSetting_14b570",
+   "inventory": "EffectSetting::Function14b570",
+   "source": "EffectSetting::GetSound",
+   "crashlogger": "EffectSetting::GetSound",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x14e7f0",
+   "unit": "skyrim_shared/magic/MagicItem_14e7f0",
+   "inventory": "MagicItem::Function14e7f0",
+   "source": "MagicItem::IsValidEnchantmentForWeapon",
+   "crashlogger": "EnchantmentItem::IsValidEnchantmentForWeapon",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x164570",
+   "unit": "skyrim_shared/extradata/ExtraDataList_163940",
+   "inventory": "ExtraDataList::GetOwner",
+   "source": "ExtraDataList::GetOwner",
+   "crashlogger": "ExtraDataList::GetOwner",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x16a0a0",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetEncounterZone",
+   "source": "ExtraDataList::GetEncounterZone",
+   "crashlogger": "ExtraDataList::GetEncounterZone",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x17c3a0",
+   "unit": "unmapped/leaves/DeletingLeaf17c3a0",
+   "inventory": "DeletingLeaf17c3a0::~DeletingLeaf17c3a0",
+   "source": "DeletingLeaf17c3a0::~DeletingLeaf17c3a0",
+   "crashlogger": "TESTopicInfo::BelongsInGroup",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x17cb90",
+   "unit": "skyrim_shared/extradata/ExtraGlobalStorageLayout",
+   "inventory": "DeletingLeaf17cb90::~DeletingLeaf17cb90",
+   "source": "DeletingLeaf17cb90::~DeletingLeaf17cb90",
+   "crashlogger": "TESTopicInfo::InitializeData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x17ee20",
+   "unit": "unmapped/storage/FieldRecoveryStorageLayout",
+   "inventory": "represented typed field operation",
+   "crashlogger": "NonActorMagicTarget::GetTargetStatsObject",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x180eb0",
+   "unit": "skyrim_shared/extradata/ExtraLock_180eb0",
+   "inventory": "ExtraLock::Function180eb0",
+   "source": "ExtraLock::~ExtraLock",
+   "crashlogger": "ExtraLock::~ExtraLock",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x181060",
+   "unit": "skyrim_shared/extradata/ExtraTeleport_181060",
+   "inventory": "ExtraTeleport::Function181060",
+   "source": "ExtraTeleport::~ExtraTeleport",
+   "crashlogger": "ExtraTeleport::~ExtraTeleport",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1860c0",
+   "unit": "skyrim_shared/extradata/ExtraPatrolRefData_1860c0",
+   "inventory": "ExtraPatrolRefData::Function1860c0",
+   "source": "ExtraPatrolRefData::~ExtraPatrolRefData",
+   "crashlogger": "ExtraPatrolRefData::~ExtraPatrolRefData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1863d0",
+   "unit": "skyrim_shared/extradata/ExtraPortalRefData_1863d0",
+   "inventory": "ExtraPortalRefData::Function1863d0",
+   "source": "ExtraPortalRefData::~ExtraPortalRefData",
+   "crashlogger": "ExtraPortalRefData::~ExtraPortalRefData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1865e0",
+   "unit": "skyrim_shared/extradata/ExtraPackageData_1865e0",
+   "inventory": "ExtraPackageData::Function1865e0",
+   "source": "ExtraPackageData::~ExtraPackageData",
+   "crashlogger": "ExtraPackageData::~ExtraPackageData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x186630",
+   "unit": "skyrim_shared/extradata/ExtraCollisionData_186630",
+   "inventory": "ExtraCollisionData::~ExtraCollisionData",
+   "source": "ExtraCollisionData::~ExtraCollisionData",
+   "crashlogger": "ExtraCollisionData::~ExtraCollisionData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x190a00",
+   "unit": "skyrim_shared/forms/TESFullName_190a00",
+   "inventory": "TESFullName::Function190a00",
+   "source": "MapMarkerData::Copy",
+   "crashlogger": "MapMarkerData::Copy",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1a0180",
+   "unit": "bsmain/TES_1a0180",
+   "inventory": "TES::Function1a0180",
+   "source": "TES::GetCurrentCell",
+   "crashlogger": "TES::GetCurrentCell",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1a6f80",
+   "unit": "bsmain/TES_1a6f80",
+   "inventory": "TES::Function1a6f80",
+   "source": "TES::ResolveCellQueryNode",
+   "crashlogger": "TES::Pick",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1d2170",
+   "unit": "skyrim_shared/forms/BGSBipedObjectForm",
+   "inventory": "BGSBipedObjectForm::Function1d2170",
+   "source": "BGSBipedObjectForm::FillsBipedSlot",
+   "crashlogger": "BGSBipedObjectForm::FillsBipedSlot",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1dcaf0",
+   "unit": "skyrim_shared/forms/TESActorBaseData_1dcaf0",
+   "inventory": "Function1dcaf0",
+   "source": "TESActorBaseData::GetTemplateUseFlag",
+   "crashlogger": "TESActorBaseData::GetTemplateUseFlag",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1e6d00",
+   "unit": "skyrim_shared/forms/TESForm_1e6d00",
+   "inventory": "TESForm::AddCompileIndex",
+   "source": "TESForm::AddCompileIndex",
+   "crashlogger": "TESForm::AddCompileIndex",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1e7cb0",
+   "unit": "bsscript/BSVMLoadTask",
+   "inventory": "BSVMLoadTask::GetDescription",
+   "source": "BSVMLoadTask::GetDescription",
+   "crashlogger": "BSVMLoadTask::GetDescription",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x226c40",
+   "unit": "skyrim_shared/world/GridCellArray_226c40",
+   "inventory": "GridCellArray::Function226c40",
+   "source": "GridCellArray::ResetCenter",
+   "crashlogger": "GridArray::Init",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x24faa0",
+   "unit": "skyrim_shared/world/TESRegion",
+   "inventory": "TESRegion::Validate",
+   "source": "TESRegion::Validate",
+   "crashlogger": "TESRegion::Validate",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x266090",
+   "unit": "skyrim_shared/refs/BGSProjectile",
+   "inventory": "BGSProjectile::Function266090",
+   "source": "Function266090",
+   "crashlogger": "BGSProjectile::GetRelaunchInterval",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2660b0",
+   "unit": "skyrim_shared/refs/BGSProjectile_2660b0",
+   "inventory": "BGSProjectile::Function2660b0",
+   "source": "BGSProjectile::GetCollisionLayer",
+   "crashlogger": "BGSProjectile::GetCollisionLayer",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x277e00",
+   "unit": "skyrim_shared/forms/TESBoundObject_1467c0",
+   "inventory": "TESBoundObject::Clone3D",
+   "source": "TESBoundObject::Clone3D",
+   "crashlogger": "TESBoundObject::Clone3D",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x278e00",
+   "unit": "skyrim_shared/forms/TESBoundObject_278e00",
+   "inventory": "TESBoundObject::ReplaceModel",
+   "source": "TESBoundObject::ReplaceModel",
+   "crashlogger": "TESBoundObject::ReplaceModel",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2878f0",
+   "unit": "skyrim_shared/forms/TESObjectSTAT",
+   "inventory": "TESObjectSTAT::Function2878f0",
+   "source": "TESObjectSTAT::SetIsSkyObject",
+   "crashlogger": "TESObjectSTAT::SetIsSkyObject",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x287910",
+   "unit": "skyrim_shared/forms/TESObjectSTAT",
+   "inventory": "TESObjectSTAT::Function287910",
+   "source": "TESObjectSTAT::Function287910",
+   "crashlogger": "TESObjectSTAT::QIsSkyObject",
+   "verdict": "rename",
+   "has_prototype": true,
+   "old_member": "Function287910",
+   "new_member": "QIsSkyObject"
+  },
+  {
+   "rva": "0x28f900",
+   "unit": "skyrim_shared/world/BGSEncounterZone_28f900",
+   "inventory": "BGSEncounterZone::Function28f900",
+   "source": "BGSEncounterZone::SetDetachTime",
+   "crashlogger": "BGSEncounterZone::SetDetachTime",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x29a690",
+   "unit": "skyrim_shared/world/BGSLocation_29a690",
+   "inventory": "BGSLocation::Function29a690",
+   "source": "BGSLocation::IsRefAtLocation",
+   "crashlogger": "BGSLocation::IsRefAtLocation",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x29b350",
+   "unit": "skyrim_shared/refs/TESObjectREFR_29b350",
+   "inventory": "FindNodeValue",
+   "source": "FindNodeValue",
+   "crashlogger": "BGSLocation::GetUnreportedCrimeFactionForRef",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2b2600",
+   "unit": "skyrim_shared/world/TESObjectLAND_2b2600",
+   "inventory": "TESObjectLAND::Function2b2600",
+   "source": "ReconstructedTESObjectLAND::TESObjectLAND::Function2b2600",
+   "crashlogger": "TESObjectLAND::IsLoaded",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2e6ab0",
+   "unit": "skyrim_shared/actors/SceneActor",
+   "inventory": "P2071::SceneActor::UpdateScene",
+   "source": "P2071::SceneActor::UpdateScene",
+   "crashlogger": "TESObjectREFR::SetCurrentSceneActionComplete",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2f3e40",
+   "unit": "skyrim_shared/refs/TESObjectREFR_2f3e40",
+   "inventory": "TESObjectREFR::Function2f3e40",
+   "source": "TESObjectREFR::GetSaveParentCell",
+   "crashlogger": "TESObjectREFR::GetSaveParentCell",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2fa140",
+   "unit": "unmapped/leaves/LeafAddress2fa140",
+   "inventory": "LeafAddress2fa140::Address",
+   "source": "LeafAddress2fa140::Address",
+   "crashlogger": "TESObjectREFR::SetOwner",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x2fcb40",
+   "unit": "skyrim_shared/refs/TESObjectREFR_2fcb40",
+   "inventory": "PrepareUpdate",
+   "source": "PrepareUpdate",
+   "crashlogger": "TESObjectREFR::SetupAnimationUpdateDataForReference",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x300c90",
+   "unit": "skyrim_shared/refs/TESObjectREFR_2fd720",
+   "inventory": "TESObjectREFR::SetActorCause",
+   "source": "TESObjectREFR::SetActorCause",
+   "crashlogger": "TESObjectREFR::SetActorCause",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x30e100",
+   "unit": "skyrim_shared/world/TESWorldSpace_30e100",
+   "inventory": "TESWorldSpace::Function30e100",
+   "source": "TESWorldSpace::GetHideMapMarkers",
+   "crashlogger": "TESWorldSpace::GetHideMapMarkers",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3202d0",
+   "unit": "skyrim_shared/forms/BGSListForm",
+   "inventory": "BGSListForm::Function3202d0",
+   "source": "BGSListForm::Function3202d0",
+   "crashlogger": "BGSListForm::GetItemAtFormListIndex",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x38b720",
+   "unit": "skyrim_shared/actors/BGSBodyPartData",
+   "inventory": "BGSBodyPartData::GetBodyPart",
+   "source": "BGSBodyPartData::GetBodyPart",
+   "crashlogger": "BGSBodyPartData::GetBodyPart",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x390a20",
+   "unit": "skyrim_shared/actors/BGSHeadPart_390a20",
+   "inventory": "BGSHeadPart::sub",
+   "source": "BGSHeadPart::sub",
+   "crashlogger": "BGSHeadPart::GetIsValidForRace",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3ac550",
+   "unit": "skyrim_shared/quest/BGSSceneActionPackage_3ac550",
+   "inventory": "BGSSceneActionPackage::Function3ac550",
+   "source": "BGSSceneActionPackage::LoadBuffer",
+   "crashlogger": "BGSSceneActionPackage::LoadGame",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3c8570",
+   "unit": "skyrim_shared/actors/TESNPC_3c8570",
+   "inventory": "TESNPC::Function3c8570",
+   "source": "TESNPC::FindInFileFast",
+   "crashlogger": "TESNPC::FindInFileFast",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3cdee0",
+   "unit": "unmapped/leaves/RelayLeaf3cdee0",
+   "inventory": "RelayLeaf3cdee0::Relay",
+   "source": "RelayLeaf3cdee0::Relay",
+   "crashlogger": "TESQuest::ForceRefIntoAlias",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3cff90",
+   "unit": "skyrim_shared/quest/TESQuest_3cff90",
+   "inventory": "TESQuest::Function3cff90",
+   "source": "TESQuest::GetObjective",
+   "crashlogger": "TESQuest::GetObjective",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3e82c0",
+   "unit": "skyrim_shared/actors/TESRace_3e82c0",
+   "inventory": "TESRace::Function3e82c0",
+   "source": "ReconstructedTESRace::TESRace::Function3e82c0",
+   "crashlogger": "TESRace::QCanUseWeaponType",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3e8300",
+   "unit": "skyrim_shared/actors/TESRace",
+   "inventory": "TESRace::Function3e8300",
+   "source": "TESRace::QCanUseMeleeWeapons",
+   "crashlogger": "TESRace::QCanUseMeleeWeapons",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x3f2e60",
+   "unit": "skyrim_shared/dialogue/TESTopicInfo_3f2e60",
+   "inventory": "TESTopicInfo::Function3f2e60",
+   "source": "ReconstructedTESTopicInfo::TESTopicInfo::Function3f2e60",
+   "crashlogger": "TESTopicInfo::ResetSaidOnceFlags",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x439650",
+   "unit": "skyrim_shared/facegen/BSFaceGenNiNode",
+   "inventory": "BSFaceGenNiNode::UpdateDownwardPass",
+   "source": "BSFaceGenNiNode::UpdateDownwardPass",
+   "crashlogger": "BSFaceGenNiNode::UpdateDownwardPass",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x447af0",
+   "unit": "skyrim/ai/BGSAIWorldLocation_447af0",
+   "inventory": "BGSAIWorldLocation::Function447af0",
+   "source": "BGSAIWorldLocation::IsValid",
+   "crashlogger": "BGSAIWorldLocation::IsValid",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x44e330",
+   "unit": "skyrim/ai/BGSPackageDataLocationWrapper",
+   "inventory": "BGSPackageDataLocationWrapper::Function44e330",
+   "source": "BGSPackageDataLocationWrapper::LoadGame",
+   "crashlogger": "BGSPackageDataLocationWrapper::LoadGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4726a0",
+   "unit": "unmapped/leaves/CommunityLeafStorageLayout",
+   "inventory": "DeletingLeaf4726a0::~DeletingLeaf4726a0",
+   "crashlogger": "CombatMagicCasterOffensive::CheckStopCast",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4745f0",
+   "unit": "unmapped/leaves/DeletingLeaf4745f0",
+   "inventory": "DeletingLeaf4745f0::~DeletingLeaf4745f0",
+   "source": "DeletingLeaf4745f0::~DeletingLeaf4745f0",
+   "crashlogger": "CombatMagicCasterLight::CheckStartCast",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x474660",
+   "unit": "unmapped/leaves/DeletingLeaf474660",
+   "inventory": "DeletingLeaf474660::~DeletingLeaf474660",
+   "source": "DeletingLeaf474660::~DeletingLeaf474660",
+   "crashlogger": "CombatMagicCasterLight::GetObjectType",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4a1320",
+   "unit": "skyrim/ai/TESPatrolPackageData",
+   "inventory": "TESPatrolPackageData::Function4a1320",
+   "source": "PatrolRefData::InitItem",
+   "crashlogger": "PatrolRefData::InitItem",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4a6e20",
+   "unit": "skyrim_shared/conditions/TESCondition",
+   "inventory": "TESCondition::IsTrue",
+   "crashlogger": "TESCondition::IsTrue",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4a7690",
+   "unit": "skyrim_shared/conditions/TESConditionItem",
+   "inventory": "TESConditionItem::Copy",
+   "source": "TESConditionItem::Copy",
+   "crashlogger": "TESConditionItem::Copy",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4e0230",
+   "unit": "skyrim_shared/pathfinding/PathingCell",
+   "inventory": "PathingCell::Function4e0230",
+   "source": "PathingCell::GetParentSpace",
+   "crashlogger": "PathingCell::GetParentSpace",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x4e0270",
+   "unit": "skyrim_shared/pathfinding/PathingCell",
+   "inventory": "PathingCell::Function4e0270",
+   "source": "PathingCell::GetWorldSpace",
+   "crashlogger": "PathingCell::GetWorldSpace",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x553560",
+   "unit": "gamebryo/nianimation/IAnimationGraphManagerHolder_553560",
+   "inventory": "IAnimationGraphManagerHolder::SetGraphVariableBool",
+   "source": "IAnimationGraphManagerHolder::SetGraphVariableBool",
+   "crashlogger": "IAnimationGraphManagerHolder::SetGraphVariable",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x553580",
+   "unit": "gamebryo/nianimation/IAnimationGraphManagerHolder_553560",
+   "inventory": "IAnimationGraphManagerHolder::SetGraphVariableInt",
+   "crashlogger": "IAnimationGraphManagerHolder::SetGraphVariable",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5535a0",
+   "unit": "gamebryo/nianimation/IAnimationGraphManagerHolder_553560",
+   "inventory": "IAnimationGraphManagerHolder::SetGraphVariableFloat",
+   "crashlogger": "IAnimationGraphManagerHolder::SetGraphVariable",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5bad70",
+   "unit": "skyrim/magic/ActiveEffect_5bad70",
+   "inventory": "ActiveEffect::ShouldApply",
+   "source": "ActiveEffect::ShouldApply",
+   "crashlogger": "ActiveEffect::CheckTargetActorsOnly",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5bca00",
+   "unit": "skyrim/magic/ActiveEffect_5bca00",
+   "inventory": "ActiveEffect::Function5bca00",
+   "source": "ActiveEffect::ForEachHitEffect",
+   "crashlogger": "ActiveEffect::ForEachHitEffect",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5bcba0",
+   "unit": "skyrim/magic/ValueModifierEffect",
+   "inventory": "ValueModifierEffect::Function5bcba0",
+   "source": "ValueModifierEffect::Function5bcba0",
+   "crashlogger": "ActiveEffect::SetExplosionLocation",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5bf7b0",
+   "unit": "skyrim/magic/ActorMagicCaster_5bf7b0",
+   "inventory": "ActorMagicCaster::FinishCastImpl",
+   "source": "ActorMagicCaster::FinishCastImpl",
+   "crashlogger": "ActorMagicCaster::FinishCastImpl",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5c5cb0",
+   "unit": "skyrim/magic/DisguiseEffect_5c5cb0",
+   "inventory": "DisguiseEffect::SaveGame",
+   "source": "DisguiseEffect::SaveGame",
+   "crashlogger": "DisguiseEffect::SaveGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5c5d40",
+   "unit": "skyrim/magic/DisguiseEffect_5c5d40",
+   "inventory": "DisguiseEffect::FinishLoadGame",
+   "source": "DisguiseEffect::FinishLoadGame",
+   "crashlogger": "DisguiseEffect::FinishLoadGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5c6e00",
+   "unit": "skyrim/magic/EtherealizationEffect",
+   "inventory": "EtherealizationEffect::Start",
+   "source": "EtherealizationEffect::Start",
+   "crashlogger": "EtherealizationEffect::Start",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5c9940",
+   "unit": "skyrim/magic/LightEffect_5c9940",
+   "inventory": "LightEffect::FinishLoadGame",
+   "source": "LightEffect::FinishLoadGame",
+   "crashlogger": "LightEffect::FinishLoadGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5cd660",
+   "unit": "skyrim/magic/MagicCaster_5cd660",
+   "inventory": "MagicCaster::FinishLoadGame",
+   "source": "MagicCaster::FinishLoadGame",
+   "crashlogger": "MagicCaster::FinishLoadGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d0d60",
+   "unit": "skyrim_shared/magic/MagicTarget_5d0d60",
+   "inventory": "MagicTarget::Function5d0d60",
+   "source": "MagicTarget::~MagicTarget",
+   "crashlogger": "MagicTarget::~MagicTarget",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d2e40",
+   "unit": "skyrim_shared/magic/MagicTarget_5d2e40",
+   "inventory": "MagicTarget::Function5d2e40",
+   "source": "MagicTarget::GetMagicTargetFormID",
+   "crashlogger": "MagicTarget::GetMagicTargetFormID",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d2ec0",
+   "unit": "unmapped/leaves/Leaf5d2ec0",
+   "inventory": "Leaf5d2ec0::Invoke",
+   "source": "Leaf5d2ec0::Invoke",
+   "crashlogger": "MagicTarget::InvalidateCommandedActorEffect",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d2fc0",
+   "unit": "unmapped/leaves/Leaf5d2fc0",
+   "inventory": "Leaf5d2fc0::Invoke",
+   "source": "Leaf5d2fc0::Invoke",
+   "crashlogger": "MagicTarget::EffectAdded",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d2fd0",
+   "unit": "unmapped/leaves/Leaf5d2fd0",
+   "inventory": "Leaf5d2fd0::Invoke",
+   "source": "Leaf5d2fd0::Invoke",
+   "crashlogger": "MagicTarget::EffectRemoved",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d2fe0",
+   "unit": "skyrim_shared/magic/MagicTarget_5d2fe0",
+   "inventory": "MagicTarget::CheckResistance",
+   "source": "MagicTarget::CheckResistance",
+   "crashlogger": "MagicTarget::CheckResistance",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d2ff0",
+   "unit": "unmapped/leaves/ReturnLeaf5d2ff0",
+   "inventory": "ReturnLeaf5d2ff0::Invoke",
+   "source": "ReturnLeaf5d2ff0::Invoke",
+   "crashlogger": "MagicTarget::CheckAbsorb",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d98e0",
+   "unit": "unmapped/leaves/ReturnLeaf5d98e0",
+   "inventory": "ReturnLeaf5d98e0::Invoke",
+   "source": "ReturnLeaf5d98e0::Invoke",
+   "crashlogger": "NonActorMagicTarget::CanAddActiveEffect",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5d98f0",
+   "unit": "unmapped/storage/FieldRecoveryStorageLayout",
+   "inventory": "represented typed field operation",
+   "crashlogger": "NonActorMagicTarget::GetActiveEffectList",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5da6c0",
+   "unit": "skyrim/magic/ReanimateEffect",
+   "inventory": "ReanimateEffect::LoadGame",
+   "source": "ReanimateEffect::LoadGame",
+   "crashlogger": "ReanimateEffect::LoadGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5dbe70",
+   "unit": "unmapped/leaves/TableStoreLeaf5dbe70",
+   "inventory": "TableStoreLeaf5dbe70::~TableStoreLeaf5dbe70",
+   "source": "TableStoreLeaf5dbe70::~TableStoreLeaf5dbe70",
+   "crashlogger": "ReferenceEffectController::~ReferenceEffectController",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5dbfb0",
+   "unit": "skyrim_shared/tempeffects/ReferenceEffectController_5dbfb0",
+   "inventory": "ReferenceEffectController::GetIsRootActor",
+   "source": "ReferenceEffectController::GetIsRootActor",
+   "crashlogger": "ReferenceEffectController::GetIsRootActor",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5dcaf0",
+   "unit": "skyrim_shared/tempeffects/ActiveEffectReferenceEffectController_5dcaf0",
+   "inventory": "ActiveEffectReferenceEffectController::Function5dcaf0",
+   "source": "ActiveEffectReferenceEffectController::GetAllowNo3D",
+   "crashlogger": "ActiveEffectReferenceEffectController::GetAllowNo3D",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5dcb40",
+   "unit": "skyrim_shared/tempeffects/ActiveEffectReferenceEffectController_5dcb40",
+   "inventory": "ActiveEffectReferenceEffectController::SaveGame",
+   "source": "ActiveEffectReferenceEffectController::SaveGame",
+   "crashlogger": "ActiveEffectReferenceEffectController::SaveGame",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5e5770",
+   "unit": "skyrim/magic/BanishEffect",
+   "inventory": "BanishEffect::Start",
+   "source": "BanishEffect::Start",
+   "crashlogger": "BanishEffect::Start",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5e6fc0",
+   "unit": "skyrim/magic/ValueModifierEffect_5e6fc0",
+   "inventory": "ValueModifierEffect::Function5e6fc0",
+   "source": "ValueModifierEffect::CheckTarget",
+   "crashlogger": "ValueModifierEffect::CheckTarget",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x5e72b0",
+   "unit": "skyrim/magic/ValueModifierEffect_5e72b0",
+   "inventory": "ValueModifierEffect::Start",
+   "source": "ValueModifierEffect::Start",
+   "crashlogger": "ValueModifierEffect::Start",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x64d0b0",
+   "unit": "skyrim/magic/EnhanceWeaponEffect",
+   "inventory": "EnhanceWeaponEffect::Start",
+   "source": "EnhanceWeaponEffect::Start",
+   "crashlogger": "EnhanceWeaponEffect::Start",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x66ec80",
+   "unit": "bscore/EventCaptureDeleteLayout",
+   "inventory": "DeletingLeaf66ec80::~DeletingLeaf66ec80",
+   "crashlogger": "IGiftMenuScriptCallback::~IGiftMenuScriptCallback",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x673ac0",
+   "unit": "skyrim_shared/actors/Character_673ac0",
+   "inventory": "Character::Function673ac0",
+   "source": "Character::SwimsOnly",
+   "crashlogger": "Actor::SwimsOnly",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x673b60",
+   "unit": "skyrim_shared/actors/Character_673b60",
+   "inventory": "Character::Function673b60",
+   "source": "Character::FightsInWater",
+   "crashlogger": "Actor::FightsInWater",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x674000",
+   "unit": "skyrim_shared/actors/Character_674000",
+   "inventory": "Character::Function674000",
+   "source": "Character::GetEssential",
+   "crashlogger": "Actor::GetEssential",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x67d8c0",
+   "unit": "skyrim_shared/actors/Character_67d8c0",
+   "inventory": "Character::Function67d8c0",
+   "source": "Character::ShouldSaveAnimationData",
+   "crashlogger": "Actor::ShouldSaveAnimationData",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x67f580",
+   "unit": "skyrim_shared/actors/Character_67f580",
+   "inventory": "Character::Function67f580",
+   "source": "Character::GetCurrentPackageTarget",
+   "crashlogger": "Actor::GetCurrentPackageTarget",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x681d60",
+   "unit": "skyrim_shared/actors/Actor",
+   "inventory": "Actor::Function681d60",
+   "source": "Actor::Function681d60",
+   "crashlogger": "Actor::IsAlarmed",
+   "verdict": "rename",
+   "has_prototype": true,
+   "old_member": "Function681d60",
+   "new_member": "IsAlarmed"
+  },
+  {
+   "rva": "0x685930",
+   "unit": "skyrim_shared/actors/Character_685930",
+   "inventory": "Character::Function685930",
+   "source": "Character::GetFlightRadius",
+   "crashlogger": "Actor::GetFlightRadius",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x690e50",
+   "unit": "skyrim_shared/actors/Actor_690e50",
+   "inventory": "Actor::SetDelete",
+   "source": "Actor::SetDelete",
+   "crashlogger": "Actor::SetDelete",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6a6a00",
+   "unit": "skyrim_shared/refs/ForwardTarget",
+   "inventory": "P2071::ActorForwardPredicate",
+   "source": "P2071::ActorForwardPredicate",
+   "crashlogger": "Actor::HasActivePath",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6a6c20",
+   "unit": "skyrim_shared/actors/Character_6a6c20",
+   "inventory": "Character::Function6a6c20",
+   "source": "Character::GetLookAtTarget",
+   "crashlogger": "Actor::GetLookAtTarget",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6be2e0",
+   "unit": "unmapped/leaves/ReturnLeaf6be2e0",
+   "inventory": "ReturnLeaf6be2e0::Invoke",
+   "source": "ReturnLeaf6be2e0::Invoke",
+   "crashlogger": "Actor::MagicTargetIsActor",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6c9870",
+   "unit": "skyrim/ai/combat/CombatActor",
+   "inventory": "P2071::CombatActor::EngagingInCombat",
+   "source": "P2071::CombatActor::EngagingInCombat",
+   "crashlogger": "Actor::IsInActiveCombat",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6d4510",
+   "unit": "skyrim_shared/actors/Actor_6d4510",
+   "inventory": "Actor::Function6d4510",
+   "source": "Actor::SetAlpha",
+   "crashlogger": "Actor::SetAlpha",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6d6ad0",
+   "unit": "skyrim_shared/actors/Character_6d6ad0",
+   "inventory": "Character::Function6d6ad0",
+   "source": "Character::SetDualCasting",
+   "crashlogger": "Actor::SetDualCasting",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6d6d00",
+   "unit": "skyrim_shared/actors/Actor_6d6d00",
+   "inventory": "HasSelectedSpell",
+   "source": "HasSelectedSpell",
+   "crashlogger": "Actor::HasCastableSpell",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6d8570",
+   "unit": "skyrim_shared/actors/Actor_6d8570",
+   "inventory": "Actor::Function6d8570",
+   "source": "Actor::CanAddActiveEffect",
+   "crashlogger": "Actor::CanAddActiveEffect",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6d9500",
+   "unit": "skyrim_shared/actors/Actor_6d9500",
+   "inventory": "Actor::Function6d9500",
+   "source": "Actor::GetSoul",
+   "crashlogger": "Actor::GetSoul",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6d9570",
+   "unit": "skyrim_shared/actors/Actor_6d9570",
+   "inventory": "Actor::Function6d9570",
+   "source": "Actor::GetSoulLevel",
+   "crashlogger": "Actor::GetSoulLevel",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x6e0fe0",
+   "unit": "unmapped/leaves/TableStoreLeaf6e0fe0",
+   "inventory": "TableStoreLeaf6e0fe0::~TableStoreLeaf6e0fe0",
+   "source": "TableStoreLeaf6e0fe0::~TableStoreLeaf6e0fe0",
+   "crashlogger": "ActorPackageData::~ActorPackageData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x73a9f0",
+   "unit": "skyrim_shared/actors/Character_685c00",
+   "inventory": "Character::PrecacheData",
+   "source": "Character::PrecacheData",
+   "crashlogger": "Character::PrecacheData",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x747b30",
+   "unit": "skyrim_shared/actors/PlayerCharacter_747b30",
+   "inventory": "PlayerCharacter::Function747b30",
+   "source": "PlayerCharacter::GetCurrent3D",
+   "crashlogger": "PlayerCharacter::GetCurrent3D",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x74a6f0",
+   "unit": "skyrim/magic/ActiveEffect_74a6f0",
+   "inventory": "ActiveEffect::Function74a6f0",
+   "source": "ActiveEffect::AllowHitEffects",
+   "crashlogger": "PlayerCharacter::AllowHitEffects",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x74e5c0",
+   "unit": "skyrim_shared/actors/PlayerCharacter_74e5c0",
+   "inventory": "ProcessComponent",
+   "source": "ProcessComponent",
+   "crashlogger": "BSSegmentedTriShape::CopyMembers",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x7559b0",
+   "unit": "skyrim_shared/actors/PlayerCharacter_7559b0",
+   "inventory": "PlayerCharacter::Function7559b0",
+   "source": "PlayerCharacter::QWarnToLeave",
+   "crashlogger": "PlayerCharacter::QWarnToLeave",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x756c60",
+   "unit": "skyrim_shared/actors/PlayerCharacter_7559b0",
+   "inventory": "PlayerCharacter::Function756c60",
+   "source": "PlayerCharacter::IsActionInList",
+   "crashlogger": "PlayerCharacter::IsActionInList",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x7573c0",
+   "unit": "skyrim_shared/actors/PlayerCharacter_7573c0",
+   "inventory": "PlayerCharacter::Function7573c0",
+   "source": "PlayerCharacter::UpdateLowHealthIMod",
+   "crashlogger": "PlayerCharacter::UpdateLowHealthIMod",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x75ac10",
+   "unit": "skyrim_shared/actors/PlayerCharacter_75ac10",
+   "inventory": "ScaledCrime",
+   "source": "ScaledCrime",
+   "crashlogger": "PlayerCharacter::CalculateDaysInJail",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x77a070",
+   "unit": "unmapped/leaves/TableStoreLeaf77a070",
+   "inventory": "TableStoreLeaf77a070::~TableStoreLeaf77a070",
+   "source": "TableStoreLeaf77a070::~TableStoreLeaf77a070",
+   "crashlogger": "IMovementControllerNPCFunctor::~IMovementControllerNPCFunctor",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x7a5c80",
+   "unit": "skyrim/ai/movement/MovementHandlerAgentSprintActionTrigger_7a5c80",
+   "inventory": "MovementHandlerAgentSprintActionTrigger::Function7a5c80",
+   "source": "MovementHandlerAgentSprintActionTrigger::Init",
+   "crashlogger": "MovementHandlerAgentSprintActionTrigger::Init",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x7e3530",
+   "unit": "unmapped/leaves/TableStoreLeaf7e3530",
+   "inventory": "TableStoreLeaf7e3530::~TableStoreLeaf7e3530",
+   "source": "TableStoreLeaf7e3530::~TableStoreLeaf7e3530",
+   "crashlogger": "IExplosionFactory::~IExplosionFactory",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x7ec700",
+   "unit": "skyrim_shared/refs/GrenadeProjectile_7ec630",
+   "inventory": "GrenadeProjectile::IsPermanent",
+   "source": "GrenadeProjectile::IsPermanent",
+   "crashlogger": "GrenadeProjectile::IsPermanent",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x833ca0",
+   "unit": "skyrim/ai/combat/CombatMagicCasterOffensive_833ca0",
+   "inventory": "CombatMagicCasterOffensive::CheckStartCast",
+   "source": "CombatMagicCasterOffensive::CheckStartCast",
+   "crashlogger": "CombatMagicCasterOffensive::CheckStartCast",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x85e2a0",
+   "unit": "unmapped/leaves/DeletingLeaf85e2a0",
+   "inventory": "DeletingLeaf85e2a0::~DeletingLeaf85e2a0",
+   "source": "DeletingLeaf85e2a0::~DeletingLeaf85e2a0",
+   "crashlogger": "CombatBehaviorThread::SetAborted",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x8d7460",
+   "unit": "unmapped/leaves/ClassTypeLeaf8d7460",
+   "inventory": "ClassTypeLeaf8d7460::QClassType",
+   "source": "ClassTypeLeaf8d7460::QClassType",
+   "crashlogger": "hkpShapeContainer::~hkpShapeContainer",
+   "verdict": "ambiguous",
+   "reason": "placeholder-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x8f6fd0",
+   "unit": "skyrim/camera/HorseCameraState_8f6fd0",
+   "inventory": "HorseCameraState::Revert",
+   "source": "HorseCameraState::Revert",
+   "crashlogger": "HorseCameraState::Revert",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa2a7f0",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "BSAudio::GetReceiver",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa2ef90",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "BSXAudio2GameSound::SetAttenuationCurve",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa33860",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "AbstractHeap::GetMemoryStats",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa55190",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiSwitchNode::AttachChild",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa55350",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiPointLight::SaveBinary",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa55390",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiStream::LoadHeader",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa55690",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiTimeController::SetTarget",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa55890",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiSkinInstance::RegisterStreamables",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa559d0",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiSkinInstance::GetRTTI",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa55c10",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiGeometryData::GetRTTI",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa560d0",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiGeometryData::RegisterStreamables",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xa61610",
+   "unit": "skyrim/papyrus/NativeFunctionLayout",
+   "inventory": "NativeFunctionLayout::~NativeFunctionLayout",
+   "crashlogger": "NiGeometry::LoadBinary",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xbaf0e0",
+   "unit": "unmapped/leaves/TableStoreLeafbaf0e0",
+   "inventory": "TableStoreLeafbaf0e0::~TableStoreLeafbaf0e0",
+   "source": "TableStoreLeafbaf0e0::~TableStoreLeafbaf0e0",
+   "crashlogger": "BSLimbIKModifierCastInfo::~BSLimbIKModifierCastInfo",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xbaf120",
+   "unit": "unmapped/leaves/TableStoreLeafbaf120",
+   "inventory": "TableStoreLeafbaf120::~TableStoreLeafbaf120",
+   "source": "TableStoreLeafbaf120::~TableStoreLeafbaf120",
+   "crashlogger": "BSILimbIKModifierSingleton::~BSILimbIKModifierSingleton",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xbb1b90",
+   "unit": "unmapped/leaves/TableStoreLeafbb1b90",
+   "inventory": "TableStoreLeafbb1b90::~TableStoreLeafbb1b90",
+   "source": "TableStoreLeafbb1b90::~TableStoreLeafbb1b90",
+   "crashlogger": "BSIDirectAtModifierSingleton::~BSIDirectAtModifierSingleton",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xbb1c00",
+   "unit": "unmapped/leaves/TableStoreLeafbb1c00",
+   "inventory": "TableStoreLeafbb1c00::~TableStoreLeafbb1c00",
+   "source": "TableStoreLeafbb1c00::~TableStoreLeafbb1c00",
+   "crashlogger": "BSIPassByTargetTriggerModifierSingleton::~BSIPassByTargetTriggerModifierSingleton",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xbb1cb0",
+   "unit": "unmapped/leaves/TableStoreLeafbb1cb0",
+   "inventory": "TableStoreLeafbb1cb0::~TableStoreLeafbb1cb0",
+   "source": "TableStoreLeafbb1cb0::~TableStoreLeafbb1cb0",
+   "crashlogger": "BSIRagdollContactListenerModifierSingleton::~BSIRagdollContactListenerModifierSingleton",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xbc1b00",
+   "unit": "unmapped/leaves/TableStoreLeafbc1b00",
+   "inventory": "TableStoreLeafbc1b00::~TableStoreLeafbc1b00",
+   "source": "TableStoreLeafbc1b00::~TableStoreLeafbc1b00",
+   "crashlogger": "IPostAnimationChannelUpdateFunctor::~IPostAnimationChannelUpdateFunctor",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xcca620",
+   "unit": "bsaudio/BSAudioManager",
+   "inventory": "BSAudioManager::QPlatformInstance",
+   "source": "BSAudioManager::QPlatformInstance",
+   "crashlogger": "BSAudioManager::QPlatformInstance",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xcddda0",
+   "unit": "unmapped/support/MemoryManager_cddda0",
+   "inventory": "Functioncddda0",
+   "source": "f3m_0086b820::Task0905::MemoryManager::GetHeapForPhysicalPointer",
+   "crashlogger": "MemoryManager::GetHeapForPhysicalPointer",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xcde9c0",
+   "unit": "unmapped/leaves/TableStoreLeafcde9c0",
+   "inventory": "TableStoreLeafcde9c0::~TableStoreLeafcde9c0",
+   "source": "TableStoreLeafcde9c0::~TableStoreLeafcde9c0",
+   "crashlogger": "IMemoryManagerFile::~IMemoryManagerFile",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xce3450",
+   "unit": "bscore/BSReadWriteLock_ce3450",
+   "inventory": "BSReadWriteLock::Functionce3450",
+   "source": "BSReadWriteLock::TryLockForRead",
+   "crashlogger": "BSReadWriteLock::TryLockForRead",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xcebe10",
+   "unit": "unmapped/wrappers/TableTailCleanups",
+   "inventory": "Functioncebe10",
+   "source": "TableTailCleanups::Cleanupcebe10",
+   "crashlogger": "IMemoryHeap::~IMemoryHeap",
+   "verdict": "ambiguous",
+   "reason": "placeholder-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xe25560",
+   "unit": "unmapped/wrappers/HeapCleanupDeallocators3",
+   "inventory": "Functione25560",
+   "source": "HeapCleanupDeallocators3::Deletee25560",
+   "crashlogger": "BSLightingShaderMaterialSnow::LoadBinary",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xebeb50",
+   "unit": "bssystem/BSFile_ebeb50",
+   "inventory": "BSFile::Functionebeb50",
+   "source": "BSFile::~BSFile",
+   "crashlogger": "BSFile::~BSFile",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xec3ce0",
+   "unit": "unmapped/leaves/TableStoreLeafec3ce0",
+   "inventory": "TableStoreLeafec3ce0::~TableStoreLeafec3ce0",
+   "source": "TableStoreLeafec3ce0::~TableStoreLeafec3ce0",
+   "crashlogger": "BSTasklet::~BSTasklet",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xec3d00",
+   "unit": "unmapped/leaves/TableStoreLeafec3d00",
+   "inventory": "TableStoreLeafec3d00::~TableStoreLeafec3d00",
+   "source": "TableStoreLeafec3d00::~TableStoreLeafec3d00",
+   "crashlogger": "BSTaskletData::~BSTaskletData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xedc7b0",
+   "unit": "gamebryo/nimain/NiObject",
+   "inventory": "NiObject::Functionedc7b0",
+   "source": "NiObject::RegisterStreamables",
+   "crashlogger": "NiObject::RegisterStreamables",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xee0e90",
+   "unit": "gamebryo/nimain/NiAVObject_ee0e90",
+   "inventory": "NiAVObject::PreAttachUpdate",
+   "source": "NiAVObject::PreAttachUpdate",
+   "crashlogger": "NiAVObject::PreAttachUpdate",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xee11e0",
+   "unit": "gamebryo/nimain/NiAVObject_ee11e0",
+   "inventory": "Functionee11e0",
+   "source": "NiAVObject::HasTransformController",
+   "crashlogger": "NiAVObject::HasTransformController",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xee23a0",
+   "unit": "gamebryo/nimain/NiNode_ee23a0",
+   "inventory": "NiNode::Functionee23a0",
+   "source": "NiNode::GetObjectByName",
+   "crashlogger": "NiNode::GetObjectByName",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xee28e0",
+   "unit": "gamebryo/nimain/NiNode_ee28e0",
+   "inventory": "NiNode::Functionee28e0",
+   "source": "NiNode::UpdateUpwardPass",
+   "crashlogger": "NiNode::UpdateUpwardPass",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xeeb7a0",
+   "unit": "gamebryo/nimain/NiAVObject_eeb7a0",
+   "inventory": "NiAVObject::Functioneeb7a0",
+   "source": "NiAVObject::GetController",
+   "crashlogger": "NiObjectNET::GetController",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xef26b0",
+   "unit": "gamebryo/nimain/NiProperty_ef26b0",
+   "inventory": "NiProperty::Functionef26b0",
+   "source": "NiProperty::Update",
+   "crashlogger": "NiProperty::Update",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xef7f80",
+   "unit": "gamebryo/nianimation/NiTimeController_ef7f80",
+   "inventory": "NiTimeController::Functionef7f80",
+   "source": "NiTimeController::LinkObject",
+   "crashlogger": "NiTimeController::LinkObject",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xefa110",
+   "unit": "gamebryo/nimain/NiGeometryData_efa110",
+   "inventory": "NiGeometryData::Functionefa110",
+   "source": "NiGeometryData::LinkObject",
+   "crashlogger": "NiGeometryData::LinkObject",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xefa170",
+   "unit": "gamebryo/nimain/NiGeometryData_efa170",
+   "inventory": "NiGeometryData::Functionefa170",
+   "source": "NiGeometryData::RegisterStreamables",
+   "crashlogger": "NiGeometryData::RegisterStreamables",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf07f70",
+   "unit": "unmapped/support/Partition_f07f70",
+   "inventory": "Functionf07f70",
+   "source": "f3m_0084d0b0::Partition::IsEqual",
+   "crashlogger": "Partition::IsEqual",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf11870",
+   "unit": "gamebryo/nimain/NiFloatsExtraData_f11870",
+   "inventory": "NiFloatsExtraData::Functionf11870",
+   "source": "NiFloatsExtraData::GetValue",
+   "crashlogger": "NiFloatsExtraData::GetValue",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf16b00",
+   "unit": "gamebryo/nimain/NiSwitchStringExtraData_f16b00",
+   "inventory": "Functionf16b00",
+   "source": "NiSwitchStringExtraData::IsEqual",
+   "crashlogger": "NiSwitchStringExtraData::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf172f0",
+   "unit": "gamebryo/nimain/NiTriShapeData_f172f0",
+   "inventory": "NiTriShapeData::Functionf172f0",
+   "source": "f3m_00845ee0::NiTriShapeData::IsEqual",
+   "crashlogger": "NiTriShapeData::IsEqual",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf614b0",
+   "unit": "contrib_nifloatinterpolator/NiFloatInterpolator",
+   "inventory": "NiFloatInterpolator::Functionf614b0",
+   "source": "NiFloatInterpolator::IsEqual",
+   "crashlogger": "NiFloatInterpolator::IsEqual",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf6a620",
+   "unit": "gamebryo/nianimation/BSAnimNoteListener_f6a620",
+   "inventory": "Functionf6a620",
+   "source": "BSAnimNoteListener::Update",
+   "crashlogger": "BSAnimNoteListener::Update",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf84ad0",
+   "unit": "gamebryo/nianimation/NiPoint3Interpolator",
+   "inventory": "NiPoint3Interpolator::Functionf84ad0",
+   "source": "NiPoint3Interpolator::IsEqual",
+   "crashlogger": "NiPoint3Interpolator::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf96ed0",
+   "unit": "gamebryo/nianimation/NiExtraDataController_f96ed0",
+   "inventory": "NiExtraDataController::Functionf96ed0",
+   "source": "NiExtraDataController::IsEqual",
+   "crashlogger": "NiExtraDataController::IsEqual",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf98320",
+   "unit": "gamebryo/nianimation/NiFloatController_f98320",
+   "inventory": "NiFloatController::Functionf98320",
+   "source": "NiFloatController::IsEqual",
+   "crashlogger": "NiFloatController::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf9a880",
+   "unit": "gamebryo/niparticle/NiPSysEmitterCtlr_f9a880",
+   "inventory": "NiPSysEmitterCtlr::Functionf9a880",
+   "source": "NiPSysEmitterCtlr::RegisterStreamables",
+   "crashlogger": "NiPSysEmitterCtlr::RegisterStreamables",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xf9ba30",
+   "unit": "gamebryo/niparticle/NiPSysEmitterCtlr_f9ba30",
+   "inventory": "NiPSysEmitterCtlr::Functionf9ba30",
+   "source": "NiPSysEmitterCtlr::ProcessClone",
+   "crashlogger": "NiPSysEmitterCtlr::ProcessClone",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfa0990",
+   "unit": "gamebryo/niparticle/NiPSysModifierCtlr_fa0990",
+   "inventory": "NiPSysModifierCtlr::Functionfa0990",
+   "source": "NiPSysModifierCtlr::LoadBinary",
+   "crashlogger": "NiPSysModifierCtlr::LoadBinary",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfa0a40",
+   "unit": "gamebryo/niparticle/NiPSysModifierCtlr_fa0a40",
+   "inventory": "NiPSysModifierCtlr::Functionfa0a40",
+   "source": "NiPSysModifierCtlr::IsEqual",
+   "crashlogger": "NiPSysModifierCtlr::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfa0c60",
+   "unit": "gamebryo/niparticle/NiPSysModifierCtlr_fa0c60",
+   "inventory": "NiPSysModifierCtlr::PostLinkObject",
+   "source": "NiPSysModifierCtlr::PostLinkObject",
+   "crashlogger": "NiPSysModifierCtlr::PostLinkObject",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfab6e0",
+   "unit": "unmapped/leaves/LeafAddressfab6e0",
+   "inventory": "LeafAddressfab6e0::Address",
+   "source": "LeafAddressfab6e0::Address",
+   "crashlogger": "GFxValue::ObjectInterface::GetElement",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfce820",
+   "unit": "gamebryo/nimain/BSMultiBoundAABB_fce820",
+   "inventory": "BSMultiBoundOBB::Functionfce820",
+   "source": "BSMultiBoundAABB::CopyMembers",
+   "crashlogger": "BSMultiBoundAABB::CopyMembers",
+   "verdict": "label-source",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfce920",
+   "unit": "gamebryo/nimain/BSMultiBoundAABB_fce920",
+   "inventory": "BSMultiBoundAABB::Functionfce920",
+   "source": "BSMultiBoundAABB::IsEqual",
+   "crashlogger": "BSMultiBoundAABB::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfd8bd0",
+   "unit": "gamebryo/nianimation/BSWindModifier_fd8bd0",
+   "inventory": "BSWindModifier::Functionfd8bd0",
+   "source": "BSWindModifier::LoadBinary",
+   "crashlogger": "BSWindModifier::LoadBinary",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfd8fa0",
+   "unit": "gamebryo/nimain/NiNode",
+   "inventory": "NiNode::Functionfd8fa0",
+   "source": "BSTempNodeManager::~BSTempNodeManager",
+   "crashlogger": "BSTempNodeManager::~BSTempNodeManager",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfe4f80",
+   "unit": "gamebryo/nimain/BSMultiBoundAABB_fe4f80",
+   "inventory": "BSMultiBoundAABB::sub",
+   "source": "BSMultiBoundAABB::sub",
+   "crashlogger": "BSMultiBoundShape::CopyMembers",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfe5250",
+   "unit": "gamebryo/nimain/BSMultiBoundAABB_fe5250",
+   "inventory": "BSMultiBoundAABB::Functionfe5250",
+   "source": "BSMultiBoundAABB::CopyMembers",
+   "crashlogger": "BSMultiBoundSphere::CopyMembers",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfe53a0",
+   "unit": "gamebryo/nimain/BSMultiBoundSphere_fe53a0",
+   "inventory": "BSMultiBoundSphere::Functionfe53a0",
+   "source": "BSMultiBoundSphere::IsEqual",
+   "crashlogger": "BSMultiBoundSphere::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xfe8e40",
+   "unit": "gamebryo/nimain/BSOcclusionPlane_fe8e40",
+   "inventory": "BSOcclusionPlane::GetFrustum",
+   "source": "BSOcclusionPlane::GetFrustum",
+   "crashlogger": "BSOcclusionPlane::GetFrustumPlanes",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xff1770",
+   "unit": "gamebryo/nimain/BSBound_ff1770",
+   "inventory": "BSBound::Functionff1770",
+   "source": "BSBound::CopyMembers",
+   "crashlogger": "BSBound::CopyMembers",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xff1870",
+   "unit": "gamebryo/nimain/BSBound_ff1770",
+   "inventory": "BSBound::Functionff1870",
+   "source": "BSBound::IsEqual",
+   "crashlogger": "BSBound::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xff2b00",
+   "unit": "gamebryo/nimain/BSMultiBoundNode_ff2b00",
+   "inventory": "BSMultiBoundNode::Functionff2b00",
+   "source": "BSMultiBoundNode::RegisterStreamables",
+   "crashlogger": "BSMultiBoundNode::RegisterStreamables",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0xff3380",
+   "unit": "gamebryo/nimain/BSMultiBoundNode_ff3380",
+   "inventory": "BSMultiBoundNode::Functionff3380",
+   "source": "BSMultiBoundNode::UpdateUpwardPass",
+   "crashlogger": "BSMultiBoundNode::UpdateUpwardPass",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10001c0",
+   "unit": "bscore/BSReference_10001c0",
+   "inventory": "BSReference::Function10001c0",
+   "source": "BSReference::IsEqual",
+   "crashlogger": "BSReference::IsEqual",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1002480",
+   "unit": "gamebryo/nimain/BSMultiBoundAABB_1002480",
+   "inventory": "BSMultiBoundAABB::Function1002480",
+   "source": "BSMultiBoundAABB::CopyMembers",
+   "crashlogger": "BSMultiBoundCapsule::CopyMembers",
+   "verdict": "ambiguous",
+   "reason": "this-differs",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1082e30",
+   "unit": "unmapped/support/Globals_1082e30",
+   "inventory": "Function1082e30",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkShape::~bhkShape",
+   "crashlogger": "bhkShape::~bhkShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1082fd0",
+   "unit": "skyrim_shared/forms/Globals_1082fd0",
+   "inventory": "Function1082fd0",
+   "source": "bhkEntity::~bhkEntity",
+   "crashlogger": "bhkEntity::~bhkEntity",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1083220",
+   "unit": "unmapped/support/Globals_1083220",
+   "inventory": "Function1083220",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkPhantom::~bhkPhantom",
+   "crashlogger": "bhkPhantom::~bhkPhantom",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10832a0",
+   "unit": "unmapped/support/Globals_10832a0",
+   "inventory": "Function10832a0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkAabbPhantom::~bhkAabbPhantom",
+   "crashlogger": "bhkAabbPhantom::~bhkAabbPhantom",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1083b90",
+   "unit": "unmapped/support/Globals_1083b90",
+   "inventory": "Function1083b90",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkSphereRepShape::~bhkSphereRepShape",
+   "crashlogger": "bhkSphereRepShape::~bhkSphereRepShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1083bd0",
+   "unit": "unmapped/support/Globals_1083bd0",
+   "inventory": "Function1083bd0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkConvexShape::~bhkConvexShape",
+   "crashlogger": "bhkConvexShape::~bhkConvexShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10873b0",
+   "unit": "unmapped/support/Globals_10873b0",
+   "inventory": "Function10873b0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkShapePhantom::~bhkShapePhantom",
+   "crashlogger": "bhkShapePhantom::~bhkShapePhantom",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1087820",
+   "unit": "unmapped/support/Globals_1087820",
+   "inventory": "Function1087820",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkSimpleShapePhantom::~bhkSimpleShapePhantom",
+   "crashlogger": "bhkSimpleShapePhantom::~bhkSimpleShapePhantom",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10891e0",
+   "unit": "unmapped/support/Globals_10891e0",
+   "inventory": "Function10891e0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkBoxShape::~bhkBoxShape",
+   "crashlogger": "bhkBoxShape::~bhkBoxShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1089970",
+   "unit": "unmapped/support/Globals_1089970",
+   "inventory": "Function1089970",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkSphereShape::~bhkSphereShape",
+   "crashlogger": "bhkSphereShape::~bhkSphereShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x108a0a0",
+   "unit": "unmapped/support/Globals_108a0a0",
+   "inventory": "Function108a0a0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkBvTreeShape::~bhkBvTreeShape",
+   "crashlogger": "bhkBvTreeShape::~bhkBvTreeShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x108f840",
+   "unit": "unmapped/support/Globals_108f840",
+   "inventory": "Function108f840",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkLimitedHingeConstraint::~bhkLimitedHingeConstraint",
+   "crashlogger": "bhkLimitedHingeConstraint::~bhkLimitedHingeConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1090bb0",
+   "unit": "unmapped/support/Globals_1090bb0",
+   "inventory": "Function1090bb0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkUnaryAction::~bhkUnaryAction",
+   "crashlogger": "bhkUnaryAction::~bhkUnaryAction",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1091830",
+   "unit": "unmapped/support/Globals_1091830",
+   "inventory": "Function1091830",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkConstraint::~bhkConstraint",
+   "crashlogger": "bhkConstraint::~bhkConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1092c20",
+   "unit": "unmapped/support/Globals_1092c20",
+   "inventory": "Function1092c20",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkPrismaticConstraint::~bhkPrismaticConstraint",
+   "crashlogger": "bhkPrismaticConstraint::~bhkPrismaticConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1093160",
+   "unit": "unmapped/support/Globals_1093160",
+   "inventory": "Function1093160",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkAction::~bhkAction",
+   "crashlogger": "bhkAction::~bhkAction",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1093430",
+   "unit": "unmapped/support/Globals_1093430",
+   "inventory": "Function1093430",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkTriSampledHeightFieldBvTreeShape::~bhkTriSampledHeightFieldBvTreeShape",
+   "crashlogger": "bhkTriSampledHeightFieldBvTreeShape::~bhkTriSampledHeightFieldBvTreeShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x109f160",
+   "unit": "unmapped/support/Globals_109f160",
+   "inventory": "Function109f160",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkMouseSpringAction::~bhkMouseSpringAction",
+   "crashlogger": "bhkMouseSpringAction::~bhkMouseSpringAction",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x109fe60",
+   "unit": "unmapped/support/Globals_109fe60",
+   "inventory": "Function109fe60",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkHingeConstraint::~bhkHingeConstraint",
+   "crashlogger": "bhkHingeConstraint::~bhkHingeConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10b4ac0",
+   "unit": "unmapped/support/Globals_10b4ac0",
+   "inventory": "Function10b4ac0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkListShape::~bhkListShape",
+   "crashlogger": "bhkListShape::~bhkListShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10b5dd0",
+   "unit": "unmapped/support/Globals_10b5dd0",
+   "inventory": "Function10b5dd0",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkBallAndSocketConstraint::~bhkBallAndSocketConstraint",
+   "crashlogger": "bhkBallAndSocketConstraint::~bhkBallAndSocketConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10b9800",
+   "unit": "unmapped/support/Globals_10b9800",
+   "inventory": "Function10b9800",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkRagdollConstraint::~bhkRagdollConstraint",
+   "crashlogger": "bhkRagdollConstraint::~bhkRagdollConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10bac70",
+   "unit": "unmapped/support/Globals_10bac70",
+   "inventory": "Function10bac70",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkStiffSpringConstraint::~bhkStiffSpringConstraint",
+   "crashlogger": "bhkStiffSpringConstraint::~bhkStiffSpringConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10c3770",
+   "unit": "unmapped/support/Globals_10c3770",
+   "inventory": "Function10c3770",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkGenericConstraint::~bhkGenericConstraint",
+   "crashlogger": "bhkGenericConstraint::~bhkGenericConstraint",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10c9b50",
+   "unit": "unmapped/support/Globals_10c9b50",
+   "inventory": "Function10c9b50",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkShapeCollection::~bhkShapeCollection",
+   "crashlogger": "bhkShapeCollection::~bhkShapeCollection",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10ec530",
+   "unit": "unmapped/support/Globals_10ec530",
+   "inventory": "Function10ec530",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkHeightFieldShape::~bhkHeightFieldShape",
+   "crashlogger": "bhkHeightFieldShape::~bhkHeightFieldShape",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10ece70",
+   "unit": "unmapped/support/Globals_10ece70",
+   "inventory": "Function10ece70",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkConstraintChain::~bhkConstraintChain",
+   "crashlogger": "bhkConstraintChain::~bhkConstraintChain",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x10eda80",
+   "unit": "unmapped/support/Globals_10eda80",
+   "inventory": "Function10eda80",
+   "source": "f3m_0090ac60::dtor_0090ac60::bhkBinaryAction::~bhkBinaryAction",
+   "crashlogger": "bhkBinaryAction::~bhkBinaryAction",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1187dc0",
+   "unit": "unmapped/wrappers/HeapCleanupDeallocators3",
+   "inventory": "Function1187dc0",
+   "source": "HeapCleanupDeallocators3::Delete1187dc0",
+   "crashlogger": "BSLightingShaderMaterialSnow::LoadBinary",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x11cc6c0",
+   "unit": "unmapped/wrappers/TableTailCleanups",
+   "inventory": "Function11cc6c0",
+   "source": "TableTailCleanups::Cleanup11cc6c0",
+   "crashlogger": "IMovementSelectIdle::~IMovementSelectIdle",
+   "verdict": "ambiguous",
+   "reason": "placeholder-name",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x11e70b0",
+   "unit": "skyrim_shared/pathfinding/BSNavmesh",
+   "inventory": "BSNavmesh::Function11e70b0",
+   "source": "BSNavmesh::Function11e70b0",
+   "crashlogger": "BSNavmesh::GetGridCellCount",
+   "verdict": "rename",
+   "has_prototype": true,
+   "old_member": "Function11e70b0",
+   "new_member": "GetGridCellCount"
+  },
+  {
+   "rva": "0x11e70c0",
+   "unit": "skyrim_shared/pathfinding/BSNavmesh",
+   "inventory": "BSNavmesh::Function11e70c0",
+   "source": "BSNavmesh::Function11e70c0",
+   "crashlogger": "BSNavmesh::GetTrianglesForGridCell",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1204410",
+   "unit": "unmapped/leaves/TableStoreLeaf1204410",
+   "inventory": "TableStoreLeaf1204410::~TableStoreLeaf1204410",
+   "source": "TableStoreLeaf1204410::~TableStoreLeaf1204410",
+   "crashlogger": "IPathBuilder::~IPathBuilder",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1204430",
+   "unit": "unmapped/leaves/TableStoreLeaf1204430",
+   "inventory": "TableStoreLeaf1204430::~TableStoreLeaf1204430",
+   "source": "TableStoreLeaf1204430::~TableStoreLeaf1204430",
+   "crashlogger": "IPathBuilderTracker::~IPathBuilderTracker",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x120aa60",
+   "unit": "unmapped/leaves/TableStoreLeaf120aa60",
+   "inventory": "TableStoreLeaf120aa60::~TableStoreLeaf120aa60",
+   "source": "TableStoreLeaf120aa60::~TableStoreLeaf120aa60",
+   "crashlogger": "IPathSmootherRayCast::~IPathSmootherRayCast",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1215fa0",
+   "unit": "unmapped/leaves/TableStoreLeaf1215fa0",
+   "inventory": "TableStoreLeaf1215fa0::~TableStoreLeaf1215fa0",
+   "source": "TableStoreLeaf1215fa0::~TableStoreLeaf1215fa0",
+   "crashlogger": "IMovementInterface::~IMovementInterface",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1215fc0",
+   "unit": "unmapped/leaves/TableStoreLeaf1215fc0",
+   "inventory": "TableStoreLeaf1215fc0::~TableStoreLeaf1215fc0",
+   "source": "TableStoreLeaf1215fc0::~TableStoreLeaf1215fc0",
+   "crashlogger": "IPipelineStageInterface::~IPipelineStageInterface",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1234b30",
+   "unit": "unmapped/leaves/TableStoreLeaf1234b30",
+   "inventory": "TableStoreLeaf1234b30::~TableStoreLeaf1234b30",
+   "source": "TableStoreLeaf1234b30::~TableStoreLeaf1234b30",
+   "crashlogger": "IMovementPlayIdleResult::~IMovementPlayIdleResult",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1234b70",
+   "unit": "unmapped/leaves/TableStoreLeaf1234b70",
+   "inventory": "TableStoreLeaf1234b70::~TableStoreLeaf1234b70",
+   "source": "TableStoreLeaf1234b70::~TableStoreLeaf1234b70",
+   "crashlogger": "ISelectIdleFilter::~ISelectIdleFilter",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1236d50",
+   "unit": "unmapped/leaves/TableStoreLeaf1236d50",
+   "inventory": "TableStoreLeaf1236d50::~TableStoreLeaf1236d50",
+   "source": "TableStoreLeaf1236d50::~TableStoreLeaf1236d50",
+   "crashlogger": "MovementMessage::~MovementMessage",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x12456c0",
+   "unit": "unmapped/leaves/TableStoreLeaf12456c0",
+   "inventory": "TableStoreLeaf12456c0::~TableStoreLeaf12456c0",
+   "source": "TableStoreLeaf12456c0::~TableStoreLeaf12456c0",
+   "crashlogger": "ICheckEndReachedFunctorMapper::~ICheckEndReachedFunctorMapper",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x14e7f40",
+   "unit": "bsshader/BSEffectShaderProperty_14e7f40",
+   "inventory": "BSEffectShaderProperty::Function14e7f40",
+   "source": "BSEffectShaderProperty::SetAlpha",
+   "crashlogger": "BSShaderProperty::SetAlpha",
+   "verdict": "ambiguous",
+   "reason": "prototype-arity",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1518b80",
+   "unit": "bsshader/BSLightingShaderProperty_1518b80",
+   "inventory": "BSLightingShaderProperty::Function1518b80",
+   "source": "BSLightingShaderProperty::RegisterStreamables",
+   "crashlogger": "BSLightingShaderProperty::RegisterStreamables",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x152a210",
+   "unit": "bsshader/BSEffectShaderProperty_152a210",
+   "inventory": "BSEffectShaderProperty::Function152a210",
+   "source": "BSEffectShaderProperty::ForEachTexture",
+   "crashlogger": "BSEffectShaderProperty::ForEachTexture",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x155dbb0",
+   "unit": "unmapped/leaves/ReturnLeaf155dbb0",
+   "inventory": "ReturnLeaf155dbb0::Invoke",
+   "source": "ReturnLeaf155dbb0::Invoke",
+   "crashlogger": "BSShadowLight::GetIsFrustumLight",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x155dbc0",
+   "unit": "unmapped/leaves/ReturnLeaf155dbc0",
+   "inventory": "ReturnLeaf155dbc0::Invoke",
+   "source": "ReturnLeaf155dbc0::Invoke",
+   "crashlogger": "BSShadowLight::GetIsParabolicLight",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x155dbe0",
+   "unit": "unmapped/leaves/ReturnLeaf155dbe0",
+   "inventory": "ReturnLeaf155dbe0::Invoke",
+   "source": "ReturnLeaf155dbe0::Invoke",
+   "crashlogger": "BSShadowLight::GetNeedsClipPlanes",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x155dbf0",
+   "unit": "unmapped/leaves/ReturnLeaf155dbf0",
+   "inventory": "ReturnLeaf155dbf0::Invoke",
+   "source": "ReturnLeaf155dbf0::Invoke",
+   "crashlogger": "BSShadowLight::GetPassExtraParam",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x155dd20",
+   "unit": "unmapped/leaves/Leaf155dd20",
+   "inventory": "Leaf155dd20::Invoke",
+   "source": "Leaf155dd20::Invoke",
+   "crashlogger": "BSShadowLight::TransformClipSpacePlanes",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1570240",
+   "unit": "gamebryo/nimain/BSOrderedNode_1570240",
+   "inventory": "BSOrderedNode::Function1570240",
+   "source": "BSOrderedNode::CopyMembers",
+   "crashlogger": "BSOrderedNode::CopyMembers",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x15702b0",
+   "unit": "gamebryo/nimain/BSOrderedNode_15702b0",
+   "inventory": "Function15702b0",
+   "source": "BSOrderedNode::LoadBinary",
+   "crashlogger": "BSOrderedNode::LoadBinary",
+   "verdict": "sync-inventory",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1571920",
+   "unit": "unmapped/leaves/TableStoreLeaf1571920",
+   "inventory": "TableStoreLeaf1571920::~TableStoreLeaf1571920",
+   "source": "TableStoreLeaf1571920::~TableStoreLeaf1571920",
+   "crashlogger": "BSStreamParserData::~BSStreamParserData",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x1572270",
+   "unit": "bssystem/BSResourceStreamParser_1572270",
+   "inventory": "BSResourceStreamParser::Function1572270",
+   "source": "f3m_004a5c10::BSResourceStreamParser::~BSResourceStreamParser",
+   "crashlogger": "BSResourceStreamParser::~BSResourceStreamParser",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x158fb70",
+   "unit": "unmapped/leaves/TableStoreLeaf158fb70",
+   "inventory": "TableStoreLeaf158fb70::~TableStoreLeaf158fb70",
+   "source": "TableStoreLeaf158fb70::~TableStoreLeaf158fb70",
+   "crashlogger": "BSShapeConstructor::~BSShapeConstructor",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": true
+  },
+  {
+   "rva": "0x164600",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetRank",
+   "source": "ExtraDataList::GetRank",
+   "crashlogger": "ExtraDataList::GetRank",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1648f0",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetCount",
+   "source": "ExtraDataList::GetCount",
+   "crashlogger": "ExtraDataList::GetCount",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x164e50",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetPersistentCell",
+   "source": "ExtraDataList::GetPersistentCell",
+   "crashlogger": "ExtraDataList::GetPersistentCell",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x169c30",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetPoison",
+   "source": "ExtraDataList::GetPoison",
+   "crashlogger": "ExtraDataList::GetPoison",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x16d850",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetPrimitive",
+   "source": "ExtraDataList::GetPrimitive",
+   "crashlogger": "ExtraDataList::GetPrimitive",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x171550",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetCombatStyle",
+   "source": "ExtraDataList::GetCombatStyle",
+   "crashlogger": "ExtraDataList::GetCombatStyle",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1732b0",
+   "unit": "skyrim_shared/extradata/ExtraDataList_164600",
+   "inventory": "ExtraDataList::GetEnchantment",
+   "source": "ExtraDataList::GetEnchantment",
+   "crashlogger": "ExtraDataList::GetEnchantment",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x184a80",
+   "unit": "skyrim_shared/extradata/ExtraLevCreaModifier_184a80",
+   "inventory": "ExtraLevCreaModifier::GetMultiplier",
+   "source": "ExtraLevCreaModifier::GetMultiplier",
+   "crashlogger": "ExtraLevCreaModifier::GetMultiplier",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x190b80",
+   "unit": "skyrim_shared/forms/TESFullName_190a90",
+   "inventory": "TESFullName::Function190b80",
+   "source": "TESFullName::Function190b80",
+   "crashlogger": "MapMarkerData::GetHidden",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1c3680",
+   "unit": "skyrim/controls/TESDataHandler_1c3680",
+   "inventory": "TESDataHandler::Function1c3680",
+   "source": "TESDataHandler::IsTemporaryFormID",
+   "crashlogger": "TESDataHandler::IsFormIDCreated",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1d90d0",
+   "unit": "skyrim_shared/magic/SpellItem_1d90d0",
+   "inventory": "SpellItem::Function1d90d0",
+   "source": "SpellItem::GetMenuDisplayObject",
+   "crashlogger": "SpellItem::GetMenuDisplayObject",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1df590",
+   "unit": "skyrim_shared/forms/TESBoundObject_1df590",
+   "inventory": "TESBoundObject::Function1df590",
+   "source": "TESBoundObject::GetFormAsBipedModel",
+   "crashlogger": "TESBipedModelForm::GetFormAsBipedModel",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1f00f0",
+   "unit": "skyrim_shared/forms/TESReactionForm_1f00f0",
+   "inventory": "TESReactionForm::Function1f00f0",
+   "source": "TESReactionForm::GetReaction",
+   "crashlogger": "TESReactionForm::GetReaction",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1f0370",
+   "unit": "skyrim_shared/forms/TESReactionForm",
+   "inventory": "TESReactionForm::Function1f0370",
+   "source": "TESReactionForm::Function1f0370",
+   "crashlogger": "TESReactionForm::GetFactionCombatRelation",
+   "verdict": "rename",
+   "has_prototype": false,
+   "old_member": "Function1f0370",
+   "new_member": "GetFactionCombatRelation"
+  },
+  {
+   "rva": "0x227120",
+   "unit": "skyrim_shared/world/GridCellArray_226c40",
+   "inventory": "GridCellArray::Function227120",
+   "source": "GridCellArray::GetCellSlot",
+   "crashlogger": "GridCellArray::Get",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x248230",
+   "unit": "skyrim/camera/LocalMapCamera_248230",
+   "inventory": "LocalMapCamera::Function248230",
+   "source": "LocalMapCamera::SetExtents",
+   "crashlogger": "LocalMapCamera::SetExtents",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x248270",
+   "unit": "skyrim/camera/LocalMapCamera",
+   "inventory": "LocalMapCamera::Function248270",
+   "source": "LocalMapCamera::SetMinFrustum",
+   "crashlogger": "LocalMapCamera::SetMinFrustum",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x259640",
+   "unit": "unmapped/support/Globals_259640",
+   "inventory": "Function259640",
+   "source": "Func004a23f0",
+   "crashlogger": "TESRegionPoint::XIntercept",
+   "verdict": "ambiguous",
+   "reason": "no-class-claim",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x28ef80",
+   "unit": "skyrim_shared/forms/TESSoulGem_28ef80",
+   "inventory": "TESSoulGem::GetSoulLevelValue",
+   "source": "TESSoulGem::GetSoulLevelValue",
+   "crashlogger": "TESSoulGem::GetSoulLevelValue",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x300cc0",
+   "unit": "skyrim_shared/refs/TESObjectREFR_2e6e50",
+   "inventory": "TESObjectREFR::GetActorCause",
+   "source": "TESObjectREFR::GetActorCause",
+   "crashlogger": "TESObjectREFR::GetActorCause",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x327e70",
+   "unit": "skyrim_shared/audio/BGSMusicType_327e70",
+   "inventory": "BGSMusicType::Function327e70",
+   "source": "BGSMusicType::DoFinish",
+   "crashlogger": "BGSMusicType::DoFinish",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x32b8d0",
+   "unit": "skyrim_shared/audio/BGSSoundOutput_32b8d0",
+   "inventory": "BGSSoundOutput::Function32b8d0",
+   "source": "BGSSoundOutput::DoGetSupportsMonitor",
+   "crashlogger": "BGSSoundOutput::DoGetSupportsMonitor",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x341650",
+   "unit": "skyrim_shared/world/TESLoadScreen",
+   "inventory": "TESLoadScreen::Function341650",
+   "source": "TESLoadScreen::CanDisplay",
+   "crashlogger": "TESLoadScreen::CanDisplay",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x38de50",
+   "unit": "skyrim_shared/perks/BGSEntryPointPerkEntry_38de50",
+   "inventory": "BGSEntryPointPerkEntry::Function38de50",
+   "source": "BGSEntryPointPerkEntry::SelectSpellFunction",
+   "crashlogger": "BGSEntryPointFunction::SelectSpellFunction",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x3e0030",
+   "unit": "skyrim_shared/forms/BGSRefAlias",
+   "inventory": "BGSRefAlias::Function3e0030",
+   "source": "BGSRefAlias::GetForcedRefType",
+   "crashlogger": "BGSRefAlias::QForcedRefType",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x3ecb00",
+   "unit": "skyrim_shared/dialogue/ResponseDataPrefixLayout",
+   "inventory": "ResponseDataPrefixLayout represented member",
+   "crashlogger": "TESTopicInfo::TESResponse::LoadResponseText",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x41d530",
+   "unit": "skyrim_shared/actors/Character_41d530",
+   "inventory": "Character::Function41d530",
+   "source": "Character::GetFollowRadiusMatchSpeed",
+   "crashlogger": "AiFormulas::GetFollowRadiusMatchSpeed",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x435020",
+   "unit": "skyrim_shared/facegen/BSFaceGenModel_435020",
+   "inventory": "BSFaceGenModel::Function435020",
+   "source": "BSFaceGenModel::BSFaceGenModel",
+   "crashlogger": "BSFaceGenModel::BSFaceGenModel",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x44e080",
+   "unit": "skyrim/ai/BGSPackageDataLocation_44e080",
+   "inventory": "BGSPackageDataLocation::Unk_0C",
+   "crashlogger": "BGSPackageDataLocation::QIsCurrLoc",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x468360",
+   "unit": "skyrim/ai/BGSProcedureFind_468360",
+   "inventory": "BGSProcedureFind::Function468360",
+   "source": "BGSProcedureFind::InitActorAnimPose",
+   "crashlogger": "BGSProcedureFind::InitActorAnimPose",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4a0ac0",
+   "unit": "skyrim/ai/TESEscortPackageData",
+   "inventory": "TESEscortPackageData::Compare",
+   "source": "TESEscortPackageData::Compare",
+   "crashlogger": "TESEscortPackageData::Compare",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4a1120",
+   "unit": "skyrim/ai/TESPatrolPackageData",
+   "inventory": "TESPatrolPackageData::Compare",
+   "source": "TESPatrolPackageData::Compare",
+   "crashlogger": "TESPatrolPackageData::Compare",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4a9820",
+   "unit": "gamebryo/nimain/NiObject_4a9820",
+   "inventory": "NiObject::Function4a9820",
+   "source": "BSTempEffect::BSTempEffect",
+   "crashlogger": "BSTempEffect::BSTempEffect",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4b4bd0",
+   "unit": "skyrim_shared/tempeffects/BSTempEffect_4b4bd0",
+   "inventory": "BSTempEffect::Function4b4bd0",
+   "source": "BSTempEffectSPG::BSTempEffectSPG",
+   "crashlogger": "BSTempEffectSPG::BSTempEffectSPG",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4c3b10",
+   "unit": "skyrim_shared/pathfinding/NavMeshInfoMap_4c3b10",
+   "inventory": "NavMeshInfoMap::Function4c3b10",
+   "source": "NavMeshInfoMap::~NavMeshInfoMap",
+   "crashlogger": "NavMeshInfoMap::~NavMeshInfoMap",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4e02b0",
+   "unit": "skyrim_shared/pathfinding/PathingCell",
+   "inventory": "PathingCell::Function4e02b0",
+   "source": "PathingCell::GetInteriorCell",
+   "crashlogger": "PathingCell::GetInteriorCell",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4e04b0",
+   "unit": "skyrim_shared/pathfinding/PathingCell_4e04b0",
+   "inventory": "PathingCell::Func8",
+   "source": "PathingCell::Func8",
+   "crashlogger": "PathingCell::QAttached",
+   "verdict": "ambiguous",
+   "reason": "source-name-differs",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x4e3260",
+   "unit": "unmapped/leaves/CtorLeaf4e3260",
+   "inventory": "CtorLeaf4e3260::CtorLeaf4e3260",
+   "source": "CtorLeaf4e3260::CtorLeaf4e3260",
+   "crashlogger": "PathingRequest::PathingRequest",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x52d200",
+   "unit": "skyrim_shared/world/TESWaterSystem",
+   "inventory": "TESWaterSystem::RemoveLODWater",
+   "source": "TESWaterSystem::RemoveLODWater",
+   "crashlogger": "TESWaterSystem::RemoveLODWater",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x556610",
+   "unit": "gamebryo/nianimation/SimpleAnimationGraphManagerHolder",
+   "inventory": "SimpleAnimationGraphManagerHolder::GetAnimationGraphManagerImpl",
+   "source": "SimpleAnimationGraphManagerHolder::GetAnimationGraphManagerImpl",
+   "crashlogger": "SimpleAnimationGraphManagerHolder::GetAnimationGraphManagerImpl",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x556670",
+   "unit": "gamebryo/nianimation/SimpleAnimationGraphManagerHolder",
+   "inventory": "SimpleAnimationGraphManagerHolder::SetAnimationGraphManagerImpl",
+   "source": "SimpleAnimationGraphManagerHolder::SetAnimationGraphManagerImpl",
+   "crashlogger": "SimpleAnimationGraphManagerHolder::SetAnimationGraphManagerImpl",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5ba590",
+   "unit": "skyrim/magic/AccumulatingValueModifierEffect_5ba590",
+   "inventory": "AccumulatingValueModifierEffect::ShouldModifyOnStart",
+   "source": "AccumulatingValueModifierEffect::ShouldModifyOnStart",
+   "crashlogger": "AccumulatingValueModifierEffect::ShouldModifyOnStart",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5ba5d0",
+   "unit": "skyrim/magic/AccumulatingValueModifierEffect_5ba5d0",
+   "inventory": "AccumulatingValueModifierEffect::ShouldModifyOnUpdate",
+   "source": "AccumulatingValueModifierEffect::ShouldModifyOnUpdate",
+   "crashlogger": "AccumulatingValueModifierEffect::ShouldModifyOnUpdate",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5c58a0",
+   "unit": "skyrim/magic/DetectLifeEffect",
+   "inventory": "DetectLifeEffect::CheckCustomSkillUseConditions",
+   "source": "DetectLifeEffect::CheckCustomSkillUseConditions",
+   "crashlogger": "DetectLifeEffect::CheckCustomSkillUseConditions",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5c6e30",
+   "unit": "skyrim/magic/EtherealizationEffect",
+   "inventory": "EtherealizationEffect::Finish",
+   "source": "EtherealizationEffect::Finish",
+   "crashlogger": "EtherealizationEffect::Finish",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5da700",
+   "unit": "skyrim/magic/ReanimateEffect_5da700",
+   "inventory": "ReanimateEffect::ShouldDispelOnDeath",
+   "source": "ReanimateEffect::ShouldDispelOnDeath",
+   "crashlogger": "ReanimateEffect::ShouldDispelOnDeath",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5db6e0",
+   "unit": "skyrim_shared/tempeffects/ReferenceEffect",
+   "inventory": "ReferenceEffect::Function5db6e0",
+   "source": "ReferenceEffect::CheckAge",
+   "crashlogger": "ReferenceEffect::CheckAge",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5dbd00",
+   "unit": "skyrim_shared/tempeffects/ReferenceEffect_5dbd00",
+   "inventory": "ReferenceEffect::Function5dbd00",
+   "source": "ReferenceEffect::ClearController",
+   "crashlogger": "ReferenceEffect::ClearController",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x5e3000",
+   "unit": "skyrim/magic/SummonCreatureEffect_5e3000",
+   "inventory": "SummonCreatureEffect::Function5e3000",
+   "source": "SummonCreatureEffect::ClearTargetImpl",
+   "crashlogger": "SummonCreatureEffect::ClearTargetImpl",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x618130",
+   "unit": "skyrim_shared/saveload/BGSSaveLoadGame",
+   "inventory": "BGSSaveLoadGame::IsFormIDInUse",
+   "source": "BGSSaveLoadGame::IsFormIDInUse",
+   "crashlogger": "BGSSaveLoadGame::IsFormIDInUse",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x667a80",
+   "unit": "bscore/TaskQueueInterface_667a80",
+   "inventory": "TaskQueueInterface::QueueNodeAttach",
+   "source": "TaskQueueInterface::QueueNodeAttach",
+   "crashlogger": "TaskQueueInterface::QueueNodeAttach",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x667ad0",
+   "unit": "bscore/TaskQueueInterface",
+   "inventory": "TaskQueueInterface::QueueNodeDetach",
+   "source": "TaskQueueInterface::QueueNodeDetach",
+   "crashlogger": "TaskQueueInterface::QueueNodeDetach",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x668270",
+   "unit": "bscore/TaskQueueInterface",
+   "inventory": "TaskQueueInterface::QueueActorKnockParalyze",
+   "source": "TaskQueueInterface::QueueActorKnockParalyze",
+   "crashlogger": "TaskQueueInterface::QueueActorKnockParalyze",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x669110",
+   "unit": "bscore/TaskQueueInterface_668fd0",
+   "inventory": "TaskQueueInterface::QueueForceWeather",
+   "source": "TaskQueueInterface::QueueForceWeather",
+   "crashlogger": "TaskQueueInterface::QueueForceWeather",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6695d0",
+   "unit": "bscore/TaskQueueInterface_668fd0",
+   "inventory": "TaskQueueInterface::QueueActorDisarm",
+   "source": "TaskQueueInterface::QueueActorDisarm",
+   "crashlogger": "TaskQueueInterface::QueueActorDisarm",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x675350",
+   "unit": "skyrim_shared/actors/Actor",
+   "inventory": "Leaf675350::Invoke",
+   "crashlogger": "Actor::SetAvoidanceDisabled",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x686600",
+   "unit": "skyrim_shared/actors/Actor_686600",
+   "inventory": "Actor::SetObjectReference",
+   "source": "Actor::SetObjectReference",
+   "crashlogger": "Actor::SetObjectReference",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x687b40",
+   "unit": "skyrim_shared/actors/Actor_687b40",
+   "inventory": "Actor::SetRestrained",
+   "source": "Actor::SetRestrained",
+   "crashlogger": "Actor::SetRestrained",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x687c90",
+   "unit": "skyrim_shared/actors/Actor_687c90",
+   "inventory": "Actor::SetActionComplete",
+   "source": "Actor::SetActionComplete",
+   "crashlogger": "Actor::SetActionComplete",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x69f990",
+   "unit": "skyrim_shared/actors/Actor_69f990",
+   "inventory": "Actor::HasPerkEntries",
+   "source": "Actor::HasPerkEntries",
+   "crashlogger": "Actor::HasPerkEntries",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x69f9e0",
+   "unit": "skyrim_shared/actors/Actor_69f9e0",
+   "inventory": "Actor::ApplyPerksFromBase",
+   "source": "Actor::ApplyPerksFromBase",
+   "crashlogger": "Actor::ApplyPerksFromBase",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6a6980",
+   "unit": "skyrim_shared/actors/Actor_690e50",
+   "inventory": "Actor::IsPathing",
+   "source": "Actor::IsPathing",
+   "crashlogger": "Actor::IsPathing",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6b1560",
+   "unit": "skyrim_shared/actors/Actor_6a5b30",
+   "inventory": "Actor::GetResponseString",
+   "crashlogger": "Actor::GetResponseString",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6e98f0",
+   "unit": "skyrim/ai/ActorProcess_6e98f0",
+   "inventory": "ActorProcess::Function6e98f0",
+   "source": "ActorProcess::IsPackageDone",
+   "crashlogger": "AIProcess::IsPackageDone",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6f1390",
+   "unit": "skyrim/ai/AIProcess",
+   "inventory": "AIProcess::Function6f1390",
+   "source": "AIProcess::GetLastSeenLocation",
+   "crashlogger": "AIProcess::GetLastSeenLocation",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6f5f90",
+   "unit": "skyrim/ai/ActorProcess_6f5f90",
+   "inventory": "ActorProcess::Function6f5f90",
+   "source": "ActorProcess::GetWaitingforLipFile",
+   "crashlogger": "AIProcess::GetWaitingforLipFile",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x6ff1b0",
+   "unit": "skyrim/ai/AIProcess_6ff1b0",
+   "inventory": "AIProcess::Function6ff1b0",
+   "source": "AIProcess::GetDoorActivated",
+   "crashlogger": "AIProcess::GetDoorActivated",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x758450",
+   "unit": "skyrim_shared/actors/PlayerCharacter_758450",
+   "inventory": "PlayerCharacter::UnlockWord",
+   "crashlogger": "PlayerCharacter::UnlockWord",
+   "verdict": "ambiguous",
+   "reason": "no-source-name",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x75d450",
+   "unit": "skyrim_shared/actors/PlayerCharacter_75d450",
+   "inventory": "PlayerCharacter::WornArmorChanged",
+   "source": "PlayerCharacter::WornArmorChanged",
+   "crashlogger": "PlayerCharacter::WornArmorChanged",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x780ec0",
+   "unit": "skyrim/ai/ProcessLists_780ec0",
+   "inventory": "ProcessLists::Function780ec0",
+   "source": "ProcessLists::SetSystemTimeClock",
+   "crashlogger": "ProcessLists::SetSystemTimeClock",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x7ec630",
+   "unit": "skyrim_shared/refs/GrenadeProjectile_7ec630",
+   "inventory": "GrenadeProjectile::TurnOff",
+   "source": "GrenadeProjectile::TurnOff",
+   "crashlogger": "GrenadeProjectile::TurnOff",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x82e840",
+   "unit": "skyrim/ai/combat/CombatInventoryItemMagic_82e840",
+   "inventory": "CombatInventoryItemMagic::Function82e840",
+   "source": "CombatInventoryItemMagic::GetEquipType",
+   "crashlogger": "CombatInventoryItemMagic::GetEquipType",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x867870",
+   "unit": "skyrim_shared/actors/Actor_867870",
+   "inventory": "Actor::Function867870",
+   "source": "CombatUtilities_ComputeProjectileTime",
+   "crashlogger": "CombatUtilities::ComputeProjectileTime",
+   "verdict": "ambiguous",
+   "reason": "no-class-claim",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x8754d0",
+   "unit": "skyrim/ai/combat/CombatBehaviorTreeNode_8754d0",
+   "inventory": "CombatBehaviorTreeNode::Function8754d0",
+   "source": "CombatBehaviorTreeNode::FindChild",
+   "crashlogger": "CombatBehaviorTreeNode::FindChild",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x8f1b70",
+   "unit": "skyrim_shared/actors/Character_8f1b70",
+   "inventory": "Character::Function8f1b70",
+   "source": "Character::Interpolate",
+   "crashlogger": "CombatAIFormulas::Interpolate",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x8f1bd0",
+   "unit": "skyrim_shared/actors/Character_8f1bd0",
+   "inventory": "Character::Function8f1bd0",
+   "source": "Character::Interpolate",
+   "crashlogger": "CombatAIFormulas::Interpolate",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xaac4e0",
+   "unit": "bshavok/Globals_aac4e0",
+   "inventory": "Functionaac4e0",
+   "source": "hkBufferedStreamReader::isOk",
+   "crashlogger": "hkBufferedStreamReader::isOk",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xaae4d0",
+   "unit": "unmapped/support/Globals_aae4d0",
+   "inventory": "Functionaae4d0",
+   "source": "hkStringBuf::pathBasename",
+   "crashlogger": "hkStringBuf::pathBasename",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xab27d0",
+   "unit": "unmapped/leaves/LeafForwardab27d0",
+   "inventory": "LeafForwardab27d0::Forward",
+   "source": "LeafForwardab27d0::Forward",
+   "crashlogger": "thunk_hkStackTracer::CallTree::quit",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xabbcb0",
+   "unit": "bshavok/Globals_abbcb0",
+   "inventory": "Functionabbcb0",
+   "source": "hkFreeList::incrementalFindGarbage",
+   "crashlogger": "hkFreeList::incrementalFindGarbage",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xb2e210",
+   "unit": "bshavok/Globals_b2e210",
+   "inventory": "Functionb2e210",
+   "source": "hkDynamicClassNameRegistry::registerList",
+   "crashlogger": "hkDynamicClassNameRegistry::registerList",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xc62610",
+   "unit": "bshavok/StructArrayImplementation_c62610",
+   "inventory": "Functionc62610",
+   "source": "StructArrayImplementation::reserve",
+   "crashlogger": "StructArrayImplementation::reserve",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xc65710",
+   "unit": "bshavok/Globals_c65710",
+   "inventory": "Functionc65710",
+   "source": "fnv_00dbb940::hkDataClassNative::getParent",
+   "crashlogger": "hkDataClassNative::getParent",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xcdc280",
+   "unit": "bsaudio/BSXAudio2DataSrc",
+   "inventory": "BSXAudio2DataSrc::Functioncdc280",
+   "source": "BSXAudio2DataSrc::Functioncdc280",
+   "crashlogger": "BSXAudio2DataSrc::MillisecondsToSamples",
+   "verdict": "rename",
+   "has_prototype": false,
+   "old_member": "Functioncdc280",
+   "new_member": "MillisecondsToSamples"
+  },
+  {
+   "rva": "0xce34c0",
+   "unit": "bscore/BSReadWriteLock_ce3450",
+   "inventory": "BSReadWriteLock::Functionce34c0",
+   "source": "BSReadWriteLock::TryLockForWrite",
+   "crashlogger": "BSReadWriteLock::TryLockForWrite",
+   "verdict": "label-source",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xce8780",
+   "unit": "bscore/MemoryHeap_ce8780",
+   "inventory": "MemoryHeap::Functionce8780",
+   "source": "MemoryHeap::BlockIsInHeap",
+   "crashlogger": "MemoryHeap::BlockIsInHeap",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xec3e60",
+   "unit": "bssystem/BSSearchPath_ec3e60",
+   "inventory": "BSSearchPath::Functionec3e60",
+   "source": "BSSearchPath::GetNextSearchPath",
+   "crashlogger": "BSSearchPath::GetNextSearchPath",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xee5930",
+   "unit": "unmapped/support/Globals_ee5930",
+   "inventory": "Functionee5930",
+   "source": "Func00a632b0",
+   "crashlogger": "NiStream::_SDMShutdown",
+   "verdict": "ambiguous",
+   "reason": "no-class-claim",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xf11850",
+   "unit": "gamebryo/nimain/NiFloatsExtraData",
+   "inventory": "NiFloatsExtraData::Functionf11850",
+   "source": "NiFloatsExtraData::Functionf11850",
+   "crashlogger": "NiFloatsExtraData::SetValue",
+   "verdict": "rename",
+   "has_prototype": false,
+   "old_member": "Functionf11850",
+   "new_member": "SetValue"
+  },
+  {
+   "rva": "0xf80490",
+   "unit": "gamebryo/nianimation/NiLookAtInterpolator_f80490",
+   "inventory": "NiLookAtInterpolator::Functionf80490",
+   "source": "NiLookAtInterpolator::~NiLookAtInterpolator",
+   "crashlogger": "NiLookAtInterpolator::~NiLookAtInterpolator",
+   "verdict": "ambiguous",
+   "reason": "generated-family",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xf8d0e0",
+   "unit": "gamebryo/nianimation/BSTreadTransfInterpolator_f8d0e0",
+   "inventory": "BSTreadTransfInterpolator::Functionf8d0e0",
+   "source": "BSTreadTransfInterpolator::GetChannelPosed",
+   "crashlogger": "BSTreadTransfInterpolator::GetChannelPosed",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xf98840",
+   "unit": "gamebryo/nianimation/NiBoolInterpController_f98840",
+   "inventory": "Functionf98840",
+   "source": "NiBoolInterpController::SynchronizePoseInterpolator",
+   "crashlogger": "NiBoolInterpController::SynchronizePoseInterpolator",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xfc18f0",
+   "unit": "gamebryo/niparticle/NiPSysModifierBoolCtlr_fc18f0",
+   "inventory": "NiPSysModifierBoolCtlr::Functionfc18f0",
+   "source": "NiPSysModifierBoolCtlr::SynchronizePoseInterpolator",
+   "crashlogger": "NiPSysModifierBoolCtlr::SynchronizePoseInterpolator",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xfcea20",
+   "unit": "gamebryo/nimain/BSMultiBoundAABB_fcea20",
+   "inventory": "BSMultiBoundAABB::Functionfcea20",
+   "source": "BSMultiBoundAABB::Ctor",
+   "crashlogger": "BSMultiBoundAABB::BSMultiBoundAABB",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xfe54d0",
+   "unit": "gamebryo/nimain/BSMultiBoundSphere_fe54d0",
+   "inventory": "BSMultiBoundSphere::Functionfe54d0",
+   "source": "BSMultiBoundSphere::Functionfe54d0",
+   "crashlogger": "DoorTeleportData::SetTeleportRotation",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xfe8120",
+   "unit": "gamebryo/nimain/BSOcclusionBox_fe8120",
+   "inventory": "BSOcclusionBox::Functionfe8120",
+   "source": "BSOcclusionBox::BSOcclusionBox",
+   "crashlogger": "BSMultiBoundAABB::BSMultiBoundAABB",
+   "verdict": "ambiguous",
+   "reason": "alias-or-overload",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xffbcf0",
+   "unit": "gamebryo/niparticle/BSMasterParticleSystem_ffbcf0",
+   "inventory": "BSMasterParticleSystem::Functionffbcf0",
+   "source": "BSMasterParticleSystem::IsMasterParticleSystem",
+   "crashlogger": "BSMasterParticleSystem::IsMasterParticleSystem",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0xffdce0",
+   "unit": "gamebryo/niparticle/BSProceduralLightningController",
+   "inventory": "BSProceduralLightningController::Functionffdce0",
+   "source": "BSProceduralLightningController::SendGeomEvent",
+   "crashlogger": "BSProceduralLightningController::SendGeomEvent",
+   "verdict": "sync-inventory",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x1002760",
+   "unit": "gamebryo/nimain/BSMultiBoundCapsule",
+   "inventory": "BSMultiBoundCapsule::Function1002760",
+   "source": "BSMultiBoundCapsule::Function1002760",
+   "crashlogger": "BSMultiBoundCapsule::CheckBound",
+   "verdict": "rename",
+   "has_prototype": false,
+   "old_member": "Function1002760",
+   "new_member": "CheckBound"
+  },
+  {
+   "rva": "0x11b42e0",
+   "unit": "unmapped/support/MoviePlayer_11b42e0",
+   "inventory": "Function11b42e0",
+   "source": "f3m_007fb000::MoviePlayer::CalculateScale",
+   "crashlogger": "MoviePlayer::CalculateScale",
+   "verdict": "ambiguous",
+   "reason": "namespace-differs",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x11cbed0",
+   "unit": "skyrim_shared/pathfinding/PathingRequestStopMoving",
+   "inventory": "PathingRequestStopMoving::Function11cbed0",
+   "source": "PathingRequestStopMoving::Function11cbed0",
+   "crashlogger": "BSPathingRequest::SetActorAvoidanceParametersNoActor",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  },
+  {
+   "rva": "0x152a290",
+   "unit": "gamebryo/nimain/NiNode_14e7f80",
+   "inventory": "NiNode::sub",
+   "source": "NiNode::sub",
+   "crashlogger": "BSEffectShaderProperty::SetBaseColorAlphaRecurse",
+   "verdict": "ambiguous",
+   "reason": "ownership-conflict",
+   "has_prototype": false
+  }
+ ]
+}
