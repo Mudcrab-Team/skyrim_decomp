@@ -491,16 +491,38 @@ def conflict_cleared(state, pr):
             and (state.get('summary') or {}).get('blocked') == 'conflict')
 
 
-def settled(state, pr=None):
+# Verdicts that come from the bot's own checks and hosts rather than from a judgement of the PR's content, so a
+# fix to the bot can change them. A review rejection is a paid judgement and is never in this set.
+BOT_SIDE_VERDICTS = frozenset({'fail:record', 'fail:missing', 'fail:host1', 'fail:host2', 'fail:precheck'})
+# Cached stage results a retry recomputes; the review, the leak scan and the hash-run result stay.
+RETRY_DROPS = ('done', 'commented', 'summary', 'decision', 'host2', 'host2_why', 'host2_base', 'precheck', 'records',
+               'failure', 'bot_error', 'blocked', 'probe_blocked')
+
+
+def stale_bot_failure(state, code):
+    """True when a head ended on a bot-side failure under a different revision of the bot's code than `code`.
+
+    Such a head waited for a push forever, though the fix that made the failure wrong may have been deployed
+    since. A head finished before the revision was stamped counts as another revision. A merged head and a
+    head blocked on the contributor never qualify.
+    """
+    if not code or not state.get('done') or state.get('merged') or state.get('done_code') == code:
+        return False
+    summary = state.get('summary') or {}
+    return summary.get('blocked') == 'record' or bool(BOT_SIDE_VERDICTS & set((summary.get('verdicts') or {}).values()))
+
+
+def settled(state, pr=None, code=None):
     """True when a head needs no further look from the poll.
 
     A head that ended blocked on `record` (the bot or its host could not write a record for an accepted
     function) is not settled: that is a fault on our side, not a verdict on the PR, so it is tried again
-    and the circuit breaker bounds the tries.
+    and the circuit breaker bounds the tries. So is a head that ended on a bot-side failure under an
+    older revision of the bot's code (`code` is the running revision).
     """
     if not state.get('done'):
         return False
-    if conflict_cleared(state, pr):
+    if conflict_cleared(state, pr) or stale_bot_failure(state, code):
         return False
     return state.get('merged') or (state.get('summary') or {}).get('blocked') != 'record'
 
@@ -1558,6 +1580,11 @@ class Bot:
                 self.code_sha_cache = ''
             self.code_sha_cache = self.code_sha_cache or 'unknown'
         return self.code_sha_cache
+
+    def mark_done(self, state):
+        """Finish a head, stamped with the code revision that did, so a later deploy can tell a stale failure."""
+        state.set('done_code', self.code_sha)
+        state.set('done', True)
 
     def for_slot(self, slot):
         """A copy of this bot with its own scratch tree, sharing the locks, so two PRs never share a checkout."""
@@ -2681,7 +2708,7 @@ class Bot:
     def warm(self, pr):
         """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
         number, head = pr['number'], pr['headRefOid']
-        if settled(State(self.work / 'state', number, head), pr) or pr.get('mergeable') == 'CONFLICTING':
+        if settled(State(self.work / 'state', number, head), pr, self.code_sha) or pr.get('mergeable') == 'CONFLICTING':
             return
         if self.latest_hash_run(head):
             return
@@ -2941,8 +2968,12 @@ class Bot:
     def _process(self, pr, base=None):
         number, head = pr['number'], pr['headRefOid']
         state = State(self.work / ('dry' if self.dry_run else 'state'), number, head)
-        if settled(state, pr):
+        if settled(state, pr, self.code_sha):
             return state.data
+        if stale_bot_failure(state, self.code_sha):
+            # Retry under the deployed code; the stored review stays, so nothing paid is repeated.
+            for key in RETRY_DROPS:
+                state.drop(key)
         if conflict_cleared(state, pr):
             # The conflict answer is out of date: drop it, and its comment mark so the new outcome replaces the
             # sticky "conflicts with main" text. A crash from here on leaves the head not done, so it is retried.
@@ -2996,7 +3027,7 @@ class Bot:
             summary = dict(pr=number, head=head, blocked=None, merge=False, verdicts={},
                            autofix=state.get('autofix'))
             state.set('summary', summary)
-            state.set('done', True)
+            self.mark_done(state)
             return summary
         self.ensure_rows(number, head, files, state)
         units = state.once('units', lambda: self.units(files))
@@ -3351,7 +3382,7 @@ class Bot:
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def mapping_problems(self, base, head):
@@ -3457,7 +3488,7 @@ class Bot:
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def carried_ci(self, head):
@@ -3632,7 +3663,7 @@ class Bot:
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def process_carried(self, pr, state, files, started):
@@ -3675,7 +3706,7 @@ class Bot:
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def compact_records(self, number):
@@ -3755,7 +3786,7 @@ class Bot:
             self.say(number, sticky_body(head, text), create=not decision['merge'])
             state.set('commented', True)
         self.drop_probe(number)
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def mapping_decision(self, number, head, base, files, state):
@@ -4144,7 +4175,7 @@ class Bot:
             # the same refusal on this head three times opens the circuit breaker instead of looping.
             state.drop('done')  # a head left done by an older run is looked at again
             raise Stop('record could not be written for accepted functions; merge blocked, retrying')
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def process_tooling(self, pr, state, started):
@@ -4182,7 +4213,7 @@ class Bot:
             self.say(pr['number'], sticky_body(pr['headRefOid'], CONFLICT_COMMENT))
         state.set('summary', summary)
         state.set('commented', True)
-        state.set('done', True)
+        self.mark_done(state)
         return summary
 
     def merge_main_into_branch(self, pr):
@@ -4922,7 +4953,7 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 ledger = state.get('failure') or {}
                 # A rejected head waits for a push; warming it would open a probe PR and a CI run for a head the
                 # bot will not look at, and queueing it costs a `gh pr view` per tick.
-                if (pr['number'] in inflight or settled(state, pr) or ledger.get('next', 0) > now
+                if (pr['number'] in inflight or settled(state, pr, bot.code_sha) or ledger.get('next', 0) > now
                         or bot.already_rejected(pr) or bot.bot_error_blocked(pr)):
                     continue
                 try:
