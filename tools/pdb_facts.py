@@ -99,18 +99,42 @@ def setup_lines(repo=ROOT, env=None, full=False):
 
 # --- inventory and committed data -----------------------------------------------------------------
 
+_LOADED = {}  # path -> (size, mtime_ns, parsed, derived): a review asks per function and the inventory is tens of MB
+_LOADED_LOCK = threading.Lock()
+
+
 def _load(path):
+    """The parsed JSON file, shared between callers (treat it as read-only); parsed again only when the file changes."""
+    return _loaded(path)[0]
+
+
+def _loaded(path):
+    path = Path(path)
     try:
-        return json.loads(Path(path).read_text())
+        stat = path.stat()
+        with _LOADED_LOCK:
+            kept = _LOADED.get(str(path))
+            if kept and kept[:2] == (stat.st_size, stat.st_mtime_ns):
+                return kept[2], kept[3]
+            parsed = json.loads(path.read_text())
+            derived = {}
+            if path.name == 'progress.json' and isinstance(parsed, dict):
+                rows = parsed.get('functions', [])
+                derived = {'by_rva': {fn['rva']: fn for fn in reversed(rows)},
+                           'names': [(fn['rva'], fn.get('name') or '') for fn in rows]}
+            _LOADED[str(path)] = (stat.st_size, stat.st_mtime_ns, parsed, derived)
+            return parsed, derived
     except (OSError, ValueError):
-        return {}
+        return {}, {}
 
 
 def inventory_entry(repo, rva):
-    for fn in _load(Path(repo) / 'data/progress.json').get('functions', []):
-        if fn['rva'] == rva:
-            return fn
-    return None
+    return _loaded(Path(repo) / 'data/progress.json')[1].get('by_rva', {}).get(rva)
+
+
+def inventory_names(repo):
+    """[(rva, name)] of every inventory row, built once per version of the file."""
+    return _loaded(Path(repo) / 'data/progress.json')[1].get('names', [])
 
 
 def committed_facts(repo, rva, name=None, tree=None, alignment=None):
@@ -241,7 +265,7 @@ def collect(repo, rva, local=True, env=None):
     facts = {'rva': f'0x{rva:x}', 'inventory_name': name, 'committed': committed_facts(repo, rva, name)}
     if local and not env.get('CI'):
         files = locate(repo, env)
-        inv = [(f['rva'], f.get('name') or '') for f in _load(Path(repo) / 'data/progress.json').get('functions', [])]
+        inv = inventory_names(repo)
         if files['tesv-2013-map'] and verify('tesv-2013-map', files['tesv-2013-map'], False) == 'ok':
             facts['map'] = map_facts(files['tesv-2013-map'], rva, name, inv)
         if files['fo4-pdb'] and verify('fo4-pdb', files['fo4-pdb'], False) == 'ok':

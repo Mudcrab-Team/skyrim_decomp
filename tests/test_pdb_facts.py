@@ -123,3 +123,18 @@ class Fo4Cache(unittest.TestCase):
             self.assertEqual(first, second)
             self.assertIsNotNone(first)
             self.assertIsNone(other)
+
+
+class LoadCache(unittest.TestCase):
+    def test_a_file_is_parsed_once_until_it_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'data').mkdir()
+            (root / 'data' / 'progress.json').write_text('{"functions": [{"rva": 16, "name": "A::B"}, {"rva": 16, "name": "dup"}]}')
+            with mock.patch.object(pf.json, 'loads', wraps=pf.json.loads) as parse:
+                self.assertEqual(pf.inventory_entry(root, 16)['name'], 'A::B')
+                self.assertEqual(pf.inventory_names(root), [(16, 'A::B'), (16, 'dup')])
+                self.assertEqual(parse.call_count, 1)
+            (root / 'data' / 'progress.json').write_text('{"functions": [{"rva": 32, "name": "C::D"}]}')
+            self.assertIsNone(pf.inventory_entry(root, 16))
+            self.assertEqual(pf.inventory_entry(root, 32)['name'], 'C::D')
