@@ -7,7 +7,7 @@ not spelled as a literal (a named constant, a sizeof, a member offset) is report
 """
 import re
 
-import source as S
+import twin_source as S
 
 INT = re.compile(r'(?<![\w.])(0[xX][0-9A-Fa-f]+|\d+)([uUlL]*)(?![\w.])')
 

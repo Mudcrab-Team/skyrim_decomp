@@ -9,8 +9,8 @@ Anything else raises `Unsupported`; no offset is ever written without a member t
 """
 import re
 
-import source as S
-from unit import Unsupported
+import twin_source as S
+from twin_unit import Unsupported
 
 BUILTIN = {'char': 1, 'signed char': 1, 'unsigned char': 1, 'bool': 1, 'short': 2, 'unsigned short': 2, 'int': 4,
            'unsigned': 4, 'unsigned int': 4, 'long': 4, 'unsigned long': 4, 'float': 4, 'long long': 8,

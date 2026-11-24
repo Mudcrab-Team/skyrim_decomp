@@ -21,7 +21,7 @@ import re
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import rva_headers  # noqa: E402
-import source as S  # noqa: E402
+import twin_source as S  # noqa: E402
 
 HEADER_LIMIT = 6
 DROP_PREFIXES = ('// Drafted by', '// Task', '// Evidence', '// Labels', '// Cookbook:', '// Adapted bodies')
@@ -486,7 +486,7 @@ def apply_constants(twin, imap):
     """Loose twin: change the integer literals of the twin's own function per `imap` {ev: (tv, width)}.
 
     Raises Unsupported when a changed value is not spelled as a literal of that function."""
-    import subst
+    import twin_subst as subst
     path = twin.stem + '.cpp'
     text = twin.files[path]
     head, body = S.split_header(text)
@@ -506,7 +506,7 @@ def apply_constants(twin, imap):
 
 def apply_layout(twin, moves):
     """Loose twin: re-lay out the stand-in owner so members sit at the twin's displacements."""
-    import layout
+    import twin_layout as layout
     if twin.mode != 'standin':
         raise Unsupported('layout-of-stamped-unit')
     path = twin.stem + '.h'

@@ -25,10 +25,10 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(ROOT / 'tools'))
 import local_paths  # noqa: E402
-import runner  # noqa: E402
-import select_twins as T  # noqa: E402
-import shapes  # noqa: E402
-import unit as U  # noqa: E402
+import twin_runner as runner  # noqa: E402
+import twin_select as T  # noqa: E402
+import twin_shapes as shapes  # noqa: E402
+import twin_unit as U  # noqa: E402
 
 
 def state_dir():
@@ -80,7 +80,7 @@ def skips(a):
 
 def loose_diffs(plan):
     """Attach each loose twin's operand differences; strict twins are left to the strict plan."""
-    import subst
+    import twin_subst as subst
     strict = state_dir() / 'plan-strict.json'
     skip = {r['rva'] for r in json.loads(strict.read_text())} if strict.exists() else set()
     rows = [r for r in plan if r['rva'] not in skip]

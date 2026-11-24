@@ -7,11 +7,11 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'twins'))
 sys.path.insert(0, str(ROOT / 'tools'))
-import layout  # noqa: E402
-import shapes  # noqa: E402
-import source as S  # noqa: E402
-import subst  # noqa: E402
-import unit as U  # noqa: E402
+import twin_layout as layout  # noqa: E402
+import twin_shapes as shapes  # noqa: E402
+import twin_source as S  # noqa: E402
+import twin_subst as subst  # noqa: E402
+import twin_unit as U  # noqa: E402
 
 STAMPED_H = """// Source exposure: binary-analysis (synthetic).
 // Code origin: original stand-in.

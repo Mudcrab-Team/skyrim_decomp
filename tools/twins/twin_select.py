@@ -8,8 +8,8 @@ from pathlib import Path
 import re
 import subprocess
 
-import shapes
-import unit as U
+import twin_shapes as shapes
+import twin_unit as U
 
 BUILD = 'sse-steam-1-7-104'
 INDEX_ROW = re.compile(r'^\| `([^`]+)` \| `?([^|`]*?)`? \((\w+)\) \| `[^`]+` / `0x([0-9a-f]+)` / (\d+) \|')
