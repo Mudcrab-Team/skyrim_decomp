@@ -42,7 +42,7 @@ import export_pack as ep  # noqa: E402
 import harvest_handlers as hh  # noqa: E402
 
 TABLE_SCHEMA = 1
-DISASM_SCHEMA = 3
+DISASM_SCHEMA = 4  # 4: call-site register setups (`reg_calls`) are part of the pass; older caches lack them
 OBJDUMP_CANDIDATES = ('llvm-objdump', '/opt/homebrew/opt/llvm/bin/llvm-objdump', '/usr/local/opt/llvm/bin/llvm-objdump')
 FUNCLET_PREFIXES = ('Unwind@', 'Catch@', 'Catch_All@')
 CXX_HANDLERS = ('__CxxFrameHandler3', '__GSHandlerCheck_EH')

@@ -98,7 +98,9 @@ under `.local/` ([tools/ghidra/README.md](../tools/ghidra/README.md)).
 | `tools/ghidra/export_pack.py` | private per-function context packs and Drafter task directories | `python3 tools/ghidra/export_pack.py packs <list file>` | @awarebayes |
 | `tools/ghidra/build_function_table.py` | whole-image function and class tables for planning and class skeletons | `python3 tools/ghidra/build_function_table.py` | @awarebayes |
 | `tools/ghidra/class_skeleton.py` | header skeleton for one class from the private class table | `python3 tools/ghidra/class_skeleton.py <Class>` | @awarebayes |
-| `tools/ghidra/harvest_handlers.py` | clean-room harvesters for executable-owned handler names (OBSERVED) | see the module docstring | @awarebayes |
+| `tools/ghidra/harvest_handlers.py` | clean-room harvesters for executable-owned handler names (OBSERVED): command tables, string-and-handler registrations, and script-engine native registrations joined to declarations | see the module docstring | @awarebayes |
+| `tools/papyrus_psc.py` | parses the native declarations of the owner-installed script archive (names, flags, returns, parameters) into a private table | `python3 tools/papyrus_psc.py scan <Scripts.zip> --out .local/papyrus/natives.json` | @awarebayes |
+| `tools/papyrus_natives.py` | joins script registrations in the image to those declarations and to the class types of `NativeFunctionN`; counts and typed prototypes for native handlers, and the census of the 310 `NativeFunctionN` instances (their run functions are not generated yet: [findings](../findings/papyrus-native-registrations.md)) | `python3 tools/papyrus_natives.py sites\|join --config <cfg> --natives .local/papyrus/natives.json` | @awarebayes |
 | `tools/ghidra/plan_cheap.py` | many small functions per Drafter, grouped into shared-header families | `python3 tools/ghidra/export_pack.py plan --order cheap ...` | @awarebayes |
 | `tools/ghidra/community_ids.py` | Address Library id to community name associations from a CommonLibSSE checkout | see the module docstring | @awarebayes |
 
