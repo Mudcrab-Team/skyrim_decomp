@@ -637,5 +637,78 @@ class ScoreRows(unittest.TestCase):
         self.assertNotIn('_target', permute._SCORING)
 
 
+OVERLOADED = '''// 0x3409a0 Toy::Load(int)
+#include "Toy.h"
+
+bool Toy::Load(const char* a_path)
+{
+    return a_path != nullptr;
+}
+
+bool Toy::Load(int a_slot)
+{
+    return a_slot > 0;
+}
+'''
+
+
+class DefinitionName(unittest.TestCase):
+    """permute.py without --function: the header line, the community name, then the bound symbol."""
+
+    def make_repo(self, text):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        repo = Path(tmp.name)
+        (repo / 'reconstruction').mkdir()
+        (repo / 'reconstruction' / 'Toy.cpp').write_text(text)
+        return repo
+
+    def test_header_line_beats_a_placeholder_community_name(self):
+        repo = self.make_repo(UNIT.replace('// toy unit', '// 0x1234 Toy::Probe'))
+        names = permute.target_names(repo, {'compiled': 'reconstruction/Toy.cpp'},
+                                     {'community_name': 'Toy::Function1234', 'symbol': 'unbound:Toy::Function1234'}, 0x1234)
+        self.assertEqual(names[0][0], 'Toy::Probe')
+        self.assertNotIn('Toy::Function1234', [n for n, _ in names])
+        self.assertEqual(permute.definition_name(UNIT, names)[0], 'Toy::Probe')
+
+    def test_bound_symbol_names_the_definition_when_the_header_has_no_line(self):
+        repo = self.make_repo(UNIT)
+        names = permute.target_names(repo, {'compiled': 'reconstruction/Toy.cpp'},
+                                     {'community_name': 'Toy::Function1234', 'symbol': '?Probe@Toy@@QEAA_NPEAUNode@@I@Z'}, 0x1234)
+        self.assertEqual([n for n, _ in names], ['Toy::Probe'])
+        self.assertEqual(permute.definition_name(UNIT, names)[0], 'Toy::Probe')
+
+    def test_a_real_community_name_is_still_used(self):
+        repo = self.make_repo(UNIT)
+        names = permute.target_names(repo, {'compiled': 'reconstruction/Toy.cpp'},
+                                     {'community_name': 'Toy::Other', 'symbol': 'unbound:Toy::Other'}, 0x1234)
+        self.assertEqual(permute.definition_name(UNIT, names)[0], 'Toy::Other')
+
+    def test_a_name_the_source_lacks_is_passed_over(self):
+        name, params = permute.definition_name(UNIT, [('Toy::Missing', None), ('Toy::Other', None)])
+        self.assertEqual(name, 'Toy::Other')
+        with self.assertRaises(ValueError):
+            permute.definition_name(UNIT, [('Toy::Missing', None)])
+
+    def test_overloads_are_told_apart_by_the_declared_parameters(self):
+        import bind
+        with self.assertRaises(ValueError):
+            permute.find_body(OVERLOADED, 'Toy::Load')
+        start, end = permute.find_body(OVERLOADED, 'Toy::Load', bind.normalize_params('int'))
+        self.assertIn('a_slot > 0', OVERLOADED[start:end])
+        start, end = permute.find_body(OVERLOADED, 'Toy::Load', bind.normalize_params('const char*'))
+        self.assertIn('a_path != nullptr', OVERLOADED[start:end])
+        repo = self.make_repo(OVERLOADED)
+        names = permute.target_names(repo, {'compiled': 'reconstruction/Toy.cpp'},
+                                     {'community_name': 'Toy::Function3409a0', 'symbol': 'unbound:x'}, 0x3409a0)
+        name, params = permute.definition_name(OVERLOADED, names)
+        unit = permute.Unit(OVERLOADED, name, params=params)
+        self.assertIn('a_slot > 0', OVERLOADED[unit.start:unit.end])
+
+    def test_unresolved_overload_still_fails(self):
+        with self.assertRaises(ValueError):
+            permute.definition_name(OVERLOADED, [('Toy::Load', None)])
+
+
 if __name__ == '__main__':
     unittest.main()

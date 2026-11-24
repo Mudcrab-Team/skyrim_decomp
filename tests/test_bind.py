@@ -178,6 +178,21 @@ class BindTests(unittest.TestCase):
         self.assertEqual(symbols[fx.FUNCTION]['rva'], fx.LAYOUT[fx.FUNCTION])
         self.assertEqual(report['renamed'], [{'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'old': old, 'new': fx.FUNCTION}])
 
+    def test_a_stale_name_at_the_function_rva_is_dropped_from_a_private_map(self):
+        # A private copy of the public map still holds the decoration the community gave this RVA.
+        stale = '?SetupSomething@Synthetic@@QEAAHXZ'
+        self.write_task('unbound:x', {stale: {'rva': fx.LAYOUT[fx.FUNCTION], 'size': None}})
+        report, symbols = self.run_bind()
+        self.assertNotIn(stale, symbols)
+        self.assertEqual(symbols[fx.FUNCTION]['rva'], fx.LAYOUT[fx.FUNCTION])
+        self.assertIn({'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'old': stale, 'new': fx.FUNCTION}, report['renamed'])
+
+    def test_a_name_the_object_refers_to_is_kept_at_the_function_rva(self):
+        # The unit calls the function through another declaration of it: the entry resolves that call.
+        self.write_task('unbound:x', {fx.COUNTER: {'rva': fx.LAYOUT[fx.FUNCTION], 'size': None}})
+        _report, symbols = self.run_bind()
+        self.assertIn(fx.COUNTER, symbols)
+
     def test_function_hint_by_rva(self):
         task = json.loads((self.task_dir / 'task.json').read_text())
         task['functions'][0]['community_name'] = 'Unrelated::Name'
@@ -413,7 +428,7 @@ class OverloadAndOrderTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def run_bind(self, defined, functions, header=None, hints=None, matcher=None):
+    def run_bind(self, defined, functions, header=None, hints=None, matcher=None, symbols=None):
         """`defined` is {decorated name: section bytes}; `functions` [(rva, size, community name)]."""
         unit = fx.Unit()
         for name, code in defined.items():
@@ -426,7 +441,7 @@ class OverloadAndOrderTests(unittest.TestCase):
         if header is not None:
             (self.root / 'unit.cpp').write_text(''.join(f'// {line}\n' for line in header) + '#include "unit.h"\n')
         (self.task_dir / 'task.json').write_text(json.dumps(task))
-        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': {}}))
+        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': symbols or {}}))
         if hints is not None:
             (self.task_dir / bind.HINTS).write_text(json.dumps(hints))
         with mock.patch.object(bind, 'target_matcher', return_value=matcher):
@@ -458,6 +473,18 @@ class OverloadAndOrderTests(unittest.TestCase):
                                       header=['0x2e8660 TESObjectREFR::GetContainer() const'])
         self.assertEqual(bound['0x2e8660'], member_fn)
         self.assertIn('declared signature', report['functions'][0]['how'])
+
+    def test_the_definition_the_map_already_names_is_the_one_bound(self):
+        # Same size, nothing else tells the overloads apart; the map holds one of them at the RVA.
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      symbols={COLL_CONST: {'rva': 0x1900a0, 'size': None}})
+        self.assertEqual(bound['0x1900a0'], COLL_CONST)
+        self.assertEqual(report['functions'][0]['how'], 'map entry')
+
+    def test_a_mapped_name_the_object_does_not_define_changes_nothing(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      symbols={'?Elsewhere@@YAXXZ': {'rva': 0x1900a0, 'size': None}})
+        self.assertEqual(bound['0x1900a0'], 'unbound:0x1900a0')
 
     def test_indistinguishable_overloads_list_the_hint_lines(self):
         report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')])
@@ -680,6 +707,12 @@ class PublicMapBindTests(BindTests):
     def run_bind(self):
         report = bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
         return report, json.loads((self.root / self.MAP).read_text())['symbols']
+
+    def test_a_stale_name_at_the_function_rva_is_dropped_from_a_private_map(self):
+        self.skipTest('private maps only: a public map changes through tools/symbol_map.py')
+
+    def test_a_name_the_object_refers_to_is_kept_at_the_function_rva(self):
+        self.skipTest('private maps only: a public map changes through tools/symbol_map.py')
 
     def test_additions_go_through_the_history(self):
         self.run_bind()

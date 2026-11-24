@@ -51,6 +51,23 @@ python3 tools/verifier/runners.py status                    # each host: toolcha
 python3 tools/verifier/reproduce_records.py --host <name>   # recompile every recorded unit there; equal/different
 ```
 
+Work that is not a compile also moves to the ssh host, so a laptop stays free:
+
+- Alignment. With `"objdump": "<llvm-objdump on the host>"` on the host, `attempt` has the host align the
+  failing functions in the same run that compiled them (`host_agent.py run --objdump`, `align.py`): the
+  fetched directory already holds `align.txt`, `align.json` and `align-summary.txt`, and `attempt` only
+  reads them. Without that setting (or on a `local` host) it aligns here, as before.
+- Bind hints. References that stay unbound after binding get a hint derived from the alignment
+  (`auto_hints.py`, on by default; `attempt --no-auto-hints` skips it): the RVA the target encodes where the
+  candidate refers to the name, when the pack or the function table lists that RVA and the aligned
+  instructions agree, or a `tls:0x<offset>` for a thread-local. They go to `<task-dir>/bind-hints.json`
+  without replacing an entry a person wrote, and the names are recorded under `_derived`.
+- Task and pack preparation. With `"prep": "<host>"` in `runners.json`, `tools/verifier/remote_prep.py start
+  0x<rva>...` runs `tools/contrib.py start` (or `--script`, e.g. a wrapper) on that host and returns the task,
+  pack and skeleton files; `remote_prep.py sync` uploads this checkout's tracked files and the private inputs
+  the start reads (the function table, the FNV and x64 lookup indexes), by content, once. Without a prep
+  host it exits 3 and the caller runs the start here.
+
 A runner confirm writes records under the "Runner hosts" condition of `docs/verification.md`:
 into `reports/` only with a `local` host among the confirm hosts (it cross-compares the other
 hosts' objects), after every host hashed its toolchain during that run and reported the loader
@@ -106,6 +123,7 @@ objects, validates records before publication, and refuses to overwrite records 
   writes `align.txt` (private aligned listing) and `align.json` (for a search tool) next to the
   side-by-side. Run it on stored attempts with `tools/verifier/align.py --attempt <dir>`. A
   reading aid and a score, never evidence of a match.
+- `auto_hints.py`, `remote_prep.py`, `prep_agent.py`: derived bind hints, and preparation on a runner host (see "Runners").
 - `permute.py`: source permuter for one near-miss function, no model in the loop
   ([docs/permuter.md](../../docs/permuter.md)). Seeded rewrites of one body from the cookbook's
   mechanisable rules, every candidate linted, batches compiled in parallel on the standing

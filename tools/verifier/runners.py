@@ -224,8 +224,13 @@ def validate(raw, root=None):
         cap = local_load.parse(raw.get(local_load.KEY), f'runners config: {local_load.KEY}')
     except ValueError as exc:
         raise RunnerError(str(exc)) from None
+    # The host that prepares tasks and packs (tools/verifier/remote_prep.py): an ssh or local host
+    # with a work directory; unset means the preparation runs on this machine as before.
+    prep = raw.get('prep')
+    if prep is not None and (prep not in out or out[prep]['backend'] not in ('ssh', 'local')):
+        raise RunnerError('runners config: prep must name a configured ssh or local host')
     return {'attempt': attempt, 'attempt_prefer': prefer, 'compare_prefer': compare, 'confirm': confirm,
-            'hosts': out, local_load.KEY: cap}
+            'prep': prep, 'hosts': out, local_load.KEY: cap}
 
 
 def load(path=None, root=None):
@@ -526,6 +531,9 @@ class AgentHost:
         self.waited = 0.0
         self.facts = None
         self._run = None
+        # When set and the host names an llvm-objdump, the run also aligns the failing functions there
+        # (tools/verifier/host_agent.py), so the caller reads the summaries instead of computing them.
+        self.align = False
 
     def _python(self):
         return list(self.host['python']) if self.host['backend'] == 'ssh' else [sys.executable]
@@ -556,10 +564,11 @@ class AgentHost:
                 self._run = name
                 self.timings['upload'] = self.timings.get('upload', 0) + time.monotonic() - start - waited
                 t0 = time.monotonic()
+                extra = ['--objdump', self.host['objdump']] if self.align and self.host.get('objdump') else []
                 code, out, err = self.transport.run(self._agent(name, 'run', '--bundle', self._remote(name + '.tar'),
                                                                 '--msvc', self.host['msvc'], '--image',
                                                                 self.host['image'], '--loader', self.host['loader'],
-                                                                '--label', self.label), timeout)
+                                                                '--label', self.label, *extra), timeout)
                 self.timings['run'] = self.timings.get('run', 0) + time.monotonic() - t0
         finally:
             for path in paths:

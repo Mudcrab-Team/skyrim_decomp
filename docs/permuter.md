@@ -15,7 +15,7 @@ tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> [--budget 600
 ```
 
 The task directory is the one `attempt` uses (task.json, symbols.json); the function is found in
-the compiled file by its community name (`--function Class::Name` overrides it) and must have
+the compiled file by its community name (`--function Class::Name` overrides it; when the community name is a placeholder such as `Class::Function<rva>`, the unit's own `// 0x<rva> Class::Method` header line and then the name of the bound symbol are used, and overloads are told apart by the declared parameters) and must have
 exactly one definition there. `--source-root DIR` reads `reconstruction/` from a private copy
 instead of the checkout, so a near-miss draft never has to be in the working tree. The run uses
 the runner host that `attempt` uses (`attempt` in `.local/verifier/runners.json`, or

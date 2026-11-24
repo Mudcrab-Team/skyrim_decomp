@@ -11,7 +11,8 @@ and its community name. In passes over all functions, so one function never take
 exact match by coming first:
 
 1. a hint in `<task dir>/bind-hints.json` whose RVA is the function's RVA, else the current
-   symbol if the object still defines it;
+   symbol if the object still defines it, else the one definition the symbol map already names at
+   that RVA (a second name there would be an undeclared alias);
 2. the definitions whose qualified name (template arguments, return type and parameters
    dropped) equals a declared name; failing that, for `Class::Ctor`, `Class::Class`,
    `Class::dtor` or `Class::~Class`, the class's constructors or destructors (plain, deleting,
@@ -41,7 +42,10 @@ never dropped silently.
 A defined function is an external symbol at offset 0 of its own code section, which is what the
 comparator requires anyway. When a previously bound symbol is gone and another is found, that is
 reported as "decorated name changed" with both names, and the old map entry is removed (a stale
-entry at the same RVA would be an undeclared alias).
+entry at the same RVA would be an undeclared alias). In a private map any other entry at a compared
+function's RVA that the object neither defines nor refers to is removed the same way: a task made
+from the repository map still carries the decoration the community gave that RVA, and a second
+attempt of a passing unit would otherwise end in `undeclared-alias`.
 
 References (relocations that leave a compared function). Each needs a map entry giving the RVA
 the game encodes; in order:
@@ -1005,20 +1009,21 @@ def pack_references(repo, fn):
     return out
 
 
-def resolve_functions(task, defined, names, hints, size_of, matcher=None, header=None):
+def resolve_functions(task, defined, names, hints, size_of, matcher=None, header=None, mapped=None):
     """{rva: result} binding each compared function to one definition of the object (no I/O).
 
     A result is {'symbol', 'how', 'candidates', 'warnings', 'choice'}; `symbol` is None when the
     function stays unbound, and `candidates` then lists the same-named definitions left.
 
     Passes, so one function can never take another's exact match because it comes first in the
-    task: (0) hints and kept symbols; (1) the names each function declares, from the unit header
+    task: (0) hints and kept symbols, then the one definition the symbol map already names at the RVA; (1) the names each function declares, from the unit header
     line and the community name, matched against parsed qualified names, constructor/destructor
     kinds and the pack's destructor evidence; (2) the member name alone, skipping definitions whose
     qualified name another compared function declares. Where several definitions share the name,
     `narrow` picks by declared signature, then size, then published target hash.
     """
     header = header or {}
+    mapped = mapped or {}
     results, taken = {}, set()
     fns = [fn for fn in task['functions']]
 
@@ -1064,6 +1069,18 @@ def resolve_functions(task, defined, names, hints, size_of, matcher=None, header
             if spec is None or destructor_fits(old, spec, fn):
                 results[fn['rva']] = result(old, 'kept')
                 taken.add(old)
+    # The map names this RVA already (an accepted unit, an earlier attempt) and the object defines exactly
+    # that one: binding another definition would add a second name at the RVA, which the comparator
+    # rejects as an undeclared alias, so the mapped one is the only choice that can pass.
+    for fn in fns:
+        if fn['rva'] in results:
+            continue
+        spec = fn.get('destructor')
+        held = [d for d in mapped.get(parse_rva(fn['rva']), []) if d in defined and d not in taken
+                and (spec is None or destructor_fits(d, spec, fn))]
+        if len(held) == 1:
+            results[fn['rva']] = result(held[0], 'map entry')
+            taken.add(held[0])
 
     # Pass 1: definitions whose parsed name is one the function declares.
     exact_names = {}
@@ -1266,7 +1283,11 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
 
     header = header_declarations(repo, task.get('compiled'))
     matcher = target_matcher(repo, obj_bytes)
-    resolved = resolve_functions(task, defined, names, hints, size_of, matcher, header)
+    held_names = {}
+    for held_name, entry in symbols.items():
+        if isinstance(entry, dict) and isinstance(entry.get('rva'), int):
+            held_names.setdefault(entry['rva'], []).append(held_name)
+    resolved = resolve_functions(task, defined, names, hints, size_of, matcher, header, held_names)
     for fn in task['functions']:
         rva = parse_rva(fn['rva'])
         old = fn.get('symbol') or ''
@@ -1301,6 +1322,15 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
             gone = rec.get('symbol')
             if (gone and gone != new and parse_rva(rec['rva']) == rva and gone not in defined
                     and gone not in folded and symbols.get(gone, {}).get('rva') == rva):
+                del symbols[gone]
+                report['renamed'].append({'rva': hex(rva), 'old': gone, 'new': new})
+                report['changed'] = True
+        if not public:
+            # A private copy of the map still names the function under a decoration an earlier binding, or
+            # the map it was copied from, gave it. The unit now defines it as `new` and nothing refers to the
+            # old name, so the entry is stale and the comparator would reject it as an undeclared alias.
+            for gone in [n for n, e in symbols.items() if isinstance(e, dict) and e.get('rva') == rva
+                         and n != new and n not in referenced and n not in folded]:
                 del symbols[gone]
                 report['renamed'].append({'rva': hex(rva), 'old': gone, 'new': new})
                 report['changed'] = True

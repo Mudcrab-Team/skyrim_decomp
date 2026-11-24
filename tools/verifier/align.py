@@ -59,6 +59,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import disasm  # noqa: E402
 
 SCHEMA = 1
+SUMMARY_FILE = 'align-summary.txt'
 # The byte column ends at a tab (or a run of spaces); a long instruction's last byte is followed
 # by the tab directly, so "bytes followed by a space" would swallow it into the text.
 INSN = re.compile(r'^\s*([0-9a-f]+):\s+([0-9a-f]{2}(?: [0-9a-f]{2})*)(?:\s*\t|\s{2,})\s*(\S.*)$')
@@ -158,7 +159,7 @@ def _cond(mnem):
 
 class Insn:
     __slots__ = ('idx', 'addr', 'off', 'data', 'text', 'mnem', 'shape', 'regs', 'ref', 'dest', 'relocs',
-                 'internal', 'label', 'block', 'mask', 'frame')
+                 'internal', 'label', 'block', 'mask', 'frame', 'sym')
 
     def __repr__(self):
         return f'Insn({self.off:#x} {self.text!r})'
@@ -268,7 +269,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False,
     for idx, (addr, data, text, relocs) in enumerate(rows):
         ins = Insn()
         ins.idx, ins.addr, ins.off, ins.data, ins.relocs = idx, addr, addr - start, data, relocs
-        ins.label = ins.internal = ins.ref = ins.dest = None
+        ins.label = ins.internal = ins.ref = ins.dest = ins.sym = None
         body = text.split(' # ')[0]
         body = re.sub(r'\s*<[^>]*>', '', body).strip()
         ins.text = text
@@ -316,6 +317,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False,
                     parts_shape.append('ref')
                     if candidate:
                         ins.ref = _cand_ref(reloc, disp, symbols)
+                        ins.sym = (reloc[2], disp) if reloc is not None else None
                     else:
                         ins.ref = _targ_ref(next_ip + disp, base)
                 else:
@@ -328,6 +330,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False,
                     if candidate and reloc is not None:
                         shapes.append(('ext',))
                         ins.ref = _cand_ref(reloc, value - next_ip, symbols)
+                        ins.sym = (reloc[2], value - next_ip)
                     elif start <= value < end:
                         shapes.append(('label',))
                         ins.internal = value
@@ -1261,6 +1264,73 @@ def behaviour_summary(found):
 
 
 
+def _operand_numbers(ins):
+    """Numeric displacement or immediate of each operand that can hold a thread-local offset, by operand index."""
+    out = {}
+    for pos, shape in enumerate(ins.shape[1]):
+        if shape[0] == 'imm':
+            out[pos] = ('imm', shape[1])
+        elif shape[0] == 'mem' and isinstance(shape[-1], int):
+            out[pos] = ('mem', shape[-1])
+    return out
+
+
+def _tls_offset(t, c):
+    """The thread-local offset a target instruction holds where its candidate pair holds only the addend.
+
+    A SECREL field of the candidate carries the addend alone, the target's code carries the offset
+    plus that addend, so the offset is the difference of the one operand that differs between the two
+    otherwise equal instructions; None when no single operand explains the pair.
+    """
+    if len(t.shape[1]) != len(c.shape[1]):
+        return None
+    tn, cn = _operand_numbers(t), _operand_numbers(c)
+    diffs = []
+    for pos, (kind, value) in tn.items():
+        other = cn.get(pos)
+        if other is None or other[0] != kind:
+            continue
+        if kind == 'mem' and t.shape[1][pos][:-1] != c.shape[1][pos][:-1]:
+            return None
+        if value != other[1]:
+            diffs.append(value - other[1])
+    return diffs[0] if len(diffs) == 1 and diffs[0] > 0 else None
+
+
+def reference_pairs(T, C, ops):
+    """What the alignment says about the symbols the candidate refers to.
+
+    Returns {'references': {symbol: {symbol RVA: pairs}}, 'thread_locals': {symbol: {TLS-template
+    offset: pairs}}}. Every paired candidate instruction that holds a relocation to a symbol, and whose
+    target instruction has the same mnemonic and encodes a reference, is one vote for the RVA the
+    target holds there less the addend the candidate stores (the symbol's own address, which is what a
+    bind hint names). Symbols the map already resolves vote too, so a binding that the alignment
+    contradicts can be seen. Nothing here says the vote is right: tools/verifier/auto_hints.py
+    decides which ones to trust, and the comparator checks whatever is bound.
+    """
+    refs, tls = {}, {}
+    for op in ops:
+        if op[0] not in ('pair', 'move'):
+            continue
+        t, c = T[op[1]], C[op[2]]
+        if t.mnem != c.mnem or not c.relocs:
+            continue
+        kind, name = c.relocs[0][1], c.relocs[0][2]
+        if name.startswith('$'):
+            continue
+        if kind == 'SECREL':
+            offset = _tls_offset(t, c)
+            if offset is not None:
+                votes = tls.setdefault(name, {})
+                votes[offset] = votes.get(offset, 0) + 1
+        elif c.sym is not None and t.ref is not None and t.ref[0] == 'rva':
+            votes = refs.setdefault(name, {})
+            value = t.ref[1] - c.sym[1]
+            votes[value] = votes.get(value, 0) + 1
+    return {'references': {n: {hex(v): k for v, k in sorted(votes.items())} for n, votes in sorted(refs.items())},
+            'thread_locals': {n: {hex(v): k for v, k in sorted(votes.items())} for n, votes in sorted(tls.items())}}
+
+
 def report(T, C, unwind=None):
     """(summary lines, JSON dict, aligned listing text) for two normalised instruction lists."""
     result = analyse(T, C, unwind)
@@ -1331,6 +1401,7 @@ def report(T, C, unwind=None):
         'unwind': {'fields': result['unwind_fields'], 'explained_by_register_map': result['unwind_explained']},
         'cookbook_rules': rules, 'suggestion': suggestion, 'behaviour': behaviour_public(behaviour),
         'alignment': [_op_json(op, T, C) for op in result['ops']],
+        'reference_pairs': reference_pairs(T, C, result['ops']),
     }
     return lines, data, _listing(result, T, C, lines)
 
@@ -1502,11 +1573,33 @@ def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, u
     text, data = summarise(target, candidate, symbols=symbols, image_base=base, target_size=size, unwind=unwind,
                            listing_path=out / 'align.txt', tls=tls)
     (out / 'align.json').write_text(json.dumps(data, indent=1) + '\n')
+    (out / SUMMARY_FILE).write_text(text + '\n')
     return text, data
+
+
+def cached_summary(fdir):
+    """Lines of a summary a host already wrote next to this function's report, or None.
+
+    A host that has llvm-objdump aligns the attempt in the same run that compiled it
+    (tools/verifier/host_agent.py), so the machine running `attempt` does not repeat the work. The
+    directory is the one just fetched, so the files belong to this compile.
+    """
+    fdir = Path(fdir)
+    try:
+        text = (fdir / SUMMARY_FILE).read_text()
+        json.loads((fdir / 'align.json').read_text())
+    except (OSError, ValueError):
+        return None
+    if not (fdir / 'align.txt').is_file():
+        return None
+    return text.splitlines() + [f'aligned listing: {fdir / "align.txt"}']
 
 
 def attempt_summary(fdir, objdump, image, obj, fn, symbols_path=None):
     """Lines for `attempt` under a failing function's line; never raises."""
+    cached = cached_summary(fdir)
+    if cached is not None:
+        return cached
     try:
         if objdump is None or image is None or not Path(image).is_file() or not Path(obj).is_file():
             return ['aligned: not available (no objdump, image or candidate object)']
@@ -1527,7 +1620,8 @@ def _config_image():
         return None, None
 
 
-def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, include_passes=False, out_root=None):
+def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, include_passes=False, out_root=None,
+                    symbols_path=None):
     """Align every function of one stored attempt; yields (rva, reason, summary text, data).
 
     Outputs go next to each function's diagnostics, or under `out_root/<rva>/` when given (for
@@ -1535,7 +1629,7 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
     """
     attempt_dir = Path(attempt_dir)
     task_dir = Path(task_dir) if task_dir else attempt_dir.parent.parent
-    symbols, tls = load_scoring(task_dir / 'symbols.json', image)
+    symbols, tls = load_scoring(symbols_path or task_dir / 'symbols.json', image)
     for fdir in sorted(p for p in attempt_dir.glob('0x*') if p.is_dir()):
         try:
             rep = json.loads((fdir / 'report.json').read_text())
@@ -1556,6 +1650,27 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
         yield fn['rva'], rep.get('reason'), text, data
 
 
+def write_side_by_sides(attempt_dir, objdump, image):
+    """side-by-side.txt for every function of a stored attempt that has none yet; the number written.
+
+    A host with llvm-objdump writes them in the run that compiled the unit (tools/verifier/host_agent.py),
+    so `attempt` only reads them.
+    """
+    attempt_dir = Path(attempt_dir)
+    count = 0
+    for fdir in sorted(p for p in attempt_dir.glob('0x*') if p.is_dir()):
+        try:
+            fn = json.loads((fdir / 'report.json').read_text()).get('function') or {}
+        except (OSError, ValueError):
+            continue
+        if not fn.get('symbol') or (fdir / 'side-by-side.txt').is_file():
+            continue
+        written, _why = disasm.write_side_by_side(fdir / 'side-by-side.txt', objdump, image, attempt_dir / 'candidate.obj',
+                                                  fn['symbol'], fn['rva'], fn['size'])
+        count += written is not None
+    return count
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--attempt', help='a stored attempt directory (<task-dir>/attempts/NNN)')
@@ -1573,12 +1688,16 @@ def main(argv=None):
     p.add_argument('--objdump', help='llvm-objdump (default: as disasm.py finds it)')
     p.add_argument('--out', help='directory for align.txt and align.json (with --attempt: one subdirectory per function)')
     p.add_argument('--json', action='store_true', help='print the JSON instead of the summary')
+    p.add_argument('--side-by-side', action='store_true', help='with --attempt: also write side-by-side.txt for every function')
     a = p.parse_args(argv)
     image, configured = _config_image()
     image = a.image or image
     objdump = disasm.find_objdump(a.objdump or configured or os.environ.get('SR_OBJDUMP'))
     if a.attempt:
-        for rva, reason, text, data in run_attempt_dir(a.attempt, a.task_dir, image, objdump, a.all, a.out):
+        if a.side_by_side:
+            write_side_by_sides(a.attempt, objdump, image)
+        for rva, reason, text, data in run_attempt_dir(a.attempt, a.task_dir, image, objdump, a.all, a.out,
+                                                       symbols_path=a.symbols):
             print(f'0x{rva:x} {reason}')
             print(json.dumps(data, indent=1) if a.json and data else '\n'.join('    ' + s for s in text.splitlines()))
         return 0

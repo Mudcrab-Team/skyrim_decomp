@@ -7,6 +7,7 @@
     "mac",
     "winpc"
   ],
+  "prep": "winpc",
   "hosts": {
     "boat": {
       "backend": "boat"
@@ -32,6 +33,7 @@
       "python": ["py", "-3.12"],
       "msvc": "C:/example/verifier/msvc",
       "image": "C:/example/verifier/private/SkyrimSE.exe",
+      "objdump": "C:/example/verifier/llvm/llvm-objdump.exe",
       "work": "C:/example/verifier/work",
       "max_parallel": 8,
       "max_sessions": 4,

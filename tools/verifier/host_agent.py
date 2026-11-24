@@ -121,6 +121,34 @@ def unpack(bundle, dest):
 
 
 UNIT_EXIT_FILE = 'unit-exit.txt'
+# What the host's own alignment printed; kept in the fetched directory for whoever wonders why a
+# function has no host summary. Never part of the sanitized standard output.
+ALIGN_LOG = 'align-host.log'
+ALIGN_TIMEOUT = 900
+
+
+def align_on_host(run, work, objdump, image):
+    """Aligned diagnostics of every failing function, computed here so the caller need not.
+
+    Best effort: any failure leaves the function without a summary and the caller aligns it itself.
+    The files land next to each function's report (align.txt, align.json, align-summary.txt, side-by-side.txt) and travel
+    in the output archive. The symbol map is the one the run compiled against (named in the spec).
+    """
+    script = run / 'repo' / 'tools' / 'verifier' / 'align.py'
+    if not objdump or not script.is_file() or not (work / 'candidate.obj').is_file():
+        return
+    try:
+        spec = json.loads((run / 'repo' / '.unit' / 'spec.json').read_text())
+        symbols = run / 'repo' / spec['symbols']
+        proc = subprocess.run([sys.executable, '-I', str(script), '--attempt', str(work), '--task-dir', str(work),
+                               '--symbols', str(symbols), '--image', image, '--objdump', objdump, '--side-by-side'],
+                              capture_output=True, text=True, errors='replace', timeout=ALIGN_TIMEOUT)
+        (work / ALIGN_LOG).write_text(f'exit {proc.returncode}\n{proc.stdout}{proc.stderr}')
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError) as exc:
+        try:
+            (work / ALIGN_LOG).write_text(f'not aligned on the host: {type(exc).__name__}\n')
+        except OSError:
+            pass
 
 
 def cmd_run(a):
@@ -140,6 +168,8 @@ def cmd_run(a):
                               capture_output=True, text=True, errors='replace')
     finally:
         marker.unlink()
+    if getattr(a, 'objdump', None):
+        align_on_host(run, work, a.objdump, a.image)
     sys.stdout.write(proc.stdout)
     if proc.stderr.strip():
         work.mkdir(parents=True, exist_ok=True)
@@ -261,6 +291,8 @@ def main():
         s.add_argument('--loader', choices=('wine', 'native'), required=True)
         if name in ('run', 'batch'):
             s.add_argument('--label', required=True)
+        if name == 'run':
+            s.add_argument('--objdump', help='llvm-objdump on this host: align the failing functions after the run')
         if name == 'batch':
             s.add_argument('--jobs', type=int, required=True)
     s = sub.add_parser('clean')

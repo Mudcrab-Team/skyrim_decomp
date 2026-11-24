@@ -22,7 +22,12 @@ the pinned image kept on the machine, and fetches private diagnostics to
 object (tools/verifier/bind.py, hints in <task-dir>/bind-hints.json, the destructor kind from the
 pack); when that changes a binding (`unbound:` symbols, a renamed declaration, a new callee, a new
 hint, a plain destructor bound where the target is a deleting one) it compares again in the same
-invocation. A hint at a compared function's RVA that ends up unused is printed as a WARNING. A run in which nothing
+invocation. References still unbound after binding get a hint derived from the instruction alignment
+(tools/verifier/auto_hints.py: the RVA the target encodes where the candidate refers to the name, when
+the pack or the function table lists it and the aligned instructions agree; --no-auto-hints skips it),
+written to <task-dir>/bind-hints.json without replacing an entry a person wrote. When the runner host
+names an llvm-objdump (runners.json `objdump`), the host also aligns the failing functions in the same run,
+so this machine only reads the summaries. A hint at a compared function's RVA that ends up unused is printed as a WARNING. A run in which nothing
 could be compared because of binding does not count against max_attempts, nor do the first three
 compile failures of a unit (later ones count), nor does a host refusal before compiling (wrong
 image or toolchain, copy not matching its spec, host agent refusing its inputs). A repository include the compiler would not find
@@ -53,6 +58,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import align  # noqa: E402
+import auto_hints  # noqa: E402
 import bind  # noqa: E402
 import boatctl  # noqa: E402
 import compare_batch  # noqa: E402
@@ -247,6 +253,7 @@ def retry_alternatives(task, host, task_dir, dest, image, objdump=None, force=Fa
         adest = dest / ('alt-' + alt['id'])
         try:
             files, _ = pipeline.unit_manifest(alt_task)
+            with_host_tools(files, host)
             host.task = alt_task
             code = run_once(alt_task, host, files, task_dir, adest)
         except (PipelineError, boatctl.BoatError, runners.RunnerError, OSError) as exc:
@@ -286,7 +293,56 @@ def retry_alternatives(task, host, task_dir, dest, image, objdump=None, force=Fa
     return lines
 
 
-def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True, retry=True, force_retry=False):
+# Tools a host with llvm-objdump needs to align the failing functions in the run that compiled them.
+HOST_ALIGN_TOOLS = ('tools/verifier/align.py', 'tools/verifier/disasm.py')
+
+
+def with_host_tools(files, host):
+    """`files` plus the alignment tools when `host` aligns after its run (see runners.AgentHost.align)."""
+    if getattr(host, 'align', False):
+        files.update({name: pipeline.REPO / name for name in HOST_ALIGN_TOOLS})
+    return files
+
+
+def alias_lines(task, dest, results):
+    """Plain words for each function the comparator rejected as `undeclared-alias`, with the next step.
+
+    The map names another symbol at the function's RVA (an accepted unit's decoration, or a binding
+    of an earlier attempt) and the comparator accepts that only with a fold. When the object defines
+    that other name too, the unit's own `// CI hash:` line settles which one is the function (bind
+    reads it before it chooses by name), so the line is spelled out.
+    """
+    failing = [fn for fn in task['functions'] if results.get(fn['rva']) == 'undeclared-alias']
+    if not failing:
+        return []
+    try:
+        mapped = align.load_symbols(task['symbols_local'])
+    except (OSError, ValueError, KeyError):
+        return []
+    try:
+        from pecoff import CoffObject, Reject
+        defined = set(bind.defined_functions(CoffObject((Path(dest) / 'candidate.obj').read_bytes())))
+    except (OSError, ValueError, ImportError, Reject):
+        defined = set()
+    out = []
+    for fn in failing:
+        rva = f'0x{fn["rva"]:x}'
+        also = sorted(n for n, r in mapped.items() if r == fn['rva'] and n != fn['symbol'])
+        shown = ', '.join(align.display_name(n)[:70] for n in also[:3]) or 'another symbol'
+        local = [n for n in also if n in defined]
+        if local:
+            out.append(f'  {rva} undeclared-alias: the symbol map already holds {shown} at this RVA and the object defines it, '
+                       f'but {align.display_name(fn["symbol"])[:70]} was bound by name. Add `// CI hash: {rva} {local[0]}` '
+                       'to the unit (a line near its top) and attempt again; nothing else needs to change.')
+        else:
+            out.append(f'  {rva} undeclared-alias: the symbol map already holds {shown} at this RVA (an accepted unit or an '
+                       f'earlier binding) and this unit does not define it; it defines {align.display_name(fn["symbol"])[:70]}. '
+                       'Declare the function with the map\'s decoration, or ask for a fold if this one is the right decoration.')
+    return out
+
+
+def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=None, rules=(), advisory=True, retry=True, force_retry=False,
+            auto=True, correct=False):
     started = time.monotonic()
     task = pipeline.load_task(task_dir)
     import draft_worktrees
@@ -333,6 +389,9 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         # A result prefetched in a batch (tools/verifier/compare_batch.py) is used only while it matches
         # these exact sources; otherwise this is the plain per-unit run on `runner`.
         host, runner = compare_batch.host_for(task, files, runner, runners.load())
+        if hasattr(host, 'align') and runner.get('objdump'):
+            host.align = True
+            with_host_tools(files, host)
     dest = attempts / f'{number:03d}'
     code = run_once(task, host, files, task_dir, dest)
     bind_lines = []
@@ -344,6 +403,18 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         bind_lines.append('  internal identities: automatic name binding disabled; use explicit scoped map keys')
     if (not internal and code in (0, 1, COMPARATOR_ERROR_EXIT) and not (dest / 'error.json').is_file()
             and (dest / 'candidate.obj').is_file() and (code != COMPARATOR_ERROR_EXIT or comparator_errored(task, dest))):
+        recompared = False
+
+        def recompare():
+            """Same source, new names: compile and compare again so this invocation reports real results."""
+            nonlocal task, files, closure, code, recompared
+            task = pipeline.load_task(task_dir)
+            files, closure = pipeline.unit_manifest(task)
+            with_host_tools(files, host)
+            host.task = task
+            code = run_once(task, host, files, task_dir, dest)
+            recompared = True
+
         try:
             with local_load.heavy('attempt binding'):
                 report = bind.bind(task_dir, dest / 'candidate.obj', config.get('image'), config.get('objdump'))
@@ -351,16 +422,31 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
             report = None
             bind_lines.append('  ' + agent_advice.explain(f'binding failed: {exc}', 'attempt'))
         if report is not None:
-            bind_lines += bind.describe(report, task_dir)
+            final, hint_lines = report, []
             if report['changed']:
-                # Same source, new names: compile and compare again so this invocation reports real results.
-                task = pipeline.load_task(task_dir)
-                files, closure = pipeline.unit_manifest(task)
-                host.task = task
-                code = run_once(task, host, files, task_dir, dest)
+                recompare()
+            if auto and (report['unbound_references'] or report['unbound_thread_locals'] or correct) \
+                    and (dest / 'candidate.obj').is_file() and code in (0, 1, COMPARATOR_ERROR_EXIT):
+                # The alignment is read from the newest run, whose function symbols are bound, so the host
+                # aligned every failing function there; hints go to bind-hints.json and bind reads them next.
+                try:
+                    with local_load.heavy('attempt hints'):
+                        added, skipped, notes = auto_hints.derive(task_dir, dest, report, config, correct=correct)
+                        hint_lines = auto_hints.describe(added, skipped, notes)
+                        second = (bind.bind(task_dir, dest / 'candidate.obj', config.get('image'), config.get('objdump'))
+                                  if added else None)
+                    if second is not None:
+                        final = auto_hints.merge_reports(report, second)
+                        if second['changed']:
+                            recompare()
+                except (OSError, ValueError, KeyError, TypeError) as exc:
+                    hint_lines = [f'  auto hints: not derived ({type(exc).__name__}: {exc})']
+            bind_lines += hint_lines + bind.describe(final, task_dir)
+            if recompared:
                 bind_lines.append('  re-compared after binding (same source)')
     snapshot_sources(pipeline.REPO, task, closure, dest)
     results = results_of(task, dest)
+    bind_lines += alias_lines(task, dest, results)
     binding_only = code in (0, 1) and bool(results) and all(r in bind.BINDING_REASONS for r in results.values())
     counted, free_compile = charge(code, binding_only, task_dir / 'attempts.jsonl', tier)
     lines, all_rows = [], []
@@ -400,6 +486,8 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
                         fdir, objdump, config.get('image'), dest / 'candidate.obj', fn, task['symbols_local']))
                 if 'internal_selector' in fn:
                     continue  # Name-only disassembly helpers cannot select TU-bound internal symbols.
+                if (fdir / 'side-by-side.txt').is_file():
+                    continue  # written by a host that aligns in its own run
                 sbs, why = disasm.write_side_by_side(fdir / 'side-by-side.txt', objdump, config.get('image'),
                                                      dest / 'candidate.obj', fn['symbol'], fn['rva'], fn['size'])
                 if sbs is None and why and not any('side-by-side' in r for r in rows):
@@ -569,6 +657,11 @@ def main():
                    'local work per unit); for callers that only need the verdict and run those checks elsewhere')
     p.add_argument('--no-retry', action='store_true', help='skip the advisory retry of failed functions under the '
                    "recipe's alternative flag sets (data/recipe-alternatives.json); the retry costs one more unit build per alternative")
+    p.add_argument('--no-auto-hints', action='store_true', help='do not derive bind hints from the instruction alignment '
+                   'for references that stay unbound after binding')
+    p.add_argument('--hints-by-alignment', action='store_true', help='also write hints for names bound by position that the '
+                   'instruction alignment contradicts (a near-miss whose hints were lost); hides a wrong global in the source, '
+                   'so it is for studies, not drafting')
     p.add_argument('--retry-any', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--clean', action='store_true', help="remove the task's files on the machine")
     p.add_argument('--stop', action='store_true', help=argparse.SUPPRESS)
@@ -595,7 +688,8 @@ def main():
             rules = sorted({int(n) for n in a.rule.split(',')}) if a.rule else []
         except ValueError:
             p.error('--rule takes cookbook rule numbers such as 48 or 48,12')
-        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory, not a.no_retry, a.retry_any)
+        return attempt(a.task_dir, a.tier, a.queue_dir, a.model, a.agent, a.profile, rules, not a.no_advisory, not a.no_retry, a.retry_any,
+                       not a.no_auto_hints, a.hints_by_alignment)
     except (PipelineError, boatctl.BoatError, runners.RunnerError, wq.QueueError, OSError, ValueError, KeyError, TypeError) as exc:
         print(f'attempt: {agent_advice.explain(exc, "attempt")}', file=sys.stderr)
         return 2

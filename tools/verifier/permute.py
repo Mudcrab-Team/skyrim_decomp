@@ -298,8 +298,8 @@ def emit(block, tail=''):
 # --------------------------------------------------------------------------------------------
 # Locating the function definition in the compiled file.
 
-def find_body(text, qualified):
-    """(start, end) of the `{ ... }` body of the definition of `qualified` (e.g. "TESFile::Seek")."""
+def find_bodies(text, qualified):
+    """[(start, end, parameter text)] of every `{ ... }` definition of `qualified` (e.g. "TESFile::Seek")."""
     toks, _ = lex(text)
     offsets, pos = [], 0
     for t in toks:
@@ -316,16 +316,103 @@ def find_body(text, qualified):
         j = i + len(want)
         if j >= len(toks) or names[j] != '(':
             continue
+        params = text[offsets[j] + 1:offsets[_balanced(toks, j) - 1]]
         j = _balanced(toks, j)
         # qualifiers between ) and { : const, noexcept, override, -> type; a `;` means a declaration
         while j < len(toks) and names[j] not in ('{', ';', ':'):
             j = _balanced(toks, j) if names[j] in ('(', '[') else j + 1
         if j < len(toks) and names[j] == '{':
             end = _balanced(toks, j)
-            hits.append((offsets[j], offsets[end - 1] + 1))
+            hits.append((offsets[j], offsets[end - 1] + 1, params))
+    return hits
+
+
+# Words that are part of a type, so a parameter ending in one has no name to drop.
+TYPE_WORDS_ONLY = {'const', 'volatile', 'struct', 'class', 'enum', 'unsigned', 'signed', 'long', 'short', 'int',
+                   'char', 'bool', 'float', 'double', 'void', '__int64', 'wchar_t'}
+# Words that cannot end a type on their own, so the word after them is still part of it.
+OPEN_TYPE = {'const', 'volatile', 'struct', 'class', 'enum', 'unsigned', 'signed', 'long', 'short'}
+
+
+def parameter_types(text):
+    """A definition's parameter list as bind.normalize_params reads a declaration's: names and defaults dropped."""
+    import bind
+    kept = []
+    for part in bind.split_params(text):
+        part = part.split('=')[0].strip()
+        words = part.split()
+        if (len(words) >= 2 and re.fullmatch(r'[A-Za-z_]\w*', words[-1]) and words[-1] not in TYPE_WORDS_ONLY
+                and words[-2] not in OPEN_TYPE and not words[-2].endswith('::')):
+            part = part[:part.rindex(words[-1])].rstrip()
+        kept.append(part)
+    return bind.normalize_params(','.join(kept))
+
+
+def find_body(text, qualified, params=None):
+    """(start, end) of the `{ ... }` body of the definition of `qualified` (e.g. "TESFile::Seek").
+
+    Several definitions of the name (overloads) are narrowed by `params`, a normalised parameter list
+    (bind.normalize_params), when one is given and exactly one definition has it.
+    """
+    hits = find_bodies(text, qualified)
+    if len(hits) > 1 and params is not None:
+        import bind
+        fitting = [h for h in hits if parameter_types(h[2]) == params]
+        hits = fitting or hits
     if len(hits) != 1:
         raise ValueError(f'{qualified}: {len(hits)} definitions found in the compiled file (need exactly 1)')
-    return hits[0]
+    return hits[0][:2]
+
+
+PLACEHOLDER_NAME = re.compile(r'(?:^|::)Function[0-9a-fA-F]+$')
+
+
+def definition_name(text, candidates):
+    """(qualified name, parameter list or None) of the first candidate the source defines exactly once.
+
+    `candidates` is [(name, parameter list or None)] in order of trust; a name that is missing from the
+    source or defined several times that the parameters do not tell apart is passed over.
+    """
+    tried = []
+    for name, params in candidates:
+        if not name or any(name == t for t, _ in tried):
+            continue
+        tried.append((name, params))
+        try:
+            find_body(text, name, params)
+        except ValueError:
+            continue
+        return name, params
+    raise ValueError('no definition found for any of: ' + ', '.join(n for n, _ in tried or [('no name', None)]))
+
+
+def target_names(repo, task, entry, rva, objdump=None):
+    """[(qualified name, parameter list or None)] naming the target's definition, most trusted first.
+
+    The header line of the unit for the RVA, the community name unless it is a placeholder
+    (`Class::Function<rva>`, `Unk<rva>`), then the qualified name of the symbol bound to the function,
+    demangled when llvm-undname is available. Each with the parameters it declares, so an overload can
+    be told from its siblings.
+    """
+    import bind
+    out = []
+    decl = bind.header_declarations(repo, task['compiled']).get(rva)
+    if decl and decl.get('name'):
+        out.append((decl['name'], decl.get('params')))
+    community = entry.get('community_name')
+    if community and not PLACEHOLDER_NAME.search(community):
+        out.append((bind.community_qualified(community) or community, decl.get('params') if decl else None))
+    symbol = entry.get('symbol') or ''
+    if symbol.startswith('?'):
+        names = bind.Names(bind.find_undname(objdump))
+        qualified = names(symbol)
+        shown = names.text.get(symbol)
+        params = None
+        if shown and '(' in shown:
+            params = bind.normalize_params(shown[shown.index('(') + 1:shown.rindex(')')])
+        if qualified:
+            out.append((qualified, params))
+    return out
 
 
 # --------------------------------------------------------------------------------------------
@@ -1229,11 +1316,11 @@ class Unit:
     a list holds one entry per body.
     """
 
-    def __init__(self, text, qualified, also=()):
+    def __init__(self, text, qualified, also=(), params=None):
         self.text = text
         self.spans, self.blocks, self.tails = [], [], []
-        for name in (qualified, *also):
-            start, end = find_body(text, name)
+        for number, name in enumerate((qualified, *also)):
+            start, end = find_body(text, name, params if number == 0 else None)
             if any(start < e and s < end for s, e in self.spans):
                 raise ValueError(f'{name}: body overlaps another mutated body')
             block, tail = parse_body(text[start:end])
@@ -1916,15 +2003,27 @@ def run(args):
         raise SystemExit(f'0x{rva:x} is not a function of the task')
     raw = json.loads((task['dir'] / 'task.json').read_text())
     entry = next(f for f in raw['functions'] if int(str(f['rva']), 0) == rva)
-    qualified = args.function or entry.get('community_name')
-    if not qualified:
-        raise SystemExit('give --function Class::Name')
     source_root = Path(args.source_root).resolve() if args.source_root else REPO
     out = Path(args.out).resolve() if args.out else task['dir'] / 'permute' / f'0x{rva:x}'
     pipeline.private_root(out)
     out.mkdir(parents=True, exist_ok=True)
     compiled = task['compiled']
-    unit = Unit((source_root / compiled).read_text(), qualified, args.also or ())
+    text = (source_root / compiled).read_text()
+    params = None
+    if args.function:
+        qualified = args.function
+    else:
+        # No --function: the unit's header line for the RVA, the community name unless it is a
+        # placeholder, then the name of the bound symbol; the first the source defines once.
+        shown_task = dict(task, compiled=compiled)
+        names = target_names(source_root, shown_task, dict(entry, symbol=fn['symbol']), rva,
+                             disasm.find_objdump(pipeline.load_config(task['dir']).get('objdump')))
+        try:
+            qualified, params = definition_name(text, names)
+        except ValueError as exc:
+            raise SystemExit(f'{exc}; give --function Class::Name') from None
+        print(f'permute: mutating {qualified} (from the unit header, community name or bound symbol)')
+    unit = Unit(text, qualified, args.also or (), params)
     from source_digest import include_closure
     closure = include_closure(source_root, compiled)
     files = {name: REPO / name for name in pipeline.TOOL_FILES + REMOTE_TOOLS}
@@ -2122,7 +2221,8 @@ def main(argv=None):
     r = sub.add_parser('run', help='search for one function of a task')
     r.add_argument('task_dir')
     r.add_argument('--rva', required=True)
-    r.add_argument('--function', help='qualified name of the definition to mutate (default: community name)')
+    r.add_argument('--function', help='qualified name of the definition to mutate (default: the unit header line for the RVA, the '
+                   'community name unless it is a placeholder, then the bound symbol)')
     r.add_argument('--also', action='append', metavar='Class::Helper',
                    help='also mutate this definition in the same file (repeatable), e.g. an inline helper')
     r.add_argument('--source-root', help='checkout-shaped tree holding reconstruction/ (default: this checkout)')
