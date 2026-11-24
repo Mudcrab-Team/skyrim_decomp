@@ -60,8 +60,8 @@ def write_unit(root, family, build_id, header, source, symbols, functions, *, ar
     directory.mkdir(parents=True)
     (root / unit.parent).mkdir(parents=True, exist_ok=True)
     compiled = unit.with_suffix('.cpp').as_posix()
-    (root / compiled).write_text('\n'.join(source) + '\n')
-    (root / unit.with_suffix('.h')).write_text('\n'.join(header) + '\n')
+    (root / compiled).write_text('\n'.join(source) + '\n', newline='\n')
+    (root / unit.with_suffix('.h')).write_text('\n'.join(header) + '\n', newline='\n')
     smap = dict(schema=1, build_id=build_id, symbols=symbols, folds=[])
     task = dict(task_schema=1, task_id=family, build_id=build_id, compiled=compiled,
                 recipe=contrib.DEFAULT_RECIPE, symbols='symbols.json', functions=functions)
