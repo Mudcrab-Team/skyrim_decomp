@@ -75,6 +75,7 @@ class FakeGitHub:
         self.prs = {}  # number -> dict
         self.comments = {}  # number -> [{id, login, body}]
         self.calls = []
+        self.head_reads = []  # one entry per cheap head re-read
         self.merges = []
         self.merge_failures = 0
         self.created = []  # every `gh pr create` the bot issued
@@ -104,6 +105,11 @@ class FakeGitHub:
     def route(self, a):
         w, ci = self.world, self.world.ci
         line = ' '.join(a)
+        m = re.search(r'pulls/(\d+)( --jq .head.sha)?$', line)
+        if m and a[0] == 'api':
+            head = self.prs[int(m[1])]['head']
+            self.head_reads.append(int(m[1]))
+            return self.ok((head + '\n').encode())
         m = re.search(r'pulls/(\d+)/files', line)
         if m:
             return self.ok([w.files_of(int(m[1]))])
@@ -532,7 +538,7 @@ class ReplayBot(pr_bot.Bot):
         records.mkdir(parents=True, exist_ok=True)
         return records, set(self.world.refused_records) & set(rvas)
 
-    def compare_on_host(self, units, tag):
+    def compare_on_host(self, units, tag, before_attempts=None):
         """The compile host: leaves the comparator reports and the task's unit symbol map where the real one does."""
         world = self.world
         number, head8 = tag.split('-')[:2]
@@ -1221,6 +1227,93 @@ class ParallelCompareTests(Replay):
             return subprocess.CompletedProcess([], 5, b'', b'boom\n')
         with self.assertRaises(pr_bot.HostFailure):
             self.compare(6, attempt)
+
+
+class HeadCheckTests(Replay):
+    """A push mid-run drops the old head before the next expensive stage instead of after it."""
+
+    OLD, NEW = 'a' * 40, 'b' * 40
+
+    def setUp(self):
+        super().setUp()
+        self.w.github.prs[7] = dict(head=self.OLD, author='x', mergeable='MERGEABLE', state='OPEN', branch='b')
+
+    def test_unmoved_head_passes_with_one_call(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.bot.check_head(7, self.OLD, 'review')
+        self.assertEqual(self.w.github.head_reads, [7])
+
+    def test_moved_head_stops_with_one_line_and_does_not_count_as_an_error(self):
+        self.w.github.prs[7]['head'] = self.NEW
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            with self.assertRaises(pr_bot.HeadMoved) as caught:
+                self.bot.check_head(7, self.OLD, 'host1')
+        self.assertIsInstance(caught.exception, pr_bot.Waiting)
+        self.assertEqual(len(out.getvalue().strip().splitlines()), 1)
+        self.assertIn('aaaaaaaa -> bbbbbbbb', out.getvalue())
+
+    def test_tag_keeps_eight_characters_and_still_matches(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.bot.check_tag_head(f'7-{self.OLD[:8]}', 'pack export')
+            self.w.github.prs[7]['head'] = self.NEW
+            with self.assertRaises(pr_bot.HeadMoved):
+                self.bot.check_tag_head(f'7-{self.OLD[:8]}', 'compare')
+
+    def test_unreadable_head_lets_the_stage_go_on(self):
+        with mock.patch.object(self.bot, 'run', side_effect=pr_bot.GhFailure('down')):
+            self.bot.check_head(7, self.OLD, 'review')
+
+    def test_compare_checks_before_export_and_before_attempts(self):
+        stages = []
+        with mock.patch.object(self.bot, 'check_tag_head', lambda tag, stage: stages.append(stage)), \
+                mock.patch.object(self.bot, 'compare_on_host',
+                                  lambda units, tag, before=None: (before(), {})[1]):
+            self.bot.mac_compare({}, '7-aaaaaaaa')
+        self.assertEqual(stages, ['pack export', 'compare'])
+
+    def test_merge_checks_before_asking_main_watch(self):
+        self.w.github.prs[7]['head'] = self.NEW
+        with contextlib.redirect_stdout(io.StringIO()), self.assertRaises(pr_bot.HeadMoved):
+            self.bot.merge_pr(7, self.OLD, 's', 'b')
+        self.assertEqual(self.w.github.merges, [])
+
+
+class HashYieldAndReportsTests(Replay):
+    """A hash wait must not give up while the same head's local compare is still running, and a retry on another slot keeps its reports."""
+
+    HEAD = 'c' * 40
+
+    def test_the_hash_wait_yields_only_once_the_local_compare_is_done(self):
+        bot = self.bot
+        bot.demand[0] = 1
+        bot.config['hash_wait'] = 600
+        busy = [True, True, False]
+        asked = []
+
+        def may_yield():
+            asked.append(1)
+            return not busy.pop(0)
+        running = dict(id=5, status='in_progress', started_at='2030-01-01T00:00:00Z', details_url='https://ci.invalid/runs/5')
+        with mock.patch.object(pr_bot, 'HASH_YIELD_AFTER', 0), mock.patch.object(bot, 'latest_hash_run', lambda *a: running), \
+                mock.patch.object(pr_bot.time, 'sleep', lambda s: None):
+            with self.assertRaises(pr_bot.Waiting):
+                bot.host1(7, self.HEAD, [0x1000], None, None, may_yield)
+        self.assertEqual(len(asked), 3)  # two refusals while the compare ran, then the yield
+
+    def test_a_retry_on_another_slot_adopts_the_reports_instead_of_dropping_the_verdict(self):
+        tag = '7-cccccccc'
+        donor = self.bot.for_slot(1)
+        report = donor.tree / f'.local/tasks/prbot-{tag}-0/attempts/001/0x1000/report.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{}')
+        self.assertFalse(self.bot.reports_present(tag, {'4096': 'pass'}))
+        self.assertTrue(self.bot.adopt_reports(tag, {'4096': 'pass'}))
+        self.assertTrue(self.bot.reports_present(tag, {'4096': 'pass'}))
+        self.assertTrue(report.exists())  # the donor keeps its copy
+
+    def test_no_slot_holding_the_reports_means_no_adoption(self):
+        self.assertFalse(self.bot.adopt_reports('7-dddddddd', {'4096': 'pass'}))
 
 
 class IncludeRefusalTests(Replay):

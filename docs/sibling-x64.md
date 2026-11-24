@@ -49,3 +49,11 @@ its own unit natively on Windows (at most four jobs); `index.py sigs`/`leads` an
 `cmp_run.py --tag msvclib` steps find unmatched target functions of the same shape. The sources copy no library
 text. `docs/resource-guidelines.md` lists CRT/STL as out of scope for drafting and counting, so a pass here is a lead
 list, not a reconstruction unit, until that row is changed by the maintainer.
+
+**Checking the cookbook against the compiler.** `tools/f3x64/lab_experiments.py` compiles toy spelling variants on the Windows
+runner with the recipe and judges a stated claim per experiment (`lab_compile.py` is the transport and listing parser);
+`corpus.py` counts a source pattern's effect over the sibling listings (line effects, the UnwindHelp store with and without a handler, vftable
+thunks, tail calls, source-identical twins); `cluster.py` groups the hunks of near pairs into width, register, offset, immediate and
+instruction-only kinds. Results are in the "Sibling x64 verification" section of [the cookbook](matching-cookbook.md). All of it
+reads only compiled sibling code and toy sources; the near-pair score files stay under `.local/`.
+

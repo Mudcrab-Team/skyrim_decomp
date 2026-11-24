@@ -257,6 +257,10 @@ class WouldSpend(Exception):
     """A dry run reached a stage that costs a compile or a review; it stops there instead of paying."""
 
 
+class HeadMoved(Waiting):
+    """The PR's head changed under a running head; the old one is dropped and the new one starts next tick."""
+
+
 class HostFailure(Stop):
     """A verifier host did not complete a compare. Repeats of it on one head back off and are said once."""
 
@@ -1829,6 +1833,26 @@ class Bot:
     def gh_json(self, *args):
         return json.loads(self.run(['gh', *args]).stdout)
 
+    def check_head(self, number, head, stage):
+        """Raise HeadMoved when the PR's head is no longer `head`; one REST call, made before an expensive stage.
+
+        `head` may be a prefix (the compare tag keeps eight characters). A failed read says nothing about the
+        head, so the stage goes ahead: the merge still pins the head with --match-head-commit.
+        """
+        try:
+            now = self.run(['gh', 'api', f'repos/{REPOSITORY}/pulls/{number}', '--jq', '.head.sha']).stdout
+        except (Stop, subprocess.SubprocessError, OSError):
+            return
+        now = now.decode(errors='replace').strip() if isinstance(now, bytes) else str(now).strip()
+        if re.fullmatch(r'[0-9a-f]{40}', now) and not now.startswith(head):
+            message = f'pr{number} head moved {head[:8]} -> {now[:8]} before {stage}; dropping the old head'
+            print(message, flush=True)
+            raise HeadMoved(message)
+
+    def check_tag_head(self, tag, stage):
+        number, _, short = tag.partition('-')
+        self.check_head(int(number), short, stage)
+
     def fetch_main_red(self):
         out = self.run(['gh', 'api', f'repos/{REPOSITORY}/actions/workflows/{MAIN_CHECK_WORKFLOW}/runs'
                         '?branch=main&event=push&status=completed&per_page=5']).stdout
@@ -1836,6 +1860,7 @@ class Bot:
 
     def merge_pr(self, number, head, subject, body, check=False):
         """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
+        self.check_head(number, head, 'merge')
         red = self.main_watch.red_sha()
         if red:
             print(f'main red at {red}; holding merges', file=sys.stderr)
@@ -2077,6 +2102,27 @@ class Bot:
         return all(next(self.tree.glob(f'.local/tasks/prbot-{tag}-*/attempts/[0-9]*/0x{int(r):x}/report.json'), None)
                    for r in verdicts)
 
+    def adopt_reports(self, tag, verdicts):
+        """Copy the PR head's comparator tasks from the slot tree that ran them; True when this tree then has them.
+
+        A retry takes whichever slot is free. Dropping the cached verdict because the report files are in another
+        slot's tree repeated a compare of hundreds of units that had already finished.
+        """
+        for index in (*range(POOL_SIZE), 'merge', 'maint', 'conflict'):
+            donor = self.for_slot(index)
+            if donor.tree == self.tree or not donor.reports_present(tag, verdicts):
+                continue
+            target = self.tree / '.local/tasks'
+            target.mkdir(parents=True, exist_ok=True)
+            try:
+                for task in (donor.tree / '.local/tasks').glob(f'prbot-{tag}-*'):
+                    shutil.rmtree(target / task.name, ignore_errors=True)
+                    shutil.copytree(task, target / task.name, symlinks=True)
+            except OSError:
+                return False
+            return self.reports_present(tag, verdicts)
+        return False
+
     def review_evidence(self, tag, functions, host1, host2, state):
         """What each host said about each function, with the Mac comparator report's path in the tree."""
         ci = state.get('ci') or {}
@@ -2269,6 +2315,7 @@ class Bot:
         With a `state`, every chunk's answer is cached under its own key, so a retry after one chunk failed
         runs only the chunks without an answer.
         """
+        self.check_head(number, head, 'review')
         old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
         chunks = review_chunks(functions, units, self.config['review_chunk']) if units else [sorted(functions)]
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
@@ -2289,8 +2336,11 @@ class Bot:
             mine = {owner.get(r) for r in chunks[i]}
             others = [f for cpp in units if cpp not in mine for f in (cpp, cpp[:-4] + '.h')]
             path = out.with_name(f'{out.stem}-c{i}.txt')
-            run = lambda: self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
-                                            companions, old_flags, path, others)
+
+            def run():
+                self.check_head(number, head, f'review chunk {i + 1}/{len(chunks)}')
+                return self.review_chunk(number, head, base, chunks[i], grep, units, evidence, changed,
+                                         companions, old_flags, path, others)
             text = state.once(keys[i], run) if state is not None else run()
             if progress:
                 progress.advance()
@@ -2542,9 +2592,10 @@ class Bot:
         """{rva: pass|fail} from the standing verifier host; raises Stop when it did not complete."""
         if self.dry_run:
             raise WouldSpend('local compare')
-        return self.compare_on_host(units, tag)
+        self.check_tag_head(tag, 'pack export')
+        return self.compare_on_host(units, tag, lambda: self.check_tag_head(tag, 'compare'))
 
-    def compare_on_host(self, units, tag):
+    def compare_on_host(self, units, tag, before_attempts=None):
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
         lines, tasks = [], []
         for index, (cpp, rvas) in enumerate(sorted(units.items())):
@@ -2569,6 +2620,8 @@ class Bot:
                          timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
             raise HostFailure(f'pack export did not complete ({type(exc).__name__}{": " + str(exc) if isinstance(exc, Stop) and str(exc) else ""})')
+        if before_attempts:
+            before_attempts()
         out, why = {}, {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
@@ -2635,7 +2688,7 @@ class Bot:
         self.host2_why[tag] = why
         return out
 
-    def host1(self, number, head, functions, state=None, units=None):
+    def host1(self, number, head, functions, state=None, units=None, may_yield=None):
         """{rva: status} from the head's `hash` run; the run's facts are kept in state for the record."""
         if self.host1_mode == 'assume-pass':
             return {r: 'pass' for r in functions}
@@ -2706,9 +2759,13 @@ class Bot:
                 raise WouldSpend('wait for the hash run')
             if time.time() > deadline:
                 raise Waiting('hash check has not finished')
-            if self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER:
+            if (self.demand[0] and time.time() - waiting_since >= HASH_YIELD_AFTER
+                    and (may_yield is None or may_yield())):
                 # CI runs on GitHub, not on this slot; holding it for the rest of hash_wait would keep PRs that
-                # are ready to run (outside contributors' first) from starting at all.
+                # are ready to run (outside contributors' first) from starting at all. While the local compare
+                # of the same head is still running the slot is busy anyway, and the caller only sees this
+                # exception once that compare ends, so yielding early would throw away a result that arrives
+                # minutes later and cost the head a tick.
                 raise Waiting('hash check has not finished; slot released for waiting PRs')
             time.sleep(20)
         table = results_from_report(found[0]) if found else {}
@@ -3251,11 +3308,19 @@ class Bot:
 
         tag = f'{number}-{head[:8]}'
 
+        mac_done = threading.Event()
+
         def mac():
+            try:
+                return mac_stage()
+            finally:
+                mac_done.set()
+
+        def mac_stage():
             # A retry can land on another slot whose scratch tree never held this head's comparator
             # reports; the cached verdict would then reach the Reviewer with no report to bind.
             cached = state.get('host2' + sfx)
-            if cached is not None and not self.reports_present(tag, cached):
+            if cached is not None and not self.reports_present(tag, cached) and not self.adopt_reports(tag, cached):
                 state.drop('host2' + sfx)
             got = state.once('host2' + sfx, lambda: {str(k): v for k, v in
                                                      self.mac_compare(check_units, tag).items()})
@@ -3264,9 +3329,11 @@ class Bot:
             return got
 
         def ci():
+            if state.get('host1' + sfx) is None:
+                self.check_head(number, head, 'host1')
             return state.once('host1' + sfx, lambda: {str(k): v for k, v in
                                                       self.host1(number, head, everything, state,
-                                                                 check_units).items()})
+                                                                 check_units, mac_done.is_set).items()})
         # Both hosts first: the Reviewer's binding check needs the comparator report and the CI result.
         with ThreadPoolExecutor(max_workers=2) as pool:
             f_mac, f_ci = pool.submit(mac), pool.submit(ci)
@@ -4317,6 +4384,7 @@ class Bot:
             login = pr['author']['login']
             uid = self.gh_json('api', f'users/{login}')['id']
             subject, body = squash_message(number, login, uid, matched, again)
+            self.check_head(number, head, 'merge')
             if self.land_with_records(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'],
                                       subject, body):
                 state.set('merged', True)
