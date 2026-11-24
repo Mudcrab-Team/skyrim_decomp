@@ -71,6 +71,12 @@ def link_private(root, tree):
             dest = verifier / entry.name
             if entry.name != 'diagnostics' and not dest.exists() and not dest.is_symlink():
                 dest.symlink_to(entry.resolve(), target_is_directory=entry.is_dir())
+    # Fill what the links above do not cover (tools/worktree_kit.py); additive only.
+    try:
+        import worktree_kit
+        worktree_kit.kit(tree, Path(root) / '.local')
+    except (ImportError, OSError, ValueError):
+        pass
 
 
 def current(root, unit):

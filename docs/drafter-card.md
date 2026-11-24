@@ -1,6 +1,8 @@
 # Drafter card
 
 Everything a Drafter needs. Do not read AGENTS.md or other policy documents; the tools enforce them.
+Read [the drafter toolkit](drafter-toolkit.md) before the first draft: every resource (sibling sources and x64
+hints, cookbook and notes, permuter, recipes, community headers, checkers) with its command, and the first-10-minutes checklist.
 Gates: G1 to G5 granted; private inputs and outputs stay under `.local/` and are never pasted anywhere.
 Card version: `shared-headers` (shared headers, multi-unit tasks; follows `origin-check`). A new
 version restarts the sampling safeguard's first-20 count for Drafter prompts (`docs/verification.md`).
