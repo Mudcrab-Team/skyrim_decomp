@@ -12,10 +12,12 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_LIST = ROOT / '.local/leakgrep-private.txt'
-# Pinned compiler headers; anything else quoted must be a repo-relative reconstruction header.
+# Pinned compiler headers (the standard containers are here for units that instantiate std:: templates); anything else quoted must be a repo-relative reconstruction header.
 STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath', 'type_traits',
                               'utility', 'new', 'limits', 'memory', 'typeinfo', 'atomic', 'algorithm', 'stddef.h', 'stdint.h',
-                              'intrin.h', 'math.h'))
+                              'intrin.h', 'math.h',
+                              'vector', 'deque', 'list', 'forward_list', 'set', 'map', 'unordered_map', 'unordered_set',
+                              'array', 'queue', 'functional', 'bitset', 'string', 'string.h'))
 MNEMONICS = ('mov movzx movsx movaps movups movss movsd lea push pop call jmp je jne jz jnz ja jae jb jbe jg jge '
              'jl jle cmp test xor and or add sub adc sbb imul mul idiv div inc dec shl shr sar sal rol ror neg not '
              'fld fstp fild fistp fadd fmul fsub fdiv fxch xchg cmov\\w+ set\\w+ rep\\s+movs\\w ret retn').split()

@@ -34,7 +34,7 @@ NEGATIVE = {
     'asm-directive': ['// the assembler is not involved', 'int casm = 1;', 'void basement();', '#pragma once',
                       '#pragma pack(push, 4)'],
     'private-path': ['// the users of this class', 'int home = 1;', '#include "reconstruction/actor/Actor.h"'],
-    'include-outside-roots': ['#include "reconstruction/actor/Actor.h"', '#include <cstdint>', '#include <stdint.h>',
+    'include-outside-roots': ['#include "reconstruction/actor/Actor.h"', '#include <cstdint>', '#include <stdint.h>', '#include <vector>', '#include <deque>', '#include <map>', '#include <string>',
                               '#include "Actor.h"'],
 }
 
