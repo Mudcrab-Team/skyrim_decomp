@@ -234,6 +234,17 @@ record.build_match_record(sys.argv[1], sys.argv[2], json.loads(sys.argv[4]), sys
 """
 
 
+def stderr_tail(raw, limit=160):
+    """Last stderr line of a failed helper, safe to show in a PR status: host paths and long hex runs are
+    replaced, so the message names the failure (an OSError, a missing tool) and nothing from the host."""
+    lines = [l.strip() for l in raw.decode(errors='replace').splitlines() if l.strip()]
+    if not lines:
+        return ''
+    text = re.sub(r'(?:[A-Za-z]:)?[\\/][^\s\'"]+', '<path>', lines[-1])
+    text = re.sub(r'[0-9a-fA-F]{16,}', '<hex>', text)
+    return text[:limit]
+
+
 class Stop(Exception):
     """Infrastructure did not complete; nothing is cached and the next tick retries."""
 
@@ -1631,6 +1642,11 @@ class Bot:
                 # codex reports account problems (credits, login) as its last ERROR line; "codex failed" alone hid them.
                 errors = [l for l in result.stderr.decode(errors='replace').splitlines() if l.startswith('ERROR')]
                 suffix = f' ({errors[-1][:200]})' if errors else ''
+            if name.startswith('python') and not suffix:
+                # The exporter's own error (for instance a file-name length OSError) was invisible in the bot's status.
+                tail = stderr_tail(result.stderr)
+                script = Path(str(argv[1])).stem if len(argv) > 1 else ''
+                suffix = f' ({script}: {tail})' if tail else ''
             raise (GhFailure if name == 'gh' else Stop)(f'{name} failed{suffix}')
         return result
 
@@ -2418,7 +2434,7 @@ class Bot:
                 self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree,
                          timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
-            raise HostFailure(f'pack export did not complete ({type(exc).__name__})')
+            raise HostFailure(f'pack export did not complete ({type(exc).__name__}{": " + str(exc) if isinstance(exc, Stop) and str(exc) else ""})')
         out, why = {}, {}
         for task, (cpp, rvas) in zip(tasks, sorted(units.items())):
             hints = ci_hash_hints((self.tree / cpp).read_text(), rvas)
