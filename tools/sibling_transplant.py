@@ -18,6 +18,7 @@ facts. The tool never reads image bytes.
 """
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -358,6 +359,31 @@ def dependency_classes(lines, class_lines, own, seen=None):
     return out
 
 
+CALL_KEYWORDS = {'if', 'for', 'while', 'switch', 'return', 'sizeof', 'catch', 'defined', 'template', 'operator', 'new', 'delete',
+                 'static_cast', 'reinterpret_cast', 'const_cast', 'dynamic_cast', 'typeid', 'throw', 'alignof', 'decltype'}
+
+
+def helper_functions(lines, upto, text, ns, seen=None, depth=3):
+    """Definitions of free helper functions (often inline templates) that sit earlier in the same
+    sibling file and that `text` calls; the target inlines them, so a bare declaration would
+    emit a call the target does not make. Dependencies come first."""
+    seen = seen if seen is not None else set()
+    out = []
+    head = lines[:upto]
+    for name in sorted(set(re.findall(rf'(?<![\w:.>])({IDENT})\s*(?:<[^<>;()]*>\s*)?\(', text)) - CALL_KEYWORDS - seen):
+        seen.add(name)
+        brace = definition_line(head, f'?{name}@@')
+        if not brace or depth <= 0:
+            continue
+        got = excerpt(lines, brace)
+        if got is None or not got[1] or got[1][0][:1].isspace() or enclosing_namespaces(lines, got[2]) != ns:
+            continue
+        body = '\n'.join(got[1])
+        out += helper_functions(lines, got[2], body, ns, seen, depth - 1)
+        out.append(body)
+    return out
+
+
 def harvest_declarations(ctx, text, limit=40):
     """One-line top-level extern, typedef and imported-function declarations of the sibling files
     that the excerpt names but does not declare itself."""
@@ -436,6 +462,49 @@ def sized_thunk_unit(entry, fact, size):
                 adapted='none', labels=[([cls, f'{cls}::~{cls}'], kind)], thunk=True, source=None, original=True)
 
 
+STATEMENT_START = re.compile(r'\s*(?:for|if|while|switch|return|do|else|case|\{|\*|\w+(?:\.|->)|\w+\s*=[^=])')
+
+
+def cut_inline_member(lines, got):
+    """(class lines with a prototype in place of the member, out-of-line definition lines) for a
+    non-template member function defined inside a class body, or None. The same code is compiled
+    either way; only the comparison needs the function to be emitted on its own."""
+    pre, fn, sig = got
+    end = sig + len(fn) - 1
+    if STATEMENT_START.match(fn[0]) or 'template' in ' '.join(l.strip() for l in lines[max(sig - 1, 0):sig + 1]).split('(')[0]:
+        return None
+    start = next((i for i in range(sig - 1, -1, -1) if re.match(rf'(?:class|struct)\s+{IDENT}\b[^;]*$', lines[i])), None)
+    if start is None or match_brace(lines, start) is None or match_brace(lines, start) < end:
+        return None
+    if start > 0 and lines[start - 1].lstrip().startswith('template'):
+        return None
+    cls = re.match(rf'(?:class|struct)\s+({IDENT})', lines[start]).group(1)
+    brace = next((i for i in range(sig, end + 1) if '{' in lines[i]), None)
+    if brace is None:
+        return None
+    head = ' '.join(l.strip() for l in lines[sig:brace]) + ' ' + lines[brace].split('{')[0].strip()
+    if ':' in re.sub(r'::', '', head.split(')')[-1]):
+        # a constructor initializer list sits between the signature and the body
+        head = head.split(')')[0] + ')'
+    m = re.search(rf'(?<![\w.>])(~?{IDENT}|operator\s*[^\s(]+)\s*\(', head)
+    if not m or m.group(1) in CALL_KEYWORDS:
+        return None
+    proto = '    ' + re.sub(r'\s+', ' ', head).strip() + ';'
+    out_head = re.sub(r'^\s*(?:(?:virtual|static|inline|explicit|__forceinline)\s+)*', '', fn[0])
+    out_head = re.sub(rf'(?<![\w.>])({re.escape(m.group(1))})\s*\(', rf'{cls}::\1(', out_head, 1)
+    if f'{cls}::' not in out_head:
+        return None
+    # default arguments belong to the declaration only
+    open_ = out_head.index('(')
+    close = out_head.rfind(')') if ')' in out_head else len(out_head)
+    out_head = out_head[:open_] + re.sub(r'\s*=\s*[^,)]+', '', out_head[open_:close]) + out_head[close:]
+    new_class = lines[start:sig] + [proto] + lines[end + 1:match_brace(lines, start) + 1]
+    closed = re.search(r'\}\s*[\w\s,*]*;\s*$', lines[match_brace(lines, start)])
+    if not closed:
+        new_class.append(lines[match_brace(lines, start) + 1])
+    return new_class, [out_head] + [l[4:] if l.startswith('    ') else l for l in fn[1:]]
+
+
 def build_unit(entry, fact, shadow_lines, original_lines, mode=None):
     """Return dict(cls, header, cpp, name, labels...) or a string explaining why not."""
     sym, rva = entry['sym'], entry['rva']
@@ -445,8 +514,11 @@ def build_unit(entry, fact, shadow_lines, original_lines, mode=None):
     got = excerpt(shadow_lines, entry['line']) if entry.get('line') else None
     inline_member = bool(got) and got[1][0][:1].isspace()
     thunk = is_thunk_sym and (got is None or inline_member or mode != 'excerpt')
+    cut = None
     if inline_member and not thunk:
-        return 'function defined inside a class body'
+        cut = cut_inline_member(shadow_lines, got)
+        if cut is None:
+            return 'function defined inside a class body'
     sk_cls, sk_method = skyrim_name(fact)
     if thunk:
         cname = decorated_parts(sym)
@@ -476,6 +548,8 @@ def build_unit(entry, fact, shadow_lines, original_lines, mode=None):
     if got is None:
         return 'function extent not found'
     pre, fn, sig = got
+    if cut:
+        pre, fn = cut
     owner, name = parse_signature(fn[:3])
     if name is None:
         return 'signature not parseable'
@@ -487,8 +561,12 @@ def build_unit(entry, fact, shadow_lines, original_lines, mode=None):
     ns = enclosing_namespaces(shadow_lines, sig)
     pre = [l for l in pre if not NAMESPACE_LINE.fullmatch(l)]
     in_pre = set(re.findall(rf'^(?:class|struct)\s+({IDENT})', '\n'.join(pre), re.M))
-    deps = [(n, b) for n, b in dependency_classes(include_context(entry['source']), pre + fn, None) if n not in in_pre]
+    helpers = helper_functions(shadow_lines, sig, '\n'.join(fn), ns) if entry.get('source') and not name.startswith('~') else []
+    deps = [(n, b) for n, b in dependency_classes(include_context(entry['source']), pre + fn + '\n'.join(helpers).split('\n'), None)
+            if n not in in_pre]
     text_pre = '\n\n'.join('\n'.join(b) for _, b in deps + [('', pre)] if b)
+    if helpers:
+        text_pre += '\n\n' + '\n\n'.join(helpers)
     used = '\n'.join(fn) + '\n' + text_pre
     fwd = [m for m in forward_declarations(used.split('\n')) if m != owner]
     if fwd:
@@ -640,31 +718,38 @@ def _start_task(rva, cls, area=None):
 
 
 def undeclared_origin_lines(cpp):
-    """`Sibling source:` lines for bodies check_origin finds close to a sibling body that the
-    header does not yet name (the same function often exists in both Fallout decompilations)."""
+    """Leading-comment lines for bodies check_origin finds close to a sibling body that the header
+    does not yet name: a `Sibling source:` line per upstream file (the same function often exists in
+    both Fallout decompilations) and one line naming helper functions taken along with the unit."""
     import subprocess
-    r = subprocess.run([sys.executable, str(ROOT / 'tools/check_origin.py'), str(cpp)], cwd=ROOT, capture_output=True, text=True)
+    files = [str(cpp)] + ([str(cpp.with_suffix('.h'))] if cpp.with_suffix('.h').exists() else [])
+    r = subprocess.run([sys.executable, str(ROOT / 'tools/check_origin.py'), *files], cwd=ROOT, capture_output=True, text=True)
     revs = {'momusdigital/fnv_decomp@91e1b6e': 'momusdigital/fnv_decomp@91e1b6e8', 'momusdigital/fnv_decomp@2b07cb3': 'momusdigital/fnv_decomp@2b07cb3e',
             'momusdigital/f3_decomp@f5bac1b': 'momusdigital/f3_decomp@f5bac1b5'}
-    out = []
-    for m in re.finditer(r'~ (\S+@[0-9a-f]+) (\S+:\d+) similarity [\d.]+ \(adapted; header does NOT name', r.stdout):
-        rev = revs.get(m.group(1))
+    out, names = [], []
+    for m in re.finditer(r'^\s+(\S+) ~ (\S+@[0-9a-f]+) (\S+:\d+) similarity [\d.]+ \(adapted; header does NOT name', r.stdout, re.M):
+        rev = revs.get(m.group(2))
         if rev:
-            out.append(f'// Sibling source: {rev} {m.group(2)}')
+            line = f'// Sibling source: {rev} {m.group(3)}'
+            if line not in out:
+                out.append(line)
+            short = m.group(1).split('::')[-1]
+            if short not in names:
+                names.append(short)
+    if out and names:
+        out.append('// Adapted helpers: ' + ', '.join(names))
     return out
 
 
-def syntax_precheck(cpp):
-    """First clang error for the unit, or None. A cheap local gate so hopeless units do not spend
-    counted compile failures on the verifier host; clang is stricter than MSVC in places, so a
-    failure here is reported, not hidden."""
+def clang_errors(cpp, limit=3):
+    """Clang errors (message only) for the unit, or [] when clang is missing or the unit parses."""
     import subprocess
     clang = Path('/opt/homebrew/opt/llvm/bin/clang++')
     if not clang.exists():
-        return None
+        return []
     tc = MAIN / '.local/toolchains/msvc-19.16.27054'
     cmd = [str(clang), '-fsyntax-only', '-target', 'x86_64-pc-windows-msvc', '-fms-extensions', '-fms-compatibility',
-           '-std=c++14', '-w', '-ferror-limit=3', '-x', 'c++', '-I', str(cpp.parent)]
+           '-std=c++14', '-w', f'-ferror-limit={limit}', '-x', 'c++', '-I', str(cpp.parent)]
     for inc in (tc / 'VC/Tools/MSVC').glob('*/include'):
         cmd += ['-isystem', str(inc)]
     for sub in ('ucrt', 'shared', 'um'):
@@ -672,8 +757,78 @@ def syntax_precheck(cpp):
             cmd += ['-isystem', str(inc)]
     r = subprocess.run(cmd + [str(cpp)], capture_output=True, text=True)
     # clang treats the Interlocked family as builtins; cl does not, so those are left to the verifier
-    errs = [l for l in r.stderr.splitlines() if ' error: ' in l and "conflicting types for 'Interlocked" not in l]
-    return re.sub(r'^.*? error: ', '', errs[0])[:140] if errs else None
+    errs = [l for l in r.stderr.splitlines() if ' error: ' in l and "conflicting types for 'Interlocked" not in l
+            and not re.search(r"declaration of '_?Interlocked\w+' has a different language linkage", l)]
+    return [re.sub(r'^.*? error: ', '', e) for e in errs]
+
+
+def syntax_precheck(cpp):
+    """First clang error for the unit, or None. A cheap local gate so hopeless units do not spend
+    counted compile failures on the verifier host; clang is stricter than MSVC in places, so a
+    failure here is reported, not hidden."""
+    errs = clang_errors(cpp)
+    return errs[0][:140] if errs else None
+
+
+SYSTEM_SNIPPETS = {'MAX_PATH': '#define MAX_PATH 260', '__m128': '#include <intrin.h>', '__m128i': '#include <intrin.h>',
+                   '__m128d': '#include <intrin.h>'}
+
+
+def missing_declaration(name, ctx):
+    """Text that declares `name`, taken from the sibling files the unit came from: a (possibly
+    multi-line) typedef, a class definition with its dependencies, or a one-line prototype."""
+    if name in SYSTEM_SNIPPETS:
+        return SYSTEM_SNIPPETS[name]
+    text = '\n'.join(ctx)
+    n = re.escape(name)
+    m = re.search(rf'^typedef\b[^;{{}}]*?(?:\(\s*[*&]?\s*{n}\s*\)[^;{{}}]*|\b{n}\s*(?:\[[^\]]*\])?\s*);', text, re.M)
+    if m:
+        return m.group(0)
+    deps = dependency_classes(ctx, [name], None)
+    if deps:
+        return '\n\n'.join('\n'.join(b) for _, b in deps)
+    m = re.search(rf'^(?:extern\b|[A-Za-z_][^\n;{{}}=]*\b){re.escape(name)}\b[^\n;{{}}]*;', text, re.M)
+    if m:
+        return m.group(0)
+    return None
+
+
+def repair_header(hpath, cpath, ctx, rounds=12):
+    """Add the sibling declarations the compiler reports as missing to the unit's own header (never
+    a shared one), until the unit parses or nothing more can be found. Returns the last error."""
+    seen = set()
+    ctx = [sanitize(l) for l in ctx]
+    for _ in range(rounds):
+        errs = clang_errors(ROOT / cpath, 12)
+        if not errs:
+            return None
+        add = []
+        for e in errs:
+            m = re.search(r"(?:unknown type name|use of undeclared identifier|incomplete type|no template named) '(?:struct |class )?([\w:]+)'", e)
+            name = m.group(1).split('::')[-1] if m else None
+            if not name or name in seen:
+                continue
+            seen.add(name)
+            raw = name
+            for rx, rep in RENAMES:
+                raw = rx.sub(rep, raw)
+            text = missing_declaration(name, ctx)
+            if 'unknown type name' in e and re.fullmatch(IDENT, name) and (not text or not text.startswith(('typedef', '#'))):
+                # a pointer or reference only needs the name; a complete type is requested by a later error
+                text = f'struct {name};'
+            if text:
+                add.append(text)
+                break  # later errors are often caused by this one
+        if not add:
+            return errs[0][:140]
+        h = (ROOT / hpath).read_text()
+        lines = h.split('\n')
+        k = next((i for i, l in enumerate(lines) if l.strip() == '#pragma once'), 0) + 1
+        add.sort(key=lambda t: not re.fullmatch(r'struct \w+;', t))
+        lines[k:k] = [''] + '\n\n'.join(add).split('\n')
+        (ROOT / hpath).write_text('\n'.join(lines))
+    errs = clang_errors(ROOT / cpath)
+    return errs[0][:140] if errs else None
 
 
 def template_instantiation(sym):
@@ -732,6 +887,11 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
     u = build_unit(entry, fact, shadow_lines, original_lines, mode)
     if isinstance(u, str):
         return 'unit:' + u
+    patches = os.environ.get('SIBLING_PATCHES')
+    if patches:
+        # {rva: [[regex, replacement]]}: argument constants the target passes differently from the sibling
+        for rx, rep in json.load(open(patches)).get(f'0x{rva:x}', []):
+            u['cpp_body'] = re.sub(rx, rep, u['cpp_body'])
     inst = None if u.get('thunk') else template_instantiation(entry['sym'])
     # the listing can point at another template than the instance named by the symbol; then nothing is instantiated
     if inst and layout is not None and '<unsigned char>' in inst:
@@ -742,13 +902,13 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
             inst = inst.replace('unsigned char', {2: 'short', 4: 'int', 8: '__int64'}[sizes.pop()])
     if inst and re.search(rf'(?<![\w:]){re.escape(u.get("raw_name") or "?")}\s*<', inst):
         u['cpp_body'] = u['cpp_body'].rstrip('\n') + '\n\n' + inst + '\n'
+    if u.get('raw_name') and u.get('method') and u['method'] != u['raw_name'] and not u['method'].startswith('~'):
+        # the declaration still carries the sibling's method name; the definition was renamed to the target's
+        u['header_decl'] = whole_word(u['header_decl'], u['raw_name'], sanitize(u['method']))
     if layout is not None:
         if u.get('thunk'):
             return 'unit:layout: thunk'
         import sibling_layout
-        if u.get('raw_name') and u.get('method') and u['method'] != u['raw_name'] and not u['method'].startswith('~'):
-            # the declaration still carries the sibling's method name; the definition was renamed to the target's
-            u['header_decl'] = whole_word(u['header_decl'], u['raw_name'], sanitize(u['method']))
         why = sibling_layout.apply_layout(u, layout, u.get('method'))
         if why:
             return 'unit:layout: ' + why
@@ -784,6 +944,8 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
         cpp = cpp.replace('#include "', hint + '\n#include "', 1)
         (ROOT / cpath).write_text(cpp)
     bad = syntax_precheck(ROOT / cpath)
+    if bad and u.get('source'):
+        bad = repair_header(hpath, cpath, include_context(u['source']))
     if bad:
         return 'precheck:' + bad
     if u.get('free'):

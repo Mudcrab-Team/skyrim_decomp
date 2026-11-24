@@ -10,6 +10,8 @@ slot numbers, with placeholders for the rest. The offsets come from the advisory
 only used to name the member that a fact refers to, and its own computed layout must agree
 with the fact before the member is trusted. Nothing here edits a shared header.
 """
+import json
+import os
 import re
 
 IDENT = r'[A-Za-z_]\w*'
@@ -152,6 +154,21 @@ def parse_classes(text):
     return out
 
 
+_COMMUNITY = {}
+
+
+def community_sizes():
+    """{type name: size} from SIBLING_COMMUNITY_SIZES ({name: {library: size}}), where every library that
+    states a size for the name states the same one."""
+    path = os.environ.get('SIBLING_COMMUNITY_SIZES')
+    if not path:
+        return {}
+    if path not in _COMMUNITY:
+        data = json.load(open(path))
+        _COMMUNITY[path] = {n: next(iter(v.values())) for n, v in data.items() if len(set(v.values())) == 1 and next(iter(v.values())) > 0}
+    return _COMMUNITY[path]
+
+
 class Layout:
     def __init__(self):
         self.offsets, self.sizes, self.size, self.align = {}, {}, None, 1
@@ -169,6 +186,7 @@ class Engine:
         for m in re.finditer(rf'typedef\s+([^;{{}}()]+?)\s+({IDENT})\s*;', text):
             self.typedefs[m.group(2)] = m.group(1)
         self.enums = set(re.findall(rf'\benum\s+(?:class\s+)?({IDENT})', text))
+        self.community = community_sizes()
 
     def type_info(self, typ, decl, depth=0):
         if decl.startswith(('*', '&', '(*')):
@@ -190,6 +208,12 @@ class Engine:
         elif t in self.classes:
             lay = self.layout(t)
             info = (lay.size, lay.align) if lay and lay.size is not None else None
+        elif t in self.community:
+            # a type the sibling text never defines: its size from the community library's static
+            # asserts. Only a guess at the sibling's own size; the offset check against the target
+            # facts in resolve() decides whether it is trusted.
+            size = self.community[t]
+            info = (size, min(8, size & -size))
         else:
             info = None
         return (info[0] * count, info[1]) if info else None
