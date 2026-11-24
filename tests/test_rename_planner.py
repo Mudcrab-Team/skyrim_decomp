@@ -168,6 +168,12 @@ class Fixture(unittest.TestCase):
         rows, _ = self.plan()
         self.assertEqual(rows['0x1000']['reason'], 'name-collision')
 
+    def test_a_range_claimed_by_two_units_is_not_renamed(self):
+        self.add(0x1000, 'Widget::Function1000', 'Widget::Spin', **self.widget_unit())
+        (self.root / 'reconstruction/area/Twin.cpp').write_text('// 0x1000 Widget::Spin\n#include "Twin.h"\n')
+        rows, _ = self.plan()
+        self.assertEqual(rows['0x1000']['reason'], 'duplicate-claim')
+
     def test_generated_family_is_never_renamed(self):
         self.add(0x1000, 'Static1000::initializer', 'Widget::Spin', unit='area/Static1000',
                  cpp='// 0x1000 Static1000::initializer\n#include "Static1000.h"\n', header='#pragma once\n')

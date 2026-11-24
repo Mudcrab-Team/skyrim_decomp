@@ -13,19 +13,20 @@
   "corroborated": 390,
   "corroborated_with_prototype": 288,
   "verdicts": {
-   "ambiguous": 224,
-   "label-source": 18,
-   "rename": 7,
-   "sync-inventory": 141
+   "ambiguous": 231,
+   "label-source": 16,
+   "rename": 4,
+   "sync-inventory": 139
   },
   "ambiguous_reasons": {
    "alias-or-overload": 26,
+   "duplicate-claim": 10,
    "generated-family": 112,
    "namespace-differs": 7,
    "no-class-claim": 3,
    "no-source-name": 24,
-   "ownership-conflict": 16,
-   "placeholder-name": 3,
+   "ownership-conflict": 15,
+   "placeholder-name": 1,
    "prototype-arity": 17,
    "source-name-differs": 7,
    "this-differs": 9
@@ -1298,7 +1299,8 @@
    "inventory": "EnhanceWeaponEffect::Start",
    "source": "EnhanceWeaponEffect::Start",
    "crashlogger": "EnhanceWeaponEffect::Start",
-   "verdict": "label-source",
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
    "has_prototype": true
   },
   {
@@ -1366,10 +1368,9 @@
    "inventory": "Actor::Function681d60",
    "source": "Actor::Function681d60",
    "crashlogger": "Actor::IsAlarmed",
-   "verdict": "rename",
-   "has_prototype": true,
-   "old_member": "Function681d60",
-   "new_member": "IsAlarmed"
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
+   "has_prototype": true
   },
   {
    "rva": "0x685930",
@@ -1861,7 +1862,7 @@
    "source": "TableTailCleanups::Cleanupcebe10",
    "crashlogger": "IMemoryHeap::~IMemoryHeap",
    "verdict": "ambiguous",
-   "reason": "placeholder-name",
+   "reason": "duplicate-claim",
    "has_prototype": true
   },
   {
@@ -2012,7 +2013,8 @@
    "inventory": "NiFloatsExtraData::Functionf11870",
    "source": "NiFloatsExtraData::GetValue",
    "crashlogger": "NiFloatsExtraData::GetValue",
-   "verdict": "sync-inventory",
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
    "has_prototype": true
   },
   {
@@ -2562,7 +2564,7 @@
    "source": "TableTailCleanups::Cleanup11cc6c0",
    "crashlogger": "IMovementSelectIdle::~IMovementSelectIdle",
    "verdict": "ambiguous",
-   "reason": "placeholder-name",
+   "reason": "duplicate-claim",
    "has_prototype": true
   },
   {
@@ -2912,7 +2914,7 @@
    "source": "TESBoundObject::GetFormAsBipedModel",
    "crashlogger": "TESBipedModelForm::GetFormAsBipedModel",
    "verdict": "ambiguous",
-   "reason": "ownership-conflict",
+   "reason": "duplicate-claim",
    "has_prototype": false
   },
   {
@@ -2921,7 +2923,8 @@
    "inventory": "TESReactionForm::Function1f00f0",
    "source": "TESReactionForm::GetReaction",
    "crashlogger": "TESReactionForm::GetReaction",
-   "verdict": "label-source",
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
    "has_prototype": false
   },
   {
@@ -2930,10 +2933,9 @@
    "inventory": "TESReactionForm::Function1f0370",
    "source": "TESReactionForm::Function1f0370",
    "crashlogger": "TESReactionForm::GetFactionCombatRelation",
-   "verdict": "rename",
-   "has_prototype": false,
-   "old_member": "Function1f0370",
-   "new_member": "GetFactionCombatRelation"
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
+   "has_prototype": false
   },
   {
    "rva": "0x227120",
@@ -3625,10 +3627,9 @@
    "inventory": "NiFloatsExtraData::Functionf11850",
    "source": "NiFloatsExtraData::Functionf11850",
    "crashlogger": "NiFloatsExtraData::SetValue",
-   "verdict": "rename",
-   "has_prototype": false,
-   "old_member": "Functionf11850",
-   "new_member": "SetValue"
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
+   "has_prototype": false
   },
   {
    "rva": "0xf80490",
@@ -3646,7 +3647,8 @@
    "inventory": "BSTreadTransfInterpolator::Functionf8d0e0",
    "source": "BSTreadTransfInterpolator::GetChannelPosed",
    "crashlogger": "BSTreadTransfInterpolator::GetChannelPosed",
-   "verdict": "sync-inventory",
+   "verdict": "ambiguous",
+   "reason": "duplicate-claim",
    "has_prototype": false
   },
   {

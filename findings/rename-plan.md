@@ -26,19 +26,20 @@ never an address). Each row got one verdict, and the first failing conflict chec
 
 - matched GUESS entries with a CrashLogger name: 7798
 - class and member present in the map: 390 (288 with a prototype)
-- verdicts: ambiguous 224, label-source 18, rename 7, sync-inventory 141
+- verdicts: ambiguous 231, label-source 16, rename 4, sync-inventory 139
 - `rename` rows change a placeholder method name in the unit's own files; `label-source` rows add the labels to a
   name the unit already uses; `sync-inventory` rows only update the inventory name, origin and source.
 
 ## Ambiguous rows by reason
 
 - `alias-or-overload`: 26
+- `duplicate-claim`: 10
 - `generated-family`: 112
 - `namespace-differs`: 7
 - `no-class-claim`: 3
 - `no-source-name`: 24
-- `ownership-conflict`: 16
-- `placeholder-name`: 3
+- `ownership-conflict`: 15
+- `placeholder-name`: 1
 - `prototype-arity`: 17
 - `source-name-differs`: 7
 - `this-differs`: 9
@@ -141,12 +142,14 @@ never an address). Each row got one verdict, and the first failing conflict chec
 | `0x5d98e0` | `unmapped/leaves/ReturnLeaf5d98e0` | `ReturnLeaf5d98e0::Invoke` | `NonActorMagicTarget::CanAddActiveEffect` | `generated-family` |
 | `0x5d98f0` | `unmapped/storage/FieldRecoveryStorageLayout` | `represented typed field operation` | `NonActorMagicTarget::GetActiveEffectList` | `no-source-name` |
 | `0x5dbe70` | `unmapped/leaves/TableStoreLeaf5dbe70` | `TableStoreLeaf5dbe70::~TableStoreLeaf5dbe70` | `ReferenceEffectController::~ReferenceEffectController` | `generated-family` |
+| `0x64d0b0` | `skyrim/magic/EnhanceWeaponEffect` | `EnhanceWeaponEffect::Start` | `EnhanceWeaponEffect::Start` | `duplicate-claim` |
 | `0x66ec80` | `bscore/EventCaptureDeleteLayout` | `DeletingLeaf66ec80::~DeletingLeaf66ec80` | `IGiftMenuScriptCallback::~IGiftMenuScriptCallback` | `no-source-name` |
 | `0x673ac0` | `skyrim_shared/actors/Character_673ac0` | `Character::SwimsOnly` | `Actor::SwimsOnly` | `ownership-conflict` |
 | `0x673b60` | `skyrim_shared/actors/Character_673b60` | `Character::FightsInWater` | `Actor::FightsInWater` | `ownership-conflict` |
 | `0x674000` | `skyrim_shared/actors/Character_674000` | `Character::GetEssential` | `Actor::GetEssential` | `prototype-arity` |
 | `0x67d8c0` | `skyrim_shared/actors/Character_67d8c0` | `Character::ShouldSaveAnimationData` | `Actor::ShouldSaveAnimationData` | `ownership-conflict` |
 | `0x67f580` | `skyrim_shared/actors/Character_67f580` | `Character::GetCurrentPackageTarget` | `Actor::GetCurrentPackageTarget` | `prototype-arity` |
+| `0x681d60` | `skyrim_shared/actors/Actor` | `Actor::Function681d60` | `Actor::IsAlarmed` | `duplicate-claim` |
 | `0x685930` | `skyrim_shared/actors/Character_685930` | `Character::GetFlightRadius` | `Actor::GetFlightRadius` | `ownership-conflict` |
 | `0x6a6a00` | `skyrim_shared/refs/ForwardTarget` | `P2071::ActorForwardPredicate` | `Actor::HasActivePath` | `prototype-arity` |
 | `0x6a6c20` | `skyrim_shared/actors/Character_6a6c20` | `Character::GetLookAtTarget` | `Actor::GetLookAtTarget` | `prototype-arity` |
@@ -183,7 +186,7 @@ never an address). Each row got one verdict, and the first failing conflict chec
 | `0xcca620` | `bsaudio/BSAudioManager` | `BSAudioManager::QPlatformInstance` | `BSAudioManager::QPlatformInstance` | `alias-or-overload` |
 | `0xcddda0` | `unmapped/support/MemoryManager_cddda0` | `f3m_0086b820::Task0905::MemoryManager::GetHeapForPhysicalPointer` | `MemoryManager::GetHeapForPhysicalPointer` | `namespace-differs` |
 | `0xcde9c0` | `unmapped/leaves/TableStoreLeafcde9c0` | `TableStoreLeafcde9c0::~TableStoreLeafcde9c0` | `IMemoryManagerFile::~IMemoryManagerFile` | `generated-family` |
-| `0xcebe10` | `unmapped/wrappers/TableTailCleanups` | `TableTailCleanups::Cleanupcebe10` | `IMemoryHeap::~IMemoryHeap` | `placeholder-name` |
+| `0xcebe10` | `unmapped/wrappers/TableTailCleanups` | `TableTailCleanups::Cleanupcebe10` | `IMemoryHeap::~IMemoryHeap` | `duplicate-claim` |
 | `0xe25560` | `unmapped/wrappers/HeapCleanupDeallocators3` | `HeapCleanupDeallocators3::Deletee25560` | `BSLightingShaderMaterialSnow::LoadBinary` | `alias-or-overload` |
 | `0xebeb50` | `bssystem/BSFile_ebeb50` | `BSFile::~BSFile` | `BSFile::~BSFile` | `generated-family` |
 | `0xec3ce0` | `unmapped/leaves/TableStoreLeafec3ce0` | `TableStoreLeafec3ce0::~TableStoreLeafec3ce0` | `BSTasklet::~BSTasklet` | `generated-family` |
@@ -191,6 +194,7 @@ never an address). Each row got one verdict, and the first failing conflict chec
 | `0xeeb7a0` | `gamebryo/nimain/NiAVObject_eeb7a0` | `NiAVObject::GetController` | `NiObjectNET::GetController` | `prototype-arity` |
 | `0xefa170` | `gamebryo/nimain/NiGeometryData_efa170` | `NiGeometryData::RegisterStreamables` | `NiGeometryData::RegisterStreamables` | `alias-or-overload` |
 | `0xf07f70` | `unmapped/support/Partition_f07f70` | `f3m_0084d0b0::Partition::IsEqual` | `Partition::IsEqual` | `namespace-differs` |
+| `0xf11870` | `gamebryo/nimain/NiFloatsExtraData_f11870` | `NiFloatsExtraData::GetValue` | `NiFloatsExtraData::GetValue` | `duplicate-claim` |
 | `0xf172f0` | `gamebryo/nimain/NiTriShapeData_f172f0` | `f3m_00845ee0::NiTriShapeData::IsEqual` | `NiTriShapeData::IsEqual` | `namespace-differs` |
 | `0xfab6e0` | `unmapped/leaves/LeafAddressfab6e0` | `LeafAddressfab6e0::Address` | `GFxValue::ObjectInterface::GetElement` | `generated-family` |
 | `0xfd8fa0` | `gamebryo/nimain/NiNode` | `BSTempNodeManager::~BSTempNodeManager` | `BSTempNodeManager::~BSTempNodeManager` | `generated-family` |
@@ -227,7 +231,7 @@ never an address). Each row got one verdict, and the first failing conflict chec
 | `0x10ece70` | `unmapped/support/Globals_10ece70` | `f3m_0090ac60::dtor_0090ac60::bhkConstraintChain::~bhkConstraintChain` | `bhkConstraintChain::~bhkConstraintChain` | `generated-family` |
 | `0x10eda80` | `unmapped/support/Globals_10eda80` | `f3m_0090ac60::dtor_0090ac60::bhkBinaryAction::~bhkBinaryAction` | `bhkBinaryAction::~bhkBinaryAction` | `generated-family` |
 | `0x1187dc0` | `unmapped/wrappers/HeapCleanupDeallocators3` | `HeapCleanupDeallocators3::Delete1187dc0` | `BSLightingShaderMaterialSnow::LoadBinary` | `alias-or-overload` |
-| `0x11cc6c0` | `unmapped/wrappers/TableTailCleanups` | `TableTailCleanups::Cleanup11cc6c0` | `IMovementSelectIdle::~IMovementSelectIdle` | `placeholder-name` |
+| `0x11cc6c0` | `unmapped/wrappers/TableTailCleanups` | `TableTailCleanups::Cleanup11cc6c0` | `IMovementSelectIdle::~IMovementSelectIdle` | `duplicate-claim` |
 | `0x11e70c0` | `skyrim_shared/pathfinding/BSNavmesh` | `BSNavmesh::Function11e70c0` | `BSNavmesh::GetTrianglesForGridCell` | `prototype-arity` |
 | `0x1204410` | `unmapped/leaves/TableStoreLeaf1204410` | `TableStoreLeaf1204410::~TableStoreLeaf1204410` | `IPathBuilder::~IPathBuilder` | `generated-family` |
 | `0x1204430` | `unmapped/leaves/TableStoreLeaf1204430` | `TableStoreLeaf1204430::~TableStoreLeaf1204430` | `IPathBuilderTracker::~IPathBuilderTracker` | `generated-family` |
@@ -251,7 +255,9 @@ never an address). Each row got one verdict, and the first failing conflict chec
 | `0x184a80` | `skyrim_shared/extradata/ExtraLevCreaModifier_184a80` | `ExtraLevCreaModifier::GetMultiplier` | `ExtraLevCreaModifier::GetMultiplier` | `alias-or-overload` |
 | `0x190b80` | `skyrim_shared/forms/TESFullName_190a90` | `TESFullName::Function190b80` | `MapMarkerData::GetHidden` | `ownership-conflict` |
 | `0x1c3680` | `skyrim/controls/TESDataHandler_1c3680` | `TESDataHandler::IsTemporaryFormID` | `TESDataHandler::IsFormIDCreated` | `source-name-differs` |
-| `0x1df590` | `skyrim_shared/forms/TESBoundObject_1df590` | `TESBoundObject::GetFormAsBipedModel` | `TESBipedModelForm::GetFormAsBipedModel` | `ownership-conflict` |
+| `0x1df590` | `skyrim_shared/forms/TESBoundObject_1df590` | `TESBoundObject::GetFormAsBipedModel` | `TESBipedModelForm::GetFormAsBipedModel` | `duplicate-claim` |
+| `0x1f00f0` | `skyrim_shared/forms/TESReactionForm_1f00f0` | `TESReactionForm::GetReaction` | `TESReactionForm::GetReaction` | `duplicate-claim` |
+| `0x1f0370` | `skyrim_shared/forms/TESReactionForm` | `TESReactionForm::Function1f0370` | `TESReactionForm::GetFactionCombatRelation` | `duplicate-claim` |
 | `0x227120` | `skyrim_shared/world/GridCellArray_226c40` | `GridCellArray::GetCellSlot` | `GridCellArray::Get` | `source-name-differs` |
 | `0x259640` | `unmapped/support/Globals_259640` | `Func004a23f0` | `TESRegionPoint::XIntercept` | `no-class-claim` |
 | `0x38de50` | `skyrim_shared/perks/BGSEntryPointPerkEntry_38de50` | `BGSEntryPointPerkEntry::SelectSpellFunction` | `BGSEntryPointFunction::SelectSpellFunction` | `ownership-conflict` |
@@ -273,7 +279,9 @@ never an address). Each row got one verdict, and the first failing conflict chec
 | `0xab27d0` | `unmapped/leaves/LeafForwardab27d0` | `LeafForwardab27d0::Forward` | `thunk_hkStackTracer::CallTree::quit` | `generated-family` |
 | `0xc65710` | `bshavok/Globals_c65710` | `fnv_00dbb940::hkDataClassNative::getParent` | `hkDataClassNative::getParent` | `namespace-differs` |
 | `0xee5930` | `unmapped/support/Globals_ee5930` | `Func00a632b0` | `NiStream::_SDMShutdown` | `no-class-claim` |
+| `0xf11850` | `gamebryo/nimain/NiFloatsExtraData` | `NiFloatsExtraData::Functionf11850` | `NiFloatsExtraData::SetValue` | `duplicate-claim` |
 | `0xf80490` | `gamebryo/nianimation/NiLookAtInterpolator_f80490` | `NiLookAtInterpolator::~NiLookAtInterpolator` | `NiLookAtInterpolator::~NiLookAtInterpolator` | `generated-family` |
+| `0xf8d0e0` | `gamebryo/nianimation/BSTreadTransfInterpolator_f8d0e0` | `BSTreadTransfInterpolator::GetChannelPosed` | `BSTreadTransfInterpolator::GetChannelPosed` | `duplicate-claim` |
 | `0xfcea20` | `gamebryo/nimain/BSMultiBoundAABB_fcea20` | `BSMultiBoundAABB::Ctor` | `BSMultiBoundAABB::BSMultiBoundAABB` | `alias-or-overload` |
 | `0xfe54d0` | `gamebryo/nimain/BSMultiBoundSphere_fe54d0` | `BSMultiBoundSphere::Functionfe54d0` | `DoorTeleportData::SetTeleportRotation` | `alias-or-overload` |
 | `0xfe8120` | `gamebryo/nimain/BSOcclusionBox_fe8120` | `BSOcclusionBox::BSOcclusionBox` | `BSMultiBoundAABB::BSMultiBoundAABB` | `alias-or-overload` |

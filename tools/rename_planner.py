@@ -20,7 +20,8 @@ Each row gets one verdict:
   identifier, its declaration, its header line and its label change, in the unit's own files only;
 - `ambiguous`: anything else, with a reason code. Ambiguous rows are reported and never renamed.
 
-The conflict checks, each a reason code when it fails: `no-source-name`, `no-class-claim`, `namespace-differs`,
+The conflict checks, each a reason code when it fails: `no-source-name`, `duplicate-claim` (another unit claims an RVA of the unit; the CI hash run and the bot cannot
+tell the units apart), `no-class-claim`, `namespace-differs`,
 `generated-family`, `source-name-differs`, `ownership-conflict`, `placeholder-name`,
 `not-corroborated`, `size-differs`, `alias-or-overload` (the name sits on several CrashLogger RVAs, on
 another inventory entry, or in a map fold group), `this-differs` (the prototype's `this` is another
@@ -272,6 +273,8 @@ def classify(entry, ctx):
         return ambiguous('no-source-name')
     source_name, source_params = declared
     row['source'] = source_name
+    if any(len(ctx['claims'].get(r, ())) > 1 for r in header_names(texts)):
+        return ambiguous('duplicate-claim')
     src_class, src_member = final_scope(source_name)
     if src_class is None and not HEX_PLACEHOLDER.fullmatch(src_member):
         pass
@@ -320,9 +323,25 @@ def classify(entry, ctx):
     return row
 
 
-def build_context(root=ROOT, map_path=None):
+def unit_claims(root=ROOT):
+    """{rva: {unit stems}} from the compact header lines of every unit file outside the generated folder."""
+    claims = collections.defaultdict(set)
+    base = Path(root) / 'reconstruction'
+    for path in list(base.rglob('*.cpp')) + list(base.rglob('*.h')):
+        if 'generated' in path.relative_to(base).parts:
+            continue
+        with open(path, encoding='utf-8-sig', errors='replace') as handle:
+            head = handle.read(6000)
+        for line in leading_lines(head):
+            m = HEADER_LINE.match(line.rstrip())
+            if m:
+                claims[int(m.group(1), 16)].add(str(path.relative_to(base).with_suffix('')))
+    return claims
+
+
+def build_context(root=ROOT, map_path=None, progress_path=None):
     names, protos, bounds = load_crashlogger(root)
-    progress = json.loads((Path(root) / 'data/progress.json').read_text(encoding='utf-8'))
+    progress = json.loads(Path(progress_path or Path(root) / 'data/progress.json').read_text(encoding='utf-8'))
     by_name = collections.defaultdict(list)
     for rva, name in names.items():
         by_name[name].append(rva)
@@ -330,7 +349,7 @@ def build_context(root=ROOT, map_path=None):
     members, source = read_map(map_path) if map_path else ({}, None)
     return {'root': Path(root), 'names': names, 'protos': protos, 'bounds': bounds, 'by_name': by_name,
             'inventory_names': inventory_names, 'map_members': members, 'map_source': source,
-            'units': index_units(root), 'progress': progress}
+            'units': index_units(root), 'progress': progress, 'claims': unit_claims(root)}
 
 
 def plan(ctx):
@@ -574,6 +593,7 @@ def main(argv=None):
     plan_p = sub.add_parser('plan')
     plan_p.add_argument('--map', required=True)
     plan_p.add_argument('--write', action='store_true')
+    plan_p.add_argument('--progress', help='inventory file to plan from instead of data/progress.json')
     src = sub.add_parser('apply-source')
     src.add_argument('--map', required=True)
     src.add_argument('--limit', type=int)
@@ -599,7 +619,7 @@ def main(argv=None):
         for v in bad:
             print('DIFFERENT', v['unit'], v['rva'], v['why'])
         return 1 if bad else 0
-    ctx = build_context(ROOT, args.map)
+    ctx = build_context(ROOT, args.map, getattr(args, 'progress', None))
     rows = plan(ctx)
     if args.cmd == 'plan':
         doc = plan_document(rows, ctx)
