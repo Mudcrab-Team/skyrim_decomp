@@ -42,10 +42,23 @@ def declaration(text, cls, method):
     return None
 
 
-def readiness(fn, cls, method, header='', facts=None):
+def binding_caution(candidate, bindings, folds):
+    """Flag public names that may conflict once a candidate is compiled under its offered name."""
+    from bind import community_qualified, fallback_qualified
+    expected = community_qualified(candidate)
+    names = {symbol: fallback_qualified(symbol) or symbol for symbol in bindings}
+    for symbol, name in names.items():
+        if name == expected:
+            declared = {symbol}.union(*(group for group in folds if symbol in group))
+            if bindings <= declared:
+                return None
+    return 'symbol binding needs preparation; existing name(s): ' + ', '.join(sorted(set(names.values())))
+
+
+def readiness(fn, cls, method, header='', facts=None, binding=None):
     """(rank, one-line reason, cautions), lower ranks first. Unknown facts stay unknown."""
     facts = {**fn, **(facts or {})}
-    cautions = []
+    cautions = [binding] if binding else []
     if header:
         from contrib_screen import screen
         if screen(header.encode(), 'declarations.h'):

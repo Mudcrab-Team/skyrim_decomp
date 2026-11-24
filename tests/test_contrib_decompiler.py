@@ -193,6 +193,8 @@ class DecompilerTests(unittest.TestCase):
             code, data, _ = self.ordinary_setup()
             self.assertEqual(code, contrib.OK)
             self.assertEqual(data['decompiler']['state'], 'starting')
+            self.assertIn('setup --no-self-test for progress', next(s['detail'] for s in data['steps']
+                                                                   if s['step'] == 'decompiler'))
             setup.assert_called_once_with(self.ctx, False)
             setup.reset_mock()
             code, data, _ = self.ordinary_setup('--no-decompiler')

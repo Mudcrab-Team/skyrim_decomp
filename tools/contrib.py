@@ -176,7 +176,16 @@ class Ctx:
         return '.\\sr.cmd' if self.windows else './sr'
 
     def which(self, name):
-        return shutil.which(name, path=self.env.get('PATH'))
+        path = shutil.which(name, path=self.env.get('PATH'))
+        paths = ntpath if self.windows else posixpath
+        if path and paths.dirname(path):
+            marker = '<tool>' if paths.dirname(name) else f'<{paths.splitext(name)[0]}>'
+            self.remember_path(path, marker)
+        return path
+
+    def remember_path(self, path, marker):
+        if self.redact and path:
+            self.redact_paths[str(path)] = marker
 
     def run(self, cmd, **kw):
         kw.setdefault('env', self.env)
@@ -195,11 +204,13 @@ class Ctx:
         return self.runner(cmd, **kw)
 
     def scrub(self, text):
-        """With --redact, the checkout and home paths replaced, for output meant to be posted."""
+        """Replace known private paths in output meant to be posted."""
         if not self.redact:
             return text
         home = self.env.get('USERPROFILE' if self.windows else 'HOME') or str(Path.home())
         paths = [(str(self.repo), '<repo>'), (home, '~')]
+        if self._private is not None:
+            paths.append((str(self._private), '<local>'))
         try:
             cfg = load_config(self)
         except Stop:
@@ -207,9 +218,11 @@ class Ctx:
         for key in ('exe', 'msvc', 'wine'):
             if cfg.get(key):
                 paths.append((str(cfg[key]), '<' + key + '>'))
-        for key in ('SR_MSVC', 'SR_MSVC_ROOT', 'SR_WINE_BIN', 'SR_SKYRIM_EXE'):
+        for key in ('SR_MSVC', 'SR_MSVC_ROOT', 'SR_WINE_BIN'):
             if self.env.get(key):
                 paths.append((self.env[key], '<toolchain>'))
+        if self.env.get('SR_SYMBOLS_DIR'):
+            paths.append((self.env['SR_SYMBOLS_DIR'], '<symbols>'))
         paths.extend(self.redact_paths.items())
         try:
             for rel, _rev, _lic in COMMUNITY_SOURCES.values():
@@ -227,8 +240,11 @@ class Ctx:
             paths[0:0] = [(str(shared.resolve()), '<local>'), (str(shared), '<local>')]
         for path, mark in sorted(paths, key=lambda item: len(item[0]), reverse=True):
             if path and len(path) > 1:
-                for variant in sorted({path, path.replace('\\', '\\\\'), path.replace('\\', '/'),
-                                       json.dumps(path)[1:-1]}, key=len, reverse=True):
+                variants = {path}
+                if self.windows:
+                    variants.update((path.replace('/', '\\'), path.replace('\\', '/')))
+                variants.update(json.dumps(p)[1:-1] for p in tuple(variants))
+                for variant in sorted(variants, key=len, reverse=True):
                     text = re.sub(re.escape(variant), lambda _m: mark, text,
                                   flags=re.I if self.windows or self.platform == 'darwin' else 0)
         return text
@@ -245,7 +261,7 @@ class Ctx:
             return True
         if not self.interactive:
             raise Stop(CONSENT, f'{question} (no terminal to ask on)', f'rerun with {flag} once a person has agreed')
-        answer = input(f'{question} [y/N] ').strip().lower()
+        answer = input(self.scrub(f'{question} [y/N] ')).strip().lower()
         return answer in ('y', 'yes')
 
     def github(self):
@@ -395,16 +411,24 @@ def unit_files(repo, cls, area=None, index=None):
     return area, f'reconstruction/{area}/{cls}.h', f'reconstruction/{area}/{cls}.cpp'
 
 
-def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None, ready=None):
-    """Unclaimed targets: callee-ready functions first (`ready`, from tools/ready_queue.py), then small functions first (under 64 bytes, then 64-255), classes that already have
-    a layout before those that do not, then advisory declaration/draft readiness, size and RVA.
+def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, published=False, class_filter=None,
+               ready=None, symbol_map=None):
+    """Unclaimed targets ordered by callee readiness, binding cautions, size band, existing layout,
+    advisory declaration readiness, blocked callers, size and RVA.
 
     With `published`, functions of the target-hash list that have no inventory entry are included when
     their offered row names a class; they are made `mapped` when recorded (tools/claimable.py).
     """
     import claimable
-    from contrib_readiness import readiness
+    from contrib_readiness import binding_caution, readiness
     out, headers, layouts = [], {}, {}
+    mapped = {}
+    if symbol_map:
+        for name, entry in symbol_map['symbols'].items():
+            if 'rva' in entry:
+                mapped.setdefault(entry['rva'], set()).add(name)
+    folds = [set(group) for group in (symbol_map or {}).get('folds', [])]
+    ready = ready or {}
     units = unit_index(repo)
     pool = list(data['functions'])
     if published:
@@ -428,17 +452,20 @@ def candidates(repo, data, claimed=(), max_size=None, readiness_facts=None, publ
         if header not in headers:
             path = Path(repo) / header if header else None
             headers[header] = path.read_text() if path and path.is_file() else ''
+        bindings = mapped.get(fn['rva'])
+        caution = binding_caution(fn.get('name'), bindings, folds) if bindings else None
         rank, reason, cautions = readiness(fn, cls, method, headers[header],
-                                          (readiness_facts or {}).get(fn['rva']))
+                                          (readiness_facts or {}).get(fn['rva']), caution)
+        callee_ready = fn['rva'] in ready and not caution
         out.append({'rva': f'0x{fn["rva"]:x}', 'size': fn['size'], 'name': fn.get('name'),
                     'name_origin': fn.get('name_origin'), 'unit': cpp, 'unit_exists': has_unit,
                     'startable': bool(m and area), 'readiness_rank': rank, 'reason': reason,
                     'cautions': cautions, 'in_inventory': fn.get('owner') != 'claim-time',
                     'size_band': claimable.band(fn['size']), 'has_layout': bool(headers[header]),
-                    'callee_ready': fn['rva'] in (ready or {}),
-                    '_key': (not m or area is None, fn['rva'] not in (ready or {}),
+                    'callee_ready': callee_ready,
+                    '_key': (not m or area is None, not callee_ready, bool(caution),
                              claimable.band(fn['size']), not headers[header], rank,
-                             -(ready or {}).get(fn['rva'], {}).get('blocks', 0), fn['size'], fn['rva'])})
+                             -ready.get(fn['rva'], {}).get('blocks', 0), fn['size'], fn['rva'])})
     out.sort(key=lambda c: c.pop('_key'))
     return out
 
@@ -513,9 +540,11 @@ def inspect_exe(path, target):
             'sha256': digest, 'version': pe_version(p)}
 
 
-def wrong_build_message(info, target):
-    return (f'{info["path"]} is version {info.get("version") or "unknown"} (SHA-256 {info["sha256"][:16]}...), '
-            f'not the pinned target {target["version"]} from {target["store"]} '
+def wrong_build_message(info, target, redact=False):
+    observed = ('does not match' if redact else
+                f'is version {info.get("version") or "unknown"} (SHA-256 {info["sha256"][:16]}...), not')
+    return (f'{info["path"]} {observed} '
+            f'the pinned target {target["version"]} from {target["store"]} '
             f'(SHA-256 {target["image_sha256"][:16]}...). The comparator needs exactly that file; '
             'see docs/contributing-agent.md, "The game executable".')
 
@@ -549,8 +578,12 @@ def resolve_exe(ctx, target, given=None):
     cfg = load_config(ctx)
     for how, path in (('--exe', given), ('SR_SKYRIM_EXE', ctx.env.get('SR_SKYRIM_EXE')), ('config', cfg.get('exe'))):
         if path:
+            ctx.remember_path(path, '<exe>')
             return inspect_exe(path, target), how
-    infos = [inspect_exe(p, target) for p in exe_candidates(ctx)]
+    paths = exe_candidates(ctx)
+    for path in paths:
+        ctx.remember_path(path, '<exe>')
+    infos = [inspect_exe(p, target) for p in paths]
     good = [i for i in infos if i['status'] == 'ok']
     if good:
         return good[0], 'found in a Steam library'
@@ -564,7 +597,7 @@ def require_exe(ctx, target):
     if info is None or info['status'] == 'missing':
         raise Stop(MISSING, 'SkyrimSE.exe not configured or not found', f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"')
     if info['status'] != 'ok':
-        raise Stop(MISSING, wrong_build_message(info, target), f'{ctx.cli} doctor')
+        raise Stop(MISSING, wrong_build_message(info, target, ctx.redact), f'{ctx.cli} doctor')
     return info
 
 
@@ -643,6 +676,7 @@ def check_toolchain(ctx):
         return {'status': 'override', 'command': json.loads(override) if override.startswith('[') else [override],
                 'pinned': False}
     root = toolchain_root(ctx)
+    ctx.remember_path(root, '<msvc>')
     bins = toolchain_bins(root)
     if not bins:
         return {'status': 'missing', 'root': str(root), 'pinned': False}
@@ -918,8 +952,10 @@ def pack_listing(pack):
 def find_objdump(ctx):
     for name in (ctx.env.get('SR_OBJDUMP'), 'llvm-objdump', '/opt/homebrew/opt/llvm/bin/llvm-objdump',
                  '/usr/local/opt/llvm/bin/llvm-objdump', r'C:\Program Files\LLVM\bin\llvm-objdump.exe'):
-        if name and (ctx.which(name) or os.path.isfile(name)):
-            return ctx.which(name) or name
+        if name and (path := ctx.which(name) or (name if os.path.isfile(name) else None)):
+            if path != 'llvm-objdump':
+                ctx.remember_path(path, '<llvm-objdump>')
+            return path
     return None
 
 
@@ -1218,6 +1254,17 @@ def symbol_map_path(repo, build_id):
     return path
 
 
+def readiness_symbol_map(ctx, build_id):
+    try:
+        return json.loads(symbol_map_path(ctx.repo, build_id).read_text())
+    except Stop:
+        # A sparse checkout can rank targets without materializing all of reports/.
+        blob = git(ctx, 'show', f'HEAD:reports/{build_id}/symbol-map.json', check=False)
+        if blob:
+            return json.loads(blob)
+        raise
+
+
 def refresh_symbols(ctx, tdir, build_id):
     """symbols.json = the public map plus the entries bind added for this task earlier."""
     public = json.loads(symbol_map_path(ctx.repo, build_id).read_text())
@@ -1247,7 +1294,8 @@ def cmd_doctor(ctx, args):
         if not ok and required and nxt is None:
             nxt = fix
     add('python', sys.version_info >= (3, 11), sys.version.split()[0], 'use ./sr (Windows: .\\sr.cmd), which finds Python 3.11+; or install Python 3.11 or newer')
-    add('git', bool(ctx.which('git')), ctx.which('git') or 'not found', 'install git')
+    git_path = ctx.which('git')
+    add('git', bool(git_path), git_path or 'not found', 'install git')
     shared = ctx.env.get('SR_LOCAL_DIR')
     if shared:
         ctx.say(f'note: private files are under {shared} (SR_LOCAL_DIR, or the main worktree\'s .local)')
@@ -1256,7 +1304,7 @@ def cmd_doctor(ctx, args):
         add('game executable', False, 'SkyrimSE.exe not found in a Steam library',
             f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"   (or set SR_SKYRIM_EXE to its path)')
     elif info['status'] != 'ok':
-        add('game executable', False, wrong_build_message(info, target) if info['status'] == 'wrong-build'
+        add('game executable', False, wrong_build_message(info, target, ctx.redact) if info['status'] == 'wrong-build'
             else f'{info["path"]} does not exist', f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"   (or set SR_SKYRIM_EXE)')
     else:
         add('game executable', True, f'{info["path"]} ({how}) is {target["version"]}, hash pinned')
@@ -1266,6 +1314,7 @@ def cmd_doctor(ctx, args):
             # Only this project's unpacked Wine counts on macOS: a cask install in /Applications
             # carries a quarantine flag and blocks on a Gatekeeper dialog when run headless.
             wine = str(Path(ctx.env.get('SR_WINE_BIN') or private_wine_bin(ctx)) / 'wine') if mac_wine_ready(ctx) else None
+            ctx.remember_path(wine, '<wine>')
         else:
             wine = ctx.which('wine64') or ctx.which('wine')
         add('wine', bool(wine), wine or 'not found',
@@ -1660,9 +1709,9 @@ def cmd_setup(ctx, args):
     info, how = resolve_exe(ctx, target, args.exe)
     steamcmd = ctx.which('steamcmd')
     if (info is None or info['status'] != 'ok') and getattr(args, 'steamcmd', False) and steamcmd \
-            and ctx.interactive and not args.exe:
+            and ctx.interactive and not args.exe and not ctx.redact:
         # SteamCMD runs in this terminal: the person types the login, password and guard code into
-        # it directly, so none of them pass through this process.
+        # it directly. Its terminal output also bypasses this process, so redacted runs use the manual route.
         ctx.say('\n'.join(steamcmd_route(ctx)))
         if ctx.ask('Start SteamCMD now (you type the steps above at its prompt)?', '--steamcmd'):
             (ctx.private / 'game').mkdir(parents=True, exist_ok=True)
@@ -1672,7 +1721,7 @@ def cmd_setup(ctx, args):
         save_config(ctx, exe=info['path'])
         step('game executable', 'ok', f'{info["path"]} ({how}), {target["version"]}, SHA-256 pinned')
     else:
-        detail = wrong_build_message(info, target) if info and info['status'] == 'wrong-build' else \
+        detail = wrong_build_message(info, target, ctx.redact) if info and info['status'] == 'wrong-build' else \
             'SkyrimSE.exe not found' + (f' at {info["path"]}' if info else ' in a Steam library')
         step('game executable', 'needs-person', detail)
         raise Stop(MISSING, detail, f'{ctx.cli} setup --exe "<path to SkyrimSE.exe>"', steps=steps,
@@ -1682,7 +1731,7 @@ def cmd_setup(ctx, args):
         decompiler = contrib_decompiler.recommended_setup(ctx, args.no_install)
         detail = (decompiler['reason'] + f'; run {ctx.cli} --yes setup later to retry'
                   if decompiler['state'] == 'skipped' else
-                  f'private background analysis; rerun {ctx.cli} setup for progress')
+                  f'private background analysis; rerun {ctx.cli} setup --no-self-test for progress')
         step('decompiler', decompiler['state'], detail)
     # 3. Community sources for the label and origin checks.
     if not args.no_sources:
@@ -1728,6 +1777,10 @@ def cmd_setup(ctx, args):
         try:
             code, data, _n = run_self_test(ctx)
         except Stop as exc:
+            if ctx.redact:
+                detail = 'failed; see private diagnostics from setup without --redact'
+                step('self-test', 'fail', detail)
+                raise Stop(exc.code, f'self-test: {detail}', f'{ctx.cli} doctor', steps=steps) from None
             step('self-test', 'fail', exc.message)
             raise Stop(exc.code, f'self-test: {exc.message}', exc.next_action or f'{ctx.cli} doctor',
                        steps=steps, **exc.data)
@@ -1738,8 +1791,11 @@ def cmd_setup(ctx, args):
                  f'0x{SELF_TEST_RVA:x} compiled and compared: ' + ', '.join(
                      f'{f["rva"]} {f["result"]} {f["reason"]}' for f in data.get('functions', [])))
         if code != OK:
+            failure = {'steps': steps}
+            if not ctx.redact:
+                failure['self_test'] = data
             raise Stop(code, 'self-test failed: the local toolchain does not reproduce an accepted match',
-                       f'{ctx.cli} doctor', steps=steps, self_test=data)
+                       f'{ctx.cli} doctor', **failure)
     result = {'steps': steps}
     if getattr(args, 'decompiler', True):
         result['decompiler'] = decompiler
@@ -1755,7 +1811,7 @@ def run_self_test(ctx):
     args = argparse.Namespace(rva=[f'0x{SELF_TEST_RVA:x}'], practice=True, drafted_by='self-test', area=None,
                               no_branch=True, recipe=None, force=False)
     start(ctx, args, quiet=True)
-    return run_compare(ctx, task_id_for(PLAIN_NAME.fullmatch(fn['name']).group(1), practice=True))
+    return run_compare(ctx, task_id_for(PLAIN_NAME.fullmatch(fn['name']).group(1), practice=True), quiet=ctx.redact)
 
 
 def cmd_next(ctx, args):
@@ -1788,8 +1844,9 @@ def cmd_next(ctx, args):
             class_filter = re.compile(args.class_regex)
         except re.error as exc:
             raise Stop(USAGE, f'--class is not a regular expression: {exc}') from None
+    symbols = readiness_symbol_map(ctx, data['target_build_id'])
     ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True,
-                                   class_filter=class_filter, ready=ready_queue.load_queue(ctx.repo))
+                                   class_filter=class_filter, ready=ready_queue.load_queue(ctx.repo), symbol_map=symbols)
              if c['startable']]
     counts = {'claimable': len(ready), 'without_inventory_entry': sum(not c['in_inventory'] for c in ready),
               'under_64_bytes': sum(c['size_band'] == 0 for c in ready),
@@ -2323,8 +2380,9 @@ def start(ctx, args, quiet=False):
         ctx.say('Function header metadata is prepared. Add the new declarations and bodies; '
                 'replace each code-origin placeholder truthfully before compare. '
                 'Accepted companions are re-confirmed by the project.')
-    for hint in declaration_advice:
-        ctx.say(hint)
+    if not quiet:
+        for hint in declaration_advice:
+            ctx.say(hint)
     prof = contrib_profile(ctx, getattr(args, 'profile', None))
     save_config(ctx, profile=prof['name'])
     task = {'task_id': tdir.name, 'build_id': target['build_id'], 'compiled': cpp, 'recipe': recipe,
@@ -2543,10 +2601,11 @@ def retry_under_alternatives(ctx, root, tdir, task, recipe, results, exe, target
     return notes
 
 
-def run_compare(ctx, ident=None, root=None, retry=True):
+def run_compare(ctx, ident=None, root=None, retry=True, quiet=False):
     """Compile the task's unit and compare each function; returns (code, data, next)."""
     import bind
     import verify_function
+    say = (lambda _line: None) if quiet else ctx.say
     root = Path(root or ctx.repo)
     tdir, task = load_task(ctx, ident, pick_current=True)
     target = target_manifest(root)
@@ -2561,10 +2620,10 @@ def run_compare(ctx, ident=None, root=None, retry=True):
     refresh_symbols(ctx, tdir, task['build_id'])
     warnings = pdb_warnings(ctx, task, root)
     for w in warnings:
-        ctx.say(f'PDB warning (advisory; a byte match decides): {w}')
+        say(f'PDB warning (advisory; a byte match decides): {w}')
     recipe = unit_recipe(root, task['compiled'], task['recipe'])
     if recipe != task['recipe']:
-        ctx.say(f'recipe: {recipe} (named by the unit; the task had {task["recipe"]})')
+        say(f'recipe: {recipe} (named by the unit; the task had {task["recipe"]})')
     built = compile_unit(ctx, root, task['compiled'], recipe, out, tool)
     objdump = find_objdump(ctx)
     bound = bind.bind(tdir, built['object'], exe, objdump, repo=root)
@@ -2613,26 +2672,26 @@ def run_compare(ctx, ident=None, root=None, retry=True):
                'bind': [line.strip() for line in bind_lines], 'retry': retry_notes, 'practice': task.get('contrib', {}).get('practice', False),
                'private_dir': str(out)}
     passed = sum(r['result'] == 'pass' for r in results)
-    ctx.say(f'run {number}: {passed}/{len(results)} pass ({summary["compiler"]} compiler)')
+    say(f'run {number}: {passed}/{len(results)} pass ({summary["compiler"]} compiler)')
     for r in results:
         size = f'{r["candidate_size"]}/{r["target_size"]} B'
-        ctx.say(f'  {r["rva"]} {r["name"]}: {r["result"].upper()} {r["reason"]} {r["first_mismatch"] or ""} {size}')
+        say(f'  {r["rva"]} {r["name"]}: {r["result"].upper()} {r["reason"]} {r["first_mismatch"] or ""} {size}')
         if r['result'] != 'pass':
-            ctx.say(f'    hint: {r["hint"]}')
+            say(f'    hint: {r["hint"]}')
     for line in retry_notes:
-        ctx.say('  ' + line)
+        say('  ' + line)
     for line in bind_lines:
-        ctx.say(line)
+        say(line)
     if objdump:
         for r in results:
-            ctx.say(f'private side-by-side: {out / r["rva"] / "side-by-side.txt"} (read locally; never paste it anywhere)')
+            say(f'private side-by-side: {out / r["rva"] / "side-by-side.txt"} (read locally; never paste it anywhere)')
     nxt = f'{ctx.cli} submit --dry-run' if passed == len(results) else f'revise the source, then {ctx.cli} compare'
     summary['profile'], summary['max_tries'] = prof['name'], prof['contrib_max_tries']
     for rva, metric in progress.items():
-        ctx.say(attempt_progress.describe(rva, metric, prof['stuck_after']))
-    ctx.say(attempt_progress.guidance(prof['stuck_after']))
+        say(attempt_progress.describe(rva, metric, prof['stuck_after']))
+    say(attempt_progress.guidance(prof['stuck_after']))
     for line in note_reminders(ctx, tdir, task, results, number):
-        ctx.say(line)
+        say(line)
     stalled = bool(progress) and all(m and m['no_improvement'] >= prof['stuck_after'] for m in progress.values())
     if passed < len(results) and (stalled or number >= prof['contrib_max_tries']) and not summary['practice']:
         # Advice only: a contributor may go on, but a weak model rarely recovers past this point.
@@ -3238,7 +3297,7 @@ def parser():
     p.add_argument('--json', action='store_true', help='one JSON object on stdout; never prompts')
     p.add_argument('--yes', action='store_true', help='agree to package installs (never to a licence)')
     p.add_argument('--redact', action='store_true',
-                   help='replace the checkout and home paths in all output; use it for anything you post publicly')
+                   help='replace known private paths in output; use it for anything you post publicly')
     sub = p.add_subparsers(dest='command', required=True)
     s = sub.add_parser('sheet')
     s.add_argument('rva')
@@ -3380,7 +3439,7 @@ def main(argv=None, ctx=None):
     ctx.assume_yes = ctx.assume_yes or args.yes
     ctx.redact = ctx.redact or args.redact
     if getattr(args, 'exe', None):
-        ctx.redact_paths[str(args.exe)] = '<exe>'
+        ctx.remember_path(args.exe, '<exe>')
     try:
         ctx.local  # Validate an explicit override before any command writes private files.
         apply_wine_env(ctx)

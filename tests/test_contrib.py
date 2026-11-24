@@ -1189,6 +1189,60 @@ class OutsiderRegressionTests(Base):
         result = json.loads(ctx.scrub(json.dumps({'path': external, 'log': 'opened ' + external})))
         self.assertEqual(result, {'path': '<exe>', 'log': 'opened <exe>'})
 
+    def test_fresh_windows_doctor_redacts_discovered_exe_and_tools(self):
+        exe = r'D:\Private Library\Café\SkyrimSE.exe'
+        git = r'E:\Private Tools\Git\bin\git.exe'
+        llvm = r'F:\Private Tools\LLVM\bin\llvm-objdump.exe'
+        env = {'USERPROFILE': r'C:\Users\synthetic', 'SR_OBJDUMP': llvm, 'SR_CONTRIB_COMPILER': 'stand-in'}
+        # LLVM is found by the filesystem fallback, while Git is found on PATH.
+        def which(name, **_):
+            return git if name == 'git' else None
+
+        for json_mode in (False, True):
+            for status in ('ok', 'wrong-build'):
+                with self.subTest(json_mode=json_mode, status=status):
+                    ctx = self.ctx(env=env, platform='win32', as_json=json_mode)
+                    info = {'status': status, 'path': exe.replace('\\', '/'),
+                            'version': 'private-version', 'sha256': 'a' * 64}
+                    flags = ['--json'] if json_mode else []
+                    with unittest.mock.patch('contrib.shutil.which', side_effect=which), \
+                            unittest.mock.patch('contrib.os.path.isfile', side_effect=lambda p: p == llvm), \
+                            unittest.mock.patch('contrib.exe_candidates', return_value=[exe]), \
+                            unittest.mock.patch('contrib.inspect_exe', return_value=info), \
+                            contextlib.redirect_stdout(io.StringIO()) as output:
+                        code = contrib.main([*flags, '--redact', 'doctor'], ctx=ctx)
+                    shown = output.getvalue()
+                    self.assertEqual(code, contrib.OK if status == 'ok' else contrib.MISSING)
+                    for private in ('Private Library', 'Private Tools', 'private-version', 'a' * 16):
+                        self.assertNotIn(private, shown)
+                    for marker in ('<exe>', '<git>', '<llvm-objdump>'):
+                        self.assertIn(marker, shown)
+                    if json_mode:
+                        self.assertTrue(json.loads(shown)['checks'])
+                    self.assertFalse(contrib.config_path(ctx).exists())
+
+    def test_redacted_setup_omits_private_self_test_failure_details(self):
+        for failure in ('compile', 'compare'):
+            with self.subTest(failure=failure):
+                ctx = self.ctx(env={'SR_CONTRIB_COMPILER': 'stand-in'}, platform='win32')
+                exe = r'D:\Private Library\SkyrimSE.exe'
+                exc = contrib.Stop(contrib.COMPILE, 'synthetic private diagnostic', errors=['synthetic listing'])
+                result = (contrib.FAILED, {'bind': ['synthetic private diagnostic'], 'functions': []}, None)
+                with unittest.mock.patch.object(ctx, 'which', return_value='git'), \
+                        unittest.mock.patch('contrib.wanted_packages', return_value=[]), \
+                        unittest.mock.patch('contrib.exe_candidates', return_value=[exe]), \
+                        unittest.mock.patch('contrib.inspect_exe', return_value={'status': 'ok', 'path': exe}), \
+                        unittest.mock.patch('contrib.run_self_test', side_effect=exc if failure == 'compile' else None,
+                                            return_value=result), \
+                        contextlib.redirect_stdout(io.StringIO()) as output:
+                    code = contrib.main(['--json', '--redact', 'setup', '--no-sources', '--no-decompiler'], ctx=ctx)
+                shown = output.getvalue()
+                self.assertEqual(code, contrib.COMPILE if failure == 'compile' else contrib.FAILED)
+                self.assertNotIn('Private Library', shown)
+                self.assertNotIn('synthetic private diagnostic', shown)
+                self.assertNotIn('synthetic listing', shown)
+                self.assertEqual(json.loads(shown)['steps'][-1]['step'], 'self-test')
+
     def test_setup_emits_one_json_object_even_when_installer_prints(self):
         ctx = self.ctx(env={'PATH': '/usr/bin:/bin', 'HOME': str(self.tmp)})
         def setup(ctx, args):
