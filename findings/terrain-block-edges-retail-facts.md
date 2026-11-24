@@ -37,8 +37,8 @@ The author read the pinned native path from streamed geometry to indexed submiss
 | `LODSettings\Tamriel.lod` from `Skyrim - Meshes0.bsa` | 16 bytes, SHA-256 `ed9988623ee9a630d28ac183b4c72f611d6d82386e6e73b063c6c8a2560c17d3` |
 | `Skyrim - Shaders.bsa` | SHA-256 `fd1ba630f443353ed21ed4ca0380968f9c7091c8434518ea3cc79bc6d38c18e7` |
 | Extracted Lighting package `shaders011.fxp` | SHA-256 `72cfc73eb0938d5949f0b3a8683722a33b671a34b41b750ba138de8d154c5fbc` |
-| Published baselines | #816 `e552bc2342729b3993e1f53eec14da0f98947d12`, #822 `e37cab1e148b5587cba1cb41b7f3c08a948e56f8`, #946 `9783521e7820b8a9ca75ff253c2f15ecb004ed13`, #947 `f8b468152faac993af627052a7ace330f1cc1867`, #979 `21e02cc3ab1b1555f76a96aafdbd44ec2619beba` |
-| Public layouts | `reconstruction/generated/crashlogger_pdb/types/` at `482e5c7a2d2ea0c664a01b1fbe4eadace6051c29` |
+| Published baselines (commit hashes) | #816 `e552bc2342729b3993e1f53eec14da0f98947d12`, #822 `e37cab1e148b5587cba1cb41b7f3c08a948e56f8`, #946 `9783521e7820b8a9ca75ff253c2f15ecb004ed13`, #947 `f8b468152faac993af627052a7ace330f1cc1867`, #979 `21e02cc3ab1b1555f76a96aafdbd44ec2619beba` |
+| Public layouts | `reconstruction/generated/crashlogger_pdb/types/` at commit `482e5c7a2d2ea0c664a01b1fbe4eadace6051c29` |
 
 ## Observations
 
