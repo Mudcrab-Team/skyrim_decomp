@@ -1540,6 +1540,49 @@ class RecordBlockRetryTests(Replay):
         self.assertTrue(pr_bot.settled(state))
 
 
+class StaleBotFailureTests(Replay):
+    """A head that ended on a bot-side failure is looked at again once the bot's code revision changes."""
+
+    def setUp(self):
+        super().setUp()
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        self.w.refused_records = {0x1000}  # not accepted before, so the PR ends done with fail:record
+
+    def test_the_failure_stays_cached_under_the_same_revision(self):
+        self.w.poll(self.bot)
+        state = self.w.state(self.bot, 7)
+        self.assertTrue(state.get('done'))
+        self.assertEqual(state.get('summary')['verdicts'], {'0x1000': 'fail:record'})
+        self.w.refused_records = set()
+        self.w.poll(self.bot, times=2)
+        self.assertFalse(self.merged(7))
+
+    def test_a_redeploy_retries_the_head_and_it_merges(self):
+        self.w.poll(self.bot)
+        self.w.refused_records = set()
+        redeployed = self.w.bot(code_sha='e' * 40)
+        log = self.w.poll(redeployed)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual(self.w.state(redeployed, 7).get('done_code'), 'e' * 40)
+
+    def test_a_head_finished_before_revisions_were_stamped_counts_as_stale(self):
+        state = self.w.state(self.bot, 7)
+        state.set('done', True)
+        state.set('summary', dict(blocked=None, verdicts={'0x1000': 'fail:host2'}))
+        self.assertTrue(pr_bot.stale_bot_failure(state, 'a' * 40))
+        self.assertFalse(pr_bot.settled(state, None, 'a' * 40))
+        self.assertTrue(pr_bot.settled(state, None, None))
+
+    def test_a_review_rejection_or_a_merged_head_is_never_stale(self):
+        state = self.w.state(self.bot, 7)
+        state.set('done', True)
+        state.set('summary', dict(blocked=None, verdicts={'0x1000': 'fail:review'}))
+        self.assertFalse(pr_bot.stale_bot_failure(state, 'a' * 40))
+        state.set('summary', dict(blocked=None, verdicts={'0x1000': 'fail:record'}))
+        state.set('merged', True)
+        self.assertFalse(pr_bot.stale_bot_failure(state, 'a' * 40))
+
+
 class SignatureTests(unittest.TestCase):
     def test_numbers_hashes_and_hex_do_not_split_one_error_into_many(self):
         a = error_of(pr_bot.Stop('hash run 123456 for deadbeefcafe0123 failed at 0x1f40'))
