@@ -4,9 +4,9 @@
 // 0xf98ab0 Func00a42070
 #include "Globals_f98ab0.h"
 
-float Func00a42070(float param_1, float param_2, float param_3, float param_4, float param_5)
+float Func00a42070(float arg1, float arg2, float arg3, float arg4, float arg5)
 {
-    float fTerm1 = (param_5 + param_3) - (param_4 - param_2) * 2.0f;
-    float fTerm2 = (param_4 - param_2) * 3.0f - (param_3 * 2.0f + param_5);
-    return param_2 + ((param_1 * fTerm1 + fTerm2) * param_1 + param_3) * param_1;
+    float fTerm1 = (arg5 + arg3) - (arg4 - arg2) * 2.0f;
+    float fTerm2 = (arg4 - arg2) * 3.0f - (arg3 * 2.0f + arg5);
+    return arg2 + ((arg1 * fTerm1 + fTerm2) * arg1 + arg3) * arg1;
 }
