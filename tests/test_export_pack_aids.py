@@ -77,3 +77,13 @@ class AidTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ClassDirname(unittest.TestCase):
+    def test_plain_names_stay_and_long_template_names_are_shortened_with_a_digest(self):
+        self.assertEqual(ep.class_dirname('TESObjectCELL'), 'TESObjectCELL')
+        long = 'Node<' + 'V?$Expr@' * 60 + '>'
+        short = ep.class_dirname(long)
+        self.assertLess(len(short), 100)
+        self.assertEqual(short, ep.class_dirname(long))
+        self.assertNotEqual(short, ep.class_dirname(long + 'x'))
