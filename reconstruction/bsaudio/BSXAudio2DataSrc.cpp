@@ -5,7 +5,7 @@
 // 0xcdc8e0 BSXAudio2DataSrc::~BSXAudio2DataSrc
 // 0xcdc210 BSXAudio2DataSrc::Functioncdc210
 // 0xcdc240 BSXAudio2DataSrc::Functioncdc240
-// 0xcdc280 BSXAudio2DataSrc::Functioncdc280
+// 0xcdc280 BSXAudio2DataSrc::MillisecondsToSamples
 // 0xcdc2b0 BSXAudio2DataSrc::Functioncdc2b0
 #include "BSXAudio2DataSrc.h"
 
@@ -33,7 +33,7 @@ std::uint32_t BSXAudio2DataSrc::Functioncdc240(std::uint32_t a_samples) const
     return static_cast<std::uint32_t>((1000.0f / static_cast<float>(sampleRate)) * static_cast<float>(a_samples));
 }
 
-std::uint32_t BSXAudio2DataSrc::Functioncdc280(std::uint32_t a_milliseconds) const
+std::uint32_t BSXAudio2DataSrc::MillisecondsToSamples(std::uint32_t a_milliseconds) const
 {
     return static_cast<std::uint32_t>((static_cast<float>(sampleRate) * 0.001f) * static_cast<float>(a_milliseconds));
 }

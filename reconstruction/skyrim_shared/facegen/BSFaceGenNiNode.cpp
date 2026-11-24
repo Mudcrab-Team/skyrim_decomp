@@ -5,6 +5,7 @@
 // Adapted bodies: UpdateDownwardPass from fo4-private@1b765c70; Function43d080 original.
 // 0x439650 BSFaceGenNiNode::UpdateDownwardPass
 // 0x43d080 BSFaceGenNiNode::Function43d080
+// BSFaceGenNiNode::UpdateDownwardPass: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "BSFaceGenNiNode.h"
 void BSFaceGenNiNode::UpdateDownwardPass(NiUpdateData& data, unsigned flagsValue) { if ((flags & 1) == 0) UpdateMorphing(data); NiNode::UpdateDownwardPass(data, flagsValue); }
 void BSFaceGenNiNode::Function43d080() { bool flag = true; Helper43d930(&flag); }

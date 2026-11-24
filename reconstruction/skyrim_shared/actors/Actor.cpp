@@ -14,7 +14,8 @@
 // 0x6c5440 Actor::GetActorValueModifier
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x2e6710 Actor::GetMountInteraction
-// 0x681d60 Actor::Function681d60
+// 0x681d60 Actor::IsAlarmed
+// Actor::IsAlarmed: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "Actor.h"
 
 bool Actor::GetMountInteraction(MountInteraction*& a_out)
@@ -233,7 +234,7 @@ int Actor::ProcessEvent(MoveFinishSink* a_sink, const bhkCharacterMoveFinishEven
     return 0;
 }
 
-bool Actor::Function681d60() const
+bool Actor::IsAlarmed() const
 {
     if (currentProcess && currentProcess->middleHigh && currentProcess->middleHigh->alarmState == 0x15) {
         return true;

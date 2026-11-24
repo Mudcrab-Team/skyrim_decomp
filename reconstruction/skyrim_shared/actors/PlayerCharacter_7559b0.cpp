@@ -9,6 +9,7 @@
 // 0x756c60 PlayerCharacter::IsActionInList
 // 0x7559d0 PlayerCharacter::SetBusyActivatingTeleportDoor
 // 0x7559b0 PlayerCharacter::QWarnToLeave
+// PlayerCharacter::QWarnToLeave: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "PlayerCharacter_7559b0.h"
 
 bool PlayerCharacter::IsActionInList(PLAYER_ACTION a_action) const

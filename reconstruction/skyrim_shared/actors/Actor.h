@@ -581,7 +581,7 @@ public:
     void SetAvoidanceDisabled(bool a_set);  // compared: 0x675350
     void UseSkill(ActorValue a_av, float a_points, TESForm* a_arg3);  // compared: 0x6990e0
     void AddPerk(BGSPerk* a_perk, std::uint32_t a_rank = 0);  // compared: 0x69f8e0
-    bool Function681d60() const;
+    bool IsAlarmed() const;
 };
 
 static_assert(offsetof(TESObjectREFR, extraList) == 0x70, "TESObjectREFR::extraList offset");

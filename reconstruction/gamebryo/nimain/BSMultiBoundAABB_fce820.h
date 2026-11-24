@@ -2,7 +2,8 @@
 // Code origin: original partial layout of the axis-aligned bound.
 // BSMultiBoundAABB, BSMultiBoundShape, NiPoint3, x, y, z: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// CopyMembers, CopyShapeMembers, halfExtents: GUESS(low)
+// CopyShapeMembers, halfExtents: GUESS(low)
+// BSMultiBoundAABB::CopyMembers: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #pragma once
 
 #include "BSMultiBoundShape.h"

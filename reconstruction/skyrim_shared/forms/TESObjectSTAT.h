@@ -34,5 +34,5 @@ public:
 
     virtual bool IsHeadingMarker() const;  // compared: 0x264510
     void SetIsSkyObject(bool a_set);
-    bool Function287910() const;
+    bool QIsSkyObject() const;
 };
