@@ -5305,8 +5305,16 @@ def _housekeeping(bot, directory, due):
             print(f'{stamp()} probe sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
 
 
+def marker_text(path):
+    """The text of the deploy marker file, or None when it is absent or unreadable."""
+    try:
+        return Path(path).read_text().strip()
+    except OSError:
+        return None
+
+
 def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=time.sleep, rounds=None,
-         refill_every=None, await_housekeeping=None):
+         refill_every=None, await_housekeeping=None, restart_on=None):
     """List the open PRs every `interval` seconds and work on up to `workers` at once, each on its own tree.
 
     A PR is never queued twice, and a finished head or one that is backing off costs no worker. After a
@@ -5314,6 +5322,9 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
     loop for tests. With `refill_every`, an idle bot checks the offered window at most that often. That check
     and the other housekeeping run beside the loop (`housekeeping`), never in it; `await_housekeeping`
     (default: when `rounds` is set) makes each tick wait for a pass it started, so a test counts exactly.
+    `restart_on` names a deploy marker file: once its text differs from what it held at start the loop stops
+    taking new work, lets the running PRs finish and returns, so a busy queue (which is never idle at the
+    `restart_after` check) still moves onto the newly pinned revision when the supervisor restarts it.
     """
     if await_housekeeping is None:
         await_housekeeping = rounds is not None
@@ -5324,6 +5335,8 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
         print('another pr_bot --poll holds the lock', file=sys.stderr)
         return 1
     started = time.time()
+    marker_at_start = marker_text(restart_on) if restart_on else None
+    draining = False
     gh = gh or GhBackoff()
     slots = queue.Queue()
     for index in range(workers):
@@ -5355,8 +5368,17 @@ def poll(bot, interval, restart_after=None, workers=POOL_SIZE, gh=None, sleep=ti
                 del inflight[number]
                 on_pool.discard(number)
                 owner_on_pool.discard(number)
-            if restart_after and time.time() - started > restart_after and not inflight and maint is None:
+            if maint is not None and maint.done():
+                maint = None
+            if restart_on and not draining and marker_text(restart_on) != marker_at_start:
+                draining = True
+                print(f'{stamp()} poll: a new revision is pinned; taking no new work until {len(inflight)} '
+                      'running PR(s) finish, then restarting', flush=True)
+            if (draining or restart_after and time.time() - started > restart_after) and not inflight and maint is None:
                 return 0  # between cycles only; the supervisor restarts it on freshly fetched tools
+            if draining:
+                sleep(interval)
+                continue
             wait = gh.remaining()
             if wait:
                 sleep(min(wait, interval))
@@ -5479,6 +5501,8 @@ def main(argv=None):
     p.add_argument('--poll', action='store_true')
     p.add_argument('--interval', type=int, default=60)
     p.add_argument('--restart-after', type=int, help='--poll: exit between cycles after this many seconds')
+    p.add_argument('--restart-on', type=Path, help='--poll: marker file a deploy rewrites; when its text changes, '
+                   'take no new work, let the running PRs finish, then exit for the supervisor to restart')
     p.add_argument('--dry-run', action='store_true',
                    help='no merge, push, comment, label or live state write; alone, run every open PR once and '
                         'exit non-zero on any exception')
@@ -5499,7 +5523,8 @@ def main(argv=None):
     bot.work.mkdir(parents=True, exist_ok=True)
     if a.poll:
         signal.signal(signal.SIGTERM, stop_on_sigterm)
-        return poll(bot, a.interval, a.restart_after, refill_every=REFILL_EVERY)
+        return poll(bot, a.interval, a.restart_after, refill_every=REFILL_EVERY,
+                    restart_on=a.restart_on)
     if a.dry_run and a.command is None:
         return 1 if dry_run_open_prs(bot, a.seed_state) else 0
     if a.command != 'pr' or not a.number:

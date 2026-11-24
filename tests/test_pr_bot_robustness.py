@@ -488,6 +488,37 @@ class PoolTests(WorkDir):
         self.assertEqual(len(set(trees)), 2)
         self.assertEqual({t.name for t in trees}, {'tree', 'tree-1'})
 
+    def test_a_new_pin_stops_new_work_and_the_bot_exits_once_the_running_prs_finish(self):
+        marker = Path(tempfile.mkdtemp()) / 'pin'
+        marker.write_text('old')
+        release, started, calls = threading.Event(), threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            started.set()
+            release.wait(5)
+        bot = self.pool_bot(lambda *a: self.prs(1, 2), arrived)
+        bot.work.mkdir(parents=True, exist_ok=True)
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            started.wait(5)
+            if len(ticks) == 1:
+                marker.write_text('new')  # a deploy pins a newer revision while PR work is in flight
+            if len(ticks) >= 3:
+                release.set()
+        self.assertEqual(pr_bot.poll(bot, 0, workers=1, sleep=sleep, restart_on=marker), 0)
+        # One slot, one PR started before the pin changed; the other never started and the loop ended by itself.
+        self.assertEqual(len(calls), 1)
+
+    def test_an_unchanged_pin_does_not_restart_the_bot(self):
+        marker = Path(tempfile.mkdtemp()) / 'pin'
+        marker.write_text('same')
+        bot = self.pool_bot(lambda *a: [], lambda pr, tree: None)
+        bot.work.mkdir(parents=True, exist_ok=True)
+        pr_bot.poll(bot, 0, workers=1, sleep=lambda s: None, rounds=3, restart_on=marker)
+
     def test_a_third_pr_waits_for_a_free_slot_and_a_running_pr_is_not_queued_twice(self):
         release, started, calls = threading.Event(), threading.Event(), []
 

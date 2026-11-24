@@ -56,7 +56,12 @@ if ! "$SR_BOT_PYTHON" "$scratch/code/tools/pr_bot.py" --dry-run --root "$SR_BOT_
     exit 1
 fi
 
-git -C "$SR_BOT_SRC" checkout -q --detach "$sha"
+# With a pin file and no label to kick, the running bot is not restarted from here: it drains (pr_bot.py
+# --restart-on) and its wrapper checks the pin out when it starts again, so the code under the running
+# processes does not change mid-PR.
+if [ -z "${SR_BOT_PIN:-}" ] || [ -n "${SR_BOT_LABEL:-}" ]; then
+    git -C "$SR_BOT_SRC" checkout -q --detach "$sha"
+fi
 [ -z "${SR_BOT_PIN:-}" ] || echo "$sha" > "$SR_BOT_PIN"
 if [ -n "${SR_BOT_LABEL:-}" ]; then
     launchctl kickstart -k "gui/$(id -u)/$SR_BOT_LABEL"
