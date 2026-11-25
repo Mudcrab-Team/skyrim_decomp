@@ -27163,6 +27163,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/storage/StorageInitcf2940` | `StorageInitcf2940::initialize` (GUESS) | `sse-steam-1-7-104` / `0xcf2940` / 63 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf2940.json` | matched | family | open |
 | `unmapped/wrappers/BSTArrayEraseOrdered3` | `Functioncf2ef0` (GUESS) | `sse-steam-1-7-104` / `0xcf2ef0` / 94 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf2ef0.json` | matched | full | - |
 | `unmapped/leaves/TableStoreLeafcf3100` | `GRefCountImplCore::dtor_impl` (COMMUNITY) | `sse-steam-1-7-104` / `0xcf3100` / 11 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf3100.json` | matched | family | open |
+| `thirdparty/scaleform/GRefCountImpl` | `GRefCountImpl::Functioncf31e0` (GUESS) | `sse-steam-1-7-104` / `0xcf31e0` / 11 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf31e0.json` | matched | full | - |
 | `leaves/ReturnFirstWrappers` | `Functioncf32e0` (GUESS) | `sse-steam-1-7-104` / `0xcf32e0` / 23 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf32e0.json` | matched | full | - |
 | `unmapped/leaves/DeletingLeafcf3470` | `DeletingLeafcf3470::~DeletingLeafcf3470` (GUESS) | `sse-steam-1-7-104` / `0xcf3470` / 43 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf3470.json` | matched | family | open |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functioncf34a0` (GUESS) | `sse-steam-1-7-104` / `0xcf34a0` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xcf34a0.json` | matched | full | - |
@@ -27227,6 +27228,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functiond07450` (GUESS) | `sse-steam-1-7-104` / `0xd07450` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd07450.json` | matched | full | - |
 | `unmapped/support/Ownerd07650_d07650` | `Functiond07650` (GUESS) | `sse-steam-1-7-104` / `0xd07650` / 52 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd07650.json` | matched | full | - |
 | `unmapped/leaves/DeletingLeafd07690` | `DeletingLeafd07690::~DeletingLeafd07690` (GUESS) | `sse-steam-1-7-104` / `0xd07690` / 43 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd07690.json` | matched | family | open |
+| `thirdparty/scaleform/GFxResource` | `GFxResource::Functiond077d0` (GUESS) | `sse-steam-1-7-104` / `0xd077d0` / 11 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd077d0.json` | matched | full | - |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functiond09090` (GUESS) | `sse-steam-1-7-104` / `0xd09090` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd09090.json` | matched | full | - |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functiond090f0` (GUESS) | `sse-steam-1-7-104` / `0xd090f0` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd090f0.json` | matched | full | - |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `GASStringManager::Functiond09150` (GUESS) | `sse-steam-1-7-104` / `0xd09150` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd09150.json` | matched | full | - |
