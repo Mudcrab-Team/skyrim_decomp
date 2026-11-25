@@ -38,7 +38,7 @@ class FakeGitHub:
         self.repo, self.created, self.comments, self.closed = contrib.UPSTREAM, [], [], []
         self.after_create = after_create
 
-    def open_items(self, refresh=False):
+    def open_items(self, refresh=False, **_scope):
         if self.offline:
             raise contrib.Offline('no network in tests')
         if refresh and self.created and self.after_create is not None:
@@ -194,6 +194,29 @@ class ExecutableTests(Base):
 
 
 class ToolchainTests(Base):
+    def test_autodetect_uses_all_pins_for_the_selected_recipe(self):
+        roots = [self.tmp / name for name in ('msvc-old', 'msvc-broken', 'msvc-correct')]
+        files = ('cl.exe', 'c1xx.dll', 'c2.dll', 'link.exe')
+        for i, root in enumerate(roots):
+            bin_dir = root / 'VC/Tools/MSVC/toy/bin/Hostx64/x64'
+            bin_dir.mkdir(parents=True)
+            for name in files:
+                (bin_dir / name).write_text('old' if i == 0 or (i == 1 and name == 'c2.dll') else 'new')
+        rep = self.tmp / 'fixture'
+        pin_dir = rep / 'tools/verifier/pinned'
+        pin_dir.mkdir(parents=True)
+        for path, content in ((pin_dir.parent / 'pinned.sha256', b'new'), (pin_dir / '1.2.3.sha256', b'old')):
+            path.write_text(''.join(f'{hashlib.sha256(content).hexdigest()}  {name}\n' for name in files))
+        recipe = rep / 'toy.json'
+        recipe.write_text(json.dumps({'compiler': {'version': '1.2.3 for x64',
+                                                   'binary_sha256': hashlib.sha256(b'old').hexdigest()}}))
+        with unittest.mock.patch.object(contrib, 'toolchain_dirs', return_value=roots):
+            ctx = self.ctx(platform='win32', env={})
+            self.assertEqual(contrib.check_toolchain(ctx, rep)['root'], str(roots[2]))
+            self.assertEqual(contrib.check_toolchain(ctx, rep, recipe.name)['root'], str(roots[0]))
+            explicit = self.ctx(platform='win32', env={'SR_MSVC': str(roots[1])})
+            self.assertEqual(contrib.check_toolchain(explicit, rep)['differing'], ['c2.dll'])
+
     def test_missing_compiler(self):
         ctx = self.ctx(env={'SR_MSVC': str(self.tmp / 'msvc'), 'PATH': ''})
         self.assertEqual(contrib.check_toolchain(ctx)['status'], 'missing')
@@ -297,6 +320,42 @@ class ToolchainTests(Base):
 
 
 class ClaimTests(Base):
+    def test_repeated_classes_share_selection_and_fall_back_to_exact_names(self):
+        rows = [{'rva': rva, 'name': name, 'status': status} for rva, name, status in (
+            (0x1000, 'Alpha::Tick', 'mapped'), (0x2000, 'Beta::Tick', 'mapped'),
+            (0x3000, 'util::tick', 'mapped'), (0x4000, 'util::tick', 'matched'),
+        )]
+        args = contrib.parser().parse_args(['claim', '--class', 'Alpha', '--class', 'Beta',
+                                            '--class', 'util::tick', '--class', 'Alpha'])
+        ctx = self.ctx()
+        self.assertEqual(contrib.claim_selection(ctx, args, {'functions': rows}),
+                         (rows[:3], [(r, r + 1) for r in (0x1000, 0x2000, 0x3000)]))
+        args.classes = ['Unknown']
+        with self.assertRaises(contrib.Stop) as cm:
+            contrib.claim_selection(ctx, args, {'functions': rows})
+        self.assertIn('claim 0x<RVA>', cm.exception.next_action)
+
+    def test_scoped_listing_checks_only_overlapping_timelines_and_refreshes(self):
+        ctx = self.ctx()
+        gh = contrib.GitHub(ctx)
+        issues = [{'number': n, 'title': title, 'body': 'toy'}
+                  for n, title in enumerate(('claim: toy 0x1000', 'claim: toy 0x2000', 'claim: other 0x1000'), 1)]
+        fetches = []
+
+        def api(path):
+            fetches.append(path.split('?')[0])
+            return [] if '/timeline?' in path else issues
+
+        with unittest.mock.patch.object(gh, 'api', side_effect=api):
+            scope = dict(build='toy', entries=[(0x1000, 0x1001)])
+            self.assertEqual([it['number'] for it in gh.open_items(**scope).records], [1])
+            issues.append({'number': 4, 'title': 'claim: toy 0x1000', 'body': 'toy'})
+            self.assertEqual([it['number'] for it in gh.open_items(refresh=True, **scope).records], [1, 4])
+            self.assertEqual([it['number'] for it in gh.open_items().records], [1, 2, 3, 4])
+        prefix = f'repos/{gh.repo}/issues'
+        self.assertEqual(fetches[:5], [prefix, prefix + '/1/timeline', prefix,
+                                        prefix + '/1/timeline', prefix + '/4/timeline'])
+
     def run_claim(self, gh, *extra):
         ctx = self.ctx(github=gh)
         out = io.StringIO()

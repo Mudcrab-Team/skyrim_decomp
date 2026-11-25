@@ -114,7 +114,8 @@ class ToolchainCacheTests(unittest.TestCase):
                     (dest / 'VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64').mkdir(parents=True)
                 return subprocess.CompletedProcess(cmd, vsdownload_rc, '', '')
             return subprocess.CompletedProcess(cmd, 0, '', '')
-        ctx = contrib.Ctx(repo=ROOT, platform='win32', env={'PATH': ''}, as_json=True, private=self.private,
+        ctx = contrib.Ctx(repo=ROOT, platform='win32', env={'PATH': '', 'SR_LOCAL_DIR': str(self.tmp)},
+                          as_json=True, private=self.private,
                           runner=runner)
         with unittest.mock.patch.object(contrib, 'recipe_constants', return_value=pins), \
                 unittest.mock.patch.object(contrib, 'main_checkout_local', return_value=None):

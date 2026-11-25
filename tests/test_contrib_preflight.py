@@ -21,6 +21,32 @@ from source_digest import include_closure
 from digest_v2 import tu_digest
 
 
+class StarterHeaders(unittest.TestCase):
+    def test_removes_unused_starter_but_preserves_definitions_and_explicit_bindings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / 'reconstruction/toy/Widget.cpp'
+            path.parent.mkdir(parents=True)
+            header = path.with_suffix('.h')
+            header.write_text('struct Widget { void Planned(); void Inline() {} void OutOfLine(); };\n'
+                              'inline void Widget::OutOfLine() {}\n')
+            source = ('// 0x1000 Widget::Planned\n// 0x1010 Widget::Done\n// 0x1020 Widget::Inline\n'
+                      '// 0x1030 Widget::Renamed\n// CI hash: 0x1030 ?Alias@Widget@@QEAAXXZ\n'
+                      '// 0x1040 Widget::PrivateHint\n// 0x1050 Widget::Edited(int)\n// 0x1060 Widget::OutOfLine\n'
+                      '#include "Widget.h"\nvoid Widget::Done() {}\n// 0x1000 Widget::Planned\n')
+            path.write_text(source)
+            names = ('Planned', 'Done', 'Inline', 'Renamed', 'PrivateHint', 'Edited', 'OutOfLine')
+            task = {'compiled': path.relative_to(root).as_posix(), 'functions': [
+                {'rva': hex(0x1000 + i * 16), 'community_name': f'Widget::{name}', 'symbol': f'unbound:{name}'}
+                for i, name in enumerate(names)]}
+            (root / 'bind-hints.json').write_text('{"?Other@Widget@@QEAAXXZ": "0x1040"}')
+            ctx = contrib.Ctx(repo=root, private=root / '.local', as_json=True)
+            contrib.prune_unused_headers(ctx, root, task)
+            self.assertEqual(path.read_text(), source.split('\n', 1)[1])
+            contrib.prune_unused_headers(ctx, root, task)
+            self.assertEqual(path.read_text(), source.split('\n', 1)[1])
+
+
 class Preflight(fixtures.SubmitTests):
     def refresh_digest(self):
         self.summary['source_revision'] = tu_digest(self.repo, include_closure(self.repo, self.unit[1]))

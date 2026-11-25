@@ -1296,6 +1296,26 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO, *, source
         if isinstance(entry, dict) and isinstance(entry.get('rva'), int):
             held_names.setdefault(entry['rva'], []).append(held_name)
     resolved = resolve_functions(task, defined, names, hints, size_of, matcher, header, held_names)
+    used = {r['symbol'] for r in resolved.values()}
+    remaining = sorted(set(defined) - used)
+    unbound = [fn for fn in task['functions'] if resolved[fn['rva']]['symbol'] is None]
+    possible = {}
+    for fn in unbound:
+        rva = parse_rva(fn['rva'])
+        size = parse_rva(fn['size'])
+        candidates = [d for d in remaining if symbols.get(d, {}).get('rva', rva) == rva
+                      and hint_for(d) in (None, rva)]
+        overloads = resolved[fn['rva']]['candidates']
+        if overloads:
+            candidates = [d for d in candidates if d in overloads]
+        same_size = [d for d in candidates if size_of(d) == size]
+        possible[fn['rva']] = same_size or candidates
+    for fn in unbound:
+        res = resolved[fn['rva']]
+        candidates = possible[fn['rva']]
+        if (not fn.get('destructor') and not res['candidates'] and len(candidates) == 1
+                and sum(candidates[0] in pool for pool in possible.values()) == 1):
+            res['suggested'] = candidates[0]
     for fn in task['functions']:
         rva = parse_rva(fn['rva'])
         old = fn.get('symbol') or ''
@@ -1305,10 +1325,10 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO, *, source
         if res['choice']:
             report['destructor_choices'].append(res['choice'])
         if new is None:
-            candidates = sorted(d for d in defined if d not in {r['symbol'] for r in resolved.values()})
             report['unbound_functions'].append({'rva': hex(rva), 'community_name': fn.get('community_name'),
-                                                'symbol': old, 'defined_in_object': candidates[:12],
-                                                'expected': fn.get('destructor'), 'overloads': res['candidates']})
+                                                'symbol': old, 'defined_in_object': remaining[:12],
+                                                'expected': fn.get('destructor'), 'overloads': res['candidates'],
+                                                'suggested': res.get('suggested')})
             continue
         if new != old:
             if old and not old.startswith(UNBOUND):
@@ -1579,7 +1599,10 @@ def describe(report, task_dir):
                          'that name. If the unit defines it under another name, write that name on its header line '
                          f'(`// {f["rva"]} Class::Method`) or add `// CI hash: {f["rva"]} <decorated name>`; '
                          f'locally {{"<decorated or Class::Method name>": "{f["rva"]}"}} in {hints} also works')
-        if f['defined_in_object']:
+        if f.get('suggested'):
+            line, = hint_lines(f['rva'], [f['suggested']])
+            lines.append(f'    Suggested binding (verify the target): {line}')
+        elif f['defined_in_object']:
             lines.append('    defined in object: ' + ', '.join(f['defined_in_object'][:6]))
     for name in report['unbound_references']:
         lines.append(f'  UNBOUND reference {name}: add {{"{name}": "0x<rva from the pack table>"}} to {hints}')

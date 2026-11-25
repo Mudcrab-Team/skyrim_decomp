@@ -618,12 +618,25 @@ def recipe_constants(repo):
         raise Stop(USAGE, str(exc))
 
 
-def pinned_hashes(repo):
+def pinned_hashes(repo, recipe=None):
+    folder = Path(repo) / 'tools/verifier'
+    pin_file = folder / 'pinned.sha256'
+    if recipe:
+        try:
+            compiler = json.loads((Path(repo) / recipe).read_text())['compiler']
+            digest = compiler['binary_sha256']
+            version = re.match(r'\d+\.\d+\.\d+\b', compiler.get('version', ''))
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise Stop(UNIT, f'invalid compiler pin in {recipe}') from exc
+        if version and (alternate := folder / 'pinned' / (version[0] + '.sha256')).is_file():
+            pin_file = alternate
     out = {}
-    for line in (Path(repo) / 'tools/verifier/pinned.sha256').read_text().splitlines():
+    for line in pin_file.read_text().splitlines():
         parts = line.split()
         if len(parts) == 2:
             out[parts[1]] = parts[0]
+    if recipe and out.get('cl.exe') != digest:
+        raise Stop(UNIT, f'no matching toolchain pins for {recipe}')
     return out
 
 
@@ -647,15 +660,18 @@ def toolchain_dirs(ctx, kind):
     return out
 
 
-def toolchain_root(ctx):
+def toolchain_candidates(ctx):
     cfg = load_config(ctx)
     explicit = ctx.env.get('SR_MSVC') or cfg.get('msvc')
-    if explicit:
-        return Path(explicit)
-    for cand in toolchain_dirs(ctx, 'msvc'):
+    return [Path(explicit)] if explicit else toolchain_dirs(ctx, 'msvc')
+
+
+def toolchain_root(ctx):
+    candidates = toolchain_candidates(ctx)
+    for cand in candidates:
         if toolchain_bins(cand):
             return cand
-    return ctx.private / 'msvc'
+    return candidates[0]
 
 
 def toolchain_bins(root):
@@ -674,26 +690,33 @@ def sdk_include_dirs(ctx, root, sdk_version):
     return None, []
 
 
-def check_toolchain(ctx):
+def check_toolchain(ctx, repo=None, recipe=None):
     """State of the compiler: 'override' (a test stand-in), 'ok', 'missing', 'mismatch' or 'no-wrapper'."""
     override = ctx.env.get('SR_CONTRIB_COMPILER')
     if override:
         return {'status': 'override', 'command': json.loads(override) if override.startswith('[') else [override],
                 'pinned': False}
-    root = toolchain_root(ctx)
-    ctx.remember_path(root, '<msvc>')
-    bins = toolchain_bins(root)
-    if not bins:
-        return {'status': 'missing', 'root': str(root), 'pinned': False}
-    pins = pinned_hashes(ctx.repo)
-    bad = [name for name, digest in pins.items()
-           if not (bins[-1] / name).is_file() or sha256_file(bins[-1] / name) != digest]
-    info = {'root': str(root), 'bin': str(bins[-1]), 'pinned': not bad, 'flavour': 'native' if ctx.windows else 'wine'}
-    if bad:
-        return dict(info, status='mismatch', differing=bad)
-    if not ctx.windows and not (root / 'bin' / 'x64' / 'cl').is_file():
-        return dict(info, status='no-wrapper')
-    return dict(info, status='ok')
+    candidates = toolchain_candidates(ctx)
+    fallback = {'status': 'missing', 'root': str(candidates[0]), 'pinned': False}
+    pins = None
+    for root in candidates:
+        ctx.remember_path(root, '<msvc>')
+        for bin_dir in reversed(toolchain_bins(root)):
+            if pins is None:
+                pins = pinned_hashes(repo or ctx.repo, recipe)
+            bad = [name for name, digest in pins.items()
+                   if not (bin_dir / name).is_file() or sha256_file(bin_dir / name) != digest]
+            status = ('mismatch' if bad else 'no-wrapper'
+                      if not ctx.windows and not (root / 'bin/x64/cl').is_file() else 'ok')
+            info = dict(root=str(root), bin=str(bin_dir), pinned=not bad, status=status,
+                        flavour='native' if ctx.windows else 'wine')
+            if bad:
+                info['differing'] = bad
+            if status == 'ok':
+                return info
+            if fallback['status'] == 'missing' or (not bad and not fallback['pinned']):
+                fallback = info
+    return fallback
 
 
 # ------------------------------------------------------------------ compiling a unit
@@ -760,6 +783,9 @@ def compile_unit(ctx, root, compiled, recipe_rel, out_dir, tool):
     elif tool['flavour'] == 'wine':
         msvc = Path(tool['root'])
         wrapper = unit_build.wrapper_settings(msvc, env)
+        if Path(wrapper['BINDIR']).resolve() != Path(tool['bin']).resolve():
+            raise Stop(MISSING, 'the compiler wrapper selects a different toolset from the recipe pin',
+                       f'{ctx.cli} doctor')
         problem = unit_build.include_problem(wrapper['INCLUDE'], wrapper['BASE'])
         if problem:
             raise Stop(UNIT, problem)
@@ -1043,12 +1069,13 @@ class GitHub:
     # rather than silently treated as complete.
     MAX_PAGES = 100
 
-    def open_items(self, refresh=False):
-        """Open issues and pull requests whose title names an RVA: {rva: [item]}."""
-        if getattr(self, '_items', None) is not None and not refresh:
-            return self._items
+    def open_items(self, refresh=False, *, build=None, entries=None):
+        """Open issues and pull requests naming RVAs, optionally scoped to a pending claim."""
+        wanted = batch_claims.ClaimIntervals(entries) if entries is not None else None
         cache = self.ctx.private / 'claims-cache.json'
-        if not refresh and not self.ctx.env.get('SR_CONTRIB_OFFLINE'):
+        if wanted is None and not refresh and not self.ctx.env.get('SR_CONTRIB_OFFLINE'):
+            if getattr(self, '_items', None) is not None:
+                return self._items
             try:
                 saved = json.loads(cache.read_text())
                 if saved['repo'] == self.repo and 0 <= time.time() - saved['fetched'] < batch_claims.TTL:
@@ -1063,12 +1090,18 @@ class GitHub:
                 raise Offline(f'more than {100 * self.MAX_PAGES} open items; claims cannot all be checked')
             for it in batch:
                 parsed = batch_claims.parse_issue(it)
-                if parsed['entries']:
-                    it['updated_at'] = batch_claims.activity(self.api, self.repo, it)
-                    items.append(batch_claims.parse_issue(it))
+                if not parsed['entries']:
+                    continue
+                if wanted is not None and (parsed['build_id'] not in (None, build)
+                                           or not any(wanted.overlaps(a, b) for a, b in parsed['entries'])):
+                    continue
+                it['updated_at'] = batch_claims.activity(self.api, self.repo, it)
+                items.append(batch_claims.parse_issue(it))
             if len(batch) < 100:
                 break
         out = batch_claims.ClaimIndex(items)
+        if wanted is not None:
+            return out
         self._items = out
         try:
             cache.parent.mkdir(parents=True, exist_ok=True)
@@ -1891,12 +1924,23 @@ def claim_selection(ctx, args, data):
             if line.strip() and not line.lstrip().startswith('#'):
                 values.append(line.split()[0])
     addresses = {parse_rva(v) for v in values}
-    for cls in getattr(args, 'classes', []) or []:
-        selected = [f for f in data['functions'] if (f.get('name') or '').rsplit('::', 1)[0] == cls
-                    and f['status'] != 'matched']
+    classes = dict.fromkeys(getattr(args, 'classes', []) or [])
+    by_class, by_name, by_rva = {}, {}, {}
+    for fn in data['functions']:
+        by_rva.setdefault(fn['rva'], fn)
+        if classes and fn['status'] != 'matched':
+            name = fn.get('name') or ''
+            owner, sep, _ = name.rpartition('::')
+            if sep and owner in classes:
+                by_class.setdefault(owner, []).append(fn['rva'])
+            if name in classes:
+                by_name.setdefault(name, []).append(fn['rva'])
+    for cls in classes:
+        selected = by_class.get(cls) or by_name.get(cls)
         if not selected:
-            raise Stop(USAGE, f'class {cls} has no unmatched functions')
-        addresses.update(f['rva'] for f in selected)
+            raise Stop(USAGE, f'class {cls} has no unmatched functions',
+                       f'{ctx.cli} claim 0x<RVA> --model <model>')
+        addresses.update(selected)
     ranges = []
     for value in getattr(args, 'ranges', []) or []:
         try:
@@ -1913,9 +1957,6 @@ def claim_selection(ctx, args, data):
         if ranges:
             raise Stop(USAGE, 'the range has no unmatched functions, so there is nothing to claim', f'{ctx.cli} next')
         raise Stop(USAGE, 'select RVAs, --class, --list or --range')
-    by_rva = {}
-    for fn in data['functions']:
-        by_rva.setdefault(fn['rva'], fn)
     if missing := addresses - by_rva.keys():
         sizes = claimable.published_sizes(ctx.repo)
         if offered := missing.intersection(sizes):
@@ -1990,7 +2031,7 @@ def cmd_claim(ctx, args):
     first = addresses[0]
     gh = ctx.github()
     try:
-        index = gh.open_items()
+        index = gh.open_items(build=build, entries=entries)
     except Offline as exc:
         if not args.offline_ok:
             raise Stop(NETWORK, f'cannot reach GitHub to check claims ({exc})',
@@ -2057,7 +2098,7 @@ def cmd_claim(ctx, args):
             continue
         urls.append(url)
         try:
-            after = overlapping(gh.open_items(refresh=True))
+            after = overlapping(gh.open_items(refresh=True, build=build, entries=entries))
         except Offline:
             after = []
         rivals = [i for i in claim_state(after, me)[1] if i['url'] != url and int(i['number']) < issue_number(url)]
@@ -2413,6 +2454,7 @@ def start(ctx, args, quiet=False):
             write_source(ctx.repo / cpp, merge_header_additions(text, additions))
         ctx.say('Function header metadata is prepared. Add the new declarations and bodies; '
                 'replace each code-origin placeholder truthfully before compare. '
+                'Preflight removes unused starter header lines it can identify. '
                 'Accepted companions are re-confirmed by the project.')
     if not quiet:
         for hint in declaration_advice:
@@ -2687,7 +2729,6 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     model = task.get('drafter_model') or config.get('model') or config.get('drafted_by')
     # Legacy comparison-only tasks may predate claims; new claims require attribution up front.
     exe = require_exe(ctx, target)['path']
-    tool = check_toolchain(ctx)
     runs = tdir / 'runs'
     number = len([p for p in runs.glob('[0-9][0-9][0-9]')]) + 1 if runs.is_dir() else 1
     out = runs / f'{number:03d}'
@@ -2698,6 +2739,9 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     recipe = unit_recipe(root, task['compiled'], task['recipe'])
     if recipe != task['recipe']:
         say(f'recipe: {recipe} (named by the unit; the task had {task["recipe"]})')
+    tool = check_toolchain(ctx, root, recipe)
+    if tool['status'] == 'ok':
+        say(f'compiler: toolset {Path(tool["bin"]).parents[2].name} at {tool["root"]} (recipe pin)')
     built = compile_unit(ctx, root, task['compiled'], recipe, out, tool)
     objdump = find_objdump(ctx)
     bound = bind.bind(tdir, built['object'], exe, objdump, repo=root)
@@ -2961,6 +3005,49 @@ def submission_files(ctx, base, unit, head='HEAD'):
     return list(dict.fromkeys([(s, n) for s, n in branch_rows if n not in unit] + [('M', n) for n in unit]))
 
 
+def prune_unused_headers(ctx, tdir, task):
+    """Remove untouched starter lines for plain members with no source definition."""
+    from bind import load_hints, unit_hints
+    from permute import find_bodies, lex
+    from source_digest import include_closure
+
+    compiled = task['compiled']
+    placeholders = {}
+    if not task.get('contrib', {}).get('practice'):
+        for fn in task['functions']:
+            name = fn.get('community_name') or ''
+            match = re.fullmatch(r'([A-Za-z_]\w*)::([A-Za-z_]\w*)', name)
+            if (match and match[2].lower() not in (match[1].lower(), 'ctor', 'dtor')
+                    and (fn.get('symbol') or '').startswith('unbound:')):
+                rva = parse_rva(fn['rva'])
+                placeholders[f'// {hex(rva)} {name}'] = (rva, name, match[2])
+    if not placeholders:
+        return
+
+    try:
+        closure = include_closure(ctx.repo, compiled)
+        sources = {name: (ctx.repo / name).read_bytes().decode('utf-8') for name in closure}
+        text = sources.pop(compiled)
+        head = set(rva_headers.leading_lines(text))
+        hinted = set(unit_hints(ctx.repo, task).values()) | set(load_hints(tdir).values())
+        cpp_names = set(re.findall(r'\b[A-Za-z_]\w*\b', ' '.join(t.text for t in lex(text)[0])))
+        headers = [(src, {t.text for t in lex(src)[0]}) for src in sources.values()]
+        remove = {line for line, (rva, name, member) in placeholders.items()
+                  if line in head and rva not in hinted and member not in cpp_names
+                  and not any(member in tokens and (tokens & {'default', 'template'}
+                                                    or find_bodies(src, member) or find_bodies(src, name))
+                              for src, tokens in headers)}
+    except (OSError, ValueError, IndexError):
+        return
+    if remove:
+        lines = text.splitlines(keepends=True)
+        end = next((i for i, line in enumerate(lines) if line.strip() and not line.lstrip().startswith('//')),
+                   len(lines))
+        write_source(ctx.repo / compiled, ''.join(line for line in lines[:end]
+                                                  if line.rstrip('\r\n') not in remove) + ''.join(lines[end:]))
+        ctx.say(f'{compiled}: removed {len(remove)} unused starter function header line(s)')
+
+
 def cmd_preflight(ctx, args):
     """Source-only intake checks are useful before the first local comparator pass, too."""
     from contrib_validation import project_reconfirmation
@@ -2973,6 +3060,8 @@ def cmd_preflight(ctx, args):
     if head:
         files = changed_files(ctx, git(ctx, 'merge-base', base, 'HEAD'), head, index_tree=True)
     else:
+        for tdir, task in picked:
+            prune_unused_headers(ctx, tdir, task)
         unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
         files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
     reminders = [line for d_, t_ in picked
@@ -3467,7 +3556,8 @@ def parser():
                    help='only classes whose name matches (re.search, e.g. "^Ni"); filters before readiness is computed')
     s = sub.add_parser('claim')
     s.add_argument('rva', nargs='*')
-    s.add_argument('--class', dest='classes', action='append', default=[])
+    s.add_argument('--class', dest='classes', action='append', default=[],
+                   help='claim unmatched members of a class or an exact function name; repeat to batch')
     s.add_argument('--list', dest='lists', action='append', default=[])
     s.add_argument('--range', dest='ranges', action='append', default=[])
     s.add_argument('--take-over', action='store_true')
