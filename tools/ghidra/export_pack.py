@@ -47,6 +47,7 @@ from pecoff import (EH_HANDLERS, EH_LAYOUTS, FUNCINFO_MAGIC, TYPE_DESCRIPTOR_NAM
 import community_ids  # noqa: E402
 import record_store  # noqa: E402
 import unit_paths  # noqa: E402
+from analysis import x64  # noqa: E402
 
 PACK_SCHEMA = 1
 TASK_SCHEMA = 1
@@ -658,29 +659,41 @@ def funclet_branch_refs(img, rva, funclets):
 
     The analysis covers the parent body only, so an unwind funclet that jumps to an out-of-line
     destructor (a scope guard, a local visitor) would leave that function out of the reference
-    table and no bind hint could name it. A funclet has no leaf-size record without .pdata, so the
-    window ends at the first int3 or the scan limit. A byte pair is accepted only when its rel32
-    lands exactly on a function start (a .pdata begin, or an aligned address after int3 padding), which makes a stray E8/E9 inside another operand
-    practically never a row.
+    table and no bind hint could name it. A leaf has no size record, so decoding stops at padding,
+    a return, an out-of-line jump or the scan limit. Each target must meet the function-start rules.
     """
     rows = []
     for start, size in funclets:
+        if size is None:
+            sec = img.section(start)
+            if sec is None:
+                continue
+            limit = min(FUNCLET_SCAN_LIMIT, sec.vaddr + min(sec.vsize or sec.raw_size, sec.raw_size) - start)
+            if limit <= 0:
+                continue
+        else:
+            limit = size
         try:
-            blob = img.read(start, size or FUNCLET_SCAN_LIMIT)
-        except Exception:
+            blob = img.read(start, limit)
+        except Reject:
             continue
-        end = len(blob) if size else (blob.find(b'\xcc') if b'\xcc' in blob else len(blob))
-        for i in range(max(end, 0) - 4):
-            op = blob[i]
-            if op not in (0xE8, 0xE9):
-                continue
-            target = (start + i + 5 + struct.unpack_from('<i', blob, i + 1)[0]) & 0xFFFFFFFF
-            if not starts_function(img, target):
-                continue
-            call = op == 0xE8
-            rows.append({'offset': start + i - rva, 'ref_type': 'UNCONDITIONAL_CALL' if call else 'UNCONDITIONAL_JUMP',
-                         'target': target, 'mnemonic': 'CALL' if call else 'JMP', 'operand': 0,
-                         'ghidra_names': '', 'target_entry': target})
+        i = 0
+        while i < len(blob):
+            try:
+                ins = x64.decode(blob, i, start + i)
+            except x64.DecodeError:
+                break
+            if ins.flow in (x64.CALL, x64.JMP) and ins.rel[1] == 4 and starts_function(img, ins.target):
+                call = ins.flow == x64.CALL
+                rows.append({'offset': start + i - rva, 'operand_offset': ins.rel[0],
+                             'ref_type': 'UNCONDITIONAL_CALL' if call else 'UNCONDITIONAL_JUMP',
+                             'target': ins.target, 'mnemonic': 'CALL' if call else 'JMP', 'operand': 0,
+                             'ghidra_names': '', 'target_entry': ins.target})
+                if size is None and not call:
+                    break
+            if size is None and ins.flow in (x64.INT3, x64.RET, x64.IJMP):
+                break
+            i += ins.length
     return rows
 
 
@@ -760,7 +773,7 @@ def classify(img, addrlib, communities, rva, gmeta, grefs):
                         'or an unrecovered switch)')
     if funclets:
         cautions.append('funclet code references are not listed except direct call/jump targets that start a '
-                        'function (found by a byte scan, not the analysis); bind the rest by hint or by position')
+                        'function (decoded from funclet code)')
         grefs = list(grefs) + funclet_branch_refs(img, rva, funclets)
     if gmeta['thunk']:
         reasons.append('thunk')
