@@ -211,7 +211,7 @@ def worker_default(tree, config):
         return False
     if active(tree) or git(tree, 'status', '--porcelain', '--untracked-files=all').strip():
         return False
-    set_patterns(tree)
+    set_patterns(tree, cone_dirs(tree, skip=('site',)))
     # Existing kit links are retained. New workers share the canonical private inputs.
     for name, source in config.get('shared', {}).items():
         if name not in ('toolchains', 'wineprefix', 'sources', 'analysis'):

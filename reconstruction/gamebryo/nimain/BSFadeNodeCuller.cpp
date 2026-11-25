@@ -1,13 +1,18 @@
 // Source exposure: mixed (community declarations and the contributor-owned pack).
-// Code origin: original reconstruction written for this project from the local function
-// pack (listing only, no copied body); declarations reuse community names from the
-// pinned checkouts named below.
+// Code origin: original reconstruction written for this project from the local function pack (listing only, no copied body); declarations reuse community names from the pinned checkouts named below; Function1555fc0: written for this reconstruction from the listing and the header declarations; names from the header, the setter role is a guess
+// Adapted bodies: none
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // SPDX-License-Identifier: GPL-3.0-or-later (powerof3/CommonLibSSE declarations; full text: licenses/CommonLibSSE-GPL-3.0.txt)
 // 0x1555fd0 BSFadeNodeCuller::Process1
-// Adapted bodies: none
-// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// 0x1555fc0 BSFadeNodeCuller::Function1555fc0
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSFadeNodeCuller.h"
+
+// BSFadeNodeCuller::Function1555fc0: GUESS(low); name and role; stores the argument into the camera slot
+void BSFadeNodeCuller::Function1555fc0(const NiCamera* a_camera)
+{
+	camera = a_camera;
+}
 
 // BSFadeNodeCuller::Process1: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); declaration
 // only, compared at its own address elsewhere.

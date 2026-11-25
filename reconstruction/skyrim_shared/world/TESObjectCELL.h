@@ -13,6 +13,42 @@
 #include <cstdint>
 #include <intrin.h>
 
+// LODRecord: GUESS(low); record whose value member sits at 0x144.
+struct LODRecord {
+    std::uint8_t unk00[0x144];  // 00
+    std::uint32_t value;        // 144
+};
+
+// LODNode: GUESS(low); virtual slot 5 yields the record.
+class LODNode {
+public:
+    virtual void U00(); virtual void U01(); virtual void U02(); virtual void U03(); virtual void U04();
+    virtual LODRecord* GetRecord();
+};
+
+// LODSource: GUESS(low); virtual slot 112 yields the node.
+class LODSource {
+public:
+    virtual void U00(); virtual void U01(); virtual void U02(); virtual void U03(); virtual void U04(); virtual void U05(); virtual void U06(); virtual void U07();
+    virtual void U08(); virtual void U09(); virtual void U0A(); virtual void U0B(); virtual void U0C(); virtual void U0D(); virtual void U0E(); virtual void U0F();
+    virtual void U10(); virtual void U11(); virtual void U12(); virtual void U13(); virtual void U14(); virtual void U15(); virtual void U16(); virtual void U17();
+    virtual void U18(); virtual void U19(); virtual void U1A(); virtual void U1B(); virtual void U1C(); virtual void U1D(); virtual void U1E(); virtual void U1F();
+    virtual void U20(); virtual void U21(); virtual void U22(); virtual void U23(); virtual void U24(); virtual void U25(); virtual void U26(); virtual void U27();
+    virtual void U28(); virtual void U29(); virtual void U2A(); virtual void U2B(); virtual void U2C(); virtual void U2D(); virtual void U2E(); virtual void U2F();
+    virtual void U30(); virtual void U31(); virtual void U32(); virtual void U33(); virtual void U34(); virtual void U35(); virtual void U36(); virtual void U37();
+    virtual void U38(); virtual void U39(); virtual void U3A(); virtual void U3B(); virtual void U3C(); virtual void U3D(); virtual void U3E(); virtual void U3F();
+    virtual void U40(); virtual void U41(); virtual void U42(); virtual void U43(); virtual void U44(); virtual void U45(); virtual void U46(); virtual void U47();
+    virtual void U48(); virtual void U49(); virtual void U4A(); virtual void U4B(); virtual void U4C(); virtual void U4D(); virtual void U4E(); virtual void U4F();
+    virtual void U50(); virtual void U51(); virtual void U52(); virtual void U53(); virtual void U54(); virtual void U55(); virtual void U56(); virtual void U57();
+    virtual void U58(); virtual void U59(); virtual void U5A(); virtual void U5B(); virtual void U5C(); virtual void U5D(); virtual void U5E(); virtual void U5F();
+    virtual void U60(); virtual void U61(); virtual void U62(); virtual void U63(); virtual void U64(); virtual void U65(); virtual void U66(); virtual void U67();
+    virtual void U68(); virtual void U69(); virtual void U6A(); virtual void U6B(); virtual void U6C(); virtual void U6D(); virtual void U6E(); virtual void U6F();
+    virtual LODNode* GetLODNode();
+};
+
+// gCellLODThreshold: GUESS(low); global at RVA 0x3275610.
+extern std::uint32_t gCellLODThreshold;
+
 class BGSLocation;
 class BGSLoadFormBuffer;
 class TESFile;
@@ -226,6 +262,8 @@ inline T* ResolveFormRef(const TESForm* a_owner, T* a_raw)
 struct LOADED_CELL_DATA {
     std::uint8_t      unk00[0x160];    // 00
     BGSEncounterZone* encounterZone;   // 160
+    std::uint8_t      unk168[0x10];    // 168
+    std::uint32_t     lodValue;        // 178
 };
 
 // TESObjectCELL: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); members at the offsets the
@@ -275,5 +313,8 @@ public:
     LOADED_CELL_DATA*  loadedData;         // 130
     void*              lightingTemplate;   // 138
     std::uint64_t      unk140;             // 140
+    int  Function2c1210();
+    bool QCanHideLOD() const;
+    void Function2c5ca0(LODSource* a_src);
 };
 static_assert(sizeof(TESObjectCELL) == 0x148, "layout");

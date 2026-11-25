@@ -141,6 +141,7 @@ class Label(Node):
 
 class Block(Node):
     kind = 'block'
+    void_body = False
 
     def __init__(self, lb, stmts, rb):
         self.lb, self.stmts, self.rb = lb, stmts, rb
@@ -327,7 +328,7 @@ def _after_initializers(toks, start):
 
 
 def find_bodies(text, qualified):
-    """[(start, end, parameter text)] of every `{ ... }` definition of `qualified` (e.g. "TESFile::Seek")."""
+    """[(start, end, parameter text, returns void)] for the definitions of `qualified`."""
     toks, _ = lex(text)
     offsets, pos = [], 0
     for t in toks:
@@ -344,8 +345,9 @@ def find_bodies(text, qualified):
         j = i + len(want)
         if j >= len(toks) or names[j] != '(':
             continue
-        params = text[offsets[j] + 1:offsets[_balanced(toks, j) - 1]]
-        j = _balanced(toks, j)
+        suffix = _balanced(toks, j)
+        params = text[offsets[j] + 1:offsets[suffix - 1]]
+        j = suffix
         # qualifiers between ) and { : const, noexcept, override, -> type; a `;` means a declaration
         while j < len(toks) and names[j] not in ('{', ';', ':'):
             j = _balanced(toks, j) if names[j] in ('(', '[') else j + 1
@@ -353,7 +355,10 @@ def find_bodies(text, qualified):
             j = _after_initializers(toks, j + 1)
         if j < len(toks) and names[j] == '{':
             end = _balanced(toks, j)
-            hits.append((offsets[j], offsets[end - 1] + 1, params))
+            qualifiers = names[suffix:j]
+            void_body = (qualifiers[-2:] == ['->', 'void'] if '->' in qualifiers
+                         else i > 0 and names[i - 1] == 'void')
+            hits.append((offsets[j], offsets[end - 1] + 1, params, void_body))
     return hits
 
 
@@ -378,12 +383,8 @@ def parameter_types(text):
     return bind.normalize_params(','.join(kept))
 
 
-def find_body(text, qualified, params=None):
-    """(start, end) of the `{ ... }` body of the definition of `qualified` (e.g. "TESFile::Seek").
-
-    Several definitions of the name (overloads) are narrowed by `params`, a normalised parameter list
-    (bind.normalize_params), when one is given and exactly one definition has it.
-    """
+def find_definition(text, qualified, params=None):
+    """Select one definition, using the normalized parameters to resolve overloads."""
     hits = find_bodies(text, qualified)
     if len(hits) > 1 and params is not None:
         import bind
@@ -391,7 +392,12 @@ def find_body(text, qualified, params=None):
         hits = fitting or hits
     if len(hits) != 1:
         raise ValueError(f'{qualified}: {len(hits)} definitions found in the compiled file (need exactly 1)')
-    return hits[0][:2]
+    return hits[0]
+
+
+def find_body(text, qualified, params=None):
+    """(start, end) of the body of the selected definition."""
+    return find_definition(text, qualified, params)[:2]
 
 
 PLACEHOLDER_NAME = re.compile(r'(?:^|::)Function[0-9a-fA-F]+$')
@@ -421,7 +427,7 @@ def sole_definition(text):
     names = set(re.findall(r'\b([A-Za-z_]\w*::(?:~?[A-Za-z_]\w*))\s*\(', text))
     found = []
     for name in sorted(names):
-        found.extend((name, params) for _start, _end, params in find_bodies(text, name))
+        found.extend((name, params) for _start, _end, params, _void in find_bodies(text, name))
     if len(found) != 1:
         raise ValueError('unit does not contain exactly one qualified definition')
     return found[0][0], None
@@ -954,7 +960,7 @@ def m_if_invert(root, rng):
 
 
 def m_early_return(root, rng):
-    """R5: early return versus nested: `if (c) {..return;} rest` <-> `if (c) {..return;} else {rest}`."""
+    """R5: exchange nesting and early exits, including a guard at the end of a void function."""
     sites = []
     for b in walk_blocks(root):
         for i, st in enumerate(b.stmts):
@@ -967,6 +973,13 @@ def m_early_return(root, rng):
                 outer = declared_names(b.stmts[:i] + b.stmts[i + 1:])
                 if not declared_names(st.els.stmts) & outer:
                     sites.append(('flat', b, i))
+    if root.void_body and root.stmts:
+        st = root.stmts[-1]
+        if (isinstance(st, If) and st.els is None and len(st.head) == 2 and st.cond
+                and isinstance(st.then, Block) and st.then.stmts
+                and all(top_level(st.cond, op) is None for op in (';', '='))
+                and all(t.text != '{' for t in st.cond)):
+            sites.append(('guard', root, len(root.stmts) - 1))
     if not sites:
         return False
     how, b, i = rng.choice(sites)
@@ -976,10 +989,28 @@ def m_early_return(root, rng):
         del b.stmts[i + 1:]
         st.then = as_block(st.then)
         st.else_kw, st.els = new('else'), Block(new('{'), rest, new('}', b.rb.pre))
-    else:
+    elif how == 'flat':
         inner = st.els.stmts
         st.else_kw, st.els = None, None
         b.stmts[i + 1:i + 1] = inner
+    else:
+        body = st.then
+        cond = st.cond
+        # Preserve contextual conversion to bool even when the condition type overloads operator!.
+        st.cond = toks_of('!static_cast<bool>(', cond[0].pre) + _with_pre(cond, '') + [new(')', '')]
+        st.then = Simple(toks_of('return;'))
+        # Retain the scope when a statement could declare a local.
+        if all(not isinstance(s, Simple) or (len(s.t) >= 3 and s.t[0].kind == 'id'
+               and (s.t[1].text in ('.', '->', '=') or [t.text for t in s.t[1:]] == ['(', ')', ';']))
+               for s in body.stmts):
+            first = body.stmts[0].toks()[0]
+            if body.lb.pre.strip():
+                first.pre = body.lb.pre + first.pre
+            if body.rb.pre.strip():
+                b.rb.pre = body.rb.pre + b.rb.pre
+            b.stmts.extend(body.stmts)
+        else:
+            b.stmts.append(body)
     return True
 
 
@@ -1361,10 +1392,11 @@ class Unit:
         self.text = text
         self.spans, self.blocks, self.tails = [], [], []
         for number, name in enumerate((qualified, *also)):
-            start, end = find_body(text, name, params if number == 0 else None)
+            start, end, _params, void_body = find_definition(text, name, params if number == 0 else None)
             if any(start < e and s < end for s, e in self.spans):
                 raise ValueError(f'{name}: body overlaps another mutated body')
             block, tail = parse_body(text[start:end])
+            block.void_body = void_body
             if emit(block, tail) != text[start:end]:
                 raise ValueError(f'{name}: body does not round-trip through the tokenizer')
             self.spans.append((start, end))
@@ -1863,8 +1895,8 @@ def score_all_objects(items, ctx, jobs):
         return list(pool.map(score_object, items, chunksize=max(1, len(items) // (4 * jobs))))
 
 
-def bound_scoring_maps(task, host, stage, out, image, objdump, rva, log):
-    """Symbol maps for scoring, from the baseline object bound with the task's bind hints.
+def bound_scoring_maps(task, host, out, image, objdump, rva, source_root):
+    """Symbol maps from the baseline object bound with the task and source unit's hints.
 
     The host's baseline run leaves candidate.obj in its run directory. It is fetched and bound in a
     scratch copy of the task (private map, the task's bind-hints.json), never in the task directory or
@@ -1889,7 +1921,7 @@ def bound_scoring_maps(task, host, stage, out, image, objdump, rva, log):
         tr, remote = host.transport, host._remote(host._run)
         obj = Path(out) / 'baseline.obj'
         tr.get(tr.join(remote, 'work', 'permute', 'candidate.obj'), obj)
-        report = bind.bind(scratch, obj, image, objdump)
+        report = bind.bind(scratch, obj, image, objdump, source_root=source_root)
         lines = bind.describe(report, task['dir'])
         lines.insert(0, f'scoring maps: {len(report["references"])} references bound for scoring, '
                         f'{len(report["unbound_references"])} references and {len(report["unbound_thread_locals"])} '
@@ -1905,7 +1937,8 @@ def bound_scoring_maps(task, host, stage, out, image, objdump, rva, log):
     except Exception as exc:  # noqa: BLE001 - scoring then uses the task's own map, as before
         lines.append(f'scoring maps: baseline binding failed ({type(exc).__name__}: {exc}); using the task map as is')
     symbols, tls = align.load_scoring(scratch / 'symbols.json', image)
-    bound = {f['rva']: f['symbol'] for f in json.loads((scratch / 'task.json').read_text())['functions']}
+    bound = {bind.parse_rva(f['rva']): f['symbol']
+             for f in json.loads((scratch / 'task.json').read_text())['functions']}
     return symbols, tls, bound, lines
 
 
@@ -2111,11 +2144,11 @@ def run(args):
         return 2
     import local_load
     with local_load.heavy('permute baseline binding'):
-        symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, stage, out, image, objdump, rva, log)
+        symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, out, image, objdump, rva, source_root)
     for line in bind_lines:
         log(line)
     (out / 'bind-report.txt').write_text('\n'.join(bind_lines) + '\n')
-    scored_fn = dict(fn, symbol=bound.get(hex(rva)) or bound.get(rva) or fn['symbol'])
+    scored_fn = dict(fn, symbol=bound.get(rva, fn['symbol']))
     import concurrent.futures
     pool = None
     remote_score = None
@@ -2200,7 +2233,12 @@ def run(args):
                         'unique_objects': result['unique_objects'],
                         'compile_failed': sum(1 for r in search.history if r.get('st') != 'ok')})
         if best.get('d') == 0 and best['id'] != 'v00000':
-            final = verify_final(host, files, compiled, out, unit.with_body(best['body']), rva, stage)
+            functions = [dict(f, symbol=bound.get(f['rva'], f['symbol'])) for f in task['functions']]
+            host.task = dict(task, functions=functions, symbols_repo=None)
+            final_files = dict(files)
+            final_files.pop(task['symbols_repo'] or pipeline.PRIVATE_SYMBOLS)
+            final_files[pipeline.PRIVATE_SYMBOLS] = out / 'bind/symbols.json'
+            final = verify_final(host, final_files, compiled, out, unit.with_body(best['body']), rva, stage)
             summary['comparator'] = final
     else:
         summary.update({k: v for k, v in result.items() if k != 'status'})

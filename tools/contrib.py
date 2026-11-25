@@ -890,7 +890,7 @@ def add_funclet_references(image_bytes, rva, refs, names, img=None):
                                              'in_funclet': True,
                                              'community_names': [{'name': n, 'kind': 'name'}
                                                                  for n in names.get(row['target'], [])]}
-            ref['at'].append(row['offset'] + 1)
+            ref['at'].append(row['offset'] + row['operand_offset'])
     except Exception as exc:  # a reading aid: the pack is still usable without the funclet rows
         return f'funclet references not added: {type(exc).__name__}'
     return None

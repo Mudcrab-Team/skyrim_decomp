@@ -1,9 +1,10 @@
 # Bounded private working storage
 
-Worker creation uses `sparse_checkouts.add_worktree`: report and site files are omitted until a
-consumer needs them. Full acceptance/check/site runs still use their complete required view.
+Worker creation uses `sparse_checkouts.add_worktree`: the generated static units and site are
+omitted until needed. Full acceptance/check/site runs still use their complete required view.
 `worker_default(tree, config)` also supports a local post-checkout hook for application-created
-workers. Its ignored config supplies `worker_roots`, protected `keep` paths and optional `shared`
+workers, keeping reports and all reconstruction sources. Its ignored config supplies
+`worker_roots`, protected `keep` paths and optional `shared`
 links for toolchains, Wine prefixes, sources and analysis. It changes only clean eligible new
 workers and never replaces an existing private input. `draft_worktrees.link_private` already
 shares kit inputs rather than copying them.

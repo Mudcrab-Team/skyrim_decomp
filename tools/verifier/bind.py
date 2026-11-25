@@ -1210,7 +1210,7 @@ def resolve_destructor(fn, spec, defined, taken, size_of, matcher):
 
 
 @local_load.heavy('binding')
-def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
+def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO, *, source_root=None):
     """Update task.json and symbols.json in place; returns a report dict (see `describe`)."""
     task_dir = Path(task_dir)
     task = json.loads((task_dir / 'task.json').read_text())
@@ -1228,7 +1228,8 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     referenced = {s.name for s in obj.symbols.values()}
     default_rvas, default_tls = split_hints({n: v for n, v in crt_defaults(repo, task.get('build_id')).items()
                                              if n in referenced})
-    hints = {**default_rvas, **unit_hints(repo, task), **load_hints(task_dir)}
+    source_root = repo if source_root is None else source_root
+    hints = {**default_rvas, **unit_hints(source_root, task), **load_hints(task_dir)}
     tls_hints = {**default_tls, **load_tls_hints(task_dir)}
     tls_used = set()
     names = Names(find_undname(objdump))
@@ -1283,7 +1284,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
         key = hint_key(name, hints)
         return hints[key] if key is not None else None
 
-    header = header_declarations(repo, task.get('compiled'))
+    header = header_declarations(source_root, task.get('compiled'))
     matcher = target_matcher(repo, obj_bytes)
     held_names = {}
     for held_name, entry in symbols.items():
