@@ -11,6 +11,9 @@
 // 0xffc920 BSProceduralLightningController::RegisterStreamables
 // 0xffca50 BSProceduralLightningController::IsEqual
 // 0xffdce0 BSProceduralLightningController::SendGeomEvent
+// SPDX-License-Identifier: CC0-1.0
+// 0xffd860 BSProceduralLightningController::Functionffd860
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSProceduralLightningController.h"
 
 // RVA 0xffd880, 12 bytes.
@@ -97,6 +100,13 @@ bool BSProceduralLightningController::RegisterStreamables(NiStream& a_stream)
 std::uint32_t BSProceduralLightningController::GetInterpolatorCount() const
 {
     return 0x9;
+}
+
+// RVA 0xffd860, 13 bytes. Reads the value behind a_ref and returns the result of the interface virtual unk49.
+void* BSProceduralLightningController::Functionffd860(void** a_ref)
+{
+    void* value = *a_ref;
+    return unk49(value);
 }
 
 // Publish the current geometry to listeners.

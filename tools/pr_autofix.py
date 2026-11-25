@@ -184,6 +184,65 @@ def restore_functions(text, main_text, names):
     return text, done
 
 
+CI_HINT = re.compile(r'//[ \t]*CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+\S+')
+SIMPLE_NAME = re.compile(r'(?:[A-Za-z_]\w*::)*~?[A-Za-z_]\w*')
+MARKED_NAME = re.compile(r'^// (0x[0-9a-fA-F]+) (\S+)', re.M)
+
+
+def all_claims(text):
+    return rva_headers.claimed_rvas([text]) | {int(m[1], 16) for m in MARKED_NAME.finditer(text)}
+
+
+def drop_claim_comments(text, rvas):
+    """Remove standalone claim lines for the dropped RVAs, keeping shared metadata intact."""
+    kept = []
+    for line in text.splitlines(keepends=True):
+        comment = line.strip()
+        content = comment.removeprefix('//').lstrip()
+        standalone = comment.startswith('//') and (
+            rva_headers.COMPARED.match(comment) or rva_headers.SIZE_RECORD.match(content)
+            or rva_headers.COMPARED_AT.match(content))
+        claims = rva_headers.claimed_rvas([comment]) if standalone else set()
+        hint = CI_HINT.fullmatch(comment)
+        if hint:
+            claims.add(int(hint[1], 16))
+        if not claims or not claims <= rvas:
+            kept.append(line)
+    return ''.join(kept)
+
+
+def drop_duplicate_functions(text, rvas):
+    """Remove unambiguous marked definitions from a unit, or leave the whole repair for manual cleanup."""
+    markers = {}
+    for marker in MARKED_NAME.finditer(text):
+        if (rva := int(marker[1], 16)) in rvas:
+            if rva in markers or not SIMPLE_NAME.fullmatch(marker[2]):
+                return None
+            markers[rva] = marker[2]
+    if markers.keys() != rvas:
+        return None
+    remaining = all_claims(text) - rvas
+    for name in markers.values():
+        span = function_span(text, name)
+        if span is None:
+            return None
+        start, end = span
+        tail = _mask(text[end:]).lstrip()
+        if tail.startswith(('{', ',', 'catch')) or re.search(r'^\s*#', _mask(text[start:end]), re.M):
+            return None
+        if text[end:end + 1] == '\n':
+            end += 1
+        text = text[:start] + text[end:]
+    text = drop_claim_comments(text, rvas)
+    if all_claims(text) != remaining:
+        return None
+    code = _mask(text)
+    if any(re.search(r'\b' + re.escape(name.rsplit('::', 1)[-1].lstrip('~')) + r'\b', code)
+           for name in markers.values()):
+        return None
+    return text
+
+
 def fix_unit(name, text, main_text=None, accepted=None):
     """(new text, [kinds]) for one unit file; the text is unchanged and kinds empty when nothing applies.
 

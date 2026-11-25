@@ -230,6 +230,31 @@ Toy::Toy(int n)
         self.assertTrue(permute.m_early_return(tree, random.Random(0)))
         self.assertEqual(' '.join(u.body_of(tree).split()), ' '.join(u.body_of(u.block).split()))
 
+    def test_void_tail_block_gets_guard_clause(self):
+        for signature in ('void T::F(int a)', 'auto T::F(int a) -> void'):
+            with self.subTest(signature=signature):
+                u = permute.Unit(signature + '\n{ Prepare(); if (a) { G(); } }', 'T::F')
+                tree = copy.deepcopy(u.block)
+                self.assertTrue(permute.m_early_return(tree, random.Random(0)))
+                self.assertEqual(' '.join(u.body_of(tree).split()),
+                                 '{ Prepare(); if (!static_cast<bool>(a)) return; G(); }')
+
+    def test_guard_clause_preserves_a_local_scope(self):
+        u = permute.Unit('void T::F(bool a) { if (a) { Resource a; G(a); } }', 'T::F')
+        tree = copy.deepcopy(u.block)
+        self.assertTrue(permute.m_early_return(tree, random.Random(0)))
+        self.assertIn('return; { Resource a; G(a); }', u.body_of(tree))
+
+    def test_guard_clause_skips_nonvoid_nested_and_condition_declarations(self):
+        for src in ('int T::F(bool a) { if (a) { G(); } }',
+                    'void* T::F(bool a) { if (a) { G(); } }',
+                    'void T::F(bool a) { while (a) { if (a) { G(); } } }',
+                    'void T::F() { if (bool a{G()}) { H(); } }',
+                    'void T::F() { if (auto a = G(); a) { H(); } }'):
+            with self.subTest(src=src):
+                u = permute.Unit(src, 'T::F')
+                self.assertFalse(permute.m_early_return(u.block, random.Random(0)))
+
     def test_temp_inline_single_use(self):
         src = 'int T::F(P* p)\n{\n    int v = p->Get();\n    return v + 1;\n}\n'
         u = permute.Unit(src, 'T::F')

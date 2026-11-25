@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ActorProcess: EXE_RTTI
 // GetEquippedLeftHand: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
-// Code origin: existing project getter GetEquippedLeftHand; new methods from the pinned image and CommonLibSSE-NG field declarations.
+// Code origin: existing project getter GetEquippedLeftHand; new methods from the pinned image and CommonLibSSE-NG field declarations.; Written for this reconstruction from the listing; field names are guesses.; Written for this reconstruction from the listing; a stand-in polymorphic target class replaces the hand-loaded vtable call.; Written for this reconstruction from the listing; the free callee is declared in the unit.; Written for this reconstruction from the listing; the fallback record is now a named member.
 // Adapted bodies: none
 // 0x6eb4a0 ActorProcess::GetEquippedLeftHand
 // 0x7265a0 ActorProcess::Function7265a0
@@ -68,7 +68,34 @@
 // 0x726eb0 ActorProcess::Function726eb0
 // 0x7270a0 ActorProcess::Function7270a0
 // 0x727eb0 ActorProcess::Function727eb0
+// 0x6ff530 ActorProcess::Function6ff530
+// Drafted by v-macrev, assisted by claude-sonnet-5-5.
+// 0x7206c0 ActorProcess::Function7206c0
+// 0x6fe650 ActorProcess::Function6fe650
+// 0x700140 ActorProcess::Function700140
+// 0x6e97b0 ActorProcess::Function6e97b0
+// 0x7220d0 ActorProcess::Function7220d0
 #include "ActorProcess.h"
+
+extern std::uint32_t defaultUnk114;
+std::uint32_t Function71d100(ActorProcess::HighProcessData* a_data);
+
+struct HighForm
+{
+    std::uint8_t pad000[0xc];
+    std::uint32_t flags;
+};
+
+struct FormStub
+{
+    std::uint8_t pad000[0x1a];
+    std::uint8_t formType;
+};
+
+struct FormHolder
+{
+    FormStub* form;
+};
 
 // MiddleHighProcessData::unk328, MiddleHighProcessData::unk248, MiddleHighProcessData::unk31E, MiddleHighProcessData::unk31F, MiddleHighProcessData::alphaMult: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // MiddleHighProcessData::scriptRefractPower, MiddleHighProcessData::unk31A, MiddleHighProcessData::unk180, MiddleHighProcessData::forceNextUpdate, MiddleHighProcessData::summonedCreature: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
@@ -89,7 +116,8 @@
 // Function733f00, Function736230, Function736a30, Function736c00: GUESS(low)
 struct ActorProcess::ProcessData
 {
-    std::uint8_t pad000[0x60];
+    std::uint8_t pad000[0x58];
+    void* unk58;
     void* unk60;
     std::uint8_t pad068[0x84];
     std::uint32_t bleedoutAttacker;
@@ -106,11 +134,15 @@ struct ActorProcess::ProcessData
     void* unk188;
     std::uint8_t pad190[0x88];
     ObjectRefHandle commandedActor;
-    std::uint8_t pad21C[0x1c];
+    std::uint8_t pad21C[0x4];
+    FormHolder* unk220;
+    std::uint8_t pad228[0x10];
     BSFaceGenAnimationData* faceAnimationData;
     std::uint8_t pad240[0x8];
     std::uint64_t unk248;
-    std::uint8_t pad250[0x60];
+    std::uint8_t pad250[0x10];
+    FormHolder* unk260;
+    std::uint8_t pad268[0x48];
     float unk2B0;
     float bleedoutRate;
     float unk2B8;
@@ -148,7 +180,11 @@ struct ActorProcess::ProcessData
 
 struct ActorProcess::HighProcessData
 {
-    std::uint8_t unknown000[0xd8];
+    std::uint8_t unknown000[0x1c];
+    float unk1C;
+    float unk20;
+    float unk24;
+    std::uint8_t unknown028[0xb0];
     ObjectRefHandle lastExtDoorActivated;
     std::uint8_t unknown0DC[0x54];
     std::uint32_t fadeState;
@@ -166,7 +202,9 @@ struct ActorProcess::HighProcessData
     std::uint8_t unknown328[0x78];
     float detectionModifier;
     float detectionModifierTimer;
-    std::uint8_t unknown3A8[0x50];
+    std::uint8_t unknown3A8[0x10];
+    HighForm* unk3B8;
+    std::uint8_t unknown3C0[0x38];
     std::int16_t unk3F8;
     std::int16_t unk3FA;
     std::uint8_t unknown3FC[0x74];
@@ -591,4 +629,74 @@ ObjectRefHandle& ActorProcess::Function727eb0(ObjectRefHandle& a_handle) const
     const std::uint32_t& source = middleHigh ? middleHigh->bleedoutAttacker : kNullHandle.native_handle;
     a_handle.native_handle = source;
     return a_handle;
+}
+
+
+std::uint32_t ActorProcess::Function6ff530() const
+{
+    if (high) {
+        return Function71d100(high);
+    }
+    return 0;
+}
+
+
+
+
+void* ActorProcess::Function7206c0(bool a_flag) const
+{
+    if (!middleHigh) {
+        return nullptr;
+    }
+    FormHolder* holder = a_flag ? middleHigh->unk220 : middleHigh->unk260;
+    if (holder) {
+        FormStub* form = holder->form;
+        if (!form || form->formType != 0x1f) {
+            return nullptr;
+        }
+    }
+    return holder;
+}
+
+void* ActorProcess::Function6fe650(ActorProcessTarget* a_target)
+{
+    if (high) {
+        high->fadeAlpha = 1.0f;
+        high->fadeState = 0;
+        return a_target->Function6fe650Target();
+    }
+    return nullptr;
+}
+
+float ActorProcess::Function700140(std::int32_t a_index) const
+{
+    if (high) {
+        switch (a_index) {
+        case 0x18:
+            return high->unk1C;
+        case 0x19:
+            return high->unk24;
+        case 0x1a:
+            return high->unk20;
+        }
+    }
+    return 0.0f;
+}
+
+void Function720580(ActorProcess* a_process);
+
+void ActorProcess::Function6e97b0()
+{
+    if (middleHigh != nullptr) {
+        ::Function720580(this);
+    } else {
+        unk114 = defaultUnk114;
+    }
+}
+
+void* ActorProcess::Function7220d0()
+{
+    ProcessData* data = middleHigh;
+    void* second = data ? data->unk60 : nullptr;
+    return second ? &data->unk58 : &fallbackRecord;
 }
