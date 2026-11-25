@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock1e8460: GUESS(low) STANDIN; original owner is unknown
 // Function1e8460: GUESS(low); provisional entry name
 // 0x1e8460 Unlock1e8460::Function1e8460

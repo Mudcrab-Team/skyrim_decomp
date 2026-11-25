@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlockef8b10: GUESS(low) STANDIN; original owner is unknown
 // Functionef8b10: GUESS(low); provisional entry name
 // 0xef8b10 Unlockef8b10::Functionef8b10

@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock6c8000: GUESS(low) STANDIN; original owner is unknown
 // Function6c8000: GUESS(low); provisional entry name
 // 0x6c8000 Unlock6c8000::Function6c8000

@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlockeb1380: GUESS(low) STANDIN; original owner is unknown
 // Functioneb1380: GUESS(low); provisional entry name
 // 0xeb1380 Unlockeb1380::Functioneb1380

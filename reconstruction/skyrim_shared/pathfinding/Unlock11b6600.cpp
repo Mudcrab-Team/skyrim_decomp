@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock11b6600: GUESS(low) STANDIN; original owner is unknown
 // Function11b6600: GUESS(low); provisional entry name
 // 0x11b6600 Unlock11b6600::Function11b6600

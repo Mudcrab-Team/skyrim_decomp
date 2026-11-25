@@ -4,7 +4,6 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include <cstdarg>
 
 class Unlock1c9850 {
 public:

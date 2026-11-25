@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock9b29d0: GUESS(low) STANDIN; original owner is unknown
 // Function9b29d0: GUESS(low); provisional entry name
 // 0x9b29d0 Unlock9b29d0::Function9b29d0

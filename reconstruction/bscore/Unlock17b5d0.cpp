@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock17b5d0: GUESS(low) STANDIN; original owner is unknown
 // Function17b5d0: GUESS(low); provisional entry name
 // 0x17b5d0 Unlock17b5d0::Function17b5d0

@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock118990: GUESS(low) STANDIN; original owner is unknown
 // Function118990: GUESS(low); provisional entry name
 // 0x118990 Unlock118990::Function118990

@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock722110: GUESS(low) STANDIN; original owner is unknown
 // Function722110: GUESS(low); provisional entry name
 // 0x722110 Unlock722110::Function722110

@@ -1,4 +1,5 @@
 // Source exposure: binary-analysis
+// Code origin: Original reconstruction from pinned-image observations.
 // Unlock5f2120: GUESS(low) STANDIN; original owner is unknown
 // Function5f2120: GUESS(low); provisional entry name
 // 0x5f2120 Unlock5f2120::Function5f2120
