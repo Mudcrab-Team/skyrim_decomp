@@ -1,5 +1,7 @@
 # 0xee24d0 NiNode::UpdateDownwardPass
 
+<!-- tags: construct/float, method/diagnostic, method/sibling, sibling/f3, sibling/fnv, wall/inlining, wall/register-schedule -->
+
 - Function: 0xee24d0 NiNode::UpdateDownwardPass
 - Label: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 - Outcome: fixed

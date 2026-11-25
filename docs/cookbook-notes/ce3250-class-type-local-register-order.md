@@ -1,5 +1,7 @@
 # 0xce3250 BSReadWriteLock::LockForRead
 
+<!-- tags: wall/register-schedule -->
+
 - Function: 0xce3250 BSReadWriteLock::LockForRead
 - Label: SpinBackoff: GUESS(low)
 - Outcome: fixed

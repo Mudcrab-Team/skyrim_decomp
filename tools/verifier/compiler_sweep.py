@@ -72,7 +72,7 @@ def toolset_recipe(recipe, version):
     name = Path(recipe).name
     if not name.startswith(stem):
         raise PipelineError(f'recipe {recipe} is not named for {BASELINE}; the sweep cannot derive its sibling')
-    return str(Path(recipe).with_name(name.replace(stem, f'msvc-{version}', 1)))
+    return Path(recipe).with_name(name.replace(stem, f'msvc-{version}', 1)).as_posix()
 
 
 def overlay_attempt(files, task_dir, number=None):

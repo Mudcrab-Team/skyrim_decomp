@@ -221,7 +221,7 @@ class PrereviewUnitTests(unittest.TestCase):
 
 
 class PrereviewCliTests(unittest.TestCase):
-    def test_a_unit_naming_a_missing_recipe_fails_and_nothing_is_written_into_the_checkout(self):
+    def test_a_recipe_must_exist_in_the_base_and_nothing_is_written_into_the_checkout(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = Path(tmp)
             (repo / 'builds').mkdir()
@@ -239,6 +239,9 @@ class PrereviewCliTests(unittest.TestCase):
             (unit / 'B.cpp').write_text('// Recipe: reconstruction/recipes/nope.json\n#include "B.h"\n')
             git('add', '.')
             git('commit', '-q', '-m', 'head')
+            recipe = repo / 'reconstruction/recipes/nope.json'
+            recipe.parent.mkdir()
+            recipe.write_text('{}')
             before = sorted(p.relative_to(repo).as_posix() for p in repo.rglob('*') if '.git' not in p.parts)
             out = subprocess.run([sys.executable, str(ROOT / 'tools/prereview.py'), '--repo', str(repo),
                                   '--base', 'HEAD~1', '--head', 'HEAD'], capture_output=True, text=True)
@@ -388,6 +391,8 @@ class VerifierHostTests(WorkDir):
 
         def run(argv, **kw):
             argv = [str(a) for a in argv]
+            if argv[0] == 'gh':  # the head re-read before a stage
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
             seen.append((argv[1:3], stale.exists()))
             code, err = (5, b'attempt budget exhausted') if 'attempt' in argv[1] else (0, b'')
             return subprocess.CompletedProcess(argv, code, b'', err)
@@ -485,6 +490,37 @@ class PoolTests(WorkDir):
         self.assertEqual(pr_bot.poll(bot, 0, workers=2, sleep=lambda s: None, rounds=1), 0)
         self.assertEqual(len(set(trees)), 2)
         self.assertEqual({t.name for t in trees}, {'tree', 'tree-1'})
+
+    def test_a_new_pin_stops_new_work_and_the_bot_exits_once_the_running_prs_finish(self):
+        marker = Path(tempfile.mkdtemp()) / 'pin'
+        marker.write_text('old')
+        release, started, calls = threading.Event(), threading.Event(), []
+
+        def arrived(pr, tree):
+            calls.append(pr['number'])
+            started.set()
+            release.wait(5)
+        bot = self.pool_bot(lambda *a: self.prs(1, 2), arrived)
+        bot.work.mkdir(parents=True, exist_ok=True)
+        ticks = []
+
+        def sleep(seconds):
+            ticks.append(1)
+            started.wait(5)
+            if len(ticks) == 1:
+                marker.write_text('new')  # a deploy pins a newer revision while PR work is in flight
+            if len(ticks) >= 3:
+                release.set()
+        self.assertEqual(pr_bot.poll(bot, 0, workers=1, sleep=sleep, restart_on=marker), 0)
+        # One slot, one PR started before the pin changed; the other never started and the loop ended by itself.
+        self.assertEqual(len(calls), 1)
+
+    def test_an_unchanged_pin_does_not_restart_the_bot(self):
+        marker = Path(tempfile.mkdtemp()) / 'pin'
+        marker.write_text('same')
+        bot = self.pool_bot(lambda *a: [], lambda pr, tree: None)
+        bot.work.mkdir(parents=True, exist_ok=True)
+        pr_bot.poll(bot, 0, workers=1, sleep=lambda s: None, rounds=3, restart_on=marker)
 
     def test_a_third_pr_waits_for_a_free_slot_and_a_running_pr_is_not_queued_twice(self):
         release, started, calls = threading.Event(), threading.Event(), []
@@ -606,6 +642,15 @@ class PoolTests(WorkDir):
         self.assertFalse(pr_bot.merge_ready(state, owner))
         state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched'}))
         self.assertTrue(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched', '32': 'fail:review'}))
+        self.assertTrue(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched', '32': 'fail:record'}))
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'32': 'fail:review'}))
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked='companion', verdicts={'16': 'matched', '32': 'fail:review'}))
+        self.assertFalse(pr_bot.merge_ready(state, owner))
+        state.set('decision', dict(merge=True, blocked=None, verdicts={'16': 'matched'}))
         self.assertFalse(pr_bot.merge_ready(state, dict(owner, author={'login': 'carol'})))
         self.assertFalse(pr_bot.merge_ready(state, dict(owner, mergeable='CONFLICTING')))
         state.set('merged', True)
@@ -645,12 +690,12 @@ class PoolTests(WorkDir):
                                                                           'next': 9e12, 'posted': True})
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=2)
 
-    def test_a_rejected_head_is_not_warmed_or_queued_until_it_is_pushed_again(self):
+    def test_a_head_rejected_by_this_revision_is_not_warmed_or_queued(self):
         bot = self.pool_bot(lambda *a: self.prs(1, 2), lambda pr, tree: self.fail('should not run'))
         warmed = []
         bot.warm = lambda pr: warmed.append(pr['number'])
-        pr_bot.State(self.work / 'state', 1, 'a' * 40).set('rejected', 'header')
-        pr_bot.State(self.work / 'state', 2, 'b' * 40).set('rejected', 'lint')
+        pr_bot.State(self.work / 'state', 1, 'a' * 40).set('rejected', dict(reason='header', code=bot.code_sha))
+        pr_bot.State(self.work / 'state', 2, 'b' * 40).set('rejected', dict(reason='lint', code=bot.code_sha))
         pr_bot.poll(bot, 0, sleep=lambda s: None, rounds=3)
         self.assertEqual(warmed, [])
 
@@ -695,6 +740,38 @@ class PoolTests(WorkDir):
         bot.record = lambda pr, st, rvas: (_ for _ in ()).throw(pr_bot.Stop('again'))
         self.assertEqual(bot.retry_records(state), [])
         self.assertFalse(pr_bot.State(state, 11, 'f' * 40).get('recorded'))
+
+    def test_a_retry_leaves_a_tree_that_a_worker_holds_and_a_worker_waits_for_the_retry(self):
+        state = self.work / 'state'
+        head = 'c' * 40
+        first = pr_bot.State(state, 7, head)
+        first.set('merged', True)
+        first.set('records', '/r')
+        first.set('summary', dict(pr=7, head=head, merge=True, verdicts={'0x10': 'matched'}))
+        (self.work / 'tree-1/.local/tasks/prbot-7-cccccccc-0').mkdir(parents=True)
+        bot = FakeBot(self.work)
+        bot.gh_json = lambda *a: dict(number=7, headRefOid='z', author=dict(login='x'))
+        bot.republish_rows = lambda rvas: []
+        bot.rebind_unit_maps = lambda *a: None
+        seen = []
+        bot.record = lambda pr, st, rvas: (seen.append(bot.task_slot(7, head).tree_lock()._is_owned()), st.set('recorded', True))
+        done = threading.Event()
+        release = threading.Event()
+
+        def worker():
+            with bot.for_slot(1).tree_lock():
+                done.set()
+                release.wait(5)
+        thread = threading.Thread(target=worker)
+        thread.start()
+        done.wait(5)
+        self.assertEqual(bot.retry_records(state), [])  # the worker's run is not disturbed; the retry waits
+        self.assertEqual(seen, [])
+        release.set()
+        thread.join()
+        self.assertEqual(bot.retry_records(state), [7])
+        self.assertEqual(seen, [True])
+        self.assertFalse(bot.for_slot(1).tree_lock()._is_owned())
 
     def test_a_retry_binds_a_dropped_unit_map_again_in_the_tree_that_holds_the_tasks(self):
         bot = FakeBot(self.work)

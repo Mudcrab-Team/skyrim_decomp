@@ -34,7 +34,7 @@ NEGATIVE = {
     'asm-directive': ['// the assembler is not involved', 'int casm = 1;', 'void basement();', '#pragma once',
                       '#pragma pack(push, 4)'],
     'private-path': ['// the users of this class', 'int home = 1;', '#include "reconstruction/actor/Actor.h"'],
-    'include-outside-roots': ['#include "reconstruction/actor/Actor.h"', '#include <cstdint>', '#include <stdint.h>',
+    'include-outside-roots': ['#include "reconstruction/actor/Actor.h"', '#include <cstdint>', '#include <stdint.h>', '#include <vector>', '#include <deque>', '#include <map>', '#include <string>',
                               '#include "Actor.h"'],
 }
 
@@ -69,6 +69,17 @@ class RuleCases(unittest.TestCase):
         self.assertEqual(leakgrep.scan_line('// Origin: lib, MIT, ' + 'ab12' * 10 + '.'), [])
         self.assertIn('hex-run', leakgrep.scan_line('const char* s = "' + 'ab12' * 10 + '";'))
         self.assertIn('hex-run', leakgrep.scan_line('// ' + 'ab12' * 11))
+
+    def test_recipe_compiler_digest_is_provenance(self):
+        digest = '5d' * 32
+        recipe = 'reconstruction/recipes/msvc-test.json'
+        line = f'    "binary_sha256": "{digest}",'
+        self.assertEqual(leakgrep.scan_diff(diff_of(line, name=recipe)), [])
+        # only a digest-named member of a recipe file; the same text elsewhere or under another key still hits
+        self.assertEqual([c for _, _, c in leakgrep.scan_diff(diff_of(line, name='reconstruction/a/B.cpp'))], ['hex-run'])
+        self.assertEqual([c for _, _, c in leakgrep.scan_diff(diff_of(f'    "note": "{digest}",', name=recipe))], ['hex-run'])
+        self.assertEqual([c for _, _, c in leakgrep.scan_diff(diff_of('    "binary_sha256": "' + 'ab' * 40 + '",', name=recipe))],
+                         ['hex-run'])
 
     def test_private_names_come_from_the_list_only(self):
         self.assertEqual(leakgrep.scan_line('// by Zorblax', ('zorblax',)), ['private-name'])

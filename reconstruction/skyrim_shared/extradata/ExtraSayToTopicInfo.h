@@ -5,10 +5,16 @@
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 // member, padding: GUESS(low); storage names invented for the measured member offset
 #pragma once
+// ptr10, ptr38: GUESS(low); member names invented for the measured offsets
 #include <cstdint>
 // GetType: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission)
 class ExtraSayToTopicInfo
 {
 public:
     virtual std::uint32_t GetType() const;
+    void Function186f70(void* value);
+    std::uint8_t unk08[0x8];
+    void* ptr10;
+    std::uint8_t unk18[0x20];
+    void* ptr38;
 };

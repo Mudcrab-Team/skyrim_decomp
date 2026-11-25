@@ -110,7 +110,7 @@ A function is accepted only when ALL of these hold:
    - code that cannot be what it claims, such as an unreachable branch or impossible type use
      that signals a wrong binding or a wrong class;
    - provenance: code from unlicensed projects other than the permitted sibling decompilations
-     `momusdigital/fnv_decomp@91e1b6e8`, `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) and game-only `fo4-private@1b765c70`, which the
+     `momusdigital/fnv_decomp@2b07cb3e`, `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) and game-only `fo4-private@1b765c70`, which the
      maintainer allowed (`docs/authorizations.md`, Notes); leaked or proprietary material; a
      source header that does not state provenance and source exposure, or whose origin or licence statement is false; and undeclared reuse of
      sibling code, meaning a unit that reuses a permitted sibling body or a substantial part of
@@ -717,6 +717,19 @@ The page renders the current committed data and source revision. Work items use 
 leaderboard, cost ledger or percentage is displayed without real supporting records.
 Add those only when there is data and a reviewed metric definition. Every record has an owner
 and outcome criteria. Update `updated_at` when the data changes. Git history is the audit trail.
+
+### Alternative flag sets (`accept_also`)
+
+A failed compare is retried under the alternative flag sets `data/recipe-alternatives.json` lists for the unit's
+recipe (`tools/recipe_alternatives.py`; `./sr compare` and `tools/verifier/attempt`, `--no-retry` skips it). Each
+alternative is a recipe file of its own, the base recipe's flags with the declared change (today `-noeh`: no `/EHsc`),
+tried in order for a function the pinned image's unwind data gives no exception handler. A pass prints
+`MATCH (under <flags>)` and the `Recipe:` line to add. The retry is advisory and never a match: the verdict under the
+unit's recipe stands. The unit is accepted under the other flags only when its own `Recipe:` line names the alternative
+recipe, because the CI hash job and the second host compile with the recipe the unit names and the target-hash manifest
+approves each recipe file by hash. The record therefore names the flags used, both hosts compile with them, and the
+match floor is unchanged: a byte match under named flags is a byte match. A new alternative needs its recipe file, a
+registry row (`python3 tools/recipe_alternatives.py generate`, `check`) and a manifest entry.
 
 ### CI hash check as the second host (p148)
 

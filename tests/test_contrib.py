@@ -123,7 +123,7 @@ class LocalDirectoryTests(Base):
     def test_redact_hides_shared_storage_outside_checkout(self):
         ctx = contrib.Ctx(repo=ROOT, env={'SR_LOCAL_DIR': str(self.tmp)}, as_json=True)
         ctx.redact = True
-        self.assertEqual(ctx.scrub(str(ctx.local / 'contrib/config.json')), '<local>/contrib/config.json')
+        self.assertEqual(ctx.scrub(str(ctx.local / 'contrib/config.json')).replace('\\', '/'), '<local>/contrib/config.json')
 
     def test_source_fetch_uses_shared_storage_and_passes_environment(self):
         calls = []
@@ -169,7 +169,7 @@ class ExecutableTests(Base):
 
     def test_missing_executable(self):
         self.assertEqual(contrib.inspect_exe(self.tmp / 'nope.exe', TARGET)['status'], 'missing')
-        ctx = self.ctx(env={'PATH': '', 'HOME': str(self.tmp)})
+        ctx = self.ctx(env={'PATH': '', 'HOME': str(self.tmp), 'ProgramFiles': str(self.tmp), 'ProgramFiles(x86)': str(self.tmp)})
         with self.assertRaises(contrib.Stop) as cm:
             contrib.require_exe(ctx, TARGET)
         self.assertEqual(cm.exception.code, contrib.MISSING)
@@ -207,6 +207,7 @@ class ToolchainTests(Base):
         self.assertEqual(state['status'], 'mismatch')
         self.assertEqual(sorted(state['differing']), ['c1xx.dll', 'c2.dll', 'cl.exe', 'link.exe'])
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_doctor_names_one_next_step(self):
         ctx = self.ctx(env={'SR_MSVC': str(self.tmp / 'msvc'), 'PATH': '/usr/bin:/bin', 'HOME': str(self.tmp),
                             'SR_SKYRIM_EXE': str(self.tmp / 'none.exe')}, platform='linux')
@@ -245,6 +246,7 @@ class ToolchainTests(Base):
         self.assertEqual(contrib.classify_windows(outside, 'C:/repo', ['C:/msvc']),
                          ([], 0, outside))
 
+    @unittest.skipIf(sys.platform == 'win32', 'the test stands in for ntpath.realpath with the POSIX one, which on Windows is the same function')
     def test_classify_windows_link_escapes(self):
         repo, tool, outside = (self.tmp / name for name in ('repo', 'msvc', 'outside'))
         for root in (repo, tool, outside / 'child'):
@@ -269,6 +271,7 @@ class ToolchainTests(Base):
         self.assertIn('--yes', cm.exception.next_action)
         self.assertTrue(self.ctx(assume_yes=True).ask('Install wine?', '--yes'))
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_setup_without_yes_does_not_install_when_not_a_terminal(self):
         bin_dir = self.tmp / 'bin'
         bin_dir.mkdir()
@@ -899,6 +902,7 @@ class FollowUpTests(Base):
         found = contrib.exe_candidates(ctx, exists=lambda p: p == str(exe), dir_exists=lambda p: False)
         self.assertEqual(found, [str(exe)])
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_apt_steamcmd_is_left_to_the_person(self):
         bin_dir = self.tmp / 'bin'
         bin_dir.mkdir()
@@ -925,9 +929,9 @@ class FollowUpTests(Base):
             self.assertEqual(cm.exception.code, contrib.USAGE, bad)
             self.assertIn('--area must be', cm.exception.message)
 
-    def _bare_entry_start(self, *extra):
+    def _bare_entry_start(self, *extra, name='Function2c5ce0'):
         entry = {'id': 'x-0x2c5ce0', 'build_id': TARGET['build_id'], 'rva': 0x2c5ce0, 'size': 29, 'status': 'mapped',
-                 'name': 'Function2c5ce0', 'name_origin': 'GUESS'}
+                 'name': name, 'name_origin': 'GUESS'}
         data = {'target_build_id': TARGET['build_id'], 'functions': [entry]}
         args = contrib.parser().parse_args(['start', '0x2c5ce0', '--no-branch', *extra])
         seen = {}
@@ -937,9 +941,12 @@ class FollowUpTests(Base):
             raise contrib.Stop(contrib.USAGE, 'no executable in this test')
 
         with unittest.mock.patch.object(contrib, 'inventory', return_value=data), \
-                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming):
+                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming), \
+                unittest.mock.patch.object(contrib, 'unit_files', wraps=contrib.unit_files) as unit_files:
             with self.assertRaises(contrib.Stop) as cm:
                 contrib.start(self.ctx(env={'PATH': ''}), args)
+        if unit_files.called:
+            seen['class'] = unit_files.call_args.args[1]
         return cm.exception, seen
 
     def test_start_names_the_class_of_a_bare_placeholder_entry_only_when_given(self):
@@ -952,11 +959,16 @@ class FollowUpTests(Base):
         self.assertIn('--class must be', stop.message)
         self.assertNotIn('named', seen)
 
+    def test_start_explicit_class_overrides_an_existing_name(self):
+        stop, seen = self._bare_entry_start('--class', 'TESObjectCELL', name='TESObjectCell::GetValue')
+        self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'TESObjectCELL')
+
     def test_redact_hides_checkout_and_home(self):
         home = str(self.tmp / 'home')
-        ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home})
+        ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home, 'USERPROFILE': home})
         ctx.redact = True
-        text = ctx.scrub(f'{self.tmp}/home/src/skyrim-research/.local/x and {home}/Games/SkyrimSE.exe')
+        text = ctx.scrub(f'{self.tmp.as_posix()}/home/src/skyrim-research/.local/x and {Path(home).as_posix()}/Games/SkyrimSE.exe')
         self.assertEqual(text, '<repo>/.local/x and ~/Games/SkyrimSE.exe')
 
     def test_practice_tasks_have_their_own_id_and_are_not_picked_by_default(self):
@@ -1184,6 +1196,60 @@ class OutsiderRegressionTests(Base):
         ctx.redact_paths[external] = '<exe>'
         result = json.loads(ctx.scrub(json.dumps({'path': external, 'log': 'opened ' + external})))
         self.assertEqual(result, {'path': '<exe>', 'log': 'opened <exe>'})
+
+    def test_fresh_windows_doctor_redacts_discovered_exe_and_tools(self):
+        exe = r'D:\Private Library\Café\SkyrimSE.exe'
+        git = r'E:\Private Tools\Git\bin\git.exe'
+        llvm = r'F:\Private Tools\LLVM\bin\llvm-objdump.exe'
+        env = {'USERPROFILE': r'C:\Users\synthetic', 'SR_OBJDUMP': llvm, 'SR_CONTRIB_COMPILER': 'stand-in'}
+        # LLVM is found by the filesystem fallback, while Git is found on PATH.
+        def which(name, **_):
+            return git if name == 'git' else None
+
+        for json_mode in (False, True):
+            for status in ('ok', 'wrong-build'):
+                with self.subTest(json_mode=json_mode, status=status):
+                    ctx = self.ctx(env=env, platform='win32', as_json=json_mode)
+                    info = {'status': status, 'path': exe.replace('\\', '/'),
+                            'version': 'private-version', 'sha256': 'a' * 64}
+                    flags = ['--json'] if json_mode else []
+                    with unittest.mock.patch('contrib.shutil.which', side_effect=which), \
+                            unittest.mock.patch('contrib.os.path.isfile', side_effect=lambda p: p == llvm), \
+                            unittest.mock.patch('contrib.exe_candidates', return_value=[exe]), \
+                            unittest.mock.patch('contrib.inspect_exe', return_value=info), \
+                            contextlib.redirect_stdout(io.StringIO()) as output:
+                        code = contrib.main([*flags, '--redact', 'doctor'], ctx=ctx)
+                    shown = output.getvalue()
+                    self.assertEqual(code, contrib.OK if status == 'ok' else contrib.MISSING)
+                    for private in ('Private Library', 'Private Tools', 'private-version', 'a' * 16):
+                        self.assertNotIn(private, shown)
+                    for marker in ('<exe>', '<git>', '<llvm-objdump>'):
+                        self.assertIn(marker, shown)
+                    if json_mode:
+                        self.assertTrue(json.loads(shown)['checks'])
+                    self.assertFalse(contrib.config_path(ctx).exists())
+
+    def test_redacted_setup_omits_private_self_test_failure_details(self):
+        for failure in ('compile', 'compare'):
+            with self.subTest(failure=failure):
+                ctx = self.ctx(env={'SR_CONTRIB_COMPILER': 'stand-in'}, platform='win32')
+                exe = r'D:\Private Library\SkyrimSE.exe'
+                exc = contrib.Stop(contrib.COMPILE, 'synthetic private diagnostic', errors=['synthetic listing'])
+                result = (contrib.FAILED, {'bind': ['synthetic private diagnostic'], 'functions': []}, None)
+                with unittest.mock.patch.object(ctx, 'which', return_value='git'), \
+                        unittest.mock.patch('contrib.wanted_packages', return_value=[]), \
+                        unittest.mock.patch('contrib.exe_candidates', return_value=[exe]), \
+                        unittest.mock.patch('contrib.inspect_exe', return_value={'status': 'ok', 'path': exe}), \
+                        unittest.mock.patch('contrib.run_self_test', side_effect=exc if failure == 'compile' else None,
+                                            return_value=result), \
+                        contextlib.redirect_stdout(io.StringIO()) as output:
+                    code = contrib.main(['--json', '--redact', 'setup', '--no-sources', '--no-decompiler'], ctx=ctx)
+                shown = output.getvalue()
+                self.assertEqual(code, contrib.COMPILE if failure == 'compile' else contrib.FAILED)
+                self.assertNotIn('Private Library', shown)
+                self.assertNotIn('synthetic private diagnostic', shown)
+                self.assertNotIn('synthetic listing', shown)
+                self.assertEqual(json.loads(shown)['steps'][-1]['step'], 'self-test')
 
     def test_setup_emits_one_json_object_even_when_installer_prints(self):
         ctx = self.ctx(env={'PATH': '/usr/bin:/bin', 'HOME': str(self.tmp)})

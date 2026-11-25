@@ -6,6 +6,7 @@
 // 0x52d200 TESWaterSystem::RemoveLODWater
 // 0x52c660 TESWaterSystem::Function52c660
 // 0x52d380 TESWaterSystem::Function52d380
+// TESWaterSystem::RemoveLODWater: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "TESWaterSystem.h"
 void TESWaterSystem::RemoveLODWater(NiAVObject* water, NiNode* root) { RemoveWater(water); root->DetachChild2(water->parent); }
 void TESWaterSystem::Function52d380() { if (void* target = g_waterSystem->sub->target) ReleaseWaterTarget(target); }

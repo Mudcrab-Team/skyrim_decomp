@@ -1,5 +1,7 @@
 # 0x346700 BSSimpleList<T>::~BSSimpleList
 
+<!-- tags: abi/exception, construct/destructor, wall/inlining -->
+
 - Function: 0x346700 BSSimpleList<SCRIPT_REFERENCED_OBJECT*>::~BSSimpleList
 - Label: list template and RemoveAll: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: fixed

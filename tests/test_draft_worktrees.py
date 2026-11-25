@@ -16,7 +16,7 @@ import lint_reconstruction as lint
 import synthetic_pecoff as fx
 from source_digest import include_closure
 from digest_v2 import tu_digest
-from repo_fixture import Repo, BUILD, git
+from repo_fixture import Repo, BUILD, git, rmtree
 
 
 class DraftWorktrees(unittest.TestCase):
@@ -30,7 +30,7 @@ class DraftWorktrees(unittest.TestCase):
                      'sources': ['reconstruction/x/Foo.h', 'reconstruction/x/Foo.cpp'],
                      'functions': ['0x1000', '0x1010'], 'budget': 3}
         (self.q / 'queue.tsv').write_text('\t'.join((self.unit['dir'], ','.join(self.unit['sources']),
-                                                    ','.join(self.unit['functions']), '3')) + '\n')
+                                                    ','.join(self.unit['functions']), '3')) + '\n', newline='\n')
         self.directory = self.root / self.unit['dir']
         self.directory.mkdir(parents=True)
         drafts.save(self.directory / 'task.json', {
@@ -51,13 +51,13 @@ class DraftWorktrees(unittest.TestCase):
         self.addCleanup(self.preparation.stop)
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        rmtree(self.tmp)
 
     def claim(self, tier='first'):
         return wq.claim(self.q, 'worker-' + tier, profile='claude-low', tier=tier)
 
     def clean_attempt(self, command, cwd=None, **kwargs):
-        if str(command[1]).endswith('/tools/verifier/attempt'):
+        if Path(command[1]).as_posix().endswith('/tools/verifier/attempt'):
             directory = Path(command[2])
             task = drafts.read(directory / 'task.json')
             dest = directory / 'attempts/001'
@@ -79,7 +79,7 @@ class DraftWorktrees(unittest.TestCase):
 
     def test_claim_is_private_labelled_and_resumes_without_changing_shared_source(self):
         src = self.root / self.unit['sources'][-1]
-        src.write_text('shared unfinished work\n')
+        src.write_text('shared unfinished work\n', newline='\n')
         unit = self.claim()
         tree = Path(unit['draft']['tree'])
         self.assertEqual((tree / self.unit['sources'][-1]).read_text(), 'int a;\n')
@@ -99,7 +99,7 @@ class DraftWorktrees(unittest.TestCase):
     def test_harvest_commits_only_unit_and_carries_snapshot_to_later_tier(self):
         unit = self.claim()
         tree = Path(unit['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text('int harvested;\n')
+        (tree / self.unit['sources'][-1]).write_text('int harvested;\n', newline='\n')
         self.finish()
         harvest = drafts.current(self.root, self.unit)
         self.assertEqual(harvest['passing'], [0x1000])
@@ -117,7 +117,7 @@ class DraftWorktrees(unittest.TestCase):
         import io
         unit = self.claim()
         tree = Path(unit['draft']['tree'])
-        (tree / 'untracked').write_text('keep')
+        (tree / 'untracked').write_text('keep', newline='\n')
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             self.finish(passed=False)
@@ -134,7 +134,7 @@ class DraftWorktrees(unittest.TestCase):
         self.assertFalse(tree.exists())
         self.assertTrue(git(self.root, 'branch', '--list', branch))
         self.assertEqual(Path(self.claim()['draft']['tree']), tree)
-        (tree / 'untracked').write_text('keep')
+        (tree / 'untracked').write_text('keep', newline='\n')
         wq.release(self.q, self.unit['dir'])
         self.assertTrue(tree.exists())
 
@@ -167,7 +167,7 @@ class DraftWorktrees(unittest.TestCase):
         for rel in self.unit['sources']:
             path = self.directory / 'skeleton' / Path(rel).name
             path.parent.mkdir(exist_ok=True)
-            path.write_text('// prepared ' + Path(rel).name + '\n')
+            path.write_text('// prepared ' + Path(rel).name + '\n', newline='\n')
         tree = Path(self.claim()['draft']['tree'])
         self.assertEqual((tree / self.unit['sources'][-1]).read_text(), '// prepared Foo.cpp\n')
         self.assertEqual((self.root / self.unit['sources'][-1]).read_text(), 'int a;\n')
@@ -246,7 +246,7 @@ class DraftWorktrees(unittest.TestCase):
                 self.unit['sources'][0], '// prepared header\n', self.unit['sources'][1], '// prepared source\n')):
             self.claim()
         self.assertEqual((tree / self.unit['sources'][1]).read_text(), '// prepared source\n')
-        (tree / self.unit['sources'][1]).write_text('// current draft\n')
+        (tree / self.unit['sources'][1]).write_text('// current draft\n', newline='\n')
         self.claim()
         self.assertEqual((tree / self.unit['sources'][1]).read_text(), '// current draft\n')
 
@@ -275,7 +275,7 @@ class DraftWorktrees(unittest.TestCase):
         with patch('draft_worktrees.subprocess.run', return_value=subprocess.CompletedProcess([], 1, '', 'fail')):
             with self.assertRaisesRegex(ValueError, 'accepted regressions do not pass'):
                 drafts.prepare_regressions(self.root, self.unit, self.root)
-        recipe.write_text('{}')
+        recipe.write_text('{}', newline='\n')
         with self.assertRaisesRegex(ValueError, 'not the task recipe'):
             drafts.prepare_regressions(self.root, self.unit, self.root)
 
@@ -285,11 +285,11 @@ class DraftWorktrees(unittest.TestCase):
         drafts.save(self.root / 'data/progress.json', data)
         git(self.root, 'add', 'data/progress.json')
         (self.q / 'results.jsonl').write_text(json.dumps({
-            'queue_unit': self.unit['dir'], 'tier': 'first', 'rva': '0x1000', 'result': 'pass'}) + '\n')
+            'queue_unit': self.unit['dir'], 'tier': 'first', 'rva': '0x1000', 'result': 'pass'}) + '\n', newline='\n')
 
     def test_legacy_earlier_pass_is_carried_without_a_harvest(self):
         self.legacy_pass()
-        (self.root / self.unit['sources'][-1]).write_text('int a;\nint earlier;\n')
+        (self.root / self.unit['sources'][-1]).write_text('int a;\nint earlier;\n', newline='\n')
         state = drafts.create(self.root, self.unit, 'strong', 'worker-strong')
         self.assertEqual((Path(state['tree']) / self.unit['sources'][-1]).read_text(),
                          'int a;\nint earlier;\n')
@@ -299,8 +299,8 @@ class DraftWorktrees(unittest.TestCase):
         self.legacy_pass()
         state = drafts.create(self.root, self.unit, 'strong', 'worker-strong')
         tree = Path(state['tree'])
-        (tree / self.unit['sources'][0]).write_text('#pragma once\nint strong;\n')
-        (self.root / self.unit['sources'][-1]).write_text('int a;\nint earlier;\n')
+        (tree / self.unit['sources'][0]).write_text('#pragma once\nint strong;\n', newline='\n')
+        (self.root / self.unit['sources'][-1]).write_text('int a;\nint earlier;\n', newline='\n')
         # A checkout made before carry-over support has no completion marker.
         state.pop('carryover', None)
         drafts.save(self.directory / 'draft-strong.json', state)
@@ -314,8 +314,8 @@ class DraftWorktrees(unittest.TestCase):
         tree = Path(state['tree'])
         state.pop('carryover', None)
         drafts.save(self.directory / 'draft-strong.json', state)
-        (tree / self.unit['sources'][-1]).write_text('int strong;\n')
-        (self.root / self.unit['sources'][-1]).write_text('int earlier;\n')
+        (tree / self.unit['sources'][-1]).write_text('int strong;\n', newline='\n')
+        (self.root / self.unit['sources'][-1]).write_text('int earlier;\n', newline='\n')
         with self.assertRaisesRegex(ValueError, 'preserve both tiers'):
             drafts.create(self.root, self.unit, 'strong', 'worker-strong')
         self.assertEqual((tree / self.unit['sources'][-1]).read_text(), 'int strong;\n')
@@ -374,7 +374,7 @@ class DraftWorktrees(unittest.TestCase):
             for name in self.unit['sources']:
                 p = repo / name
                 p.parent.mkdir(parents=True, exist_ok=True)
-                p.write_text('// synthetic skeleton\n')
+                p.write_text('// synthetic skeleton\n', newline='\n')
 
         with patch.object(unit_skeleton, 'write_skeleton', side_effect=skeleton):
             unit = self.claim()
@@ -393,10 +393,10 @@ class DraftWorktrees(unittest.TestCase):
         unit = self.claim()
         tree = Path(unit['draft']['tree'])
         (tree / self.unit['sources'][-1]).write_text('int SyntheticSum() { return 0; }\n'
-                                                    'static int FailedAddition() { return 1; }\n')
+                                                    'static int FailedAddition() { return 1; }\n', newline='\n')
         with self.assertRaisesRegex(wq.QueueError, 'source contains target bodies without passing attempts'):
             self.finish()
-        (tree / self.unit['sources'][-1]).write_text('int SyntheticSum() { return 0; }\n')
+        (tree / self.unit['sources'][-1]).write_text('int SyntheticSum() { return 0; }\n', newline='\n')
         self.finish()
 
     def linted_claim(self):
@@ -405,10 +405,10 @@ class DraftWorktrees(unittest.TestCase):
         drafts.save(self.root / 'reconstruction/recipes/r.json', {})
         (self.root / self.unit['sources'][0]).write_text(
             '// Source exposure: binary-analysis\n// Foo: GUESS(low)\n'
-            '#pragma once\nclass Foo {};\n')
+            '#pragma once\nclass Foo {};\n', newline='\n')
         source = ('// Source exposure: binary-analysis\n'
                   '// 0x1000 SyntheticSum\n#include "Foo.h"\n')
-        (self.root / self.unit['sources'][-1]).write_text(source + 'int SyntheticSum() { return 0; }\n')
+        (self.root / self.unit['sources'][-1]).write_text(source + 'int SyntheticSum() { return 0; }\n', newline='\n')
         git(self.root, 'add', 'builds/target.json', 'reconstruction/recipes/r.json', *self.unit['sources'])
         git(self.root, 'commit', '-m', 'synthetic lint inputs')
         git(self.root, 'push', 'origin', 'main')
@@ -422,7 +422,7 @@ class DraftWorktrees(unittest.TestCase):
                    ' Scope(int& s) : slot(s), saved(s) { slot = 1; }\n'
                    ' ~Scope() { slot = saved; } };\n'
                    'int slot;\nint SyntheticSum() { Scope scope(slot); return slot; }\n')
-        (tree / self.unit['sources'][-1]).write_text(source)
+        (tree / self.unit['sources'][-1]).write_text(source, newline='\n')
         obj = fx.Unit()
         for symbol in (fx.FUNCTION, ctor, dtor):
             section = obj.section('.text$mn', fx.CALLEE_CODE, fx.SCN_CODE)
@@ -439,7 +439,7 @@ class DraftWorktrees(unittest.TestCase):
         tree, source = self.linted_claim()
         source += ('inline int UnusedHelper() { return 7; }\n'
                    'int SyntheticSum() { return 0; }\n')
-        (tree / self.unit['sources'][-1]).write_text(source)
+        (tree / self.unit['sources'][-1]).write_text(source, newline='\n')
         # Existing lint has no unused-helper rule; review still judges dead code and rationale.
         self.assertEqual(lint.lint_tree(tree, self.unit['sources']), [])
         self.finish()
@@ -448,7 +448,7 @@ class DraftWorktrees(unittest.TestCase):
         tree, source = self.linted_claim()
         source += ('__forceinline int UnusedHelper() { return 7; }\n'
                    'int SyntheticSum() { return 0; }\n')
-        (tree / self.unit['sources'][-1]).write_text(source)
+        (tree / self.unit['sources'][-1]).write_text(source, newline='\n')
         findings = lint.lint_tree(tree, self.unit['sources'])
         self.assertTrue(any('__forceinline' in finding for finding in findings))
         with self.assertRaisesRegex(wq.QueueError, 'harvest lint failed'):
@@ -479,7 +479,7 @@ class DraftWorktrees(unittest.TestCase):
         git(self.root, 'commit', '-m', 'synthetic accepted base definition in another unit')
         git(self.root, 'push', 'origin', 'main')
         tree = Path(self.claim()['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text('int AcceptedBase() { return 3; }\n')
+        (tree / self.unit['sources'][-1]).write_text('int AcceptedBase() { return 3; }\n', newline='\n')
         return tree
 
     def test_new_copy_of_accepted_definition_is_freshly_compared_and_frozen(self):
@@ -504,7 +504,7 @@ class DraftWorktrees(unittest.TestCase):
         fake = self.clean_attempt
 
         def fail_dependency(command, cwd=None, **kwargs):
-            if str(command[1]).endswith('/tools/verifier/attempt'):
+            if Path(command[1]).as_posix().endswith('/tools/verifier/attempt'):
                 task = drafts.read(Path(command[2]) / 'task.json')
                 if any(f['symbol'] == 'AcceptedBase' for f in task['functions']):
                     return subprocess.CompletedProcess(command, 1, '', 'accepted base copy differs')
@@ -531,8 +531,8 @@ class DraftWorktrees(unittest.TestCase):
 
     def existing_header(self):
         symbol = '??_GExisting@@UEAAPEAXI@Z'
-        (self.root / self.unit['sources'][0]).write_text('class Existing { public: virtual ~Existing(); };\n')
-        (self.root / self.unit['sources'][1]).write_text('#include "Foo.h"\nint a;\n')
+        (self.root / self.unit['sources'][0]).write_text('class Existing { public: virtual ~Existing(); };\n', newline='\n')
+        (self.root / self.unit['sources'][1]).write_text('#include "Foo.h"\nint a;\n', newline='\n')
         git(self.root, 'add', *self.unit['sources'])
         git(self.root, 'commit', '-m', 'synthetic pre-existing stand-in')
         git(self.root, 'push', 'origin', 'main')
@@ -551,7 +551,7 @@ class DraftWorktrees(unittest.TestCase):
         symbol = self.existing_header()
         tree = Path(self.claim()['draft']['tree'])
         header = tree / self.unit['sources'][0]
-        header.write_text(header.read_text() + 'int NewDeclaration();\n')
+        header.write_text(header.read_text() + 'int NewDeclaration();\n', newline='\n')
         sys.path.insert(0, str(ROOT / 'tools/verifier'))
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
@@ -561,7 +561,7 @@ class DraftWorktrees(unittest.TestCase):
         symbol = self.existing_header()
         tree = Path(self.claim()['draft']['tree'])
         header = tree / self.unit['sources'][0]
-        header.write_text(header.read_text().replace('public:', 'public: enum class Kind : int {};'))
+        header.write_text(header.read_text().replace('public:', 'public: enum class Kind : int {};'), newline='\n')
         sys.path.insert(0, str(ROOT / 'tools/verifier'))
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
@@ -571,7 +571,7 @@ class DraftWorktrees(unittest.TestCase):
         symbol = self.existing_header()
         tree = Path(self.claim()['draft']['tree'])
         header = tree / self.unit['sources'][0]
-        header.write_text(header.read_text().replace('public:', 'public: enum Kind { one } field;'))
+        header.write_text(header.read_text().replace('public:', 'public: enum Kind { one } field;'), newline='\n')
         sys.path.insert(0, str(ROOT / 'tools/verifier'))
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
@@ -580,13 +580,13 @@ class DraftWorktrees(unittest.TestCase):
 
     def test_preexisting_inventory_body_is_not_a_new_candidate_when_cpp_is_extended(self):
         source = self.root / self.unit['sources'][-1]
-        source.write_text('int InventoryOther() { return 1; }\n')
+        source.write_text('int InventoryOther() { return 1; }\n', newline='\n')
         git(self.root, 'add', self.unit['sources'][-1])
         git(self.root, 'commit', '-m', 'synthetic existing uncompared body')
         git(self.root, 'push', 'origin', 'main')
         drafts.save(self.directory / 'symbols.json', {'symbols': {'InventoryOther': {'rva': 0x2000}}})
         tree = Path(self.claim()['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text(source.read_text() + 'int NewHelper() { return 2; }\n')
+        (tree / self.unit['sources'][-1]).write_text(source.read_text() + 'int NewHelper() { return 2; }\n', newline='\n')
         sys.path.insert(0, str(ROOT / 'tools/verifier'))
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, 'InventoryOther': 2}):
@@ -595,7 +595,7 @@ class DraftWorktrees(unittest.TestCase):
     def test_added_inventory_target_body_cannot_use_existing_header_exemption(self):
         symbol = self.existing_header()
         tree = Path(self.claim()['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text('#include "Foo.h"\nExisting::~Existing() {}\n')
+        (tree / self.unit['sources'][-1]).write_text('#include "Foo.h"\nExisting::~Existing() {}\n', newline='\n')
         sys.path.insert(0, str(ROOT / 'tools/verifier'))
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
@@ -617,7 +617,7 @@ class DraftWorktrees(unittest.TestCase):
     def accepted_baseline(self, stale=False, accepted=True):
         symbol = self.existing_header()
         source = self.root / self.unit['sources'][-1]
-        source.write_text('#include "Foo.h"\nExisting::~Existing() {}\n')
+        source.write_text('#include "Foo.h"\nExisting::~Existing() {}\n', newline='\n')
         data = drafts.read(self.root / 'data/progress.json')
         regression = data['functions'][0]
         regression['status'] = 'matched' if accepted else 'mapped'
@@ -638,7 +638,7 @@ class DraftWorktrees(unittest.TestCase):
         symbol = self.accepted_baseline()
         tree = Path(self.claim()['draft']['tree'])
         source = tree / self.unit['sources'][-1]
-        source.write_text(source.read_text() + 'int Added() { return 3; }\n')
+        source.write_text(source.read_text() + 'int Added() { return 3; }\n', newline='\n')
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
             self.finish()
@@ -651,7 +651,7 @@ class DraftWorktrees(unittest.TestCase):
         symbol = self.accepted_baseline()
         tree = Path(self.claim()['draft']['tree'])
         (tree / self.unit['sources'][-1]).write_text(
-            '#include "Foo.h"\nExisting::~Existing() noexcept {}\n')
+            '#include "Foo.h"\nExisting::~Existing() noexcept {}\n', newline='\n')
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
             with self.assertRaisesRegex(wq.QueueError, 'target functions without passing attempts'):
@@ -661,7 +661,7 @@ class DraftWorktrees(unittest.TestCase):
         symbol = self.accepted_baseline()
         tree = Path(self.claim()['draft']['tree'])
         (tree / self.unit['sources'][-1]).write_text(
-            '#include "Foo.h"\nExisting::~Existing() { int added = 1; }\n')
+            '#include "Foo.h"\nExisting::~Existing() { int added = 1; }\n', newline='\n')
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
             with self.assertRaisesRegex(wq.QueueError, 'target functions without passing attempts'):
@@ -686,7 +686,7 @@ class DraftWorktrees(unittest.TestCase):
     def test_added_defaulted_destructor_is_not_an_untouched_header_emission(self):
         symbol = self.existing_header()
         tree = Path(self.claim()['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text('#include "Foo.h"\nExisting::~Existing() noexcept(true) = default;\n')
+        (tree / self.unit['sources'][-1]).write_text('#include "Foo.h"\nExisting::~Existing() noexcept(true) = default;\n', newline='\n')
         sys.path.insert(0, str(ROOT / 'tools/verifier'))
         import bind
         with patch.object(bind, 'defined_functions', return_value={fx.FUNCTION: 1, symbol: 2}):
@@ -740,7 +740,7 @@ class DraftWorktrees(unittest.TestCase):
         unit = self.claim('strong')
         near = self.directory / 'near-miss/0x1000.cpp'
         near.parent.mkdir()
-        near.write_text('// synthetic near miss\n')
+        near.write_text('// synthetic near miss\n', newline='\n')
         wq.finish(self.q, self.unit['dir'], ['{"rva":"0x1000","result":"fail"}',
                                             '{"rva":"0x1010","result":"fail"}'], tier='strong')
         self.assertFalse(Path(unit['draft']['tree']).exists())
@@ -774,17 +774,17 @@ class DraftWorktrees(unittest.TestCase):
         git(self.root, 'push', 'origin', 'main')
         unit = self.claim()
         tree = Path(unit['draft']['tree'])
-        (tree / self.unit['sources'][-1]).write_text('int harvested;\n')
-        (tree / 'untracked').write_text('keep')
+        (tree / self.unit['sources'][-1]).write_text('int harvested;\n', newline='\n')
+        (tree / 'untracked').write_text('keep', newline='\n')
         self.finish()
         data['functions'].append(later_enrollment)
         drafts.save(self.root / 'data/progress.json', data)
-        (tree / self.unit['sources'][-1]).write_text('int dirty_draft;\n')
+        (tree / self.unit['sources'][-1]).write_text('int dirty_draft;\n', newline='\n')
         self.real_run = subprocess.run
         seen = []
 
         def run(command, cwd=None, **kwargs):
-            if len(command) > 1 and ('verifier/bind.py' in str(command[1]) or 'verifier/confirm' in str(command[1])):
+            if len(command) > 1 and ('verifier/bind.py' in Path(command[1]).as_posix() or 'verifier/confirm' in Path(command[1]).as_posix()):
                 # This fixture's old binder and final check need their original full view.
                 self.assertFalse(drafts.sparse.active(cwd))
                 seen.append((Path(cwd) / self.unit['sources'][-1]).read_text())
@@ -797,7 +797,7 @@ class DraftWorktrees(unittest.TestCase):
         self.assertEqual(seen, ['int harvested;\n', 'int harvested;\n'])
 
     def test_confirm_with_sparse_aware_harvest_runs_in_the_sparse_tree(self):
-        (self.root / 'tools/sparse_checkouts.py').write_text('# synthetic sparse-aware tools\n')
+        (self.root / 'tools/sparse_checkouts.py').write_text('# synthetic sparse-aware tools\n', newline='\n')
         git(self.root, 'add', 'tools/sparse_checkouts.py')
         git(self.root, 'commit', '-m', 'synthetic sparse-aware transport')
         git(self.root, 'push', 'origin', 'main')
@@ -806,7 +806,7 @@ class DraftWorktrees(unittest.TestCase):
         original_run = subprocess.run
         seen = []
         def run(command, cwd=None, **kwargs):
-            if len(command) > 1 and ('verifier/bind.py' in str(command[1]) or 'verifier/confirm' in str(command[1])):
+            if len(command) > 1 and ('verifier/bind.py' in Path(command[1]).as_posix() or 'verifier/confirm' in Path(command[1]).as_posix()):
                 seen.append(command[1])
                 self.assertTrue(drafts.sparse.active(cwd))
                 self.assertTrue((Path(cwd) / f'reports/{BUILD}/0x2000.json').exists())

@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import leakgrep
+import lesson_tags
 
 NOTES_DIR = 'docs/cookbook-notes/'
 NOTE_FILE = re.compile(r'docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]{0,60}\.md\Z')
@@ -37,6 +38,8 @@ def render(rva, name, label, outcome, score, attempts):
     """The template, pre-filled with what the task knows; every TODO is the drafter's to finish."""
     return '\n'.join([
         f'# 0x{rva:x} {name}',
+        '',
+        '<!-- tags: ' + ', '.join(sorted(lesson_tags.infer(name) or {'method/diagnostic'})) + ' -->',
         '',
         f'- Function: 0x{rva:x} {name}',
         f'- Label: {label or PLACEHOLDER + " (the label the unit declares, or none)"}',
@@ -86,6 +89,8 @@ def validate(name, text):
     if any(code for _n, _l, code in leakgrep.scan_diff(
             '+++ b/note.md\n@@ -0,0 +1 @@\n' + ''.join('+' + line + '\n' for line in text.splitlines()))):
         codes.append('leak-pattern')
+    if lesson_tags.parse(text, lesson_tags.vocabulary()) is None:
+        codes.append('tags')
     fields, body = sections(text)
     if any(f not in fields for f in FIELDS) or any(s not in body for s in SECTIONS):
         codes.append('template')

@@ -45,6 +45,16 @@ class T(unittest.TestCase):
                 self.fixture(root, 'test_failure', text)
                 self.assertNotEqual(self.run_suite(root).returncode, 0)
 
+    def test_undecodable_worker_output_does_not_abort_the_run(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.fixture(root, 'test_noise', 'import sys, unittest\nclass T(unittest.TestCase):\n def test_noise(self):\n'
+                         '  sys.stdout.flush(); sys.stdout.buffer.write(b"\\x90\\xff noise\\n"); sys.stdout.buffer.flush()\n')
+            self.fixture(root, 'test_after', 'import unittest\nclass T(unittest.TestCase):\n def test_after(self): pass\n')
+            run = self.run_suite(root)
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+            self.assertIn('Ran 2 tests', run.stdout)
+
     def test_existing_unittest_skip_is_counted_not_hidden(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

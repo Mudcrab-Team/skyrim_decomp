@@ -7,6 +7,8 @@ import sys
 import tempfile
 import unittest
 
+from repo_fixture import rmtree
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
 import disasm  # noqa: E402
@@ -33,7 +35,7 @@ class TaskFiles(unittest.TestCase):
         (self.task_dir / 'symbols.json').write_text('{}')
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        rmtree(self.tmp)
 
     def write(self, **overrides):
         task = {'build_id': TARGET['build_id'], 'compiled': 'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp',
@@ -207,7 +209,7 @@ class CompilerIncludeRoots(unittest.TestCase):
         self.recipe('plain', ['/nologo', '/c', '/O2'])
 
     def tearDown(self):
-        shutil.rmtree(self.repo)
+        rmtree(self.repo)
 
     def recipe(self, name, flags):
         (self.repo / f'reconstruction/recipes/{name}.json').write_text(json.dumps({'flags': flags}))
@@ -267,7 +269,7 @@ class AttemptCharge(unittest.TestCase):
         self.log = self.tmp / 'attempts.jsonl'
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        rmtree(self.tmp)
 
     def log_run(self, code):
         counted, free = self.attempt.charge(code, False, self.log)

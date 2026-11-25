@@ -54,14 +54,14 @@ def indexed_callee(image, member, starts):
         return False
 
 
-def write_unit(root, family, build_id, header, source, symbols, functions):
-    unit = Path('reconstruction/leaves') / family
+def write_unit(root, family, build_id, header, source, symbols, functions, *, area='leaves'):
+    unit = Path('reconstruction') / area / family
     directory = root / 'tasks' / family
     directory.mkdir(parents=True)
     (root / unit.parent).mkdir(parents=True, exist_ok=True)
     compiled = unit.with_suffix('.cpp').as_posix()
-    (root / compiled).write_text('\n'.join(source) + '\n')
-    (root / unit.with_suffix('.h')).write_text('\n'.join(header) + '\n')
+    (root / compiled).write_text('\n'.join(source) + '\n', newline='\n')
+    (root / unit.with_suffix('.h')).write_text('\n'.join(header) + '\n', newline='\n')
     smap = dict(schema=1, build_id=build_id, symbols=symbols, folds=[])
     task = dict(task_schema=1, task_id=family, build_id=build_id, compiled=compiled,
                 recipe=contrib.DEFAULT_RECIPE, symbols='symbols.json', functions=functions)
@@ -95,11 +95,14 @@ def compare_members(ctx, root, manifest, image, tasks, build):
     return counts
 
 
-def run(description, discover, emit):
+def run(description, discover, emit, *, split=None):
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--exe', required=True, type=Path)
     parser.add_argument('--out', type=Path, help='new snapshot directory beneath this checkout’s .local/')
     parser.add_argument('--compare', action='store_true', help='run the full local comparator and save reports')
+    parser.add_argument('--only', type=Path, help='file of whitespace-separated hexadecimal RVAs; keep only those members')
+    if split:
+        parser.add_argument('--split', choices=('development', 'held-out'), help='generate only this validation partition')
     args = parser.parse_args()
     private = ROOT / '.local'
     out = args.out.resolve() if args.out else None
@@ -116,6 +119,11 @@ def run(description, discover, emit):
     progress = json.loads((ROOT / 'data/progress.json').read_text())
     inventory = {f['rva']: f for f in progress['functions'] if f['build_id'] == manifest['build_id']}
     members = discover(PeImage(image), boundaries(ROOT), inventory)
+    if split and args.split:
+        members = [m for m in members if split(m) == args.split]
+    if args.only:
+        wanted = {int(word, 16) for word in args.only.read_text().split()}
+        members = [m for m in members if m.rva in wanted]
     print('Candidates:', dict(Counter(m.family for m in members)), flush=True)
     if out is None:
         return 0

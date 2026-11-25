@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x6b0650",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "made the fourth allocation argument explicit (false) and corrected a string literal binding",
+        "rewrote the constructors for explicit ownership and channel types (lower sim, restored)",
+        "removed constructor exception specifications and cached the actor pointer early (shifted layout, restored)",
+        "used an interlocked increment instead of an atomic (+7)",
+        "built each channel in one expression with a class allocation function returning null on failure",
+        "recomputed the actor from the holder at every use"
+      ],
+      "still_differs": "Temporary-name lifetimes and stack placement differ around the repeated inlined channel factories.",
+      "suspected_cause": "Not fully determined; an earlier run blames register choice, the frame form with exception bookkeeping and string literal references that may not be recoverable from source.",
+      "best_similarity": 81.41,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/6b0650/1"
+      }
+    }
+  ]
+}

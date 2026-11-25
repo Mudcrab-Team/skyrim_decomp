@@ -198,7 +198,7 @@ class GeneratorLayoutTests(unittest.TestCase):
             self.assertIn('"generator_version":"2"', text)
             self.assertIn(stamp.template_digest('const-return'), text)
             self.assertIn('// Slot2: GUESS(low)', text)
-            names += [row['compiled'], str(Path(row['compiled']).with_suffix('.h'))]
+            names += [row['compiled'], Path(row['compiled']).with_suffix('.h').as_posix()]
         self.assertEqual(lint_tree(self.wt, names), [])
         summary = json.loads((self.out / 'const-return.summary.json').read_text())
         self.assertEqual(summary['skipped'], {'no-area-rule': 1, 'unsupported-class-layout': 1})

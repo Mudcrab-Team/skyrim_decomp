@@ -1,6 +1,8 @@
 # Drafter card
 
 Everything a Drafter needs. Do not read AGENTS.md or other policy documents; the tools enforce them.
+Read [the drafter toolkit](drafter-toolkit.md) before the first draft: every resource (sibling sources and x64
+hints, cookbook and notes, permuter, recipes, community headers, checkers) with its command, and the first-10-minutes checklist.
 Gates: G1 to G5 granted; private inputs and outputs stay under `.local/` and are never pasted anywhere.
 Card version: `shared-headers` (shared headers, multi-unit tasks; follows `origin-check`). A new
 version restarts the sampling safeguard's first-20 count for Drafter prompts (`docs/verification.md`).
@@ -8,6 +10,9 @@ version restarts the sampling safeguard's first-20 count for Drafter prompts (`d
 **You get** a context pack (function notes, community types) in your brief and a private task
 directory `.local/tasks/<task-id>/` with `task.json` (build id, RVA, size, compiled file, recipe,
 attempt budget) and the symbol map. Work in the checkout you are given; do not create worktrees.
+
+**Check the sibling x64 hint first.** The task directory holds `sibling_x64.json` (sibling repo@commit, file:line, name,
+score). For an `exact_shape` candidate transplant the body with `tools/sibling_transplant.py` before drafting by hand.
 
 **The loop.** Write or edit `reconstruction/<area>/<Class>.h` and `.cpp`, then run
 `tools/verifier/attempt .local/tasks/<task-id>` from the repository root (about 5 to 10 s when
@@ -31,6 +36,11 @@ has a cause it does not cover (a failure the cookbook already describes gets no 
 `python3 tools/cookbook_notes.py --new 0x<rva> --name <Class::Method> --outcome fixed|unsolved --score "<best>" --attempts <n>`,
 then finish every `TODO` (format: `docs/cookbook-notes/README.md`). Words and short plain C++ only; never
 bytes, hex, disassembly or listing text. Commit it with your units.
+
+**Large or low-scoring functions.** For a function over about 1,000 bytes, or a first score under 80 percent, read
+`docs/near-tier-lessons.md` before drafting (measured moves per lesson; bind everything first, check the recipe, the
+instruction mix and the size ratio, rewrite rather than patch). At the end write the reflection the toolkit describes
+(`docs/drafter-toolkit.md`, "Reflections and lessons"); the integration step folds it into the lessons.
 
 **Names and binding.** Your class and function names may differ from the community names; the
 decorated name is read from your object. `attempt` binds functions and references itself and
@@ -91,7 +101,7 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   legacy ones):
   `// <names>: <LABEL> [<LABEL>...][; note]`, LABEL one of
   `COMMUNITY(<owner>/<repo>@<rev>, <licence>)` (e.g. `COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)`),
-  `SIBLING(momusdigital/fnv_decomp@91e1b6e8, no-licence)` (a name or declaration taken from the
+  `SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)` (a name or declaration taken from the
   Fallout: New Vegas decompilation, below),
   `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)` (the same for the Fallout 3 decompilation),
   `SIBLING(fo4-private@1b765c70, author-permission)` (anonymous permitted game-code sibling),
@@ -102,14 +112,16 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   `OBSERVED`, and `STANDIN` together with the name's origin (`// TESObjectARMO: STANDIN COMMUNITY(...)`).
   A community name is `COMMUNITY` and a sibling name `SIBLING`, never `GUESS`; `GUESS` is only for
   names you made up. Do not write the label words anywhere else.
-- **Sibling source (FNV).** `.local/sources/fnv_decomp` (momusdigital/fnv_decomp at `91e1b6e8`)
-  may be read and reused by maintainer decision (`docs/authorizations.md`); its LICENSE grants
-  none, so label everything you take. Before drafting, open the file and line your pack's
+- **Sibling x64 builds.** The FNV and F3 trees also compile as x64 with the recipe compiler; see
+  `docs/sibling-x64.md`. Compiled output is a lead, not evidence.
+- **Sibling source (FNV).** `.local/sources/fnv_decomp` (momusdigital/fnv_decomp at `2b07cb3e`)
+  may be read and reused by maintainer decision (`docs/authorizations.md`); it is CC0 1.0 apart from the
+  Xbox 360 PDB-derived names and Havok/Gamebryo material, which stay excluded, so label everything you take. Before drafting, open the file and line your pack's
   "Sibling source" section gives for the same-named method and for the class's accessors and
   helpers. Adapt, do not assume: it is a 32-bit build of an older engine, most game units there
   are `/Od`, and its layouts, offsets and vtable slots do not carry over, so take shapes and
   names, then check every offset against your listing. If your unit reuses a body or a
-  substantial part of one, add `// Sibling source: momusdigital/fnv_decomp@91e1b6e8 <path>:<line>`
+  substantial part of one, add `// Sibling source: momusdigital/fnv_decomp@2b07cb3e <path>:<line>`
   to the header comment (one line per body). `check_labels.py` verifies `SIBLING` names and the
   path; the Reviewer rejects undeclared reuse.
 - **Sibling source (Fallout 3).** `.local/sources/f3_decomp` (momusdigital/f3_decomp at `f5bac1b5`,

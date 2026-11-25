@@ -6,12 +6,14 @@ import subprocess
 import sys
 import tempfile
 import unittest
+
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import build_fo4_private_index as builder
 import check
+from repo_fixture import kept_environment
 import check_labels
 import check_origin
 import fo4_private as sibling
@@ -22,7 +24,7 @@ import unit_skeleton
 
 class AnonymousGuard(unittest.TestCase):
     def test_index_and_worktree_are_checked_without_echoing_identity(self):
-        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {}, clear=True):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, kept_environment(), clear=True):
             root = Path(tmp)
             subprocess.run(['git', 'init', '-q', str(root)], check=True)
             (root / '.local').mkdir()
@@ -56,7 +58,7 @@ class AnonymousGuard(unittest.TestCase):
                 self.assertEqual(check.anonymity_terms(Path(tmp) / 'other-clone'), ('syntheticsecret',))
 
     def test_short_nickname_is_a_token_and_owner_repo_remain_literal(self):
-        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {}, clear=True):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, kept_environment(), clear=True):
             root = Path(tmp)
             (root / '.local').mkdir()
             (root / '.local/anonymity.json').write_text(json.dumps(
@@ -87,7 +89,7 @@ class SiblingPolicy(unittest.TestCase):
         self.assertIn('outside the allowed game-code folders', findings[0])
 
     def test_config_override_keeps_anonymous_default_and_drifted_citation_is_not_read(self):
-        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {}, clear=True):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, kept_environment(), clear=True):
             root = Path(tmp)
             config = root / '.local/verifier/config.json'
             config.parent.mkdir(parents=True)
@@ -155,7 +157,7 @@ class HintIndex(unittest.TestCase):
                 builder.source_bodies(Path('unused'))
 
     def test_sheets_attach_hint_only_to_sibling_variant_and_matching_build(self):
-        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {}, clear=True):
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, kept_environment(), clear=True):
             root = Path(tmp)
             directory = root / '.local' / sibling.INDEX
             directory.mkdir(parents=True)

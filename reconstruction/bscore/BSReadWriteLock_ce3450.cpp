@@ -5,6 +5,8 @@
 // Adapted bodies: none.
 // 0xce34c0 BSReadWriteLock::TryLockForWrite
 // 0xce3450 BSReadWriteLock::TryLockForRead
+// BSReadWriteLock::TryLockForRead: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
+// BSReadWriteLock::TryLockForWrite: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "BSReadWriteLock_ce3450.h"
 
 #include <intrin.h>

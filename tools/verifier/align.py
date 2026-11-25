@@ -59,6 +59,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import disasm  # noqa: E402
 
 SCHEMA = 1
+SUMMARY_FILE = 'align-summary.txt'
 # The byte column ends at a tab (or a run of spaces); a long instruction's last byte is followed
 # by the tab directly, so "bytes followed by a space" would swallow it into the text.
 INSN = re.compile(r'^\s*([0-9a-f]+):\s+([0-9a-f]{2}(?: [0-9a-f]{2})*)(?:\s*\t|\s{2,})\s*(\S.*)$')
@@ -158,7 +159,7 @@ def _cond(mnem):
 
 class Insn:
     __slots__ = ('idx', 'addr', 'off', 'data', 'text', 'mnem', 'shape', 'regs', 'ref', 'dest', 'relocs',
-                 'internal', 'label', 'block', 'mask', 'frame')
+                 'internal', 'label', 'block', 'mask', 'frame', 'sym')
 
     def __repr__(self):
         return f'Insn({self.off:#x} {self.text!r})'
@@ -247,12 +248,14 @@ def _memory(op):
     return size, seg, base, index, scale, disp
 
 
-def build(rows, start=None, size=None, base=None, symbols=None, candidate=False):
+def build(rows, start=None, size=None, base=None, symbols=None, candidate=False, tls=None):
     """Normalised instructions of one side. `rows` from parse_listing (absolute addresses).
 
     `start` is the function's address in the listing's address space (default: the first row),
     `base` the image base for the target side (address minus base is the RVA), `symbols` a map of
-    name -> RVA for resolving the candidate's relocations.
+    name -> RVA for resolving the candidate's relocations, `tls` a map of thread-local variable
+    name -> TLS-template offset: a SECREL field of the candidate holds only the addend, while the
+    target's code holds the offset plus the addend, so the offset is added to the candidate's value.
     """
     if not rows:
         return []
@@ -261,11 +264,12 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
     if size is not None:
         end = start + size
     symbols = symbols or {}
+    tls = tls or {}
     out = []
     for idx, (addr, data, text, relocs) in enumerate(rows):
         ins = Insn()
         ins.idx, ins.addr, ins.off, ins.data, ins.relocs = idx, addr, addr - start, data, relocs
-        ins.label = ins.internal = ins.ref = ins.dest = None
+        ins.label = ins.internal = ins.ref = ins.dest = ins.sym = None
         body = text.split(' # ')[0]
         body = re.sub(r'\s*<[^>]*>', '', body).strip()
         ins.text = text
@@ -279,6 +283,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
             rest = nxt[1] if len(nxt) > 1 else ''
         ins.mnem = mnem
         reloc = relocs[0] if relocs else None
+        secrel = tls.get(reloc[2]) if candidate and reloc is not None and reloc[1] == 'SECREL' else None
         next_ip = addr + len(data)
         shapes, regs = [], []
         ops = _split_operands(rest)
@@ -312,10 +317,11 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
                     parts_shape.append('ref')
                     if candidate:
                         ins.ref = _cand_ref(reloc, disp, symbols)
+                        ins.sym = (reloc[2], disp) if reloc is not None else None
                     else:
                         ins.ref = _targ_ref(next_ip + disp, base)
                 else:
-                    parts_shape.append(disp)
+                    parts_shape.append(disp + secrel if secrel is not None and mbase != 'rip' else disp)
                 shapes.append(tuple(parts_shape))
                 continue
             if _is_num(op):
@@ -324,6 +330,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
                     if candidate and reloc is not None:
                         shapes.append(('ext',))
                         ins.ref = _cand_ref(reloc, value - next_ip, symbols)
+                        ins.sym = (reloc[2], value - next_ip)
                     elif start <= value < end:
                         shapes.append(('label',))
                         ins.internal = value
@@ -334,7 +341,7 @@ def build(rows, start=None, size=None, base=None, symbols=None, candidate=False)
                     shapes.append(('imm-ref',))
                     ins.ref = _cand_ref(reloc, value, symbols)
                 else:
-                    shapes.append(('imm', value))
+                    shapes.append(('imm', value + secrel if secrel is not None else value))
                 continue
             shapes.append(('raw', op))
         ins.shape = (mnem, tuple(shapes))
@@ -477,37 +484,124 @@ def _ref_state(t, c):
     return 'unknown'
 
 
+def _cost_rows(T, C, mapping, band=None):
+    """(row index, first column, costs) per target row: substitution costs against the candidate, as `_cost` gives them.
+
+    Instructions of equal shape cost 0, plus 0.3 when their references disagree and 0.2 when they
+    break the register map; others 1.2 when their mnemonics are related, else 2.0. The part that
+    depends only on the two shapes is built once per distinct target shape, so the alignment's
+    quadratic loop never calls back into the classification. With `band`, only the columns of
+    1..m within `band` of the diagonal are produced: costs[k] belongs to candidate instruction
+    first + k (zero-based).
+    """
+    m = len(C)
+    c_mnems = [c.mnem for c in C]
+    same_at = {}
+    for j, c in enumerate(C):
+        same_at.setdefault(c.shape, []).append(j)
+    mnem_set = set(c_mnems)
+    related = {}
+    base = {}
+    for i, t in enumerate(T):
+        shape = t.shape
+        lo, hi = (0, m) if band is None else (max(0, i + 1 - band - 1), min(m, i + 1 + band))
+        if lo >= hi:
+            yield i, lo, []
+            continue
+        row = base.get(shape)
+        if row is None:
+            rel = related.setdefault(t.mnem, {})
+            for cm in mnem_set:
+                if cm not in rel:
+                    rel[cm] = 1.2 if _related(t.mnem, cm) else 2.0
+            row = [rel[cm] for cm in c_mnems]
+            for j in same_at.get(shape, ()):
+                row[j] = 0.0
+            base[shape] = row
+        out = row[lo:hi]
+        same = same_at.get(shape)
+        if same:
+            for j in same[bisect.bisect_left(same, lo):bisect.bisect_left(same, hi)]:
+                c = C[j]
+                cost = 0.0 if _ref_state(t, c) != 'wrong' else 0.3
+                if mapping is not None and not _regs_agree(t, c, mapping):
+                    cost += 0.2
+                out[j - lo] = cost
+        yield i, lo, out
+
+
+def _banded_costs(T, C, mapping, band):
+    """(total cost, back pointers) of the weighted edit alignment restricted to |i - j| <= band.
+
+    back[i * (m + 1) + j] is 0 (pair), 1 (target instruction unpaired) or 2 (candidate
+    instruction unpaired) for every cell of the band; cells outside it keep the value 0 and are
+    never read by the traceback of an exact band (see `_edit_align`).
+    """
+    n, m = len(T), len(C)
+    INF = float('inf')
+    width = m + 1
+    prev = [float(j) if j <= band else INF for j in range(width)]
+    back = bytearray((n + 1) * width)
+    for j in range(1, min(m, band) + 1):
+        back[j] = 2
+    for i, first, costs in _cost_rows(T, C, mapping, band):
+        i += 1
+        cur = [INF] * width
+        row = i * width
+        lo = first + 1
+        if i <= band:
+            cur[0] = left = float(i)
+            back[row] = 1
+        else:
+            left = INF
+        if costs:
+            j = lo - 1
+            for diag, up, sub in zip(prev[lo - 1:], prev[lo:], costs):
+                j += 1
+                best, how = diag + sub, 0
+                if up + 1 < best:
+                    best, how = up + 1, 1
+                if left + 1 < best:
+                    best, how = left + 1, 2
+                cur[j] = left = best
+                if how:
+                    back[row + j] = how
+        prev = cur
+    return prev[m], back
+
+
 def _edit_align(T, C, mapping=None):
     """[('pair', i, j) | ('del', i) | ('ins', j)] minimising the weighted edit cost.
 
     With a register map, same-shape pairs that break it cost a little, so that of two identical
     shapes the one holding the corresponding value is paired.
+
+    The table is filled only within a band of diagonals. A path that reaches diagonal d (i - j)
+    has paid at least |d| gaps and pays at least |n - m - d| more to get back to the corner, so
+    when the best path found inside the band is cheaper than that bound for the first diagonal
+    outside it, no path through the outside is cheaper or ties, and the traceback (which only
+    meets cells of optimal paths) is the one the full table gives, tie-breaking included.
+    Otherwise the band is widened to the cost found, which always satisfies the bound.
     """
     n, m = len(T), len(C)
     if n * m > 6_000_000:
         return _difflib_align(T, C)
-    INF = float('inf')
-    prev = [float(j) for j in range(m + 1)]
-    back = bytearray((n + 1) * (m + 1))
-    for j in range(1, m + 1):
-        back[j] = 2
-    for i in range(1, n + 1):
-        cur = [INF] * (m + 1)
-        cur[0] = float(i)
-        back[i * (m + 1)] = 1
-        ti = T[i - 1]
-        for j in range(1, m + 1):
-            best, how = prev[j - 1] + _cost(ti, C[j - 1], mapping), 0
-            if prev[j] + 1 < best:
-                best, how = prev[j] + 1, 1
-            if cur[j - 1] + 1 < best:
-                best, how = cur[j - 1] + 1, 2
-            cur[j] = best
-            back[i * (m + 1) + j] = how
-        prev = cur
+    gap = n - m
+    band = abs(gap) + 16
+    while True:
+        if band >= max(n, m):
+            band = max(n, m)
+            total, back = _banded_costs(T, C, mapping, band)
+            break
+        total, back = _banded_costs(T, C, mapping, band)
+        out = band + 1
+        if total < out + min(abs(gap - out), abs(gap + out)):
+            break
+        band = max(band + 1, int(total) + 1)
+    width = m + 1
     ops, i, j = [], n, m
     while i or j:
-        how = back[i * (m + 1) + j]
+        how = back[i * width + j]
         if i and j and how == 0:
             i, j = i - 1, j - 1
             if _cost(T[i], C[j]) >= 2.0:
@@ -1012,7 +1106,232 @@ SUGGEST = {
 }
 
 
-def report(T, C, unwind=None):
+# Behaviour mismatches. The shape comparison ignores which callee, global or table slot an
+# instruction names and the instruction's own constants are part of it only for the weighted
+# distance, so a candidate that adds 0x10 where the target adds 0x20 loses a fraction of a percent.
+# These helpers count the pairs that keep mnemonic and operand shape but name a different value,
+# and compare the two sides' multisets of values, which also covers regions the alignment missed.
+BEHAVIOUR_KINDS = ('displacement', 'immediate', 'call-target', 'global-ref')
+# Values that every function holds in bulk: counted in an aligned pair, ignored in the multiset.
+COMMON_VALUES = frozenset((0, 1, -1))
+_MASK64 = (1 << 64) - 1
+
+
+def _operand_bases(ins):
+    """Base register names of the instruction's memory operands, in operand order."""
+    body = re.sub(r'\s*<[^>]*>', '', ins.text.split(' # ')[0]).strip()
+    words = body.split(' ', len(ins.mnem.split()))
+    rest = words[-1] if len(words) > len(ins.mnem.split()) else ''
+    out = []
+    for op in _split_operands(rest):
+        mem = _memory(op)
+        if mem is not None:
+            out.append(mem[2])
+    return out
+
+
+def _is_frame(ins, base):
+    """A stack-frame adjustment or a stack-slot address: layout of locals, not behaviour."""
+    if base in ('rsp', 'rbp'):
+        return True
+    return ins.mnem in ('add', 'sub') and ins.shape[1] and ins.shape[1][0][:2] == ('reg', 'rsp')
+
+
+def _value_slots(ins):
+    """[(kind, operand position, value, frame)] of the operands that carry a value of their own.
+
+    The value is a signed displacement or immediate, or an RVA tuple for a call target and a global
+    reference (None when the reference does not resolve to an RVA). `frame` marks stack-frame values.
+    """
+    slots, bases, mem_at = [], _operand_bases(ins), 0
+    for pos, op in enumerate(ins.shape[1]):
+        kind = op[0]
+        if kind == 'mem':
+            base = bases[mem_at] if mem_at < len(bases) else None
+            mem_at += 1
+            if op[-1] == 'ref':
+                slots.append(('global-ref', pos, ins.ref, False))
+            else:
+                slots.append(('displacement', pos, op[-1], _is_frame(ins, base)))
+        elif kind == 'imm':
+            slots.append(('immediate', pos, op[1], _is_frame(ins, None)))
+        elif kind == 'ext' and (ins.is_call or ins.is_branch):
+            slots.append(('call-target', pos, ins.ref, False))
+        elif kind == 'imm-ref':
+            slots.append(('global-ref', pos, ins.ref, False))
+    return slots
+
+
+def _blank(ins):
+    """The instruction's shape with every value-carrying operand reduced to its kind."""
+    out = []
+    for op in ins.shape[1]:
+        if op[0] == 'mem':
+            out.append(op[:-1] + ('ref' if op[-1] == 'ref' else 'disp',))
+        elif op[0] == 'imm':
+            out.append(('imm',))
+        else:
+            out.append(op)
+    return (ins.mnem, tuple(out))
+
+
+def _norm_value(kind, value):
+    if kind in ('call-target', 'global-ref'):
+        return value[1] if value and value[0] == 'rva' else None
+    return value & _MASK64 if isinstance(value, int) else value
+
+
+def _show(kind, value):
+    if value is None:
+        return 'unresolved'
+    if kind in ('call-target', 'global-ref'):
+        return f'rva {value:#x}'
+    return f'{value:#x}' if value < (1 << 63) else f'-{(1 << 64) - value:#x}'
+
+
+def behaviour_mismatches(T, C, ops, limit=12):
+    """Pairs whose mnemonic and operand shape agree but whose value differs, plus the value multisets.
+
+    `ops` is the alignment from `analyse` (`result['ops']`). Returns a dict:
+
+    - `pairs`: aligned pairs (paired or moved) with the same mnemonic and shape and a different member
+      displacement, immediate, call target or global reference, one entry per pair with its offsets and
+      each differing value; stack-frame displacements and stack-pointer adjustments are not counted
+      (they are the layout of locals) and a reference that does not resolve to an RVA on one side is
+      counted under `unresolved`, not as a mismatch;
+    - `count`: the number of such pairs, and `by_kind` the number of differing values per kind;
+    - `multiset`: the values (member displacements and immediates other than 0, 1 and -1, outside
+      stack-frame operands) that one side holds more often than the other, over the whole function,
+      with `missing` and `extra` totals and the largest differences first.
+    """
+    pairs, unresolved, by_kind = [], 0, Counter()
+    for op in ops:
+        if op[0] not in ('pair', 'move'):
+            continue
+        t, c = T[op[1]], C[op[2]]
+        if _blank(t) != _blank(c):
+            continue
+        diffs = []
+        for (kind, pos, tv, tf), (_k, _p, cv, cf) in zip(_value_slots(t), _value_slots(c)):
+            if tf or cf:
+                continue
+            a, b = _norm_value(kind, tv), _norm_value(kind, cv)
+            if kind in ('call-target', 'global-ref') and (a is None or b is None):
+                unresolved += tv != cv
+                continue
+            if a != b:
+                diffs.append({'kind': kind, 'target': _show(kind, a), 'candidate': _show(kind, b)})
+                by_kind[kind] += 1
+        if diffs:
+            pairs.append({'t': t.off, 'c': c.off, 'mnemonic': t.mnem, 'differences': diffs})
+    tally = {'t': Counter(), 'c': Counter()}
+    for side, insns in (('t', T), ('c', C)):
+        for ins in insns:
+            for kind, _pos, value, frame in _value_slots(ins):
+                if frame or kind not in ('displacement', 'immediate') or not isinstance(value, int):
+                    continue
+                if value in COMMON_VALUES:
+                    continue
+                tally[side][(kind, value & _MASK64)] += 1
+    only_t, only_c = tally['t'] - tally['c'], tally['c'] - tally['t']
+    spread = []
+    for key in set(only_t) | set(only_c):
+        spread.append({'kind': key[0], 'value': _show(key[0], key[1]), 'target': tally['t'][key],
+                       'candidate': tally['c'][key], 'difference': tally['c'][key] - tally['t'][key]})
+    spread.sort(key=lambda r: (-abs(r['difference']), r['kind'], r['value']))
+    return {'count': len(pairs), 'by_kind': {k: by_kind[k] for k in BEHAVIOUR_KINDS if by_kind[k]},
+            'unresolved': unresolved, 'pairs': pairs,
+            'multiset': {'missing': sum(only_t.values()), 'extra': sum(only_c.values()),
+                         'distinct': len(spread), 'largest': spread[:limit]}}
+
+
+def behaviour_public(found):
+    """The part of `behaviour_mismatches` that carries no values: offsets, kinds and counts."""
+    return {'count': found['count'], 'by_kind': found['by_kind'], 'unresolved': found['unresolved'],
+            'pairs': [{'t': p['t'], 'c': p['c'], 'mnemonic': p['mnemonic'],
+                       'kinds': [d['kind'] for d in p['differences']]} for p in found['pairs']],
+            'multiset': {k: found['multiset'][k] for k in ('missing', 'extra', 'distinct')}}
+
+
+def behaviour_summary(found):
+    """One line for the aligned summary; '' when nothing differs."""
+    ms = found['multiset']
+    if not found['count'] and not ms['missing'] and not ms['extra']:
+        return ''
+    kinds = ', '.join(f'{n} {k}' for k, n in found['by_kind'].items())
+    return (f'behaviour: {found["count"]} aligned pairs with a different value' + (f' ({kinds})' if kinds else '')
+            + f'; values only in the target {ms["missing"]}, only in the candidate {ms["extra"]}')
+
+
+
+def _operand_numbers(ins):
+    """Numeric displacement or immediate of each operand that can hold a thread-local offset, by operand index."""
+    out = {}
+    for pos, shape in enumerate(ins.shape[1]):
+        if shape[0] == 'imm':
+            out[pos] = ('imm', shape[1])
+        elif shape[0] == 'mem' and isinstance(shape[-1], int):
+            out[pos] = ('mem', shape[-1])
+    return out
+
+
+def _tls_offset(t, c):
+    """The thread-local offset a target instruction holds where its candidate pair holds only the addend.
+
+    A SECREL field of the candidate carries the addend alone, the target's code carries the offset
+    plus that addend, so the offset is the difference of the one operand that differs between the two
+    otherwise equal instructions; None when no single operand explains the pair.
+    """
+    if len(t.shape[1]) != len(c.shape[1]):
+        return None
+    tn, cn = _operand_numbers(t), _operand_numbers(c)
+    diffs = []
+    for pos, (kind, value) in tn.items():
+        other = cn.get(pos)
+        if other is None or other[0] != kind:
+            continue
+        if kind == 'mem' and t.shape[1][pos][:-1] != c.shape[1][pos][:-1]:
+            return None
+        if value != other[1]:
+            diffs.append(value - other[1])
+    return diffs[0] if len(diffs) == 1 and diffs[0] > 0 else None
+
+
+def reference_pairs(T, C, ops):
+    """What the alignment says about the symbols the candidate refers to.
+
+    Returns {'references': {symbol: {symbol RVA: pairs}}, 'thread_locals': {symbol: {TLS-template
+    offset: pairs}}}. Every paired candidate instruction that holds a relocation to a symbol, and whose
+    target instruction has the same mnemonic and encodes a reference, is one vote for the RVA the
+    target holds there less the addend the candidate stores (the symbol's own address, which is what a
+    bind hint names). Symbols the map already resolves vote too, so a binding that the alignment
+    contradicts can be seen. Nothing here says the vote is right: tools/verifier/auto_hints.py
+    decides which ones to trust, and the comparator checks whatever is bound.
+    """
+    refs, tls = {}, {}
+    for op in ops:
+        if op[0] not in ('pair', 'move'):
+            continue
+        t, c = T[op[1]], C[op[2]]
+        if t.mnem != c.mnem or not c.relocs:
+            continue
+        kind, name = c.relocs[0][1], c.relocs[0][2]
+        if name.startswith('$'):
+            continue
+        if kind == 'SECREL':
+            offset = _tls_offset(t, c)
+            if offset is not None:
+                votes = tls.setdefault(name, {})
+                votes[offset] = votes.get(offset, 0) + 1
+        elif c.sym is not None and t.ref is not None and t.ref[0] == 'rva':
+            votes = refs.setdefault(name, {})
+            value = t.ref[1] - c.sym[1]
+            votes[value] = votes.get(value, 0) + 1
+    return {'references': {n: {hex(v): k for v, k in sorted(votes.items())} for n, votes in sorted(refs.items())},
+            'thread_locals': {n: {hex(v): k for v, k in sorted(votes.items())} for n, votes in sorted(tls.items())}}
+
+
+def report(T, C, unwind=None, signature=False):
     """(summary lines, JSON dict, aligned listing text) for two normalised instruction lists."""
     result = analyse(T, C, unwind)
     counts, costs = Counter(), Counter()
@@ -1021,6 +1340,7 @@ def report(T, C, unwind=None):
         costs[d.cls] += d.weight
     hunks = _hunks(result['rows'])
     rules = _rules(T, C, result, counts)
+    behaviour = behaviour_mismatches(T, C, result['ops'])
     comps = result['components']
     lines = [f'aligned: distance {result["distance"]:g} (prologue {comps["prologue"]:g}, body {comps["body"]:g}, '
              f'refs {comps["refs"]:g}); edits shape {result["shape_edits"]}, exact {result["exact_edits"]} '
@@ -1034,6 +1354,8 @@ def report(T, C, unwind=None):
     if counts:
         top = sorted(counts, key=lambda k: (-costs[k], k))
         lines.append('classes: ' + ', '.join(f'{k} {counts[k]} ({costs[k]:g})' for k in top[:6]))
+    if behaviour_summary(behaviour):
+        lines.append(behaviour_summary(behaviour))
     shown = [h for h in hunks if set(h['classes']) - {'register-renaming'}][:4]
     if shown:
         def span(h):
@@ -1077,9 +1399,19 @@ def report(T, C, unwind=None):
         'classes': {k: {'count': counts[k], 'cost': round(costs[k], 2)} for k in sorted(counts)},
         'hunks': [{'target': h['t'], 'candidate': h['c'], 'classes': dict(h['classes'])} for h in hunks],
         'unwind': {'fields': result['unwind_fields'], 'explained_by_register_map': result['unwind_explained']},
-        'cookbook_rules': rules, 'suggestion': suggestion,
+        'cookbook_rules': rules, 'suggestion': suggestion, 'behaviour': behaviour_public(behaviour),
         'alignment': [_op_json(op, T, C) for op in result['ops']],
+        'reference_pairs': reference_pairs(T, C, result['ops']),
     }
+    if signature:
+        kinds = {'pair': 'pair', 'del': 'missing', 'ins': 'extra', 'move': 'moved'}
+        by_class = {}
+        for op, (_, _, _, classes) in zip(result['ops'], result['rows']):
+            kind = kinds[op[0]]
+            for cls in classes:
+                counts_by_kind = by_class.setdefault(cls, Counter())
+                counts_by_kind[kind] += 1
+        data['diff_signature'] = by_class
     return lines, data, _listing(result, T, C, lines)
 
 
@@ -1124,8 +1456,67 @@ def load_symbols(path):
     return out
 
 
+def load_tls(path):
+    """name -> TLS-template offset for the thread-local entries of a task symbol map."""
+    if path is None or not Path(path).is_file():
+        return {}
+    raw = json.loads(Path(path).read_text())
+    raw = raw.get('symbols', raw) if isinstance(raw, dict) else {}
+    return {name: value['tls_offset'] for name, value in raw.items()
+            if isinstance(value, dict) and value.get('kind') == 'thread-local' and isinstance(value.get('tls_offset'), int)}
+
+
+_TLS_INDEX_RVA = {}
+
+
+def tls_index_rva(image):
+    """RVA of the image's TLS index slot, which a candidate's `_tls_index` reference resolves to; None
+    when the image has no usable TLS directory. Read once per image."""
+    key = str(image)
+    if key not in _TLS_INDEX_RVA:
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+            from pecoff import PeImage
+            _TLS_INDEX_RVA[key] = PeImage(Path(image).read_bytes()).tls_template()[2]
+        except Exception:  # noqa: BLE001 - scoring just leaves the reference unresolved
+            _TLS_INDEX_RVA[key] = None
+    return _TLS_INDEX_RVA[key]
+
+
+def load_scoring(path, image=None):
+    """(name -> RVA, name -> TLS offset) of a task symbol map, with `_tls_index` resolved from the image."""
+    symbols, tls = load_symbols(path), load_tls(path)
+    if image and '_tls_index' not in symbols:
+        index = tls_index_rva(image)
+        if index is not None:
+            symbols['_tls_index'] = index
+    return symbols, tls
+
+
+def unresolved_references(candidate_listing, symbols, tls):
+    """Names of the relocations in a candidate listing that the symbol maps do not resolve, in order of first use.
+
+    A SECREL field resolves through `tls`, anything else through `symbols`; compiler-local labels
+    (`$LN`, `$unwind`) never need a map entry.
+    """
+    out = []
+    for _addr, _data, _text, relocs in _as_rows(candidate_listing):
+        for _field, kind, name in relocs:
+            if name.startswith('$') or name in out:
+                continue
+            if name not in (tls if kind == 'SECREL' else symbols):
+                out.append(name)
+    return out
+
+
+def display_name(name):
+    """A symbol name for logs: a string literal's name spells its text, so only its hash is shown."""
+    m = re.match(r'\?\?_C@_0(?:[0-9]|[A-P]+@)([0-9A-Z]{8})@', name)
+    return f'??_C@..{m.group(1)}' if m else name
+
+
 def summarise(target_listing, candidate_listing, symbols=None, target_rva=None, image_base=None,
-              target_size=None, unwind=None, listing_path=None):
+              target_size=None, unwind=None, listing_path=None, tls=None, signature=False):
     """(summary text, JSON dict) for one function.
 
     Listings are llvm-objdump text (the candidate with -r) or rows of (address, bytes, text,
@@ -1138,8 +1529,9 @@ def summarise(target_listing, candidate_listing, symbols=None, target_rva=None, 
     if image_base is None and target_rva is not None and t_rows:
         image_base = t_rows[0][0] - target_rva
     T = build(t_rows, size=target_size, base=image_base)
-    C = build(c_rows, symbols=symbols if isinstance(symbols, dict) else load_symbols(symbols), candidate=True)
-    lines, data, listing = report(T, C, unwind)
+    C = build(c_rows, symbols=symbols if isinstance(symbols, dict) else load_symbols(symbols), candidate=True,
+              tls=tls if isinstance(tls, dict) else load_tls(tls))
+    lines, data, listing = report(T, C, unwind, signature)
     if listing_path is not None:
         Path(listing_path).write_text(listing)
     return '\n'.join(lines), data
@@ -1173,7 +1565,8 @@ def unwind_from_diagnostics(fdir):
     return None
 
 
-def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, unwind=None, out_dir=None):
+def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, unwind=None, out_dir=None, tls=None,
+                   signature=False):
     """Align one compiled function against the image; writes align.txt and align.json to `out_dir`.
 
     `fdir` is the attempt's function directory (its diagnostics.json supplies the unwind infos);
@@ -1188,18 +1581,41 @@ def align_function(fdir, objdump, image, obj, symbol, rva, size, symbols=None, u
     out = Path(out_dir) if out_dir is not None else Path(fdir)
     out.mkdir(parents=True, exist_ok=True)
     text, data = summarise(target, candidate, symbols=symbols, image_base=base, target_size=size, unwind=unwind,
-                           listing_path=out / 'align.txt')
+                           listing_path=out / 'align.txt', tls=tls, signature=signature)
     (out / 'align.json').write_text(json.dumps(data, indent=1) + '\n')
+    (out / SUMMARY_FILE).write_text(text + '\n')
     return text, data
+
+
+def cached_summary(fdir):
+    """Lines of a summary a host already wrote next to this function's report, or None.
+
+    A host that has llvm-objdump aligns the attempt in the same run that compiled it
+    (tools/verifier/host_agent.py), so the machine running `attempt` does not repeat the work. The
+    directory is the one just fetched, so the files belong to this compile.
+    """
+    fdir = Path(fdir)
+    try:
+        text = (fdir / SUMMARY_FILE).read_text()
+        json.loads((fdir / 'align.json').read_text())
+    except (OSError, ValueError):
+        return None
+    if not (fdir / 'align.txt').is_file():
+        return None
+    return text.splitlines() + [f'aligned listing: {fdir / "align.txt"}']
 
 
 def attempt_summary(fdir, objdump, image, obj, fn, symbols_path=None):
     """Lines for `attempt` under a failing function's line; never raises."""
+    cached = cached_summary(fdir)
+    if cached is not None:
+        return cached
     try:
         if objdump is None or image is None or not Path(image).is_file() or not Path(obj).is_file():
             return ['aligned: not available (no objdump, image or candidate object)']
+        symbols, tls = load_scoring(symbols_path, image)
         text, _ = align_function(fdir, objdump, image, obj, fn['symbol'], fn['rva'], fn['size'],
-                                 symbols=load_symbols(symbols_path))
+                                 symbols=symbols, tls=tls, signature=True)
         return text.splitlines() + [f'aligned listing: {Path(fdir) / "align.txt"}']
     except Exception as exc:  # noqa: BLE001 - a broken diagnostic must not hide the comparator's result
         return [f'aligned: not available ({type(exc).__name__}: {exc})']
@@ -1214,7 +1630,8 @@ def _config_image():
         return None, None
 
 
-def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, include_passes=False, out_root=None):
+def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, include_passes=False, out_root=None,
+                    symbols_path=None):
     """Align every function of one stored attempt; yields (rva, reason, summary text, data).
 
     Outputs go next to each function's diagnostics, or under `out_root/<rva>/` when given (for
@@ -1222,7 +1639,7 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
     """
     attempt_dir = Path(attempt_dir)
     task_dir = Path(task_dir) if task_dir else attempt_dir.parent.parent
-    symbols = load_symbols(task_dir / 'symbols.json')
+    symbols, tls = load_scoring(symbols_path or task_dir / 'symbols.json', image)
     for fdir in sorted(p for p in attempt_dir.glob('0x*') if p.is_dir()):
         try:
             rep = json.loads((fdir / 'report.json').read_text())
@@ -1235,12 +1652,34 @@ def run_attempt_dir(attempt_dir, task_dir=None, image=None, objdump=None, includ
             continue
         try:
             text, data = align_function(fdir, objdump, image, attempt_dir / 'candidate.obj', fn['symbol'],
-                                        fn['rva'], fn['size'], symbols=symbols,
-                                        out_dir=Path(out_root) / fdir.name if out_root else None)
+                                        fn['rva'], fn['size'], symbols=symbols, tls=tls,
+                                        out_dir=Path(out_root) / fdir.name if out_root else None,
+                                        signature=out_root is None)
         except (OSError, ValueError, subprocess.SubprocessError) as exc:
             yield fn.get('rva'), rep.get('reason'), f'aligned: not available ({exc})', None
             continue
         yield fn['rva'], rep.get('reason'), text, data
+
+
+def write_side_by_sides(attempt_dir, objdump, image):
+    """side-by-side.txt for every function of a stored attempt that has none yet; the number written.
+
+    A host with llvm-objdump writes them in the run that compiled the unit (tools/verifier/host_agent.py),
+    so `attempt` only reads them.
+    """
+    attempt_dir = Path(attempt_dir)
+    count = 0
+    for fdir in sorted(p for p in attempt_dir.glob('0x*') if p.is_dir()):
+        try:
+            fn = json.loads((fdir / 'report.json').read_text()).get('function') or {}
+        except (OSError, ValueError):
+            continue
+        if not fn.get('symbol') or (fdir / 'side-by-side.txt').is_file():
+            continue
+        written, _why = disasm.write_side_by_side(fdir / 'side-by-side.txt', objdump, image, attempt_dir / 'candidate.obj',
+                                                  fn['symbol'], fn['rva'], fn['size'])
+        count += written is not None
+    return count
 
 
 def main(argv=None):
@@ -1260,12 +1699,16 @@ def main(argv=None):
     p.add_argument('--objdump', help='llvm-objdump (default: as disasm.py finds it)')
     p.add_argument('--out', help='directory for align.txt and align.json (with --attempt: one subdirectory per function)')
     p.add_argument('--json', action='store_true', help='print the JSON instead of the summary')
+    p.add_argument('--side-by-side', action='store_true', help='with --attempt: also write side-by-side.txt for every function')
     a = p.parse_args(argv)
     image, configured = _config_image()
     image = a.image or image
     objdump = disasm.find_objdump(a.objdump or configured or os.environ.get('SR_OBJDUMP'))
     if a.attempt:
-        for rva, reason, text, data in run_attempt_dir(a.attempt, a.task_dir, image, objdump, a.all, a.out):
+        if a.side_by_side:
+            write_side_by_sides(a.attempt, objdump, image)
+        for rva, reason, text, data in run_attempt_dir(a.attempt, a.task_dir, image, objdump, a.all, a.out,
+                                                       symbols_path=a.symbols):
             print(f'0x{rva:x} {reason}')
             print(json.dumps(data, indent=1) if a.json and data else '\n'.join('    ' + s for s in text.splitlines()))
         return 0
@@ -1281,8 +1724,9 @@ def main(argv=None):
         if objdump is None or image is None:
             p.error('needs llvm-objdump and the local image')
         out = Path(a.out) if a.out else Path(a.object).parent
+        symbols, tls = load_scoring(a.symbols, image)
         text, data = align_function(out, objdump, image, a.object, a.symbol, a.rva, a.size,
-                                    symbols=load_symbols(a.symbols))
+                                    symbols=symbols, tls=tls)
         print(json.dumps(data, indent=1) if a.json else text)
         return 0
     p.error('give --attempt, or --target and --candidate, or --object, --symbol, --rva and --size')

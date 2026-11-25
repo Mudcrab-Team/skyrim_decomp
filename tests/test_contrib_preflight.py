@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -14,6 +15,7 @@ import contrib
 import contrib_readiness
 import contrib_validation
 import test_contrib as fixtures
+from test_cookbook_notes import NOTE, good
 import test_match_gate as gate
 from source_digest import include_closure
 from digest_v2 import tu_digest
@@ -92,6 +94,46 @@ class Preflight(fixtures.SubmitTests):
         self.assertTrue(any('unsafe-pragma' in p for p in result['blockers']))
         self.assertEqual(self.preflight()[0], contrib.OK)
 
+    def test_staged_preflight_runs_ci_compact_header_check_without_task_metadata(self):
+        cpp = self.repo / self.unit[1]
+        original = cpp.read_text()
+        cpp.write_text(('// Synthetic header comment\n' * 12) + original)
+        self.git('add', *self.unit)
+        cpp.write_text(original)
+        shutil.rmtree(self.tdir)
+
+        code, result = self.preflight('--staged')
+        self.assertEqual(code, contrib.FAILED)
+        self.assertIn('header_check: FAIL (1 problem(s))', result['blockers'])
+        self.git('add', *self.unit)
+        self.assertEqual(self.preflight('--staged')[0], contrib.OK)
+
+    def test_staged_preflight_checks_note_tags_outside_the_current_task(self):
+        note = self.repo / NOTE
+        note.parent.mkdir(parents=True)
+        original = good()
+        note.write_text('\n'.join(line for line in original.splitlines() if not line.startswith('<!-- tags:')) + '\n')
+        self.git('add', NOTE)
+        note.write_text(original)
+
+        code, result = self.preflight('--staged')
+        self.assertEqual(code, contrib.FAILED)
+        self.assertTrue(any('lesson note refused (tags)' in item for item in result['blockers']))
+        self.git('add', NOTE)
+        self.assertEqual(self.preflight('--staged')[0], contrib.OK)
+
+    def test_staged_preflight_refuses_a_duplicate_rva_against_base(self):
+        self.git('add', *self.unit)
+        self.git('commit', '-q', '-m', 'synthetic unit at base')
+        for name in self.unit:
+            other = name.replace('TESActorBaseData', 'TESOther')
+            (self.repo / other).write_text((self.repo / name).read_text().replace('TESActorBaseData', 'TESOther'))
+            self.git('add', other)
+
+        code, result = self.preflight('--staged')
+        self.assertEqual(code, contrib.FAILED)
+        self.assertIn(f'0x{self.RVA:x} is now marked in 2 units', result['blockers'])
+
     def test_transitive_unchanged_header_is_screened(self):
         helper = self.repo / 'reconstruction/other/Helper.h'
         helper.parent.mkdir()
@@ -169,13 +211,15 @@ class Ranking(unittest.TestCase):
         unit.mkdir(parents=True)
         (unit / 'TESReady.cpp').write_text('#include "TESReady.h"\n')
         (unit / 'TESReady.h').write_text('class TESReady {\npublic:\n int GetValue() const;\n bool HasFlag(int mask);\n virtual ~TESReady();\n};\n')
-        self.data = {'functions': [self.fn(0x1000, 'TESNew::Work', 3),
-                                   self.fn(0x2000, 'TESReady::GetValue', 32),
-                                   self.fn(0x3000, 'TESReady::~TESReady', 3),
-                                   self.fn(0x4000, 'TESReady::HasFlag', 12)]}
+        self.data = {'target_build_id': 'synthetic', 'functions': [
+            self.fn(0x1000, 'TESNew::Work', 3), self.fn(0x2000, 'TESReady::GetValue', 32),
+            self.fn(0x3000, 'TESReady::~TESReady', 3), self.fn(0x4000, 'TESReady::HasFlag', 12)]}
+        self.symbol_map = self.root / 'reports/synthetic/symbol-map.json'
+        self.symbol_map.parent.mkdir(parents=True)
+        self.symbol_map.write_text(json.dumps({'symbols': {}}))
 
     def fn(self, rva, name, size):
-        return dict(rva=rva, name=name, size=size, status='mapped', name_origin='GUESS')
+        return dict(rva=rva, name=name, size=size, status='mapped', name_origin='GUESS', build_id='synthetic')
 
     def test_existing_usable_accessor_beats_smaller_new_class_and_destructor(self):
         rows = contrib.candidates(self.root, self.data)
@@ -200,15 +244,36 @@ class Ranking(unittest.TestCase):
         self.assertEqual({r['rva'] for r in rows}, {'0x1000', '0x3000'})
 
     def test_next_excludes_live_foreign_claim_before_recommending(self):
-        data = dict(self.data, target_build_id='synthetic')
-        data['functions'] = [dict(f, build_id='synthetic') for f in data['functions']]
         gh = fixtures.FakeGitHub({0x4000: [fixtures.item('someone', 0)]})
         ctx = contrib.Ctx(repo=self.root, private=self.root / '.local/contrib', github=gh, as_json=True)
-        with patch.object(contrib, 'inventory', return_value=data):
+        with patch.object(contrib, 'inventory', return_value=self.data):
             _code, result, _next = contrib.cmd_next(ctx, contrib.parser().parse_args(['next']))
         self.assertNotIn('0x4000', [r['rva'] for r in result['candidates']])
         self.assertTrue(result['claims_checked'])
         self.assertTrue(all(r['reason'] for r in result['candidates']))
+
+    def test_next_demotes_an_rva_with_a_conflicting_binding(self):
+        old_name = '?OldHelper@@YAHPEAVTESReady@@@Z'
+        offered_name = '?HasFlag@TESReady@@QEAA_NH@Z'
+        entry = {'rva': 0x4000, 'size': None}
+        ctx = contrib.Ctx(repo=self.root, github=fixtures.FakeGitHub(), as_json=True)
+        for symbols, folds, rank in (({old_name: entry}, [], 4),
+                                     ({old_name: entry, offered_name: entry}, [], 4),
+                                     ({offered_name: entry}, [], 0),
+                                     ({old_name: entry, offered_name: entry}, [[old_name, offered_name]], 0)):
+            with self.subTest(symbols=list(symbols), folds=folds):
+                self.symbol_map.write_text(json.dumps({'symbols': symbols, 'folds': folds}))
+                with patch.object(contrib, 'inventory', return_value=self.data), \
+                        patch.object(contrib.ready_queue, 'load_queue', return_value={0x4000: {'blocks': 8}}):
+                    _code, result, nxt = contrib.cmd_next(ctx, contrib.parser().parse_args(['next']))
+                row = next(c for c in result['candidates'] if c['rva'] == '0x4000')
+                self.assertEqual(row['readiness_rank'], rank)
+                self.assertEqual(row['callee_ready'], rank == 0)
+                self.assertEqual(result['counts']['callee_ready'], int(rank == 0))
+                self.assertTrue(nxt.endswith('0x4000' if rank == 0 else '0x2000'))
+                if rank == 4:
+                    self.assertIn('symbol binding needs preparation', row['reason'])
+                    self.assertIn('OldHelper', row['reason'])
 
     def test_placeholder_declarations_are_not_promoted(self):
         header = self.root / 'reconstruction/forms/TESReady.h'

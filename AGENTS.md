@@ -28,9 +28,12 @@ independent of Mudcrab; never apply another checkout's build/cache instructions 
   traces, saves and generated objects. Never force-add ignored paths.
 - No game files, binary bytes, disassembly, dumps, proprietary symbols/SDKs, leaked code or
   unlicensed copied code in commits, PRs, issues, logs, releases or CI artifacts. Maintainer
-  exceptions: names, declarations and code from the FNV decompilation `momusdigital/fnv_decomp@91e1b6e8`
-  may be reused in reconstructions, labelled `SIBLING(...)`, which is itself CC0 1.0 (`LICENSE`)
-  (`docs/authorizations.md`, Notes; `LEGAL.md`). The Fallout 3 decompilation
+  exceptions: names, declarations and code from the FNV decompilation `momusdigital/fnv_decomp@2b07cb3e`
+  (CC0 1.0 for the contributors' own work since `42baf49a`) may be reused in reconstructions, labelled
+  `SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)`. The earlier pin `91e1b6e8` (label word `no-licence`)
+  stays valid for merged units and is not rewritten. Upstream's Xbox 360 PDB-derived names and
+  Havok/Gamebryo material are not covered by CC0 and stay excluded (`docs/authorizations.md`, Notes;
+  `LEGAL.md`). The x64 ports of both siblings are described in `docs/sibling-x64.md`. The Fallout 3 decompilation
   `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) is handled the same way, labelled
   `SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)`. The anonymous private Fallout 4 sibling
   `fo4-private@1b765c70` is also permitted for game-code folders only, with author permission conditional on anonymity, labelled
@@ -86,7 +89,7 @@ tool and step only, never with game bytes or disassembly.
 
 Bulk work ships as one commit and one PR: hash or data publishes, inventory refreshes, mechanical
 rewrites, folder moves. Split it only for a named hard limit, such as the 1 MiB per-file cap (split
-files, not PRs), the 200-function cap per reconstruction PR, or a GitHub size limit. Name that
+files, not PRs), the 2000-function cap per reconstruction PR, or a GitHub size limit. Name that
 limit in the PR. "Test the first chunk", "safer in pieces" and staged rollouts are not reasons:
 measure on the single PR instead.
 

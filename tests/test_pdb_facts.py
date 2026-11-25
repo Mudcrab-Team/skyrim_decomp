@@ -102,3 +102,39 @@ class Canonical(unittest.TestCase):
         self.assertEqual(pf.canonical('Widget::ctor'), pf.canonical('Widget::Widget'))
         self.assertEqual(pf.canonical('Widget::Dtor'), pf.canonical('Widget::~Widget'))
         self.assertNotEqual(pf.canonical('Widget::Poke'), pf.canonical('Widget::Prod'))
+
+
+class Fo4Cache(unittest.TestCase):
+    def test_the_database_is_parsed_once_however_many_functions_ask(self):
+        import symbol_corroboration
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'db.pdb'
+            path.write_bytes(b'x')
+            model = mock.Mock(variants={})
+            pf._FO4_CACHE.clear()
+            with (mock.patch.object(pf.pdb_types, 'Msf') as msf, mock.patch.object(pf.pdb_types, 'Tpi'),
+                  mock.patch.object(pf.pdb_types, 'Model', return_value=model) as build,
+                  mock.patch.object(symbol_corroboration, 'pdb_publics', return_value=[('?Poke@Widget@@QEAAXXZ', None)]) as publics,
+                  mock.patch.object(pf.symbol_align, 'member_of', return_value=('Widget', 'Poke'))):
+                first = pf.fo4_facts(path, 'Widget::Poke')
+                second = pf.fo4_facts(path, 'Widget::Poke')
+                other = pf.fo4_facts(path, 'Widget::Prod')
+            self.assertEqual((msf.call_count, build.call_count, publics.call_count), (1, 1, 1))
+            self.assertEqual(first, second)
+            self.assertIsNotNone(first)
+            self.assertIsNone(other)
+
+
+class LoadCache(unittest.TestCase):
+    def test_a_file_is_parsed_once_until_it_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'data').mkdir()
+            (root / 'data' / 'progress.json').write_text('{"functions": [{"rva": 16, "name": "A::B"}, {"rva": 16, "name": "dup"}]}')
+            with mock.patch.object(pf.json, 'loads', wraps=pf.json.loads) as parse:
+                self.assertEqual(pf.inventory_entry(root, 16)['name'], 'A::B')
+                self.assertEqual(pf.inventory_names(root), [(16, 'A::B'), (16, 'dup')])
+                self.assertEqual(parse.call_count, 1)
+            (root / 'data' / 'progress.json').write_text('{"functions": [{"rva": 32, "name": "C::D"}]}')
+            self.assertIsNone(pf.inventory_entry(root, 16))
+            self.assertEqual(pf.inventory_entry(root, 32)['name'], 'C::D')

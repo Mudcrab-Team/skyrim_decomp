@@ -22,6 +22,7 @@ from check_source_digest import include_closure, source_digest_cache
 import source_moves
 from lint_reconstruction import lint_tree
 import cost_ledger
+import local_load
 import revision_cache
 from validation_reads import read_bytes, read_text, read_once
 import record_store
@@ -758,26 +759,39 @@ def _work(fn):
     return outcome, (key, memo.get(key))
 
 
-def _check_functions(entries, target, root):
+def _check_functions(entries, target, root, *, staged=False):
     jobs = int(os.environ.get('SR_CHECK_JOBS') or os.cpu_count() or 1)
+    if staged and local_load.limit() is not None:
+        # Staged validation can hand the slot back between groups without losing its read and digest caches.
+        for start in range(0, len(entries), _CHUNK):
+            with local_load.heavy('staged check', foreground=False):
+                for fn in entries[start:start + _CHUNK]:
+                    yield _check_function(fn, target, root)
+        return
     if jobs < 2 or len(entries) < _PARALLEL_MIN or 'fork' not in multiprocessing.get_all_start_methods():
         for fn in entries:
             yield _check_function(fn, target, root)
         return
     global _WORK
-    _WORK = (target, root)
-    try:
-        with multiprocessing.get_context('fork').Pool(jobs) as pool:
-            memo = _STALE_MEMO.get()
-            for outcome, learned in pool.imap(_work, entries, chunksize=_CHUNK):
-                if memo is not None and learned is not None and learned[1] is not None:
-                    memo[learned[0]] = learned[1]
-                yield outcome
-    finally:
-        _WORK = None
+    # A machine capped by local_max_heavy gets no more workers than the slots it was granted.
+    with local_load.heavy('check', want=jobs, foreground=False) as granted:
+        if granted < 2:
+            for fn in entries:
+                yield _check_function(fn, target, root)
+            return
+        _WORK = (target, root)
+        try:
+            with multiprocessing.get_context('fork').Pool(granted) as pool:
+                memo = _STALE_MEMO.get()
+                for outcome, learned in pool.imap(_work, entries, chunksize=_CHUNK):
+                    if memo is not None and learned is not None and learned[1] is not None:
+                        memo[learned[0]] = learned[1]
+                    yield outcome
+        finally:
+            _WORK = None
 
 
-def validate(data, target, root=None, stale_ok=False):
+def validate(data, target, root=None, stale_ok=False, *, staged=False):
     """Validate the inventory; `stale_ok` (for tools that are about to clear staleness) skips the
     `matched` checks of stale entries instead of failing on them: True for every entry, or a set of
     function ids that may be stale. The result is never acceptance."""
@@ -821,7 +835,7 @@ def validate(data, target, root=None, stale_ok=False):
     # Units share headers and most entries share a unit, so resolving include closures once per
     # validation (not once per entry, per worker) is what keeps a full-inventory pass tolerable.
     with source_digest_cache():
-        for outcome in _check_functions(heavy, target, root):
+        for outcome in _check_functions(heavy, target, root, staged=staged):
             if outcome is not None:
                 stale.append(outcome)
     ordered_ranges = sorted(ranges)
@@ -953,34 +967,43 @@ def background(calls):
         for call, args in calls:
             call(*args)
         return
-    ctx = multiprocessing.get_context('fork')
-    started = []
-    try:
-        # Forked before the validation pool starts any thread, so no child inherits a held lock.
-        for call, args in calls:
-            receive, send = ctx.Pipe(duplex=False)
-            process = ctx.Process(target=_child, args=(send, call, args))
-            process.start()
-            send.close()
-            started.append((process, receive))
-        yield
-        failure = None
-        for process, receive in started:
-            try:
-                kind, value = receive.recv()
-            except EOFError:
-                kind, value = 'err', ValueError('a parallel check ended without a result')
-            process.join()
-            if kind == 'err' and failure is None:
-                failure = value
-        if failure is not None:
-            raise failure
-    finally:
-        for process, receive in started:
-            if process.is_alive():
-                process.terminate()
-            process.join()
-            receive.close()
+    # The body and each forked check are processes: all of them must fit the machine's heavy-job slots,
+    # otherwise the checks run in order after the body, in this one process.
+    with local_load.heavy('check', want=1 + len(calls), foreground=False) as granted:
+        if granted < 1 + len(calls):
+            yield
+            for call, args in calls:
+                call(*args)
+            return
+        ctx = multiprocessing.get_context('fork')
+        started = []
+        try:
+            # Forked before the validation pool starts any thread, so no child inherits a held lock.
+            for call, args in calls:
+                receive, send = ctx.Pipe(duplex=False)
+                process = ctx.Process(target=_child, args=(send, call, args))
+                process.start()
+                send.close()
+                started.append((process, receive))
+            with local_load.reserved(len(started)):
+                yield
+            failure = None
+            for process, receive in started:
+                try:
+                    kind, value = receive.recv()
+                except EOFError:
+                    kind, value = 'err', ValueError('a parallel check ended without a result')
+                process.join()
+                if kind == 'err' and failure is None:
+                    failure = value
+            if failure is not None:
+                raise failure
+        finally:
+            for process, receive in started:
+                if process.is_alive():
+                    process.terminate()
+                process.join()
+                receive.close()
 
 
 @read_once()
@@ -1009,7 +1032,7 @@ def _load_uncached(staged=False):
         subprocess.check_call(['git', 'checkout-index', '--all', f'--prefix={tmp}/'], cwd=ROOT)
         root = Path(tmp)
         data = validate(json.loads(read_text(root / 'data/progress.json')),
-                        json.loads(read_text(root / 'builds/target.json')), root)
+                        json.loads(read_text(root / 'builds/target.json')), root, staged=True)
         lint(root)
         check_index(root, data)
         check_costs(root, data)
@@ -1244,30 +1267,29 @@ def check_git(root=ROOT, staged=False, content_revision=None, only=None):
     return count
 
 
-# Staged additions that need no inventory, index or picture re-check: a new unit is judged by the
-# source lint and the blob scan alone, and those read nothing that another unit can change.
-SCOPED_NOTES = re.compile(r'docs/cookbook-notes/[A-Za-z0-9_.-]+\.md')
+# Prose edits keep existing evidence paths intact. Infrastructure-only changes get the full
+# validation and tests in CI, so the local publication guard only needs their staged blobs.
+STAGED_PROSE = re.compile(r'(?:docs|findings|tools|tests)/.+\.md|(?:README|CONTRIBUTING)\.md')
+STAGED_INFRA = re.compile(r'(?:tools|tests)/.+\.py|\.github/workflows/[^/]+\.ya?ml')
 
 
 def scoped_staged_paths(root=ROOT):
-    """The staged paths when the change is only new unit sources (or cookbook notes), else None.
-
-    Anything else (an edit or deletion of a tracked file, metadata, tools, recipes, generated
-    files) can change what another entry's validation sees, so it keeps the whole-tree check.
-    """
+    """Paths for a staged blob scan and any new-unit lint, or None for full validation."""
     out = subprocess.check_output(['git', 'diff', '--cached', '--name-status', '--no-renames', '-z'],
                                   cwd=root).decode('utf-8').split('\0')
     fields = [f for f in out if f]
     if not fields or len(fields) % 2:
         return None
     from lint_reconstruction import SOURCE
-    names = []
-    for status, name in zip(fields[::2], fields[1::2]):
-        # The lint's own shape rule decides what a unit source is; a notes file needs the blob scan only.
-        if status != 'A' or not (SOURCE.fullmatch(name) or SCOPED_NOTES.fullmatch(name)):
-            return None
-        names.append(name)
-    return names
+    rows = list(zip(fields[::2], fields[1::2]))
+    if any(status not in ('A', 'M') for status, _ in rows):
+        return None
+    names = fields[1::2]
+    if all(STAGED_PROSE.fullmatch(n) or STAGED_INFRA.fullmatch(n) for n in names):
+        return names
+    if all(STAGED_PROSE.fullmatch(n) or (s == 'A' and SOURCE.fullmatch(n)) for s, n in rows):
+        return names
+    return None
 
 
 def scoped_context(root, names):
@@ -1290,12 +1312,14 @@ def scoped_context(root, names):
 
 
 def check_staged_scoped(root, names):
-    """Blob scan plus source lint for the staged units only; (files scanned, None)."""
-    import staged_exports
+    """Scan staged blobs and run source lint for staged new units."""
     count = check_git(root, staged=True, only=names)
     sources = [n for n in names if n.startswith('reconstruction/')]
+    if not sources:
+        return count, None
+    import staged_exports
     with staged_exports.directory(root) as tmp:
-        wanted = [*names, *scoped_context(root, names)]
+        wanted = [*sources, *scoped_context(root, sources)]
         subprocess.run(['git', 'checkout-index', '-z', f'--prefix={tmp}/', '--stdin'], cwd=root,
                        input='\0'.join(wanted).encode('utf-8') + b'\0', check=True)
         lint(Path(tmp), sources)
@@ -1309,7 +1333,7 @@ def run(staged=False, then=None, full=False):
     builds from the validated data does not scan or validate again.
     """
     if staged and not full and then is None:
-        names = scoped_staged_paths()
+        names = scoped_staged_paths(ROOT)
         if names:
             return check_staged_scoped(ROOT, names)
     # Check anonymity before metadata/lint diagnostics could quote offending content.
@@ -1327,15 +1351,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--staged', action='store_true', help='Check index blobs and staged metadata')
     parser.add_argument('--full', action='store_true',
-                        help='With --staged, check the whole index instead of only the staged new units')
+                        help='With --staged, force a complete check of the index')
     args = parser.parse_args()
     try:
         count, data = run(args.staged, full=args.full)
-    except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError) as exc:
+    except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError, local_load.LoadGuardError) as exc:
         print(f'FAIL: {exc}', file=sys.stderr)
         return 1
     if data is None:
-        print(f'PASS: {count} staged files (scan and source lint; inventory unchanged, use --full for the whole index). '
+        print(f'PASS: {count} staged files (publication scan and new-unit lint where applicable). '
               'No Skyrim byte comparison performed.')
         return 0
     print(f'PASS: metadata and {count} tracked files. No Skyrim byte comparison performed.')

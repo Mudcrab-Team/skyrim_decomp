@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "alternatives": {
+    "reconstruction/recipes/msvc-19.16.27054-o2.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/msvc-19.16.27054-o2-noeh.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/msvc-19.16.27054-o2-reconstruction.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/msvc-19.16.27054-o2-noeh-reconstruction.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/msvc-19.16.27054-o2-noeh-root-includes.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/o2-fpfast.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/o2-fpfast-noeh.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/o2-fpfast-reconstruction.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/o2-fpfast-noeh-reconstruction.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/o2-fpfast-root-includes.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/o2-fpfast-noeh-root-includes.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/o2-os.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/o2-os-noeh.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/o2-os-reconstruction.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/o2-os-noeh-reconstruction.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    },
+    "reconstruction/recipes/o2-os-root-includes.json": {
+      "accept_also": [
+        {
+          "id": "noeh",
+          "recipe": "reconstruction/recipes/o2-os-noeh-root-includes.json",
+          "remove": [
+            "/EHsc"
+          ],
+          "add": [],
+          "requires": "target-no-eh-frame"
+        }
+      ]
+    }
+  }
+}

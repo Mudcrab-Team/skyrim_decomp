@@ -62,7 +62,7 @@ LICENSE is CC0 1.0, so no permission exception is involved; labels read `SIBLING
 (`docs/authorizations.md`, Notes). It is another game, so it is never evidence about the Skyrim binary.
 
 **Sibling decompilation (FNV): maintainer decision.** The maintainer (awarebayes) has decided
-that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `91e1b6e8` may be
+that the Fallout: New Vegas decompilation `momusdigital/fnv_decomp` at revision `2b07cb3e` (earlier pin `91e1b6e8` stays valid for merged units) may be
 read by Engineers and Drafters and that its names, declarations and code may be reused in
 reconstructions, including published ones, where they fit the Skyrim target
 (`docs/authorizations.md`, Notes). The facts the maintainer weighed are stated plainly here: that
@@ -109,7 +109,7 @@ on condition of anonymity (author's terms quoted: 'no attribution. or credit ano
 Its game-code names, declarations and bodies may be read and reused on the same reconstruction
 and publication terms as the FNV decision above, within the exact game-code folder allowlist
 and pin in `docs/authorizations.md`. Its Havok, HavokLib, Scaleform, SDK and Gamebryo folders,
-vendor-derived material elsewhere and mixed generated aggregates are excluded. Everything
+vendor-derived material elsewhere and mixed generated aggregates are excluded from reuse, except that its Gamebryo folder may be read as a study reference with rewrite-only units (`docs/authorizations.md`). Everything
 reused is labelled `SIBLING(fo4-private@1b765c70, author-permission)` and each reused body has
 an anonymous unit-header source/path/line citation. This permission is not a general licence
 or a grant of third-party rights, and is not dedicated under this repository's CC0 licence (`LICENSE`).
@@ -130,6 +130,10 @@ Nothing in this repository grants third-party rights. See `LICENSE` for the scop
 reconstructions, docs and research; MIT for infrastructure; per-file exceptions); do not label the
 entire repository MIT or CC0. Material reused from FNV under the decision above comes from a CC0
 project; it is labelled `SIBLING(...)` for provenance.
+Community libraries (CommonLibF4 under MIT, GPL forks of it and any other community library) may be
+used for names, declarations and bodies under the maintainer decision in `docs/authorizations.md`
+("Community and sibling source decisions"); each use is labelled `COMMUNITY(<owner>/<repo>@<pin>, <SPDX>)`
+and a GPL label makes the file state the GPL licence.
 Contributor authorship alone does not establish rights to all underlying material.
 
 US law distinguishes ideas/methods from protected expression in [17 USC 102(b)](https://www.law.cornell.edu/uscode/text/17/102).

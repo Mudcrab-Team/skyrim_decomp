@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x54e9c0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "switched to the fast floating-point recipe so the square root inlines",
+        "used a range-for leader scan and a single 16-byte member copy",
+        "removed initialisers of the Euler outputs the callee fills",
+        "wrote the saved-pose branch as save first, restore out of line, and flipped the size zero ternary in begin and end",
+        "typed the pose blocks as a Havok transform-shaped struct and used 16-byte aligned constants",
+        "swapped operand order inside Cross and moved the done flag (identical code)",
+        "kept every shuffled quaternion lane in a shared object (worse, reverted)"
+      ],
+      "still_differs": "Packed quaternion math differs in register allocation and the operand order of the pose composition, and the target has an unexplained zero register and a home slot at function entry.",
+      "suspected_cause": "Not determined; other runs guess an unwind flag for a conditional temporary and a frame-pointer style frame, both unverified.",
+      "best_similarity": 79.9,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/54e9c0/1"
+      }
+    }
+  ]
+}

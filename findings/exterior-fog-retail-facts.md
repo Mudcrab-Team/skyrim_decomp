@@ -27,9 +27,9 @@ The master SHA-256 is `e198c3b85e5e48e0c92a6580d8f66e644256b68d812ee32b61735cf9b
 
 ### G01. Weather record fields
 
-**Verified, static only.** Each of the 84 scanned `WTHR` records in `Skyrim.esm` has a 32-byte `FNAM` subrecord. Its eight float32 values are day near, day far, night near, night far, day power, night power, day max, and night max. The loader stores them at weather offsets `+0x678` through `+0x694`. The exterior scalar mixer reads all eight. Far is the ramp endpoint, power controls the exponent, and max caps fog strength in G04. These eight values supply no separate weather high-clip field. Evidence at `0x14030894b–0x1403089ab` and `0x140413b17–0x140413cee`, with the `FogData` layout (CRASHLOGGER_PDB(59818@2026.10.24)).
+**Verified, static only.** Each scanned `WTHR` record in the master has an `FNAM` subrecord. The scanned record count and the subrecord length come from the game plugin, not from the executable. Its eight float32 values are day near, day far, night near, night far, day power, night power, day max, and night max. The loader stores them at weather offsets `+0x678` through `+0x694`. The exterior scalar mixer reads all eight. Far is the ramp endpoint, power controls the exponent, and max caps fog strength in G04. These eight values supply no separate weather high-clip field. Evidence at `0x14030894b–0x1403089ab` and `0x140413b17–0x140413cee`, with the `FogData` layout (CRASHLOGGER_PDB(59818@2026.10.24)).
 
-**Verified, static only.** `NAM0` supplies packed colours to the weather table at `+0x698`. Each row stores sunrise, day, sunset, and night. Fog near uses zero-based row 1 and fog far uses row 12. Among the 84 records, the counts are 72 at 272 bytes, 11 at 224 bytes, and one at 208 bytes. Both fog rows fit in all three lengths. Evidence at `0x140308366`, `0x14030849d–0x140308509`, and `0x1404133e0–0x140413491`, with the day-part selection in G02.
+**Verified, static only.** `NAM0` supplies packed colours to the weather table at `+0x698`. Each row stores sunrise, day, sunset, and night. Fog near uses zero-based row 1 and fog far uses row 12. The `NAM0` subrecord length varies among the scanned records. The lengths and their counts are read from the game plugin, not from the executable. Both fog rows fit in every length found there. Evidence at `0x140308366`, `0x14030849d–0x140308509`, and `0x1404133e0–0x140413491`, with the day-part selection in G02.
 
 **Confidence: high** for the scanned master and the traced loader and mixer. Record overrides and other formats remain **unverified**.
 
@@ -44,7 +44,7 @@ The master SHA-256 is `e198c3b85e5e48e0c92a6580d8f66e644256b68d812ee32b61735cf9b
 | `C` | Sunset begin |
 | `D` | Sunset end plus `fDaytimeColorExtension`, capped at `23.99` |
 
-The compiled extension is `0.5` hour at `0x14209e5a0`. The master climate record `0x00000812` has timing bytes `33, 60, 96, 123`. With the compiled extension, its endpoints are `5, 10, 16, 21` hours to the precision shown. Evidence at `0x1402a5b52/0x1402a5ba5` and `0x140419ab0/0x140419d00/0x140419d50/0x140419bb0`.
+The compiled extension is `0.5` hour at `0x14209e5a0`. The timing bytes of a master climate record are read from the game plugin, not from the executable. Each climate record gives its own endpoints through the table above and the compiled extension. Evidence at `0x1402a5b52/0x1402a5ba5` and `0x140419ab0/0x140419d00/0x140419d50/0x140419bb0`.
 
 **Verified, static only.** The weather scalar branch requires current weather, Sky mode 3, and two null alternate lighting lookups. For ordered, distinct endpoints and game hour `h`, the day weight is `(h−A)/(B−A)` for `A < h < B`, one for `B ≤ h ≤ C`, and `(D−h)/(D−C)` for `C < h < D`. Otherwise the weight is zero. The branch uses this same weight for near, far, power, and max. For each field and each weather, the result is the weighted blend of its day and night values. If previous weather exists, the result is `q × current + (1−q) × previous` after each weather's day/night blend. The references are at `Sky+0x48/+0x50` and `q` at `+0x1b8` (`Sky` is a CRASHLOGGER_PDB(59818@2026.10.24) name). Evidence at `0x140413a36–0x140413cee`.
 
@@ -106,6 +106,8 @@ Here `M` is an intermediate. The native slot-12 writer supplies `S=0` when bit 1
 
 **Confidence: high** for the checked shader expressions and the static slot-12 flag mapping. Runtime flag choices, scene constants, exceptional power inputs, and later frame processing remain **unverified**.
 
+**Amendment (2026-11-24, UNREVIEWED).** **Scope.** G04 covers the Lighting vertex and pixel records only. At (S,T) = (1,0) the pixel tail returns `L` in every channel where `k × M ≤ B`, so it does not write the fogged colour `M` there. A separate image-space composite pass applies fog per pixel from the depth texture, using the same scene fog property ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md), G04 and G05). Static only.
+
 ### G05. Object and terrain LOD
 
 **Verified, static only.** The pinned image binds Lighting to package group 6. The technique table names 13 and 15 `LODOBJECTS` and `LODOBJECTSHD`. The following list covers every entry for those two techniques in group 6. Each prefix combines with each suffix to give a checked key.
@@ -140,6 +142,8 @@ For these object vertices and the two ordinary comparison vertices, the fog leng
 
 **Verified, static only.** The `bSAOApplyFog` value reaches a separate flag and shader setup at `0x141541f0a–0x141541f11` and `0x141542cf8`. **Unverified.** A link from these three booleans to the checked exterior Lighting expressions.
 
+**Amendment (2026-11-24, UNREVIEWED).** This supersedes the unverified statement about `bSAOApplyFog` in the paragraph above. **Verified, static only.** `bSAOApplyFog` is not linked to the checked Lighting expressions. Its cached byte (`0x343639b`, also flipped by the console command `ToggleFog`, short `tfog`, handler `0x37d490`) decides whether the image-space SAO composite pass receives the scene fog property ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G04). **Unverified.** A link from `bFogEnabled:Weather` and `bDo30VFog:Display` to the checked Lighting expressions.
+
 **Verified, static only.** None of `Skyrim_Default.ini`, `Low.ini`, `Medium.ini`, `High.ini`, or `Ultra.ini` contains a case-insensitive match for fog, clip, sunrise, sunset, `NoLODFarDistance`, `WeatherTrans`, `DaytimeColorExtension`, or `fLightingOutputColourClampPostLit`. An ASCII setting-name scan of `.data` and `.rdata` found no floating-point setting with literal form `f…Fog…:Section`. **Unverified.** Other names, indirect consumers, and overrides in user INIs.
 
 **Confidence: high** for the byte gate, the arithmetic, the compiled values, and the five template scans. Runtime setting coverage remains **unverified**.
@@ -151,6 +155,8 @@ For these object vertices and the two ordinary comparison vertices, the fog leng
 ## Interpretation and alternatives
 
 The checked Lighting path evaluates a projection-dependent curve at vertices and interpolates both fog strength and fog RGB for the pixel calculation. A per-pixel depth or world-space radial calculation would change this input. The weather max limits vertex fog strength. The gated scene far override can change CPU endpoints before the shader ramp.
+
+**Amendment (2026-11-24, UNREVIEWED).** That statement concerns the Lighting path. The image-space composite pass is a per-pixel depth calculation of that kind, applied after the Lighting draws ([exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G05).
 
 ## Negative results and limits
 
@@ -178,3 +184,7 @@ Summary: 2 groups confirmed, 5 corrected, 0 rejected.
 ## Reviewer and outcome
 
 Reviewed independently on 2026-11-22 by `gpt-6.2-sol` (Codex, high effort, fresh context), separate from the author. Outcome: 2 confirmed (G01, G07), 5 corrected (G02 to G06), 0 rejected. Static only. A review verdict is not match evidence, and transfer eligibility is not decided. Unverified: live draw bindings and bound values, including the active scene, shader key pairing and per-draw constants; visible and rendered results, including degenerate endpoints and final frame output; the sky, cloud, sun and moon fog paths; other Lighting techniques, shader groups and packages beyond the enumerated records; the runtime producer of the far-override gate byte and the configurations that open it; forced and interrupted weather transition routing, cache timing at a climate change, and coincident or unordered endpoints; other `NAM0` formats and record overrides; any link from `bFogEnabled`, `bDo30VFog` and `bSAOApplyFog` to the checked Lighting expressions; indirect settings consumers, other setting names and user INI overrides; runtime slot-12 flag choices and exceptional power inputs; the active interior draw binding.
+
+**Amendment (2026-11-24, UNREVIEWED).** Later note (2026-11-24): the `bSAOApplyFog` item in the unverified list is resolved by [exterior-haze-trace-retail-facts.md](exterior-haze-trace-retail-facts.md) G04 (gate of the composite fog, not of the Lighting expressions).
+
+**Amendment (2026-11-24, UNREVIEWED):** plugin-derived values were replaced by symbolic text (hygiene). Rules and arithmetic are unchanged.

@@ -123,7 +123,7 @@ def entry(build_id, rva, size, cls=None):
 
 # Kinds a PR may claim without an inventory entry. The on-demand publisher and the record validator must agree
 # on this, or a function is published and compared but its record is then refused.
-ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
+ON_DEMAND_KINDS = ('ordinary', 'static-initializer', 'teardown')
 
 
 def resolve(root, build_id, rva, inventory_rvas, table=None):
@@ -134,14 +134,18 @@ def resolve(root, build_id, rva, inventory_rvas, table=None):
     """
     if rva in inventory_rvas:
         return None
-    size = published_sizes(root).get(rva)
-    if size is None:
-        return None
+    return resolve_many(root, build_id, [rva], table).get(rva)
+
+
+def resolve_many(root, build_id, rvas, table=None, *, sizes=None):
+    """Resolve untracked RVAs with one read of the published bounds and offered classes."""
+    sizes = published_sizes(root) if sizes is None else sizes
+    selected = {rva: sizes[rva] for rva in rvas if rva in sizes}
     if table is not None:
-        row = table.get(rva)
-        if not row or row.get('kind') not in ON_DEMAND_KINDS or row.get('size') != size:
-            return None
-    return entry(build_id, rva, size, offered_classes(root).get(rva))
+        selected = {rva: size for rva, size in selected.items()
+                    if (row := table.get(rva)) and row.get('kind') in ON_DEMAND_KINDS and row.get('size') == size}
+    classes = offered_classes(root) if selected else {}
+    return {rva: entry(build_id, rva, size, classes.get(rva)) for rva, size in selected.items()}
 
 
 def load_table(path):

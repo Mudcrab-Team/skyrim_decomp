@@ -1,4 +1,5 @@
-// Character, Point3, x, y, z, Value, Compute, Function685c00, Function68ab20, PrecacheData, Lookup, Apply, Start, Continue, Finish: GUESS(low)
+// Character, Point3, x, y, z, Value, Compute, Function685c00, Function68ab20, Lookup, Apply, Start, Continue, Finish: GUESS(low)
+// Character::PrecacheData: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 // Inferred names: GUESS(low)
 // Origin: original reconstruction; no sibling source used.
 // Source exposure: binary-analysis (local binary analysis only).

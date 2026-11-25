@@ -57,7 +57,7 @@ class RankTest(unittest.TestCase):
     def test_every_rule_is_ranked_and_linked(self):
         text = (ROOT / 'docs' / 'matching-cookbook.md').read_text()
         rules = cookbook_rank.parse_rules(text)
-        self.assertEqual(sorted(rules), list(range(1, 68)))
+        self.assertEqual(sorted(rules), list(range(1, max(rules) + 1)))
         for n in rules:
             self.assertIn(f'<a id="rule-{n}"></a>', text)
             self.assertIn(f'](#rule-{n}) |', text)

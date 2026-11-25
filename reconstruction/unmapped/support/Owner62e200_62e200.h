@@ -1,0 +1,13 @@
+// Source exposure: mixed (names from the community PDB table where labelled; sizes from the pinned image listing).
+// Code origin: original; a class with a virtual destructor, sized from the target; the sibling decompilation only pointed at the shape.
+// SPDX-License-Identifier: CC0-1.0
+// Owner62e200, Owner62e200::~Owner62e200: GUESS(low); placeholder name
+#pragma once
+
+class Owner62e200
+{
+  public:
+    Owner62e200();
+    virtual ~Owner62e200();
+    char padding_[32];
+};

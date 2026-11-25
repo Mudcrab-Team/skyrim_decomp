@@ -29,7 +29,7 @@ AREAS = (
     'skyrim_shared/magic', 'skyrim_shared/pathfinding', 'skyrim_shared/perks', 'skyrim_shared/quest',
     'skyrim_shared/refs', 'skyrim_shared/saveload', 'skyrim_shared/sky', 'skyrim_shared/tempeffects',
     'skyrim_shared/world',
-    'thirdparty/scaleform',
+    'std', 'thirdparty/scaleform',
     'unmapped/buffers', 'unmapped/fields', 'unmapped/leaves', 'unmapped/represented',
     'unmapped/static', 'unmapped/storage', 'unmapped/support', 'unmapped/wrappers',
 )
@@ -84,6 +84,8 @@ def owner_of(stem):
 
 # First match wins; order matters (a specific family before its general prefix).
 RULES = (
+    # explicit instantiations of the compiler's standard templates over game or scalar types
+    (r'Std_', 'std'),
     # third-party libraries and the engine's script machine
     (r'(?:GFx|GAS|GRefCount|GRef)', 'thirdparty/scaleform'),
     (r'(?:NativeFunction|AutoPropertyFunction|FunctionPointerCallable|BoundArgumentCallable|BoundPairCallable|'

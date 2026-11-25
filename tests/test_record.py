@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from unittest import mock
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,6 +120,36 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.assertEqual((out['recorded'], out['refused']), ([], {self.fn['rva']: 'not in inventory'}))
         self.assertEqual((self.root / 'data/progress.json').read_bytes(), before)
 
+    def test_claim_time_function_refuses_overlapping_inventory_range(self):
+        self.data['functions'].remove(self.fn)
+        neighbor = self.data['functions'][0]
+        neighbor['rva'] = self.fn['rva'] - 16
+        neighbor['size'] = 17
+        self.save()
+        build_index.write_index(self.data, self.root)
+        self.publish(self.fn['rva'])
+        before = (self.root / 'data/progress.json').read_bytes()
+
+        out = self.apply()
+        self.assertEqual(out['recorded'], [])
+        self.assertEqual(out['refused'], {self.fn['rva']: 'overlaps an inventory function range'})
+        self.assertEqual((self.root / 'data/progress.json').read_bytes(), before)
+        self.assertFalse(record_store.is_file(self.root / REVIEW))
+
+        neighbor['size'] = 16
+        self.save()
+        self.assertEqual(self.apply()['recorded'], [self.fn['rva']])
+
+    def test_claim_time_function_refuses_overlap_with_an_entry_added_in_the_same_batch(self):
+        self.data['functions'].remove(self.fn)
+        self.save()
+        start = self.fn['rva']
+        self.publish(start, start + 1)
+
+        out = self.apply([start, start + 1])
+        self.assertEqual(out['recorded'], [start])
+        self.assertEqual(out['refused'], {start + 1: 'overlaps an inventory function range'})
+
     def test_a_refused_claim_time_function_adds_no_entry(self):
         self.data['functions'].remove(self.fn)
         self.save()
@@ -137,6 +168,17 @@ class RecordTests(GateFixture, unittest.TestCase):
         self.assertEqual(again['refused'][self.fn['rva']], 'already matched')
         self.assertEqual((self.root / 'data/progress.json').read_bytes(), snapshot)
 
+
+    def test_files_that_vanish_before_folding_are_an_error_not_a_commit_without_records(self):
+        real = record_store.fold
+
+        def wiped(root, names):
+            for name in names:
+                (Path(root) / name).unlink(missing_ok=True)  # another run cleaned the untracked records away
+            return real(root, names)
+        with mock.patch.object(record_store, 'fold', wiped):
+            with self.assertRaises(RuntimeError):
+                self.apply()
 
     def test_a_record_pointing_at_an_immutable_unit_map_carries_the_map_and_its_history(self):
         import symbol_map
@@ -168,6 +210,22 @@ class RecordTests(GateFixture, unittest.TestCase):
 
 
 class PushRetryTests(unittest.TestCase):
+    def test_permanent_remote_rejection_reports_the_git_error_without_retrying(self):
+        from unittest import mock
+
+        def git(root, *args, **kwargs):
+            if args[0] == 'push':
+                return subprocess.CompletedProcess(
+                    args, 1, '!\tHEAD:refs/heads/main\t[remote rejected] (protected branch)\nDone\n',
+                    'error: failed to push some refs\n')
+            return subprocess.CompletedProcess(args, 0, '', '')
+
+        with (mock.patch.object(record, 'apply', return_value={'recorded': [1], 'files': ['h']}),
+              mock.patch.object(record, 'git', side_effect=git) as commands):
+            with self.assertRaisesRegex(RuntimeError, r'git push exited 1: .*protected branch'):
+                record.record_and_push(Path('.'), 'x', [1], b'', 'Record', model='m', task_id='t')
+        self.assertEqual([call.args[1] for call in commands.call_args_list], ['add', 'commit', 'push'])
+
     def test_non_fast_forward_is_fetched_rebased_and_pushed(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)

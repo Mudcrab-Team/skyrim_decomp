@@ -50,7 +50,7 @@ DEFAULT_THRESHOLD = 0.75
 DEFAULT_SOURCES = {
     'CharmedBaryon/CommonLibSSE-NG': ('.local/sources/CommonLibSSE-NG', 'MIT', ('include', 'src')),
     'powerof3/CommonLibSSE': ('.local/sources/CommonLibSSE-po3', 'GPL-3.0', ('include', 'src')),
-    'momusdigital/fnv_decomp': ('.local/sources/fnv_decomp', 'no-licence', ('include', 'src')),
+    'momusdigital/fnv_decomp': ('.local/sources/fnv_decomp', 'CC0-1.0', ('include', 'src')),
     'momusdigital/f3_decomp': ('.local/sources/f3_decomp', 'CC0-1.0', ('include', 'src')),
     'fo4-private': ('.local/sources/fo4-private', 'author-permission', GAME_DIRS),
 }

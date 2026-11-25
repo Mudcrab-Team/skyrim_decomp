@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x14a630",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "used a union field plus one template helper per field type for the repeated resolve-form-id pattern",
+        "bound the callees (recall 0.50 to 1.00, no sim change)",
+        "tried a local pointer to the size field in the sound-array element removal (no change, reverted)",
+        "wrote the sound-array removal as a helper with a single-element special case and a range-remove call"
+      ],
+      "still_differs": "The sound-array element removal differs (the target keeps a pointer to the size field in a callee-saved register), prologue register saves differ, and the final flag setter is a tail jump in the draft but a normal call in the target.",
+      "suspected_cause": "Not determined; the drafter guesses a returned value kept alive or a later statement optimised away for the tail call, but never tested it.",
+      "best_similarity": 94.7,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/14a630/1"
+      }
+    }
+  ]
+}

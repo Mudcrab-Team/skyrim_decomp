@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x1007b70",
+  "records": [
+    {
+      "category": "other",
+      "tried": [
+        "unrolled the sixteen stage updates with compile-time recursion and forced inlining",
+        "made the third table 64-bit entries",
+        "used index loops for the two query-creation loops",
+        "reordered the window-created branch and the style test",
+        "bound the import entries for the Windows calls"
+      ],
+      "still_differs": "Per-stage dirty-bit updates are a single-bit-set form in the target but an or with a constant in the draft; some frame slots and a thread-local offset constant also differ.",
+      "suspected_cause": "Not determined; the drafter suggests testing whether a runtime-variable shift kept by the loop produces the single-bit-set form.",
+      "best_similarity": 92.77,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-sonnet-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/1007b70/1"
+      }
+    }
+  ]
+}

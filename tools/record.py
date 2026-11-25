@@ -31,6 +31,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
 import claimable  # noqa: E402
+from claims import ClaimIntervals  # noqa: E402
 import record_store  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
@@ -211,8 +212,11 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     target = _load(root, TARGET)
     by_rva = {fn['rva']: (i, fn) for i, fn in enumerate(data['functions']) if fn['build_id'] == build_id}
     out = {'recorded': [], 'refused': {}, 'files': []}
+    expected = []  # what the recorded functions must resolve to once folded
     changed, created = [], set()
     table = []
+    inventory_ranges = None
+    last_created_end = 0
     for rva in sorted(set(rvas)):
         index = None
         if rva in by_rva:
@@ -225,6 +229,12 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
             fn = claimable.resolve(root, build_id, rva, set(by_rva), table[0])
             if fn is None:
                 out['refused'][rva] = 'not in inventory'
+                continue
+            if inventory_ranges is None:
+                inventory_ranges = ClaimIntervals((start, start + row['size'])
+                                                  for start, (_, row) in by_rva.items())
+            if rva < last_created_end or inventory_ranges.overlaps(rva, rva + fn['size']):
+                out['refused'][rva] = 'overlaps an inventory function range'
                 continue
         report = f'reports/{build_id}/0x{rva:x}.json'
         review_path = root / review_record_path(fn)
@@ -274,11 +284,13 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
         if index is None:
             data['functions'].append(candidate)
             created.add(rva)
+            last_created_end = rva + candidate['size']
         else:
             data['functions'][index] = candidate
         changed.append(candidate)
         out['recorded'].append(rva)
         out['files'] += [report, review_record_path(fn)]
+        expected += [report, review_record_path(fn), record['symbol_map']['path']]
         # A unit map is immutable and content-addressed, so a record that points at one must carry it.
         for rel in (record['symbol_map']['path'], symbol_map.history_name(record['symbol_map']['path'])):
             if '/unit-symbols/' in rel and record_store.is_file(root / rel) and rel not in out['files']:
@@ -301,11 +313,27 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
                 out['files'].append(name)
     # Records are committed as shards; the loose files written above were only the working copy.
     out['files'] = record_store.fold(root, out['files'])
+    # Untracked files can vanish under a shared tree (a reset and clean by another run); folding then packs nothing
+    # while progress.json still says matched. Refuse to hand such a result to a commit.
+    lost = sorted({rel for rel in expected if not record_store.is_file(root / rel)})
+    if lost:
+        raise RuntimeError(f'{len(lost)} recorded file(s) are missing after folding, for example {lost[0]}')
     return out
 
 
 def git(root, *args, check=True):
-    return subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True, check=check)
+    done = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True)
+    if check and done.returncode:
+        raise RuntimeError(git_failure(args[0], done))
+    return done
+
+
+def git_failure(action, done):
+    lines = (done.stderr + '\n' + done.stdout).strip().splitlines()
+    detail = (next((line for line in lines if line.startswith(('fatal:', 'remote: error:'))), None)
+              or next((line.split('\t')[-1] for line in lines if line.startswith('!\t')), None)
+              or (lines[-1] if lines else 'no git output'))
+    return f'git {action} exited {done.returncode}: {detail}'
 
 
 def record_and_push(root, build_id, rvas, review_blob, message, push=True, **kwargs):
@@ -331,11 +359,13 @@ def record_and_push(root, build_id, rvas, review_blob, message, push=True, **kwa
             git(root, 'commit', '-q', '-m', message)
         if not push:
             return last
-        pushed = git(root, 'push', '-q', 'origin', 'HEAD:main', check=False)
+        pushed = git(root, 'push', '--porcelain', 'origin', 'HEAD:main', check=False)
         if pushed.returncode == 0:
             last['pushed'] = True
             return last
-    raise RuntimeError('push to main kept losing the race')
+        if '\t[remote rejected]' in pushed.stdout:
+            break
+    raise RuntimeError(git_failure('push', pushed))
 
 
 def main(argv=None):

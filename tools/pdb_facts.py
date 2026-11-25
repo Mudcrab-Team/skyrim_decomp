@@ -22,6 +22,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -98,18 +99,42 @@ def setup_lines(repo=ROOT, env=None, full=False):
 
 # --- inventory and committed data -----------------------------------------------------------------
 
+_LOADED = {}  # path -> (size, mtime_ns, parsed, derived): a review asks per function and the inventory is tens of MB
+_LOADED_LOCK = threading.Lock()
+
+
 def _load(path):
+    """The parsed JSON file, shared between callers (treat it as read-only); parsed again only when the file changes."""
+    return _loaded(path)[0]
+
+
+def _loaded(path):
+    path = Path(path)
     try:
-        return json.loads(Path(path).read_text())
+        stat = path.stat()
+        with _LOADED_LOCK:
+            kept = _LOADED.get(str(path))
+            if kept and kept[:2] == (stat.st_size, stat.st_mtime_ns):
+                return kept[2], kept[3]
+            parsed = json.loads(path.read_text())
+            derived = {}
+            if path.name == 'progress.json' and isinstance(parsed, dict):
+                rows = parsed.get('functions', [])
+                derived = {'by_rva': {fn['rva']: fn for fn in reversed(rows)},
+                           'names': [(fn['rva'], fn.get('name') or '') for fn in rows]}
+            _LOADED[str(path)] = (stat.st_size, stat.st_mtime_ns, parsed, derived)
+            return parsed, derived
     except (OSError, ValueError):
-        return {}
+        return {}, {}
 
 
 def inventory_entry(repo, rva):
-    for fn in _load(Path(repo) / 'data/progress.json').get('functions', []):
-        if fn['rva'] == rva:
-            return fn
-    return None
+    return _loaded(Path(repo) / 'data/progress.json')[1].get('by_rva', {}).get(rva)
+
+
+def inventory_names(repo):
+    """[(rva, name)] of every inventory row, built once per version of the file."""
+    return _loaded(Path(repo) / 'data/progress.json')[1].get('names', [])
 
 
 def committed_facts(repo, rva, name=None, tree=None, alignment=None):
@@ -157,6 +182,10 @@ def _undname(decorated):
 
 
 _MAP_CACHE = {}  # one parse of the map per process: a review asks about many functions
+# The Fallout 4 database is parsed once per process too: its type model costs seconds and about a gigabyte, and a
+# review asks about every function of a PR from several threads at once.
+_FO4_CACHE = {}
+_FO4_LOCK = threading.Lock()
 
 
 def map_facts(path, rva, name, inventory):
@@ -193,23 +222,36 @@ def map_facts(path, rva, name, inventory):
             'tier': hit[2] if hit else None, 'label': 'SYMBOLS(tesv-2013-map)'}
 
 
+def _fo4_parsed(path):
+    """({(class, member): [decorated names]}, type model) of the database, parsed once per file version."""
+    stat = Path(path).stat()
+    key = (str(path), stat.st_size, stat.st_mtime_ns)
+    with _FO4_LOCK:
+        if key not in _FO4_CACHE:
+            import symbol_corroboration
+            _FO4_CACHE.clear()
+            msf = pdb_types.Msf(Path(path).read_bytes())
+            members = {}
+            for dec, _home in symbol_corroboration.pdb_publics(path):
+                m = symbol_align.member_of(dec)
+                if m:
+                    members.setdefault((m[0], m[1]), []).append(dec)
+            _FO4_CACHE[key] = (members, pdb_types.Model(pdb_types.Tpi(msf.stream(2))))
+        return _FO4_CACHE[key]
+
+
 def fo4_facts(path, name):
     """Layout and method prototypes for the Fallout 4 class of the same name, when the class is shared."""
     cls, _, method = (name or '').rpartition('::')
     if not cls:
         return None
-    import symbol_corroboration
-    protos = []
-    for dec, _home in symbol_corroboration.pdb_publics(path):
-        m = symbol_align.member_of(dec)
-        if m and m[0] == cls and m[1] == method:
-            protos.append(dec)
+    members, model = _fo4_parsed(path)
+    protos = list(members.get((cls, method), ()))
     layout = None
-    msf = pdb_types.Msf(Path(path).read_bytes())
-    model = pdb_types.Model(pdb_types.Tpi(msf.stream(2)))
     if cls in model.variants:
         _key, index = model.variants[cls][0]
-        layout = pdb_types.Renderer(model).render(index).text.rstrip('\n').split('\n')
+        with _FO4_LOCK:  # the renderer memoises into the shared model
+            layout = pdb_types.Renderer(model).render(index).text.rstrip('\n').split('\n')
     if not protos and not layout:
         return None
     return {'prototypes': _undname(protos[:4]) if protos else [], 'layout': layout, 'class': cls,
@@ -223,7 +265,7 @@ def collect(repo, rva, local=True, env=None):
     facts = {'rva': f'0x{rva:x}', 'inventory_name': name, 'committed': committed_facts(repo, rva, name)}
     if local and not env.get('CI'):
         files = locate(repo, env)
-        inv = [(f['rva'], f.get('name') or '') for f in _load(Path(repo) / 'data/progress.json').get('functions', [])]
+        inv = inventory_names(repo)
         if files['tesv-2013-map'] and verify('tesv-2013-map', files['tesv-2013-map'], False) == 'ok':
             facts['map'] = map_facts(files['tesv-2013-map'], rva, name, inv)
         if files['fo4-pdb'] and verify('fo4-pdb', files['fo4-pdb'], False) == 'ok':

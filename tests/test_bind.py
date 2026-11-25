@@ -178,6 +178,21 @@ class BindTests(unittest.TestCase):
         self.assertEqual(symbols[fx.FUNCTION]['rva'], fx.LAYOUT[fx.FUNCTION])
         self.assertEqual(report['renamed'], [{'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'old': old, 'new': fx.FUNCTION}])
 
+    def test_a_stale_name_at_the_function_rva_is_dropped_from_a_private_map(self):
+        # A private copy of the public map still holds the decoration the community gave this RVA.
+        stale = '?SetupSomething@Synthetic@@QEAAHXZ'
+        self.write_task('unbound:x', {stale: {'rva': fx.LAYOUT[fx.FUNCTION], 'size': None}})
+        report, symbols = self.run_bind()
+        self.assertNotIn(stale, symbols)
+        self.assertEqual(symbols[fx.FUNCTION]['rva'], fx.LAYOUT[fx.FUNCTION])
+        self.assertIn({'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'old': stale, 'new': fx.FUNCTION}, report['renamed'])
+
+    def test_a_name_the_object_refers_to_is_kept_at_the_function_rva(self):
+        # The unit calls the function through another declaration of it: the entry resolves that call.
+        self.write_task('unbound:x', {fx.COUNTER: {'rva': fx.LAYOUT[fx.FUNCTION], 'size': None}})
+        _report, symbols = self.run_bind()
+        self.assertIn(fx.COUNTER, symbols)
+
     def test_function_hint_by_rva(self):
         task = json.loads((self.task_dir / 'task.json').read_text())
         task['functions'][0]['community_name'] = 'Unrelated::Name'
@@ -413,7 +428,7 @@ class OverloadAndOrderTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def run_bind(self, defined, functions, header=None, hints=None, matcher=None):
+    def run_bind(self, defined, functions, header=None, hints=None, matcher=None, symbols=None):
         """`defined` is {decorated name: section bytes}; `functions` [(rva, size, community name)]."""
         unit = fx.Unit()
         for name, code in defined.items():
@@ -426,7 +441,7 @@ class OverloadAndOrderTests(unittest.TestCase):
         if header is not None:
             (self.root / 'unit.cpp').write_text(''.join(f'// {line}\n' for line in header) + '#include "unit.h"\n')
         (self.task_dir / 'task.json').write_text(json.dumps(task))
-        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': {}}))
+        (self.task_dir / 'symbols.json').write_text(json.dumps({'schema': 1, 'symbols': symbols or {}}))
         if hints is not None:
             (self.task_dir / bind.HINTS).write_text(json.dumps(hints))
         with mock.patch.object(bind, 'target_matcher', return_value=matcher):
@@ -458,6 +473,18 @@ class OverloadAndOrderTests(unittest.TestCase):
                                       header=['0x2e8660 TESObjectREFR::GetContainer() const'])
         self.assertEqual(bound['0x2e8660'], member_fn)
         self.assertIn('declared signature', report['functions'][0]['how'])
+
+    def test_the_definition_the_map_already_names_is_the_one_bound(self):
+        # Same size, nothing else tells the overloads apart; the map holds one of them at the RVA.
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      symbols={COLL_CONST: {'rva': 0x1900a0, 'size': None}})
+        self.assertEqual(bound['0x1900a0'], COLL_CONST)
+        self.assertEqual(report['functions'][0]['how'], 'map entry')
+
+    def test_a_mapped_name_the_object_does_not_define_changes_nothing(self):
+        report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
+                                      symbols={'?Elsewhere@@YAXXZ': {'rva': 0x1900a0, 'size': None}})
+        self.assertEqual(bound['0x1900a0'], 'unbound:0x1900a0')
 
     def test_indistinguishable_overloads_list_the_hint_lines(self):
         report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')])
@@ -673,12 +700,19 @@ class PublicMapBindTests(BindTests):
         (self.task_dir / 'task.json').write_text(json.dumps(task))
         path = self.root / self.MAP
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({'schema': 1, 'build_id': 'synthetic-fixture', 'symbols': symbols,
-                                    'folds': []}, indent=2) + '\n')
+        # Bytes: the tool's canonical form ends in a bare LF, which text mode would turn into CRLF on Windows.
+        path.write_bytes((json.dumps({'schema': 1, 'build_id': 'synthetic-fixture', 'symbols': symbols,
+                                      'folds': []}, indent=2) + '\n').encode())
 
     def run_bind(self):
         report = bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
         return report, json.loads((self.root / self.MAP).read_text())['symbols']
+
+    def test_a_stale_name_at_the_function_rva_is_dropped_from_a_private_map(self):
+        self.skipTest('private maps only: a public map changes through tools/symbol_map.py')
+
+    def test_a_name_the_object_refers_to_is_kept_at_the_function_rva(self):
+        self.skipTest('private maps only: a public map changes through tools/symbol_map.py')
 
     def test_additions_go_through_the_history(self):
         self.run_bind()
@@ -807,6 +841,46 @@ class ThreadLocalBindTests(unittest.TestCase):
         self.assertNotIn(hint, symbols)
         self.assertIn(f'bind hint {hint} -> tls:0x40 ignored', '\n'.join(bind.describe(report, self.task_dir)))
 
+    def test_undecorated_name_binds_a_thread_local(self):
+        report, symbols = self.run_bind({'tSyntheticGuard': hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+        self.assertEqual(report['unbound_thread_locals'], [])
+        self.assertEqual(report['ignored_hints'], [])
+        self.assertEqual(symbols[fx.TLS_VAR]['tls_offset'], fx.TLS_OFFSET)
+
+    def test_member_name_of_a_scoped_variable_binds_when_unique(self):
+        old = fx.TLS_VAR
+        fx.TLS_VAR = '?tSyntheticGuard@Scope@@2HA'
+        try:
+            self.tearDown()
+            self.setUp()
+            report, symbols = self.run_bind({'tSyntheticGuard': hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+            self.assertEqual(report['unbound_thread_locals'], [])
+            self.assertEqual(symbols[fx.TLS_VAR]['tls_offset'], fx.TLS_OFFSET)
+            # The qualified spelling binds the same symbol.
+            self.run_bind({'Scope::tSyntheticGuard': hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
+        finally:
+            fx.TLS_VAR = old
+
+    def test_unused_hint_is_listed_by_name(self):
+        report, _ = self.run_bind({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x'), 'MissingThing': '0x1234'})
+        self.assertEqual(report['unused_hints'], ['MissingThing'])
+        self.assertIn('MissingThing', '\n'.join(bind.describe(report, self.task_dir)))
+
+    def test_describe_names_every_unbound_reference_and_pastes_a_hint_object(self):
+        report = {'functions': [], 'references': [], 'renamed': [], 'unbound_functions': [],
+                  'unbound_references': ['?a@@3HA', '?b@@3HA', '??_C@_01ABCDEFGH@x@'],
+                  'unbound_thread_locals': ['?t@@3HA']}
+        lines = bind.describe(report, self.task_dir)
+        text = '\n'.join(lines)
+        for name in report['unbound_references'] + report['unbound_thread_locals']:
+            self.assertIn(f'UNBOUND', text)
+            self.assertIn(name, text)
+        paste = [line for line in lines if 'paste into' in line]
+        self.assertEqual(len(paste), 1)
+        self.assertEqual(json.loads(paste[0].split(': ', 1)[1]),
+                         {'?a@@3HA': '0x<rva>', '?b@@3HA': '0x<rva>', '??_C@_01ABCDEFGH@x@': '0x<rva>',
+                          '?t@@3HA': 'tls:0x<offset>'})
+
     def test_used_tls_hint_stays_used_once_bound(self):
         hints = {fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')}
         self.run_bind(hints)
@@ -826,7 +900,7 @@ class ThreadLocalBindTests(unittest.TestCase):
                                                                        for n in smap['symbols']]}
         path = self.root / self.PUBLIC
         path.parent.mkdir(parents=True)
-        path.write_text(json.dumps(smap, indent=2) + '\n')
+        path.write_bytes((json.dumps(smap, indent=2) + '\n').encode())
         (self.task_dir / bind.HINTS).write_text(json.dumps({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')}))
         return path
 
@@ -851,6 +925,34 @@ class ThreadLocalBindTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'stale.*thread-local entry'):
             bind.bind(self.task_dir, self.root / 'obj', self.root / 'image', repo=self.root)
         self.assertEqual(path.read_bytes(), blob)
+
+
+class PoolConstantTests(unittest.TestCase):
+    """Compiler-made float and vector literals bind by the value the symbol name spells."""
+
+    def test_bytes_follow_the_name(self):
+        self.assertEqual(bind.pool_constant_bytes('__real@3f800000'), bytes.fromhex('0000803f'))
+        self.assertEqual(bind.pool_constant_bytes('__real@3ff0000000000000'), bytes.fromhex('000000000000f03f'))
+        self.assertEqual(len(bind.pool_constant_bytes('__xmm@' + '0' * 24 + '80000000')), 16)
+        self.assertIsNone(bind.pool_constant_bytes('__real@3f80'))
+        self.assertIsNone(bind.pool_constant_bytes('?g@@3HA'))
+
+    def test_string_literal_names_spell_their_text(self):
+        self.assertEqual(bind.string_literal_bytes('??_C@_0BA@KBMLLPJE@Scroll?5Sequence@'), (b'Scroll Sequence\0', True))
+        self.assertEqual(bind.string_literal_bytes('??_C@_05BHEJOJJF@Shout@'), (b'Shout\0', True))
+        self.assertEqual(bind.string_literal_bytes('??_C@_0BL@EIDEOLFC@?$CIUninitialized?5event?5node?$CJ@'),
+                         (b'(Uninitialized event node)\0', True))
+        self.assertEqual(bind.string_literal_bytes('??_C@_04ABCDEFGH@ab?$AAc@')[0], b'ab\0c\0')
+        self.assertIsNone(bind.string_literal_bytes('??_C@_1BA@ABCDEFGH@x@'))
+        self.assertIsNone(bind.string_literal_bytes('??_C@_05BHEJOJJF@Sho@'))  # length disagrees with the text
+
+    def test_image_must_hold_those_bytes(self):
+        class Image:
+            def read(self, rva, size, what):
+                return rva, (b'\x00\x00\x80?' + b'\x00' * 12)[:size]
+        want = bind.pool_constant_bytes('__real@3f800000')
+        self.assertTrue(bind.constant_at(Image(), 0x100, want))
+        self.assertFalse(bind.constant_at(Image(), 0x100, bind.pool_constant_bytes('__real@40000000')))
 
 
 class DeclaredTlsNameTests(unittest.TestCase):

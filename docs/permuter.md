@@ -15,12 +15,24 @@ tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> [--budget 600
 ```
 
 The task directory is the one `attempt` uses (task.json, symbols.json); the function is found in
-the compiled file by its community name (`--function Class::Name` overrides it) and must have
+the compiled file by its community name (`--function Class::Name` overrides it; when the community name is a placeholder such as `Class::Function<rva>`, the unit's own `// 0x<rva> Class::Method` header line and then the name of the bound symbol are used, and overloads are told apart by the declared parameters) and must have
 exactly one definition there. `--source-root DIR` reads `reconstruction/` from a private copy
 instead of the checkout, so a near-miss draft never has to be in the working tree. The run uses
 the runner host that `attempt` uses (`attempt` in `.local/verifier/runners.json`, or
-`SR_RUNNERS_CONFIG`; there is no other backend, and the run stops if none is configured). Scoring
-needs `llvm-objdump` and the local image on the calling machine (`.local/verifier/config.json`).
+`SR_RUNNERS_CONFIG`; there is no other backend, and the run stops if none is configured).
+**Scoring** runs on the host when its runners entry has `"objdump": "<path to llvm-objdump>"` (a path
+without spaces; the host's own image is used): the host compiles and scores in `--jobs` processes and
+returns rows only, so the calling machine only mutates, lints and orchestrates. Without that key the
+objects come back and are scored on the calling machine, which then needs `llvm-objdump` and the local
+image (`.local/verifier/config.json`). The local image is needed in both cases to bind the baseline.
+**Bind hints count.** After the baseline compile the run fetches its object and binds it in a scratch copy
+of the task (never the task directory or the repository map) with the task's `bind-hints.json`, the
+pack and the target image, as `attempt` does. The resulting map, with its thread-local entries (a SECREL
+field is scored as the declared offset plus its addend) and `_tls_index`, is what every candidate is
+scored against, so a referent the hints bind no longer sits in the distance as a floor. The run prints
+the binding result and the names of the references that stay unresolved in the score (`bind-report.txt`
+in the output directory; a string literal is shown by its hash only) and keeps `baseline.obj` there. The
+unit's `// CI hash:` lines and header declarations are read from this checkout, not from `--source-root`.
 The host keeps its files under its work directory for the run and removes them at the end.
 
 Outputs go to `<task-dir>/permute/0x<rva>/` (private): `best.cpp` (the whole unit with the best
@@ -46,6 +58,8 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    | `compare`, `commute`, `test-form` | R7 | compare direction and operand order; commutative operands; `!x` versus `x == 0`, `nullptr` versus `0` |
    | `increment` | | `++i`, `i++`, `i += 1`, `i = i + 1` |
    | `out-init` | cookbook 9 | a local whose address is passed keeps or drops its zero initialiser |
+   | `zero-form` | | how a zero is materialised: a never-written zero local read at the use, the literal at the use, or a new `zero_` local standing for one literal |
+   | `return-through` | cookbook 2 | a switch arm `x = e; break;` becomes `return e;`, so that path skips the code after the switch |
 
    Some rewrites can change meaning (a width, a re-read across a call). That does not matter
    for the search, because only identical bytes count, but the Reviewer still reads the result
@@ -61,15 +75,30 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    them `--jobs` at a time (default: the host's `max_parallel`; the first slot is waited for, the
    others are taken only if free) in per-worker copies of the unit, with the recipe's flags and
    the environment `unit_build.py` uses, and one download of the objects. The host needs no
-   objdump and no Python packages. The objects are disassembled and scored on the calling
-   machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
+   objdump and no Python packages unless it also scores (above). The objects are disassembled and
+   scored on the host, or on the calling machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
    function's code and relocations. Compiler output stays on the host; a failed compile reports
-   its error codes only.
+   its error codes only. A score row needs only the alignment (`align.analyse`), not the report, so
+   the rule hints, behaviour tally and listing are not built, and the target's instructions are built
+   once per scoring process. The alignment fills its table only within a band of diagonals and widens
+   the band until the cost found is below the bound for any path outside it, which gives the full
+   table's alignment, ties included (`tests/test_align.py` compares the two). A large function's
+   score was 3 to 5 s of Python; it is now about 0.15 s.
 4. **Search.** Greedy hill-climb on (distance, exact edits, instruction-count difference), with
    sideways moves to new objects of equal score, a random restart from the best after
    `--restart-after` batches without progress, and a seen-set of object hashes, so a spelling
    that compiles to known code does not count as progress. Stops at distance 0, at `--budget`
-   seconds of wall time, or after `--patience` batches without a new best.
+   seconds of wall time (time spent waiting out a host outage is not counted), after `--patience`
+   rounds without a new best (default 30; `0` never stops for that reason, only at the budget), or as
+   `pool-exhausted`. A round with few new sources (under a quarter of a batch) or no new object code
+   widens the search by one more stacked mutation per candidate, up to 8; `--dry-limit` such rounds in a
+   row (default 4) at that width end the run, unless `--reseeds` (default 2) first restarts it from one
+   of the best distinct objects seen with the widening reset, so one exhausted neighbourhood does not
+   cut a long `--patience` short.
+   After every round `history.jsonl`, `best.cpp` and a partial `result.json` (status `running`)
+   are rewritten, so a run that dies keeps what it found (status `aborted: <error>`). A dropped
+   connection repeats the whole batch with a 5 s to 120 s backoff (and starts the host's run
+   directory again first, in case the host restarted) for up to `--outage` seconds (default 1800).
 5. **Confirmation.** A distance-0 winner is compiled and compared once more by `unit_build.py`
    (pinned toolchain and image checks, include closure, `verify_function.py`). Only that report
    says pass. Distance 0 alone is not a pass: `align.py` is run without the unwind infos.

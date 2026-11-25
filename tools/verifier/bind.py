@@ -11,7 +11,8 @@ and its community name. In passes over all functions, so one function never take
 exact match by coming first:
 
 1. a hint in `<task dir>/bind-hints.json` whose RVA is the function's RVA, else the current
-   symbol if the object still defines it;
+   symbol if the object still defines it, else the one definition the symbol map already names at
+   that RVA (a second name there would be an undeclared alias);
 2. the definitions whose qualified name (template arguments, return type and parameters
    dropped) equals a declared name; failing that, for `Class::Ctor`, `Class::Class`,
    `Class::dtor` or `Class::~Class`, the class's constructors or destructors (plain, deleting,
@@ -41,7 +42,10 @@ never dropped silently.
 A defined function is an external symbol at offset 0 of its own code section, which is what the
 comparator requires anyway. When a previously bound symbol is gone and another is found, that is
 reported as "decorated name changed" with both names, and the old map entry is removed (a stale
-entry at the same RVA would be an undeclared alias).
+entry at the same RVA would be an undeclared alias). In a private map any other entry at a compared
+function's RVA that the object neither defines nor refers to is removed the same way: a task made
+from the repository map still carries the decoration the community gave that RVA, and a second
+attempt of a passing unit would otherwise end in `undeclared-alias`.
 
 References (relocations that leave a compared function). Each needs a map entry giving the RVA
 the game encodes; in order:
@@ -63,6 +67,17 @@ lists exactly one call and the funclet leaves exactly one name unbound, that cal
 compiler generates for a local is often not in the pack at all; a call from an unwind funclet whose
 decoded target is a function start of the private function table (`SR_FUNCTION_TABLE`, else
 `.local/analysis/functions.jsonl` of the checkout or of the main checkout) binds by position too.
+
+5. a compiler-made literal whose name spells its value (`__real@<hex>`, `__xmm@<hex>`, or a narrow
+   string `??_C@_0...`): the address the target's own field holds when the image holds exactly those
+   bytes there; else the one address among the pack's references that holds them; else, for a complete
+   string only, the one place in the image's data that holds exactly that text (preceded by a NUL).
+   The comparator still checks the binding, so a wrong choice fails with relocation-target-mismatch.
+
+Hint keys may be decorated names, qualified names or, for a thread-local or data variable, its bare
+member name (`g_tlsErrorContext`) when no other referenced symbol has that member name. A hint that
+names no symbol of the object is listed by name as unused; every unbound reference is listed by name
+with a ready-to-paste hints object.
 
 Anything left is listed with the file to edit. The comparator still checks every binding: a
 wrong RVA fails with relocation-target-mismatch, it cannot pass.
@@ -116,6 +131,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / 'tools'))
 from pecoff import CoffObject, PeImage, Reject, SCN_CNT_CODE, STORAGE_EXTERNAL, SYM_UNDEFINED  # noqa: E402
+import local_load  # noqa: E402
 import symbol_map as symbol_maps  # noqa: E402
 
 UNBOUND = 'unbound:'
@@ -397,6 +413,85 @@ def by_position(image, fn_rva, rel):
     if rel.kind == ADDR32NB:
         return struct.unpack('<I', field)[0]
     return None
+
+
+POOL_CONSTANT = re.compile(r'__(?:real|xmm)@([0-9a-fA-F]+)\Z')
+
+
+def pool_constant_bytes(name):
+    """The bytes a compiler-made `__real@<hex>` / `__xmm@<hex>` constant holds (little-endian value), or None."""
+    m = POOL_CONSTANT.fullmatch(name or '')
+    if not m or len(m.group(1)) not in (8, 16, 32):
+        return None
+    return int(m.group(1), 16).to_bytes(len(m.group(1)) // 2, 'little')
+
+
+STRING_LITERAL = re.compile(r'\?\?_C@_0(?:([0-9])|([A-P]+)@)[0-9A-Z]{8}@(.*)@\Z')
+LITERAL_ESCAPES = dict(zip('0123456789', ',/\\:. \n\t\'-'))
+
+
+def string_literal_bytes(name):
+    """(bytes, complete) a narrow string literal's decorated name spells, or None.
+
+    `??_C@_0<length><hash>@<text>@`: the length counts the terminating NUL; 1 to 10 is one digit 0 to 9,
+    anything longer is base 16 with digits A to P ended by `@`; the text is spelled out for the first 32
+    characters (`?<digit>` for punctuation, `?<letter>` for lower case, `?$<two letters>` for any other
+    byte). `complete` is False when the literal is longer than what the name spells.
+    """
+    m = STRING_LITERAL.fullmatch(name or '')
+    if not m:
+        return None
+    single, letters, text = m.groups()
+    length = int(single) + 1 if single else int(''.join(format(ord(c) - ord('A'), 'x') for c in letters), 16)
+    out, i = bytearray(), 0
+    while i < len(text):
+        c = text[i]
+        if c != '?':
+            out.append(ord(c))
+            i += 1
+        elif text[i + 1:i + 2] == '$' and i + 4 <= len(text):
+            hi, lo = ord(text[i + 2]) - ord('A'), ord(text[i + 3]) - ord('A')
+            if not (0 <= hi < 16 and 0 <= lo < 16):
+                return None
+            out.append(hi * 16 + lo)
+            i += 4
+        elif text[i + 1:i + 2] in LITERAL_ESCAPES:
+            out.append(ord(LITERAL_ESCAPES[text[i + 1]]))
+            i += 2
+        elif text[i + 1:i + 2].isalpha() and text[i + 1].isupper():
+            out.append(ord(text[i + 1].lower()))
+            i += 2
+        else:
+            return None
+    if len(out) + 1 == length:
+        return bytes(out) + b'\0', True
+    return (bytes(out), False) if len(out) == 32 and length > 33 else None
+
+
+def find_literal(image, want):
+    """RVAs where the image holds exactly the string `want` (NUL-terminated, preceded by a NUL), in the
+    sections that are not code; a short or unterminated value is too ambiguous to search for."""
+    if not want.endswith(b'\0') or len(want) < 6:
+        return []
+    out = []
+    for sec in image.sections:
+        if sec.flags & 0x20000000 or not sec.raw_size:  # IMAGE_SCN_MEM_EXECUTE
+            continue
+        data = image.blob[sec.raw_ptr:sec.raw_ptr + sec.raw_size]
+        at = data.find(want)
+        while at != -1:
+            if at > 0 and data[at - 1] == 0:
+                out.append(sec.vaddr + at)
+            at = data.find(want, at + 1)
+    return out
+
+
+def constant_at(image, rva, want):
+    """True when the image holds exactly `want` at `rva`."""
+    try:
+        return image.read(rva, len(want), 'bind')[1] == want
+    except Exception:  # noqa: BLE001 - an unreadable address is simply no evidence
+        return False
 
 
 def field_addend(obj, section, rel):
@@ -915,20 +1010,21 @@ def pack_references(repo, fn):
     return out
 
 
-def resolve_functions(task, defined, names, hints, size_of, matcher=None, header=None):
+def resolve_functions(task, defined, names, hints, size_of, matcher=None, header=None, mapped=None):
     """{rva: result} binding each compared function to one definition of the object (no I/O).
 
     A result is {'symbol', 'how', 'candidates', 'warnings', 'choice'}; `symbol` is None when the
     function stays unbound, and `candidates` then lists the same-named definitions left.
 
     Passes, so one function can never take another's exact match because it comes first in the
-    task: (0) hints and kept symbols; (1) the names each function declares, from the unit header
+    task: (0) hints and kept symbols, then the one definition the symbol map already names at the RVA; (1) the names each function declares, from the unit header
     line and the community name, matched against parsed qualified names, constructor/destructor
     kinds and the pack's destructor evidence; (2) the member name alone, skipping definitions whose
     qualified name another compared function declares. Where several definitions share the name,
     `narrow` picks by declared signature, then size, then published target hash.
     """
     header = header or {}
+    mapped = mapped or {}
     results, taken = {}, set()
     fns = [fn for fn in task['functions']]
 
@@ -974,6 +1070,18 @@ def resolve_functions(task, defined, names, hints, size_of, matcher=None, header
             if spec is None or destructor_fits(old, spec, fn):
                 results[fn['rva']] = result(old, 'kept')
                 taken.add(old)
+    # The map names this RVA already (an accepted unit, an earlier attempt) and the object defines exactly
+    # that one: binding another definition would add a second name at the RVA, which the comparator
+    # rejects as an undeclared alias, so the mapped one is the only choice that can pass.
+    for fn in fns:
+        if fn['rva'] in results:
+            continue
+        spec = fn.get('destructor')
+        held = [d for d in mapped.get(parse_rva(fn['rva']), []) if d in defined and d not in taken
+                and (spec is None or destructor_fits(d, spec, fn))]
+        if len(held) == 1:
+            results[fn['rva']] = result(held[0], 'map entry')
+            taken.add(held[0])
 
     # Pass 1: definitions whose parsed name is one the function declares.
     exact_names = {}
@@ -1101,6 +1209,7 @@ def resolve_destructor(fn, spec, defined, taken, size_of, matcher):
     return out
 
 
+@local_load.heavy('binding')
 def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     """Update task.json and symbols.json in place; returns a report dict (see `describe`)."""
     task_dir = Path(task_dir)
@@ -1126,7 +1235,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     defined = defined_functions(obj)
     names.load(list(defined) + [s.name for s in obj.symbols.values()] + list(hints) + list(tls_hints))
     report = {'functions': [], 'references': [], 'unbound_functions': [], 'unbound_references': [],
-              'unbound_thread_locals': [],
+              'unbound_thread_locals': [], 'unused_hints': [],
               'renamed': [], 'ignored_hints': [], 'destructor_choices': [], 'warnings': [], 'changed': False}
     if image is not None and any(s.name == '__std_terminate' and s.section == SYM_UNDEFINED
                                  for s in obj.symbols.values()):
@@ -1147,15 +1256,40 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
     def size_of(d):
         return obj.section(defined[d]).raw_size
 
-    def hint_for(name):
-        if name in hints:
-            return hints[name]
+    # How many referenced symbols share each member name: a hint written as the bare member name
+    # (`g_tlsErrorContext`) binds only when exactly one referenced symbol has that member name.
+    member_count = {}
+    for s in obj.symbols.values():
+        if s.section == SYM_UNDEFINED and names(s.name):
+            member_count[member(names(s.name))] = member_count.get(member(names(s.name)), 0) + 1
+
+    def hint_key(name, table):
+        """The key of `table` (hints or tls_hints) that names the symbol `name`, or None.
+
+        In order: the decorated name, the qualified name, then the bare member name when no other
+        referenced symbol shares it.
+        """
+        if name in table:
+            return name
         q = names(name)
-        return hints.get(q) if q else None
+        if q and q in table:
+            return q
+        m = member(q) if q else None
+        if m and m != q and m in table and member_count.get(m) == 1:
+            return m
+        return None
+
+    def hint_for(name):
+        key = hint_key(name, hints)
+        return hints[key] if key is not None else None
 
     header = header_declarations(repo, task.get('compiled'))
     matcher = target_matcher(repo, obj_bytes)
-    resolved = resolve_functions(task, defined, names, hints, size_of, matcher, header)
+    held_names = {}
+    for held_name, entry in symbols.items():
+        if isinstance(entry, dict) and isinstance(entry.get('rva'), int):
+            held_names.setdefault(entry['rva'], []).append(held_name)
+    resolved = resolve_functions(task, defined, names, hints, size_of, matcher, header, held_names)
     for fn in task['functions']:
         rva = parse_rva(fn['rva'])
         old = fn.get('symbol') or ''
@@ -1190,6 +1324,15 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
             gone = rec.get('symbol')
             if (gone and gone != new and parse_rva(rec['rva']) == rva and gone not in defined
                     and gone not in folded and symbols.get(gone, {}).get('rva') == rva):
+                del symbols[gone]
+                report['renamed'].append({'rva': hex(rva), 'old': gone, 'new': new})
+                report['changed'] = True
+        if not public:
+            # A private copy of the map still names the function under a decoration an earlier binding, or
+            # the map it was copied from, gave it. The unit now defines it as `new` and nothing refers to the
+            # old name, so the entry is stale and the comparator would reject it as an undeclared alias.
+            for gone in [n for n, e in symbols.items() if isinstance(e, dict) and e.get('rva') == rva
+                         and n != new and n not in referenced and n not in folded]:
                 del symbols[gone]
                 report['renamed'].append({'rva': hex(rva), 'old': gone, 'new': new})
                 report['changed'] = True
@@ -1239,7 +1382,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                     # A TLS offset is not an RVA: neither the pack's references nor the target's field
                     # name it, so only an explicit hint binds it.
                     q = names(ref)
-                    key = ref if ref in tls_hints else q if q in tls_hints else None
+                    key = hint_key(ref, tls_hints)
                     if key is not None:
                         tls_used.add(key)
                     if ref in symbols:
@@ -1292,6 +1435,7 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                     how = 'hint'
                 accept = known | life_known if is_funclet else known
                 contradicted = False
+                pos, addend = None, 0
                 if value is None and base is not None:
                     pos = by_position(image, base, rel)
                     # The field encodes the symbol plus the member offset the candidate stores in it, and
@@ -1308,6 +1452,23 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
                         # need not list; the relocated target being a known function start is the evidence.
                         how, value = 'unwind funclet position', pos
                     contradicted = value is None and pos is not None and pos not in accept and pos - addend not in accept
+                want = pool_constant_bytes(ref) or (string_literal_bytes(ref) or (None,))[0]
+                if value is None and want is not None and image is not None:
+                    # A float, vector or string literal: its name spells the value, so the bytes at the
+                    # target's own field (when the candidate's code lines up) or at the one address the
+                    # pack lists for the function that holds exactly that value is the evidence.
+                    if pos is not None and constant_at(image, pos - addend, want):
+                        how, value, contradicted = 'literal value at position', pos - addend, False
+                    else:
+                        hits = sorted(r for r in accept if constant_at(image, r, want))
+                        if len(hits) == 1:
+                            how, value, contradicted = 'literal value among the pack references', hits[0], False
+                        elif not hits and (string_literal_bytes(ref) or (None, False))[1]:
+                            # Last resort, for a string the pack does not list: the one place in the image's
+                            # data that holds exactly that text. The comparator still checks the binding.
+                            found_at = find_literal(image, want)
+                            if len(found_at) == 1:
+                                how, value = 'literal value, the only such string in the image', found_at[0]
                 if value is None:
                     q = names(ref)
                     pool = refs + life_refs if is_funclet else refs
@@ -1339,6 +1500,11 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO):
         if key not in tls_used:
             report['ignored_hints'].append({'hint': key, 'rva': f'tls:{hex(offset)}',
                                             'reason': 'no SECREL reference of a compared function or funclet has that name'})
+    # A hint that names no symbol of the object at all is usually misspelt or left over from an
+    # earlier draft; listing it by name is cheaper than finding out why a reference stayed unbound.
+    compared_rvas = {parse_rva(f['rva']) for f in task['functions']}
+    in_object = {hint_key(s.name, hints) for s in obj.symbols.values()}
+    report['unused_hints'] = sorted(h for h, r in hints.items() if h not in in_object and r not in compared_rvas)
     if report['changed']:
         if public:
             publish(Path(repo), map_name, smap, before, found)
@@ -1414,6 +1580,15 @@ def describe(report, task_dir):
     for name in report.get('unbound_thread_locals', []):
         lines.append(f'  UNBOUND thread-local {name}: add {{"{name}": "tls:0x<offset>"}} to {hints}; the offset is '
                      'the displacement the target adds to the TLS block, the same for every function using it')
+    if report.get('unused_hints'):
+        shown = report['unused_hints']
+        lines.append(f'  unused bind hints ({len(shown)}): no symbol of the object has these names '
+                     '(misspelt, or the unit no longer references them): ' + ', '.join(shown[:12])
+                     + (f' ... {len(shown) - 12} more' if len(shown) > 12 else ''))
+    open_names = ([(n, '0x<rva>') for n in report['unbound_references']]
+                  + [(n, 'tls:0x<offset>') for n in report.get('unbound_thread_locals', [])])
+    if len(open_names) > 3:
+        lines.append(f'  paste into {hints.name}: ' + json.dumps({n: v for n, v in open_names}))
     return lines
 
 

@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSNavmesh, BSNavmesh::~BSNavmesh, BSNavmesh::doorPortals, BSNavmesh::meshGrid, BSNavmesh::unk110: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSNavmeshTriangleDoorPortal, owningTriangleIndex, BSNavmeshGrid, gridSize, gridData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// NavmeshCursor, NavmeshEdgeOut, BSNavmeshGridCell, BSNavmeshDoorPortalArray, unknown08, unknown70, unknownD0, ForwardMeshGrid, Function11deea0, Function11dfcc0, Function11e0100, Function11e01e0, Function11e02a0, Function11e02c0, Function11e70b0, Function11e70c0: GUESS(low)
+// NavmeshCursor, NavmeshEdgeOut, BSNavmeshGridCell, BSNavmeshDoorPortalArray, unknown08, unknown70, unknownD0, ForwardMeshGrid, Function11deea0, Function11dfcc0, Function11e0100, Function11e01e0, Function11e02a0, Function11e02c0, Function11e70c0: GUESS(low)
+// BSNavmesh::GetGridCellCount: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #pragma once
 
 #include <cstdint>
@@ -75,7 +76,7 @@ public:
     BSNavmeshTriangleDoorPortal* Function11e01e0(std::uint16_t a_index) const;
     BSNavmeshTriangleDoorPortal* Function11e02a0(std::uint16_t a_index) const;
     std::int32_t Function11e02c0(std::uint16_t a_triangleIndex) const;
-    std::uint32_t Function11e70b0() const;
+    std::uint32_t GetGridCellCount() const;
     BSNavmeshGridCell* Function11e70c0(std::uint32_t a_cellIndex) const;
 
     std::uint8_t unknown08[0x50];  // 08

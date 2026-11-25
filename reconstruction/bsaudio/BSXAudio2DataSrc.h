@@ -3,7 +3,8 @@
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // BSXAudio2DataSrc, BSXAudio2DataSrc::~BSXAudio2DataSrc: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0) EXE_RTTI
 // BSAudioDataSrc_VBSXAudio2DataSrc: STANDIN EXE_RTTI
-// BSAudioDataSrc_VBSXAudio2DataSrc::~BSAudioDataSrc_VBSXAudio2DataSrc, unknown08, unknown18, formatTag, pad22, sampleRate, unknown28, field40, unknown44, Functioncdc210, Functioncdc240, Functioncdc280, Functioncdc2b0: GUESS(low)
+// BSAudioDataSrc_VBSXAudio2DataSrc::~BSAudioDataSrc_VBSXAudio2DataSrc, unknown08, unknown18, formatTag, pad22, sampleRate, unknown28, field40, unknown44, Functioncdc210, Functioncdc240, Functioncdc2b0: GUESS(low)
+// BSXAudio2DataSrc::MillisecondsToSamples: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #pragma once
 
 #include <cstdint>
@@ -25,7 +26,7 @@ public:
 
     std::uint32_t Functioncdc210() const;
     std::uint32_t Functioncdc240(std::uint32_t a_samples) const;
-    std::uint32_t Functioncdc280(std::uint32_t a_milliseconds) const;
+    std::uint32_t MillisecondsToSamples(std::uint32_t a_milliseconds) const;
     void Functioncdc2b0(std::uint32_t* a_samples) const;
 
     std::uint8_t unknown18[0x8];  // 18

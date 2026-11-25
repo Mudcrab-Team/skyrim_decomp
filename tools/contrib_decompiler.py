@@ -386,7 +386,10 @@ def project_alias(ctx, project):
             yield alias
         finally:
             if ctx.windows:
-                alias.rmdir()
+                try:
+                    alias.rmdir()
+                except FileNotFoundError:
+                    pass
             else:
                 alias.unlink()
 
@@ -436,7 +439,7 @@ def setup_locked(ctx, exe, project, no_install):
         return state
     ctx.say(f'One-time private analysis: {HEAP} Java heap cap plus native memory; '
             'see docs/contributor-platforms.md for measured costs. '
-            'Runs in background; rerun setup for status. '
+            'Runs in background; rerun setup --no-self-test for status. '
             'Interrupted runs resume from the saved import; the current analysis pass restarts.')
     names = c.public_names(ctx.repo, c.inventory(ctx.repo))
     (project / 'names.tsv').write_text(''.join(f'0x{r:x}\t{n[0]}\n' for r, n in sorted(names.items())),

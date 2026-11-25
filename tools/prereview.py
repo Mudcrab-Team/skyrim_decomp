@@ -15,7 +15,6 @@ hostile path never reaches the log.
 import argparse
 import hashlib
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -25,6 +24,7 @@ import tempfile
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import lint_reconstruction  # noqa: E402
 import lint_review_readiness  # noqa: E402
+from git_context import blobs, lint_dependencies, tree_entries  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SAFE = re.compile(r'reconstruction/[A-Za-z0-9_./+-]+')
@@ -191,24 +191,24 @@ def check(root, base, head):
     names = changed_units(root, base, head)
     if not names:
         return []
-    build = json.loads((root / 'builds/target.json').read_text())['build_id']
+    # Read the unit pair from the head and its lint dependencies from the trusted base.
+    # Git blobs give Windows and sparse checkouts the same inputs as CI.
+    pair = {Path(n).with_suffix(ext).as_posix() for n in names for ext in ('.h', '.cpp')}
+    _, head_entries = tree_entries(root, head, cached=False)
+    _, base_entries = tree_entries(root, base, cached=False)
+    sources = blobs(root, head_entries, pair)
+    dependencies = lint_dependencies(sources) - pair
+    dependencies.update(recipe for n, blob in sources.items() if n.endswith('.cpp')
+                        for recipe in RECIPE.findall(blob.decode('utf-8', 'replace')))
+    target = 'builds/target.json'
+    deps = blobs(root, base_entries, dependencies | {target})
+    build = json.loads(deps.pop(target))['build_id']
     with tempfile.TemporaryDirectory() as scratch:
         scratch = Path(scratch)
-        # Trusted data (inventory, pins, licences, recipes) from this checkout; only the changed units come
-        # from the PR head, and only as text for the linters.
-        for entry in root.iterdir():
-            if entry.name not in ('reconstruction', '.git', '.local'):
-                os.symlink(entry, scratch / entry.name)
-        (scratch / 'reconstruction').mkdir()
-        # Never link the unit directories: the extraction below would write through the link into this checkout.
-        if (root / 'reconstruction/recipes').is_dir():
-            os.symlink(root / 'reconstruction/recipes', scratch / 'reconstruction/recipes')
-        # A unit is its .h and .cpp pair, and the lint reads both.
-        pair = sorted({n[:n.rindex('.')] + ext for n in names for ext in ('.h', '.cpp')})
-        present = [n for n in pair if subprocess.run(['git', 'cat-file', '-e', f'{head}:{n}'], cwd=root,
-                                                     capture_output=True).returncode == 0]
-        archive = subprocess.run(['git', 'archive', head, '--', *present], cwd=root, capture_output=True, check=True)
-        subprocess.run(['tar', '-x', '-C', str(scratch)], input=archive.stdout, check=True)
+        for name, blob in (deps | sources).items():
+            path = scratch / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(blob)
         return unit_problems(scratch, names, build)
 
 

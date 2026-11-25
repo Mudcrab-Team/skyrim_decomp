@@ -63,7 +63,7 @@ The stage table also contains `0d000001` and `0f000000` as VS keys. The native c
 
 **Verified.** On the exterior weather branch, Sky mode 3 uses the current weather at `Sky+0x48` and optional previous weather at `+0x50`. The branch requires the two alternate lighting lookups to return null. The `WTHR.DALC` loader fills four consecutive 32-byte day-part entries at weather `+0x7f8`. Each contains six packed directional RGBs, one additional packed RGB and one float power. The constructor initializes the six directional RGBs to white, the additional RGB to black and power to 1.0. The 64-bit store at `0x203eb5` sets the sixth RGB at entry `+0x14` to `0x00ffffff` and the additional RGB at `+0x18` to zero. Evidence at `0x413751–0x413794`, `0x413917–0x413947`, `0x3085e2–0x3085fa`, `0x203ed0`, `0x307e4b–0x307e65` and `0x203e90–0x203ec4`.
 
-**Verified.** For ordered climate endpoints, the day-part colour weights follow the table. The `CLMT.TNAM` timing bytes use ten-minute units. Let A be sunrise begin less `fDaytimeColorExtension`, floored at zero. B is sunrise end, C is sunset begin, and D is sunset end plus the extension, capped at 23.99 hours. The setting defaults to 0.5 hour. The shipped climate example in #812 G02 has A/B/C/D of 5/10/16/21 hours at that default.
+**Verified.** For ordered climate endpoints, the day-part colour weights follow the table. The `CLMT.TNAM` timing bytes use ten-minute units. Let A be sunrise begin less `fDaytimeColorExtension`, floored at zero. B is sunrise end, C is sunset begin, and D is sunset end plus the extension, capped at 23.99 hours. The setting defaults to 0.5 hour. The timing bytes of a climate record come from the game plugin and are not given here. Each climate record gives its own A, B, C and D at that default.
 
 | Game hour | Day-part mix within each weather |
 |---|---|
@@ -222,3 +222,5 @@ Result: **1 confirmed (G06), 5 corrected (G01–G05), 0 rejected.** The reviewer
 Source exposure of the review: mixed. The reviewer used the local pinned executable, the shipped shader and mesh archives, published findings and generated name layouts. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by `gpt-6.2-sol` via Codex. Outcome: 1 confirmed, 5 corrected, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+**Amendment (2026-11-24, UNREVIEWED):** plugin-derived values were replaced by symbolic text (hygiene). Rules and arithmetic are unchanged.

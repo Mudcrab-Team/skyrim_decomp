@@ -23,7 +23,7 @@ class CompactionTests(unittest.TestCase):
         tmp = Path(self.tmp.name)
         subprocess.run(['git', 'init', '-q', '--bare', '-b', 'main', str(tmp / 'o.git')], check=True)
         self.work = tmp / 'work'
-        subprocess.run(['git', 'clone', '-q', str(tmp / 'o.git'), str(self.work)], check=True, capture_output=True)
+        subprocess.run(['git', '-c', 'core.autocrlf=false', 'clone', '-q', str(tmp / 'o.git'), str(self.work)], check=True, capture_output=True)
         git(self.work, 'config', 'user.email', 't@example.invalid')
         git(self.work, 'config', 'user.name', 't')
         (self.work / 'tools').mkdir()
@@ -31,12 +31,12 @@ class CompactionTests(unittest.TestCase):
             (self.work / 'tools' / name).write_text((ROOT / 'tools' / name).read_text())
         build = self.work / 'reports/b1'
         build.mkdir(parents=True)
-        (build / '0x10.json').write_text('{"a": 1}\n')
+        (build / '0x10.json').write_text('{"a": 1}\n', newline='\n')
         git(self.work, 'add', '.')
         git(self.work, 'commit', '-qm', 'base')
         git(self.work, 'push', '-q', 'origin', 'HEAD:main')
         self.tree = tmp / 'tree'
-        subprocess.run(['git', 'clone', '-q', str(tmp / 'o.git'), str(self.tree)], check=True, capture_output=True)
+        subprocess.run(['git', '-c', 'core.autocrlf=false', 'clone', '-q', str(tmp / 'o.git'), str(self.tree)], check=True, capture_output=True)
         git(self.tree, 'config', 'user.email', 't@example.invalid')
         git(self.tree, 'config', 'user.name', 't')
 

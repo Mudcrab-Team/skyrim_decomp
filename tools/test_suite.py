@@ -33,12 +33,15 @@ def inventory(root):
 
 
 def execute(root, ids, result):
+    # The worker writes UTF-8 and is read as UTF-8: the Windows locale codec cannot decode every test
+    # message, and a reader that fails there leaves no output at all and aborts the whole run.
     proc = subprocess.run([sys.executable, str(Path(__file__).resolve()), '--root', root,
                            '--worker', '--result', result], input=json.dumps(ids),
-                          capture_output=True, text=True, cwd=root)
+                          capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=root,
+                          env=dict(os.environ, PYTHONIOENCODING='utf-8'))
     path = Path(result)
     report = json.loads(path.read_text()) if path.is_file() else None
-    return proc.returncode, proc.stdout + proc.stderr, report
+    return proc.returncode, (proc.stdout or '') + (proc.stderr or ''), report
 
 
 def shard_modules(modules, index, count):
@@ -63,7 +66,10 @@ def run(root, jobs, listing=False, shard_index=0, shard_count=1):
                  for module, ids in modules.items()}
         for future in as_completed(tasks):
             module, ids = tasks[future]
-            code, output, report = future.result()
+            try:
+                code, output, report = future.result()
+            except Exception as exc:  # noqa: BLE001 - one broken module process must not hide the others
+                code, output, report = 1, f'{type(exc).__name__}: {exc}\n', None
             print(output, end='', flush=True)
             if report is None or code or report['run'] != len(ids):
                 failed = True
@@ -96,6 +102,10 @@ def main():
     p.add_argument('--worker', action='store_true', help=argparse.SUPPRESS)
     p.add_argument('--result', type=Path, help=argparse.SUPPRESS)
     a = p.parse_args()
+    # Worker output is forwarded as is; a console codec that lacks one of its characters must not stop the run.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(errors='replace')
     if a.jobs < 1:
         p.error('--jobs must be positive')
     if a.shard_count < 1 or not 0 <= a.shard_index < a.shard_count:

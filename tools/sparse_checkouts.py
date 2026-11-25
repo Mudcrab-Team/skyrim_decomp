@@ -220,6 +220,12 @@ def worker_default(tree, config):
         target.parent.mkdir(exist_ok=True)
         if not target.exists() and not target.is_symlink():
             target.symlink_to(Path(source).resolve(), target_is_directory=True)
+    # Sources, indexes and configs a drafter reads by raw path (tools/worktree_kit.py); additive only.
+    try:
+        import worktree_kit
+        worktree_kit.kit(tree)
+    except (ImportError, OSError, ValueError):
+        pass
     return True
 
 

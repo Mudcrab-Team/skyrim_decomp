@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from unittest import mock
 
@@ -383,7 +384,7 @@ class FakeBot(pr_bot.Bot):
         self.calls.append(['mac', units])
         return dict(self.h2)
 
-    def host1(self, number, head, functions, state=None, units=None):
+    def host1(self, number, head, functions, state=None, units=None, may_yield=None):
         self.calls.append(['host1', sorted(functions), units])
         return dict(self.h1)
 
@@ -1172,6 +1173,15 @@ class RecordStepTests(RecordStaleTests):
         self.bot.record(self.pr, self.state, [0x30])
         self.assertTrue(self.state.get('recorded'))
 
+    def test_a_stderr_only_record_failure_logs_the_exit_and_sanitized_error(self):
+        base_run = self.bot.run
+        self.bot.run = lambda argv, **kw: (subprocess.CompletedProcess(
+            argv, 1, b'', b'Traceback\nRuntimeError: git push rejected /private/checkout\n')
+            if str(argv[1]).endswith('record.py') else base_run(argv, **kw))
+        with self.assertRaisesRegex(pr_bot.Stop, r'exit 1: RuntimeError: git push rejected <path>'):
+            self.bot.record(self.pr, self.state, [0x30])
+        self.assertFalse(self.state.get('recorded'))
+
 
 class CarriedRecordsTests(unittest.TestCase):
     """carried_records builds one record per carried function, whatever the count."""
@@ -1612,7 +1622,7 @@ class NewFunctionRecordTests(unittest.TestCase):
         (self.tree / 'data/progress.json').write_text(json.dumps({'functions': [
             {'rva': 0x10, 'status': 'mapped'}, {'rva': 0x20, 'status': 'matched'}]}))
         self.calls, self.bind_code, self.record_ok = [], 0, {0x10: True, 0x20: True}
-        self.confirm_codes = []
+        self.confirm_codes, self.refusals = [], {}
         bot = pr_bot.Bot(root=ROOT, work=self.work)
         bot.tree, bot.run = self.tree, self.fake_run
         self.bot = bot
@@ -1640,7 +1650,10 @@ class NewFunctionRecordTests(unittest.TestCase):
             code = self.confirm_codes.pop(0)
         if argv[1] == '-c':
             rva = json.loads((Path(argv[4]) / 'task.json').read_text())['functions'][0]['rva']
-            if self.record_ok[int(rva, 0)]:
+            if self.refusals.get(int(rva, 0)):
+                self.refusals[int(rva, 0)] -= 1
+                code = 1
+            elif self.record_ok[int(rva, 0)]:
                 dest = Path(argv[5]) / 'b' / f'{rva}.json'
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 dest.write_text('{}')
@@ -1663,6 +1676,35 @@ class NewFunctionRecordTests(unittest.TestCase):
         sub = json.loads((self.task / 'confirm-0x10/task.json').read_text())
         self.assertTrue(sub['symbols'].startswith('reports/b/unit-symbols/'))
         self.assertEqual(len(self.seen('wine_confirm.py')), 2)
+
+    def test_confirmations_run_in_parallel_after_one_batch_request_for_every_function(self):
+        both = threading.Barrier(2, timeout=5)
+        plain = self.fake_run
+
+        def run(argv, **kw):
+            if str(argv[1]).endswith('wine_confirm.py'):
+                both.wait()  # passes only when the two confirmations overlap
+            return plain(argv, **kw)
+        self.bot.run = run
+        self.bot.config['compare_workers'] = 2
+        out, failed = self.build()
+        self.assertEqual(failed, set())
+        batch = self.seen('compare_batch.py')
+        self.assertEqual(len(batch), 1)
+        self.assertIn('--confirm', batch[0])
+        self.assertEqual(sum(a.endswith('confirm-0x10') or a.endswith('confirm-0x20') for a in batch[0]), 2)
+        self.assertLess(self.calls.index(batch[0]), self.calls.index(self.seen('wine_confirm.py')[0]))
+
+    def test_a_record_refused_for_its_kept_confirmation_is_confirmed_again_before_it_counts(self):
+        self.refusals = {0x10: 1}
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertEqual(len(self.seen('wine_confirm.py')), 2)  # the batch's result is not trusted a second time
+
+    def test_a_record_refused_after_a_fresh_confirmation_stays_drafted(self):
+        self.refusals = {0x10: 2}
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, {0x10})
 
     def test_only_the_functions_being_recorded_are_bound_so_a_debt_function_cannot_refuse_them(self):
         out, failed = self.build({0x10})
@@ -1711,6 +1753,28 @@ class NewFunctionRecordTests(unittest.TestCase):
         out, failed = self.build()
         self.assertEqual((failed, asked), (set(), [({0x10}, 'b')]))
         self.assertEqual(len(self.seen('wine_confirm.py')), 1)
+
+    def test_a_digest_carried_function_whose_record_is_current_needs_no_record(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON_DIGEST}
+        self.state.data['ci']['rows'].pop('16')
+        self.bot.record_is_current = lambda rva: rva == 0x10
+        self.bot.carried_records = lambda *a, **k: self.fail('a current record is not rebuilt')
+        out, failed = self.build({0x10})
+        self.assertEqual(failed, set())
+        self.assertTrue(out.is_dir())
+        self.assertFalse((out / 'b/0x10.json').exists())
+
+    def test_a_digest_carried_function_whose_record_is_not_current_is_still_carried(self):
+        (self.tree / 'builds').mkdir()
+        (self.tree / 'builds/target.json').write_text(json.dumps({'build_id': 'b'}))
+        self.state.data['carried'] = {'16': pr_bot.CARRY_REASON_DIGEST}
+        self.bot.record_is_current = lambda rva: False
+        asked = []
+        self.bot.carried_records = lambda tag, rvas, build, reasons=None: (asked.append(set(rvas)), (self.work, set()))[1]
+        out, failed = self.build({0x10})
+        self.assertEqual((failed, asked), (set(), [{0x10}]))
 
     def test_a_carried_record_that_cannot_be_built_refuses_only_that_function(self):
         (self.tree / 'builds').mkdir()
@@ -2301,21 +2365,21 @@ class StickyCommentTests(unittest.TestCase):
         self.assertIn('2 functions, over the limit of 1', bot.comments[0]['body'])
         self.assertTrue(bot.comments[0]['body'].startswith(pr_bot.STICKY))
 
-    def test_the_default_cap_is_200_and_scales_the_step_timeouts_with_it(self):
+    def test_the_default_cap_is_2000_and_scales_the_step_timeouts_with_it(self):
         bot = FakeBot(self.work)
-        self.assertEqual(bot.config['max_functions'], 200)
+        self.assertEqual(bot.config['max_functions'], 2000)
         self.assertEqual((bot.config['model_timeout'], bot.config['compare_timeout'], bot.config['hash_wait']),
                          (3000, 5400, 1800))
         self.assertIn('50 to 200 functions', pr_bot.BATCH_LINE)
 
     def test_a_pr_at_the_default_cap_is_not_rejected_and_one_over_is(self):
         bot = FakeBot(self.work)
-        bot.new_functions = lambda base, units: set(range(201))
+        bot.new_functions = lambda base, units: set(range(2001))
         with self.assertRaises(pr_bot.Rejected):
             bot.process(PR)
-        self.assertIn('201 functions, over the limit of 200', bot.comments[0]['body'])
+        self.assertIn('2001 functions, over the limit of 2000', bot.comments[0]['body'])
         bot = FakeBot(self.work)
-        bot.new_functions = lambda base, units: set(range(200))
+        bot.new_functions = lambda base, units: set(range(2000))
         try:
             bot.process(PR)
         except pr_bot.Rejected as exc:

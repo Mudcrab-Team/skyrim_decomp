@@ -27,8 +27,7 @@ SIZE_TIERS = (64, 256, 1024)  # small, small-medium, medium; above is large
 UNNAMED_HOW = {'placeholder'}
 RESERVED_DIRS = ('.local/twins', '.local/stamp-sweep')  # private plans of internal workers, relative to the bot root
 ON_DEMAND_MAX = 256  # PR-claimed functions published per run; at least one PR's cap of new functions
-# Kinds a PR may claim on demand. Static initializers are matched on main already and generated reflection
-# initializers are claimed by whole units, so they cannot depend on the ordinary-only window.
+# Static initializers and teardowns can be claimed on demand outside the ordinary-only window.
 ON_DEMAND_KINDS = claimable.ON_DEMAND_KINDS
 PLAN_IDLE_HOURS = 12  # a plan directory untouched this long is treated as abandoned and stops reserving
 MIN_RVA = 0x1000  # nothing below the first section holds a function; keeps sizes in plan files from reading as RVAs
@@ -224,7 +223,7 @@ def select_on_demand(metadata, known, extra, retained=()):
     """(accepted [rva], refused {rva: reason}) for RVAs an open PR claims that have no published row.
 
     The window's rules, minus its class filter (the PR brings its own unit): the RVA must be a function
-    start of the private table, an ordinary function with a size that the local analysis supports, and not
+    start of an on-demand kind with a size that the private table's local analysis supports, and must not be
     recorded yet. `retained` are earlier on-demand rows still wanted; one that has since been recorded or no
     longer qualifies is dropped without a refusal. Only these RVAs, sizes and hashes are ever published.
     """

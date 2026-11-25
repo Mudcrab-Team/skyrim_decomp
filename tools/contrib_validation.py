@@ -10,6 +10,7 @@ import tempfile
 import check_code_rules
 import cookbook_notes
 import contrib_screen
+import leakgrep
 import lint_reconstruction
 import lint_review_readiness
 import unit_paths
@@ -20,7 +21,7 @@ from local_paths import local_path, no_sibling_names
 UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 
 
-def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
+def publication_problems(ctx, base, rows, head=None, merge_method='squash', *, scope=False):
     """Use intake's retained-publication policy on a private snapshot, without changing the index.
 
     The synthetic commit is unreferenced and never pushed. It lets the same Git-based screen see
@@ -28,6 +29,11 @@ def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
     """
     from contrib_publication import PublicationRejected, screen_publication
     def screen(revision):
+        if scope:
+            import scope_check
+            for status, output in scope_check.results(ctx.repo, base, revision):
+                if status:
+                    return output.splitlines()
         try:
             screen_publication(ctx.repo, base, revision, merge_method=merge_method)
         except PublicationRejected as exc:
@@ -111,6 +117,19 @@ def screen_diagnostics(blob, name, *, headers=contrib_screen.STANDARD_HEADERS, c
                'remove the refused construct or reduce the reported resource use') for code in codes]
 
 
+def leakgrep_diagnostics(blob, name):
+    """The rules the bot's leakgrep applies to added lines (decompiler-style names such as `param_1`,
+    asm lines, byte runs), run here so a contributor finds them before the push. Include and path
+    findings are the deterministic screen's and are not repeated."""
+    out = []
+    for number, line in enumerate(blob.decode('utf-8', 'replace').splitlines(), 1):
+        for code in leakgrep.scan_line(line, path=name):
+            if code != 'include-outside-roots':
+                out.append(diagnostic(f'{name}:{number}: leakgrep: {code}; fix: remove or rename it; '
+                                      'the intake bot refuses this line'))
+    return out
+
+
 def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEADERS, guard=None,
                     companions=()):
     """Screen exactly the changed files and their complete compiler input closures."""
@@ -152,6 +171,8 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
                 problems.append(diagnostic(f'{name}: publication guard: {exc}'))
                 continue
         problems += screen_diagnostics(blob, name, headers=headers, changed=name in all_names_changed)
+        if name in all_names_changed:
+            problems += leakgrep_diagnostics(blob, name)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
             problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]

@@ -306,3 +306,209 @@ def harvest_registrations(img, reg_calls, entries, *, min_sites=20):
                 'sites': len(callsites),
             }
     return out, {'observations': len(observations), 'callees': accepted_callees, 'accepted': len(out)}
+
+
+# ---------------------------------------------------------------------------------------------
+# Script-engine native registrations.
+#
+# A native function object is built in two steps the pass below can see: a base constructor call
+# whose argument registers hold a function-name string and a script-name string, then a few stores
+# into the new object (a virtual-table pointer at offset 0 and the handler address in a later
+# slot). The strings are joined to the declarations read from the shipped script archive
+# (`tools/papyrus_psc.py`); the join, not the string shape alone, is what makes a site count.
+
+GPR64 = ('rax', 'rcx', 'rdx', 'rbx', 'rsp', 'rbp', 'rsi', 'rdi') + tuple(f'r{i}' for i in range(8, 16))
+_SUBREG = {}
+for _i, _name in enumerate(GPR64):
+    _SUBREG[_name] = _name
+    if _i < 8:
+        _SUBREG['e' + _name[1:]] = _name
+        _SUBREG[_name[1:]] = _name
+    else:
+        for _suffix in ('d', 'w', 'b'):
+            _SUBREG[_name + _suffix] = _name
+VOLATILE = ('rax', 'rcx', 'rdx', 'r8', 'r9', 'r10', 'r11')
+ARG_SLOT_REGS = ('rcx', 'rdx', 'r8', 'r9')
+STORE_RE = re.compile(r'^(?:qword )?ptr \[(?P<base>\w+)(?: \+ 0x(?P<off>[0-9a-f]+))?\]$')
+CALL_TARGET_RE = re.compile(r'^0x([0-9a-f]+)')
+COMMENT_TARGET_RE = re.compile(r'#\s*0x([0-9a-f]+)')
+SITE_TAIL = 14
+
+
+def _split_operands(text):
+    text = text.split('#', 1)[0].strip()
+    out, depth, cur = [], 0, ''
+    for ch in text:
+        if ch == '[':
+            depth += 1
+        elif ch == ']':
+            depth -= 1
+        if ch == ',' and depth == 0:
+            out.append(cur.strip())
+            cur = ''
+        else:
+            cur += ch
+    if cur.strip():
+        out.append(cur.strip())
+    return out
+
+
+class RegistrationSiteScanner:
+    """Stream of ``llvm-objdump -d --x86-asm-syntax=intel`` lines to registration call sites.
+
+    A register map tracks which general register holds a RIP-relative address (set by ``lea``, cleared
+    by any other write and, for the volatile registers, by every call), so a callee-saved register that
+    carries a table address across a call is still known when it is stored. At every direct call, the
+    argument registers that hold such an address are recorded when at least two do; the next
+    ``SITE_TAIL`` instructions (up to the next control transfer) are scanned for stores of a known
+    address into ``[reg]`` or ``[reg + off]``. Output rows are plain dicts:
+    ``{'site', 'callee', 'args': {slot: rva}, 'stores': [(offset, rva)]}``.
+    """
+
+    def __init__(self, base, entries=None):
+        self.base = base
+        self.entries = set(entries or ())
+        self.known = {}
+        self.rows = []
+        self.open = None
+        self.left = 0
+        self.func = None
+        self.ctor_vtables = defaultdict(set)
+
+    def _close(self):
+        if self.open is not None:
+            self.rows.append(self.open)
+        self.open = None
+        self.left = 0
+
+    def instruction(self, addr, mn, ops, target):
+        rva = addr - self.base
+        if rva in self.entries:
+            self._close()
+            self.known.clear()
+            self.func = rva
+        mn = mn.split()[-1]
+        if mn == 'mov' and len(ops) == 2 and self.func is not None:
+            m = STORE_RE.match(ops[0])
+            src = _SUBREG.get(ops[1])
+            if m and src in self.known and not m.group('off') and m.group('base') in ('rcx', 'rbx', 'rdi', 'rsi'):
+                self.ctor_vtables[self.func].add(self.known[src])
+        if self.open is not None:
+            if mn in ('call', 'jmp', 'ret') or mn.startswith('j') or self.left <= 0:
+                self._close()
+            else:
+                self.left -= 1
+                if mn == 'mov' and len(ops) == 2:
+                    m = STORE_RE.match(ops[0])
+                    src = _SUBREG.get(ops[1])
+                    if m and src in self.known:
+                        self.open['stores'].append((int(m.group('off') or '0', 16), self.known[src]))
+        if mn == 'call':
+            self._close()
+            m = CALL_TARGET_RE.match(ops[0]) if ops else None
+            if m:
+                args = {i: self.known[r] for i, r in enumerate(ARG_SLOT_REGS) if r in self.known}
+                if len(args) >= 2:
+                    self.open = {'site': rva, 'callee': int(m.group(1), 16) - self.base, 'args': args, 'stores': []}
+                    self.left = SITE_TAIL
+            for r in VOLATILE:
+                self.known.pop(r, None)
+            return
+        if not ops or mn in NO_DEST:
+            return
+        dest = _SUBREG.get(ops[0])
+        if dest is None:
+            return
+        if mn == 'lea' and len(ops) == 2 and target is not None and RIP_LEA_RE.search(ops[1]):
+            self.known[dest] = target - self.base
+        else:
+            self.known.pop(dest, None)
+
+    def feed(self, lines):
+        for text in lines:
+            colon = text.find(':')
+            if colon < 8 or colon > 17 or text[0] == ' ':
+                continue
+            try:
+                addr = int(text[:colon], 16)
+            except ValueError:
+                continue
+            rest = text[colon + 1:].strip()
+            if not rest:
+                continue
+            parts = rest.split('\t', 1)
+            mn = ' '.join(parts[0].split())
+            opstext = parts[1] if len(parts) > 1 else ''
+            m = COMMENT_TARGET_RE.search(opstext)
+            self.instruction(addr, mn, _split_operands(opstext), int(m.group(1), 16) if m else None)
+        self._close()
+        return self.rows
+
+
+def harvest_native_registrations(img, sites, natives, vftable_names=None, ctor_vtables=None):
+    """Join registration call sites to script declarations. Returns ``(rows, stats)``.
+
+    ``natives`` is the table of ``tools/papyrus_psc.py`` (`{folded script: {'natives': [...]}}`).
+    ``vftable_names`` optionally maps a virtual-table RVA to its class name (read from RTTI).
+    ``ctor_vtables`` maps a constructor to the virtual tables it stores at offset zero; it names the class when the
+    registering function does not store one itself. The handler is an executable address passed as an argument or
+    stored into the new object. A row is emitted only when two argument strings are a declared (script, native function) pair
+    and exactly one stored address lies in executable code; a handler that more than one declared
+    pair claims is dropped, as the pairing is then not one to one.
+    """
+    declared = {}
+    for key, script in natives.items():
+        for c in script['natives']:
+            declared[(key, c['name'].lower())] = (script, c)
+    stats = {'sites': len(sites), 'pairs': 0, 'no_handler': 0, 'several_handlers': 0}
+    found = []
+    for site in sites:
+        strings = {}
+        for slot, rva in site['args'].items():
+            sec = img.section(rva)
+            if sec is None or _is_exec(sec):
+                continue
+            text = _read_cstr(img, rva, 97)
+            if text and REG_IDENT_RE.match(text):
+                strings[slot] = text
+        pair = None
+        for a, fn in strings.items():
+            for b, scr in strings.items():
+                if a != b and (scr.lower(), fn.lower()) in declared:
+                    pair = (scr, fn)
+        if pair is None:
+            continue
+        stats['pairs'] += 1
+        handlers, vtables = set(), set()
+        for rva in site['args'].values():
+            sec = img.section(rva)
+            if sec is not None and _is_exec(sec) and rva != site['callee']:
+                handlers.add(rva)
+        for off, rva in site['stores']:
+            sec = img.section(rva)
+            if sec is None:
+                continue
+            if _is_exec(sec):
+                handlers.add(rva)
+            elif off == 0:
+                vtables.add(rva)
+        if not handlers:
+            stats['no_handler'] += 1
+            continue
+        if len(handlers) > 1:
+            stats['several_handlers'] += 1
+            continue
+        script, c = declared[(pair[0].lower(), pair[1].lower())]
+        if not vtables:
+            vtables = set((ctor_vtables or {}).get(site['callee'], ()))
+        vt = next(iter(vtables)) if len(vtables) == 1 else None
+        found.append({'handler': next(iter(handlers)), 'script': script['name'], 'function': c['name'],
+                      'decl': c, 'site': site['site'], 'vftable': vt,
+                      'native_class': (vftable_names or {}).get(vt)})
+    by_handler = defaultdict(set)
+    for r in found:
+        by_handler[r['handler']].add((r['script'].lower(), r['function'].lower()))
+    rows = [r for r in found if len(by_handler[r['handler']]) == 1]
+    stats.update({'resolved': len(rows), 'shared_handlers': len(found) - len(rows),
+                  'distinct_handlers': len({r['handler'] for r in rows})})
+    return rows, stats
