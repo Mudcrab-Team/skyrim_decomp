@@ -28,7 +28,7 @@ def parse(text, with_relocs):
             continue
         m = INS.match(line)
         if m:
-            row = {'off': int(m.group(1), 16), 'b': m.group(2).split(), 't': ' '.join(m.group(3).split()), 'rel': []}
+            row = {'off': int(m.group(1), 16), 'b': m.group(2).split(), 't': ' '.join(m.group(3).split()), 'rel': [], 'relsym': []}
             (cur if cur is not None else rows).append(row)
             continue
         m = REL.match(line)
@@ -36,6 +36,7 @@ def parse(text, with_relocs):
             tgt = cur if cur else rows
             if tgt:
                 tgt[-1]['rel'].append(int(m.group(1), 16) - tgt[-1]['off'])
+                tgt[-1]['relsym'].append(m.group(3))
     return blocks if cur is not None or blocks else rows
 
 

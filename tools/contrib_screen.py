@@ -13,7 +13,7 @@ MAX_DEPTH = 32
 MAX_MACROS = 128
 MAX_EXPANSION = 100000
 # These are pinned compiler headers, never searched on the maintainer's ordinary include path.
-STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath',
+STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath', 'cstdarg', 'cstdio',
                               'type_traits', 'utility', 'new', 'limits', 'stddef.h', 'stdint.h', 'intrin.h', 'math.h',
                               'algorithm', 'memory', 'vector', 'deque', 'list', 'forward_list', 'set', 'map', 'unordered_map', 'unordered_set',
                               'array', 'queue', 'functional', 'bitset', 'string', 'string.h'))

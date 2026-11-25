@@ -1173,6 +1173,15 @@ class RecordStepTests(RecordStaleTests):
         self.bot.record(self.pr, self.state, [0x30])
         self.assertTrue(self.state.get('recorded'))
 
+    def test_a_stderr_only_record_failure_logs_the_exit_and_sanitized_error(self):
+        base_run = self.bot.run
+        self.bot.run = lambda argv, **kw: (subprocess.CompletedProcess(
+            argv, 1, b'', b'Traceback\nRuntimeError: git push rejected /private/checkout\n')
+            if str(argv[1]).endswith('record.py') else base_run(argv, **kw))
+        with self.assertRaisesRegex(pr_bot.Stop, r'exit 1: RuntimeError: git push rejected <path>'):
+            self.bot.record(self.pr, self.state, [0x30])
+        self.assertFalse(self.state.get('recorded'))
+
 
 class CarriedRecordsTests(unittest.TestCase):
     """carried_records builds one record per carried function, whatever the count."""
