@@ -595,6 +595,7 @@ def apply_constants(u, facts):
     return done
 
 
+NOT_CALLS = {'if', 'for', 'while', 'switch', 'return', 'sizeof', 'catch', 'static_cast', 'reinterpret_cast', 'const_cast', 'dynamic_cast'}
 PARAM_TYPES = re.compile(r'(?<![\w:])(unsigned\s+int|unsigned\s+long|unsigned|long|int)(?![\w:])')
 
 
@@ -640,6 +641,29 @@ def widen_parameters(u, facts, method_name):
     dm = re.search(rf'(?<![\w~]){re.escape(name)}\s*\(([^)]*)\)', decl) if name else None
     if dm:
         u['header_decl'] = decl[:dm.start(1)] + PARAM_TYPES.sub(lambda mm: 'unsigned __int64' if 'unsigned' in mm.group(1) else '__int64', dm.group(1)) + decl[dm.end(1):]
+    # a callee that takes the value by int would narrow it again: the prototypes the body calls are widened too
+    callees = set(re.findall(rf'(?<![\w.>:])({IDENT})\s*\(', u['cpp_body'][head_end:])) - {name} - NOT_CALLS
+    for callee in sorted(callees):
+        def proto(mm):
+            changed[0] += len(PARAM_TYPES.findall(mm.group(2)))
+            return mm.group(1) + PARAM_TYPES.sub(lambda t: 'unsigned __int64' if 'unsigned' in t.group(1) else '__int64', mm.group(2)) + ');'
+        u['header_decl'] = re.sub(rf'(?m)^((?:[A-Za-z_][\w:<>\s\*&]*?\s)?\b{re.escape(callee)}\s*\()([^()]*)\)\s*;', proto, u['header_decl'])
+    # a class built in the body from the widened values: its constructor parameters and the members they initialise follow
+    for cls in sorted(set(re.findall(rf'(?m)^\s*({IDENT})\s+{IDENT}\s*\(', u['cpp_body'][head_end:])) - NOT_CALLS):
+        m = re.search(rf'\b{re.escape(cls)}\s*\(([^()]*)\)\s*:\s*([^{{;]*)\{{', u['header_decl'])
+        if not m:
+            continue
+        names = [mm.group(3) for mm in re.finditer(rf'({PARAM_TYPES.pattern})\s+({IDENT})', m.group(1))]
+        if not names:
+            continue
+        changed[0] += len(names)
+        params = PARAM_TYPES.sub(lambda t: 'unsigned __int64' if 'unsigned' in t.group(1) else '__int64', m.group(1))
+        header = u['header_decl'][:m.start(1)] + params + u['header_decl'][m.end(1):]
+        for member, arg in re.findall(rf'({IDENT})\s*\(\s*({IDENT})\s*\)', m.group(2)):
+            if arg in names:
+                header = re.sub(rf'(?m)^(\s*)(?:unsigned\s+int|unsigned|long|int)\s+{re.escape(member)}\s*;',
+                                lambda t: f'{t.group(1)}__int64 {member};', header)
+        u['header_decl'] = header
     u['widened_parameters'] = changed[0]
     return changed[0]
 
@@ -684,15 +708,24 @@ def apply_layout(u, facts, method_name=None):
     if not members and not slots and not literals and not widths and not tails:
         return None if (consts or widened) else 'no usable layout fact'
     if literals:
-        body = u['cpp_body']
-        lines = body.split('\n')
-        for (src, sib), sky in literals.items():
-            want = ' '.join(src.split())
-            for i, l in enumerate(lines):
-                if ' '.join(l.split()) == want:
-                    lines[i] = re.sub(rf'(\+\s*)(?:0x{sib:x}|{sib})\b', lambda m: m.group(1) + f'{sky:#x}', l, flags=re.I)
-        u['cpp_body'] = '\n'.join(lines)
-        u['literal_offsets'] = len(literals)
+        # the spelled offset can sit in the unit's body or in an inline function of its header
+        hit = 0
+        for field in ('cpp_body', 'header_decl'):
+            lines = u[field].split('\n')
+            for (src, sib), sky in literals.items():
+                want = ' '.join(src.split())
+                for i, l in enumerate(lines):
+                    if want and want in ' '.join(l.split()):
+                        new = re.sub(rf'(\+\s*)(?:0x{sib:x}|{sib})\b', lambda m: m.group(1) + f'{sky:#x}', l, flags=re.I)
+                        hit += new != l
+                        lines[i] = new
+            u[field] = '\n'.join(lines)
+        u['literal_offsets'] = hit
+        if not hit:
+            return 'literal offset not found in the unit text'
+        text = u['header_decl']
+        classes = parse_classes(text)
+        engine = Engine(classes, text)
     touched = set()
     for cn, _ in list(members) + list(slots) + list(widths):
         ch = chain(classes, cn)

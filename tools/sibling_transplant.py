@@ -66,6 +66,10 @@ STATIC_ASSERTS = [
 ]
 
 
+# the compiler's own va_list is the one the unit needs; the sibling's 32-bit spelling clashes with it
+VA_LIST_TYPEDEF = re.compile(r'^[ \t]*typedef\s+char\s*\*\s*va_list\s*;[ \t]*$', re.M)
+
+
 def sanitize(text):
     for rx, rep in RENAMES:
         text = rx.sub(rep, text)
@@ -74,6 +78,7 @@ def sanitize(text):
     text = CRT_DECLARATION.sub('', text)
     for rx in STATIC_ASSERTS:
         text = rx.sub('', text)
+    text = VA_LIST_TYPEDEF.sub('', text)
     text = re.sub(r'\b__forceinline\b', 'inline', text)
     text = re.sub(r'__declspec\(\s*noinline\s*\)\s*', '', text)
     return CALLCONV.sub('', text)
@@ -1096,7 +1101,7 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
         u['header_decl'] = whole_word(u['header_decl'], u['raw_name'], sanitize(u['method']))
     if layout is not None:
         import sibling_layout
-        why = sibling_layout.apply_layout(u, layout, u.get('method'))
+        why = sibling_layout.apply_layout(u, layout, sanitize(u['method']) if u.get('method') else None)
         if why:
             return 'unit:layout: ' + why
     if os.environ.get('SIBLING_DRY'):

@@ -11,9 +11,9 @@
 #   SR_BOT_SRC      the checkout the service runs pr_bot.py from
 #   SR_BOT_PYTHON   interpreter for the bot
 #   SR_BOT_ENV      optional shell file of exports the service needs (runner config, paths), sourced first
-#   SR_BOT_LABEL    optional launchd label to kickstart; without it the service is not restarted
+#   SR_BOT_LABEL    optional launchd label to kickstart when no pin is configured
 #   SR_BOT_PIN      optional file the deploy writes the SHA to; a service wrapper that refreshes SR_BOT_SRC
-#                   from main on every restart should check out this SHA instead while the file exists
+#                   from main on restart should check out this SHA instead. The running bot drains.
 set -eu
 
 sha=${1:?usage: pr_bot_deploy.sh SHA [--allow-stale]}
@@ -43,7 +43,8 @@ if main=$(git -C "$SR_BOT_SRC" rev-parse --verify -q "refs/remotes/origin/main^{
 fi
 
 scratch=$(mktemp -d)
-trap 'git -C "$SR_BOT_SRC" worktree remove --force "$scratch/code" >/dev/null 2>&1 || true; rm -rf "$scratch"' EXIT
+pin_tmp=
+trap 'git -C "$SR_BOT_SRC" worktree remove --force "$scratch/code" >/dev/null 2>&1 || true; rm -rf "$scratch"; [ -z "$pin_tmp" ] || rm -f "$pin_tmp"' EXIT
 git -C "$SR_BOT_SRC" worktree add -q --detach "$scratch/code" "$sha"
 
 # State is seeded from copies of the live files and written only under the scratch directory.
@@ -56,14 +57,18 @@ if ! "$SR_BOT_PYTHON" "$scratch/code/tools/pr_bot.py" --dry-run --root "$SR_BOT_
     exit 1
 fi
 
-# With a pin file and no label to kick, the running bot is not restarted from here: it drains (pr_bot.py
-# --restart-on) and its wrapper checks the pin out when it starts again, so the code under the running
-# processes does not change mid-PR.
-if [ -z "${SR_BOT_PIN:-}" ] || [ -n "${SR_BOT_LABEL:-}" ]; then
+# With a pin, keep the running checkout in place even if a launchd label is also set. The bot
+# drains (--restart-on) and the wrapper checks out the new SHA after the process exits.
+if [ -n "${SR_BOT_PIN:-}" ]; then
+    pin_tmp=$(mktemp "$SR_BOT_PIN.XXXXXX")
+    echo "$sha" > "$pin_tmp"
+    mv -f "$pin_tmp" "$SR_BOT_PIN"
+    pin_tmp=
+    echo "pinned $sha; the running bot will drain before restarting"
+else
     git -C "$SR_BOT_SRC" checkout -q --detach "$sha"
+    if [ -n "${SR_BOT_LABEL:-}" ]; then
+        launchctl kickstart -k "gui/$(id -u)/$SR_BOT_LABEL"
+    fi
+    echo "deployed $sha"
 fi
-[ -z "${SR_BOT_PIN:-}" ] || echo "$sha" > "$SR_BOT_PIN"
-if [ -n "${SR_BOT_LABEL:-}" ]; then
-    launchctl kickstart -k "gui/$(id -u)/$SR_BOT_LABEL"
-fi
-echo "deployed $sha"
