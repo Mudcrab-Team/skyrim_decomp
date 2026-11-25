@@ -21,6 +21,7 @@ BUILTIN = {'char': 1, 'signed char': 1, 'unsigned char': 1, 'bool': 1, 'short': 
            'uint8_t': 1, 'int8_t': 1, 'uint16_t': 2, 'int16_t': 2, 'uint32_t': 4, 'int32_t': 4, 'uint64_t': 8, 'int64_t': 8,
            'ptrdiff_t': 8, 'intptr_t': 8, 'uintptr_t': 8}
 QUALIFIERS = re.compile(r'\b(?:const|volatile|mutable|struct|class|enum|register)\b')
+WIDTH_TYPES = {'byte': 'unsigned char', 'word': 'unsigned short', 'dword': 'unsigned int', 'qword': 'unsigned __int64'}
 NOT_MEMBER = ('typedef', 'using', 'friend', 'template', 'static', 'struct', 'class', 'union', 'enum', 'extern', 'public', 'private', 'protected')
 
 
@@ -73,7 +74,7 @@ class Cls:
                 if j is None:
                     self.bad = 'unbalanced'
                     break
-                decls.append((text, True))
+                decls.append((text, body[i:j + 1]))
                 cur, i = [], j + 1
                 if i < len(body) and body[i] == ';':
                     i += 1
@@ -114,7 +115,8 @@ class Cls:
             name = re.search(rf'(~?{IDENT}|operator\s*\S+)\s*$', head)
             if not name:
                 return
-            self.methods.append(dict(name=name.group(1), virtual=bool(re.search(r'\bvirtual\b', head)), text=text, has_body=has_body))
+            self.methods.append(dict(name=name.group(1), virtual=bool(re.search(r'\bvirtual\b', head)), text=text, has_body=bool(has_body),
+                                     body=has_body or ''))
             return
         self._data_member(text)
 
@@ -245,6 +247,7 @@ class Engine:
         base = bases[0] if bases else None
         lay.base = base
         cur = 0
+        own_virtuals += [m for m in c.methods if not m['virtual'] and m['name'].startswith('~') and base is not None and base.poly]
         lay.poly = bool(own_virtuals) or bool(base and base.poly)
         if base:
             lay.slots, lay.nslots = dict(base.slots), base.nslots
@@ -262,6 +265,10 @@ class Engine:
             lay.align = max(lay.align, other.align)
         for m in own_virtuals:
             if m['name'] not in lay.slots:
+                inherited = next((n for n in lay.slots if n.startswith('~')), None) if m['name'].startswith('~') else None
+                if inherited is not None:
+                    lay.slots[m['name']] = lay.slots[inherited]
+                    continue
                 lay.slots[m['name']] = lay.nslots
                 lay.nslots += 1
         complete = True
@@ -300,14 +307,44 @@ def chain(classes, name):
 def resolve(engine, classes, facts, body):
     """(members {(class, member): (sibling offset, target offset)}, slots {(class, method):
     (sibling slot, target slot)}) or a reason string."""
-    members, slots, literals = {}, {}, {}
+    members, slots, literals, widths, sizes = {}, {}, {}, {}, []
     for f in facts:
-        if f['kind'] == 'member-offset':
-            pat = re.search(r'\[\s*(\w+)\s*\+\s*#\s*\]', f['instruction_pattern'])
-            if not pat:
-                continue  # a scale factor or an index, not a field offset
-            if pat.group(1) in ('rsp', 'rbp'):
+        if f['kind'] in ('class-size', 'alloc-size'):
+            sib, sky = hexval(f['sibling_x64']), hexval(f['skyrim'])
+            if sib is not None and sky is not None and sib != sky:
+                sizes.append((f['kind'], sib, sky, f.get('source_line') or ''))
+        elif f['kind'] == 'operand-width':
+            m = re.search(r'\[\s*(\w+)\s*(?:\+\s*(0x[0-9a-f]+|\d+)\s*)?\]', f['sibling_x64'])
+            ptr = re.search(r'\b(byte|word|dword|qword) ptr\b', f['skyrim'])
+            if not m or not ptr:
+                return 'width fact is not on a member access'
+            if m.group(1) in ('rsp', 'rbp'):
                 return 'stack frame offset differs (local variable layout)'
+            sib = int(m.group(2), 0) if m.group(2) else 0
+            found = set()
+            for idents in (set(re.findall(IDENT, f.get('source_line') or '')), set(re.findall(IDENT, body))):
+                for cname in classes:
+                    lay = engine.layout(cname)
+                    for nm, off in (lay.offsets.items() if lay else ()):
+                        if nm in idents and off == sib:
+                            found.add((cname, nm))
+                if found:
+                    break
+            found = {(c, n) for c, n in found if not any(o != c and (o, n) in found and c in (chain(classes, o) or []) for o in classes)}
+            if len(found) != 1:
+                return 'width fact not matched to one member'
+            key = next(iter(found))
+            new = WIDTH_TYPES[ptr.group(1)]
+            if widths.get(key, new) != new:
+                return 'one member with two different widths'
+            widths[key] = new
+        elif f['kind'] in ('member-offset', 'add-offset'):
+            if f['kind'] == 'member-offset':
+                pat = re.search(r'\[\s*(\w+)\s*\+\s*#\s*\]', f['instruction_pattern'])
+                if not pat:
+                    continue  # a scale factor or an index, not a field offset
+                if pat.group(1) in ('rsp', 'rbp'):
+                    return 'stack frame offset differs (local variable layout)'
             sib, sky = hexval(f['sibling_x64']), hexval(f['skyrim'])
             if sib is None or sky is None or sib == sky:
                 continue
@@ -323,6 +360,18 @@ def resolve(engine, classes, facts, body):
                             found.add((cname, nm))
                 if found:
                     break
+            if not found and not literal_offset(f, sib, sky):
+                # the computed layout can be wrong (an unknown base or member type before it), so the member the fact's own
+                # source line names is taken when it is the only one; the comparator decides whether the guess was right
+                named = set(re.findall(IDENT, f.get('source_line') or ''))
+                loose = set()
+                for cname, c in classes.items():
+                    if engine.layout(cname) is None:
+                        continue
+                    loose.update((cname, m[2]) for m in c.members if m[2] in named)
+                loose = {(c, n) for c, n in loose if not any(o != c and (o, n) in loose and c in (chain(classes, o) or []) for o in classes)}
+                if len(loose) == 1:
+                    found = loose
             if not found:
                 lit = literal_offset(f, sib, sky)
                 if lit:
@@ -378,7 +427,7 @@ def resolve(engine, classes, facts, body):
             if slots.get(key, (sib // 8, sky // 8)) != (sib // 8, sky // 8):
                 return 'one virtual with two different target slots'
             slots[key] = (sib // 8, sky // 8)
-    return members, slots, literals
+    return members, slots, literals, widths, sizes
 
 
 def literal_offset(f, sib, sky):
@@ -387,7 +436,7 @@ def literal_offset(f, sib, sky):
     return bool(re.search(rf'\+\s*(?:0x{sib:x}|{sib})\b', line, re.I))
 
 
-def emit_class(c, engine, classes, members, slots, body_idents, method_name):
+def emit_class(c, engine, classes, members, slots, body_idents, method_name, widths=None, tails=None, keep_dtor=False):
     """Text of the stand-in for class `c` (a Cls) or a reason string, plus its placeholder names."""
     lay = engine.layout(c.name)
     if lay is None:
@@ -398,11 +447,17 @@ def emit_class(c, engine, classes, members, slots, body_idents, method_name):
         start = base.size if base.size else 0
     placed = {}  # name -> (offset, typ, decl)
     original = {m[2]: m[3].strip() for m in c.members}
+    widths = widths or {}
     for typ, decl, nm, _ in c.members:
         target = members.get((c.name, nm))
+        if (c.name, nm) in widths:
+            if '[' in decl or decl.startswith('(*'):
+                return f'member {nm} is not a scalar', []
+            typ, decl = widths[(c.name, nm)], nm
+            original[nm] = f'{typ} {nm}'
         if target is not None:
             placed[nm] = (target[1], typ, decl)
-        elif nm in body_idents:
+        elif nm in body_idents or (c.name, nm) in widths:
             if nm not in lay.offsets:
                 return f'referenced member {nm} has no computed offset', []
             placed[nm] = (lay.offsets[nm], typ, decl)
@@ -411,7 +466,10 @@ def emit_class(c, engine, classes, members, slots, body_idents, method_name):
     for (cn, nm), (_sib, sky) in slots.items():
         if cn == c.name:
             virt[sky] = nm
+    dtors = [m for m in c.methods if keep_dtor and m['name'].startswith('~') and m['name'] in lay.slots]
     for m in c.methods:
+        if m in dtors:
+            continue
         if m['virtual'] and (m['name'] in body_idents or m['name'] == method_name) and (c.name, m['name']) not in slots:
             slot = lay.slots.get(m['name'])
             if slot is not None:
@@ -421,11 +479,19 @@ def emit_class(c, engine, classes, members, slots, body_idents, method_name):
     base_slots = base.nslots if base else 0
     if base is None and virt:
         base_slots = 0
+    for m in dtors:
+        # a destructor overriding the base's takes the base slot and is only re-declared; a new one gets its own slot
+        if lay.slots[m['name']] >= base_slots:
+            virt.setdefault(lay.slots[m['name']], m['name'])
     if virt and min(virt) < base_slots:
         return 'target slot lies inside the base class virtuals', []
     names = []
     lines = []
-    texts = {m['name']: m for m in c.methods if m['virtual']}
+    for m in dtors:
+        if lay.slots[m['name']] < base_slots:
+            head = m['text'] if 'virtual' in m['text'].split('(')[0] else 'virtual ' + m['text']
+            lines.append('    ' + head + ' ' + (m['body'] or ';'))
+    texts = {m['name']: m for m in c.methods if m['virtual'] or (keep_dtor and m['name'].startswith('~'))}
     top = max(virt) if virt else None
     own_poly = lay.poly and (base is None or not base.poly)
     if own_poly and top is None:
@@ -438,7 +504,11 @@ def emit_class(c, engine, classes, members, slots, body_idents, method_name):
                 names.append(nm)
                 lines.append(f'    virtual void {nm}();')
             else:
-                lines.append('    ' + declaration_only(texts[nm]['text']) + ';' if nm in texts else f'    virtual void {nm}();')
+                if keep_dtor and nm.startswith('~') and nm in texts:
+                    t = texts[nm]
+                    lines.append('    ' + (t['text'] if 'virtual' in t['text'].split('(')[0] else 'virtual ' + t['text']) + ' ' + (t['body'] or ';'))
+                else:
+                    lines.append('    ' + declaration_only(texts[nm]['text']) + ';' if nm in texts else f'    virtual void {nm}();')
     # the polymorphic stand-in reaches the vptr automatically; members follow at their offsets
     cur = 8 if (top is not None and base is None) else start
     for nm, (off, typ, decl) in sorted(placed.items(), key=lambda kv: kv[1][0]):
@@ -457,8 +527,15 @@ def emit_class(c, engine, classes, members, slots, body_idents, method_name):
             lines.append(f'    char {gname}[{gap}];')
         lines.append(f'    {original[nm]};' if decl.startswith('(*') else f'    {typ} {decl};')
         cur = off + info[0]
+    if tails and c.name in tails:
+        tail = tails[c.name]
+        if tail < cur:
+            return f'target size {tail:#x} is below the members the function uses ({cur:#x})', []
+        if tail > cur:
+            names.append('padding_tail_')
+            lines.append(f'    char padding_tail_[{tail - cur}];')
     for m in c.methods:
-        if not m['virtual']:
+        if not m['virtual'] and not (keep_dtor and m['name'].startswith('~') and m['name'] in lay.slots):
             lines.append('    ' + declaration_only(m['text']) + ';')
     clause = f' : {", ".join(c.bases)}' if c.bases else ''
     kw = c.kw
@@ -483,18 +560,129 @@ def declaration_only(text):
     return (text[:end] + (' ' + ' '.join(tail) if tail else '')).strip()
 
 
+def literal_value(token):
+    try:
+        return int(token, 0)
+    except ValueError:
+        return None
+
+
+def apply_constants(u, facts):
+    """Replace the argument literals the sibling passes to a call by the target's constants. Only the fact's own
+    source line is touched when the listing names it; otherwise every argument position holding the sibling's
+    value. Returns the number of replaced literals."""
+    done, lines = 0, u['cpp_body'].split('\n')
+    seen = set()
+    for f in facts:
+        if f['kind'] != 'call-arg-constant':
+            continue
+        sib, sky = literal_value(f['sibling_x64']), literal_value(f['skyrim'])
+        if sib is None or sky is None or sib == sky or (sib, sky) in seen:
+            continue
+        seen.add((sib, sky))
+        want = ' '.join((f.get('source_line') or '').split())
+        rows = [i for i, l in enumerate(lines) if want and ' '.join(l.split()) == want] or list(range(len(lines)))
+
+        def swap(m):
+            nonlocal done
+            if literal_value(m.group(2).rstrip('uUlL')) != sib:
+                return m.group(0)
+            done += 1
+            return m.group(1) + (f'{sky:#x}' if m.group(2).lower().startswith('0x') else str(sky))
+        for i in rows:
+            lines[i] = re.sub(r'((?<=[(,])\s*)(0[xX][0-9a-fA-F]+[uUlL]*|\d+[uUlL]*)(?=\s*[,)])', swap, lines[i])
+    u['cpp_body'] = '\n'.join(lines)
+    return done
+
+
+PARAM_TYPES = re.compile(r'(?<![\w:])(unsigned\s+int|unsigned\s+long|unsigned|long|int)(?![\w:])')
+
+
+def register_width(f):
+    """True for a width fact that concerns a register or a stack slot (a parameter or local), not a member."""
+    if f['kind'] != 'operand-width':
+        return False
+    m = re.search(r'\[\s*(\w+)\s*[+\]]', f['sibling_x64'])
+    return m is None or m.group(1) in ('rsp', 'rbp')
+
+
+def widen_parameters(u, facts, method_name):
+    """Rule 68: the sibling's integer parameters are 32-bit where the target's are pointer-sized. Widen every integer
+    parameter of the compiled function (definition and declaration). Returns the number of parameters changed, or a
+    reason string when the facts say the target is narrower or the signature is not found."""
+    rows = [f for f in facts if register_width(f)]
+    if not rows:
+        return 0
+    narrower = 0
+    for f in rows:
+        a, b = f['sibling_x64'], f['skyrim']
+        if re.search(r'\b(?:dword|e[a-z]{2}|r\d+d)\b', a) and re.search(r'\b(?:qword|r[a-z]{2}|r\d+)\b', b):
+            narrower += 1
+    if narrower < len(rows) / 2:
+        return 'the target is narrower than the sibling: not a parameter widening'
+    name = (method_name or '').split('::')[-1] or None
+    body = u['cpp_body']
+    head_end = body.find('{')
+    head = body[:head_end] if head_end > 0 else ''
+    m = re.search(rf'(?<![\w~]){re.escape(name)}\s*\(([^)]*)\)' if name else r'\w+\s*\(([^)]*)\)', head)
+    if not m:
+        return 'signature not found for a parameter widening'
+    changed = [0]
+
+    def wide(match):
+        changed[0] += 1
+        return 'unsigned __int64' if 'unsigned' in match.group(1) else '__int64'
+    params = PARAM_TYPES.sub(wide, m.group(1))
+    if not changed[0]:
+        return 'no integer parameter to widen'
+    u['cpp_body'] = body[:m.start(1)] + params + body[m.end(1):]
+    decl = u['header_decl']
+    dm = re.search(rf'(?<![\w~]){re.escape(name)}\s*\(([^)]*)\)', decl) if name else None
+    if dm:
+        u['header_decl'] = decl[:dm.start(1)] + PARAM_TYPES.sub(lambda mm: 'unsigned __int64' if 'unsigned' in mm.group(1) else '__int64', dm.group(1)) + decl[dm.end(1):]
+    u['widened_parameters'] = changed[0]
+    return changed[0]
+
+
 def apply_layout(u, facts, method_name=None):
     """Replace the classes of u['header_decl'] that carry facts (and their bases) by stand-ins.
     Returns None on success or a reason string; adds the GUESS labels for the placeholders."""
     text = u['header_decl']
     classes = parse_classes(text)
     engine = Engine(classes, text)
-    res = resolve(engine, classes, [f for f in facts if f['kind'] in ('member-offset', 'vtable-slot')], u['cpp_body'])
+    thunk = bool(u.get('thunk'))
+    consts = apply_constants(u, facts)
+    widened = widen_parameters(u, facts, method_name)
+    if isinstance(widened, str):
+        return widened
+    facts = [f for f in facts if not register_width(f)]
+    if widened:
+        text = u['header_decl']
+        classes = parse_classes(text)
+        engine = Engine(classes, text)
+    # a deleting-destructor thunk keeps the class text with the inline destructor: that body names the members it releases
+    body = u['cpp_body'] + ('\n' + '\n'.join(m['body'] for c in classes.values() for m in c.methods if m.get('body')) if thunk else '')
+    usable = [f for f in facts if f['kind'] in ('member-offset', 'vtable-slot', 'add-offset', 'operand-width', 'class-size', 'alloc-size')]
+    res = resolve(engine, classes, usable, body)
     if isinstance(res, str):
         return res
-    members, slots, literals = res
-    if not members and not slots and not literals:
-        return 'no usable layout fact'
+    members, slots, literals, widths, sizes = res
+    tails = {}
+    for kind, sib, sky, src in sizes:
+        if thunk and u.get('cls') in classes:
+            owner = u['cls']
+        else:
+            named = [n for n in re.findall(rf'\bnew\s+({IDENT})', src) if n in classes]
+            sized = [n for n in classes if (engine.layout(n) is not None and engine.layout(n).size == sib)]
+            owner = named[0] if len(set(named)) == 1 else (sized[0] if len(sized) == 1 else None)
+        if owner is None:
+            return 'size fact not matched to a class'
+        if tails.get(owner, sky) != sky:
+            return 'one class with two different target sizes'
+        tails[owner] = sky
+    u['constants'] = consts
+    if not members and not slots and not literals and not widths and not tails:
+        return None if (consts or widened) else 'no usable layout fact'
     if literals:
         body = u['cpp_body']
         lines = body.split('\n')
@@ -506,16 +694,22 @@ def apply_layout(u, facts, method_name=None):
         u['cpp_body'] = '\n'.join(lines)
         u['literal_offsets'] = len(literals)
     touched = set()
-    for cn, _ in list(members) + list(slots):
+    for cn, _ in list(members) + list(slots) + list(widths):
         ch = chain(classes, cn)
         if ch is None:
             return 'class chain not supported'
         touched.update(ch)
-    body_idents = set(re.findall(IDENT, strip_comments(u['cpp_body'])))
+    for cn in tails:
+        ch = chain(classes, cn)
+        if ch is None:
+            return 'class chain not supported'
+        touched.update(ch)
+    body_idents = set(re.findall(IDENT, strip_comments(body)))
     pieces, placeholders = [], []
     for name in sorted(touched, key=lambda n: -classes[n].start):
         c = classes[name]
-        out, names = emit_class(c, engine, classes, members, slots, body_idents, method_name)
+        out, names = emit_class(c, engine, classes, members, slots, body_idents, method_name, widths, tails,
+                                keep_dtor=thunk and name == u.get('cls'))
         if not out.startswith(('//', 'class ', 'struct ')):
             return out
         pieces.append((c.start, c.end, out))
@@ -533,6 +727,10 @@ def apply_layout(u, facts, method_name=None):
         lay = engine2.layout(cn)
         if lay is None or lay.slots.get(nm) != sky:
             return f'stand-in does not place {cn}::{nm} on slot {sky}'
+    for cn, size in tails.items():
+        lay = engine2.layout(cn)
+        if lay is None or lay.size != size:
+            return f'stand-in {cn} is not {size:#x} bytes'
     u['header_decl'] = text
     if placeholders:
         u['labels'] = u['labels'] + [(placeholders, 'GUESS')]

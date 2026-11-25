@@ -242,8 +242,9 @@ def class_origin(rel, name):
 
 
 def class_text(lines, name):
+    start = re.compile(rf'(?:class|struct)\s+{re.escape(name)}\b(?!\s*;)')
     for i, l in enumerate(lines):
-        if re.match(rf'(?:class|struct)\s+{re.escape(name)}\b(?!\s*;)', l):
+        if l.startswith(('class', 'struct')) and start.match(l):
             end = match_brace(lines, i)
             if end is not None:
                 closed = re.search(r'\}\s*[\w\s,*]*;\s*$', lines[end])
@@ -305,7 +306,7 @@ def build_plan_fnv(args):
     skip = {int(x) for x in json.load(open(args.skip))} if args.skip else set()
     out, cache = [], {}
     for x in json.load(open(args.scores)):
-        if not x.get('identical') or x['rva'] not in wanted or x['rva'] in skip:
+        if (x.get('identical') == bool(args.near)) or x['rva'] not in wanted or x['rva'] in skip:
             continue
         stem, sym = x['key']
         src = stem_src.get(stem)
@@ -364,19 +365,21 @@ def forward_declarations(class_lines):
     return sorted(u for u in used if not re.fullmatch(r'(?:Func|Data|Routine)[0-9a-f]{6,8}', u))
 
 
-def dependency_classes(lines, class_lines, own, seen=None):
+def dependency_classes(lines, class_lines, own, seen=None, defined=None):
     """Definitions of the sibling classes `class_lines` use (bases and members), dependencies first."""
     seen = seen if seen is not None else {own}
+    if defined is None:
+        # one pass over the file: a regex search per identifier over a large source made big units take minutes
+        defined = set(re.findall(r'^(?:class|struct)\s+([A-Za-z_]\w*)\b(?!\s*;)', '\n'.join(lines), re.M))
     out = []
-    joined = '\n'.join(lines)
     for name in sorted(set(re.findall(r'\b([A-Za-z_]\w*)\b', '\n'.join(class_lines)))):
-        if name in seen or not re.search(rf'^(?:class|struct)\s+{re.escape(name)}\b(?!\s*;)', joined, re.M):
+        if name in seen or name not in defined:
             continue
         seen.add(name)
         body = class_text(lines, name)
         if body is None:
             continue
-        out += dependency_classes(lines, body, own, seen)
+        out += dependency_classes(lines, body, own, seen, defined)
         out.append((name, body))
     return out
 
@@ -511,7 +514,8 @@ def cut_inline_member(lines, got):
     m = re.search(rf'(?<![\w.>])(~?{IDENT}|operator\s*[^\s(]+)\s*\(', head)
     if not m or m.group(1) in CALL_KEYWORDS:
         return None
-    proto = '    ' + re.sub(r'\s+', ' ', head).strip() + ';'
+    # an inline declaration is only emitted when something calls it; the comparison needs the function on its own
+    proto = '    ' + re.sub(r'\b(?:inline|__forceinline)\s+', '', re.sub(r'\s+', ' ', head).strip()) + ';'
     out_head = re.sub(r'^\s*(?:(?:virtual|static|inline|explicit|__forceinline)\s+)*', '', fn[0])
     out_head = re.sub(rf'(?<![\w.>])({re.escape(m.group(1))})\s*\(', rf'{cls}::\1(', out_head, 1)
     if f'{cls}::' not in out_head:
@@ -1091,12 +1095,12 @@ def run_mode(entry, fact, shadow_lines, original_lines, rva, mode, layout=None):
         # the declaration still carries the sibling's method name; the definition was renamed to the target's
         u['header_decl'] = whole_word(u['header_decl'], u['raw_name'], sanitize(u['method']))
     if layout is not None:
-        if u.get('thunk'):
-            return 'unit:layout: thunk'
         import sibling_layout
         why = sibling_layout.apply_layout(u, layout, u.get('method'))
         if why:
             return 'unit:layout: ' + why
+    if os.environ.get('SIBLING_DRY'):
+        return 'dry-ok'
     existing = next((ROOT / '.local/contrib/tasks').glob(f'*-{rva:x}'), None)
     if existing is not None:
         files, out = tuple(json.load(open(existing / 'task.json'))['contrib']['unit']), ''
@@ -1178,6 +1182,7 @@ def main():
     q.add_argument('--build-results', required=True)
     q.add_argument('--pass-list', required=True)
     q.add_argument('--skip', help='JSON list of rvas to leave out (those the Fallout 3 sibling already covers)')
+    q.add_argument('--near', action='store_true', help='plan the listed pairs that are NOT identical after masking (layout near pairs)')
     q.add_argument('--out', required=True)
     r = sub.add_parser('run')
     r.add_argument('plan')
