@@ -43,8 +43,8 @@ down` (attempt never stops a machine; --stop is retired).
 
 Attribution is required before compiling: inherit a queue claim, pass --model/--agent, or use
 a project --profile default. Progress lines show matching bytes versus the previous attempt and
-a best-score no-improvement count. Keep improving until N attempts without improvement or the
-existing hard attempt cap. Progress never decides a match.
+a best-score no-improvement count. A stalled score produces routing advice. Progress never
+decides a match.
 
 Results keep src/ and diff-signature.json locally. The signature maps each function to
 counts by mismatch class and alignment operation, an empty object on a pass, or null when
@@ -611,23 +611,33 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
         except (OSError, ValueError, KeyError, TypeError):
             pass
     current = {}
+    failed = set()
     for fn in task['functions']:
         rva = f'0x{fn["rva"]:x}'
         fdir = dest / rva
         report = attempt_progress.read_json(fdir / 'report.json')
         alignment = attempt_progress.read_json(fdir / 'align.json')
+        if report.get('result') == 'fail':
+            failed.add(rva)
         if report.get('result') == 'pass' and 'internal_selector' not in fn:
             alignment = dict(matching_bytes=fn['size'], target_bytes=fn['size'], matching_regions=1)
         current[rva] = attempt_progress.measure(report, alignment)
     history = [r for r in log_rows(task_dir / 'attempts.jsonl') if r.get('tier', 'first') == tier]
-    progress = attempt_progress.update(current, history, counted)
+    finished_at = time.time()
+    progress = attempt_progress.update(current, history, counted, now=finished_at)
+    stuck = [advice for rva, metric in progress.items() if counted and rva in failed
+             if (advice := attempt_progress.stuck_advice(rva, metric, patience, finished_at))]
     lines += [attempt_progress.describe(rva, metric, patience) for rva, metric in progress.items()]
+    lines += stuck
     lines.append(attempt_progress.guidance(patience))
     lines += pipeline.compile_warnings(dest / 'compile.log')
     if code == 1 and error is None:
         lines.append('scored, not exact: the unit compiled and was compared; exit status 1 only says not every '
                      'function passed, it is not a tool failure.')
-        lines.append('Next: revise the source using the aligned differences and retry; keep going while matching bytes rise.')
+        if not stuck:
+            lines.append('Next: revise the source using the aligned differences and retry; keep going while matching bytes rise.')
+        elif len(stuck) < len(failed):
+            lines.append('Next: use the aligned differences to revise functions still in the draft loop.')
     elif code != 0:
         problem = 'compile failed' if code == 3 else (error or {}).get('detail', 'host input failed')
         lines.append('Next: ' + agent_advice.next_action(problem, 'attempt'))
@@ -667,6 +677,8 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
             actionable = all_rows[0].splitlines()[0].strip()
         if actionable:
             print(actionable + f' (details: {rel}/attempt.txt; --verbose for full output)')
+        for advice in stuck:
+            print(advice)
     if max_attempt_bytes is not None:
         try:
             removed, total = prune_attempts(task_dir, max_attempt_bytes, keep=dest)

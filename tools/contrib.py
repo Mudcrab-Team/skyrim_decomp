@@ -2684,7 +2684,8 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False):
     first = json.loads((out / f'0x{parse_rva(task["functions"][0]["rva"]):x}' / 'report.json').read_text())
     prof = contrib_profile(ctx, task.get('contrib', {}).get('profile'))
     history = [attempt_progress.read_json(path / 'summary.json') for path in sorted(runs.glob('[0-9][0-9][0-9]')) if path != out]
-    progress = attempt_progress.update(current, history)
+    finished_at = time.time()
+    progress = attempt_progress.update(current, history, now=finished_at)
     summary = {'model': model, 'progress': progress, 'task': task['task_id'], 'run': number, 'unit': task['compiled'], 'source_revision': built['digest'],
                'recipe': task['recipe'], 'recipe_sha256': built['recipe_sha256'],
                'compiler': 'pinned' if built['compiler'] in ('wine', 'native') else 'override',
@@ -2710,14 +2711,19 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False):
     summary['profile'], summary['max_tries'] = prof['name'], prof['contrib_max_tries']
     for rva, metric in progress.items():
         say(attempt_progress.describe(rva, metric, prof['stuck_after']))
+    failed = [r['rva'] for r in results if r['result'] != 'pass']
+    stuck = [advice for rva in failed
+             if (advice := attempt_progress.stuck_advice(rva, progress[rva], prof['stuck_after'], finished_at))]
+    for advice in stuck:
+        say(advice)
     say(attempt_progress.guidance(prof['stuck_after']))
     for line in note_reminders(ctx, tdir, task, results, number):
         say(line)
-    stalled = bool(progress) and all(m and m['no_improvement'] >= prof['stuck_after'] for m in progress.values())
-    if passed < len(results) and (stalled or number >= prof['contrib_max_tries']) and not summary['practice']:
-        # Advice only: a contributor may go on, but a weak model rarely recovers past this point.
+    if failed and len(stuck) == len(failed) and not summary['practice']:
+        nxt = ' | '.join(stuck)
+    elif failed and number >= prof['contrib_max_tries'] and not summary['practice']:
         first_rva = task['functions'][0]['rva']
-        nxt = (f'stop: {prof["stuck_after"]} attempts with no improvement or hard cap {prof["contrib_max_tries"]} reached under profile {prof["name"]}; tell the person, then '
+        nxt = (f'stop: hard cap {prof["contrib_max_tries"]} reached under profile {prof["name"]}; tell the person, then '
                f'{ctx.cli} release {first_rva} --reason "<one line>"'
                + (f', or continue with a stronger model ({ctx.cli} start {first_rva} --profile full)'
                   if prof['name'] == 'cheap' else ''))
