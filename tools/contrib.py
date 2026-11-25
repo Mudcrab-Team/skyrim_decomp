@@ -2522,6 +2522,9 @@ def start(ctx, args, quiet=False):
         drafted = args.drafted_by or load_config(ctx).get('drafted_by') or 'unknown'
         text = (ctx.repo / cpp).read_text()
         claimed = rva_headers.claimed_rvas([text, (ctx.repo / header).read_text() if (ctx.repo / header).is_file() else ''])
+        # An older unit can already carry the function marker outside its leading comment block.
+        claimed.update(int(marker[1], 16) for line in text.splitlines()
+                       if (marker := HEADER_COMPARED.match(line.lstrip())))
         additions = []
         for fn, mm in zip(fns, m):
             if fn['rva'] not in claimed:
