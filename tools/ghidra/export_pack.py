@@ -50,7 +50,6 @@ import unit_paths  # noqa: E402
 
 PACK_SCHEMA = 1
 TASK_SCHEMA = 1
-DEFAULT_CONFIG = REPO / '.local/config/export_pack.json'
 DEFAULT_RECIPE = 'msvc-19.16.27054-o2'
 # Placeholder until bind reads the decorated name from a compiled object. The attempt command
 # needs a non-empty symbol to run at all; the comparator then fails this function with a
@@ -1583,8 +1582,9 @@ def render_pack_readme(p):
     return '\n'.join(lines)
 
 
-def shared_unit_functions(root=REPO):
+def shared_unit_functions(root=None):
     """Index accepted functions by translation unit so edits re-open their matches."""
+    root = Path(root or REPO)
     out = defaultdict(list)
     progress = json.loads((root / 'data/progress.json').read_text())
     for fn in progress['functions']:
@@ -1698,7 +1698,7 @@ def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts
         max_attempts = attempts_per_function * sum(1 for f in functions if f.get('role') != 'regression')
     # A community `X::~X` at vtable slot 0 is a deleting destructor in the image; record which
     # destructor function the target is so binding never settles on the plain `??1`.
-    sys.path.insert(0, str(REPO / 'tools' / 'verifier'))
+    sys.path.insert(0, str(HERE.parent / 'verifier'))
     import bind as binding
     binding.annotate_destructors({'functions': functions}, REPO)
     classes = sorted({p['identity'].get('owning_class') or 'Unknown' for p in packs})
@@ -3036,10 +3036,12 @@ def cmd_packs(args):
         write_group(REPO / '.local/tasks' / group, [REPO / '.local/tasks' / group / i for i in ids])
     # The findings file these tasks cite gets a table naming each unit, so tools/check_labels.py can
     # match a unit's Evidence line without a hand edit.
-    rows = progress_rows()
-    cited = list(dict.fromkeys(ev for d in task_dirs for ev in task_evidence(json.loads((d / 'task.json').read_text()), rows)))
-    for ev in write_unit_tables(cited):
-        print(f'{ev}: unit table updated')
+    if not args.no_evidence_tables:
+        inventory = progress_rows()
+        cited = list(dict.fromkeys(ev for d in task_dirs
+                                  for ev in task_evidence(json.loads((d / 'task.json').read_text()), inventory)))
+        for ev in write_unit_tables(cited):
+            print(f'{ev}: unit table updated')
     if moved:
         (run / 'fpfast.json').write_text(json.dumps(moved, indent=2) + '\n')
     t_py = time.monotonic() - t0
@@ -3191,8 +3193,10 @@ def cmd_survey(args):
 
 
 def main():
+    global REPO, ANALYSIS
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--config', default=str(DEFAULT_CONFIG))
+    p.add_argument('--repo', type=Path, help='Checkout whose inventory, units and private files to use')
+    p.add_argument('--config')
     sub = p.add_subparsers(dest='cmd', required=True)
     a = sub.add_parser('packs')
     a.add_argument('list')
@@ -3207,6 +3211,8 @@ def main():
     a.add_argument('--fpfast-recipe', default='o2-fpfast')
     a.add_argument('--class-material', action='store_true',
                    help='Also write .local/packs/<build>/class/<Class>/ for the classes of these tasks')
+    a.add_argument('--no-evidence-tables', action='store_true',
+                   help='Export tasks without reading other tasks or updating findings files')
     a.add_argument('--shared-classes-name', default='_shared-classes.json',
                    help='File name of the shared-class summary under class/ (a new name keeps an earlier batch\'s)')
     pl = sub.add_parser('plan', help='Propose class-grouped units from the community-named survey')
@@ -3255,6 +3261,11 @@ def main():
     b.add_argument('--task', required=True)
     b.add_argument('--object', default=None, help='Default: the newest attempts/<NNN>/candidate.obj')
     args = p.parse_args()
+    if args.repo is not None:
+        REPO = args.repo.resolve()
+        ANALYSIS = REPO / '.local/analysis'
+    if args.config is None:
+        args.config = REPO / '.local/config/export_pack.json'
     if args.cmd == 'packs':
         cmd_packs(args)
     elif args.cmd == 'survey':

@@ -83,24 +83,25 @@ def git_lines(root, *args):
     return out.stdout.decode('utf-8', 'replace').splitlines()
 
 
-def against_main(root, main, head):
+def against_main(root, main, head, *, incoming_only=False):
     """{rva: units} for RVAs a PR head marks in a unit while a different unit on `main` marks it too.
 
     A PR is checked against the base it was opened on. When another PR lands on main afterwards, the
     two can repeat an RVA although neither check saw the other, so the bot asks this at merge time.
-    Units the PR deletes no longer count on main's side.
+    Units the PR deletes no longer count on main's side. With incoming_only, return only the paths
+    that the PR introduces for each colliding RVA, leaving main's copies out of the result.
     """
     base = git_lines(root, 'merge-base', main, head)[0]
     paths = ('--', 'reconstruction/*.cpp')
-    added = set(git_lines(root, 'diff', '--name-only', '--diff-filter=AM', base, head, *paths))
-    gone = set(git_lines(root, 'diff', '--name-only', '--diff-filter=D', base, head, *paths))
+    added = set(git_lines(root, 'diff', '--no-renames', '--name-only', '--diff-filter=AM', base, head, *paths))
+    gone = set(git_lines(root, 'diff', '--no-renames', '--name-only', '--diff-filter=D', base, head, *paths))
     on_main = revision_markers(root, main)
     found = {}
     for rva, units in revision_markers(root, head).items():
         mine = {u for u in units if u in added and u not in on_main.get(rva, ())}
         others = set(on_main.get(rva, ())) - gone - mine
         if mine and others:
-            found[rva] = sorted(mine | others)
+            found[rva] = sorted(mine if incoming_only else mine | others)
     return dict(sorted(found.items()))
 
 

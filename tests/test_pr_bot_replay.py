@@ -88,7 +88,8 @@ class FakeGitHub:
         pr = self.prs[n]
         return dict(number=n, headRefOid=pr['head'], author={'login': pr['author']}, baseRefName='main',
                     isDraft=pr.get('draft', False), mergeable=pr['mergeable'], state=pr['state'],
-                    labels=[{'name': x} for x in pr.get('labels', [])], maintainerCanModify=True,
+                    labels=[{'name': x} for x in pr.get('labels', [])],
+                    maintainerCanModify=pr.get('can_modify', True),
                     headRefName=pr['branch'], headRepository={'name': 'fork'}, headRepositoryOwner={'login': pr['author']})
 
     def handle(self, argv):
@@ -401,6 +402,7 @@ class World:
             head = git(self.origin, 'rev-parse', f'refs/heads/{pr["branch"]}')
             if head != pr['head'] and pr['state'] == 'OPEN':
                 pr['head'], pr['mergeable'] = head, 'MERGEABLE'
+                pr['base'] = git(self.origin, 'merge-base', 'main', head)
                 git(self.origin, 'update-ref', f'refs/pull/{number}/head', head)
                 self.new_head_ci(number)
 
@@ -1018,7 +1020,7 @@ class ListedPathMissingTests(Replay):
 
 class MainMovesTests(Replay):
     def test_a_duplicate_from_main_updates_the_sticky_without_tripping_the_breaker(self):
-        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)}, can_modify=False)
         self.bot.say(7, pr_bot.sticky_body(head, pr_bot.BOT_ERROR_COMMENT))
         self.w.on_compile = lambda: self.w.move_main({'reconstruction/fx/other.cpp': unit(0x1000)})
 
@@ -1032,6 +1034,64 @@ class MainMovesTests(Replay):
         self.assertIn('0x1000', self.w.sticky(7)[0])
         self.assertIn('Merge main into your branch', self.w.sticky(7)[0])
         self.assertNotIn(pr_bot.BOT_ERROR_COMMENT, self.w.sticky(7)[0])
+
+    def test_a_concurrent_landing_drops_the_duplicate_pair_and_checks_the_new_head(self):
+        duplicate, keep = unit_path(0x1000), unit_path(0x2000)
+        header = duplicate.replace('.cpp', '.h')
+        body = '// 0x1000 Example::~Example\n#include "U1000.h"\nExample::Example() {}\n'
+        head = self.w.make_pr(7, {duplicate: body, header: '#pragma once\n',
+                                  keep: unit(0x2000)})
+        original_main = 'reconstruction/fx/winner.cpp'
+        self.w.on_compile = lambda: self.w.move_main({original_main: unit(0x1000)})
+
+        log = self.w.poll(self.bot)
+        new = self.w.github.prs[7]['head']
+        main = git(self.w.origin, 'rev-parse', 'main')
+        self.assertNotEqual(new, head, log)
+        self.assertFalse(self.merged(7), log)
+        self.assertEqual(git(self.w.origin, 'rev-list', '--parents', '-n', '1', new).split(),
+                         [new, head, main])
+        self.assertIn('Co-authored-by: alice <', git(self.w.origin, 'show', '-s', '--format=%B', new))
+        self.assertEqual([f['filename'] for f in self.w.files_of(7)], [keep])
+        self.assertIsNone(self.w.state(self.bot, 7, head).get('bot_error'))
+
+        log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertIn(original_main, self.w.main_files())
+        self.assertIn(keep, self.w.main_files())
+        self.assertNotIn(duplicate, self.w.main_files())
+        self.assertNotIn(header, self.w.main_files())
+
+    def test_preflight_drops_a_function_and_its_markers_without_discarding_the_rest_of_the_unit(self):
+        path = unit_path(0x1000)
+        header = path.replace('.cpp', '.h')
+        markers = '// 0x1000 Func1000\n// 0x2000 Func2000\n'
+        owned = 'int Func2000() { return 2; }\n'
+        head = self.w.make_pr(7, {
+            path: markers + '// CI hash: 0x1000 ?Old@@\n#include "U1000.h"\n'
+            'int Func1000() { return 1; }\n\n' + owned,
+            header: markers + '#pragma once\nint Func2000();\n',
+        })
+        self.w.move_main({'reconstruction/fx/winner.cpp': unit(0x1000)})
+
+        log = self.w.poll(self.bot)
+        new = self.w.github.prs[7]['head']
+        self.assertNotEqual(new, head, log)
+        self.assertEqual(self.w.reviewers.calls, [])
+        self.assertEqual(git(self.w.origin, 'show', f'{new}:{path}'),
+                         '// 0x2000 Func2000\n#include "U1000.h"\n\n' + owned.rstrip())
+        self.assertEqual(git(self.w.origin, 'show', f'{new}:{header}'),
+                         '// 0x2000 Func2000\n#pragma once\nint Func2000();')
+
+    def test_a_remaining_caller_keeps_the_branch_and_gets_the_cleanup_message(self):
+        head = self.w.make_pr(7, {unit_path(0x1000): '// 0x1000 Func1000\n// 0x2000 Func2000\n'
+                                                                    'int Func1000() { return 1; }\n'
+                                                                    'int Func2000() { return Func1000(); }\n'})
+        self.w.move_main({'reconstruction/fx/winner.cpp': unit(0x1000)})
+
+        self.w.poll(self.bot)
+        self.assertEqual(self.w.github.prs[7]['head'], head)
+        self.assertIn('Merge main into your branch', self.w.sticky(7)[0])
 
     def test_main_moving_during_the_compile_does_not_stale_the_landing(self):
         self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
@@ -1214,6 +1274,9 @@ class ParallelCompareTests(Replay):
         def run(argv, **kw):
             name = str(argv[1])
             if name.endswith('export_pack.py'):
+                self.assertEqual(argv[1], self.bot.tools / 'ghidra/export_pack.py')
+                self.assertEqual(argv[argv.index('--repo') + 1], self.bot.tree)
+                self.assertIn('--no-evidence-tables', argv)
                 for i, r in enumerate(rvas):
                     task = self.bot.tree / '.local/tasks' / f'prbot-{tag}-{i}'
                     task.mkdir(parents=True, exist_ok=True)

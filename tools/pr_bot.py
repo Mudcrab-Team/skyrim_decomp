@@ -77,6 +77,7 @@ import symbol_map  # noqa: E402
 import target_hash_store  # noqa: E402
 import drafter_claim  # noqa: E402
 import duplicate_rva  # noqa: E402
+import digest_v2  # noqa: E402
 import header_check  # noqa: E402
 import verdicts  # noqa: E402
 import giveup  # noqa: E402
@@ -2077,25 +2078,40 @@ class Bot:
                         '?branch=main&event=push&status=completed&per_page=5']).stdout
         return red_run((json.loads(out) if out.strip() else {}).get('workflow_runs') or [])
 
-    def refuse_repeats_from_main(self, number, head):
-        """Stop the merge when the PR marks an RVA that a unit landed on main after the PR was checked.
+    def refuse_repeats_from_main(self, number, head, main=None):
+        """Repair cross-unit duplicates or stop the old head with instructions for its author.
 
         The PR's checks compare it with the base it was opened on, so two PRs that each pass can still repeat
         an RVA once both are in. A failed read says nothing, so the merge goes ahead as for the head check.
         """
         try:
-            with self.root_lock:
-                self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
-            clash = duplicate_rva.against_main(self.root, 'origin/main', head)
+            if main is None:
+                with self.root_lock:
+                    self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
+                    main = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
+            clash = duplicate_rva.against_main(self.root, main, head)
         except (Stop, subprocess.SubprocessError, OSError, SystemExit):
             return
         if clash:
+            if not self.dry_run and not self.autofix_skipped(number):
+                try:
+                    repaired = self.merge_main_into_branch(dict(number=number, headRefOid=head), dedupe=True)
+                except (GhFailure, HeadMoved):
+                    raise
+                except (Stop, subprocess.SubprocessError, OSError, ValueError, SystemExit) as exc:
+                    print(f'pr{number}: duplicate RVA repair failed ({type(exc).__name__})',
+                          file=sys.stderr, flush=True)
+                    repaired = None
+                if repaired:
+                    raise HeadMoved(f'pr{number} removed duplicate RVAs on {repaired[:8]}; checking the new head next')
+                self.check_head(number, head, 'duplicate RVA repair')
             shown = ', '.join(f'0x{rva:x}' for rva in list(clash)[:5])
             if len(clash) > 5:
                 shown += f', and {len(clash) - 5} more'
             raise Rejected('duplicate-rva', f'Main already contains these RVAs in other reconstruction units: '
                            f'{shown}. Merge main into your branch, remove the duplicate functions and their RVA '
                            'markers from your units, then push. The next check will run on the updated branch.')
+        return main
 
     def merge_pr(self, number, head, subject, body, check=False):
         """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""
@@ -2941,7 +2957,8 @@ class Bot:
             progress.begin('pack-export', len(tasks))
         try:
             with self.ghidra_lock, (progress.heartbeat() if progress else contextlib.nullcontext()):
-                self.run([sys.executable, 'tools/ghidra/export_pack.py', 'packs', listing], cwd=self.tree,
+                self.run([sys.executable, self.tools / 'ghidra/export_pack.py', '--repo', self.tree,
+                          'packs', listing, '--no-evidence-tables'], cwd=self.tree,
                          timeout=pack_export_timeout(len(lines)), own_group=True)
         except (Stop, subprocess.TimeoutExpired) as exc:
             raise HostFailure(f'pack export did not complete ({type(exc).__name__}{": " + str(exc) if isinstance(exc, Stop) and str(exc) else ""})')
@@ -3443,8 +3460,8 @@ class Bot:
                     continue
                 dest = task / f'confirm-0x{rva:x}'
                 dest.mkdir(exist_ok=True)
-                (dest / 'task.json').write_text(json.dumps(dict(
-                    info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn])))
+                write_json_atomic(dest / 'task.json', dict(
+                    info, task_id=info['task_id'] + f'-{rva:x}', functions=[fn]))
                 jobs.append((rva, dest, info))
         self.confirm_all([dest for _, dest, _ in jobs])
 
@@ -3655,6 +3672,8 @@ class Bot:
         # Today's tools and inventory, with the PR's files on top: a PR cut long ago would otherwise be
         # built and recorded with a base that lacks the record tooling.
         tip = pinned or self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
+        if not pinned and not self.dry_run:
+            state.once('duplicate_rva_preflight', lambda: self.refuse_repeats_from_main(number, head, tip))
         self.prepare_tree(tip or base)
         self.overlay(head, files)
         if deletion_lane(files):
@@ -4903,9 +4922,9 @@ class Bot:
             uid = self.gh_json('api', f'users/{login}')['id']
             subject, body = squash_message(number, login, uid, matched, again)
             self.check_head(number, head, 'merge')
-            self.refuse_repeats_from_main(number, head)
+            checked_main = self.refuse_repeats_from_main(number, head)
             if self.land_with_records(pr, state, [int(r) for r, v in verdicts.items() if v == 'matched'],
-                                      subject, body):
+                                      subject, body, checked_main):
                 state.set('merged', True)
                 state.set('recorded', True)
             else:
@@ -4985,16 +5004,18 @@ class Bot:
         self.mark_done(state)
         return summary
 
-    def merge_main_into_branch(self, pr):
+    def merge_main_into_branch(self, pr, *, dedupe=False):
         """Merge origin/main into the contributor's branch and push the merge commit; the new head SHA, else None.
 
         Never rebases or force-pushes, so the author's commits stay as they are. Done in a scratch worktree
         whose merge is aborted unless every conflicting file is under reconstruction/ and every conflict is a
-        header comment block that `union_header_conflicts` resolves.
+        header comment block that can be resolved mechanically. Duplicate cleanup is staged in the
+        same scratch merge so the contributor's branch receives the complete repair at once.
         """
         number, head = pr['number'], pr['headRefOid']
         info = self.gh_json('pr', 'view', str(number), '-R', REPOSITORY, '--json',
-                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,isCrossRepository,state')
+                            'headRefOid,headRefName,headRepository,headRepositoryOwner,maintainerCanModify,'
+                            'isCrossRepository,state,author')
         repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
         if (info.get('headRefOid') != head or info.get('state') != 'OPEN'
                 or not (info.get('maintainerCanModify') or info.get('isCrossRepository') is False)
@@ -5007,15 +5028,16 @@ class Bot:
             self.run(['git', 'fetch', '--quiet', 'origin', 'main', f'pull/{number}/head'], check=False)
             if self.run(['git', 'cat-file', '-e', head], check=False).returncode:
                 self.run(['git', 'fetch', '--quiet', 'origin', head])
+            main = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
             self.run(['git', 'worktree', 'prune'], check=False)
             if scratch.exists():
                 shutil.rmtree(scratch, ignore_errors=True)
                 self.run(['git', 'worktree', 'prune'], check=False)
             scratch.parent.mkdir(parents=True, exist_ok=True)
-            self.run(['git', 'worktree', 'add', '--quiet', '--detach', scratch, head])
+            self.run([*git, 'worktree', 'add', '--quiet', '--detach', scratch, head])
         try:
             message = MAIN_MERGE_MESSAGE.format(branch=info['headRefName'])
-            merge = self.run([*git, 'merge', '--no-ff', '--no-edit', '-m', message, 'origin/main'], cwd=scratch,
+            merge = self.run([*git, 'merge', '--no-ff', '--no-commit', main], cwd=scratch,
                              check=False)
             if merge.returncode:
                 names = self.run([*git, 'diff', '--name-only', '--diff-filter=U', '-z'], cwd=scratch,
@@ -5042,10 +5064,22 @@ class Bot:
                         return None
                     path.write_bytes(resolved.encode('utf-8'))
                     self.run([*git, 'add', '--', name], cwd=scratch)
+            merging = self.run(
+                [*git, 'rev-parse', '-q', '--verify', 'MERGE_HEAD'], cwd=scratch, check=False).returncode == 0
+            if dedupe:
+                if not self.stage_duplicate_cleanup(scratch, main, head, git):
+                    return None
+                login = info['author']['login']
+                uid = self.gh_json('api', f'users/{login}')['id']
+                subject = f'{message} and remove duplicate RVAs' if merging else 'Remove duplicate RVAs already on main'
+                message = f'{subject}\n\nCo-authored-by: {login} <{uid}+{login}@users.noreply.github.com>'
+            if merging or dedupe:
                 self.run([*git, 'commit', '--quiet', '-m', message], cwd=scratch)
             sha = self.run([*git, 'rev-parse', 'HEAD'], cwd=scratch).stdout.decode().strip()
             if sha == head:
                 return None
+            if dedupe:
+                self.check_head(number, head, 'push duplicate RVA repair')
             # The author's branch is never forced: a push that lost a race to a new commit is simply refused,
             # and the fresh head is looked at on the next tick. gh's credentials, since a fork needs them.
             pushed = self.run([*git, '-c', 'credential.helper=', '-c', 'credential.helper=!gh auth git-credential',
@@ -5057,6 +5091,63 @@ class Bot:
                 self.run(['git', 'worktree', 'remove', '--force', scratch], check=False)
                 shutil.rmtree(scratch, ignore_errors=True)
                 self.run(['git', 'worktree', 'prune'], check=False)
+
+    def stage_duplicate_cleanup(self, scratch, main, head, git):
+        """Drop only definitions introduced by the PR and confirm the staged tree adds no duplicate."""
+        incoming = duplicate_rva.against_main(scratch, main, head, incoming_only=True)
+        if not incoming:
+            return False
+        units = {}
+        for rva, paths in incoming.items():
+            for name in paths:
+                units.setdefault(name, set()).add(rva)
+        added = set(duplicate_rva.git_lines(scratch, 'diff', '--cached', '--no-renames', '--diff-filter=A',
+                                            '--name-only', main, '--', 'reconstruction/'))
+        for name, rvas in units.items():
+            path = scratch / name
+            if path.is_symlink() or not path.is_file():
+                return False
+            text = path.read_bytes().decode('utf-8')
+            header = path.with_suffix('.h')
+            rel = header.relative_to(scratch).as_posix()
+            if header.is_symlink():
+                return False
+            header_text = header.read_bytes().decode('utf-8') if header.is_file() else ''
+            if name in added and rel in added and (pr_autofix.all_claims(text) | pr_autofix.all_claims(header_text)) <= rvas:
+                # A standalone pair may contain support code for compiler-emitted definitions.
+                references = self.run([*git, 'grep', '--cached', '-q', '-F',
+                                       '-e', header.name + '"', '-e', header.name + '>',
+                                       '-e', path.name + '"', '-e', path.name + '>',
+                                       '--', 'reconstruction/', f':(exclude){name}', f':(exclude){rel}'],
+                                      cwd=scratch, check=False)
+                if references.returncode != 1:
+                    return False
+                self.run([*git, 'rm', '--quiet', '--force', '--', name, rel], cwd=scratch)
+                continue
+            new = pr_autofix.drop_duplicate_functions(text, rvas)
+            if new is None:
+                return False
+            if name in added and not pr_autofix.all_claims(new):
+                code = digest_v2.strip_comments(new.encode(), name, keep_provenance=False)
+                if any(line.strip() and not re.fullmatch(r'\s*#\s*include\s+["<][^">]+[">]\s*', line)
+                       for line in code.splitlines()):
+                    return False
+                self.run([*git, 'rm', '--quiet', '--force', '--', name], cwd=scratch)
+            else:
+                path.write_bytes(new.encode('utf-8'))
+                self.run([*git, 'add', '--', name], cwd=scratch)
+            if header_text:
+                new_header = pr_autofix.drop_claim_comments(header_text, rvas)
+                if pr_autofix.all_claims(new_header) != pr_autofix.all_claims(header_text) - rvas:
+                    return False
+                if new_header != header_text:
+                    base_header = self.run([*git, 'show', f'{main}:{rel}'], cwd=scratch, check=False)
+                    if pr_autofix.all_claims(base_header.stdout.decode('utf-8')) & rvas:
+                        return False
+                    header.write_bytes(new_header.encode('utf-8'))
+                    self.run([*git, 'add', '--', rel], cwd=scratch)
+        staged = self.run([*git, 'write-tree'], cwd=scratch).stdout.decode().strip()
+        return not duplicate_rva.new_duplicates(scratch, main, staged)
 
     def autofix_skipped(self, number):
         """True for a PR someone is repairing by hand; `.local/pr-bot/no-autofix.txt` lists their numbers."""
@@ -5241,7 +5332,7 @@ class Bot:
         claim = drafter_claim.from_body(body)
         return ['--drafter', claim] if claim else []
 
-    def land_with_records(self, pr, state, rvas, subject, body):
+    def land_with_records(self, pr, state, rvas, subject, body, checked_main=None):
         """Squash the PR and write its records in one commit on main; False when the usual merge must be used.
 
         GitHub's own squash can only carry the PR's tree, so a record written afterwards leaves main
@@ -5272,7 +5363,10 @@ class Bot:
         task_id = f'pr-bot-{number}-{head[:8]}'
         for _ in range(3):
             git('fetch', '--quiet', 'origin', 'main')
-            git('checkout', '--quiet', '--force', '-B', 'land', 'origin/main')
+            main = git('rev-parse', 'origin/main').stdout.decode().strip()
+            if main != checked_main:
+                checked_main = self.refuse_repeats_from_main(number, head, main)
+            git('checkout', '--quiet', '--force', '-B', 'land', main)
             git('clean', '-fdq', 'reconstruction', 'reports', 'data/target-hashes', 'docs/cookbook-notes', 'data/giveups', check=False)
             if git('merge', '--squash', head, check=False).returncode:
                 return abandon()

@@ -4,10 +4,52 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools/ghidra'))
 import export_pack as ep
 import record_store
+
+
+class ComparePackExport(unittest.TestCase):
+    def test_compare_export_ignores_an_unrelated_empty_confirmation_task(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            evidence = root / 'findings/example.md'
+            evidence.parent.mkdir()
+            evidence.write_text('# Original finding\n')
+            (root / 'data').mkdir()
+            (root / 'data/progress.json').write_text(json.dumps({'functions': [
+                {'id': 'synthetic-0x1000', 'rva': 4096, 'evidence': 'findings/example.md'}]}))
+            tasks = root / '.local/tasks'
+            unrelated = tasks / 'older/confirm-0x2000/task.json'
+            unrelated.parent.mkdir(parents=True)
+            unrelated.touch()
+            listing = root / 'list.txt'
+            listing.write_text('synthetic 0x1000 compare reconstruction/fx/Example.cpp\n')
+
+            def write_task(task_id, unit, _recipe, _packs, _target, task_root, *_args, **_kwargs):
+                task = task_root / task_id
+                task.mkdir(exist_ok=True)
+                (task / 'task.json').write_text(json.dumps(dict(
+                    task_id=task_id, compiled=unit, build_id='synthetic', functions=[{'rva': '0x1000'}])))
+                return task
+
+            argv = ['export_pack.py', '--repo', str(root), 'packs', str(listing)]
+            target = {'build_id': 'synthetic'}
+            pack = dict(size=1, verdict='ready', reasons=[], identity={'owning_class': 'Example', 'community_name': None})
+            with (patch.object(ep, 'REPO'), patch.object(ep, 'ANALYSIS'), patch.object(ep, 'load_config'),
+                  patch.object(ep, 'setup', return_value=(target, None, None, [])),
+                  patch.object(ep, 'run_ghidra', return_value=0), patch.object(ep, 'load_ghidra', return_value=({}, {})),
+                  patch.object(ep, 'classify'), patch.object(ep, 'write_pack', return_value=pack),
+                  patch.object(ep, 'shared_unit_functions', return_value={}),
+                  patch.object(ep, 'write_task', side_effect=write_task)):
+                with patch.object(sys, 'argv', argv), self.assertRaises(json.JSONDecodeError):
+                    ep.main()
+                with patch.object(sys, 'argv', argv + ['--no-evidence-tables']):
+                    ep.main()
+            self.assertTrue((tasks / 'compare/task.json').is_file())
+            self.assertEqual(evidence.read_text(), '# Original finding\n')
 
 
 class RegressionSymbols(unittest.TestCase):
