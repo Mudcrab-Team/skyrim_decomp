@@ -776,6 +776,12 @@ symbol to be among them, so both hosts are bound to the same function. The bot b
 `pass` counts: `regressed`, `fail`, `preexisting-fail` and `unverified` give no confirmation, and a
 record without both hosts is refused as before.
 
+For repeated local `ci_target_hash_check.py prepare` runs, reuse the same private `--work` directory
+for each sequential verifier slot. The source worktree retains its trusted base checkout and include
+index, then replaces the previous run's source overlay with the new one. `--base` selects the trusted
+inputs even when the checkout running the trusted script is at a different revision. Pass the same
+`--base` and `--head` to `check` or `regress` to consume that preparation.
+
 ### Comment-only changes to a function with no target hash
 
 If a function was already `no-target` in the hash job at the PR's base (its own base compile gave no

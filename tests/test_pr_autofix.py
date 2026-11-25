@@ -134,6 +134,22 @@ class FixUnitTests(unittest.TestCase):
         new, kinds = pr_autofix.fix_unit('reconstruction/x.cpp', mine, main, {})
         self.assertEqual((new, kinds), (mine, []))
 
+    def test_body_repair_skips_a_deleted_helper_and_its_includes(self):
+        name = 'reconstruction/x.cpp'
+        old_body = 'return offset(a_x);'
+        helper = '#include <cstddef>\n\nstatic int offset(std::ptrdiff_t x) { return x + 1; }\n\n'
+        main = ('// 0x1000 Thing::Alpha\n' + BODY.replace('int Thing::Alpha', helper + 'int Thing::Alpha')
+                .replace('return a_x + 1;', old_body))
+        mine = main.replace(helper, '').replace(old_body, 'return a_x + 1;')
+        self.assertEqual(pr_autofix.fix_unit(name, mine, main, self.ACCEPTED), (mine, []))
+
+    def test_body_repair_with_a_new_definition_preserves_the_addition(self):
+        name = 'reconstruction/x.cpp'
+        main = '// 0x1000 Thing::Alpha\n' + BODY
+        added = '\nint Thing::Gamma() { return 3; }\n'
+        mine = main.replace('return a_x + 1;', 'return a_x + 2;') + added
+        self.assertEqual(pr_autofix.fix_unit(name, mine, main, self.ACCEPTED), (main + added, ['accepted']))
+
     def test_a_new_file_gets_only_header_repairs(self):
         new, kinds = pr_autofix.fix_unit('reconstruction/x.cpp', over_budget(3) + BODY, None, self.ACCEPTED)
         self.assertEqual(kinds, ['header'])

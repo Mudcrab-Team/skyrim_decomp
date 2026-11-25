@@ -220,7 +220,7 @@ class CompileFailures(Fixture):
         self.write(UNIT, f'// Recipe: {RECIPE}\n// CI hash: 0x1020 ?g@@YAHXZ\n#include "Fixture.h"\n')
         refs = ci.requests(self.root, [UNIT], {})
         manifest = dict(functions=[], recipe_sha256={RECIPE: 'a' * 64})
-        self.write('work/requests.json', json.dumps(refs))
+        self.write('work/requests.json', json.dumps(dict(base=None, head=None, refs=refs)))
         for name in (UNIT, HEADER):
             self.write(f'work/source/{name}', (self.root / name).read_text())
         output = io.StringIO()
