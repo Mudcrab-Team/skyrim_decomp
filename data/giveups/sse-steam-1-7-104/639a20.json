@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x639a20",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "Retained the strongest scored source from the prior attempts"
+      ],
+      "still_differs": "The retained comparison did not pass",
+      "suspected_cause": "Register choice or operation order differs",
+      "best_distance": 1.0,
+      "model": "unknown",
+      "harness": "historical comparison",
+      "lane": "internal",
+      "best_code": {
+        "kind": "draft",
+        "ref": "drafts/sse-steam-1-7-104/639a20.cpp"
+      }
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 # Small-function Drafter card (version `small-3`)
 
+To share a near-miss, use `./sr note --rva 0x<rva> --draft-from <file.cpp>` with its measured score and
+give-up details from the [contributor card](contributor-card.md). Keep diffs and listings private.
+
 For small functions (accessors, initialisers, flag tests, forwarders, empty or deleting destructors).
 This card is all you need; `docs/drafter-card.md` and `docs/matching-cookbook.md` are optional, for hard cases.
 

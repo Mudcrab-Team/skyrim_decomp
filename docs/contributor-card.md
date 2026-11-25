@@ -2,7 +2,7 @@
 
 Use `./sr` (Windows: `.\sr.cmd`) in your own clone: `go --drafted-by "<person>, assisted by
 <model>"`, edit the two source files it creates, `compare`, then `submit --dry-run` and `submit`.
-Open a PR that touches only `reconstruction/**` and `docs/cookbook-notes/**`; checks run; the bot reviews and merges.
+Open a PR that touches only `reconstruction/**`, `docs/cookbook-notes/**`, `data/giveups/**` and `drafts/**`; checks run; the bot reviews and merges.
 A PR that touches only `findings/*.md` (static research prose: settings, values and rules in words, no bytes,
 disassembly or decompiler text) takes the same bot route after a leak scan, the `check` job and one review.
 Before drafting, read `docs/cookbook-notes/` for your function's class or cause, and look the shape up in
@@ -161,7 +161,11 @@ Stop on the profile's numbers (the card above), then keep what you learned inste
 `./sr release 0x<rva> --reason "<one line>" --category <control-flow|register-schedule|inline-set|layout-unknown|eh-frame|callee-missing|signature-wrong|other> --tried "<one short try>" --tried "..." --still-differs "<in words>" --suspected-cause "<one sentence>"`
 releases the claim and writes `data/giveups/<build id>/<rva>.json` with those words, the best similarity of your last compare, your model and `./sr`. The file is committed by your next `submit`
 (a PR may carry it with units or notes, or alone); it is words and numbers only, and the leak scan and `tools/giveup.py check` refuse instructions, bytes and paths.
-The best source stays in your task folder. If the near-miss has a cause the cookbook does not cover, write a lesson note (`./sr note`) and add `--note docs/cookbook-notes/<file>.md`, so the record points at it.
+To share your original best source, add `--draft-from <file.cpp> --best-similarity <percent> --similarity-basis "<metric>"`
+(or `--best-distance <distance>`) to `release`. Use the score measured for that exact source. You can also use
+`./sr note --rva 0x<rva>` with the same give-up and draft flags. The source lands under `drafts/<build>/<rva>.cpp`.
+Use `./sr submit --notes-only` for a draft or give-up PR without a matching unit.
+A lesson about a new cause can still go in `docs/cookbook-notes/`.
 The next person who runs `./sr next`, `claim`, `start` or `facts` for that function sees the records first and does not repeat your tries; `python3 tools/giveup.py show 0x<rva>` prints them.
 A record is a lead, never evidence.
 

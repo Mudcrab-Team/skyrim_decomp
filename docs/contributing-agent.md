@@ -7,7 +7,7 @@ verifier hosts.
 ## The flow
 
 1. Draft the reconstruction locally and get a local comparator PASS.
-2. Open a pull request that touches only `reconstruction/**` and `docs/cookbook-notes/**`. Read the notes there
+2. Open a pull request that touches only `reconstruction/**`, `docs/cookbook-notes/**`, `data/giveups/**` and `drafts/**`. Read the notes there
    for your function's class or cause before drafting, and **send your lessons** with the functions (below).
 3. Checks run on the PR: a path and leak scan, and a Windows compile whose hashes are compared to
    the published target hashes (host 1). The project's bot compares on a second host, reviews the

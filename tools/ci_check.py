@@ -14,6 +14,7 @@ import tempfile
 
 import build_site
 import check
+import giveup
 from check import ROOT
 
 
@@ -23,6 +24,16 @@ def main():
         trend = subprocess.Popen([sys.executable, str(Path(__file__).with_name('build_model_trend.py')),
                                   '--rows-out', rows], cwd=ROOT)
         try:
+            names = subprocess.check_output(['git', 'ls-files', '-z', '--', giveup.DRAFT_DIR, giveup.DIR],
+                                            cwd=ROOT).decode().split('\0')
+            for name in filter(None, names):
+                if not (giveup.DRAFT_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name)):
+                    raise ValueError('unexpected path under drafts/ or data/giveups/')
+            problems = giveup.git_pair_problems(ROOT, names, 'HEAD', 'HEAD')
+            if problems:
+                for name, codes in problems:
+                    print(f'{name}: {", ".join(codes)}', file=sys.stderr)
+                raise ValueError(f'{len(problems)} draft or give-up file(s) refused')
             count, _ = check.run(then=lambda data: build_after(data, trend, rows))
         except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError) as exc:
             print(f'FAIL: {exc}', file=sys.stderr)

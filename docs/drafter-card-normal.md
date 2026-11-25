@@ -1,5 +1,8 @@
 # Drafter card: normal functions
 
+To share a near-miss, use `./sr note --rva 0x<rva> --draft-from <file.cpp>` with its measured score and
+give-up details from the [contributor card](contributor-card.md). Keep diffs and listings private.
+
 One class per unit; usually 6–10 functions, mostly 65–512 bytes. Use this card with
 `docs/drafter-runbook.md`, passing the queue directory from the brief to every queue command.
 Read `sheet.md` and one function's numbered pages at a time. Luna reads only plain `.md`

@@ -7,6 +7,8 @@ import re
 import subprocess
 import sys
 
+import giveup
+
 TOOLS = Path(__file__).resolve().parent
 OUTSIDE_RECONSTRUCTION = re.compile(
     r'docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]*\.md|'
@@ -19,12 +21,13 @@ def results(repo, base, head):
     raw = subprocess.run(['git', 'diff', '--no-renames', '--name-only', '-z', f'{base}...{head}', '--'],
                          cwd=repo, check=True, capture_output=True).stdout
     paths = os.fsdecode(raw).split('\0')
-    outside = sum(not (name.startswith('reconstruction/') or OUTSIDE_RECONSTRUCTION.fullmatch(name))
+    outside = sum(not (name.startswith('reconstruction/') or OUTSIDE_RECONSTRUCTION.fullmatch(name)
+                      or giveup.DRAFT_FILE.fullmatch(name))
                   for name in paths if name)
     if outside:
         # Paths are supplied by the PR. Only publish the count.
         yield 1, (f'scope: {outside} changed path(s) are outside reconstruction/, '
-                  'docs/cookbook-notes/ and data/giveups/\n')
+                  'docs/cookbook-notes/, data/giveups/ and drafts/\n')
         return
     for check in CHECKS:
         result = subprocess.run([sys.executable, str(TOOLS / f'{check}.py'), '--repo', str(repo),
@@ -33,6 +36,9 @@ def results(repo, base, head):
         yield result.returncode, result.stdout + result.stderr or f'{check}: exit {result.returncode}\n'
         if result.returncode:
             return
+    problems = giveup.git_pair_problems(repo, paths, head, base)
+    for name, codes in problems:
+        yield 1, f'{name}: {", ".join(codes)}\n'
 
 
 def main(argv=None):

@@ -31,6 +31,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
 import claimable  # noqa: E402
+import giveup  # noqa: E402
 from claims import ClaimIntervals  # noqa: E402
 import record_store  # noqa: E402
 import symbol_map  # noqa: E402
@@ -296,6 +297,8 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
             if '/unit-symbols/' in rel and record_store.is_file(root / rel) and rel not in out['files']:
                 out['files'].append(rel)
     if changed:
+        for fn in changed:
+            out['files'] += giveup.retire(root, build_id, fn['rva'])
         data['updated_at'] = when.strftime('%Y-%m-%dT%H:%M:%SZ')
         (root / PROGRESS).write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
         if created:
@@ -351,6 +354,12 @@ def record_and_push(root, build_id, rvas, review_blob, message, push=True, **kwa
                     return last
                 git(root, 'add', '--', *last['files'])
                 git(root, 'commit', '-q', '-m', message)
+            else:
+                retired = [name for rva in last['recorded'] for name in giveup.retire(root, build_id, rva)]
+                if retired:
+                    git(root, 'add', '--', *retired)
+                    git(root, 'commit', '-q', '--amend', '--no-edit')
+                    last['files'] = list(dict.fromkeys(last['files'] + retired))
         else:
             last = apply(root, build_id, rvas, review_blob, **kwargs)
             if not last['recorded']:

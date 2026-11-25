@@ -113,6 +113,46 @@ class Tool(Repo):
     def test_every_committed_record_is_valid(self):
         self.assertEqual(giveup.main(['check']), 0)
 
+    def test_public_draft_and_history_share_the_giveup_identity(self):
+        (self.root / 'data').mkdir()
+        (self.root / 'data/progress.json').write_text('{"functions": []}')
+        source = self.root / 'Toy.cpp'
+        source.write_text('// Source exposure: black-box\n// 0x1000 Toy\n\nint Toy() { return 2; }\n')
+        data = record(best_similarity=97)
+        path, added = giveup.add(self.root, '0x1000', data, draft_from=source)
+        self.assertTrue(added)
+        self.assertFalse(giveup.add(self.root, '0x1000', data, draft_from=source)[1])
+        draft = giveup.draft_path(self.root, BUILD, '0x1000')
+        name = draft.relative_to(self.root).as_posix()
+        self.assertEqual(draft.read_text(), giveup.draft_line(data) + '\n' + source.read_text())
+
+        def read(name):
+            path = self.root / name
+            return path.read_bytes() if path.is_file() else None
+
+        self.assertEqual(giveup.pair_problems(self.root, [name], read, set(), BUILD), [])
+        matched = {(BUILD, '0x1000')}
+        self.assertEqual(giveup.pair_problems(self.root, [name], read, matched, BUILD),
+                         [(name, ['draft-target-or-status'])])
+        self.assertEqual(giveup.retire(self.root, BUILD, '0x1000'), [name, path.relative_to(self.root).as_posix()])
+        self.assertFalse(draft.exists())
+        self.assertEqual(giveup.load(self.root, '0x1000')[0]['best_code'], dict(kind='draft-history', ref=name))
+        self.assertEqual(giveup.pair_problems(self.root, [name], read, matched, BUILD), [])
+
+    def test_invalid_public_source_leaves_existing_pair_untouched(self):
+        (self.root / 'data').mkdir()
+        (self.root / 'data/progress.json').write_text('{"functions": []}')
+        source = self.root / 'Toy.cpp'
+        source.write_text('// Source exposure: black-box\n// 0x1000 Toy\nint Toy() { return 2; }\n')
+        path, _ = giveup.add(self.root, '0x1000', record(), draft_from=source)
+        draft = giveup.draft_path(self.root, BUILD, '0x1000')
+        before = draft.read_bytes(), path.read_bytes()
+        with source.open('a') as stream:
+            stream.write('// ' + 'mov' + ' eax, ecx\n')
+        with self.assertRaisesRegex(ValueError, 'asm-mnemonic'):
+            giveup.add(self.root, '0x1000', record(best_similarity=99), draft_from=source)
+        self.assertEqual((draft.read_bytes(), path.read_bytes()), before)
+
 
 class Surfaces(Repo):
     def test_the_unit_sheet_lists_earlier_give_ups_first(self):
@@ -167,6 +207,10 @@ class Scope(unittest.TestCase):
         rows = [dict(filename='data/giveups/sse-steam-1-7-104/1004350.json', status='added')]
         self.assertTrue(pr_bot.notes_lane(rows))
         self.assertFalse(pr_bot.notes_lane(rows + [dict(filename='tools/x.py', status='added')]))
+        draft = dict(filename=f'drafts/{BUILD}/1000.cpp', status='added')
+        self.assertTrue(pr_bot.in_scope(draft['filename']))
+        self.assertTrue(pr_bot.notes_lane(rows + [draft]))
+        self.assertFalse(pr_bot.in_scope(f'drafts/{BUILD}/1000.txt'))
 
     def test_the_scope_job_regex_matches_the_bot_rule(self):
         import scope_check

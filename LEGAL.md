@@ -122,7 +122,9 @@ transfers without proof. Every function still requires the unchanged two-host co
 independent admitted review and integration. This is a maintainer policy decision, not a legal
 opinion or clean-room approval; all private-input and research-boundary rules still apply.
 
-Each function is published only once accepted under the acceptance rule in
+The maintainer also permits publishing the project's own best near-miss source under `drafts/`,
+with ordinary provenance labels and a sanitized give-up record. Raw evidence stays private.
+Accepted functions are published under the acceptance rule in
 `docs/verification.md`, which includes provenance review by an admitted Reviewer under the
 individual or family procedure, with provenance or legal doubt escalated to the maintainer. The copyright status of reconstructed
 implementations is not settled by matching bytes or withholding binaries.

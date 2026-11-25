@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x5bb350",
+  "records": [
+    {
+      "category": "callee-missing",
+      "tried": [
+        "Retained the strongest scored source from the prior attempts"
+      ],
+      "still_differs": "The retained comparison did not pass",
+      "suspected_cause": "A reference remains unresolved",
+      "best_distance": 0.0,
+      "model": "unknown",
+      "harness": "historical comparison",
+      "lane": "internal",
+      "best_code": {
+        "kind": "draft",
+        "ref": "drafts/sse-steam-1-7-104/5bb350.cpp"
+      }
+    }
+  ]
+}

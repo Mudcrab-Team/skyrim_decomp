@@ -18,36 +18,36 @@ Where things live (docs/contributing-agent.md, "If you can't match it"):
 - `data/giveups/<build id>/<rva without 0x>.json` holds the records of one function, words and numbers only.
   A contributor PR may carry them (the scope check allows exactly this path), together with its units or with
   lesson notes; the bot validates them with `validate` below and the leak scan, with no model review.
-- The best source never goes in a record. An internal worker keeps it under `.local/giveups/` (`--best-from`
-  copies the files there and the record points at them); a contributor keeps it in the task folder, and when
-  the near-miss has a cause the cookbook does not cover, writes it as a lesson note (`./sr note`) and points the
-  record at the note. Neither is evidence of a match; only a byte match is acceptance.
-
-A record never says which instructions differ. It is words in plain sentences, a short list and numbers; the
-same leak rules as for every committed text refuse anything that reads as bytes, disassembly or a private path.
+- A record points to source. Use `--draft-from` and its measured score for original public
+  source, `--best-from` for private copies, or `--note` to link a cookbook lesson.
 """
 import argparse
 import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import leakgrep  # noqa: E402
+from flow_state import atomic_write  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 DIR = 'data/giveups'
 CATEGORIES = ('control-flow', 'register-schedule', 'inline-set', 'layout-unknown', 'eh-frame', 'callee-missing',
               'signature-wrong', 'other')
 LANES = ('internal', 'contributor')
-BEST_KINDS = ('local', 'note', 'none')
-KEYS = ('category', 'tried', 'still_differs', 'suspected_cause', 'best_similarity', 'similarity_basis', 'model',
+BEST_KINDS = ('local', 'note', 'none', 'draft', 'draft-history')
+KEYS = ('category', 'tried', 'still_differs', 'suspected_cause', 'best_similarity', 'similarity_basis', 'best_distance', 'model',
         'harness', 'lane', 'best_code')
 REQUIRED = ('category', 'tried', 'still_differs', 'suspected_cause', 'model', 'harness', 'lane', 'best_code')
 MAX_RECORDS = 20
 MAX_TRIED, MAX_TRIED_LEN, MAX_TEXT = 12, 160, 400
 RECORD_FILE = re.compile(r'data/giveups/[a-z0-9][a-z0-9-]{0,63}/[0-9a-f]{3,8}\.json\Z')
+DRAFT_DIR = 'drafts'
+DRAFT_FILE = re.compile(r'drafts/[a-z0-9][a-z0-9-]{0,63}/[0-9a-f]{3,8}\.cpp\Z')
+DRAFT_LINE = '// Near miss: '
 RVA = re.compile(r'0x[0-9a-f]{3,8}\Z')
 LABEL = re.compile(r'[A-Za-z0-9][A-Za-z0-9 ._:/@+-]{0,59}\Z')
 INSTRUCTION = re.compile(r'\b(?:mov|movzx|movss|movaps|lea|cmp|test|xor|call|jmp|push|pop|add|sub|imul)\s+'
@@ -68,6 +68,16 @@ def norm_rva(text):
 
 def record_path(root, build, rva):
     return Path(root) / DIR / build / f'{norm_rva(rva)[2:]}.json'
+
+
+def draft_path(root, build, rva):
+    return Path(root) / DRAFT_DIR / build / f'{norm_rva(rva)[2:]}.cpp'
+
+
+def draft_line(rec):
+    distance = rec.get('best_distance')
+    score = f'{distance} alignment distance' if distance is not None else f'{rec["best_similarity"]}%'
+    return f'{DRAFT_LINE}{score} | {rec["category"]}'
 
 
 def text_problems(value, limit=MAX_TEXT):
@@ -108,6 +118,9 @@ def record_problems(rec):
     sim = rec.get('best_similarity')
     if sim is not None and (isinstance(sim, bool) or not isinstance(sim, (int, float)) or not 0 <= sim <= 100):
         codes.append('best-similarity')
+    distance = rec.get('best_distance')
+    if distance is not None and (type(distance) not in (float, int) or not 0 <= distance <= 1_000_000):
+        codes.append('best-distance')
     if rec.get('similarity_basis') is not None:
         codes += ['similarity-basis-' + c for c in text_problems(rec['similarity_basis'], 80)]
     for key in ('model', 'harness'):
@@ -124,6 +137,9 @@ def record_problems(rec):
     elif best['kind'] == 'note':
         if not NOTE_REF.fullmatch(str(best.get('ref', ''))):
             codes.append('best-code-note')
+    elif best['kind'] in ('draft', 'draft-history'):
+        if not DRAFT_FILE.fullmatch(str(best.get('ref', ''))) or (sim is None) == (distance is None):
+            codes.append('best-code-draft')
     elif not LOCAL_REF.fullmatch(str(best.get('ref', ''))) or '..' in str(best.get('ref')).split('/'):
         codes.append('best-code-local')
     return sorted(set(codes))
@@ -152,7 +168,11 @@ def validate(name, text, build=None):
         codes.append('records-list')
     else:
         for rec in doc['records']:
-            codes += record_problems(rec)
+            problems = record_problems(rec)
+            if not problems and 'identity' not in codes and rec['best_code']['kind'] in ('draft', 'draft-history'):
+                if rec['best_code']['ref'] != draft_path('.', doc['build_id'], doc['rva']).as_posix():
+                    problems.append('draft-identity')
+            codes += problems
     if text != dump(doc):
         codes.append('format')
     return sorted(set(codes))
@@ -213,6 +233,8 @@ def lines_for(root, rvas, cli='python3 tools/giveup.py'):
         out.append(f'Earlier give-ups for {norm_rva(rva)} (read these before drafting; they are words, not evidence):')
         for i, rec in enumerate(records, 1):
             sim = f', best {rec["best_similarity"]:g}%' if rec.get('best_similarity') is not None else ''
+            if rec.get('best_distance') is not None:
+                sim = f', best alignment distance {rec["best_distance"]:g}'
             out.append(f'  {i}. {rec["category"]}{sim}; {rec["model"]} via {rec["harness"]}')
             out.append('     tried: ' + '; '.join(rec['tried']))
             out.append('     still differs: ' + rec['still_differs'])
@@ -224,7 +246,133 @@ def lines_for(root, rvas, cli='python3 tools/giveup.py'):
     return out
 
 
-def add(root, rva, rec):
+def matched_keys(blob):
+    return {(row['build_id'], norm_rva(row['rva'])) for row in json.loads(blob)['functions']
+            if row['status'] == 'matched'}
+
+
+def private_terms(root):
+    from local_paths import main_checkout_local
+
+    terms = set(leakgrep.load_private(Path(root) / '.local/leakgrep-private.txt'))
+    if main := main_checkout_local(root):
+        terms.update(leakgrep.load_private(main / 'leakgrep-private.txt'))
+    return terms
+
+
+def draft_problems(name, blob, private=()):
+    from contrib_screen import screen
+    from lint_reconstruction import (COMPARED_LINE, EXPOSURE, header_budget_problems, label_problems,
+                                     leading_comment, licence_problems, sibling_header_problems,
+                                     sibling_label_problems, spdx_problems)
+
+    if not DRAFT_FILE.fullmatch(name):
+        return ['bad-draft-path']
+    if len(blob) > 1024 * 1024 or b'\0' in blob:
+        return ['draft-size-or-binary']
+    try:
+        text = blob.decode('utf-8')
+    except UnicodeDecodeError:
+        return ['draft-encoding']
+    marker, _, source = text.partition('\n')
+    if not marker.startswith(DRAFT_LINE):
+        return ['draft-score-line']
+    header = leading_comment(source)
+    expected = '0x' + Path(name).stem
+    if [line[2:].strip() for line in COMPARED_LINE.findall(header)] != [expected]:
+        return ['draft-rva']
+    exposure = re.search(r'^// Source exposure: ([a-z-]+)$', header, re.M)
+    if not exposure or exposure.group(1) not in EXPOSURE or len(source.splitlines()) <= len(header.split('\n')):
+        return ['draft-header']
+    codes = set(screen(blob, name))
+    codes.update(code for line in text.splitlines() for code in leakgrep.scan_line(line, private, name))
+    if re.search(r'\bSKELETON_TODO_BODY\b', source):
+        codes.add('draft-placeholder')
+    if (header_budget_problems(name, header) or label_problems(name, source, header, 'cpp')
+            or licence_problems(name, source, header) or spdx_problems(name, header)
+            or sibling_label_problems(name, source) or sibling_header_problems(name, header)):
+        codes.add('draft-header')
+    return sorted(codes)
+
+
+def pair_problems(root, names, read, matched, build):
+    """Check changed giveups and their corresponding drafts through the same file reader."""
+    problems = []
+    identities = {(parts[-2], Path(parts[-1]).stem)
+                  for name in names if DRAFT_FILE.fullmatch(name) or RECORD_FILE.fullmatch(name)
+                  for parts in [name.split('/')]}
+    private = private_terms(root) if identities else ()
+    for owner, short in sorted(identities):
+        rva = '0x' + short
+        record = record_path('.', owner, rva).as_posix()
+        name = draft_path('.', owner, rva).as_posix()
+        if norm_rva(rva) != rva:
+            problems.append((name, ['noncanonical-rva']))
+            continue
+        try:
+            blob = read(record)
+            codes = validate(record, blob.decode('utf-8'), build) if blob is not None else []
+            if codes:
+                problems.append((record, codes))
+                continue
+            draft = read(name)
+        except (UnicodeDecodeError, ValueError):
+            problems.append((name, ['draft-or-record-file-type']))
+            continue
+        records = json.loads(blob)['records'] if blob is not None else []
+        active = [r for r in records if r['best_code']['kind'] == 'draft']
+        if draft is None:
+            if active:
+                problems.append((name, ['draft-missing']))
+            continue
+        codes = draft_problems(name, draft, private)
+        if owner != build or (owner, rva) in matched:
+            codes.append('draft-target-or-status')
+        if not active:
+            codes.append('draft-unreferenced')
+        elif draft.split(b'\n', 1)[0] != draft_line(active[-1]).encode():
+            codes.append('draft-score-or-wall')
+        if codes:
+            problems.append((name, codes))
+    return problems
+
+
+def git_pair_problems(root, names, head, base):
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=root)
+
+    def read(name):
+        row = git('ls-tree', '-z', head, '--', name)
+        if not row:
+            return None
+        mode, kind, oid = row.partition(b'\t')[0].split()
+        if mode != b'100644' or kind != b'blob' or int(git('cat-file', '-s', oid)) > 1024 * 1024:
+            raise ValueError('expected bounded regular text')
+        return git('cat-file', 'blob', oid)
+
+    if not any(DRAFT_FILE.fullmatch(n) or RECORD_FILE.fullmatch(n) for n in names):
+        return []
+    target = json.loads(git('show', f'{base}:builds/target.json'))
+    matched = matched_keys(git('show', f'{base}:data/progress.json'))
+    return pair_problems(root, names, read, matched, target['build_id'])
+
+
+def retire(root, build, rva):
+    """Archive the give-up pointer in place and return the paths to stage with acceptance."""
+    draft = draft_path(root, build, rva)
+    if not draft.is_file():
+        return []
+    record = record_path(root, build, rva)
+    doc = json.loads(record.read_text(encoding='utf-8'))
+    for rec in doc['records']:
+        if rec['best_code']['kind'] == 'draft':
+            rec['best_code']['kind'] = 'draft-history'
+    atomic_write(record, dump(doc).encode())
+    draft.unlink()
+    return [p.relative_to(root).as_posix() for p in (draft, record)]
+
+
+def add(root, rva, rec, draft_from=None):
     """Append `rec` to the function's file; returns (path, added) and refuses an invalid or repeated record."""
     root = Path(root)
     problems = record_problems(rec)
@@ -232,19 +380,57 @@ def add(root, rva, rec):
         raise ValueError('record refused: ' + ', '.join(problems))
     build = build_id(root)
     path = record_path(root, build, rva)
+    source = None
+    draft = draft_path(root, build, rva)
+    if draft_from is not None:
+        rec = dict(rec, best_code=dict(kind='draft', ref=draft.relative_to(root).as_posix()))
+        problems = record_problems(rec)
+        if problems:
+            raise ValueError('draft record refused: ' + ', '.join(problems))
+        source = Path(draft_from).read_text(encoding='utf-8')
+        if source.startswith(DRAFT_LINE):
+            source = source.partition('\n')[2]
+        source = draft_line(rec) + '\n' + source
+        problems = draft_problems(rec['best_code']['ref'], source.encode(), private_terms(root))
+        if problems:
+            raise ValueError('draft refused: ' + ', '.join(problems))
+        if (build, norm_rva(rva)) in matched_keys((root / 'data/progress.json').read_bytes()):
+            raise ValueError('function already matched')
     records = load(root, rva, build)
     same = [r for r in records if (r['model'], r['harness'], r['category'], r['still_differs']) ==
             (rec['model'], rec['harness'], rec['category'], rec['still_differs'])]
-    if same:
+    if same and source is None:
         return path, False
+    if source is not None:
+        active = [r for r in records if r['best_code']['kind'] == 'draft']
+        if active:
+            last = active[-1]
+            if ('best_distance' in last and 'best_distance' in rec and last['best_distance'] < rec['best_distance']
+                    or 'best_similarity' in last and 'best_similarity' in rec
+                    and last.get('similarity_basis') == rec.get('similarity_basis')
+                    and last['best_similarity'] > rec['best_similarity']):
+                raise ValueError('a higher-scoring public draft already exists')
+        if active and rec == active[-1] and draft.is_file() and draft.read_text(encoding='utf-8') == source:
+            return path, False
+        records = [r for r in records if r != rec]
     if len(records) >= MAX_RECORDS:
         raise ValueError(f'{norm_rva(rva)} already holds {MAX_RECORDS} give-ups; read them with `show` before adding more')
     doc = dict(schema=1, build_id=build, rva=norm_rva(rva), records=records + [rec])
     codes = validate(path.relative_to(root).as_posix(), dump(doc), build)
     if codes:
         raise ValueError('record file would be refused: ' + ', '.join(codes))
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(dump(doc))
+    before = draft.read_bytes() if source is not None and draft.is_file() else None
+    if source is not None:
+        atomic_write(draft, source.encode())
+    try:
+        atomic_write(path, dump(doc).encode())
+    except OSError:
+        if source is not None:
+            if before is None:
+                draft.unlink()
+            else:
+                atomic_write(draft, before)
+        raise
     return path, True
 
 
@@ -278,12 +464,14 @@ def command_add(a):
                model=a.model, harness=a.harness, lane=a.lane, best_code=best_code)
     if a.best_similarity is not None:
         rec['best_similarity'] = a.best_similarity
+    if a.best_distance is not None:
+        rec['best_distance'] = a.best_distance
     if a.similarity_basis:
         rec['similarity_basis'] = a.similarity_basis
     ordered = {k: rec[k] for k in KEYS if k in rec}
     try:
-        path, added = add(a.root, a.rva, ordered)
-    except ValueError as exc:
+        path, added = add(a.root, a.rva, ordered, draft_from=a.draft_from)
+    except (ValueError, OSError) as exc:
         print(f'giveup: {exc}', file=sys.stderr)
         return 2
     print(('added to ' if added else 'already recorded in ') + path.relative_to(Path(a.root)).as_posix())
@@ -326,6 +514,19 @@ def command_check(a):
     return int(bool(bad))
 
 
+def add_draft_arguments(parser):
+    parser.set_defaults(note=None)
+    parser.add_argument('--category', choices=CATEGORIES, help='wall class for a give-up')
+    parser.add_argument('--tried', action='append', help='one short try; repeat for each')
+    parser.add_argument('--still-differs', help='in words, no instructions')
+    parser.add_argument('--suspected-cause')
+    parser.add_argument('--draft-from', type=Path, metavar='FILE', help='publish original best source')
+    score = parser.add_mutually_exclusive_group()
+    score.add_argument('--best-similarity', type=float, help='measured percentage for that source')
+    score.add_argument('--best-distance', type=float, help='measured alignment distance for that source')
+    parser.add_argument('--similarity-basis', help='what the score measures')
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--root', type=Path, default=ROOT)
@@ -336,7 +537,9 @@ def main(argv=None):
     s.add_argument('--tried', action='append', required=True, help='one short try; repeat for each')
     s.add_argument('--still-differs', required=True, help='in words, no instructions')
     s.add_argument('--suspected-cause', required=True)
-    s.add_argument('--best-similarity', type=float)
+    score = s.add_mutually_exclusive_group()
+    score.add_argument('--best-similarity', type=float)
+    score.add_argument('--best-distance', type=float)
     s.add_argument('--similarity-basis', help='what the number measures, e.g. "aligned shape similarity"')
     s.add_argument('--model', required=True)
     s.add_argument('--harness', required=True)
@@ -344,6 +547,7 @@ def main(argv=None):
     where = s.add_mutually_exclusive_group()
     where.add_argument('--best-from', nargs='+', metavar='FILE', help='copy the best source files under .local/giveups/')
     where.add_argument('--note', help='docs/cookbook-notes/<rva>-<slug>.md that holds the lesson')
+    where.add_argument('--draft-from', type=Path, help='publish original best source with --best-similarity')
     s.set_defaults(func=command_add)
     s = sub.add_parser('show')
     s.add_argument('rva')

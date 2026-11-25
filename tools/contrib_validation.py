@@ -10,6 +10,7 @@ import tempfile
 import check_code_rules
 import cookbook_notes
 import contrib_screen
+import giveup
 import leakgrep
 import lint_reconstruction
 import lint_review_readiness
@@ -29,6 +30,9 @@ def publication_problems(ctx, base, rows, head=None, merge_method='squash', *, s
     """
     from contrib_publication import PublicationRejected, screen_publication
     def screen(revision):
+        found = giveup.git_pair_problems(ctx.repo, [n for _status, n in rows], revision, base)
+        if found:
+            return [f'{name}: {", ".join(codes)}' for name, codes in found]
         if scope:
             import scope_check
             for status, output in scope_check.results(ctx.repo, base, revision):
@@ -249,8 +253,11 @@ def intake_problems(ctx, rows, head=None, details=None):
                 problems.append(diagnostic(f'{name}: deleting a note is for maintainers'))
             else:
                 problems.extend(note_problems(ctx, name, head))
+        elif giveup.DRAFT_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name):
+            if status == 'D':
+                problems.append(diagnostic(f'{name}: deleting a draft or give-up is for maintainers'))
         elif not UNIT.fullmatch(name):
-            problems.append(diagnostic(f'{name}: outside contributor scope (reconstruction/<area>/<Class>.h or .cpp only)'))
+            problems.append(diagnostic(f'{name}: outside contributor scope'))
         elif status == 'D':
             problems.append(diagnostic(f'{name}: deleting a unit file is for maintainers'))
         elif status == 'A' and not unit_paths.area_accepted(UNIT.fullmatch(name).group(1)):

@@ -1,5 +1,8 @@
 # Drafter card
 
+To share a near-miss, use `./sr note --rva 0x<rva> --draft-from <file.cpp>` with its measured score and
+give-up details from the [contributor card](contributor-card.md). Keep diffs and listings private.
+
 Everything a Drafter needs. Do not read AGENTS.md or other policy documents; the tools enforce them.
 Read [the drafter toolkit](drafter-toolkit.md) before the first draft: every resource (sibling sources and x64
 hints, cookbook and notes, permuter, recipes, community headers, checkers) with its command, and the first-10-minutes checklist.

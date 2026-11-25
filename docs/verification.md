@@ -712,6 +712,13 @@ maintainer's decision) can suggest hypotheses but cannot establish Skyrim behavi
 
 ## Progress and history
 
+Public near-miss sources live in `drafts/<build>/<rva>.cpp`, keyed by build and RVA, with the
+usual unit header and one score and wall line. Their give-up records point to the draft. Drafts
+are outside compile inputs, CI hash claims, the match gate, progress and INDEX. Scope and leak
+checks cover them. When the match is recorded, the source is removed and the give-up pointer
+becomes `draft-history`. Use `git log --diff-filter=AM -- drafts/<build>/<rva>.cpp` to recover it.
+The collector accepts `drafts/` or one draft plus a locally prepared task for the same function.
+
 The page renders the current committed data and source revision. Work items use `planned`,
 `active`, `blocked`, `done`. Milestones identify actual dated outcomes. No simulated trend,
 leaderboard, cost ledger or percentage is displayed without real supporting records.

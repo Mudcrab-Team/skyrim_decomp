@@ -1269,7 +1269,7 @@ def check_git(root=ROOT, staged=False, content_revision=None, only=None):
 
 # Prose edits keep existing evidence paths intact. Infrastructure-only changes get the full
 # validation and tests in CI, so the local publication guard only needs their staged blobs.
-STAGED_PROSE = re.compile(r'(?:docs|findings|tools|tests)/.+\.md|(?:README|CONTRIBUTING)\.md')
+STAGED_PROSE = re.compile(r'(?:docs|findings|tools|tests)/.+\.md|(?:README|CONTRIBUTING|AGENTS|LEGAL)\.md')
 STAGED_INFRA = re.compile(r'(?:tools|tests)/.+\.py|\.github/workflows/[^/]+\.ya?ml')
 
 
@@ -1281,11 +1281,13 @@ def scoped_staged_paths(root=ROOT):
     if not fields or len(fields) % 2:
         return None
     from lint_reconstruction import SOURCE
+    import giveup
     rows = list(zip(fields[::2], fields[1::2]))
     if any(status not in ('A', 'M') for status, _ in rows):
         return None
     names = fields[1::2]
-    if all(STAGED_PROSE.fullmatch(n) or STAGED_INFRA.fullmatch(n) for n in names):
+    if all(STAGED_PROSE.fullmatch(n) or STAGED_INFRA.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n)
+           or giveup.DRAFT_FILE.fullmatch(n) for n in names):
         return names
     if all(STAGED_PROSE.fullmatch(n) or (s == 'A' and SOURCE.fullmatch(n)) for s, n in rows):
         return names
@@ -1314,6 +1316,12 @@ def scoped_context(root, names):
 def check_staged_scoped(root, names):
     """Scan staged blobs and run source lint for staged new units."""
     count = check_git(root, staged=True, only=names)
+    import giveup
+    if any(giveup.DRAFT_FILE.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n) for n in names):
+        head = subprocess.check_output(['git', 'write-tree'], cwd=root).decode().strip()
+        problems = giveup.git_pair_problems(root, names, head, head)
+        if problems:
+            raise ValueError('\n'.join(f'{name}: {", ".join(codes)}' for name, codes in problems))
     sources = [n for n in names if n.startswith('reconstruction/')]
     if not sources:
         return count, None

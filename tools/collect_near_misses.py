@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Collect private drafts from handoffs, worktrees or task directories.
+"""Collect near misses from public drafts, handoffs, worktrees or task directories.
 
     python3 tools/collect_near_misses.py PATH [PATH ...]
 
 Use the resulting <build>/0x<rva> directory as the permuter task, and its
 source-root directory with --source-root. pool.json lists the active copies.
+Public drafts use a local task for the same build and RVA for symbols and packs.
 """
 import argparse
 import json
@@ -15,6 +16,7 @@ import shutil
 import subprocess
 import tempfile
 
+import giveup
 import record_store
 from source_digest import INCLUDE_ROOTS, include_closure, quoted_includes
 
@@ -112,7 +114,10 @@ def copy_unit(dest, compiled, source, roots):
         if path.is_file():
             continue
         path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(original, path)
+        if giveup.DRAFT_FILE.fullmatch('/'.join(original.parts[-3:])):
+            path.write_bytes(original.read_bytes().partition(b'\n')[2])
+        else:
+            shutil.copyfile(original, path)
         for kind, inc in quoted_includes(path.read_bytes(), str(name)):
             bases = ([name.parent, *parents] if kind == '"' else []) + [Path(p) for p in INCLUDE_ROOTS]
             for base in bases:
@@ -173,14 +178,21 @@ def collect(repo, paths, matched):
     if not pool.resolve().is_relative_to(repo / '.local'):
         raise ValueError('pool must stay under this checkout’s .local directory')
     pool.mkdir(parents=True, exist_ok=True)
-    targets, inputs = set(), set()
+    targets, inputs, public = set(), set(), {}
     for path in paths:
-        if path.suffix.lower() == '.md':
+        if path.name == giveup.DRAFT_DIR or giveup.DRAFT_FILE.fullmatch('/'.join(path.parts[-3:])):
+            for source in path.glob('*/*.cpp') if path.is_dir() else (path,):
+                if not source.is_symlink() and giveup.DRAFT_FILE.fullmatch('/'.join(source.parts[-3:])):
+                    public[source.parent.name, rva(source.stem)] = source
+        elif path.suffix.lower() == '.md':
             refs, marked = handoff_inputs(path)
             inputs.update(refs)
             targets.update(marked)
         else:
             inputs.add(path)
+    public_only = bool(public) and not inputs
+    if public:
+        inputs.update((repo / '.local/tasks', repo / '.local/contrib/tasks'))
     files = list(discover(inputs))
     candidates = []
     for path in (p for p in files if p.name == 'staged.json'):
@@ -192,7 +204,7 @@ def collect(repo, paths, matched):
         if isinstance(rows, list):
             targets.update(rva(row['rva']) for row in rows if row.get('outcome') == 'near-miss' and 'rva' in row)
     candidates.extend((p, None, None) for p in files if p.name == 'task.json')
-    skipped, errors = set(), {}
+    skipped, errors = set(public) & matched, {}
     for path, selected, staged in candidates:
         if '.local' not in path.resolve().parts or not path.is_file():
             continue
@@ -205,13 +217,17 @@ def collect(repo, paths, matched):
             if fn.get('role') == 'regression' or (selected is not None and address != selected):
                 continue
             compiled = Path(raw['compiled'])
-            if staged is None:
+            key = raw['build_id'], address
+            if key in public:
+                source = public[key]
+            elif public_only:
+                continue
+            elif staged is None:
                 source = saved_source(path.parent, compiled, address, roots[:-1], address in targets)
             else:
                 source = staged / compiled
             if not source:
                 continue
-            key = raw['build_id'], address
             if key in matched:
                 skipped.add(key)
                 continue
@@ -232,12 +248,17 @@ def collect(repo, paths, matched):
         index = Path(temp) / 'pool.json'
         write_json(index, active)
         index.replace(pool / 'pool.json')
-    return active, skipped, list(errors.values())
+    missing = set(public) - skipped - set(errors) - {
+        (build, rva(address)) for build, address in (name.split('/') for name in active)}
+    messages = list(errors.values())
+    if missing:
+        messages.append(f'{len(missing)} public draft(s) without a prepared local task')
+    return active, skipped, messages
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('paths', type=Path, nargs='+', help='Markdown handoffs, worktrees or private tasks')
+    parser.add_argument('paths', type=Path, nargs='+', help='drafts/ or a draft .cpp, Markdown handoffs, worktrees or private tasks')
     args = parser.parse_args(argv)
     paths = [p.resolve() for p in args.paths]
     for path in paths:

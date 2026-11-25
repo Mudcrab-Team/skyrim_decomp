@@ -60,6 +60,16 @@ class NearMissPoolTests(unittest.TestCase):
         self.assertEqual((active, skipped, errors), (['toy-build/0x100'], set(), []))
         self.assertEqual((self.pool / active[0] / 'source-root' / self.compiled).read_text(), 'void F() {}\n')
 
+    def test_public_source_uses_the_matching_local_task(self):
+        public = self.repo / 'drafts/toy-build/100.cpp'
+        public.parent.mkdir(parents=True)
+        source = 'int ToyF() { return 5; }\n'
+        public.write_text('// Near miss: 97% | register-schedule\n' + source)
+        match = ('toy-build', 0x200)
+        active, skipped, errors = collect(self.repo, [public, self.tree], {match})
+        self.assertEqual((active, skipped, errors), (['toy-build/0x100'], {match}, []))
+        self.assertEqual((self.pool / active[0] / 'source-root' / self.compiled).read_text(), source)
+
     def test_handoff_finds_a_staged_pool_with_no_original_snapshots(self):
         (self.snapshot / '100.cpp').unlink()
         (self.snapshot / '200.cpp').unlink()

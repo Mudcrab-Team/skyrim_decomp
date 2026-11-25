@@ -42,7 +42,7 @@ jobs:
             {bad=1}
             END {print (p && !bad) ? "true" : "false"}')
           echo "mapping=$mapping" >> "$GITHUB_OUTPUT"
-          if git diff --name-only "$BASE...$HEAD" | grep -qvE '^(reconstruction/|data/|docs/)|\.md$'; then
+          if git diff --name-only "$BASE...$HEAD" | grep -qvE '^(reconstruction/|data/|docs/|drafts/)|\.md$'; then
             echo code=true >> "$GITHUB_OUTPUT"
           else
             echo code=false >> "$GITHUB_OUTPUT"

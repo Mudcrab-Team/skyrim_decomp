@@ -2086,6 +2086,9 @@ def cmd_claim(ctx, args):
 
 def cmd_release(ctx, args):
     rva = parse_rva(args.rva)
+    if getattr(args, 'draft_from', None) and not args.category:
+        raise Stop(USAGE, '--draft-from needs --category and the give-up details')
+    filed = file_giveup(ctx, rva, args) if args.category else None
     gh = ctx.github()
     reason = args.reason or 'giving the function back'
     closed = []
@@ -2104,19 +2107,21 @@ def cmd_release(ctx, args):
     if (ctx.private / 'claims.json').exists():
         (ctx.private / 'claims.json').write_text(json.dumps(claims, indent=2) + '\n')
     ctx.say('released' + (': ' + ', '.join(closed) if closed else ' locally (close the claim issue on GitHub if any)'))
-    filed = None
-    if args.category:
-        filed = file_giveup(ctx, rva, args)
-    elif args.reason and args.reason != 'giving the function back':
+    if not filed and args.reason and args.reason != 'giving the function back':
         ctx.say(f'to keep what you learned for the next drafter, add --category <{"|".join(giveup.CATEGORIES)}> '
                 '--tried "..." --still-differs "..." --suspected-cause "..." (the record is words and numbers only)')
     return OK, {'rva': f'0x{rva:x}', 'closed': closed, 'giveup': filed}, \
-        (f'{ctx.cli} submit --dry-run (the give-up record goes in the same PR)' if filed else f'{ctx.cli} next')
+        (f'{ctx.cli} submit --notes-only --dry-run' if filed else f'{ctx.cli} next')
 
 
 def file_giveup(ctx, rva, args):
     """Write the give-up record for a released function from the arguments and the task's last compare."""
     similarity, model = None, None
+    source = getattr(args, 'draft_from', None)
+    explicit_score = getattr(args, 'best_similarity', None)
+    distance = getattr(args, 'best_distance', None)
+    if source and explicit_score is None and distance is None:
+        raise Stop(USAGE, '--draft-from needs --best-similarity or --best-distance measured for that source')
     for task_dir in sorted((ctx.private / 'tasks').glob('*')) if (ctx.private / 'tasks').is_dir() else ():
         last = attempt_progress.read_json(task_dir / 'last-compare.json')
         for fn in last.get('functions', []):
@@ -2130,15 +2135,20 @@ def file_giveup(ctx, rva, args):
     rec = dict(category=args.category, tried=args.tried or [], still_differs=args.still_differs or '',
                suspected_cause=args.suspected_cause or '', model=str(model)[:59], harness=ctx.cli.lstrip('./'),
                lane='contributor', best_code=dict(kind='note', ref=args.note) if args.note else dict(kind='none'))
-    if similarity is not None:
+    if distance is not None:
+        rec['best_distance'] = distance
+    elif explicit_score is not None:
+        rec['best_similarity'] = explicit_score
+        if basis := getattr(args, 'similarity_basis', None):
+            rec['similarity_basis'] = basis
+    elif similarity is not None:
         rec['best_similarity'] = similarity
         rec['similarity_basis'] = 'aligned matching bytes of the last compare'
     try:
-        path, added = giveup.add(ctx.repo, f'0x{rva:x}', {k: rec[k] for k in giveup.KEYS if k in rec})
-    except ValueError as exc:
-        raise Stop(USAGE, f'give-up record not written: {exc}', f'fix the words and run {ctx.cli} release again') from None
-    ctx.say(('give-up record written: ' if added else 'give-up record already there: ') + path.relative_to(ctx.repo).as_posix()
-            + ' (it is committed with your next submit; the source stays in your task folder)')
+        path, added = giveup.add(ctx.repo, f'0x{rva:x}', {k: rec[k] for k in giveup.KEYS if k in rec}, draft_from=source)
+    except (ValueError, OSError) as exc:
+        raise Stop(USAGE, f'give-up record not written: {exc}') from None
+    ctx.say(('give-up record written: ' if added else 'give-up record already there: ') + path.relative_to(ctx.repo).as_posix())
     return path.relative_to(ctx.repo).as_posix()
 
 
@@ -2779,13 +2789,19 @@ def last_results(tdir):
 
 
 def pending_notes(ctx):
-    """Lesson notes with uncommitted changes, which a submission carries along with the unit."""
-    return sorted(n for n in changed_paths(ctx) if (cookbook_notes.NOTE_FILE.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n))
+    """Uncommitted note, give-up and draft files to carry with a submission."""
+    from contrib_publication import auxiliary
+    return sorted(n for n in changed_paths(ctx) if auxiliary(n)
                   and (ctx.repo / n).is_file())
 
 
 def cmd_note(ctx, args):
     """Write the lesson-note template for a function, pre-filled from the task, for the drafter to finish."""
+    if getattr(args, 'draft_from', None):
+        if not args.rva or not args.category:
+            raise Stop(USAGE, '--draft-from needs --rva, --category and the give-up details')
+        record = file_giveup(ctx, parse_rva(args.rva), args)
+        return OK, {'giveup': record}, f'{ctx.cli} submit --notes-only --dry-run'
     tdir, task = load_task(ctx, args.task, pick_current=True)
     results, attempts = last_results(tdir), task_attempts(tdir)
     if args.rva:
@@ -3071,6 +3087,8 @@ def submit_task_blockers(ctx, tdir, task):
 
 
 def cmd_submit(ctx, args):
+    if getattr(args, 'notes_only', False):
+        return submit_notes(ctx, args)
     picked = select_tasks(ctx, args)
     tdir, task = picked[0]
     blockers, warnings = [], []
@@ -3145,14 +3163,48 @@ def cmd_submit(ctx, args):
         ctx.say(f'Hint: this PR has {count} function(s). Bigger is welcome: 50 to 200 per PR, one PR per family. '
                 "Don't do it all in one go: split a family into batches of 10-15 and give each to a subagent "
                 '(recipe in docs/contributor-card.md), then submit them together with `--all-dirty`.')
-    if args.dry_run:
-        plan = [f'git push --dry-run {push or "<your fork remote>"} HEAD', f'git add {" ".join(unit)}', f'{ctx.cli} preflight --staged --base {base}',
-                f'git commit -m "{title}" -- {" ".join(unit)}',f'git push {push or "<your fork remote>"} HEAD',
-                f'gh pr create --repo {ctx.github().repo} --title "{title}" --body-file {tdir / "pr-body.md"}']
+    return publish_submission(ctx, data, push, files, picked)
+
+
+def submit_notes(ctx, args):
+    from contrib_publication import auxiliary
+
+    if args.task or args.all_dirty:
+        raise Stop(USAGE, '--notes-only takes no tasks')
+    unit = pending_notes(ctx)
+    up, push = upstream_remote(ctx)
+    base = args.base or (f'{up}/main' if up else 'origin/main')
+    files = submission_files(ctx, base, unit)
+    if not files or any(not auxiliary(name) for _status, name in files):
+        raise Stop(USAGE, '--notes-only needs a branch containing only drafts, give-ups or lessons')
+    preflight = submit_preflight(ctx, push)
+    blockers = preflight['blockers'] + intake_problems(ctx, base, head=None, files=files)
+    for finding in blockers:
+        ctx.say(f'BLOCKED: {finding}')
+    title = 'Share contributor near-miss drafts and notes'
+    body_file = ctx.private / 'notes-pr-body.md'
+    body_file.parent.mkdir(parents=True, exist_ok=True)
+    body_file.write_text('Contributor drafts and notes for future attempts.\n\n## Files\n\n'
+                         + ''.join(f'- `{name}`\n' for _, name in files), encoding='utf-8')
+    return publish_submission(ctx, dict(title=title, body_file=str(body_file), files=unit,
+                                        blockers=blockers, dry_run=args.dry_run, base=base,
+                                        preflight=preflight, commit_message=title), push, files, [])
+
+
+def publish_submission(ctx, data, push, files, picked):
+    title, body_file = data['title'], data['body_file']
+    unit, base, blockers, preflight = (data[k] for k in ('files', 'base', 'blockers', 'preflight'))
+    if data['dry_run']:
+        plan = [f'git push --dry-run {push or "<your fork remote>"} HEAD']
+        if unit:
+            plan += [f'git add {" ".join(unit)}', f'{ctx.cli} preflight --staged --base {base}',
+                     f'git commit -m "{title}" -- {" ".join(unit)}']
+        plan += [f'git push {push or "<your fork remote>"} HEAD',
+                 f'gh pr create --repo {ctx.github().repo} --title "{title}" --body-file {body_file}']
         for p in plan:
             ctx.say(f'would run: {p}')
         return (OK if not blockers else FAILED), dict(data, plan=plan), \
-            ('fix the blockers listed' if blockers else f'{ctx.cli} submit')
+            ('fix the blockers listed' if blockers else f'{ctx.cli} submit' + ('' if picked else ' --notes-only'))
     if blockers:
         raise Stop(FAILED, f'{len(blockers)} blocker(s); nothing committed or pushed', 'fix the blockers listed', **data)
     other = [n for n in git(ctx, 'diff', '--cached', '--name-only').splitlines() if n and n not in unit]
@@ -3171,14 +3223,16 @@ def cmd_submit(ctx, args):
         raise Stop(NETWORK, 'fork push authentication/permission preflight failed; nothing committed',
                    'configure Git push credentials for your fork, then rerun submit', **data)
     preflight['git_push_auth'] = 'passed'
-    git(ctx, 'add', '--', *unit)
+    if unit:
+        git(ctx, 'add', '--', *unit)
     # Validate the immutable index that will be committed, without requiring project acceptance.
     index_tree = git(ctx, 'write-tree')
     staged_problems = intake_problems(ctx, base, head=index_tree, files=files)
     if staged_problems:
         raise Stop(FAILED, 'staged submission preflight failed', 'fix the listed findings',
                    blockers=staged_problems)
-    git(ctx, 'commit', '-m', data['commit_message'], '--', *unit)
+    if unit:
+        git(ctx, 'commit', '-m', data['commit_message'], '--', *unit)
     if not push:
         raise Stop(USAGE, 'no fork remote to push to', 'fork the repository on GitHub, then '
                    f'git remote add fork https://github.com/<you>/{UPSTREAM.split("/")[-1]}.git and run submit again', **data)
@@ -3191,14 +3245,14 @@ def cmd_submit(ctx, args):
     if gh:
         owner = preflight['fork_owner']
         proc = ctx.run([gh, 'pr', 'create', '--repo', ctx.github().repo, '--head', f'{owner}:{branch}',
-                        '--title', title, '--body-file', str(tdir / 'pr-body.md')], capture_output=True, text=True)
+                        '--title', title, '--body-file', body_file], capture_output=True, text=True)
         if proc.returncode == 0:
             url = proc.stdout.strip().splitlines()[-1]
             ctx.say(f'pull request: {url}')
             return OK, dict(data, pull_request=url), 'wait for the project to confirm; watch the pull request'
     head = urllib.parse.quote(f"{preflight['fork_owner']}:{branch}", safe=':')
     link = f'https://github.com/{ctx.github().repo}/compare/main...{head}?expand=1'
-    ctx.say(f'open this link and paste {tdir / "pr-body.md"} as the description: {link}')
+    ctx.say(f'open this link and paste {body_file} as the description: {link}')
     return OK, dict(data, link=link), 'open the link and create the pull request'
 
 
@@ -3373,11 +3427,7 @@ def parser():
     s = sub.add_parser('release')
     s.add_argument('rva')
     s.add_argument('--reason')
-    s.add_argument('--category', choices=giveup.CATEGORIES,
-                   help='also file a give-up record (docs/contributor-card.md, "If you can\'t match it")')
-    s.add_argument('--tried', action='append', help='one short try; repeat for each')
-    s.add_argument('--still-differs', help='in words, no instructions')
-    s.add_argument('--suspected-cause')
+    giveup.add_draft_arguments(s)
     s.add_argument('--note', help='lesson note holding the near-miss, docs/cookbook-notes/<rva>-<slug>.md')
     s = sub.add_parser('start')
     s.add_argument('--model', '--agent', help='actual model id or agent/tool name')
@@ -3405,6 +3455,7 @@ def parser():
     s.add_argument('--slug', help='short file-name slug (default: the function name)')
     s.add_argument('--path', help=argparse.SUPPRESS)
     s.add_argument('--force', action='store_true', help='replace an existing note')
+    giveup.add_draft_arguments(s)
     s = sub.add_parser('lesson', help='write the lesson-note template for one function (a near-miss, a hard pass, a solved shape)')
     s.add_argument('rva')
     s.add_argument('--name', help='function name for the template when there is no task')
@@ -3416,6 +3467,7 @@ def parser():
     s.add_argument('task', nargs='*', help='one or more task names; several make one pull request')
     s.add_argument('--all-dirty', action='store_true',
                    help='every unsubmitted task whose unit has uncommitted changes, in one pull request')
+    s.add_argument('--notes-only', action='store_true', help='submit drafts, give-ups or lessons without a matched unit')
     s.add_argument('--dry-run', action='store_true')
     s.add_argument('--base')
     s.add_argument('--drafted-by')
