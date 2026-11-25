@@ -1,13 +1,16 @@
 """Rendering inventory: a synthetic repository tree, no game data."""
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools')]
 import render_inventory as inv_tool
+import pr_bot
 from claimable import write_sharded
 
 PDB = 'reconstruction/generated/crashlogger_pdb'
@@ -179,6 +182,92 @@ class Output(unittest.TestCase):
         inv_tool.main(['--root', str(self.root), '--json', str(out)])
         doc = json.loads(out.read_text())
         self.assertEqual({r['rva'] for r in doc['rows']}, {0x1000, 0x1100, 0x1200, 0x1300, 0x1400, 0x1500, 0x1700})
+
+    def test_issue_mode_refreshes_counts_and_tables_in_place_and_is_idempotent(self):
+        task = ('Keep this introduction.\n\nKnown functions: 99, matched: 99.\n\n'
+                'Classes (open of known): stale.\n\n'
+                '## First entry points (easiest first)\n\nThe current queue lists 99 ready functions.\n\n'
+                f'{inv_tool.ENTRY_HEADER}\n| `0xdead` | Stale | 7 | ready | 1 |\n\nKeep this guidance.\n')
+        tracking = inv_tool.TRACKING_ISSUE
+        tasks = inv_tool.TASK_ISSUES
+        issues = {tracking: {'body': 'Keep the tracking issue text.\n'},
+                  **{number: {'body': task} for number in tasks.values()}}
+        gh = mock.Mock()
+        gh.api.side_effect = lambda path: issues[int(path.rsplit('/', 1)[-1])]
+
+        def edit(command, action, number, option, repo, *, body):
+            self.assertEqual((command, action, option), ('issue', 'edit', '--repo'))
+            issues[number]['body'] = body
+        gh.run.side_effect = edit
+
+        with mock.patch('claims.GitHub', return_value=gh):
+            gh.open_claims.return_value = [{'number': 6, 'entries': [[0x1500, 0x1501]]}]
+            args = ['--root', str(self.root), '--fetch-claims', '--update-issues']
+            self.assertEqual(inv_tool.main(args), 0)
+            self.assertEqual(inv_tool.main(args), 0)
+
+        self.assertEqual(gh.run.call_count, 6)
+        self.assertIn('| E: Shadows | 1 | 0 | 0.0% | 1 |', issues[tracking]['body'])
+        self.assertIn('Keep the tracking issue text.', issues[tracking]['body'])
+        foundation = issues[tasks['A']]['body']
+        self.assertIn('| `0x1400` | Renderer::Lock | 14 | ready | 0 |', foundation)
+        self.assertIn('Keep this introduction.', foundation)
+        self.assertTrue(foundation.endswith('Keep this guidance.\n'))
+        self.assertNotIn('0xdead', foundation)
+        shadows = issues[tasks['E']]['body']
+        self.assertIn('matched: 0, under open claims: 1, open and available: 0', shadows)
+        self.assertNotIn('0x1500', shadows)
+        self.assertNotIn('ShadowSceneNode', shadows)
+
+    def test_task_issue_refuses_to_edit_missing_sections(self):
+        inv = inv_tool.build(self.root)
+        groups, classes = inv_tool.summarize(inv)
+        with self.assertRaisesRegex(ValueError, 'entry-point section in workstream E'):
+            inv_tool.render_task_issue('Manually rewritten body', inv, 'E', groups['E1'], classes)
+
+    def test_housekeeping_publishes_only_the_doc_and_retries_issues_at_the_next_window(self):
+        def git(*args, cwd=self.root):
+            return subprocess.run(['git', *args], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+
+        git('init', '-q', '-b', 'main')
+        git('config', 'user.name', 'Fixture')
+        git('config', 'user.email', 'fixture@example.invalid')
+        doc = 'docs/milestones/rendering.md'
+        write(self.root, doc, f'{inv_tool.BLOCK_START}\nold\n{inv_tool.BLOCK_END}\n')
+        git('add', '.')
+        git('commit', '-qm', 'Initial inventory')
+        git('clone', '-q', '--bare', '.', 'remote.git')
+        git('remote', 'add', 'origin', str(self.root / 'remote.git'))
+        bot = pr_bot.Bot(root=self.root, work=self.root / 'work').maintenance_tree()
+        git('config', 'user.name', 'Fixture bot', cwd=bot.tree)
+        git('config', 'user.email', 'fixture-bot@example.invalid', cwd=bot.tree)
+        bot.clock = mock.Mock(return_value=10_000)
+
+        with mock.patch.object(inv_tool, 'fetch_claims', return_value=[]) as claims, \
+             mock.patch.object(inv_tool, 'update_issues', side_effect=[RuntimeError('offline'), [], []]) as issues:
+            with self.assertRaisesRegex(RuntimeError, 'offline'):
+                bot.refresh_rendering()
+            self.assertEqual(git('diff-tree', '--no-commit-id', '--name-only', '-r', 'origin/main', cwd=bot.tree), doc)
+            self.assertIn('| E: Shadows | 1 | 0 |', git('show', f'origin/main:{doc}', cwd=bot.tree))
+            bot.refresh_rendering()
+            self.assertEqual(claims.call_count, 1)
+
+            bot.clock.return_value += pr_bot.CLAIM_SWEEP_EVERY
+            bot.refresh_rendering()
+            self.assertEqual(issues.call_count, 2)
+            bot.clock.return_value += pr_bot.CLAIM_SWEEP_EVERY
+            bot.refresh_rendering()
+            self.assertEqual(claims.call_count, 2)
+
+            git('pull', '-q', '--ff-only', 'origin', 'main')
+            progress = json.loads((self.root / 'data/progress.json').read_text())
+            progress['functions'][1]['status'] = 'matched'
+            write(self.root, 'data/progress.json', progress)
+            git('commit', '-qam', 'Record a match')
+            git('push', '-q', 'origin', 'main')
+            bot.refresh_rendering()
+            self.assertEqual(issues.call_count, 3)
+            self.assertIn('| E: Shadows | 1 | 1 |', git('show', f'origin/main:{doc}', cwd=bot.tree))
 
 
 if __name__ == '__main__':
