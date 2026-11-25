@@ -236,20 +236,18 @@ void* TESObjectREFR::QueryExtraList() const
     return list ? list->Unk166af0() : nullptr;
 }
 
-// WorldLookup, worldLookup: GUESS(low); the singleton-global the lookup goes through and its
-// cell-to-worldspace entry point.
+// WorldLookup, worldLookup: GUESS(low); stand-ins for the receiver of the cell query.
 class WorldLookup
 {
 public:
-    TESWorldSpace* Function1a2200(TESObjectCELL* a_cell, const void* a_context);
     bool Function1a2200(TESObjectCELL* a_cell, bool a_flag);
 };
 
 extern WorldLookup* worldLookup;
 
-TESWorldSpace* TESObjectREFR::Function2ebcb0() const
+bool TESObjectREFR::Function2ebcb0() const
 {
-    return worldLookup->Function1a2200(parentCell, nullptr);
+    return worldLookup->Function1a2200(parentCell, false);
 }
 
 bool TESObjectREFR::Function2f5930() const

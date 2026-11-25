@@ -1,7 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing); mixed (community headers, the pinned image listing, and a permitted private sibling for IsTrue)
 // Origin: independently decoded target, anonymous sibling and public declarations.
-// Code origin: original reconstruction from the pinned image listing; no adapted bodies; Function4a6c10: Function4a6c10 and Function4a6df0 written from the listing with no adapted bodies; IsTrue is adapted from the sibling below
-// Adapted bodies: none; TESCondition::IsTrue from fo4-private@1b765c70 src/Shared/AI/TESCondition.cpp:349 (author-permission)
+// Code origin: Function4a6c10 and Function4a6df0 are original reconstructions from the listing.
+// Adapted bodies: TESCondition::IsTrue from fo4-private@1b765c70 src/Shared/AI/TESCondition.cpp:349 (author-permission)
 // 0x4a6df0 TESCondition::Function4a6df0
 // 0x4a6c10 TESCondition::Function4a6c10
 // TESCondition::IsTrue: SIBLING(fo4-private@1b765c70, author-permission); adapted to target observations.

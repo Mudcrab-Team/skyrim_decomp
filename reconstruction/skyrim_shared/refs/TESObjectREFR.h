@@ -462,7 +462,7 @@ public:
 
     // Function2ebcb0, Function2f5930, Function3002f0, Function300310: GUESS(low); the four small
     // members below, defined in the .cpp beside this file.
-    TESWorldSpace* Function2ebcb0() const;
+    bool Function2ebcb0() const;
     bool           Function2f5930() const;
     void           Function3002f0();
     bool           Function300310() const;

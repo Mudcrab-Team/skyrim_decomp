@@ -143,8 +143,6 @@ public:
     bool allowDecommits;  // 1264
     std::uint8_t pad1265;  // 1265
     std::uint16_t pad1266;  // 1266
-    // address 0xcea520: range check of a block pointer against allocBase and blockPageCommit (name is a placeholder)
-    bool Functioncea520(const void* a_block) const;
 };
 static_assert(sizeof(BSSmallBlockAllocator) == 0x1268, "BSSmallBlockAllocator size");
 static_assert(offsetof(BSSmallBlockAllocator, allocBase) == 0x1238, "allocBase offset");
