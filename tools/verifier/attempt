@@ -622,8 +622,13 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
     history = [r for r in log_rows(task_dir / 'attempts.jsonl') if r.get('tier', 'first') == tier]
     finished_at = time.time()
     progress = attempt_progress.update(current, history, counted, now=finished_at)
+    private_roots = {pipeline.private_root(task_dir), pipeline.REPO / '.local',
+                     pipeline.main_checkout() / '.local'}
+    pools = [root / 'near-miss' / task['build_id'] for root in private_roots]
     stuck = [advice for rva, metric in progress.items() if counted and rva in failed
-             if (advice := attempt_progress.stuck_advice(rva, metric, patience, finished_at))]
+             if (advice := attempt_progress.stuck_advice(
+                 rva, metric, patience, finished_at,
+                 permute_dirs=[task_dir / 'permute' / rva, *(pool / rva / 'permute' / rva for pool in pools)]))]
     lines += [attempt_progress.describe(rva, metric, patience) for rva, metric in progress.items()]
     lines += stuck
     lines.append(attempt_progress.guidance(patience))

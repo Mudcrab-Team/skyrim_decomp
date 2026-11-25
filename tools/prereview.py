@@ -22,6 +22,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import header_check  # noqa: E402
 import lint_reconstruction  # noqa: E402
 import lint_review_readiness  # noqa: E402
 from git_context import blobs, lint_dependencies, tree_entries  # noqa: E402
@@ -71,6 +72,16 @@ def readiness_problems(root, name, text, included_only=None):
             if not (root / recipe).is_file():
                 problems.append(f'{name}: names recipe {recipe}, which does not exist; '
                                 'fix: name a recipe under reconstruction/recipes/')
+    return problems
+
+
+def staged_problems(repo, exported, names):
+    """Check the exported index files with HEAD as the header baseline."""
+    problems = []
+    for name in names:
+        text = (exported / name).read_text(encoding='utf-8', errors='replace')
+        problems += header_check.file_problems(name, text, header_check.blob(repo, 'HEAD', name))
+        problems += readiness_problems(exported, name, text)
     return problems
 
 

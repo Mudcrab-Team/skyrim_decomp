@@ -54,7 +54,7 @@ def update(current, history, counted=True, now=None):
     return out
 
 
-def stuck_advice(rva, metric, patience, now):
+def stuck_advice(rva, metric, patience, now, *, permute_dirs=()):
     if not metric or metric['total'] <= 0 or not metric['no_improvement']:
         return None
     if metric['no_improvement'] >= patience:
@@ -63,9 +63,13 @@ def stuck_advice(rva, metric, patience, now):
         reason = f'{STUCK_MINUTES} minutes'
     else:
         return None
-    route = (f'permute (one run, {PERMUTE_BUDGET_SECONDS}s search budget)'
-             if 100 * metric['best'] >= PERMUTE_MIN_PERCENT * metric['total']
-             else 'park in the near-miss pool')
+    if any((directory / name).is_file() for directory in permute_dirs
+           for name in ('history.jsonl', 'run.log', 'result.json')):
+        route = 'permuter exhausted; use wall-identifier to pick a structural change'
+    elif 100 * metric['best'] >= PERMUTE_MIN_PERCENT * metric['total']:
+        route = f'permute (one run, {PERMUTE_BUDGET_SECONDS}s search budget)'
+    else:
+        route = 'park in the near-miss pool'
     return f'stuck {rva}: no gain in {reason} → {route}'
 
 

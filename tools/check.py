@@ -1335,8 +1335,7 @@ def check_staged_sources(root, sources):
                        input='\0'.join(wanted).encode('utf-8') + b'\0', check=True)
         exported = Path(tmp)
         lint(exported, sources)
-        problems = [problem for name in sources
-                    for problem in prereview.readiness_problems(exported, name, (exported / name).read_text())]
+        problems = prereview.staged_problems(root, exported, sources)
         require(not problems, 'Prereview: ' + '\n'.join(problems))
 
 

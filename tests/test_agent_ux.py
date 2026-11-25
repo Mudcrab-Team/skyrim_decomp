@@ -139,6 +139,31 @@ class Progress(unittest.TestCase):
         self.assertIn('5 minutes → park', progress.stuck_advice(rva, later, 3, 650))
         self.assertIsNone(progress.stuck_advice(rva, None, 3, 650))
 
+    def test_stuck_advice_uses_history_for_the_same_build_and_rva(self):
+        rva = '0x1000'
+        metric = dict(self.metric(18), best=18, no_improvement=3)
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / '.local'
+            task = local / 'tasks/toy'
+            pool = local / 'near-miss/toy-build' / rva
+            dirs = [root / 'permute' / rva for root in (task, pool)]
+            other = pool.with_name('0x2000') / 'permute/0x2000'
+            other.mkdir(parents=True)
+            (other / 'result.json').touch()
+            self.assertIn('→ permute (one run', progress.stuck_advice(rva, metric, 3, 100, permute_dirs=dirs))
+            for directory, name in ((dirs[0], 'history.jsonl'), (dirs[0], 'run.log'), (dirs[1], 'result.json')):
+                with self.subTest(name=name):
+                    directory.mkdir(parents=True, exist_ok=True)
+                    artifact = directory / name
+                    artifact.touch()
+                    advice = progress.stuck_advice(rva, metric, 3, 100, permute_dirs=dirs)
+                    self.assertIn('permuter exhausted', advice)
+                    self.assertIn('structural change', advice)
+                    self.assertIn('wall-identifier', advice)
+                    improved = progress.update({rva: self.metric(19)}, [{'progress': {rva: metric}}])[rva]
+                    self.assertIsNone(progress.stuck_advice(rva, improved, 3, 100, permute_dirs=dirs))
+                    artifact.unlink()
+
     def test_later_matching_region_rises_with_unchanged_first_mismatch(self):
         target = '1000: b8 01 00 00 00  mov eax, 1\n1005: 83 c0 02  add eax, 2\n1008: c3  ret\n'
         before = '0: b8 03 00 00 00  mov eax, 3\n5: 83 c0 04  add eax, 4\n8: c3  ret\n'
@@ -160,7 +185,7 @@ class Progress(unittest.TestCase):
             other.mkdir(parents=True)
             (other / 'attempt.txt').write_text('other task')
             (other.parents[1] / 'attempts.jsonl').write_text('{"attempt":1}\n')
-            task = dict(dir=directory, task_id='synthetic', compiled='reconstruction/misc/X.cpp',
+            task = dict(dir=directory, task_id='synthetic', build_id='toy-build', compiled='reconstruction/misc/X.cpp',
                         max_attempts=3, symbols_local=directory / 'symbols.json',
                         functions=[dict(rva=0x1000, size=20, symbol='synthetic')])
             values = iter([4, 8, 12])
@@ -197,6 +222,7 @@ class Progress(unittest.TestCase):
                     self.assertEqual(attempt.attempt(directory), 5)
                 self.assertIn('+4 vs previous', output.getvalue())
                 self.assertIn('Next: revise the source', output.getvalue())
+                self.assertNotIn('stuck 0x1000:', output.getvalue())
                 self.assertIn('stop after 3 counted attempts or 5 minutes without a new best', output.getvalue())
                 self.assertIn('attempt budget exhausted: 3 of 3', output.getvalue())
             rows = [json.loads(line) for line in (directory / 'attempts.jsonl').read_text().splitlines()]

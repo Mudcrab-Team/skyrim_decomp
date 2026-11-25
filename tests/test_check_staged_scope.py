@@ -100,6 +100,14 @@ class ScopedStagedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'missing reconstruction origin statement'):
             self.scoped()
 
+    def test_prereview_rejects_a_staged_ng_declaration_without_the_licence_line(self):
+        ng = self.h.replace('GUESS(low)', 'COMMUNITY(CharmedBaryon/CommonLibSSE-NG@1234abcd, MIT)')
+        self.stage(h=ng)
+        self.assertEqual(self.full_lint(), [])
+        self.put(UNIT + '.h', self.h)
+        with self.assertRaisesRegex(ValueError, 'NG declarations need the line'):
+            self.scoped()
+
     def test_prereview_also_checks_edits_to_existing_units(self):
         self.stage()
         git(self.root, 'commit', '-qm', 'unit')
