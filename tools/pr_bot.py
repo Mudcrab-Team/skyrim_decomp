@@ -164,7 +164,7 @@ PROBE_COOLDOWN = 1800  # seconds before the same head's hash run is requested ag
 ROWS_RERUN_LIMIT = 3  # runs asked for one head because main published rows its run's base lacked
 PROBE_TITLE = re.compile(r'pr-check run for the head of #(\d+)')
 PROBE_SWEEP_EVERY = 120  # seconds between closings of finished probe PRs
-CLAIM_SWEEP_EVERY = 600  # seconds between closings of claim issues whose functions are all matched
+CLAIM_SWEEP_EVERY = 3600  # seconds between closings of claim issues that are fully matched or lapsed
 RECORD_RETRY_WINDOW = 3 * 86400  # a merged PR whose records are still missing is retried for this long
 
 
@@ -4632,10 +4632,10 @@ class Bot:
         return got
 
     def close_done_claims(self):
-        """Close claim issues whose functions are all matched on origin/main. Returns the issue numbers."""
+        """Close claim issues that are fully matched on origin/main or have lapsed. Returns (matched, lapsed)."""
         import claims
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
-        return claims.close_completed(claims.GitHub(self.tree), claims.git_json(self.tree, 'origin/main'))
+        return claims.sweep(claims.GitHub(self.tree), claims.git_json(self.tree, 'origin/main'))
 
     def task_slot(self, number, head):
         """The slot whose tree still holds the PR's confirm tasks, else this one."""
@@ -5534,8 +5534,11 @@ def _housekeeping(bot, directory, due):
             print(f'{stamp()} record retry: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
     if 'claims' in due:
         try:
-            for number in slot.close_done_claims():
+            matched, stale = slot.close_done_claims()
+            for number in matched:
                 print(f'{stamp()} claim #{number}: all functions matched, closed', flush=True)
+            for number in stale:
+                print(f'{stamp()} claim #{number}: lapsed, closed', flush=True)
         except errors + (RuntimeError,) as exc:
             print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
     if 'probes' in due:

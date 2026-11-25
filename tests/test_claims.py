@@ -334,6 +334,88 @@ class ClaimsTests(unittest.TestCase):
         fake, done = self.close_with([raw(1)], self.matched_public(0x1000), dry_run=True)
         self.assertEqual((done, fake.closed), ([1], []))
 
+    def sweep_with(self, rows, public, dry_run=False):
+        fake = FakeGh(rows)
+        return fake, claims.sweep(fake.client, public, dry_run)
+
+    def closing_comment(self, fake, number):
+        close = next(c for c in fake.calls if c[1:3] == ['issue', 'close'] and c[3] == str(number))
+        return close[close.index('--comment') + 1]
+
+    def test_sweep_separates_matched_lapsed_and_active_claims(self):
+        rows = [raw(1, entries=((0x1000, 0x1001),), old=True),
+                raw(2, entries=((0x1020, 0x1021),), old=True),
+                raw(3, entries=((0x2000, 0x2001),)),
+                raw(4, entries=((0x1000, 0x1001),))]
+        fake, (done, stale) = self.sweep_with(rows, self.matched_public(0x1000))
+        self.assertEqual((done, stale), ([1, 4], [2]))
+        self.assertEqual(sorted(fake.closed), [1, 2, 4])
+        self.assertEqual(self.closing_comment(fake, 1), claims.DONE_COMMENT)
+        self.assertEqual(self.closing_comment(fake, 2), claims.LAPSED_COMMENT)
+        self.assertEqual(fake.writes, [])
+
+    def test_sweep_keeps_a_recent_claim_with_unmatched_functions(self):
+        fake, (done, stale) = self.sweep_with([raw(1)], self.matched_public())
+        self.assertEqual((done, stale, fake.closed), ([], [], []))
+
+    def test_sweep_dry_run_reports_without_closing(self):
+        fake, (done, stale) = self.sweep_with([raw(1, old=True)], self.matched_public(), dry_run=True)
+        self.assertEqual((done, stale, fake.closed), ([], [1], []))
+
+    def test_sweep_ignores_pull_requests_and_non_claim_issues(self):
+        pull = dict(raw(1, old=True), pull_request={'url': 'u'})
+        plain = dict(raw(2, old=True), title='Active workstreams')
+        fake, (done, stale) = self.sweep_with([pull, plain], self.matched_public())
+        self.assertEqual((done, stale, fake.closed), ([], [], []))
+
+    def test_a_recent_comment_keeps_an_old_claim_alive(self):
+        old = raw(1, old=True)
+        old['comments'] = 1
+        fresh = {'event': 'commented', 'created_at': NOW, 'updated_at': NOW, 'body': 'still working'}
+        fake = FakeGh([old])
+        original = fake.run
+
+        def run(command, **kw):
+            if command[1] == 'api' and '/timeline?' in command[2]:
+                return subprocess.CompletedProcess(command, 0, json.dumps([fresh]), '')
+            return original(command, **kw)
+        fake.client = claims.GitHub(runner=run)
+        self.assertEqual(claims.sweep(fake.client, self.matched_public()), ([], []))
+
+    def timeline_gh(self, rows, events):
+        fake = FakeGh(rows)
+        original = fake.run
+
+        def run(command, **kw):
+            if command[1] == 'api' and '/timeline?' in command[2]:
+                return subprocess.CompletedProcess(command, 0, json.dumps(events), '')
+            return original(command, **kw)
+        return claims.GitHub(runner=run)
+
+    def test_a_tracker_issue_naming_a_claim_does_not_renew_it(self):
+        mention = {'event': 'cross-referenced', 'created_at': NOW, 'updated_at': NOW,
+                   'source': {'issue': {'number': 36, 'updated_at': NOW}}}
+        gh = self.timeline_gh([raw(1, old=True)], [mention])
+        self.assertEqual(claims.sweep(gh, self.matched_public()), ([], [1]))
+
+    def test_a_linked_pull_request_renews_the_claim(self):
+        linked = {'event': 'cross-referenced', 'created_at': '2020-01-01T00:00:00Z',
+                  'updated_at': '2020-01-01T00:00:00Z',
+                  'source': {'issue': {'number': 40, 'pull_request': {}, 'updated_at': NOW}}}
+        gh = self.timeline_gh([raw(1, old=True)], [linked])
+        self.assertEqual(claims.sweep(gh, self.matched_public()), ([], []))
+
+    def test_sweep_command_prints_both_groups(self):
+        fake = FakeGh([raw(1, old=True), raw(2, entries=((0x1020, 0x1021),))])
+        out = io.StringIO()
+        with patch.object(claims, 'GitHub', return_value=fake.client), \
+             patch.object(claims, 'git_json', return_value=self.matched_public(0x1020)) as read, \
+             contextlib.redirect_stdout(out):
+            self.assertEqual(claims.main(['--root', str(self.root), 'sweep', '--dry-run']), 0)
+        read.assert_called_once_with(self.root, 'origin/main')
+        self.assertEqual(out.getvalue().splitlines(),
+                         ['would close (matched): #2', 'would close (lapsed): #1'])
+
     def test_sync_failure_is_nonfatal(self):
         with patch.object(claims, 'sync', side_effect=RuntimeError('offline')), contextlib.redirect_stderr(io.StringIO()) as err:
             claims.sync_safe(self.root)

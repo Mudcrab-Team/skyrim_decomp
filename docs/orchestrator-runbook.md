@@ -94,9 +94,12 @@ Sync counts only acceptances on `origin/main`, updates the accepted count, and c
 an issue when every member is accepted. It leaves unknown range members open. Fetch origin before
 running sync manually. Issues without the new claim block are left alone.
 
-Contributor claims are closed separately: the PR bot runs `claims.close_completed` every ten minutes, and
-`python3 tools/claims.py close-done [--dry-run]` does the same by hand. Any open `claim:` issue whose
-functions are all `matched` on `origin/main` gets one closing comment.
+Contributor claims are closed separately: the PR bot runs `claims.sweep` at most once an hour, and
+`python3 tools/claims.py sweep [--dry-run]` does the same by hand. Any open `claim:` issue whose
+functions are all `matched` on `origin/main` gets one closing comment; so does any claim with unmatched
+functions that has seen no activity (its own update, comments, linked pull requests) for 24 hours,
+the claims policy's lapse window. Claims with recent activity stay open. `close-done` closes only the
+fully matched ones.
 
 ## The loop
 

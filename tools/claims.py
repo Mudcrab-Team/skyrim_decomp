@@ -27,7 +27,9 @@ BODY_LIMIT = 60000
 TTL = 600
 CLAIM_LAPSE = timedelta(hours=24)
 RENEWAL = 'skyrim-claim-renewal-v1'
-DONE_COMMENT = 'All claimed functions are matched \u2014 closing. Thanks!'
+DONE_COMMENT = 'All claimed functions are matched; closing.'
+LAPSED_COMMENT = ('Claim lapsed after 24 hours without activity, per the claims policy. '
+                  'Reopen or claim again to continue.')
 TOKEN = re.compile(r'(?<![A-Za-z0-9])0x([0-9a-fA-F]+)\b')
 ENTRY = re.compile(r'0x([0-9a-fA-F]+)(?:-0x([0-9a-fA-F]+))?(?:\s+[^\r\n]+)?')
 
@@ -164,8 +166,10 @@ def activity(api, repo, raw):
                     raw.setdefault('claim_takeovers', []).append((a, b))
             if event.get('event') == 'renamed' and MANAGED in (raw.get('body') or ''):
                 continue  # automatic scope/title maintenance is not a broad renewal
-            dates = [event.get('updated_at'), event.get('created_at')]
             linked = (event.get('source') or {}).get('issue') or {}
+            if event.get('event') == 'cross-referenced' and 'pull_request' not in linked:
+                continue  # another issue merely naming the claim is not work on it
+            dates = [event.get('updated_at'), event.get('created_at')]
             if 'pull_request' in linked:
                 dates.append(linked.get('updated_at'))
             ordinary.extend(filter(None, dates))
@@ -219,13 +223,19 @@ class GitHub:
                 return result
         raise RuntimeError('open issue pagination limit reached')
 
-    def open_claims(self):
-        """Open claim issues of any author, parsed without the per-issue timeline reads `issues` makes."""
+    def open_claims(self, with_activity=False):
+        """Open claim issues of any author.
+
+        By default they are parsed without the per-issue timeline reads `issues` makes; `with_activity`
+        adds those reads so comments, renewals and linked pull requests count toward `updated_at`.
+        """
         result = []
         for page in range(1, 101):
             rows = self.api(f'repos/{REPO}/issues?state=open&per_page=100&page={page}')
             for raw in rows:
                 if 'pull_request' not in raw and (raw.get('title') or '').startswith('claim:'):
+                    if with_activity:
+                        raw['updated_at'] = activity(self.api, REPO, raw)
                     result.append(parse_issue(raw))
             if len(rows) < 100:
                 return result
@@ -593,6 +603,32 @@ def close_completed(gh, public, dry_run=False):
     return closed
 
 
+def lapsed(item, now=None):
+    """True when no part of the claim has seen activity inside the lapse window."""
+    return not item.get('pull_request') and not live_entries(item, now)
+
+
+def sweep(gh, public, dry_run=False, now=None):
+    """Close every open claim that is finished or has lapsed. Returns (matched, lapsed) issue numbers.
+
+    A claim whose functions are all matched closes as done even when it is also silent; a silent claim
+    with unmatched functions closes as lapsed; a recently active claim with unmatched functions stays.
+    Claims are advisory, so closing only tidies the list; the single comment says why.
+    """
+    done, stale = [], []
+    for item in gh.open_claims(with_activity=True):
+        if completed(item, public):
+            reason, bucket = DONE_COMMENT, done
+        elif lapsed(item, now):
+            reason, bucket = LAPSED_COMMENT, stale
+        else:
+            continue
+        if not dry_run:
+            gh.close(item['number'], reason)
+        bucket.append(item['number'])
+    return done, stale
+
+
 def sync_safe(root):
     try:
         sync(root)
@@ -605,12 +641,12 @@ def main(argv=None):
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--cache-dir', type=Path)
     sub = p.add_subparsers(dest='cmd', required=True)
-    for cmd in ('list', 'check', 'publish', 'sync', 'close-done'):
+    for cmd in ('list', 'check', 'publish', 'sync', 'close-done', 'sweep'):
         s = sub.add_parser(cmd)
         s.add_argument('--refresh', action='store_true')
         if cmd == 'check':
             s.add_argument('rvas', nargs='+')
-        if cmd in ('publish', 'close-done'):
+        if cmd in ('publish', 'close-done', 'sweep'):
             s.add_argument('--dry-run', action='store_true')
         if cmd == 'publish':
             s.add_argument('--family-root', type=Path, action='append', default=[])
@@ -625,6 +661,11 @@ def main(argv=None):
         elif a.cmd == 'close-done':
             done = close_completed(gh, git_json(a.root, 'origin/main'), a.dry_run)
             print(('would close: ' if a.dry_run else 'closed: ') + (', '.join(f'#{n}' for n in done) or 'none'))
+        elif a.cmd == 'sweep':
+            done, stale = sweep(gh, git_json(a.root, 'origin/main'), a.dry_run)
+            verb = 'would close' if a.dry_run else 'closed'
+            for label, numbers in (('matched', done), ('lapsed', stale)):
+                print(f'{verb} ({label}): ' + (', '.join(f'#{n}' for n in numbers) or 'none'))
         else:
             index, _ = cached(a.root, a.refresh, gh, a.cache_dir)
             public = git_json(a.root)

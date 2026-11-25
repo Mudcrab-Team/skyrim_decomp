@@ -450,7 +450,7 @@ class RecordRebindTests(WorkDir):
 class PoolTests(WorkDir):
     class PoolBot(FakeBot):
         def close_done_claims(self):
-            return []
+            return ([], [])
 
         def sweep_probes(self):
             return []
@@ -940,7 +940,7 @@ class PoolTests(WorkDir):
                 calls.append(1)
                 if len(calls) == 1:
                     raise RuntimeError('gh failed')
-                return [5]
+                return ([5], [])
         bot = Sweeping(self.work)
         listed = []
         bot.gh_json = lambda *a: listed.append(1) or []
@@ -971,12 +971,12 @@ class PoolTests(WorkDir):
         bot = FakeBot(self.work)
         seen = {}
 
-        def fake_close(gh, public):
+        def fake_sweep(gh, public):
             seen['public'] = public
-            return [9]
+            return [9], [10]
         with mock.patch('claims.git_json', return_value={'functions': []}) as read, \
-                mock.patch('claims.close_completed', side_effect=fake_close):
-            self.assertEqual(bot.close_done_claims(), [9])
+                mock.patch('claims.sweep', side_effect=fake_sweep):
+            self.assertEqual(bot.close_done_claims(), ([9], [10]))
         read.assert_called_once_with(bot.tree, 'origin/main')
         self.assertEqual(seen['public'], {'functions': []})
         self.assertEqual(bot.calls[-1][:4], ['git', 'fetch', '--quiet', 'origin'])

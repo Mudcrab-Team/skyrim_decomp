@@ -531,7 +531,7 @@ class ReplayBot(pr_bot.Bot):
         return []
 
     def close_done_claims(self):
-        return []
+        return ([], [])
 
     def build_records(self, tag, units, rvas, state):
         records = self.work / 'records' / tag.replace('/', '-')
