@@ -476,6 +476,17 @@ public:
     // As: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the checked downcast on references.
     template <class T>
     const T* As() const;
+    // Function2e3c40, Function1e64c0, Function2e4920, Function2e49f0, Function2e4a30, Function2e4a60, Function2e4a90, Function2e4ae0, Function2e49c0, Function2e4800: GUESS(low); flag and form-type probes defined in the .cpp.
+    bool Function2e3c40() const;
+    void Function1e64c0(bool a_set);
+    void Function2e4920(bool a_set);
+    void Function2e49f0(bool a_set);
+    void Function2e4a30(bool a_set);
+    bool Function2e4a60() const;
+    bool Function2e4a90() const;
+    bool Function2e4ae0() const;
+    bool Function2e49c0() const;
+    bool Function2e4800() const;
 };
 
 // Actor: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the character reference type that GetTransform tests for.

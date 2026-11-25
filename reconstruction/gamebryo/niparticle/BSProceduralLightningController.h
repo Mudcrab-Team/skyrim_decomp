@@ -6,6 +6,7 @@
 // NiInterpController: STANDIN EXE_RTTI
 // BSProceduralLightningController::GetInterpolator, BSProceduralLightningController::GetInterpolatorID, BSProceduralLightningController::TargetIsRequiredType, BSProceduralLightningController::LoadBinary, BSProceduralLightningController::InterpolatorIsCorrectType, BSProceduralLightningController::RegisterStreamables, BSProceduralLightningController::IsEqual: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
 // NiInterpolator, NiStream, NiRTTI: STANDIN COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
+// 0xffd860 BSProceduralLightningController::Functionffd860
 #pragma once
 
 #include <cstdint>
@@ -130,6 +131,16 @@ public:
     virtual bool RegisterStreamables(NiStream& a_stream);
     // IsEqual: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0); RVA 0xffca50
     virtual bool IsEqual(NiObject* a_object);
+    // unk44 through unk48: GUESS(low); vtable slots 0x2C through 0x30 of the pinned layout, not yet identified
+    virtual void unk44();
+    virtual void unk45();
+    virtual void unk46();
+    virtual void unk47();
+    virtual void unk48();
+    // unk49: GUESS(low); vtable slot 0x188 (index 0x31); the argument type is guess(low)
+    virtual void* unk49(void* a_arg);
+    // Functionffd860: GUESS(low); RVA 0xffd860; forwards the value stored at a_ref to slot 0x188
+    void* Functionffd860(void** a_ref);
 
     // unknown48: GUESS(low); padding up to the first member, apart from the offsets the bodies read
     void SendGeomEvent();

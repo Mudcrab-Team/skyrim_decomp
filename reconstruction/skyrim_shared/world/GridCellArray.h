@@ -13,6 +13,10 @@ public:
 	static void KillStatics();
 	// DetachAll: GUESS(low); no public name for the per-cell callee, placeholder name.
 	void DetachAll();
+	// unknown00: GUESS(low); unread bytes before the cell state.
+	char unknown00[0x44];
+	// cellState: GUESS(low); byte at 0x44 compared with 4.
+	unsigned char cellState;
 };
 
 class TESDataHandler
@@ -62,6 +66,7 @@ public:
 	TESObjectCELL** cells;     // 18 - allocated with 8 * numGrids * numGrids
 	Point3 position;           // 20
 	bool land3DAttached;       // 2C
+	bool Function227210();
 	void KillAll();
 	// DetachAll: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); the name is the GridArray base declaration, the body is independently written.
 	void DetachAll();

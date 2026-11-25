@@ -25,8 +25,9 @@ public:
     virtual void Unk_02();  // compared: 0xeebf20  // slot 01
     virtual void Unk_05(void);  // 01
 
-    // TODO members: replace part of the padding with the members the bodies read,
-    // keeping every offset and the size check true.
-    std::uint8_t unknown10[0x8];  // 10
+    void Function818090();  // 0x818090, non-virtual
+
+    // unknown10 is the pointer-sized slot that Function818090 clears; the name is a guess.
+    void* unknown10;  // 10
 };
 static_assert(sizeof(CombatGroupDetectionListener) == 0x18, "CombatGroupDetectionListener size");

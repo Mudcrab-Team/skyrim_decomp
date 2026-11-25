@@ -39,6 +39,12 @@ public:
 
     // TODO members: replace part of the padding with the members the bodies read,
     // keeping every offset and the size check true.
-    std::uint8_t unknown08[0x8];  // 08
+    std::uint16_t memSizeAndFlags;  // 08
+    std::int16_t referenceCount;  // 0A
+    std::uint8_t unknown0C[0x4];  // 0C
+    void Functionaa2b50();
+    static void Functionaa2ab0(std::uint32_t a_value);
+    void Functionaa2870();
+    void Functionaa2890();
 };
 static_assert(sizeof(hkReferencedObject) == 0x10, "hkReferencedObject size");
