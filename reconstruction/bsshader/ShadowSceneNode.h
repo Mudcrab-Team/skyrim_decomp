@@ -43,6 +43,7 @@ public:
         virtual ~IAllocatorFunctor() {}
     };
 
+    ~BSTArrayBase();
     std::uint32_t AddUninitialized(const IAllocatorFunctor& a_allocator, std::uint32_t a_allocSize, std::uint32_t a_itemSize);
 
     std::uint32_t iSize;
@@ -51,6 +52,7 @@ public:
 class BSTArrayHeapAllocator
 {
 public:
+    ~BSTArrayHeapAllocator();
     bool Allocate(std::uint32_t a_count, std::uint32_t a_itemSize);
     bool Reallocate(std::uint32_t a_newCount, std::uint32_t a_oldCount, std::uint32_t a_copyFrom, std::uint32_t a_copyCount, std::uint32_t a_itemSize);
     void Deallocate();
@@ -98,6 +100,7 @@ template <class T, class A = BSTArrayHeapAllocator>
 class BSTArray : public A, public BSTArrayBase
 {
 public:
+    ~BSTArray() { Clear(true); }
     BSTArrayIterator<T> begin()
     {
         if (!this->iSize) return BSTArrayIterator<T>(0);
@@ -123,21 +126,36 @@ public:
         }
         return index;
     }
-    void Clear(bool abFree);
+    // noinline: the engine keeps this as its own function that the destructor calls
+    __declspec(noinline) void Clear(bool abFree)
+    {
+        if (A::QBuffer()) {
+            std::uint32_t count = this->iSize;
+            T* pItem = static_cast<T*>(A::QBuffer());
+            for (std::uint32_t i = 0; i < count; ++i) {
+                pItem->~T();
+                ++pItem;
+            }
+            if (abFree) {
+                A::Deallocate();
+            }
+            this->iSize = 0;
+        }
+    }
     // noinline: the engine keeps SetSize as its own function that its callers call
     __declspec(noinline) bool SetSize(std::uint32_t aiSize);
     // noinline: the engine keeps this as its own function that SetSize calls
     __declspec(noinline) void ConstructDefaultItems(std::uint32_t aiStart, std::uint32_t aiCount);
-    void DestructItems(std::uint32_t aiStart, std::uint32_t aiCount);
+    // noinline: the engine keeps this as its own function that SetSize calls
+    __declspec(noinline) void DestructItems(std::uint32_t aiStart, std::uint32_t aiCount);
     template <class U>
-    std::uint32_t Add(U a_arg)
+    void Add(U a_arg)
     {
         std::uint32_t index = AddUninitialized();
         if (index != 0xffffffff) {
             T* item = static_cast<T*>(A::QBuffer()) + index;
             new (item) T(a_arg);
         }
-        return index;
     }
 };
 
@@ -162,23 +180,18 @@ inline void BSTArray<T, A>::DestructItems(std::uint32_t aiStart, std::uint32_t a
 }
 
 template <class T, class A>
-inline void BSTArray<T, A>::Clear(bool abFree)
-{
-    if (A::QBuffer()) {
-        DestructItems(0, this->iSize);
-        if (abFree) {
-            A::Deallocate();
-        }
-        this->iSize = 0;
-    }
-}
-
-template <class T, class A>
 inline bool BSTArray<T, A>::SetSize(std::uint32_t aiSize)
 {
     bool bResult = true;
     if (aiSize == 0) {
-        Clear(false);
+        T* pItem = static_cast<T*>(A::QBuffer());
+        if (pItem) {
+            std::uint32_t count = this->iSize;
+            for (std::uint32_t i = 0; i < count; ++i) {
+                pItem->~T();
+                ++pItem;
+            }
+        }
     } else if (aiSize == this->iSize) {
         bResult = true;
     } else if (aiSize > QAllocSize()) {
@@ -249,7 +262,7 @@ private:
 struct NiRefHeader
 {
     void* vtable;  // 00
-    volatile long refCount;  // 08
+    long refCount;  // 08
     std::uint32_t pad0C;  // 0C
 };
 static_assert(sizeof(NiRefHeader) == sizeof(NiRefObject), "NiRefHeader mirrors NiRefObject");
@@ -259,10 +272,12 @@ class NiRefCounted : public NiRefObject
 public:
     // atomic count: every holder of the pointer shares this reference count
     void IncRefCount() { _InterlockedIncrement(&Header()->refCount); }
+    std::uint32_t GetRefCount() { return static_cast<std::uint32_t>(Header()->refCount); }
     void DecRefCount()
     {
         // atomic count: the last holder to release deletes the object
-        if (_InterlockedDecrement(&Header()->refCount) == 0) {
+        long count = _InterlockedDecrement(&Header()->refCount);
+        if (count == 0) {
             DeleteThis();
         }
     }
@@ -340,23 +355,9 @@ public:
     virtual void Unk_13();  // 13
     virtual void Unk_14();  // 14
     virtual void Unk_15(std::uint32_t a_flag);  // 15
-};
 
-// NiCamera, BSShaderAccumulator: GUESS(low); counted objects the descriptor holds, no body reads their layout
-class NiCamera : public NiRefCounted
-{
-};
-
-class BSShaderAccumulator : public NiRefCounted
-{
-};
-
-// NiLight: GUESS(low); the light node, only the float at 128 is read here
-class NiLight
-{
-public:
-    std::uint8_t unknown00[0x128];
-    float unknown128;  // 128
+    std::uint8_t unknown08[0x30190 - 0x08];
+    void* unk30190;  // 30190
 };
 
 // NiPoint3: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0) STANDIN
@@ -373,6 +374,71 @@ struct NiPoint3
     float x;
     float y;
     float z;
+};
+
+// NiMatrix3, NiFrustum, UpdateTimeFlags: GUESS(low); shapes measured from the listing
+struct NiMatrix3
+{
+    float entry[9];
+};
+
+struct NiFrustum
+{
+    float left;  // 00
+    float right;  // 04
+    float top;  // 08
+    float bottom;  // 0C
+    float nearPlane;  // 10
+    float farPlane;  // 14
+    std::uint32_t ortho;  // 18
+};
+
+struct UpdateTimeFlags
+{
+    float time;
+    std::uint32_t flags;
+};
+
+// NiCamera, BSShaderAccumulator, NiLight: GUESS(low); counted objects the descriptor holds, only the fields the shadow code reads are named
+class NiCamera : public NiRefCounted
+{
+public:
+    void SetFrustum(const NiFrustum& a_frustum);
+    void UpdateObjectUpwards(UpdateTimeFlags* a_data);
+
+    std::uint8_t unknown10[0x48 - 0x10];
+    NiMatrix3 worldRotate;  // 48
+    NiPoint3 worldTranslate;  // 6C
+    std::uint8_t unknown78[0x150 - 0x78];
+    NiFrustum frustum;  // 150
+    std::uint8_t unknown16C[4];
+};
+
+class BSShaderAccumulator : public NiRefCounted
+{
+public:
+    std::uint8_t unknown10[0x12E - 0x10];
+    bool unk12E;  // 12E
+    std::uint8_t unknown12F[0x160 - 0x12F];
+    std::uint32_t passIndex;  // 160
+    std::uint32_t passMask;  // 164
+    std::uint32_t unk168;  // 168
+};
+
+class NiLight : public NiRefCounted
+{
+public:
+    std::uint8_t unknown10[0x48 - 0x10];
+    NiMatrix3 worldRotate;  // 48
+    NiPoint3 worldTranslate;  // 6C
+    std::uint8_t unknown78[0xA0 - 0x78];
+    NiPoint3 boundCenter;  // A0
+    std::uint8_t unknownAC[0xF4 - 0xAC];
+    std::uint32_t flags;  // F4
+    std::uint8_t unknownF8[0x128 - 0xF8];
+    float unknown128;  // 128
+    std::uint8_t unknown12C[0x134 - 0x12C];
+    float radius;  // 134
 };
 
 // NiPlane: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0) STANDIN; the constructor is out of line
@@ -416,6 +482,15 @@ struct ShadowmapDescriptor
 };
 static_assert(sizeof(ShadowmapDescriptor) == 0xF0, "ShadowmapDescriptor size");
 
+// ShadowLightTail: GUESS(low); the member at 528 of a shadow light, destroyed out of line
+struct ShadowLightTail
+{
+    ~ShadowLightTail();
+    std::uint8_t unknown00[0x558 - 0x528];
+    bool focusEnabled;  // 30
+    std::uint8_t unknown31[0x560 - 0x559];
+};
+
 class BSLight : public NiRefCounted
 {
 public:
@@ -425,10 +500,16 @@ public:
 
     void ClearGeometryList();
     void AttachObject(NiAVObject* a_object, bool a_arg2, bool a_arg3);
+    void UpdateLODFadeAndCull(NiCamera* a_camera);
+    void SetLight(NiLight* a_light);
 
-    std::uint8_t unknown010[0x38];
+    std::uint8_t unknown010[0x34];
+    std::uint8_t unk44;  // 44
+    std::uint8_t unknown045;
+    std::uint8_t unk46;  // 46
+    std::uint8_t unknown047;
     NiLight* light;  // 48
-    std::uint8_t unknown050[0x5C - 0x50];
+    NiPoint3 position;  // 50
     std::uint32_t frustumCull;  // 5C
     std::uint8_t unknown060[0xD0 - 0x60];
     std::uint8_t unk0D0;  // D0
@@ -454,6 +535,8 @@ public:
     virtual void Unk_0C();  // 0C
 
     void ReturnShadowmaps();
+    void AccumulateShadow(ShadowmapDescriptor* a_descriptor, const std::uint32_t* a_cascade, const void* a_data, std::uint32_t a_count);
+    void RenderShadowmap(ShadowmapDescriptor* a_descriptor, std::uint32_t* a_arg, std::uint32_t a_flags);
     // noinline: the engine calls this out of line from SetShadowmapCount
     __declspec(noinline) void ReleaseShadowmapDescriptor(std::uint32_t a_index);
     void SetShadowmapCount(std::uint32_t a_count);
@@ -463,9 +546,24 @@ public:
     BSTArray<ShadowmapDescriptor> shadowmapDescriptors;  // 148
     ShadowmapDescriptor focusShadowmapDescriptors[4];  // 160
     std::uint32_t shadowmapIndex;  // 520
-    std::uint8_t unknown524[0x560 - 0x524];
+    std::uint8_t unknown524[4];
+    ShadowLightTail tail;  // 528
 };
 static_assert(sizeof(BSShadowLight) == 0x560, "BSShadowLight size");
+
+class BSShadowFrustumLight : public BSShadowLight
+{
+public:
+    ~BSShadowFrustumLight() override;  // 00
+    void Accumulate(const std::uint32_t* a_cascade, std::uint32_t a_count);
+    void Render(std::uint32_t* a_arg);
+    void SetLight(NiLight* a_light);
+
+    std::uint8_t unknown560[0x56C - 0x560];
+    float unk56C;  // 56C
+    std::uint8_t unknown570[0x578 - 0x570];
+};
+static_assert(sizeof(BSShadowFrustumLight) == 0x578, "BSShadowFrustumLight size");
 
 class BSShadowParabolicLight : public BSShadowLight
 {
@@ -479,12 +577,17 @@ public:
 class BSShadowDirectionalLight : public BSShadowLight
 {
 public:
+    void Accumulate(const std::uint32_t* a_cascade);
+    void Render(std::uint32_t* a_arg);
     void ReturnShadowmaps();
     void TransformClipSpacePlanes(const void* a_arg1, const void* a_arg2);
     void UpdateSunDirection(NiPoint3* a_out);
 
     NiPoint3 sunDirection;  // 560
-    std::uint8_t unknown56C[0x5B0 - 0x56C];
+    std::uint8_t unknown56C[0x578 - 0x56C];
+    NiPointer<NiCamera> cascadeCamera;  // 578
+    BSTArray<BSCullingProcess*> cullingProcesses;  // 580
+    std::uint8_t unknown598[0x5B0 - 0x598];
     float sunDirectionTime;  // 5B0
     std::uint32_t sunDirectionMode;  // 5B4
 };
@@ -556,6 +659,9 @@ struct ShadowFrameSource
 
 struct BSPortalGraph
 {
+    std::uint8_t unknown00[0x50];
+    std::uint32_t unk50;  // 50
+
     std::uint32_t GetAlwaysRenderCount();
     NiAVObject* GetAlwaysRenderAt(std::uint32_t a_index);
 };
@@ -606,6 +712,15 @@ public:
     void UnlinkChildLights(NiNode* a_node);
     void CollectLightingShaderGeometry(void* a_visitor);
     void CollectLitGeometry();
+    // noinline: the engine calls this out of line from its callers
+    __declspec(noinline) void EnableLight(BSLight* a_light);
+    void AttachShadowLight(BSLight* a_light, ShadowLightTail* a_tail, bool a_focus);
+    void AccumulateLights(BSLight* a_light, std::uint32_t a_arg, bool a_focus);
+    void BeginShadowFrame(ShadowFrameSource* a_source);
+    void* FillShadowScratch(int a_value);
+    void UpdateActiveLightsLODFadeAndCull(NiCamera* a_camera);
+    void QueueLightRemoveByNode(NiLight* a_light);
+    void QueueLightRemoveUnscoped(BSLight* a_light);
 
     std::uint8_t unknown128[8];
     BSTArray<NiPointer<BSLight>> activeLights;  // 130
