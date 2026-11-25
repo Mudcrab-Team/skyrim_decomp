@@ -263,3 +263,17 @@ After the review, a third Sonnet 5.5 run applied the corrections. It re-read 21 
 Source exposure of the review: pinned native binary and shipped INI text. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by a Sonnet 5.5 run. Outcome: 7 confirmed, 6 corrected, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-25, UNREVIEWED)
+
+**Scope.** Wording only, for seven statements. No numeric formula, constant, address or range in this finding changes. The source is [light-flicker-time-base-retail-facts.md](light-flicker-time-base-retail-facts.md) (G01, G02, G05 and G08 there). **Verified, high. Static only.** Reviewed by an independent Sonnet 5.5 run in that finding.
+
+1. **G08, the paragraph "Unverified. The unit of `dt`. …".** It now reads: **Verified (see the light flicker time-base finding).** The float at `0x3275608` is `BSTimer.delta`, in seconds. It is written only by `BSTimer` methods (frame update `0xce36b0`; the multiplier setter `0xce3970`). It is the real frame time from the performance counter (1 ms steps, capped at 1/6 s, smoothed over the last 8 frames by default), times the global time multiplier (default 1.0). The float at `0x3275600` is the fixed frame length in **milliseconds** (`1000 / N`), set from `iFPSClamp` or `iFPS:CameraPath` and 0 by default.
+2. **G08, the confidence line.** It now reads: **Confidence: high** for the formulas, the constants and the unit of `dt`. **What would change it:** one frame capture of two consecutive `light +0x134` values.
+3. **G07, the sentence "The time per cycle is `2π / period` seconds if `dt` is in seconds."** It now reads: `dt` is in real seconds times the global time multiplier `m` (default 1.0), and the loader clamps `period` to [0, 1]. One cycle takes `2π / (period × m)` seconds: at least 6.283 s at `m = 1`, and 6.283 / `period` s in general. In the G07 confidence line, "**What would change it:** `dt` units (G08), or another flag-dependent path." now reads: **What would change it:** another flag-dependent path.
+4. **G06, the paragraph "Unverified. Whether other code reads bit 6 and modulates Flicker Slow lights. …".** It now reads: **Verified for the scope searched.** Bit 6 is read only by the editor-name function (`0x274330`) and the registration tests (`0x2d7ff6`, `0x2d81bd`). A `+0xec` displacement search found no other bit-6 test. Not covered: copies of the flag word and access through a pointer to the LIGH `DATA` block.
+5. **G08, the table paragraph, and G07, the clause "Which table holds the cosine is inferred (see G08)".** "Inferred. The first is the sine table and the second is the cosine table. …" and the G07 clause now read: **Verified.** The fill loop `0xef2ca0` writes the sine to `0x331c6f0` and the cosine to `0x331cef0`.
+6. **Negative results, the line "Unverified. The unit of the frame-time float at `0x3275608`. Whether any code other than `0x274bc0` modulates Flicker Slow lights."** It now reads: **Unverified.** Whether any indirect user of the flag word modulates Flicker Slow lights (see the time-base finding).
+7. **Independent review table, row G08.** Add: Time base verified in the follow-up finding. The earlier outcome words stay.
+
+The original text above stays unchanged. The amendment supersedes it for these statements only.
