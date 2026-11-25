@@ -60,6 +60,11 @@ class PlacementTests(unittest.TestCase):
         self.assertEqual(kinds.count('pdata'), 2)
         self.assertEqual(res.notes, set())
 
+    def test_runtime_engine_functions_place_like_ordinary_ones(self):
+        linker, res, _ = run(fx.inputs(), mutate=lambda s: s.update(engine='runtime'))
+        self.assertEqual(res.status, relink.IDENTICAL)
+        self.assertEqual(sorted(k for k, _r, _n in res.ranges), ['code', 'eh-data', 'pdata'])
+
     def test_the_patched_image_really_holds_our_bytes(self):
         # Blank the function in the image copy's source: only placement can restore it.
         args = fx.inputs()
@@ -238,12 +243,15 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(linker.results[-1].status, relink.IDENTICAL)
 
     def test_function_spec_reads_identity_and_record_hash_from_a_match_record(self):
-        report = {'function': {'rva': 16, 'size': 4, 'symbol': 'S'},
+        report = {'comparator': {'version': '0.6.0'}, 'function': {'rva': 16, 'size': 4, 'symbol': 'S'},
                   'source': {'source_revision': 'r' * 64, 'path': 'reconstruction/a.cpp'},
                   'candidate': {'code_section_sha256': 'c' * 64}}
         rec = {'function_id': 'b-0x10', 'runs': [{'report': report}, {'report': dict(report)}]}
         spec = units.function_spec(rec)
         self.assertEqual((spec['rva'], spec['symbol'], spec['record_code_section_sha256']), (16, 'S', 'c' * 64))
+        self.assertNotIn('engine', spec)
+        report['comparator'] = {'version': '0.6.1-runtime'}
+        self.assertEqual(units.function_spec(rec)['engine'], 'runtime')
         rec['runs'][1]['report'] = dict(report, candidate={'code_section_sha256': 'd' * 64})
         self.assertNotIn('record_code_section_sha256', units.function_spec(rec))
         report['function']['internal_identity'] = {'entry_offset': 0}

@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from compare import (ADDR32NB, REL32_TAIL, SECREL, Function, code_section_sha256, expected_field,  # noqa: E402
                      find_function, load_symbol_map)
 from compare_internal import InternalFunction, find_internal_function, internal_code_sha256  # noqa: E402
+from compare_runtime import RuntimeFunction  # noqa: E402
 from pecoff import (RUNTIME_FUNCTION_SIZE, SCN_CNT_CODE, CoffObject, PeImage, Reject, rel_name)  # noqa: E402
 
 ADDR64 = 0x01
@@ -260,8 +261,8 @@ class Linker:
         entries, _folds, tls_entries = symbol_map
         if internal:
             self.prime()
-        fn = (InternalFunction if internal else Function)(obj, sec, task, entries, self.image, new_coverage(),
-                                                           tls_entries)
+        engine = InternalFunction if internal else RuntimeFunction if spec.get('engine') == 'runtime' else Function
+        fn = engine(obj, sec, task, entries, self.image, new_coverage(), tls_entries)
         try:
             self.bind_exception_data(fn, sec)
         except Reject as exc:

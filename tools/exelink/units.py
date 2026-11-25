@@ -39,6 +39,9 @@ def function_spec(rec):
             'source_revision': src['source_revision'], 'source_path': src['path']}
     if 'internal_identity' in fn:
         spec['internal_identity'] = fn['internal_identity']
+    elif run['comparator']['version'].endswith('-runtime'):
+        # Ordinary functions with a verified CRT termination action bind through the runtime engine.
+        spec['engine'] = 'runtime'
     hashes = {r['report'].get('candidate', {}).get('code_section_sha256') for r in rec['runs']}
     hashes.discard(None)
     if len(hashes) == 1:
