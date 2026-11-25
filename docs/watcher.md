@@ -38,6 +38,9 @@ The bot keeps one sticky comment per PR head and edits it in place.
 - **tooling**: no file under `reconstruction/`; not a function PR (see below).
 - **conflict**: PR conflicts with main. The bot merges main into the branch only when contributors
   allow maintainer edits and only header comment blocks conflict; anything else is the contributor's.
+- **duplicate-rva**: main already marks an RVA in another unit. Where branch permissions and source
+  allow a mechanical repair, the bot merges main, drops the duplicate, credits the contributor,
+  and checks the new head. Otherwise the sticky comment lists the RVAs and cleanup steps.
 - **precheck** and **origin** findings: a mechanical lint, readiness, undeclared-adapted-body or
   binding refusal before any review, with the exact fix in the comment; origin notes that say "not
   a block" are informational (correctly labelled sibling similarity).

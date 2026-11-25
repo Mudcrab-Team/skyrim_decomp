@@ -1,5 +1,5 @@
 // Source exposure: mixed
-// Code origin: DetachAll written from the target listing plus public declarations; KillAll adapted from the anonymous sibling and public declarations.
+// Code origin: DetachAll written from the target listing plus public declarations; KillAll adapted from the anonymous sibling and public declarations.; Written for this reconstruction from the listing; the cell state field offset is a tentative guess.
 // Adapted bodies: GridCellArray::KillAll (fo4-private, see the Sibling source line)
 // GridCellArray::KillAll: SIBLING(fo4-private@1b765c70, author-permission); adapted to target observations.
 // Sibling source: fo4-private@1b765c70 src/Shared/Misc/GridCell.cpp:140
@@ -8,6 +8,8 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x227280 GridCellArray::KillAll
 // 0x227970 GridCellArray::DetachAll
+// 0x227210 GridCellArray::Function227210
+// Drafted by v-macrev, assisted by claude-sonnet-5-5.
 #include "GridCellArray.h"
 void GridCellArray::KillAll() { GridArray::KillAll(); if (dataHandler->IsClearing()) TESObjectCELL::KillStatics(); }
 
@@ -21,4 +23,17 @@ void GridCellArray::DetachAll()
 			}
 		}
 	}
+}
+
+bool GridCellArray::Function227210()
+{
+	bool ok = true;
+	unsigned count = length * length;
+	for (unsigned i = 0; i < count && ok; ++i) {
+		TESObjectCELL* cell = cells[i];
+		if (!cell || cell->cellState != 4) {
+			ok = false;
+		}
+	}
+	return ok;
 }

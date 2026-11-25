@@ -4,6 +4,7 @@
 // Code origin: original; the pinned image listing only
 // 0x1535f80 BSParticleShaderCollisionEmitter::Function1535f80
 // Adapted bodies: none
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "BSParticleShaderCollisionEmitter.h"
 
 std::uint16_t BSParticleShaderCollisionEmitter::Function1535f80() const
@@ -13,8 +14,5 @@ std::uint16_t BSParticleShaderCollisionEmitter::Function1535f80() const
 
 void* BSParticleShaderCollisionEmitter::Function1535f90(std::uint32_t a_index)
 {
-    struct ArrayView { void** data; };
-    const ArrayView* view = reinterpret_cast<const ArrayView*>(
-        reinterpret_cast<const std::uint8_t*>(this) + 0xEE8);
-    return view->data[a_index];
+    return ptrEE8[a_index];
 }

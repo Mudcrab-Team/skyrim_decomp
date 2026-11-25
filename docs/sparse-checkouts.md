@@ -1,15 +1,16 @@
 # Worker checkout disk use
 
 New Drafter and queue-claim trees, restored draft branches, harvested confirmation trees and
-sampling rerun trees use Git non-cone sparse checkout: everything except `reports/` and `site/`.
+sampling rerun trees use cone-mode sparse checkout and omit `site/` and
+`reconstruction/unmapped/static/`. The post-checkout hook for application-created workers
+keeps every tracked directory except `site/`, including reports and all reconstruction sources.
 Create a detached rerun tree with `python3 tools/sparse_checkouts.py <tree> <revision>`.
 Existing live worker trees are left alone.
 
-Report dependencies are materialized on demand from the worker's own index, including pinned
-maps, histories and family metadata. Working edits take precedence. Inventory-wide draft symbol
-lookups stream omitted reports through `git cat-file --batch`; they do not copy the report tree
-or follow the shared checkout's moving main. Source evidence in the unit's include closure is
-materialized before the existing lint runs. Missing dependencies still fail the existing checks.
+Legacy sparse workers can materialize report dependencies on demand from their own index, including
+pinned maps, histories and family metadata. Working edits take precedence. Inventory-wide draft
+symbol lookups stream omitted reports through `git cat-file --batch` from that index. Source
+evidence in the unit's include closure is materialized before the existing lint runs.
 
 `check.py` temporarily expands sparse trees, runs its unchanged full checks, and restores the
 patterns even after failure. Old harvest commits with tools predating sparse support expand for

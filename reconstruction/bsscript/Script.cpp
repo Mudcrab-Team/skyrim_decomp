@@ -1,12 +1,14 @@
 // Source exposure: mixed (pinned image listing and labelled declarations).
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Code origin: original reconstruction from the pinned image listing with labelled declarations.
+// Code origin: original reconstruction from the pinned image listing with labelled declarations; SetProcessScripts written for this reconstruction from the listing.
 // Adapted bodies: none.
 // ClearProfilerTimersFunctor, Script::profilerTimer: CRASHLOGGER_PDB(59818@2026.10.24)
 // 0x344760 Script::InitItemImpl
 // 0x3463a0 Script::GetProcessScripts
 // 0x3466f0 ClearProfilerTimersFunctor
+// 0x346390 Script::SetProcessScripts
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "Script.h"
 
 // g_scriptProcessScripts: GUESS(low); a mutable global the compared GetProcessScripts reads at 0x207e511
@@ -17,6 +19,12 @@ void ScriptInitItemHelper(Script* a_self, Script* a_other);
 void Script::InitItemImpl()
 {
     ScriptInitItemHelper(this, this);
+}
+
+// Script::SetProcessScripts: GUESS(low); stores the process-scripts flag, parameter name and meaning guessed.
+void Script::SetProcessScripts(bool a_value)
+{
+    g_scriptProcessScripts = a_value;
 }
 
 bool Script::GetProcessScripts()

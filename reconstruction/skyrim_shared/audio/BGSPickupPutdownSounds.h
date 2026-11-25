@@ -35,5 +35,6 @@ public:
 
     BGSSoundDescriptorForm* field08;  // 08
     BGSSoundDescriptorForm* field10;  // 10
+    BGSPickupPutdownSounds* Function1db6b0();  // compared: 0x1db6b0
 };
 static_assert(sizeof(BGSPickupPutdownSounds) == 0x18, "BGSPickupPutdownSounds size");
