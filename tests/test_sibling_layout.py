@@ -82,6 +82,15 @@ class Layout(unittest.TestCase):
         lay = sl.Engine(sl.parse_classes(u['header_decl']), u['header_decl']).layout('Holder')
         self.assertEqual(lay.offsets['first'], 0x50)
 
+    def test_spelled_offset_inside_an_inline_header_function_is_patched(self):
+        header = ("struct Owner\n{\n    char* base;\n    int Get() const { return *reinterpret_cast<int*>("
+                  "reinterpret_cast<char*>(this) + 0x24c); }\n    void Run();\n};\n")
+        facts = [dict(kind='member-offset', sibling_x64='0x24c', skyrim='0x298', instruction_pattern='mov rbx, qword ptr [rcx + #]',
+                      source_line='return *reinterpret_cast<int*>(reinterpret_cast<char*>(this) + 0x24c);')]
+        u = dict(header_decl=header, cpp_body='void Owner::Run()\n{\n    Get();\n}\n', labels=[])
+        self.assertIsNone(sl.apply_layout(u, facts, 'Run'))
+        self.assertIn('+ 0x298)', u['header_decl'])
+
     def test_stack_frame_difference_is_not_a_layout_fact(self):
         stack = [dict(kind='member-offset', sibling_x64='0x28', skyrim='0x2c', instruction_pattern='mov eax, dword ptr [rsp + #]',
                       source_line='x')]
@@ -121,6 +130,24 @@ class FactKinds(unittest.TestCase):
         self.assertIn('Set(__int64 a, unsigned __int64 b, char* c)', u['cpp_body'])
         self.assertIn('Set(__int64 a, unsigned __int64 b, char* c);', u['header_decl'])
         self.assertEqual(u['widened_parameters'], 2)
+
+    def test_widening_follows_the_callee_prototype(self):
+        header = "void Helper(int a, int b);\nstruct Owner\n{\n    void Set(int a, int b);\n};\n"
+        body = "void Owner::Set(int a, int b)\n{\n    Helper(b, a);\n}\n"
+        facts = [dict(kind='operand-width', sibling_x64='mov eax, edx', skyrim='mov rax, rdx', instruction_pattern='mov eax, edx',
+                      source_line='')]
+        u = dict(header_decl=header, cpp_body=body, labels=[])
+        self.assertIsNone(sl.apply_layout(u, facts, 'Set'))
+        self.assertIn('void Helper(__int64 a, __int64 b);', u['header_decl'])
+
+    def test_widening_follows_a_constructed_class(self):
+        header = "struct C\n{\n    int m_i;\n    C(int a) : m_i(a)\n    {}\n};\nvoid Free(int x, int w);\n"
+        body = "void Free(int x, int w)\n{\n    C c(w);\n}\n"
+        facts = [dict(kind='operand-width', sibling_x64='mov eax, edx', skyrim='mov rax, rdx', instruction_pattern='x', source_line='')]
+        u = dict(header_decl=header, cpp_body=body, labels=[])
+        self.assertIsNone(sl.apply_layout(u, facts, 'Free'))
+        self.assertIn('__int64 m_i;', u['header_decl'])
+        self.assertIn('C(__int64 a) : m_i(a)', u['header_decl'])
 
     def test_register_width_fact_without_an_integer_parameter_is_refused(self):
         facts = [dict(kind='operand-width', sibling_x64='mov eax, edx', skyrim='mov rax, rdx', instruction_pattern='mov eax, edx',
