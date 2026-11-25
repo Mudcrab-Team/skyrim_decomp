@@ -4,6 +4,7 @@
 // TableCleanupDeallocatorLeaves, PolymorphicObject, methods and targets: GUESS(low) STANDIN; original ownership and layouts unknown.
 // Adapted bodies: none
 // 0x6e1ad0 TableCleanupDeallocatorLeaves::Delete6e1ad0
+// CI hash: 0x6e1ad0 ?Delete6e1ad0@TableCleanupDeallocatorLeaves@@SAPEAXPEAUPolymorphicObject@@I@Z
 #include "TableCleanupDeallocatorLeaves.h"
 
 void* TableCleanupDeallocatorLeaves::Delete6e1ad0(PolymorphicObject* object, unsigned int flags)

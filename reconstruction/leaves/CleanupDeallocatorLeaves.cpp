@@ -10,6 +10,13 @@
 // 0x8fc670 CleanupDeallocatorLeaves::Delete8fc670
 // 0xf9fd70 CleanupDeallocatorLeaves::Deletef9fd70
 // 0x1099550 CleanupDeallocatorLeaves::Delete1099550
+// CI hash: 0x4b8680 ?Delete4b8680@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
+// CI hash: 0x53d110 ?Delete53d110@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
+// CI hash: 0x79a7b0 ?Delete79a7b0@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
+// CI hash: 0x7b1c40 ?Delete7b1c40@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
+// CI hash: 0x8fc670 ?Delete8fc670@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
+// CI hash: 0xf9fd70 ?Deletef9fd70@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
+// CI hash: 0x1099550 ?Delete1099550@CleanupDeallocatorLeaves@@SAPEAXPEAXI@Z
 #include "CleanupDeallocatorLeaves.h"
 
 void* CleanupDeallocatorLeaves::Delete4b8680(void* object, unsigned int flags)

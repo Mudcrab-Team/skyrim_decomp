@@ -8,13 +8,13 @@
 #pragma once
 #include <functional>
 
-// Stand-in callable: Bytes of stored state and a call operator that is never reached.
-template <unsigned long long Bytes>
-struct StdCallableState
+// capturedWord: GUESS(low) STANDIN; the copied word is typed, its original meaning is unknown.
+struct CallableTable18eef70
 {
-    alignas(8) unsigned char state[Bytes];
+    unsigned long long capturedWord;
     void operator()() const {}
 };
+static_assert(sizeof(CallableTable18eef70) == 8, "observed callable word size");
 
 struct StdCallableCopyMoveLeaves
 {

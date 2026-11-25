@@ -11,5 +11,5 @@
 // CI hash: 0x576230 ?_Move@?$_Func_impl_no_alloc@UCallableTable18eef70@@X$$V@std@@EEAAPEAV?$_Func_base@X$$V@2@PEAX@Z
 #include "StdCallableCopyMoveLeaves.h"
 
-struct CallableTable18eef70 : StdCallableState<8> {};
+// PDB note: the destructor annotation conflicts with RTTI-owned primary copy/move slots; the complete slot bodies and table binding are compared.
 template class std::_Func_impl_no_alloc<CallableTable18eef70, void>;
