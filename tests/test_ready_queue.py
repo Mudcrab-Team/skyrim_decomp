@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools')]
@@ -117,6 +118,20 @@ class Feeding(unittest.TestCase):
         rows = contrib.candidates(self.root, self.data, ready=ready_queue.load_queue(self.root))
         self.assertEqual([c['rva'] for c in rows], ['0x2000', '0x1000'])
         self.assertEqual([c['callee_ready'] for c in rows], [True, False])
+
+    def test_default_publication_keeps_later_shards_visible_to_class_search(self):
+        table = self.root / 'table.jsonl'
+        table.write_text('\n'.join(json.dumps(item) for item in [row(0x1000, 12), row(0x2000, 300)]))
+        self.data['functions'][1]['size'] = 300
+        with patch.object(ready_queue, 'ROWS_PER_PART', 1):
+            self.assertEqual(ready_queue.main(['--repo', str(self.root), '--function-table', str(table)]), 0)
+        queue = ready_queue.load_queue(self.root)
+        self.assertEqual(list(queue), [0x1000, 0x2000])
+        rows = contrib.candidates(self.root, self.data, class_filter=contrib.re.compile('^TESNew$'), ready=queue)
+        self.assertEqual([c['callee_ready'] for c in rows], [True, True])
+        manifest = json.loads((self.root / ready_queue.QUEUE_PATH).read_text())
+        (self.root / manifest['parts'][1]['path']).unlink()
+        self.assertEqual(ready_queue.load_queue(self.root), {})
 
     def test_unlock_rank_beats_size_band_among_ready_functions(self):
         self.data['functions'] += [dict(rva=0x3000, name='TESNew::Big', size=400, status='mapped', name_origin='GUESS')]

@@ -7,7 +7,6 @@ import hashlib
 import json
 import re
 import subprocess
-from pathlib import Path
 
 import compare
 from pecoff import CoffObject
@@ -35,6 +34,10 @@ def tools_digest(root):
 
 
 def tools_digest_at(root, rev):
+    return memoized(('ci_tools_digest', str(root), rev), lambda: _tools_digest_at(root, rev))
+
+
+def _tools_digest_at(root, rev):
     try:
         return sha(b"".join(name.encode() + b"\0" + subprocess.run(
             ["git", "-C", str(root), "show", f"{rev}:{name}"],
@@ -107,8 +110,8 @@ def pr_check_evidence(root, run, report, row, map_status, first_host):
             'artifact belongs to another revision than the run')
     require(is_sha(report.get('base_sha')) and 'error' not in report and report.get('toolset') == 'MATCH',
             'hash run did not complete on a verified toolset')
-    manifest = _manifest(root)
-    target = next((r for r in manifest['functions'] if r['rva'] == int(row['rva'], 16)), None)
+    manifest, targets = _manifest(root)
+    target = targets.get(int(row['rva'], 16))
     require(target is not None, 'no published target hash')
     return dict(schema=2, kind='pr-check-hash', **CI_HOST, workflow=PR_WORKFLOW, job=PR_JOB,
                 event=run['event'], conclusion=run['conclusion'], run_id=run['run_id'],
@@ -123,11 +126,24 @@ def pr_check_evidence(root, run, report, row, map_status, first_host):
 
 
 def _manifest(root):
-    """The verified target-hash manifest, read once per operation (callers only read it).
+    """The verified manifest and its RVA index, built once per operation.
 
     target_hashes.py is itself bound by the manifest's normalizer hash, so the memo lives here.
     """
-    return memoized(('load_manifest', str(Path(root).resolve())), lambda: target_hashes.load_manifest(root))
+    def read():
+        manifest = target_hashes.load_manifest(root)
+        return manifest, {row['rva']: row for row in manifest['functions']}
+
+    return memoized(('ci_manifest', str(root)), read)
+
+
+def _require_ancestor(root, base):
+    def is_ancestor():
+        result = subprocess.run(['git', '-C', str(root), 'merge-base', '--is-ancestor', base, 'HEAD'],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return result.returncode == 0
+
+    require(memoized(('ci_ancestor', str(root), base), is_ancestor), 'CI tools revision is not an ancestor')
 
 
 def validate_pr_check(root, record, fn, target, c):
@@ -145,9 +161,7 @@ def validate_pr_check(root, record, fn, target, c):
             and type(c.get('run_attempt')) is int and c['run_attempt'] > 0, 'invalid run identity')
     require(is_sha(c.get('head_sha')) and is_sha(c.get('base_sha')) and c['head_sha'] != c['base_sha'],
             'invalid revision')
-    ancestry = subprocess.run(['git', '-C', str(root), 'merge-base', '--is-ancestor',
-                               c['base_sha'], 'HEAD'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    require(ancestry.returncode == 0, 'CI tools revision is not an ancestor')
+    _require_ancestor(root, c['base_sha'])
     require(c.get('build_id') == target['build_id'] and c.get('rva') == hex(fn['rva'])
             and c.get('unit') in source_moves.accepted_paths(record['source']['compiled'], root),
             'function or unit binding differs')
@@ -155,8 +169,8 @@ def validate_pr_check(root, record, fn, target, c):
             'hash did not pass')
     require(c.get('toolset') == 'MATCH' and c.get('compiler_pins_sha256') ==
             sha((root / 'tools/verifier/pinned.sha256').read_bytes()), 'compiler pins differ')
-    manifest = _manifest(root)
-    row = next((r for r in manifest['functions'] if r['rva'] == fn['rva']), None)
+    _, targets = _manifest(root)
+    row = targets.get(fn['rva'])
     require(row is not None and row['size'] == fn['size'] and row['extraction'] != 'unmasked-unsupported',
             'no supported published target hash')
     require(c.get('target') == row and c.get('normalized_sha256') == row['normalized_sha256']
@@ -186,17 +200,15 @@ def validate(root, record, fn, target):
     for key in ('base_sha', 'candidate_sha'):
         require(isinstance(c.get(key), str) and re.fullmatch('[0-9a-f]{40}', c[key]), 'invalid revision')
     digest = tools_digest_at(root, c['base_sha'])
-    ancestry = subprocess.run(['git', '-C', str(root), 'merge-base', '--is-ancestor',
-                               c['base_sha'], 'HEAD'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    require(ancestry.returncode == 0, 'CI tools revision is not an ancestor')
+    _require_ancestor(root, c['base_sha'])
     require(c.get('tools_sha256') == digest, 'stale CI tools')
     require(c.get('toolchain_manifest_sha256') == sha((root / 'tools/toolchain/v141-manifest.json').read_bytes())
             and c.get('cache_verified') is True and c.get('toolset') == 'MATCH', 'toolchain not verified')
     pins = {name: digest for digest, name in
             (line.split() for line in (root / 'tools/verifier/pinned.sha256').read_text().splitlines() if line.strip())}
     require(c.get('compiler_sha256') == pins, 'compiler pins differ')
-    manifest = _manifest(root)
-    row = next((r for r in manifest['functions'] if r['rva'] == fn['rva']), None)
+    _, targets = _manifest(root)
+    row = targets.get(fn['rva'])
     require(row is not None and row['size'] == fn['size'] and row['extraction'] != 'unmasked-unsupported',
             'no supported published target hash')
     require(c.get('target') == row and c.get('build_id') == target['build_id'], 'target binding differs')

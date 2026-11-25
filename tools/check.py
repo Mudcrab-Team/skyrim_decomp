@@ -1061,7 +1061,8 @@ def inspect_payload(name, payload, mode='100644'):
     limit_mib = 32 if large else 1
     require(len(payload) <= limit_mib * 1024 * 1024, f'{name}: exceeds {limit_mib} MiB limit')
     require(b'\0' not in payload, f'{name}: binary content')
-    require(not re.search(rb'(?im)^\s*// PRIVATE DECOMPILER HINT:', payload),
+    require(b'// private decompiler hint:' not in payload.lower()
+            or not re.search(rb'(?im)^\s*// PRIVATE DECOMPILER HINT:', payload),
             f'{name}: private decompiler output/project')
     try:
         payload.decode('utf-8')
@@ -1107,17 +1108,21 @@ def anonymity_terms(root=ROOT):
         require(isinstance(terms, list) and terms and all(text(t) for t in terms), '')
         tokens = data.get('forbidden_tokens', [])
         require(isinstance(tokens, list) and all(text(t) for t in tokens), '')
+        tokens = [token.casefold() for token in tokens]
         return (tuple(t.casefold() for t in terms)
-                + tuple(re.compile(r'(?<![a-z0-9_])' + re.escape(t.casefold()) + r'(?![a-z0-9_])')
-                        for t in tokens))
+                + tuple((token, re.compile(r'(?<![a-z0-9_])' + re.escape(token) + r'(?![a-z0-9_])'))
+                        for token in tokens))
     except (OSError, ValueError, KeyError, TypeError):
         raise ValueError('Anonymous sibling guard: private config missing or invalid') from None
 
 
 def check_anonymity(name, payload, terms):
     """Case-insensitive path/content check with a diagnostic that cannot expose an identity."""
+    if not terms:
+        return
     content = name.casefold() + '\n' + payload.decode('utf-8', 'replace').casefold()
-    require(not any(term in content if isinstance(term, str) else term.search(content) for term in terms),
+    require(not any(term in content if isinstance(term, str)
+                    else term[0] in content and term[1].search(content) for term in terms),
             'Anonymous sibling guard: forbidden private identity in publication tree (details withheld)')
 
 
@@ -1154,6 +1159,8 @@ def publication_policy_path(root, name, variable):
 
 
 def check_private_workflow(name, payload, terms):
+    if not terms:
+        return
     content = name.casefold() + '\n' + payload.decode('utf-8', 'replace').casefold()
     require(not any(term in content for term in terms),
             'Private workflow guard: forbidden private value in publication tree (details withheld)')

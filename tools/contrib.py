@@ -1853,7 +1853,8 @@ def cmd_next(ctx, args):
         except re.error as exc:
             raise Stop(USAGE, f'--class is not a regular expression: {exc}') from None
     symbols = readiness_symbol_map(ctx, data['target_build_id'])
-    ready = [c for c in candidates(ctx.repo, data, claimed, args.max_size, facts, published=True,
+    max_size = 64 if args.max_size is None and class_filter is None else args.max_size
+    ready = [c for c in candidates(ctx.repo, data, claimed, max_size, facts, published=True,
                                    class_filter=class_filter, ready=ready_queue.load_queue(ctx.repo), symbol_map=symbols)
              if c['startable']]
     counts = {'claimable': len(ready), 'without_inventory_entry': sum(not c['in_inventory'] for c in ready),
@@ -3354,7 +3355,7 @@ def parser():
                    help="Windows: a person has accepted the terms of winget's package source")
     s = sub.add_parser('next')
     s.add_argument('--count', type=int, default=5)
-    s.add_argument('--max-size', type=int, default=64)
+    s.add_argument('--max-size', type=int, help='maximum function size (default: 64 bytes without --class)')
     s.add_argument('--function-table', help='optional private function table derived locally from your own pinned image')
     s.add_argument('--class', dest='class_regex', metavar='REGEX',
                    help='only classes whose name matches (re.search, e.g. "^Ni"); filters before readiness is computed')
