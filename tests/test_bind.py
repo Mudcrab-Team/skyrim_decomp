@@ -888,10 +888,12 @@ class ThreadLocalBindTests(unittest.TestCase):
     def test_contributor_bind_writes_and_applies_the_aligned_tls_hint(self):
         import contrib
         (self.root / 'obj').rename(self.root / 'candidate.obj')
-        run = self.root / '0x1000'
+        task = json.loads((self.task_dir / 'task.json').read_text())
+        run = self.root / task['functions'][0]['rva']
         run.mkdir()
         (run / 'align.json').write_text(json.dumps({'reference_pairs': {'thread_locals': {fx.TLS_VAR: {'0x768': 1}}}}))
-        report, lines = contrib.bind_attempt(self.root, self.task_dir, self.root, self.root / 'image', 'unused')
+        with mock.patch('auto_hints.align.attempt_summary', side_effect=AssertionError('fixture alignment missing')):
+            report, lines = contrib.bind_attempt(self.root, self.task_dir, self.root, self.root / 'image', 'unused')
         self.assertEqual(report['unbound_thread_locals'], [])
         self.assertEqual(bind.load_tls_hints(self.task_dir), {fx.TLS_VAR: 0x768})
         self.assertIn(f'{fx.TLS_VAR}": "tls:0x768"', '\n'.join(lines))
