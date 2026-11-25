@@ -1,46 +1,30 @@
-// Source exposure: community-headers
-// Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
+// Source exposure: mixed
+// Code origin: declarations and layout reconstruction using the labelled sources.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// ActiveEffectReferenceEffectController, GetScale, effect: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// ActiveEffect, EffectSetting, GetBaseObject, flags, dualCastScale: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// Func3_14055D150: CRASHLOGGER_PDB(59818@2026.10.24); the name GetScale is the community one for slot 3
-// EffectSetting::Function14b7e0: GUESS(low); unknown predicate on the base effect
-// TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
-// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422 (TestBit, shape only)
+// ActiveEffectReferenceEffectController, ActiveEffect, EffectSetting, effect, GetBaseObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// GetScale, flags, dualCastScale: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// IsHitEffectArtScaleOverridden: SIBLING(fo4-private@1b765c70, author-permission)
+// Minimal stand-ins flatten accessed nested fields at their observed offsets.
 #pragma once
-
-#include <cstdint>
-
-class EffectSetting
-{
+#include <cstddef>
+class EffectSetting {
 public:
-    bool Function14b7e0();  // bound: 0x14b7e0
-
-    unsigned char pad00[0x110];  // 00
-    float dualCastScale;         // 110 (data + A8)
+    bool IsHitEffectArtScaleOverridden() const;
+    unsigned char unknown00[0x110];
+    float dualCastScale;
 };
-
-class ActiveEffect
-{
+class ActiveEffect {
 public:
-    EffectSetting* GetBaseObject();  // bound: 0x5bb090
-
-    unsigned char pad00[0x7C];  // 00
-    std::uint32_t flags;        // 7C
+    EffectSetting* GetBaseObject() noexcept;
+    unsigned char unknown00[0x7c];
+    unsigned flags;
 };
-
-inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
-{
-    return ((a_flags >> a_bit) & 1) != 0;
-}
-
-class ActiveEffectReferenceEffectController
-{
+class ActiveEffectReferenceEffectController {
 public:
-    virtual ~ActiveEffectReferenceEffectController();  // 00
-    virtual void unk01();                               // 01
-    virtual void unk02();                               // 02
-    virtual float GetScale();                           // 03
-
-    ActiveEffect* effect;  // 08
+    float GetScale();
+    unsigned char unknown00[8];
+    ActiveEffect* effect;
 };
+static_assert(offsetof(EffectSetting, dualCastScale) == 0x110, "accessed field offset");
+static_assert(offsetof(ActiveEffect, flags) == 0x7c, "accessed field offset");
+static_assert(offsetof(ActiveEffectReferenceEffectController, effect) == 8, "accessed field offset");
