@@ -64,6 +64,7 @@ import signal
 import struct
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import traceback
@@ -5287,22 +5288,71 @@ class Bot:
         edits = self.autofix_edits(files, accepted)
         if not edits:
             return False
-        kinds = sorted({k for _, ks in edits.values() for k in ks})
         number, head = pr['number'], pr['headRefOid']
         login = pr['author']['login']
         uid = self.gh_json('api', f'users/{login}')['id']
-        lines = '\n'.join(f'- {name}: {", ".join(ks)}' for name, (_, ks) in sorted(edits.items()))
-        sha = self.push_to_branch(pr, {n: t for n, (t, _) in edits.items()},
-                                  AUTOFIX_MESSAGE.format(lines=lines, login=login, uid=uid))
+        def message(kept):
+            lines = '\n'.join(f'- {name}: {", ".join(ks)}' for name, (_, ks) in sorted(kept.items()))
+            return AUTOFIX_MESSAGE.format(lines=lines, login=login, uid=uid)
+
+        sha, edits = self.push_to_branch(pr, edits, message)
         if not sha:
             return False
+        kinds = sorted({k for _, ks in edits.values() for k in ks})
         state.set('autofix', dict(pushed=sha, files=sorted(edits), kinds=kinds))
         self.say(number, sticky_body(head, AUTOFIX_COMMENT.format(what='; '.join(AUTOFIX_WHAT[k] for k in kinds))))
         state.set('commented', True)
         return True
 
+    def autofix_compile(self, scratch, cpp, files, out):
+        """Compile the proposed translation unit with the pinned recipe and no compare."""
+        import contrib
+        import contrib_screen
+        import unit_build
+
+        try:
+            text = (scratch / cpp).read_text(encoding='utf-8-sig')
+            recipe = (contrib.UNIT_RECIPE.search(text) or [contrib.DEFAULT_RECIPE])[0]
+            if (scratch / recipe).read_bytes() != (self.tree / recipe).read_bytes():
+                return False
+            if contrib_screen.screen_tree(scratch, cpp):
+                return False
+            ctx = contrib.Ctx(repo=self.root, interactive=False)
+            if not ctx.windows and (prefix := ctx.local / 'wineprefix').is_dir():
+                ctx.env.setdefault('WINEPREFIX', str(prefix))
+            contrib.apply_wine_env(ctx)
+            tool = contrib.check_toolchain(ctx, self.tree, recipe)
+            built = contrib.compile_unit(ctx, scratch, cpp, recipe, out, tool)
+            return set(files).issubset(built['closure'])
+        except (OSError, ValueError, KeyError, contrib.Stop, unit_build.UnitError, subprocess.TimeoutExpired):
+            return False
+
+    def compile_autofix_edits(self, scratch, edits):
+        """Apply edits in the PR checkout, restoring both files of a unit when its compile fails."""
+        original, units = {}, collections.defaultdict(list)
+        kept = edits.copy()
+        for name, (text, _) in edits.items():
+            path = scratch / name
+            original[name] = path.read_bytes()
+            path.write_bytes(text.encode('utf-8'))
+            units[Path(name).with_suffix('.cpp').as_posix()].append(name)
+
+        with tempfile.TemporaryDirectory(dir=scratch.parent, prefix='autofix-compile-') as directory:
+            # A surviving unit may include a header from an edit we just dropped. Recheck the final overlay.
+            while units:
+                failed = [cpp for i, cpp in enumerate(sorted(units))
+                          if not self.autofix_compile(scratch, cpp, units[cpp], Path(directory) / str(i))]
+                if not failed:
+                    break
+                for cpp in failed:
+                    print(f'{stamp()} autofix skipped for {cpp}: compile gate did not pass', file=sys.stderr)
+                    for name in units.pop(cpp):
+                        (scratch / name).write_bytes(original[name])
+                        del kept[name]
+        return kept
+
     def push_to_branch(self, pr, edits, message):
-        """Commit `edits` ({path: text}) on top of the PR head in the contributor's branch; the new SHA, else None.
+        """Compile and push the mechanical edits at the exact PR head; return the SHA and surviving edits.
 
         Never forces: a branch that moved since the head was read refuses the push and the new head is looked
         at on the next tick. gh's credentials are used because the branch may live in a fork.
@@ -5313,7 +5363,7 @@ class Bot:
         repo, owner = info.get('headRepository') or {}, info.get('headRepositoryOwner') or {}
         if (info.get('headRefOid') != head or info.get('state') != 'OPEN' or not info.get('maintainerCanModify')
                 or not repo.get('name') or not owner.get('login') or not info.get('headRefName')):
-            return None
+            return None, {}
         url = branch_url(owner['login'], repo['name'])
         scratch = self.work / 'merge-scratch' / f'fix{number}'
         git = ['git', '-c', 'core.hooksPath=/dev/null']
@@ -5325,17 +5375,21 @@ class Bot:
             scratch.parent.mkdir(parents=True, exist_ok=True)
             self.run(['git', 'worktree', 'add', '--quiet', '--detach', scratch, head])
         try:
-            for name, text in edits.items():
-                if not name.startswith(SCOPE_PREFIX) or '..' in name.split('/'):
-                    return None
-                (scratch / name).write_bytes(text.encode('utf-8'))
+            for name in edits:
+                path = scratch / name
+                if (not name.startswith(SCOPE_PREFIX) or '..' in name.split('/') or not path.is_file()
+                        or path.resolve() != scratch.resolve() / name):
+                    return None, {}
+            edits = self.compile_autofix_edits(scratch, edits)
+            if not edits:
+                return None, {}
             self.run([*git, 'add', '--', *edits], cwd=scratch)
-            self.run([*git, 'commit', '--quiet', '-m', message], cwd=scratch)
+            self.run([*git, 'commit', '--quiet', '-m', message(edits)], cwd=scratch)
             sha = self.run([*git, 'rev-parse', 'HEAD'], cwd=scratch).stdout.decode().strip()
             pushed = self.run([*git, '-c', 'credential.helper=', '-c', 'credential.helper=!gh auth git-credential',
                                'push', '--quiet', url, f'HEAD:refs/heads/{info["headRefName"]}'], cwd=scratch,
                               check=False)
-            return sha if pushed.returncode == 0 else None
+            return (sha, edits) if pushed.returncode == 0 else (None, {})
         finally:
             with self.root_lock:
                 self.run(['git', 'worktree', 'remove', '--force', scratch], check=False)

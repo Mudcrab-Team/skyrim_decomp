@@ -184,6 +184,25 @@ def restore_functions(text, main_text, names):
     return text, done
 
 
+def restoration_keeps_context(name, text, main_text, restored):
+    """Require the base code outside restored definitions to survive in order."""
+    def context(source):
+        spans = [function_span(source, function) for function in restored]
+        if None in spans:
+            raise ValueError('restored definition not found')
+        for start, end in sorted(spans, reverse=True):
+            source = source[:start] + '\n' + source[end:]
+        code = digest_v2.strip_comments(source.encode(), name, keep_provenance=False)
+        return [line.strip() for line in code.splitlines() if line.strip()]
+
+    # A replaced definition may still depend on an include, helper or declaration the PR removed.
+    try:
+        current = iter(context(text))
+        return all(line in current for line in context(main_text))
+    except ValueError:
+        return False
+
+
 CI_HINT = re.compile(r'//[ \t]*CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+\S+')
 SIMPLE_NAME = re.compile(r'(?:[A-Za-z_]\w*::)*~?[A-Za-z_]\w*')
 MARKED_NAME = re.compile(r'^// (0x[0-9a-fA-F]+) (\S+)', re.M)
@@ -252,8 +271,9 @@ def fix_unit(name, text, main_text=None, accepted=None):
     kinds, current = [], text
     if main_text is not None and accepted:
         named = rva_headers.claimed_rvas([current]) & rva_headers.claimed_rvas([main_text]) & set(accepted)
-        current, restored = restore_functions(current, main_text, [accepted[r] for r in sorted(named)])
-        if restored:
+        repaired, restored = restore_functions(current, main_text, [accepted[r] for r in sorted(named)])
+        if restored and restoration_keeps_context(name, current, main_text, restored):
+            current = repaired
             kinds.append('accepted')
     header_fixed = current
     for kind, fix in (('header', lambda t: trim_header(t, name)), ('spdx', add_spdx)):

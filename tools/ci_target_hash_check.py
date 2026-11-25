@@ -58,8 +58,8 @@ CARRIED = re.compile(r'reports/[^/]+/0x[0-9a-f]+(?:\.review)?\.json|data/progres
                      r'|reconstruction/INDEX\.md')
 
 
-def git(root, *args):
-    return subprocess.run(['git', *args], cwd=root, capture_output=True, check=True).stdout
+def git(root, *args, input=None):
+    return subprocess.run(['git', *args], cwd=root, input=input, capture_output=True, check=True).stdout
 
 
 def trusted_inputs(root):
@@ -106,15 +106,69 @@ class LintFailure(ValueError):
 
 
 class PrepareRevisionError(ValueError):
-    """A prepare invocation with the wrong checkout or revision arguments."""
+    """A prepare invocation with invalid revision arguments."""
+
+
+SOURCE_DIRS = ('reconstruction', 'builds', 'findings', 'reports')
+
+
+def worktree_at(root, tree, base, folders):
+    """Create a scratch checkout once and move it to a new trusted base only when needed."""
+    if not (tree / '.git').is_file():
+        if tree.exists():
+            shutil.rmtree(tree)  # A scratch tree left by the copy-based prepare.
+        tree.parent.mkdir(parents=True, exist_ok=True)
+        git(root, '-c', f'core.hooksPath={os.devnull}', 'worktree', 'add', '--detach', '--no-checkout',
+            str(tree.resolve()), base)
+        git(tree, 'sparse-checkout', 'set', '--cone', '--sparse-index', *folders)
+        git(tree, 'reset', '--hard', base)
+    elif git(tree, 'rev-parse', 'HEAD').decode().strip() != base:
+        git(tree, 'reset', '--hard', base)
+    return tree
+
+
+def base_view(root, base, work):
+    if not base or git(root, 'rev-parse', 'HEAD').decode().strip() == base:
+        return root
+    if not SHA.fullmatch(base):
+        raise PrepareRevisionError('expected a full commit SHA for --base')
+    return worktree_at(root, work / 'base', base, (*SOURCE_DIRS, 'data', 'tools'))
+
+
+def overlay_source(root, base, rows, work, index_includes):
+    tree = work / 'source'
+    journal = work / 'source-overlay.json'
+    if journal.is_file() and (tree / '.git').is_file():
+        previous = json.loads(journal.read_text())
+        tracked = []
+        for name, existed in previous:
+            if not contrib.UNIT_PATH.fullmatch(name):
+                raise ValueError('invalid source overlay path')
+            if existed:
+                tracked.append(name)
+            else:
+                (tree / name).unlink(missing_ok=True)
+        if tracked:
+            git(tree, '--literal-pathspecs', 'restore', '--source=HEAD', '--worktree',
+                '--pathspec-from-file=-', '--pathspec-file-nul', input=('\0'.join(tracked) + '\0').encode())
+    worktree_at(root, tree, base, SOURCE_DIRS)
+    if index_includes:
+        update_include_graph(tree, base, work / 'source-includes.json')
+    paths = [(name, (tree / name).is_file()) for name, _ in rows]
+    pending = journal.with_suffix('.tmp')
+    pending.write_text(json.dumps(paths))
+    pending.replace(journal)
+    for name, blob in rows:
+        path = tree / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(blob)
+    return tree
 
 
 def prepare(root, base, head, work):
     if not SHA.fullmatch(base or '') or not SHA.fullmatch(head or ''):
         raise PrepareRevisionError('prepare requires full commit SHAs for --base and --head')
-    if git(root, 'rev-parse', 'HEAD').decode().strip() != base:
-        raise PrepareRevisionError('prepare requires HEAD to equal --base. Check out the trusted base commit '
-                                   'and pass the proposed commit separately as --head.')
+    trusted = base_view(root, base, work)
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only, deleted, carried = [], set(), [], []
@@ -126,7 +180,7 @@ def prepare(root, base, head, work):
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
-        return root, []
+        return trusted, []
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
         if (pdb_types.is_generated(name) or NOTE_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name)
@@ -165,27 +219,21 @@ def prepare(root, base, head, work):
                 return None
             shown = subprocess.run(['git', '-C', str(root), 'show', f'{head}:{path}'], capture_output=True)
             return shown.stdout.decode('utf-8-sig', 'replace') if shown.returncode == 0 else None
-        found = unit_deletion.problems(root, deleted, lambda n: base_text(root, merge_base, n),
+        found = unit_deletion.problems(trusted, deleted, lambda n: base_text(root, merge_base, n),
                                        lambda n: bool(git(root, 'ls-tree', head, '--', n).strip()), head_file)
         if found:
             raise ValueError('unit deletion would orphan an accepted function: ' + '; '.join(found))
     if not rows:
-        return root, []
-    tree = work / 'source'
-    tree.mkdir(parents=True)
-    for name in ('reconstruction', 'builds', 'findings', 'reports'):
-        shutil.copytree(root / name, tree / name, symlinks=False)
-    target = json.loads((root / 'builds/target.json').read_text())['build_id']
-    for name, blob in rows:
-        path = tree / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(blob)
+        return trusted, []
+    changed = [name for name, _ in rows if name not in comment_only]
+    tree = overlay_source(root, base, rows, work, bool(changed))
+    target = json.loads((trusted / 'builds/target.json').read_text())['build_id']
     found = [line for name, _blob in rows for line in lint.lint_file(tree, name, target)]
     if found:
         raise LintFailure(found)
     # A file whose text differs from base only in comments (digest_v2.strip_comments) compiles to the
     # same code, so it asks for no compile of its own; it is still linted and still in the tree above.
-    return tree, [name for name, _ in rows if name not in comment_only]
+    return tree, changed
 
 
 def rebound_units(root, base, head):
@@ -242,52 +290,85 @@ def unit_recipe(text):
 INCLUDE_LINES = re.compile('^' + STRICT_INCLUDE.pattern + '$', re.M)
 
 
-def include_candidates(tree, changed):
-    """Find possible includers by basename before resolving full translation units."""
-    files = {}
-    for folder in ('reconstruction', 'builds', 'findings', 'reports'):
+def source_files(tree):
+    for folder in SOURCE_DIRS:
         for directory, _dirs, names in os.walk(tree / folder):
             for name in names:
-                files.setdefault(name, []).append(Path(directory) / name)
-    units = {p for name, paths in files.items() if name.endswith('.cpp')
-             for p in paths if p.is_relative_to(tree / 'reconstruction')}
-    scanned, reverse = set(), {}
-    pending = list(units)
-    while pending:
-        path = pending.pop()
-        if path in scanned or path.is_symlink():
-            continue
-        scanned.add(path)
-        text = path.read_text(encoding='utf-8-sig', errors='replace').replace('\\\n', '')
-        for match in INCLUDE_LINES.finditer(text):
-            basename = posixpath.basename(posixpath.normpath(match[1] or match[2]))
-            reverse.setdefault(basename, set()).add(path)
-            pending.extend(p for p in files.get(basename, ()) if p not in scanned)
+                yield (Path(directory) / name).relative_to(tree).as_posix()
+
+
+def included_basenames(path):
+    if path.is_symlink() or not path.is_file():
+        return []
+    text = path.read_text(encoding='utf-8-sig', errors='replace').replace('\\\n', '')
+    return sorted({posixpath.basename(posixpath.normpath(match[1] or match[2]))
+                   for match in INCLUDE_LINES.finditer(text)})
+
+
+def update_include_graph(tree, base, cache):
+    """Keep the basename graph at the clean base, updating only files changed since the last run."""
+    graph = {}
+    names = source_files(tree)
+    try:
+        saved = json.loads(cache.read_text())
+        previous, stored = saved['base'], saved['graph']
+        if SHA.fullmatch(previous) and isinstance(stored, dict):
+            if previous == base:
+                return
+            names = git(tree, 'diff', '--no-renames', '--name-only', '-z', previous, base,
+                        '--', *SOURCE_DIRS).decode().split('\0')[:-1]
+            graph = stored
+    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError):
+        pass
+    for name in names:
+        if includes := included_basenames(tree / name):
+            graph[name] = includes
+        else:
+            graph.pop(name, None)
+    pending = cache.with_suffix('.tmp')
+    pending.write_text(json.dumps(dict(base=base, graph=graph)))
+    pending.replace(cache)
+
+
+def include_candidates(tree, changed, graph=None):
+    """Find possible includers by basename before resolving full translation units."""
+    if graph is None:
+        graph = {name: includes for name in source_files(tree) if (includes := included_basenames(tree / name))}
+    reverse = {}
+    for name, includes in graph.items():
+        for basename in includes:
+            reverse.setdefault(basename, set()).add(name)
     names = {posixpath.basename(path) for path in changed}
     pending_names = list(names)
     includers = set()
     while pending_names:
         for path in reverse.get(pending_names.pop(), ()):
             includers.add(path)
-            if path.name not in names:
-                names.add(path.name)
-                pending_names.append(path.name)
-    return {p.relative_to(tree).as_posix() for p in includers & units}
+            name = posixpath.basename(path)
+            if name not in names:
+                names.add(name)
+                pending_names.append(name)
+    return {name for name in includers if name.startswith('reconstruction/') and name.endswith('.cpp')}
 
 
-def requests(tree, changed, known):
+def requests(tree, changed, known, work=None):
     from check_source_digest import include_closure as cached_closure, source_digest_cache
     import revision_cache
     tree = Path(tree)
     changed = set(changed)
     if not changed:
         return []
-    snapshot = revision_cache.snapshot(tree) if (tree / '.git').exists() else None
+    snapshot = revision_cache.snapshot(tree) if work is None and (tree / '.git').exists() else None
     key = hashes.digest(json.dumps([snapshot, sorted(changed)]).encode()) if snapshot else None
     units = revision_cache.read(tree, 'affected-units', key) if key else None
     if units is None:
         units = {name for name in changed if name.endswith('.cpp')}
-        candidates = units | include_candidates(tree, changed)
+        graph = None
+        if work is not None:
+            graph = json.loads((work / 'source-includes.json').read_text())['graph']
+            for name, _ in json.loads((work / 'source-overlay.json').read_text()):
+                graph[name] = included_basenames(tree / name)
+        candidates = units | include_candidates(tree, changed, graph)
         with source_digest_cache():
             units = sorted(unit for unit in candidates if changed.intersection(cached_closure(tree, unit)))
         if key and revision_cache.snapshot(tree) == snapshot:
@@ -556,35 +637,42 @@ def main(argv=None):
                   base_sha=a.base, normalization_version=hashes.VERSION, acceptance='not-evaluated')
     try:
         a.work.mkdir(parents=True, exist_ok=True)
+        request_file = a.work / 'requests.json'
         if a.command == 'prepare':
+            request_file.unlink(missing_ok=True)
             tree, changed = prepare(ROOT, a.base, a.head, a.work)
-        report.update(trusted_inputs(ROOT))
+        trusted = base_view(ROOT, a.base, a.work)
+        report.update(trusted_inputs(trusted))
         if a.command == 'prepare':
-            refs = requests(tree, changed, without_rebound(bindings(ROOT), rebound_units(ROOT, a.base, a.head)))
-            (a.work / 'requests.json').write_text(json.dumps(refs))
+            refs = requests(tree, changed, without_rebound(bindings(trusted), rebound_units(ROOT, a.base, a.head)),
+                            work=a.work)
+            request_file.write_text(json.dumps(dict(base=a.base, head=a.head, refs=refs)))
             report['intake'] = 'pass'
             report['requested_functions'] = len(refs)
             if os.environ.get('GITHUB_OUTPUT'):
                 with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
                     out.write('mode=' + ('check' if changed else 'sample') + '\n')
         else:
-            manifest = hashes.load_manifest(ROOT)
-            if not a.bin or public.probe(ROOT, a.bin)['toolset'] != 'MATCH':
+            manifest = hashes.load_manifest(trusted)
+            if not a.bin or public.probe(trusted, a.bin)['toolset'] != 'MATCH':
                 raise ValueError('compiler pin mismatch')
             report['toolset'] = 'MATCH'
             if a.command == 'sample':
-                report['functions'] = sample(ROOT, a.bin, a.work, manifest)
-            elif a.command == 'regress':
-                refs = json.loads((a.work / 'requests.json').read_text())
-                report['functions'] = regress(ROOT, a.work / 'source', refs, a.bin, a.work / 'objects', manifest)
-                if a.map_out:
-                    a.map_out.parent.mkdir(parents=True, exist_ok=True)
-                    a.map_out.write_text(json.dumps({r['rva'] or r['unit']: r['status'] for r in report['functions']},
-                                                    indent=2, sort_keys=True) + '\n')
+                report['functions'] = sample(trusted, a.bin, a.work, manifest)
             else:
-                refs = json.loads((a.work / 'requests.json').read_text())
-                report['functions'] = compile_requests(ROOT, a.work / 'source', refs, a.bin,
-                                                       a.work / 'objects', manifest)
+                prepared = json.loads(request_file.read_text())
+                if (prepared['base'], prepared['head']) != (a.base, a.head):
+                    raise PrepareRevisionError('prepared revisions differ; run prepare with the requested base and head')
+                refs = prepared['refs']
+                if a.command == 'regress':
+                    report['functions'] = regress(trusted, a.work / 'source', refs, a.bin, a.work / 'objects', manifest)
+                    if a.map_out:
+                        a.map_out.parent.mkdir(parents=True, exist_ok=True)
+                        a.map_out.write_text(json.dumps({r['rva'] or r['unit']: r['status'] for r in report['functions']},
+                                                        indent=2, sort_keys=True) + '\n')
+                else:
+                    report['functions'] = compile_requests(trusted, a.work / 'source', refs, a.bin,
+                                                           a.work / 'objects', manifest)
     except (ValueError, OSError, KeyError, StopIteration, Reject, contrib.Stop,
             subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         report['error'] = type(exc).__name__

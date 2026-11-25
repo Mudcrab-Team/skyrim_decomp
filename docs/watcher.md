@@ -60,6 +60,10 @@ three times backs that head off; read the bot's log before re-triggering.
 - Contributors never wait on a person or a particular machine.
 - Fix small things (SPDX or header lines, label typos) on the contributor's branch and credit them
   with `Co-authored-by`. Do not ask them to redo trivia.
+- Mechanical autofixes restore an accepted definition only when its surrounding base code is still
+  present. Before committing, the bot compiles each repaired unit at the contributor's head with the
+  pinned recipe. If the compile gate fails, the bot drops the unit's repairs and proceeds with the
+  repairs that pass.
 - Fix the bot, not the PR: if a verdict is wrong, land a tooling PR; do not patch around it.
 - Post no PR comments beyond the bot's one sticky comment.
 - Never `--admin` merge a PR that touches `reconstruction/**`; only the bot merges those, because the

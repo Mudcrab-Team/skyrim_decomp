@@ -75,19 +75,65 @@ class CommentOnlyTests(unittest.TestCase):
         changed = self.prepare(reconstruction__misc__Widget_cpp=SOURCE.replace('#include', recipe + '#include', 1))
         self.assertEqual(changed, [CPP])
 
-    def test_prepare_reports_how_to_fix_a_checkout_of_the_wrong_commit(self):
-        head = self.commit_files(tools__x_py='print(1)\n')
-        run(self.root, 'checkout', '-q', head)
+    def test_prepare_uses_the_named_base_without_switching_the_checkout(self):
+        head = self.commit_files(reconstruction__misc__Widget_cpp=SOURCE.replace('return value', 'return value + 1'))
+        elsewhere = self.commit_files(reconstruction__misc__Widget_h=HEADER.replace('GUESS(low)', 'GUESS(high)'))
+        run(self.root, 'checkout', '-q', elsewhere)
+        work = Path(self.tmp.name) / 'work-alternate'
+        tree, changed = ci.prepare(self.root, self.base, head, work)
+        self.assertEqual(changed, [CPP])
+        self.assertEqual((tree / HDR).read_text(), HEADER)
+        self.assertEqual((work / 'base' / CPP).read_text(), SOURCE)
+        self.assertEqual(run(self.root, 'rev-parse', 'HEAD'), elsewhere)
+
+    def test_repeated_prepare_reuses_checkout_and_clears_the_previous_head(self):
+        added = 'reconstruction/misc/Other.h'
+        head = self.commit_files(**{added: HEADER.replace('Widget', 'Other')},
+                                 reconstruction__misc__Widget_h=HEADER.replace('GUESS(low)', 'GUESS(high)'))
+        work = Path(self.tmp.name) / 'work-reused'
+        tree, changed = ci.prepare(self.root, self.base, head, work)
+        self.assertCountEqual(changed, [added, HDR])
+        self.assertTrue((tree / added).exists())
+        self.assertNotEqual((tree / HDR).read_text(), HEADER)
+
+        next_base = self.commit_files(reconstruction__misc__Widget_h=HEADER + '// trusted base edit\n')
+        run(self.root, 'checkout', '-q', next_base)
+        next_head = self.commit_files(reconstruction__misc__Widget_cpp=SOURCE.replace('return value', 'return value + 1'))
+        metadata = (tree / '.git').read_bytes()
+        reused, changed = ci.prepare(self.root, next_base, next_head, work)
+        self.assertEqual((reused, changed), (tree, [CPP]))
+        self.assertEqual((reused / '.git').read_bytes(), metadata)
+        self.assertEqual(run(reused, 'rev-parse', 'HEAD'), next_base)
+        self.assertEqual((reused / HDR).read_text(), HEADER + '// trusted base edit\n')
+        self.assertFalse((reused / added).exists())
+
+    def test_reused_include_index_follows_base_and_head_changes(self):
+        other = 'reconstruction/misc/Other.h'
+        header = HEADER.replace('Widget', 'Other')
+        head = self.commit_files(reconstruction__misc__Widget_cpp=SOURCE.replace('return value', 'return value + 1'))
+        work = Path(self.tmp.name) / 'work-includes'
+        tree, changed = ci.prepare(self.root, self.base, head, work)
+        self.assertEqual({ref['unit'] for ref in ci.requests(tree, changed, {}, work)}, {CPP})
+
+        next_base = self.commit_files(**{other: header}, reconstruction__misc__Widget_cpp=SOURCE.replace(
+            '#include "Widget.h"', '#include "Widget.h"\n#include "Other.h"'))
+        run(self.root, 'checkout', '-q', next_base)
+        next_head = self.commit_files(**{other: header.replace('GUESS(low)', 'GUESS(high)')})
+        tree, changed = ci.prepare(self.root, next_base, next_head, work)
+        self.assertEqual(changed, [other])
+        self.assertEqual({ref['unit'] for ref in ci.requests(tree, changed, {}, work)}, {CPP})
+
+    def test_prepare_reports_an_invalid_revision(self):
         out = Path(self.tmp.name) / 'result.json'
         output = io.StringIO()
         with patch.object(ci, 'ROOT', self.root), patch.dict(ci.os.environ, GITHUB_STEP_SUMMARY=''), \
                 contextlib.redirect_stdout(output):
-            code = ci.main(['prepare', '--base', self.base, '--head', head,
+            code = ci.main(['prepare', '--base', self.base, '--head', 'HEAD',
                             '--work', str(out.parent / 'work'), '--out', str(out)])
         self.assertEqual(code, 1)
         error = json.loads(out.read_text())['error']
-        self.assertIn('HEAD to equal --base', error)
-        self.assertIn('Check out the trusted base commit', output.getvalue())
+        self.assertIn('full commit SHAs', error)
+        self.assertIn(error, output.getvalue())
 
     def commit_files(self, **files):
         for name, text in files.items():
