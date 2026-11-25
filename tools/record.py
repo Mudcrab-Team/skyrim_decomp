@@ -31,6 +31,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_index  # noqa: E402
 import claimable  # noqa: E402
+from claims import ClaimIntervals  # noqa: E402
 import record_store  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
@@ -214,6 +215,8 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
     expected = []  # what the recorded functions must resolve to once folded
     changed, created = [], set()
     table = []
+    inventory_ranges = None
+    last_created_end = 0
     for rva in sorted(set(rvas)):
         index = None
         if rva in by_rva:
@@ -226,6 +229,12 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
             fn = claimable.resolve(root, build_id, rva, set(by_rva), table[0])
             if fn is None:
                 out['refused'][rva] = 'not in inventory'
+                continue
+            if inventory_ranges is None:
+                inventory_ranges = ClaimIntervals((start, start + row['size'])
+                                                  for start, (_, row) in by_rva.items())
+            if rva < last_created_end or inventory_ranges.overlaps(rva, rva + fn['size']):
+                out['refused'][rva] = 'overlaps an inventory function range'
                 continue
         report = f'reports/{build_id}/0x{rva:x}.json'
         review_path = root / review_record_path(fn)
@@ -275,6 +284,7 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
         if index is None:
             data['functions'].append(candidate)
             created.add(rva)
+            last_created_end = rva + candidate['size']
         else:
             data['functions'][index] = candidate
         changed.append(candidate)
