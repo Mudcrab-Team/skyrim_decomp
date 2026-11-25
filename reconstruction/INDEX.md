@@ -18023,7 +18023,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/leaves/Leaf6ad3a0` | `Leaf6ad3a0::Invoke` (GUESS) | `sse-steam-1-7-104` / `0x6ad3a0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x6ad3a0.json` | matched | family | open |
 | `skyrim/papyrus/InitializeValues` | `Actor::Func280` (GUESS) | `sse-steam-1-7-104` / `0x6ad3b0` / 43 | `msvc-19.16.27054-o2-reconstruction` | `reports/sse-steam-1-7-104/0x6ad3b0.json` | mapped, record awaiting review | - | - |
 | `skyrim_shared/actors/PlayerCharacterTyped` | `P2062::PlayerCharacter::Function6adea0` (GUESS) | `sse-steam-1-7-104` / `0x6adea0` / 39 | `msvc-19.16.27054-o2-reconstruction` | `reports/sse-steam-1-7-104/0x6adea0.json` | mapped, record awaiting review | - | - |
-| - | `Character::Function6aded0` (GUESS) | `sse-steam-1-7-104` / `0x6aded0` / 33 | - | - | mapped | - | - |
+| - | `Character::Function6aded0` (GUESS) | `sse-steam-1-7-104` / `0x6aded0` / 17 | - | - | mapped | - | - |
 | `skyrim_shared/actors/Owner6adef0` | `Character::Function6adef0` (GUESS) | `sse-steam-1-7-104` / `0x6adef0` / 39 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x6adef0.json` | matched | full | - |
 | `skyrim_shared/actors/Character_6adf40` | `Character::Function6adf40` (GUESS) | `sse-steam-1-7-104` / `0x6adf40` / 53 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x6adf40.json` | matched | full | - |
 | - | `Actor::SetMaximumMovementSpeed` (COMMUNITY) | `sse-steam-1-7-104` / `0x6ae3e0` / 472 | - | - | mapped | - | - |

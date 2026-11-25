@@ -30,6 +30,8 @@ Entries are added in two commits so that the first ten can be started first: the
 
 ## Observations
 
+The `0x6aded0` extent was rechecked against the pinned image after the neighboring entry was matched. This leaf has no `.pdata` entry. Its terminal instruction ends at `0x6adee1`, followed by 15 bytes of alignment padding up to the `.pdata` start at `0x6adef0`. The original 33-byte body included the padding and the first byte of the neighbor. The corrected extent is 17 bytes.
+
 | subsystem (by class prefix, approximate) | entries |
 |---|---|
 | player controls and input | 10 |
@@ -176,7 +178,7 @@ Not reviewed. No claim, pull request or acceptance is made by this note.
 | `0x692eb0` | 405 | `Actor::SetRotationX` | MIT NG |
 | `0x693050` | 412 | `Function693050` | GUESS |
 | `0x6a6050` | 398 | `Actor::StopMoving` | MIT NG |
-| `0x6aded0` | 33 | `Character::Function6aded0` | GUESS |
+| `0x6aded0` | 17 | `Character::Function6aded0` | GUESS |
 | `0x6ae3e0` | 472 | `Actor::SetMaximumMovementSpeed` | meh321 |
 | `0x6aefa0` | 65 | `Actor::IsMoving` | MIT NG |
 | `0x6b21b0` | 356 | `Actor::ProcessEvent` | GUESS |
