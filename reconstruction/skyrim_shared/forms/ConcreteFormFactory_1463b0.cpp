@@ -2,7 +2,7 @@
 // Source exposure: mixed (pinned image and published community declarations).
 // Factory types and template arguments: EXE_RTTI
 // Plain destructor entry and size: OBSERVED
-// Virtual declarations and _name: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// IFormFactory, ConcreteFormFactory, CreateImpl, GetFormName, GetFormType, GetObjectName, GetObjectType, GetObjectCategory, _name: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // UnregisterFormFactory and integral argument types: GUESS(low) STANDIN
 // Code origin: original form-factory destructor template. Adapted bodies: none.
 // Boundary source: CRASHLOGGER_PDB(59818@2026.10.24)
