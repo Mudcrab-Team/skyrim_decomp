@@ -56,8 +56,8 @@ body in a `Sibling source: momusdigital/fnv_decomp@2b07cb3e <path>:<line>` heade
 game proves no Skyrim offset, layout or behavior. Follow LEGAL.md and PROVENANCE.md.
 
 Skills in `.claude/skills/` (adapted from lemiur's Game-Decompilation-Skill, CC-BY-4.0, see each
-`NOTICE.md`): `matcher` for a near-miss you are iterating on, `permute` when only register
-allocation or ordering differs, `wall-identifier` when a function stalls, to classify the wall
+`NOTICE.md`): `matcher` for a near-miss you are iterating on, `permute` for hints when only register
+allocation or ordering differs (check types, store placement and callee bodies first), `wall-identifier` when a function stalls, to classify the wall
 before giving up.
 
 ## Big batches: use subagents

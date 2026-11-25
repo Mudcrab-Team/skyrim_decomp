@@ -2,7 +2,15 @@
 
 `tools/verifier/permute.py` searches for a source spelling of one near-miss function that compiles
 to the target's bytes, with no model in the loop (proposal P3 in [ideas-next.md](ideas-next.md),
-in the spirit of decomp-permuter). Run it on a near-miss before an Engineer triages it, within the ordinary attempt budget.
+in the spirit of decomp-permuter).
+
+Track record: about 150 bounded runs over roughly 70 register/schedule and control-flow near-misses,
+over 80,000 scored candidates, and no exact state. Every such near-miss that closed was closed by a
+source change found by reading the target: a parameter type or order, a store inside or after a
+branch, a helper body the unit could not see. So it is a hint generator, not a closing step. Before
+running it, check argument-register roles, store placement relative to branches and which callee
+bodies the unit defines (the matcher skill's levers). A short run (at most 150 s) is worth it only
+when those checks are done and its best states may point at a spelling to try by hand.
 A permuter result is a draft like any other. It is evidence of nothing until `attempt` passes on
 the winning source, the lint passes, and a Reviewer approves it under the rule in
 [verification.md](verification.md).

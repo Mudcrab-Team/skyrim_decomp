@@ -70,8 +70,8 @@ Worktree and storage setup for this is in [contributor-parallel.md](contributor-
 
 ## Skills
 
-`.claude/skills/` holds `matcher` (a near-miss you are iterating on), `permute` (only register
-allocation or ordering differs) and `wall-identifier` (a stalled function: classify the wall before
+`.claude/skills/` holds `matcher` (a near-miss you are iterating on), `permute` (hints when only register
+allocation or ordering differs, after checking types, store placement and callee bodies) and `wall-identifier` (a stalled function: classify the wall before
 giving up). They are adapted from lemiur's Game-Decompilation-Skill-For-Claude, CC-BY-4.0; see the
 `NOTICE.md` in each directory.
 
