@@ -1,12 +1,13 @@
-// Source exposure: mixed (local target analysis and permitted name/layout references).
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// Code origin: original ownership-release body; community lock implementation inspected.
-// 0x721a30 ActorProcess::UnlockForDemandedAnimationSet
+// Source exposure: mixed (community headers; the pinned image listing).
+// Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
+// SPDX-License-Identifier: CC0-1.0
+// 0x721a30 ActorProcess::UnlockOwnedData
+// Adapted bodies: none
 #include "ActorProcess_721a30.h"
 
-void ActorProcess::UnlockForDemandedAnimationSet()
+void ActorProcess::UnlockOwnedData()
 {
-    if (middleHigh) {
-        middleHigh->unk1E8.Unlock();
+    if (data) {
+        data->lock.Unlock();
     }
 }

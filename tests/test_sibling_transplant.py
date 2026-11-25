@@ -48,6 +48,9 @@ class Rewrites(unittest.TestCase):
     def test_decompiler_names_are_renamed(self):
         self.assertEqual(st.sanitize('FUN_00a5c570(DAT_01234567)'), 'Func00a5c570(Data01234567)')
 
+    def test_sanitize_drops_the_sibling_va_list_typedef(self):
+        self.assertEqual(st.sanitize('a\ntypedef char *va_list;\nb\n'), 'a\n\nb\n')
+
     def test_calling_conventions_and_32_bit_allocation_signatures_are_adapted(self):
         text = st.sanitize('void __thiscall f(); static void* operator new(unsigned int n);')
         self.assertNotIn('__thiscall', text)

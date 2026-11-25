@@ -35,10 +35,16 @@ class OnDemandSelectionTests(unittest.TestCase):
                                    0x2200: 'not-an-ordinary-function', 0x2300: 'locally-unsupported',
                                    0x2500: 'already-recorded', 0x10: 'not-a-function-start'})
 
-    def test_static_initializers_are_accepted_but_funclets_are_not(self):
-        table = {0x2000: row(kind='static-initializer'), 0x2100: row(kind='eh-funclet')}
-        got, refused = offers.select_on_demand(table, set(), [0x2000, 0x2100])
-        self.assertEqual((got, refused), ([0x2000], {0x2100: 'not-an-ordinary-function'}))
+    def test_supported_static_initializers_and_teardowns_are_accepted(self):
+        table = {0x2000: row(kind='static-initializer'), 0x2100: row(kind='teardown', verdict='caution'),
+                 0x2200: row(kind='eh-funclet'), 0x2300: row(kind='internal'),
+                 0x2400: row(kind='teardown', verdict='unsupported')}
+        expected = [0x2000, 0x2100]
+        got, refused = offers.select_on_demand(table, set(), table)
+        self.assertEqual(got, expected)
+        self.assertEqual(refused, {0x2200: 'not-an-ordinary-function', 0x2300: 'not-an-ordinary-function',
+                                   0x2400: 'locally-unsupported'})
+        self.assertEqual(offers.select_on_demand(table, set(), [], retained=table), (expected, {}))
 
     def test_a_claim_beyond_the_cap_publishes_the_rest_on_the_next_run(self):
         table = {0x2000 + 0x10 * i: row() for i in range(offers.ON_DEMAND_MAX + 30)}
@@ -111,6 +117,7 @@ class BotRowsTests(unittest.TestCase):
         self.assertEqual(self.bot.dropped_claims(self.files), [0x1100])
 
     def test_a_claim_without_a_row_gets_its_row_published_and_the_head_a_fresh_run(self):
+        self.table[0x1100] = row(kind='teardown', verdict='caution')
         self.ensure()
         self.assertEqual(self.calls, [('regenerate', [0x1100]), ('prepare', 'c' * 40), ('overlay', HEAD)])
         self.assertIsNotNone(self.state.get('rows_at'))

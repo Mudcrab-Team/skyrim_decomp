@@ -123,7 +123,7 @@ def entry(build_id, rva, size, cls=None):
 
 # Kinds a PR may claim without an inventory entry. The on-demand publisher and the record validator must agree
 # on this, or a function is published and compared but its record is then refused.
-ON_DEMAND_KINDS = ('ordinary', 'static-initializer')
+ON_DEMAND_KINDS = ('ordinary', 'static-initializer', 'teardown')
 
 
 def resolve(root, build_id, rva, inventory_rvas, table=None):

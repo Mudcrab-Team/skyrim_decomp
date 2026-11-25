@@ -36,6 +36,15 @@ def vector_slot(rva, table):
     return code
 
 
+def empty_slot(rva, table):
+    return LEA + struct.pack('<i', table - (rva + 7)) + bytes.fromhex('48 89 02 48 8b c2 c3')
+
+
+def scalar_slot(rva, table):
+    tail = COPY_TAIL[:11] + bytes.fromhex('48 8b 41 10 48 89 42 10') + COPY_TAIL[11:]
+    return LEA + struct.pack('<i', table - (rva + 7)) + tail
+
+
 def delete_slot(rva, size, callee):
     code = DELETE_HEAD + struct.pack('<I', size) + bytes([0xe9]) + struct.pack('<i', callee - (rva + 14)) + bytes([0xc3])
     assert len(code) == 15
@@ -58,16 +67,25 @@ class StdCallableTests(unittest.TestCase):
         place(0x10c0, copy_slot(0x10c0, RDATA + 0x20))        # table does not name this entry
         place(0x1240, vector_slot(0x1240, RDATA + 0x40))
         place(0x1280, vector_slot(0x1280, RDATA + 0x40))
+        place(0x12a0, empty_slot(0x12a0, RDATA + 0x60))
+        place(0x12c0, empty_slot(0x12c0, RDATA + 0x70))
+        place(0x12e0, scalar_slot(0x12e0, RDATA + 0xf0))
         place(0x1100, delete_slot(0x1100, 0x10, 0x1000))
         place(0x1140, delete_slot(0x1140, 0x20, 0x1000))
         place(0x1180, delete_slot(0x1180, 0x14, 0x1000))      # size is not a whole number of words
         place(0x11c0, delete_slot(0x11c0, 0x10, 0x1001))      # callee is not an indexed function
         place(0x1200, delete_slot(0x1200, 0x10, 0x1000))      # overlaps a matched entry
 
-        rdata = bytearray(0x100)
+        rdata = bytearray(0x120)
         struct.pack_into('<QQ', rdata, 0, BASE + 0x1040, BASE + 0x1080)
         struct.pack_into('<QQ', rdata, 0x20, BASE + 0x1f00, BASE + 0x1f10)
         struct.pack_into('<QQ', rdata, 0x40, BASE + 0x1240, BASE + 0x1280)
+        struct.pack_into('<QQQ', rdata, 0x58, BASE + 0x2080, BASE + 0x12a0, 0)
+        struct.pack_into('<Q', rdata, 0x70, BASE + 0x12c0)  # no complete object locator
+        struct.pack_into('<QQQ', rdata, 0xe8, BASE + 0x2080, 0, BASE + 0x12e0)
+        struct.pack_into('<6I', rdata, 0x80, 1, 0, 0, 0x20a0, 0, 0x2080)
+        owner = b'.?AV?$_Func_impl_no_alloc@UToy@@X$$V@std@@\0'
+        rdata[0xb0:0xb0 + len(owner)] = owner
         image = PeImage(assemble_pe([
             ('.text', 0x1000, bytes(text), 0x60000020),
             ('.rdata', RDATA, bytes(rdata), 0x40000040),
@@ -81,6 +99,8 @@ class StdCallableTests(unittest.TestCase):
                 generator.Slot(0x1080, 22, generator.COPY, 'move', table=RDATA),
                 generator.Slot(0x1240, 22, generator.COPY, 'copy', table=RDATA + 0x40, state=16),
                 generator.Slot(0x1280, 22, generator.COPY, 'move', table=RDATA + 0x40, state=16),
+                generator.Slot(0x12a0, 14, generator.EMPTY_COPY, 'copy', table=RDATA + 0x60, state=0),
+                generator.Slot(0x12e0, 30, generator.SCALAR_COPY, 'move', table=RDATA + 0xf0, state=16),
                 generator.Slot(0x1100, 15, generator.DELETE, 'delete', object_size=0x10, callee=0x1000),
                 generator.Slot(0x1140, 15, generator.DELETE, 'delete', object_size=0x20, callee=0x1000),
             ],

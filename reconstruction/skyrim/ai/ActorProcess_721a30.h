@@ -1,54 +1,51 @@
-// Source exposure: mixed (local target analysis and permitted name/layout references).
-// Code origin: declarations and layout reconstruction using the labelled sources.
-// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
-// ActorProcess: EXE_RTTI
-// UnlockForDemandedAnimationSet: SYMBOLS(tesv-2013-map); candidate name from AIProcess
-// MiddleHighProcessData, BSSpinLock: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// middleHigh, unk1E8, _owningThread, _lockCount, Unlock: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// GetCurrentThreadId: OBSERVED
-// padding: GUESS(low); unused layout ranges
+// Source exposure: mixed (community headers; compared functions from the pinned image).
+// Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
+// SPDX-License-Identifier: CC0-1.0
+// ActorProcess, ActorProcess::UnlockOwnedData, OwnedData, Lock, Lock::Unlock: GUESS(low) STANDIN
+// owner, count, data, GetCurrentThreadId: GUESS(low) OBSERVED
 #pragma once
+
 #include <cstdint>
 #include <cstddef>
 #include <intrin.h>
 
 extern "C" __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
-class BSSpinLock
+
+struct Lock
 {
-public:
-    std::uint32_t _owningThread;
-    std::uint32_t _lockCount;
+    std::uint32_t owner;
+    std::uint32_t count;
 
     void Unlock()
     {
-        // Acquire prior protected reads before checking ownership.
+        // Order the ownership query after prior protected reads.
         _mm_lfence();
-        if (_owningThread != GetCurrentThreadId()) {
-            return;
-        }
-        if (_lockCount == 1) {
-            _owningThread = 0;
-            // Publish owner clearance before releasing the final hold.
-            _mm_mfence();
-            // Release only a single outstanding recursive hold.
-            _InterlockedCompareExchange(reinterpret_cast<volatile long*>(&_lockCount), 0, 1);
-        } else {
-            // Nested holds release one recursion level atomically.
-            _InterlockedDecrement(reinterpret_cast<volatile long*>(&_lockCount));
+        if (owner == GetCurrentThreadId()) {
+            if (count == 1) {
+                owner = 0;
+                // Publish owner clearance before releasing the recursion count.
+                _mm_mfence();
+                // Release the final recursive hold atomically.
+                _InterlockedCompareExchange(reinterpret_cast<volatile long*>(&count), 0, 1);
+            } else {
+                // A nested hold releases one recursion level atomically.
+                _InterlockedDecrement(reinterpret_cast<volatile long*>(&count));
+            }
         }
     }
 };
-struct MiddleHighProcessData
+
+struct OwnedData
 {
-    std::uint8_t padding[0x1E8];
-    BSSpinLock unk1E8;
+    std::uint8_t pad00[0x1E8];
+    Lock lock;  // 1E8
 };
+
 class ActorProcess
 {
 public:
-    void UnlockForDemandedAnimationSet();
-    std::uint8_t padding[8];
-    MiddleHighProcessData* middleHigh;
+    void UnlockOwnedData();  // compared: 0x721a30
+
+    void* unk00;
+    OwnedData* data;  // 008
 };
-static_assert(offsetof(MiddleHighProcessData, unk1E8) == 0x1E8, "lock offset");
-static_assert(offsetof(ActorProcess, middleHigh) == 8, "middle high offset");
