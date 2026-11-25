@@ -10,6 +10,12 @@
     "findings/fourth-batch-selection.md"
   ],
   "image": {
+    "pe_code_virtual_size": {
+      "value": 24929512,
+      "basis": "measured",
+      "source": "builds/target.json",
+      "method": "Verify the installed executable against the pinned SHA-256, then sum PE section VirtualSize for entries flagged IMAGE_SCN_CNT_CODE. Only the executable .text entry qualifies. This counts CRT and import code without file-alignment padding."
+    },
     "ghidra_functions": {
       "value": 176587,
       "basis": "measured",

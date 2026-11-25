@@ -110,3 +110,5 @@ measure on the single PR instead.
   advisory and changes no gate.
 - Progress comes only from `data/progress.json`; totals are derived, not manually entered into HTML.
   Unknown scope means no completion percentage. No dummy success records or fake history.
+- The objdiff report may show exact matched bytes as a lower-bound percentage of the pinned
+  executable's measured `.text` size, including CRT and import code. See [authorizations](docs/authorizations.md#objdiff-code-section-denominator).

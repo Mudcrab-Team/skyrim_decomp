@@ -17,6 +17,14 @@ and adding a dated note.
 
 Past outside contributors consented on the project Discord to CC0 for their merged contributions.
 
+### Objdiff code section denominator
+
+The maintainer authorizes the objdiff progress report to divide accepted matched bytes by the
+pinned executable's measured PE code-section virtual size. Label the result as a lower bound
+(% of `.text`, includes CRT/import code). The sole published measurement and its method live in
+`data/scope.json` under `image.pe_code_virtual_size`. This exception applies only to the objdiff
+report. The reviewed function scope and other progress surfaces continue to follow their existing rules.
+
 ### G4: GitHub-hosted MSVC compile-and-hash prototype
 
 Maintainer statement by awarebayes, 2026-11-14, supplied in the p124 brief and recorded verbatim
