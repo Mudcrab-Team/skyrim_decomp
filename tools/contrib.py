@@ -783,7 +783,7 @@ def compile_unit(ctx, root, compiled, recipe_rel, out_dir, tool):
     elif tool['flavour'] == 'wine':
         msvc = Path(tool['root'])
         wrapper = unit_build.wrapper_settings(msvc, env)
-        if Path(wrapper['BINDIR']).resolve() != Path(tool['bin']).resolve():
+        if not same_file(wrapper['BINDIR'], tool['bin']):
             raise Stop(MISSING, 'the compiler wrapper selects a different toolset from the recipe pin',
                        f'{ctx.cli} doctor')
         problem = unit_build.include_problem(wrapper['INCLUDE'], wrapper['BASE'])
@@ -2334,6 +2334,48 @@ def pdb_warnings(ctx, task, root):
     return out
 
 
+def practice_unit(root, rvas):
+    """Select the source unit whose leading comment claims each requested RVA."""
+    import pdb_types
+    paths = None
+    if rvas and (root / '.git').exists():
+        addresses = '|'.join(f'{rva:x}' for rva in sorted(rvas))
+        scan = subprocess.run(['git', 'grep', '-ilz', '--untracked', '-E',
+                               rf'^[[:space:]]*//[[:blank:]]*0x0*({addresses})[[:blank:]]',
+                               '--', ':(glob)reconstruction/**/*.cpp', ':(glob)reconstruction/**/*.h',
+                               ':(exclude)reconstruction/generated/crashlogger_pdb/**'],
+                              cwd=root, capture_output=True)
+        if scan.returncode in (0, 1):
+            paths = [root / path for path in scan.stdout.decode('utf-8').split('\0') if path]
+    if paths is None:
+        paths = (root / 'reconstruction').rglob('*')
+    found = {}
+    for path in paths:
+        if path.suffix not in ('.cpp', '.h'):
+            continue
+        unit = path.with_suffix('.cpp').relative_to(root).as_posix()
+        if pdb_types.is_generated(unit) or not UNIT_PATH.fullmatch(unit):
+            continue
+        if path.suffix == '.h' and not (root / unit).is_file():
+            continue
+        with path.open(encoding='utf-8-sig', errors='replace') as lines:
+            for line in lines:
+                if line.strip() and not line.lstrip().startswith('//'):
+                    break
+                for rva, _ in rva_headers.compact_claims(line):
+                    if rva in rvas:
+                        found.setdefault(rva, set()).add(unit)
+    for rva, units in found.items():
+        if len(units) > 1:
+            raise Stop(USAGE, f'{rva:#x} is claimed by several units: {", ".join(sorted(units))}')
+    if not found:
+        return None
+    units = set().union(*found.values())
+    if len(units) != 1 or len(found) != len(rvas):
+        raise Stop(USAGE, 'one unit per practice task: give RVAs claimed by the same unit')
+    return units.pop()
+
+
 def start(ctx, args, quiet=False):
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
@@ -2360,16 +2402,17 @@ def start(ctx, args, quiet=False):
                 method = f'~{given}' if method.startswith('~') else given
             fns[i] = dict(fn, name=f'{given}::{method}', name_origin='GUESS')
     m = [PLAIN_NAME.fullmatch(fn.get('name') or '') for fn in fns]
-    if not all(m):
+    claimed_unit = practice_unit(ctx.repo, {fn['rva'] for fn in fns}) if args.practice else None
+    if not claimed_unit and not all(m):
         bare = any(BARE_PLACEHOLDER.fullmatch(fn.get('name') or '') for fn in fns)
         raise Stop(USAGE, 'only plain Class::Method names can be started with a skeleton'
                    + ('; an entry named Function<rva> has no class yet: pass --class <ClassName>, '
                       'your reading of the owner (label it GUESS unless a public table names it)' if bare else ''),
                    f'{ctx.cli} next')
-    classes = {x.group(1) for x in m}
-    if len(classes) != 1:
+    classes = {x.group(1) for x in m if x}
+    if not claimed_unit and len(classes) != 1:
         raise Stop(USAGE, 'one unit per task: give functions of one class')
-    cls = classes.pop()
+    cls = Path(claimed_unit).stem if claimed_unit else classes.pop()
     import unit_paths
     if args.area is not None and not unit_paths.area_accepted(args.area):
         raise Stop(USAGE, f'--area must be one of the areas in tools/unit_paths.py (for example skyrim/ai), '
@@ -2379,12 +2422,18 @@ def start(ctx, args, quiet=False):
         old = json.loads((tdir / 'task.json').read_text())
     except (OSError, ValueError):
         old = {}
-    area, header, cpp = unit_files(ctx.repo, cls, args.area)
-    # A task already pointing at an existing unit keeps that unit, wherever it lives.
+    if claimed_unit:
+        cpp = claimed_unit
+        header = Path(cpp).with_suffix('.h').as_posix()
+        area = Path(cpp).parent.relative_to('reconstruction').as_posix()
+    else:
+        area, header, cpp = unit_files(ctx.repo, cls, args.area)
     kept = (old.get('contrib') or {}).get('unit') or []
-    if len(kept) == 2 and old.get('compiled') == kept[1] and (ctx.repo / kept[1]).is_file():
+    if not claimed_unit and len(kept) == 2 and old.get('compiled') == kept[1] and (ctx.repo / kept[1]).is_file():
         header, cpp = kept
         area = Path(cpp).parent.relative_to('reconstruction').as_posix()
+    if old.get('compiled') != cpp:
+        old = {}
     if area is None:
         raise Stop(USAGE, f'no area rule for class {cls} (reconstruction/README.md, "Layout")',
                    f'{ctx.cli} start {" ".join(args.rva)} --area <area>  (ask in your claim issue which area)')
@@ -2395,7 +2444,7 @@ def start(ctx, args, quiet=False):
     smap = json.loads(symbol_map_path(ctx.repo, target['build_id']).read_text())['symbols']
     by_rva = {e['rva']: n for n, e in smap.items() if isinstance(e, dict) and isinstance(e.get('rva'), int)}
     functions = {parse_rva(f['rva']): f for f in old.get('functions', [])}
-    for fn, mm in zip(fns, m):
+    for fn in fns:
         dest, _pack = write_pack(ctx, exe, fn, names)
         functions.setdefault(fn['rva'], {
             'rva': f'0x{fn["rva"]:x}', 'size': fn['size'],
@@ -2407,7 +2456,7 @@ def start(ctx, args, quiet=False):
         (tdir / 'sibling.md').write_text(f'# {cls}: pointers into the FNV decompilation (private)\n'
                                          + '\n'.join(sibling) + '\n')
     from header_index import advice as header_advice
-    declaration_advice = [hint for mm in m for hint in header_advice(ctx.repo, cls, mm.group(2))]
+    declaration_advice = [hint for mm in m if mm for hint in header_advice(ctx.repo, mm.group(1), mm.group(2))]
     created = []
     if not args.practice and not getattr(args, 'code_origin', None) and ctx.interactive:
         args.code_origin = input('Code origin: describe the actual sources and any adaptation '
@@ -2722,6 +2771,12 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     if draft_rva is None:
         tdir, task = load_task(ctx, ident, pick_current=True)
         target = target_manifest(root)
+        if task.get('contrib', {}).get('practice'):
+            unit = practice_unit(root, {parse_rva(fn['rva']) for fn in task['functions']})
+            if unit and unit != task['compiled']:
+                task['compiled'] = unit
+                task['contrib']['unit'] = [Path(unit).with_suffix('.h').as_posix(), unit]
+                (tdir / 'task.json').write_text(json.dumps(task, indent=2) + '\n')
     else:
         target = target_manifest(root)
         tdir, task = prepare_draft_compare(ctx, root, target, draft_rva, ident)

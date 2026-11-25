@@ -95,6 +95,28 @@ class TargetHashTest(unittest.TestCase):
         lookup = bytes.fromhex('488b0cd0' 'c3')  # mov rcx,[rax+rdx*8]; ret
         self.assertEqual(h.layout(h.target_section(tls + other + lookup, 0x1000)), [])
 
+    def test_thread_local_block_displacement_and_register_addend(self):
+        try:
+            import iced_x86
+        except ImportError:
+            self.skipTest('local generator dependency iced-x86==1.21.0 not installed')
+        # Load the index and the TLS array, then load the indexed block into rax.
+        prefix = bytes.fromhex('8b0dfa0f0000' '65488b042558000000' '488b04c8')
+        disp = bytes.fromhex('8b9054020000c3')
+        direct = h.target_section(prefix + disp, 0x1000, tls_index=0x2000, tls_size=0x300)
+        self.assertEqual(h.layout(direct), [(2, 6, fx.REL32), (21, 25, compare.SECREL)])
+        add = bytes.fromhex('ba54020000' '4801d0' '8b10c3')
+        added = h.target_section(prefix + add, 0x1000, tls_index=0x2000, tls_size=0x300)
+        self.assertEqual(h.layout(added), [(2, 6, fx.REL32), (20, 24, compare.SECREL)])
+        for code, index, size in (
+                (prefix + disp, 0x2004, 0x300),
+                (prefix + disp, 0x2000, 0x200),
+                (prefix + bytes.fromhex('31c0') + disp, 0x2000, 0x300),
+                (prefix[:-4] + disp, 0x2000, 0x300),
+                (prefix + bytes.fromhex('4883c001') + disp, 0x2000, 0x300)):
+            with self.subTest(index=index, size=size, length=len(code)):
+                self.assertEqual(h.layout(h.target_section(code, 0x1000, index, size)), [(2, 6, fx.REL32)])
+
     def test_preparation_reads_blobs_never_executes_pr_and_rejects_symlinks(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / 'repo'

@@ -59,6 +59,16 @@ class HeaderClaims(Fixture):
         got = ci.requests(self.root, [HEADER], {})
         self.assertEqual(got, [dict(unit=UNIT, rva=0x1010, symbol=None, recipe=ci.DEFAULT_RECIPE)])
 
+    def test_resolves_only_possible_transitive_includers_of_changed_paths(self):
+        self.write('reconstruction/shared/Leaf.h', 'int f();\n')
+        self.write(HEADER, '#include "../shared/Le\\\naf.h"\n')
+        self.write('reconstruction/unrelated/Leaf.h', 'int g();\n')
+        self.write('reconstruction/unrelated/Other.cpp', '#include "Leaf.h"\n')
+        self.write('reconstruction/unrelated/Broken.cpp', '#include "unrelated.h"\n')
+        leaf = 'reconstruction/shared/Leaf.h'
+        got = ci.requests(self.root, [leaf], {})
+        self.assertEqual({r['unit'] for r in got}, {UNIT})
+
     def test_ci_hash_hint_accepts_optional_space_after_the_colon(self):
         for spacing in ('', ' ', '  ', '\t'):
             with self.subTest(spacing=spacing):
@@ -157,6 +167,24 @@ class Discovery(Fixture):
         (row,) = self.rows(fx.coff_object(), [dict(unit=UNIT, rva=0x1010, symbol=fx.FUNCTION, recipe=RECIPE)],
                            [target_row()])
         self.assertEqual((row['result'], row['symbols']), ('hash-match', [fx.FUNCTION]))
+
+    def test_identical_comdats_resolve_to_the_claimed_decorated_symbol(self):
+        left, right = '?Add@Left@@YAHXZ', '?Add@Right@@YAHXZ'
+        unit = fx.Unit()
+        for symbol in (left, right):
+            section = unit.section('.text$mn', bytes.fromhex('31c0c3'), 0x60001020)
+            unit.define(symbol, section, storage=fx.STORAGE_EXTERNAL, function=True)
+        blob = unit.coff()
+        _, section = compare.find_function(CoffObject(blob), left)
+        row = dict(rva=0x1010, size=len(section.data), extraction='linked-reference-inference',
+                   **hashes.section_hash(section))
+        self.write(UNIT, f'// Recipe: {RECIPE}\n// 0x1010 {right}\n#include "Fixture.h"\n')
+        refs = ci.requests(self.root, [UNIT], {UNIT: [dict(rva=0x1010, symbol=left, recipe=RECIPE)]})
+        (result,) = self.rows(blob, refs, [row])
+        self.assertEqual((result['result'], result['symbols']), ('hash-match', [right]))
+        refs[0]['claim'] = '?Add@Missing@@YAHXZ'
+        (result,) = self.rows(blob, refs, [row])
+        self.assertEqual(result['result'], 'mismatch')
 
 
     def test_a_stale_recorded_symbol_is_found_again_by_its_hash(self):

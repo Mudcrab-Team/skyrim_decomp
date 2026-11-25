@@ -225,6 +225,10 @@ class Names:
                 if len(block) >= 2 and not block[1].startswith('error'):
                     self.cache[block[0]] = qualified(block[1])
                     self.text[block[0]] = block[1]
+        elif todo and os.name == 'nt':
+            for name, declaration in native_declarations(todo):
+                self.cache[name] = qualified(declaration)
+                self.text[name] = declaration
         for n in names:
             # Undecorated names (extern "C", tests) are their own qualified name; compiler-made
             # names such as __real@ or $unwind$ are never bound by name.
@@ -234,6 +238,22 @@ class Names:
     def __call__(self, name):
         self.load([name])
         return self.cache.get(name)
+
+
+def native_declarations(symbols):
+    import ctypes
+    from ctypes import wintypes
+
+    try:
+        decode = ctypes.WinDLL('dbghelp').UnDecorateSymbolName
+    except (AttributeError, OSError):
+        return
+    decode.argtypes = (ctypes.c_char_p, ctypes.POINTER(ctypes.c_char), wintypes.DWORD, wintypes.DWORD)
+    decode.restype = wintypes.DWORD
+    buffer = ctypes.create_string_buffer(16384)
+    for symbol in symbols:
+        if symbol.isascii() and decode(symbol.encode('ascii'), buffer, len(buffer), 0):
+            yield symbol, buffer.value.decode('ascii', errors='replace')
 
 
 def defined_functions(obj):
@@ -614,6 +634,7 @@ CV_CODES = {'A': '', 'B': 'const', 'C': 'volatile', 'D': 'const volatile'}
 # declaration's parameter list and cv-qualifier, `// 0x<rva> Class::Method(int) const`.
 HEADER_LINE = re.compile(r'//[ \t]*0x([0-9a-fA-F]+)[ \t]+([A-Za-z_~][\w:~<>,]*)'
                          r'(?:[ \t]*(\([^)]*\))[ \t]*((?:const|volatile)(?:[ \t]+(?:const|volatile))?)?)?[ \t]*$')
+TEMPLATE_CLAIM = re.compile(r'([A-Za-z_~][\w:~<>, *&]*::[A-Za-z_~]\w*(?:<[^()]+>)?)(?:\([^)]*\)(?:\s+(?:const|volatile))*)?')
 
 
 def decoration_traits(name, text=None):
@@ -703,6 +724,34 @@ def normalize_params(text):
     return '' if text == 'void' else text
 
 
+def claim_identity(text):
+    """An exact COFF symbol or a template declaration with its full scope."""
+    if re.fullmatch(r'\?\S+', text):
+        return text
+    if '<' in text and (match := TEMPLATE_CLAIM.fullmatch(text)):
+        return normalize_params(match[1])
+    return None
+
+
+def matches_claim(symbol, claim, names):
+    if symbol == claim:
+        return True
+    if claim.startswith('?'):
+        return False
+    names.load([symbol])
+    declaration = names.text.get(symbol, '').partition('(')[0]
+    depth = start = 0
+    for pos, char in enumerate(declaration):
+        if char == '<':
+            depth += 1
+        elif char == '>':
+            depth -= 1
+        elif char.isspace() and depth == 0:
+            start = pos + 1
+    qualified_name = normalize_params(declaration[start:])
+    return qualified_name == claim or (not claim.endswith('>') and qualified_name.startswith(claim + '<'))
+
+
 def header_declarations(repo, unit):
     """{rva: declaration} from the leading compact `// 0x<rva> Name[(params)][ const]` lines of a unit.
 
@@ -713,20 +762,25 @@ def header_declarations(repo, unit):
     out = {}
     if not unit:
         return out
-    from rva_headers import leading_lines
+    from rva_headers import compact_claims
     base = Path(repo) / unit
     for path in (base.with_suffix('.cpp'), base.with_suffix('.h')):
         if not path.is_file():
             continue
-        for line in leading_lines(path.read_text(encoding='utf-8-sig', errors='replace')):
-            m = HEADER_LINE.match(line.rstrip())
+        for rva, text in compact_claims(path.read_text(encoding='utf-8-sig', errors='replace')):
+            claim = claim_identity(text)
+            m = HEADER_LINE.fullmatch(f'// {rva:#x} {text}')
             if not m:
+                if claim:
+                    out.setdefault(rva, {'claim': claim, 'name': None, 'params': None, 'cv': None})
                 continue
             decl = {'name': community_qualified(m.group(2)), 'params': None, 'cv': None}
+            if claim:
+                decl['claim'] = claim
             if m.group(3) is not None:
                 decl['params'] = normalize_params(m.group(3)[1:-1])
                 decl['cv'] = ' '.join((m.group(4) or '').split())
-            out.setdefault(int(m.group(1), 16), decl)
+            out.setdefault(rva, decl)
     return out
 
 
@@ -1064,6 +1118,20 @@ def resolve_functions(task, defined, names, hints, size_of, matcher=None, header
     for fn in fns:
         if fn['rva'] in results:
             continue
+        rva = parse_rva(fn['rva'])
+        claim = header.get(rva, {}).get('claim')
+        if not claim:
+            continue
+        hits = [d for d in defined if d not in taken and matches_claim(d, claim, names)]
+        cands, steps = narrow(sorted(hits), fn, header[rva], traits_of, size_of, matcher)
+        if len(cands) == 1:
+            results[fn['rva']] = result(cands[0], 'source claim')
+            taken.add(cands[0])
+        else:
+            results[fn['rva']] = result(None, None, cands)
+    for fn in fns:
+        if fn['rva'] in results:
+            continue
         old = fn.get('symbol') or ''
         spec = fn.get('destructor')
         if old in defined and old not in taken:
@@ -1313,7 +1381,8 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO, *, source
     for fn in unbound:
         res = resolved[fn['rva']]
         candidates = possible[fn['rva']]
-        if (not fn.get('destructor') and not res['candidates'] and len(candidates) == 1
+        if (not fn.get('destructor') and not header.get(rva, {}).get('claim')
+                and not res['candidates'] and len(candidates) == 1
                 and sum(candidates[0] in pool for pool in possible.values()) == 1):
             res['suggested'] = candidates[0]
     for fn in task['functions']:
