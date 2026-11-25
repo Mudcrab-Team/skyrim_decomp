@@ -180,6 +180,22 @@ class RecordTests(GateFixture, unittest.TestCase):
 
 
 class PushRetryTests(unittest.TestCase):
+    def test_permanent_remote_rejection_reports_the_git_error_without_retrying(self):
+        from unittest import mock
+
+        def git(root, *args, **kwargs):
+            if args[0] == 'push':
+                return subprocess.CompletedProcess(
+                    args, 1, '!\tHEAD:refs/heads/main\t[remote rejected] (protected branch)\nDone\n',
+                    'error: failed to push some refs\n')
+            return subprocess.CompletedProcess(args, 0, '', '')
+
+        with (mock.patch.object(record, 'apply', return_value={'recorded': [1], 'files': ['h']}),
+              mock.patch.object(record, 'git', side_effect=git) as commands):
+            with self.assertRaisesRegex(RuntimeError, r'git push exited 1: .*protected branch'):
+                record.record_and_push(Path('.'), 'x', [1], b'', 'Record', model='m', task_id='t')
+        self.assertEqual([call.args[1] for call in commands.call_args_list], ['add', 'commit', 'push'])
+
     def test_non_fast_forward_is_fetched_rebased_and_pushed(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)

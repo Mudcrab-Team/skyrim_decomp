@@ -74,6 +74,36 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(layout.f3class('?Create@NiRenderedTexture@@SAPEAV1@XZ'), 'NiRenderedTexture')
         self.assertEqual(layout.f3class('??_GNiFile@@UEAAPEAXI@Z'), 'NiFile')
 
+    def test_fact_kinds_by_context(self):
+        def row(text, relsym=()):
+            return {'t': text, 'rel': [1] if relsym else [], 'relsym': list(relsym), 'b': []}
+        sibling = [row('mov rcx, qword ptr [rbx + 0x10]'), row('mov edx, 0x20'), row('call 0x0', relsym=['??2@YAPEAX_K@Z']),
+                   row('add rcx, 0x8'), row('mov r8d, 0x5'), row('call 0x0', relsym=['?Register@@YAXXZ']),
+                   row('call qword ptr [rax + 0x68]'), row('sub rsp, 0x28'), row('mov rax, qword ptr [rsp + 0x30]')]
+        target = [row('mov rcx, qword ptr [rbx + 0x18]'), row('mov edx, 0x30'), row('call 0x1400'), row('add rcx, 0x10'),
+                  row('mov r8d, 0x3'), row('call 0x1500'), row('call qword ptr [rax + 0x50]'), row('sub rsp, 0x38'),
+                  row('mov rax, qword ptr [rsp + 0x40]')]
+        facts, why = layout.pair_facts(sibling, target, '?Make@Thing@@QEAAXXZ')
+        self.assertIsNone(why)
+        self.assertEqual([f['kind'] for f in facts], ['member-offset', 'alloc-size', 'add-offset', 'call-arg-constant', 'vtable-slot',
+                                                      'frame-size', 'stack-offset'])
+        self.assertEqual(facts[1]['callee'], '??2@YAPEAX_K@Z')
+
+    def test_deleting_thunk_size_and_width_facts(self):
+        def row(text):
+            return {'t': text, 'rel': [], 'relsym': [], 'b': []}
+        facts, why = layout.pair_facts([row('mov edx, 0x8'), row('mov dword ptr [rcx + 0x18], 0x0')],
+                                       [row('mov edx, 0x20'), row('mov qword ptr [rcx + 0x20], 0x0')], '??_GThing@@UEAAPEAXI@Z')
+        self.assertIsNone(why)
+        kinds = [f['kind'] for f in facts]
+        self.assertEqual(kinds, ['class-size', 'operand-width', 'member-offset'])
+        self.assertEqual((facts[1]['sibling_disp'], facts[1]['skyrim_disp']), ('0x18', '0x20'))
+
+    def test_a_structural_difference_rejects_the_pair(self):
+        def row(text):
+            return {'t': text, 'rel': [], 'relsym': [], 'b': []}
+        self.assertIsNotNone(layout.pair_facts([row('test rax, rax')], [row('xor eax, eax')], '?F@@YAXXZ')[1])
+
 
 if __name__ == '__main__':
     unittest.main()
