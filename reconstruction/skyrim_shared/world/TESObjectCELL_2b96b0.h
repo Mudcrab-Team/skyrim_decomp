@@ -1,6 +1,6 @@
 // Source exposure: mixed (pinned-image observations and community symbol declarations).
 // Code origin: original; partial declarations from labelled naming sources
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESObjectCELL, TESObjectCELL::GetGroupSubBlockKey: CRASHLOGGER_PDB(59818@2026.10.24)
 // TESObjectCELL::GetGroupSubBlockKey: SYMBOLS(fo4-pdb)
 // formID: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)

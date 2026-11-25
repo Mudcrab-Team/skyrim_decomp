@@ -1,6 +1,6 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original; pinned-image observations and labelled naming sources
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x2b96b0 TESObjectCELL::GetGroupSubBlockKey
 // Adapted bodies: none
 #include "TESObjectCELL_2b96b0.h"
