@@ -1,4 +1,4 @@
-"""tools/pr_bot_deploy.sh: the revision is checked out and the service restarted only when the dry run exits 0."""
+"""tools/pr_bot_deploy.sh only changes the pin or restarts after the dry run exits 0."""
 import os
 from pathlib import Path
 import subprocess
@@ -51,17 +51,23 @@ class DeployTests(unittest.TestCase):
         git(self.src, 'remote', 'add', 'origin', str(origin))
         git(self.src, 'push', '-q', 'origin', f'{self.new}:refs/heads/main')
 
-    def deploy(self, sha, *extra):
+    def deploy(self, sha, *extra, pin=True):
         env = {**ENV, 'PATH': f'{self.dir / "bin"}:{os.environ["PATH"]}', 'SR_BOT_ROOT': str(self.dir),
                'SR_BOT_SRC': str(self.src), 'SR_BOT_PYTHON': 'python3', 'SR_BOT_LABEL': 'x.bot',
-               'SR_BOT_PIN': str(self.dir / 'pin')}
+               'SR_BOT_PIN': str(self.dir / 'pin') if pin else ''}
         return subprocess.run(['sh', str(SCRIPT), sha, *extra], capture_output=True, text=True, env=env)
 
-    def test_a_passing_dry_run_checks_the_revision_out_pins_it_and_restarts(self):
+    def test_pin_takes_precedence_over_a_launchd_label(self):
         done = self.deploy(self.new)
         self.assertEqual(done.returncode, 0, done.stderr)
-        self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.new)
+        self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.old)
         self.assertEqual((self.dir / 'pin').read_text().strip(), self.new)
+        self.assertFalse(self.kicked.exists())
+
+    def test_without_a_pin_a_passing_dry_run_checks_out_the_revision_and_restarts(self):
+        done = self.deploy(self.new, pin=False)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.new)
         self.assertIn('kickstart -k', self.kicked.read_text())
 
     def test_a_pin_without_a_label_leaves_the_running_checkout_alone(self):
@@ -93,7 +99,7 @@ class DeployTests(unittest.TestCase):
     def test_allow_stale_deploys_a_revision_behind_origin_main(self):
         self.with_origin()
         git(self.src, 'checkout', '-q', '--detach', self.new)
-        done = self.deploy(self.old, '--allow-stale')
+        done = self.deploy(self.old, '--allow-stale', pin=False)
         self.assertEqual(done.returncode, 0, done.stderr)
         self.assertEqual(git(self.src, 'rev-parse', 'HEAD'), self.old)
         self.assertIn('kickstart -k', self.kicked.read_text())

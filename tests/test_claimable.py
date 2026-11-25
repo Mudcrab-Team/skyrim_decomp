@@ -64,11 +64,11 @@ class ClaimableTests(Fixture):
         self.assertIsNone(claimable.resolve(self.repo, BUILD, 0x100, {0x100}))
 
     def test_private_table_must_agree_when_present(self):
-        ok = {0x200: {'kind': 'ordinary', 'size': 20}}
-        self.assertIsNotNone(claimable.resolve(self.repo, BUILD, 0x200, set(), ok))
-        # The on-demand publisher offers static initializers too, so their records must validate.
-        self.assertIsNotNone(claimable.resolve(self.repo, BUILD, 0x200, set(), {0x200: {'kind': 'static-initializer', 'size': 20}}))
-        for bad in ({}, {0x200: {'kind': 'thunk', 'size': 20}}, {0x200: {'kind': 'ordinary', 'size': 21}}):
+        for kind in ('ordinary', 'static-initializer', 'teardown'):
+            with self.subTest(kind=kind):
+                table = {0x200: {'kind': kind, 'size': 20}}
+                self.assertIsNotNone(claimable.resolve(self.repo, BUILD, 0x200, set(), table))
+        for bad in ({}, {0x200: {'kind': 'thunk', 'size': 20}}, {0x200: {'kind': 'teardown', 'size': 21}}):
             self.assertIsNone(claimable.resolve(self.repo, BUILD, 0x200, set(), bad))
 
     def test_claim_and_start_accept_a_published_function_without_an_entry(self):

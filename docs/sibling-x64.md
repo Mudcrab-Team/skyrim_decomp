@@ -50,6 +50,15 @@ its own unit natively on Windows (at most four jobs); `index.py sigs`/`leads` an
 text. `docs/resource-guidelines.md` counts `std::` template instances that the game's own code instantiated as game code, so a
 pass here becomes a reconstruction unit labelled `OBSERVED`; plain C runtime functions and import thunks stay out of scope.
 
+**Near pairs (`tools/f3x64/layout.py`, `tools/sibling_layout.py`).** A sibling function whose compiled code equals the target's except
+for numbers or operand widths states facts about the Skyrim layout. `layout.py` lists them per pair from any sibling build (Fallout 3,
+New Vegas or the private Fallout 4 tree) and keeps class sizes keyed by the Skyrim owner, never by the sibling class: member and
+sub-object offsets (`add-offset` is the same kind as a displacement), virtual slots, class and allocation sizes, constants passed to a
+call, and operand widths. `sibling_transplant.py run --layouts` applies them to the transplanted unit: stand-in classes with the
+members at the target offsets and padding between them, members retyped to the target width, a tail pad to the target size, the
+target's call-argument constants, and integer parameters widened for register-width facts. `SIBLING_DRY=1` stops after the layout
+step to count what is ready without starting tasks. Nothing here is match evidence; the comparator decides.
+
 **Checking the cookbook against the compiler.** `tools/f3x64/lab_experiments.py` compiles toy spelling variants on the Windows
 runner with the recipe and judges a stated claim per experiment (`lab_compile.py` is the transport and listing parser);
 `corpus.py` counts a source pattern's effect over the sibling listings (line effects, the UnwindHelp store with and without a handler, vftable

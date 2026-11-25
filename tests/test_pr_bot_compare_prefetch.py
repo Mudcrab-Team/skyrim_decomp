@@ -1,7 +1,10 @@
-"""The bot's compare asks the runner for one batch first and never depends on it."""
+"""The bot's compare asks the runner for prefetched results and reports them as they arrive."""
+import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
+import threading
 import unittest
 from types import SimpleNamespace
 
@@ -37,6 +40,32 @@ class PrefetchCompare(unittest.TestCase):
         def run(argv, **kw):
             raise AssertionError('must not run')
         pr_bot.Bot.prefetch_compare(fake({'compare_prefetch': False}, run), [Path('/t/a')], None)
+
+    def test_completed_prefetch_units_count_while_the_command_is_running(self):
+        from verifier.compare_batch import entry_path
+
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            tasks = [directory / 'a', directory / 'b']
+            saw_partial = threading.Event()
+
+            def say(line):
+                if 'compare-batch 1/2' in line:
+                    saw_partial.set()
+
+            progress = pr_bot.Progress(directory, 7, 'a' * 40, interval=0.01, every=1, say=say)
+
+            def run(argv, **kw):
+                for i, task in enumerate(tasks):
+                    path = entry_path(task)
+                    path.parent.mkdir(parents=True)
+                    path.write_text('{}')
+                    if i == 0:
+                        self.assertTrue(saw_partial.wait(5))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+
+            pr_bot.Bot.prefetch_compare(fake({}, run), tasks, progress)
+            self.assertEqual(json.loads(progress.path.read_text())['done'], 2)
 
 
 class IncompleteReview(unittest.TestCase):
