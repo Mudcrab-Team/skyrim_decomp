@@ -1728,14 +1728,15 @@ class Progress:
                  f'pass={e["passed"]} fail={e["failed"]}')
 
     @contextlib.contextmanager
-    def heartbeat(self, period=None):
-        """Touch the entry every `period` seconds while the block runs (one opaque child process)."""
+    def heartbeat(self, period=None, tick=None):
+        """Refresh progress every `period` seconds while the block runs."""
         stop = threading.Event()
         period = period or self.interval
+        tick = tick or self.touch
 
         def beat():
             while not stop.wait(period):
-                self.touch()
+                tick()
         thread = threading.Thread(target=beat, daemon=True)
         thread.start()
         try:
@@ -2861,13 +2862,29 @@ class Bot:
         """
         if not self.config.get('compare_prefetch', True) or not tasks:
             return
+        heartbeat = contextlib.nullcontext()
         if progress:
+            from verifier.compare_batch import entry_path
+
             progress.begin('compare-batch', len(tasks))
+            pending = {entry_path(task) for task in tasks}
+
+            def update():
+                finished = {path for path in pending if path.is_file()}
+                pending.difference_update(finished)
+                if finished:
+                    progress.advance(count=len(finished))
+                else:
+                    progress.touch()
+
+            heartbeat = progress.heartbeat(tick=update)
         try:
-            with (progress.heartbeat() if progress else contextlib.nullcontext()):
+            with heartbeat:
                 done = self.run([sys.executable, 'tools/verifier/compare_batch.py', '--deadline',
                                  str(self.config.get('compare_prefetch_wait', 1800)), *map(str, tasks)],
                                 cwd=self.tree, check=False, timeout=self.config['compare_timeout'])
+            if progress:
+                update()
             tail = done.stdout.decode(errors='replace').strip().splitlines()[-1:] if done.stdout else []
             print(f'compare prefetch: {tail[0] if tail else "no output"}', flush=True)
         except (Stop, subprocess.TimeoutExpired, OSError) as exc:
@@ -5221,7 +5238,11 @@ class Bot:
                 for r in todo:
                     argv += ['--rva', hex(r)]
                 done = self.run(argv, cwd=tree, timeout=1800, check=False)
-                if done.returncode or refused_by_record(done.stdout):
+                if done.returncode:
+                    print(f'{stamp()} pr {number}: record step in squash failed: {record_failure(done)}',
+                          file=sys.stderr, flush=True)
+                    return abandon()
+                if refused_by_record(done.stdout):
                     return abandon()
                 try:
                     files = json.loads((done.stdout or b'').decode(errors='replace').strip().splitlines()[-1])['files']
@@ -5293,15 +5314,19 @@ class Bot:
             state.set('recorded', True)
             return
         if done.returncode:
-            # record.py prints which function it refused and why; without it the log only says "python3.13 failed".
-            tail = (done.stdout or b'').decode(errors='replace').strip().splitlines()[-1:] or ['no output']
-            raise Stop(f'record step failed after the merge: {tail[0][:300]}')
+            raise Stop(f'record step failed after the merge: {record_failure(done)}')
         # record.py exits 0 when any function was recorded; one it refused is reported only in its output and
         # would otherwise stay stale on main while the PR is marked recorded.
         if left:
             raise Stop(f'record step refused {len(left)} function(s) after the merge: '
                        + ', '.join(f'{r}: {why}' for r, why in sorted(left.items())[:3])[:300])
         state.set('recorded', True)
+
+
+def record_failure(done):
+    """Keep a sanitized error from record.py, including failures before it prints its JSON result."""
+    detail = stderr_tail(done.stderr or b'', 300) or stderr_tail(done.stdout or b'', 300) or 'no output'
+    return f'exit {done.returncode}: {detail}'
 
 
 def refused_by_record(stdout):
