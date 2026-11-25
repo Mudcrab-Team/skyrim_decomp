@@ -14,6 +14,7 @@ import tempfile
 
 import build_site
 import check
+import draft_bundle
 import giveup
 from check import ROOT
 
@@ -27,7 +28,7 @@ def main():
             names = subprocess.check_output(['git', 'ls-files', '-z', '--', giveup.DRAFT_DIR, giveup.DIR],
                                             cwd=ROOT).decode().split('\0')
             for name in filter(None, names):
-                if not (giveup.DRAFT_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name)):
+                if not (draft_bundle.owner(name) or giveup.RECORD_FILE.fullmatch(name)):
                     raise ValueError('unexpected path under drafts/ or data/giveups/')
             problems = giveup.git_pair_problems(ROOT, names, 'HEAD', 'HEAD')
             if problems:

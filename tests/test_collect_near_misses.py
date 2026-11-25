@@ -63,12 +63,18 @@ class NearMissPoolTests(unittest.TestCase):
     def test_public_source_uses_the_matching_local_task(self):
         public = self.repo / 'drafts/toy-build/100.cpp'
         public.parent.mkdir(parents=True)
-        source = 'int ToyF() { return 5; }\n'
-        public.write_text('// Near miss: 97% | register-schedule\n' + source)
+        source = '#include "Toy.h"\nint ToyF() { return Value; }\n'
+        public.write_text('// Near miss: 97% | register-schedule\n'
+                          + source.replace('"Toy.h"', '"include/100/Original.h"'))
+        header = public.parent / 'include/100/Original.h'
+        header.parent.mkdir(parents=True)
+        header.write_text('constexpr int Value = 5;\n')
         match = ('toy-build', 0x200)
         active, skipped, errors = collect(self.repo, [public, self.tree], {match})
         self.assertEqual((active, skipped, errors), (['toy-build/0x100'], {match}, []))
         self.assertEqual((self.pool / active[0] / 'source-root' / self.compiled).read_text(), source)
+        self.assertEqual((self.pool / active[0] / 'source-root' / self.compiled.with_suffix('.h')).read_bytes(),
+                         header.read_bytes())
 
     def test_handoff_finds_a_staged_pool_with_no_original_snapshots(self):
         (self.snapshot / '100.cpp').unlink()

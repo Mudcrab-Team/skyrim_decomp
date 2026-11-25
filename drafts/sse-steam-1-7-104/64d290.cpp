@@ -11,7 +11,7 @@
 // inventoryEventSink: GUESS(low); names the event-sink subobject
 // unknownPrefix, unknownTail, vtable: OBSERVED
 // Sibling source: fo4-private@1b765c70 src/Game/Magic/EnhanceWeaponEffect.cpp:75
-#include "EnhanceWeaponEffect_64d290.h"
+#include "include/64d290/EnhanceWeaponEffect_64d290.h"
 
 void EnhanceWeaponEffect::Revert(BGSLoadFormBuffer* buffer)
 {

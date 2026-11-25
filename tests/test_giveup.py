@@ -153,6 +153,29 @@ class Tool(Repo):
             giveup.add(self.root, '0x1000', record(best_similarity=99), draft_from=source)
         self.assertEqual((draft.read_bytes(), path.read_bytes()), before)
 
+    def test_header_only_changes_are_checked_with_the_draft(self):
+        (self.root / 'data').mkdir()
+        (self.root / 'data/progress.json').write_text('{"functions": []}')
+        source = self.root / 'Toy.cpp'
+        source.write_text('// Source exposure: black-box\n// 0x1000 Toy\n'
+                          '#include "Toy.h"\nint Toy() { return Value; }\n')
+        (self.root / 'Toy.h').write_text('// Source exposure: black-box\n// Value: OBSERVED\n'
+                                         'const int Value = 2;\n')
+        giveup.add(self.root, '0x1000', record(), draft_from=source)
+        name = f'drafts/{BUILD}/include/1000/Toy.h'
+        header = self.root / name
+
+        def read(member):
+            path = self.root / member
+            return path.read_bytes() if path.is_file() else None
+
+        self.assertEqual(giveup.pair_problems(self.root, [name], read, set(), BUILD), [])
+        header.write_text('// Source exposure: black-box\nconst int Value = 2;\n')
+        self.assertEqual(giveup.pair_problems(self.root, [name], read, set(), BUILD), [(name, ['draft-header'])])
+        header.unlink()
+        self.assertEqual(giveup.pair_problems(self.root, [name], read, set(), BUILD),
+                         [(f'drafts/{BUILD}/1000.cpp', ['draft-includes'])])
+
 
 class Surfaces(Repo):
     def test_the_unit_sheet_lists_earlier_give_ups_first(self):

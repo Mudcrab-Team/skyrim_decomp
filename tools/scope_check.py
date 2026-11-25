@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 
+import draft_bundle
 import giveup
 
 TOOLS = Path(__file__).resolve().parent
@@ -22,7 +23,7 @@ def results(repo, base, head):
                          cwd=repo, check=True, capture_output=True).stdout
     paths = os.fsdecode(raw).split('\0')
     outside = sum(not (name.startswith('reconstruction/') or OUTSIDE_RECONSTRUCTION.fullmatch(name)
-                      or giveup.DRAFT_FILE.fullmatch(name))
+                      or draft_bundle.owner(name))
                   for name in paths if name)
     if outside:
         # Paths are supplied by the PR. Only publish the count.

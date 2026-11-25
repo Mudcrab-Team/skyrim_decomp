@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiPSysMeshUpdateModifier, IsEqual: CRASHLOGGER_PDB(59818@2026.10.24)
 // 0xfa19c0 NiPSysMeshUpdateModifier::IsEqual
-#include "NiPSysMeshUpdateModifier_fa19c0.h"
+#include "include/fa19c0/NiPSysMeshUpdateModifier_fa19c0.h"
 
 // Compare the modifier state and each possibly empty mesh entry.
 bool NiPSysMeshUpdateModifier::IsEqual(NiObject* object)

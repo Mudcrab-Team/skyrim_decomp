@@ -611,6 +611,38 @@ class CompareTests(Base):
         text = json.dumps({k: v for k, v in data.items() if k != 'private_dir'})
         self.assertNotIn(sp.CODE.hex()[:16], text)
 
+    def test_note_bundles_declarations_and_compare_scores_the_public_draft(self):
+        rva = hex(sp.LAYOUT[sp.FUNCTION])
+        snapshot = self.tmp / 'snapshot'
+        snapshot.mkdir()
+        source = snapshot / 'Synthetic.cpp'
+        source.write_text(f'// Source exposure: black-box\n// {rva} {sp.FUNCTION}\n'
+                          '// Recipe: reconstruction/recipes/synthetic.json\n'
+                          f'#include "Synthetic.h"\nint {sp.FUNCTION}() {{ return Value; }}\n')
+        (snapshot / 'Synthetic.h').write_text('// Source exposure: black-box\n// Value: OBSERVED\n'
+                                              '#pragma once\nconstexpr int Value = 2;\n')
+        (self.repo / 'data').mkdir()
+        (self.repo / 'data/progress.json').write_text(json.dumps(
+            {'functions': [{'rva': int(rva, 16), 'size': len(sp.CODE), 'status': 'mapped'}]}))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(contrib.main(['note', '--rva', rva, '--draft-from', str(source),
+                                          '--category', 'other', '--tried', 'changed a return value',
+                                          '--still-differs', 'return value differs',
+                                          '--suspected-cause', 'a constant differs',
+                                          '--best-distance', '1'], ctx=self.ctx_), contrib.OK)
+        shutil.rmtree(snapshot)
+        shutil.rmtree(self.repo / 'reconstruction/forms')
+        shutil.rmtree(self.private / 'tasks')
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = contrib.main(['compare', '--draft', rva, '--no-retry'], ctx=self.ctx_)
+        data = json.loads(output.getvalue())
+        self.assertEqual(code, contrib.OK, data)
+        self.assertEqual(data['unit'], f'drafts/synthetic-fixture/{rva[2:]}.cpp')
+        self.assertEqual(data['progress'][rva]['value'], len(sp.CODE))
+        self.assertFalse((self.private / 'tasks/contrib-synthetic/last-compare.json').exists())
+
     def test_shared_storage_compare_preserves_results_and_diagnostics(self):
         default_code, default_data, _ = contrib.run_compare(self.ctx_, 'contrib-synthetic')
         shared = (self.tmp / 'shared').resolve()

@@ -8,7 +8,7 @@
 // Save: SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/SaveGame/Buffers/BGSSaveGameBuffer.cpp:53
 // Body adapted to the observed file callback and byte-count interface.
-#include "BGSSaveGameBuffer_639a20.h"
+#include "include/639a20/BGSSaveGameBuffer_639a20.h"
 
 void BGSSaveGameBuffer::Save(BGSSaveLoadFile* file, std::uint32_t size)
 {

@@ -5,7 +5,7 @@
 // BSInvMarker: CRASHLOGGER_PDB(59818@2026.10.24)
 // CopyMembers: GUESS(low); cloning copy role
 // 0xffed40 BSInvMarker::CopyMembers
-#include "BSInvMarker_ffed40.h"
+#include "include/ffed40/BSInvMarker_ffed40.h"
 #include <xmmintrin.h>
 
 void BSInvMarker::CopyMembers(BSInvMarker* destination, NiCloningProcess& process)

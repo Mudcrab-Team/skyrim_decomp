@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BGSLoadFormBuffer, buffer, bufferPosition: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // ReadEncodedValue: GUESS(low); reads a value with an embedded width tag
-#include "BGSLoadFormBuffer_637e10.h"
+#include "include/637e10/BGSLoadFormBuffer_637e10.h"
 #include <cstring>
 
 // Copy the unaligned tagged value and advance by its selected storage width.

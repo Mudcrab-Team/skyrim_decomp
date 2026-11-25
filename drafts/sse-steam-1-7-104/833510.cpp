@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // CombatMagicCaster, CombatController, GetMagicTarget, GetDelivery, magicItem, attackerHandle, targetHandle, handleCount, cachedAttacker, cachedTarget: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TargetResult: GUESS(low); explicit handle/pointer result rather than the community void pointer.
-#include "CombatMagicCaster_833510.h"
+#include "include/833510/CombatMagicCaster_833510.h"
 
 TargetResult CombatMagicCaster::GetMagicTarget(const CombatController* controller) const
 {

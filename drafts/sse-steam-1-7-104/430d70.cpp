@@ -7,7 +7,7 @@
 // Reset: GUESS(low); inferred reset operation
 // Cookbook: 48
 // 0x430d70 BSFaceGenKeyframeExclusive::Reset
-#include "BSFaceGenKeyframeExclusive_430d70.h"
+#include "include/430d70/BSFaceGenKeyframeExclusive_430d70.h"
 
 void BSFaceGenKeyframeExclusive::Reset()
 {

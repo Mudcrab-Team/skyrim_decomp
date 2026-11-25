@@ -6,7 +6,7 @@
 // CalculatePriority: SYMBOLS(tesv-2013-map) SIBLING(fo4-private@1b765c70, author-permission)
 // Sibling source: fo4-private@1b765c70 src/Game/AI/Combat/CombatAimController.cpp:153
 // ReadFlag, bonus: GUESS(low); bit-index accessor and combined-flag priority bonus.
-#include "CombatAimController_80a290.h"
+#include "include/80a290/CombatAimController_80a290.h"
 
 static inline bool ReadFlag(unsigned int flags, unsigned int index)
 {

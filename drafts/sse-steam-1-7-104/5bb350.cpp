@@ -5,7 +5,7 @@
 // ActiveEffect, MagicItem, MagicTarget, ForEachActiveEffectVisitor, VisitEffects, Accept, spell, target, displacementSpell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // CheckDisplacementSpellOnTarget: SYMBOLS(tesv-2013-map); candidate identity inferred from visited spells.
 // DisplacementSpellVisitor, found: GUESS(low); visitor role inferred from construction.
-#include "ActiveEffect_5bb350.h"
+#include "include/5bb350/ActiveEffect_5bb350.h"
 
 bool ActiveEffect::CheckDisplacementSpellOnTarget()
 {

@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import tempfile
 
+import draft_bundle
 import giveup
 import record_store
 from source_digest import INCLUDE_ROOTS, include_closure, quoted_includes
@@ -107,6 +108,10 @@ def saved_source(task, compiled, address, roots, listed):
 def copy_unit(dest, compiled, source, roots):
     """Copy the saved translation unit, preferring private siblings over checkout dependencies."""
     source_root = dest / 'source-root'
+    public = '/'.join(source.parts[-3:])
+    if giveup.DRAFT_FILE.fullmatch(public):
+        draft_bundle.restore(source.parents[2], public, source_root, compiled.as_posix())
+        return
     pending = [(compiled, source, ())]
     while pending:
         name, original, parents = pending.pop()
@@ -114,10 +119,7 @@ def copy_unit(dest, compiled, source, roots):
         if path.is_file():
             continue
         path.parent.mkdir(parents=True, exist_ok=True)
-        if giveup.DRAFT_FILE.fullmatch('/'.join(original.parts[-3:])):
-            path.write_bytes(original.read_bytes().partition(b'\n')[2])
-        else:
-            shutil.copyfile(original, path)
+        shutil.copyfile(original, path)
         for kind, inc in quoted_includes(path.read_bytes(), str(name)):
             bases = ([name.parent, *parents] if kind == '"' else []) + [Path(p) for p in INCLUDE_ROOTS]
             for base in bases:

@@ -6,7 +6,7 @@
 // BSPSysStripUpdateModifier, IsEqual: CRASHLOGGER_PDB(59818@2026.10.24)
 // NiPSysModifier, NiObject: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // fUpdateDeltaTime: SYMBOLS(fo4-pdb)
-#include "BSPSysStripUpdateModifier_1002a50.h"
+#include "include/1002a50/BSPSysStripUpdateModifier_1002a50.h"
 
 bool BSPSysStripUpdateModifier::IsEqual(NiObject* object)
 {

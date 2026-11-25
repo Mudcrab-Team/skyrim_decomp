@@ -49,6 +49,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -2145,7 +2146,8 @@ def file_giveup(ctx, rva, args):
         rec['best_similarity'] = similarity
         rec['similarity_basis'] = 'aligned matching bytes of the last compare'
     try:
-        path, added = giveup.add(ctx.repo, f'0x{rva:x}', {k: rec[k] for k in giveup.KEYS if k in rec}, draft_from=source)
+        path, added = giveup.add(ctx.repo, f'0x{rva:x}', {k: rec[k] for k in giveup.KEYS if k in rec},
+                                 draft_from=source, draft_declarations=getattr(args, 'draft_declarations', None))
     except (ValueError, OSError) as exc:
         raise Stop(USAGE, f'give-up record not written: {exc}') from None
     ctx.say(('give-up record written: ' if added else 'give-up record already there: ') + path.relative_to(ctx.repo).as_posix())
@@ -2632,14 +2634,54 @@ def retry_under_alternatives(ctx, root, tdir, task, recipe, results, exe, target
     return notes
 
 
-def run_compare(ctx, ident=None, root=None, retry=True, quiet=False):
+def prepare_draft_compare(ctx, root, target, rva, ident):
+    import bind
+    import claimable
+
+    build = target['build_id']
+    draft = giveup.draft_path(root, build, rva)
+    if not draft.is_file():
+        raise Stop(USAGE, f'no public draft for {rva:#x}')
+    compiled = draft.relative_to(root).as_posix()
+    if ident:
+        tdir, task = load_task(ctx, ident)
+        functions = [fn for fn in task['functions'] if parse_rva(fn['rva']) == rva]
+        if not functions or task['build_id'] != build:
+            raise Stop(USAGE, f'{rva:#x} is not a function of the specified task and build')
+    else:
+        entry = find_function(inventory(root), rva)
+        size = entry['size'] if entry else claimable.published_sizes(root).get(rva)
+        name = bind.header_declarations(root, compiled).get(rva, {}).get('name')
+        if size is None or not name:
+            raise Stop(USAGE, f'the public draft for {rva:#x} needs a target size and function name',
+                       f'{ctx.cli} compare <prepared-task> --draft {rva:#x}')
+        functions = [{'rva': hex(rva), 'size': size, 'community_name': name, 'symbol': f'unbound:{name}'}]
+        task = {'build_id': build, 'recipe': DEFAULT_RECIPE}
+    draft_scores = ctx.private / 'draft-scores'
+    draft_scores.mkdir(parents=True, exist_ok=True)
+    draft_task = Path(tempfile.mkdtemp(prefix=f'{rva:x}-', dir=draft_scores))
+    if ident:
+        for filename in ('symbols.json', 'bind-hints.json'):
+            if (tdir / filename).is_file():
+                shutil.copyfile(tdir / filename, draft_task / filename)
+    task = dict(task, task_id=f'public-draft-{draft_task.name.replace("_", "-")}', functions=functions,
+                compiled=compiled, symbols='symbols.json', contrib=dict(task.get('contrib', {}), unit=[compiled]))
+    (draft_task / 'task.json').write_text(json.dumps(task) + '\n')
+    return draft_task, task
+
+
+def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=None):
     """Compile the task's unit and compare each function; returns (code, data, next)."""
     import bind
     import verify_function
     say = (lambda _line: None) if quiet else ctx.say
     root = Path(root or ctx.repo)
-    tdir, task = load_task(ctx, ident, pick_current=True)
-    target = target_manifest(root)
+    if draft_rva is None:
+        tdir, task = load_task(ctx, ident, pick_current=True)
+        target = target_manifest(root)
+    else:
+        target = target_manifest(root)
+        tdir, task = prepare_draft_compare(ctx, root, target, draft_rva, ident)
     config = load_config(ctx)
     model = task.get('drafter_model') or config.get('model') or config.get('drafted_by')
     # Legacy comparison-only tasks may predate claims; new claims require attribution up front.
@@ -2720,6 +2762,9 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False):
     summary['profile'], summary['max_tries'] = prof['name'], prof['contrib_max_tries']
     for rva, metric in progress.items():
         say(attempt_progress.describe(rva, metric, prof['stuck_after']))
+    if draft_rva is not None:
+        (out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+        return (OK if passed == len(results) else FAILED), summary, None
     say(attempt_progress.guidance(prof['stuck_after']))
     for line in note_reminders(ctx, tdir, task, results, number):
         say(line)
@@ -2864,7 +2909,8 @@ def cmd_lesson(ctx, args):
 
 
 def cmd_compare(ctx, args):
-    return run_compare(ctx, args.task, retry=not args.no_retry)
+    draft_rva = parse_rva(args.draft) if args.draft is not None else None
+    return run_compare(ctx, args.task, retry=not args.no_retry, draft_rva=draft_rva)
 
 
 # ------------------------------------------------------------------ intake rules and submit
@@ -3447,6 +3493,7 @@ def parser():
     s.add_argument('--force', action='store_true', help=argparse.SUPPRESS)
     s = sub.add_parser('compare')
     s.add_argument('task', nargs='?')
+    s.add_argument('--draft', metavar='RVA', help='score the public draft for this RVA')
     s.add_argument('--no-retry', action='store_true',
                    help='skip the advisory retry of failed functions under the recipe\'s alternative flag sets')
     s = sub.add_parser('note')

@@ -80,6 +80,7 @@ import duplicate_rva  # noqa: E402
 import digest_v2  # noqa: E402
 import header_check  # noqa: E402
 import verdicts  # noqa: E402
+import draft_bundle
 import giveup  # noqa: E402
 from contrib_publication import MAX_FUNCTIONS  # noqa: E402
 import lint_reconstruction  # noqa: E402
@@ -103,7 +104,7 @@ GIVEUP_FILE = giveup.RECORD_FILE
 def in_scope(name):
     """A path a contributor PR may change."""
     return (name.startswith(SCOPE_PREFIX) or bool(NOTE_FILE.fullmatch(name)) or bool(GIVEUP_FILE.fullmatch(name))
-            or bool(giveup.DRAFT_FILE.fullmatch(name)))
+            or bool(draft_bundle.owner(name)))
 HASH_CHECKS = ('hash', 'pr-check / hash')
 MAPPING_CHECKS = ('mapping', 'pr-check / mapping')
 SCOPE_CHECKS = ('scope', 'pr-check / scope')
@@ -336,7 +337,7 @@ def notes_lane(files):
     return bool(files) and all(item.get('status') in ('added', 'modified') and not item.get('previous_filename')
                                and (NOTE_FILE.fullmatch(item.get('filename', ''))
                                     or GIVEUP_FILE.fullmatch(item.get('filename', ''))
-                                    or giveup.DRAFT_FILE.fullmatch(item.get('filename', ''))) for item in files)
+                                    or draft_bundle.owner(item.get('filename', ''))) for item in files)
 
 
 def findings_lane(files):
@@ -4083,7 +4084,7 @@ class Bot:
             return summary
         with self.land_lock:
             if decision['merge'] and not state.get('merged'):
-                if any(giveup.DRAFT_FILE.fullmatch(f['filename']) for f in files):
+                if any(draft_bundle.owner(f['filename']) for f in files):
                     self.run(['git', 'fetch', '--quiet', 'origin', 'main'])
                     found = giveup.git_pair_problems(self.root, [f['filename'] for f in files], head, 'origin/main')
                     if found:

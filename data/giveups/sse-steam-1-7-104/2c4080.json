@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x2c4080",
+  "records": [
+    {
+      "category": "control-flow",
+      "tried": [
+        "Retained the strongest publishable scored source from the prior attempts"
+      ],
+      "still_differs": "The retained comparison did not pass",
+      "suspected_cause": "Control flow or function extent differs",
+      "best_distance": 4.5,
+      "model": "unknown",
+      "harness": "historical comparison",
+      "lane": "internal",
+      "best_code": {
+        "kind": "draft",
+        "ref": "drafts/sse-steam-1-7-104/2c4080.cpp"
+      }
+    }
+  ]
+}

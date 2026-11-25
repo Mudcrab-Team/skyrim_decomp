@@ -5,7 +5,7 @@
 // DoGetCurrentMaxSpeeds: SYMBOLS(tesv-2013-map)
 // GetForwardRunSpeed: GUESS(low); queried forward running component
 // 0x11d67b0 ActorState::GetForwardRunSpeed
-#include "ActorState_11d67b0.h"
+#include "include/11d67b0/ActorState_11d67b0.h"
 
 // Return the queried forward running speed, or zero when unavailable.
 float ActorState::GetForwardRunSpeed()

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x1523d20",
+  "records": [
+    {
+      "category": "other",
+      "tried": [
+        "Retained the strongest publishable scored source from the prior attempts"
+      ],
+      "still_differs": "The retained comparison did not pass",
+      "suspected_cause": "The specific cause is unclassified",
+      "best_similarity": 0.0,
+      "model": "unknown",
+      "harness": "historical comparison",
+      "lane": "internal",
+      "best_code": {
+        "kind": "draft",
+        "ref": "drafts/sse-steam-1-7-104/1523d20.cpp"
+      },
+      "similarity_basis": "comparator exact byte coverage"
+    }
+  ]
+}

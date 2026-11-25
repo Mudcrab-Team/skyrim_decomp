@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // BSGamepadDevice, ProcessRawInput: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // 0xcfbb90 BSGamepadDevice::ProcessRawInput
-#include "BSGamepadDevice_cfbb90.h"
+#include "include/cfbb90/BSGamepadDevice_cfbb90.h"
 
 void BSGamepadDevice::ProcessRawInput(int rawX, int rawY, float& outX, float& outY)
 {

@@ -6,7 +6,7 @@
 // Sibling source: fo4-private@1b765c70 src/Shared/DistantTerrain/BGSTerrainUpdateManager.cpp:241
 // Body adapted with target-specific child layout and cancellation checks.
 // TestBit: GUESS(low); indexed accessor written from cookbook rule 16.
-#include "BGSQueuedTerrainInitialLoad_51c670.h"
+#include "include/51c670/BGSQueuedTerrainInitialLoad_51c670.h"
 
 inline bool TestBit(std::uint32_t state, unsigned int bit)
 {

@@ -22,6 +22,7 @@ Where things live (docs/contributing-agent.md, "If you can't match it"):
   source, `--best-from` for private copies, or `--note` to link a cookbook lesson.
 """
 import argparse
+from functools import lru_cache
 import json
 from pathlib import Path
 import re
@@ -31,6 +32,8 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import leakgrep  # noqa: E402
+import draft_bundle  # noqa: E402
+from draft_bundle import DRAFT_DIR, DRAFT_FILE  # noqa: E402
 from flow_state import atomic_write  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,8 +48,6 @@ REQUIRED = ('category', 'tried', 'still_differs', 'suspected_cause', 'model', 'h
 MAX_RECORDS = 20
 MAX_TRIED, MAX_TRIED_LEN, MAX_TEXT = 12, 160, 400
 RECORD_FILE = re.compile(r'data/giveups/[a-z0-9][a-z0-9-]{0,63}/[0-9a-f]{3,8}\.json\Z')
-DRAFT_DIR = 'drafts'
-DRAFT_FILE = re.compile(r'drafts/[a-z0-9][a-z0-9-]{0,63}/[0-9a-f]{3,8}\.cpp\Z')
 DRAFT_LINE = '// Near miss: '
 RVA = re.compile(r'0x[0-9a-f]{3,8}\Z')
 LABEL = re.compile(r'[A-Za-z0-9][A-Za-z0-9 ._:/@+-]{0,59}\Z')
@@ -263,33 +264,37 @@ def private_terms(root):
 def draft_problems(name, blob, private=()):
     from contrib_screen import screen
     from lint_reconstruction import (COMPARED_LINE, EXPOSURE, header_budget_problems, label_problems,
-                                     leading_comment, licence_problems, sibling_header_problems,
+                                     leading_comment, licence_problems, notice_problems, sibling_header_problems,
                                      sibling_label_problems, spdx_problems)
 
-    if not DRAFT_FILE.fullmatch(name):
+    if not draft_bundle.owner(name):
         return ['bad-draft-path']
+    is_unit = bool(DRAFT_FILE.fullmatch(name))
     if len(blob) > 1024 * 1024 or b'\0' in blob:
         return ['draft-size-or-binary']
     try:
         text = blob.decode('utf-8')
     except UnicodeDecodeError:
         return ['draft-encoding']
-    marker, _, source = text.partition('\n')
-    if not marker.startswith(DRAFT_LINE):
-        return ['draft-score-line']
+    source = text
+    if is_unit:
+        marker, _, source = text.partition('\n')
+        if not marker.startswith(DRAFT_LINE):
+            return ['draft-score-line']
     header = leading_comment(source)
     expected = '0x' + Path(name).stem
-    if [line[2:].strip() for line in COMPARED_LINE.findall(header)] != [expected]:
+    if is_unit and [line[2:].strip() for line in COMPARED_LINE.findall(header)] != [expected]:
         return ['draft-rva']
     exposure = re.search(r'^// Source exposure: ([a-z-]+)$', header, re.M)
     if not exposure or exposure.group(1) not in EXPOSURE or len(source.splitlines()) <= len(header.split('\n')):
         return ['draft-header']
-    codes = set(screen(blob, name))
+    codes = set(screen(blob, name, relative_include=draft_bundle.relative_include))
     codes.update(code for line in text.splitlines() for code in leakgrep.scan_line(line, private, name))
     if re.search(r'\bSKELETON_TODO_BODY\b', source):
         codes.add('draft-placeholder')
-    if (header_budget_problems(name, header) or label_problems(name, source, header, 'cpp')
+    if (header_budget_problems(name, header) or label_problems(name, source, header, 'cpp' if is_unit else 'h')
             or licence_problems(name, source, header) or spdx_problems(name, header)
+            or (not is_unit and notice_problems(name, source))
             or sibling_label_problems(name, source) or sibling_header_problems(name, header)):
         codes.add('draft-header')
     return sorted(codes)
@@ -298,9 +303,16 @@ def draft_problems(name, blob, private=()):
 def pair_problems(root, names, read, matched, build):
     """Check changed giveups and their corresponding drafts through the same file reader."""
     problems = []
-    identities = {(parts[-2], Path(parts[-1]).stem)
-                  for name in names if DRAFT_FILE.fullmatch(name) or RECORD_FILE.fullmatch(name)
-                  for parts in [name.split('/')]}
+    identities = {}
+    for path in names:
+        identity = draft_bundle.owner(path)
+        if RECORD_FILE.fullmatch(path):
+            p = Path(path)
+            identity = p.parent.name, p.stem
+        if identity:
+            headers = identities.setdefault(identity, set())
+            if draft_bundle.HEADER_FILE.fullmatch(path):
+                headers.add(path)
     private = private_terms(root) if identities else ()
     for owner, short in sorted(identities):
         rva = '0x' + short
@@ -321,6 +333,30 @@ def pair_problems(root, names, read, matched, build):
             continue
         records = json.loads(blob)['records'] if blob is not None else []
         active = [r for r in records if r['best_code']['kind'] == 'draft']
+        changed_headers = identities[owner, short]
+        if draft is not None:
+            try:
+                members = draft_bundle.closure(root, name, read=lambda member: read(member)
+                                               if member == name or draft_bundle.allowed_header(name, member) else None)
+            except (OSError, ValueError):
+                problems.append((name, ['draft-includes']))
+            else:
+                for member in members:
+                    if draft_bundle.HEADER_FILE.fullmatch(member):
+                        codes = draft_problems(member, read(member), private)
+                        if codes:
+                            problems.append((member, codes))
+                changed_headers -= set(members)
+        for member in sorted(changed_headers):
+            try:
+                header = read(member)
+                codes = [] if header is None else draft_problems(member, header, private)
+            except ValueError:
+                codes = ['draft-or-record-file-type']
+            if draft is None and header is not None:
+                codes.append('draft-unreferenced')
+            if codes:
+                problems.append((member, codes))
         if draft is None:
             if active:
                 problems.append((name, ['draft-missing']))
@@ -341,6 +377,7 @@ def git_pair_problems(root, names, head, base):
     def git(*args):
         return subprocess.check_output(['git', *args], cwd=root)
 
+    @lru_cache(maxsize=None)
     def read(name):
         row = git('ls-tree', '-z', head, '--', name)
         if not row:
@@ -350,7 +387,7 @@ def git_pair_problems(root, names, head, base):
             raise ValueError('expected bounded regular text')
         return git('cat-file', 'blob', oid)
 
-    if not any(DRAFT_FILE.fullmatch(n) or RECORD_FILE.fullmatch(n) for n in names):
+    if not any(draft_bundle.owner(n) or RECORD_FILE.fullmatch(n) for n in names):
         return []
     target = json.loads(git('show', f'{base}:builds/target.json'))
     matched = matched_keys(git('show', f'{base}:data/progress.json'))
@@ -369,10 +406,13 @@ def retire(root, build, rva):
             rec['best_code']['kind'] = 'draft-history'
     atomic_write(record, dump(doc).encode())
     draft.unlink()
-    return [p.relative_to(root).as_posix() for p in (draft, record)]
+    headers = sorted((Path(root) / draft_bundle.header_dir(draft.relative_to(root).as_posix())).glob('*.h'))
+    for header in headers:
+        header.unlink()
+    return [p.relative_to(root).as_posix() for p in (draft, record, *headers)]
 
 
-def add(root, rva, rec, draft_from=None):
+def add(root, rva, rec, draft_from=None, draft_declarations=None):
     """Append `rec` to the function's file; returns (path, added) and refuses an invalid or repeated record."""
     root = Path(root)
     problems = record_problems(rec)
@@ -381,19 +421,35 @@ def add(root, rva, rec, draft_from=None):
     build = build_id(root)
     path = record_path(root, build, rva)
     source = None
+    bundle = {}
     draft = draft_path(root, build, rva)
     if draft_from is not None:
         rec = dict(rec, best_code=dict(kind='draft', ref=draft.relative_to(root).as_posix()))
         problems = record_problems(rec)
         if problems:
             raise ValueError('draft record refused: ' + ', '.join(problems))
-        source = Path(draft_from).read_text(encoding='utf-8')
+        name = rec['best_code']['ref']
+        bundle = draft_bundle.gather(root, name, draft_from, draft_declarations)
+        source = bundle[name].decode('utf-8')
         if source.startswith(DRAFT_LINE):
             source = source.partition('\n')[2]
         source = draft_line(rec) + '\n' + source
-        problems = draft_problems(rec['best_code']['ref'], source.encode(), private_terms(root))
-        if problems:
-            raise ValueError('draft refused: ' + ', '.join(problems))
+        bundle[name] = source.encode()
+        private = private_terms(root)
+        for member, blob in bundle.items():
+            problems = draft_problems(member, blob, private)
+            if problems:
+                raise ValueError('draft refused: ' + ', '.join(problems))
+        def read(member):
+            if member in bundle:
+                return bundle[member]
+            if draft_bundle.allowed_header(name, member):
+                path = root / member
+                if path.is_file() and not path.is_symlink():
+                    return path.read_bytes()
+            return None
+
+        draft_bundle.closure(root, name, read=read)
         if (build, norm_rva(rva)) in matched_keys((root / 'data/progress.json').read_bytes()):
             raise ValueError('function already matched')
     records = load(root, rva, build)
@@ -410,7 +466,8 @@ def add(root, rva, rec, draft_from=None):
                     and last.get('similarity_basis') == rec.get('similarity_basis')
                     and last['best_similarity'] > rec['best_similarity']):
                 raise ValueError('a higher-scoring public draft already exists')
-        if active and rec == active[-1] and draft.is_file() and draft.read_text(encoding='utf-8') == source:
+        if active and rec == active[-1] and all((root / p).is_file() and (root / p).read_bytes() == blob
+                                                for p, blob in bundle.items()):
             return path, False
         records = [r for r in records if r != rec]
     if len(records) >= MAX_RECORDS:
@@ -419,17 +476,23 @@ def add(root, rva, rec, draft_from=None):
     codes = validate(path.relative_to(root).as_posix(), dump(doc), build)
     if codes:
         raise ValueError('record file would be refused: ' + ', '.join(codes))
-    before = draft.read_bytes() if source is not None and draft.is_file() else None
-    if source is not None:
-        atomic_write(draft, source.encode())
+    before = {}
     try:
+        for member, blob in bundle.items():
+            dest = root / member
+            if dest.is_symlink() or not dest.parent.resolve().is_relative_to(root.resolve()):
+                raise ValueError('draft destination crosses a symlink')
+            prior = dest.read_bytes() if dest.is_file() else None
+            if blob != prior:
+                atomic_write(dest, blob)
+                before[dest] = prior
         atomic_write(path, dump(doc).encode())
-    except OSError:
-        if source is not None:
-            if before is None:
-                draft.unlink()
+    except (OSError, ValueError):
+        for dest, prior in reversed(list(before.items())):
+            if prior is None:
+                dest.unlink()
             else:
-                atomic_write(draft, before)
+                atomic_write(dest, prior)
         raise
     return path, True
 
@@ -470,7 +533,7 @@ def command_add(a):
         rec['similarity_basis'] = a.similarity_basis
     ordered = {k: rec[k] for k in KEYS if k in rec}
     try:
-        path, added = add(a.root, a.rva, ordered, draft_from=a.draft_from)
+        path, added = add(a.root, a.rva, ordered, draft_from=a.draft_from, draft_declarations=a.draft_declarations)
     except (ValueError, OSError) as exc:
         print(f'giveup: {exc}', file=sys.stderr)
         return 2
@@ -521,6 +584,8 @@ def add_draft_arguments(parser):
     parser.add_argument('--still-differs', help='in words, no instructions')
     parser.add_argument('--suspected-cause')
     parser.add_argument('--draft-from', type=Path, metavar='FILE', help='publish original best source')
+    parser.add_argument('--draft-declarations', type=Path, metavar='DIR',
+                        help='directory holding the declarations if separate from the draft source')
     score = parser.add_mutually_exclusive_group()
     score.add_argument('--best-similarity', type=float, help='measured percentage for that source')
     score.add_argument('--best-distance', type=float, help='measured alignment distance for that source')

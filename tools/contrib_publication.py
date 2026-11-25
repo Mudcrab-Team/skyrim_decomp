@@ -10,6 +10,7 @@ import re
 import subprocess
 
 from cookbook_notes import NOTE_FILE, validate as note_codes
+import draft_bundle
 import giveup
 from rva_headers import claimed_rvas
 from contrib_screen import (EMAIL, MAX_BYTES, MAX_HISTORY_BYTES, MAX_IDENTITY_BYTES, MAX_MESSAGE_BYTES,
@@ -20,7 +21,7 @@ SHA = re.compile(r'[0-9a-f]{40}\Z')
 
 
 def auxiliary(name):
-    return NOTE_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name) or giveup.DRAFT_FILE.fullmatch(name)
+    return NOTE_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name) or draft_bundle.owner(name)
 
 
 class PublicationRejected(ValueError):
@@ -164,7 +165,7 @@ def screen_publication(root, base, head, *, merge_method='squash', headers=STAND
                 codes = note_codes(name, blob.decode('utf-8', 'replace'))
             elif giveup.RECORD_FILE.fullmatch(name):
                 codes = giveup.validate(name, blob.decode('utf-8', 'replace'))
-            elif giveup.DRAFT_FILE.fullmatch(name):
+            elif draft_bundle.owner(name):
                 codes = giveup.draft_problems(name, blob, giveup.private_terms(root))
             else:
                 codes = screen(blob, name, headers=headers)

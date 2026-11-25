@@ -6,7 +6,7 @@
 // EffectSetting, HasKeyword, BGSKeyword: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // HasKeyword: SIBLING(fo4-private@1b765c70, author-permission); control-flow lead, independently written for this target
 // Sibling source: fo4-private@1b765c70 src/Shared/Magic/EffectSetting.cpp:211
-#include "EffectSetting_14b510.h"
+#include "include/14b510/EffectSetting_14b510.h"
 
 bool EffectSetting::HasKeyword(const BGSKeyword* keyword) const
 {

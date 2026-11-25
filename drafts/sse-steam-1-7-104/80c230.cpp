@@ -4,7 +4,7 @@
 // Source exposure: mixed
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // CombatProjectileAimController, sub_14075D1B0: CRASHLOGGER_PDB(59818@2026.10.24)
-#include "CombatProjectileAimController_80c230.h"
+#include "include/80c230/CombatProjectileAimController_80c230.h"
 
 void CombatProjectileAimController::sub_14075D1B0()
 {

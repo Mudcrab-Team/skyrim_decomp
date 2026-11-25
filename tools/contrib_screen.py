@@ -39,7 +39,7 @@ def stays_in_tree(name, target):
     return joined.startswith('reconstruction/') and '..' not in joined.split('/')
 
 
-def screen(blob, name, *, headers=STANDARD_HEADERS):
+def screen(blob, name, *, headers=STANDARD_HEADERS, relative_include=stays_in_tree):
     """Return fixed reason codes only; never echo attacker-controlled text into public comments.
 
     Over-refusal is deliberate: scan both raw and spliced text, including inactive branches,
@@ -72,7 +72,7 @@ def screen(blob, name, *, headers=STANDARD_HEADERS):
     # Comments cannot hide keywords or arguments from this additional screen.
     normalized = re.sub(r'/\*.*?\*/', ' ', spliced, flags=re.S)
     hops = {target for kind, target in includes if kind == '"' and '..' in target.split('/')
-            and stays_in_tree(name, target)}
+            and relative_include(name, target)}
     for text_variant in (text, spliced, normalized):
         if re.search(r'\b(?:__asm__|__asm|_asm|asm|__emit|__pragma|_Pragma)\b', text_variant):
             problems.add('assembly-or-pragma-operator')

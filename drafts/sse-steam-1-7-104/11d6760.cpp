@@ -4,7 +4,7 @@
 // ActorState: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // ReadMaxSpeedComponent: GUESS(low); reads an unnamed component of the speed output
 // 0x11d6760 ActorState::ReadMaxSpeedComponent
-#include "ActorState_11d6760.h"
+#include "include/11d6760/ActorState_11d6760.h"
 
 float ActorState::ReadMaxSpeedComponent()
 {

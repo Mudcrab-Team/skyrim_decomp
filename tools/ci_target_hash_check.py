@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import record_store
 import ci_hash_check as public
 import contrib
+import draft_bundle
 import giveup
 import pdb_types
 import lint_reconstruction as lint
@@ -115,7 +116,7 @@ def prepare(root, base, head, work):
     # A lesson note is a file a function PR may carry (the scope check admits it), so it must not fail intake.
     names = [n for i in range(0, len(diff) - 1, 2)
              if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n)
-                     or NOTE_FILE.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n) or giveup.DRAFT_FILE.fullmatch(n))]
+                     or NOTE_FILE.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n) or draft_bundle.owner(n))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
@@ -123,7 +124,7 @@ def prepare(root, base, head, work):
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
         if (pdb_types.is_generated(name) or NOTE_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name)
-                or giveup.DRAFT_FILE.fullmatch(name)):
+                or draft_bundle.owner(name)):
             continue
         if CARRIED.fullmatch(name):
             carried.append(name)

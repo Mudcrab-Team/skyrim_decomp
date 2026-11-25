@@ -163,7 +163,13 @@ releases the claim and writes `data/giveups/<build id>/<rva>.json` with those wo
 (a PR may carry it with units or notes, or alone); it is words and numbers only, and the leak scan and `tools/giveup.py check` refuse instructions, bytes and paths.
 To share your original best source, add `--draft-from <file.cpp> --best-similarity <percent> --similarity-basis "<metric>"`
 (or `--best-distance <distance>`) to `release`. Use the score measured for that exact source. You can also use
-`./sr note --rva 0x<rva>` with the same give-up and draft flags. The source lands under `drafts/<build>/<rva>.cpp`.
+`./sr note --rva 0x<rva>` with the same give-up and draft flags. The source lands under `drafts/<build>/<rva>.cpp`,
+with its original declaration headers in `drafts/<build>/include/<rva>/`. Keep the declarations beside the source
+or pass `--draft-declarations <dir>` for a separate snapshot directory. Each copied header needs the same
+exposure, provenance and licence labels as a unit header.
+After setup, run `./sr compare --draft 0x<rva>` to compile and score the public files from a fresh checkout.
+You can pass a prepared task by name if you need its local symbol bindings. Draft scores are kept separately
+from the working unit’s comparison history.
 Use `./sr submit --notes-only` for a draft or give-up PR without a matching unit.
 A lesson about a new cause can still go in `docs/cookbook-notes/`.
 The next person who runs `./sr next`, `claim`, `start` or `facts` for that function sees the records first and does not repeat your tries; `python3 tools/giveup.py show 0x<rva>` prints them.

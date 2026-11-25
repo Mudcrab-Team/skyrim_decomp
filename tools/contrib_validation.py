@@ -10,6 +10,7 @@ import tempfile
 import check_code_rules
 import cookbook_notes
 import contrib_screen
+import draft_bundle
 import giveup
 import leakgrep
 import lint_reconstruction
@@ -253,7 +254,7 @@ def intake_problems(ctx, rows, head=None, details=None):
                 problems.append(diagnostic(f'{name}: deleting a note is for maintainers'))
             else:
                 problems.extend(note_problems(ctx, name, head))
-        elif giveup.DRAFT_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name):
+        elif draft_bundle.owner(name) or giveup.RECORD_FILE.fullmatch(name):
             if status == 'D':
                 problems.append(diagnostic(f'{name}: deleting a draft or give-up is for maintainers'))
         elif not UNIT.fullmatch(name):
