@@ -45,6 +45,7 @@ sys.path.insert(0, str(HERE))
 from pecoff import (EH_HANDLERS, EH_LAYOUTS, FUNCINFO_MAGIC, TYPE_DESCRIPTOR_NAME, UNW_FLAG_CHAININFO,  # noqa: E402
                     UNW_FLAG_EHANDLER, UNW_FLAG_UHANDLER, CoffObject, PeImage, Reject, eh_size, unwind_header)
 import community_ids  # noqa: E402
+import record_store  # noqa: E402
 import unit_paths  # noqa: E402
 
 PACK_SCHEMA = 1
@@ -1582,17 +1583,24 @@ def render_pack_readme(p):
     return '\n'.join(lines)
 
 
-def shared_unit_functions(unit_cpp):
-    """Inventory entries whose match record already binds this unit: editing it re-opens them."""
-    out = []
-    progress = json.loads((REPO / 'data/progress.json').read_text())
+def shared_unit_functions(root=REPO):
+    """Index accepted functions by translation unit so edits re-open their matches."""
+    out = defaultdict(list)
+    progress = json.loads((root / 'data/progress.json').read_text())
     for fn in progress['functions']:
-        rec = fn.get('report')
-        if rec and (REPO / rec).is_file() and unit_cpp in (REPO / rec).read_text():
-            runs = json.loads((REPO / rec).read_text()).get('runs') or [{}]
-            symbol = runs[0].get('report', {}).get('function', {}).get('symbol')
-            out.append({'function_id': fn['id'], 'status': fn['status'], 'record': rec, 'rva': hex(fn['rva']),
-                        'size': fn['size'], 'symbol': symbol, 'community_name': fn['name']})
+        path = fn.get('report')
+        if not path:
+            continue
+        try:
+            record = json.loads(record_store.read_text(root / path))
+        except FileNotFoundError:
+            continue
+        run = (record.get('runs') or [{}])[0].get('report', {})
+        unit = (record.get('source') or {}).get('compiled') or (run.get('source') or {}).get('path')
+        if unit:
+            symbol = run.get('function', {}).get('symbol')
+            out[unit].append({'function_id': fn['id'], 'status': fn['status'], 'record': path,
+                              'rva': hex(fn['rva']), 'size': fn['size'], 'symbol': symbol, 'community_name': fn['name']})
     return out
 
 
@@ -1601,25 +1609,32 @@ def regression_symbols(shared, build_id, root=None):
     root = Path(root or REPO)
     paths = []
     for fn in shared:
-        record = json.loads((root / fn['record']).read_text())
+        record = json.loads(record_store.read_text(root / fn['record']))
         path = record.get('symbol_map', {}).get('path') or f'reports/{build_id}/symbol-map.json'
         if path not in paths:
             paths.append(path)
-    symbols, folds, provenance = {}, [], []
+    symbols, folds, provenance, ambiguous_vftables = {}, [], [], set()
     for path in paths:
-        payload = json.loads((root / path).read_text())
+        payload = json.loads(record_store.read_text(root / path))
         for name, entry in payload['symbols'].items():
             previous = symbols.get(name)
             if previous is not None and {k: v for k, v in previous.items() if k != 'size'} != {
                     k: v for k, v in entry.items() if k != 'size'}:
-                raise ValueError(f'regression symbol {name} has conflicting bindings')
+                if not name.startswith('??_7'):
+                    raise ValueError(f'regression symbol {name} has conflicting bindings')
+                # A vftable can have multiple image copies. Resolve its address from each function's references.
+                ambiguous_vftables.add(name)
             if previous is None or previous.get('size') is None:
                 symbols[name] = entry
             provenance.append({'name': name, 'from': path})
         for group in payload.get('folds', []):
             if not any(set(group) == set(known) for known in folds):
                 folds.append(group)
-    return symbols, folds, provenance
+    for name in ambiguous_vftables:
+        symbols.pop(name)
+    folds = [[name for name in group if name not in ambiguous_vftables] for group in folds]
+    return symbols, [group for group in folds if len(group) > 1], [
+        entry for entry in provenance if entry['name'] not in ambiguous_vftables]
 
 
 AREA_PREFIXES = (('Ni', 'netimmerse'), ('BS', 'bsengine'), ('TES', 'forms'), ('BGS', 'forms'))
@@ -1641,7 +1656,7 @@ def area_for(cls, classes=None):
     return None
 
 
-def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts, attempts_per_function=None):
+def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts, attempts_per_function=None, *, shared=()):
     if not (REPO / unit_cpp).exists() and (REPO / f'reconstruction/recipes/{recipe}-reconstruction.json').is_file():
         from reconstruction_includes import root_recipe
         recipe = Path(root_recipe(REPO, f'reconstruction/recipes/{recipe}.json')).stem
@@ -1664,7 +1679,6 @@ def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts
             if r['symbol'] and r['symbol'] not in symbols:
                 symbols[r['symbol']] = {'rva': r['target_rva'], 'size': None}
                 provenance.append({'name': r['symbol'], 'rva': hex(r['target_rva']), 'from': r['resolution']})
-    shared = shared_unit_functions(unit_cpp)
     regression, folds, origins = regression_symbols(shared, target['build_id'])
     # A unit's accepted records can use private reference names frozen in immutable unit maps.
     # A global map alone loses those names and their explicitly declared aliases.
@@ -2988,6 +3002,7 @@ def cmd_packs(args):
                 moved += [(p['rva_hex'], task_id, 'dropped') for p in flagged]
                 print(f'task {task_id}: dropped ' + ', '.join(p['rva_hex'] for p in flagged))
     task_dirs = []
+    shared_by_unit = shared_unit_functions()
     for task_id, items in by_task.items():
         units = {u for _, u in items if u}
         if len(units) > 1:
@@ -3004,7 +3019,8 @@ def cmd_packs(args):
         root = REPO / '.local/tasks' / group if group else REPO / '.local/tasks'
         task_dirs.append(write_task(task_id, unit, recipes[task_id], [p for p, _ in items], target, root,
                                     budgets.get(task_id, args.max_attempts),
-                                    None if task_id in budgets else args.attempts_per_function))
+                                    None if task_id in budgets else args.attempts_per_function,
+                                    shared=shared_by_unit.get(unit, ())))
     if args.class_material:
         shared = write_class_material(task_dirs, target, img, addrlib, comms, args.shared_classes_name)
         for rva in packs:

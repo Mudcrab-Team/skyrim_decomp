@@ -73,6 +73,7 @@ import file_lock as fcntl  # noqa: E402
 import cookbook_notes  # noqa: E402
 import findings_check  # noqa: E402
 import record_store  # noqa: E402
+import symbol_map  # noqa: E402
 import target_hash_store  # noqa: E402
 import drafter_claim  # noqa: E402
 import duplicate_rva  # noqa: E402
@@ -2894,6 +2895,29 @@ class Bot:
         except (Stop, subprocess.TimeoutExpired, OSError) as exc:
             print(f'compare prefetch skipped ({type(exc).__name__})', flush=True)
 
+    def isolate_vftable_compare(self, task, info, fn, report):
+        """Give one function its own reference map when the shared vftable binding fails."""
+        if len(info['functions']) < 2 or report.get('reason') != 'relocation-target-mismatch':
+            return None
+        match = re.search(r" of '(\?\?_7[^']+)'$", report.get('detail', ''))
+        if not match:
+            return None
+        map_path = task / 'symbols.json'
+        mapping = json.loads(map_path.read_text())
+        name = match[1]
+        if name not in mapping['symbols']:
+            return None
+        rva = int(str(fn['rva']), 0)
+        retry = task.with_name(f'{task.name}-vftable-{rva:x}')
+        retry.mkdir()
+        (retry / 'task.json').write_text(json.dumps(dict(info, task_id=retry.name, functions=[fn])) + '\n')
+        (retry / 'symbols.json').write_text(json.dumps(
+            symbol_map.subset(mapping, mapping['symbols'].keys() - {name})) + '\n')
+        hints = task / 'bind-hints.json'
+        if hints.is_file():
+            shutil.copyfile(hints, retry / hints.name)
+        return retry
+
     def compare_on_host(self, units, tag, before_attempts=None):
         build = json.loads((self.tree / 'builds/target.json').read_text())['build_id']
         lines, tasks = [], []
@@ -2910,6 +2934,8 @@ class Bot:
             # A task directory reused from an earlier compare keeps its attempt count, and the verifier
             # refuses a task whose attempt budget is spent (exit 5) however often it is asked again.
             shutil.rmtree(task, ignore_errors=True)
+            for retry in task.parent.glob(f'{task.name}-vftable-*'):
+                shutil.rmtree(retry, ignore_errors=True)
         progress = self.progress_of(tag)
         if progress:
             progress.begin('pack-export', len(tasks))
@@ -2952,39 +2978,65 @@ class Bot:
                 for future in futures:
                     future.cancel()
                 raise
+        retries = []
         for task, done in zip(tasks, finished):
             code = done.returncode
-            if code == REFUSED_INCLUDE_EXIT:
-                # The verifier refuses before compiling when a header cannot be found with the unit's recipe. That
-                # is a finding about the unit; reported as a host failure it was retried unchanged forever.
-                for fn in json.loads((task / 'task.json').read_text())['functions']:
-                    out[int(str(fn['rva']), 0)] = 'fail'
-                    why[int(str(fn['rva']), 0)] = 'include'
-                continue
-            if code == COMPILE_FAILED_EXIT:
-                # No attempt report exists when the compile fails; reading the missing files made every
-                # function look like a byte difference or a missing result.
-                for fn in json.loads((task / 'task.json').read_text())['functions']:
-                    out[int(str(fn['rva']), 0)] = 'fail'
-                    why[int(str(fn['rva']), 0)] = 'compile'
-                continue
-            if code not in (0, 1):
+            if code not in (0, 1, REFUSED_INCLUDE_EXIT, COMPILE_FAILED_EXIT):
                 # The tool's own last line says why (a bad task row, a missing toolchain); without it every
                 # failure looks the same in the service log.
                 lines = [l for l in done.stderr.decode(errors='replace').splitlines() if l.strip()]
                 raise HostFailure(f'verifier host did not complete (exit {code}, {tid_of(task)}): '
                            f'{(lines[-1] if lines else "no error text")[:200]}')
+            info = json.loads((task / 'task.json').read_text())
+            if code in (REFUSED_INCLUDE_EXIT, COMPILE_FAILED_EXIT):
+                # Include and compile failures are findings about the unit and have no comparator report.
+                for fn in info['functions']:
+                    rva = int(str(fn['rva']), 0)
+                    out[rva] = 'fail'
+                    why[rva] = 'include' if code == REFUSED_INCLUDE_EXIT else 'compile'
+                continue
             attempts = sorted((task / 'attempts').glob('[0-9]*'))
-            for fn in json.loads((task / 'task.json').read_text())['functions']:
+            for fn in info['functions']:
                 rva = int(str(fn['rva']), 0)
                 try:
-                    report = json.loads((attempts[-1] / f'0x{rva:x}' / 'report.json').read_text())
-                    out[rva] = 'pass' if report.get('result') == 'pass' else 'fail'
-                    if out[rva] == 'fail':
-                        why[rva] = host_category(report.get('reason') or 'differs')
+                    report_path = attempts[-1] / f'0x{rva:x}' / 'report.json'
+                    report = json.loads(report_path.read_text())
                 except (IndexError, OSError, ValueError):
                     out[rva] = 'fail'
                     why[rva] = host_category(None)
+                    continue
+                out[rva] = 'pass' if report.get('result') == 'pass' else 'fail'
+                if out[rva] == 'fail':
+                    why[rva] = host_category(report.get('reason') or 'differs')
+                    retry = self.isolate_vftable_compare(task, info, fn, report)
+                    if retry:
+                        retries.append((task, info, fn, rva, report_path, retry))
+        if retries:
+            if before_attempts:
+                before_attempts()
+            if progress:
+                progress.begin('compare-vftables', len(retries))
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                tried = pool.map(attempt, (retry for *_, retry in retries))
+                for (task, info, fn, rva, report_path, retry), done in zip(retries, tried):
+                    if done.returncode not in (0, 1, REFUSED_INCLUDE_EXIT, COMPILE_FAILED_EXIT):
+                        raise HostFailure(f'isolated verifier compare did not complete (exit {done.returncode}, {retry.name})')
+                    if done.returncode:
+                        shutil.rmtree(retry)
+                        continue
+                    isolated = retry / 'attempts/001' / f'0x{rva:x}' / 'report.json'
+                    try:
+                        passed = json.loads(isolated.read_text()).get('result') == 'pass'
+                    except (OSError, ValueError):
+                        passed = False
+                    if not passed:
+                        raise HostFailure(f'isolated verifier compare returned no pass ({retry.name})')
+                    # The isolated task owns this function's evidence for review and record building.
+                    info['functions'].remove(fn)
+                    (task / 'task.json').write_text(json.dumps(info, indent=2) + '\n')
+                    report_path.rename(report_path.with_name('grouped-report.json'))
+                    out[rva] = 'pass'
+                    del why[rva]
         self.host2_why[tag] = why
         return out
 

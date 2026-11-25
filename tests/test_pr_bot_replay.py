@@ -1248,6 +1248,61 @@ class ParallelCompareTests(Replay):
             self.compare(6, attempt)
 
 
+class VftableCompareTests(Replay):
+    def compare(self, retry_passes):
+        cpp, tag = unit_path(0x1000), '7-abcdef12'
+        tree = self.bot.tree
+        (tree / cpp).parent.mkdir(parents=True, exist_ok=True)
+        (tree / cpp).write_text(unit(0x1000))
+        (tree / 'builds').mkdir(exist_ok=True)
+        (tree / 'builds/target.json').write_text(json.dumps(dict(build_id=BUILD)))
+        task = tree / '.local/tasks' / f'prbot-{tag}-0'
+        retry = task.with_name(task.name + '-vftable-1010')
+        vftable = '??_7Synthetic@@6B@'
+        reference = {'rva': 0x2000, 'size': None}
+        self.bot.config['compare_prefetch'] = False
+
+        def run(argv, **kw):
+            if str(argv[1]).endswith('export_pack.py'):
+                task.mkdir(parents=True)
+                (task / 'task.json').write_text(json.dumps(dict(
+                    task_id=task.name, functions=[dict(rva='0x1000'), dict(rva='0x1010')])))
+                (task / 'symbols.json').write_text(json.dumps(dict(symbols={vftable: reference, 'Other': reference})))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            self.assertTrue(str(argv[1]).endswith('attempt'))
+            dest = Path(argv[2])
+            functions = json.loads((dest / 'task.json').read_text())['functions']
+            fail = dest == task or not retry_passes
+            if dest == retry:
+                self.assertEqual(functions, [dict(rva='0x1010')])
+                self.assertEqual(json.loads((dest / 'symbols.json').read_text())['symbols'], {'Other': reference})
+            for fn in functions:
+                report = dest / 'attempts/001' / fn['rva'] / 'report.json'
+                report.parent.mkdir(parents=True)
+                result = (dict(result='fail', reason='relocation-target-mismatch',
+                               detail=f"REL32 at +0x1 does not encode the RVA of '{vftable}'")
+                          if fail and fn['rva'] == '0x1010' else dict(result='pass'))
+                report.write_text(json.dumps(result))
+            return subprocess.CompletedProcess(argv, int(fail), b'', b'')
+
+        with mock.patch.object(self.bot, 'run', run):
+            results = pr_bot.Bot.compare_on_host(self.bot, {cpp: [0x1000, 0x1010]}, tag)
+        return results, task, retry
+
+    def test_a_fresh_vftable_binding_keeps_the_isolated_pass_for_review_and_recording(self):
+        results, task, retry = self.compare(retry_passes=True)
+        self.assertEqual(results, {0x1000: 'pass', 0x1010: 'pass'})
+        self.assertEqual(json.loads((task / 'task.json').read_text())['functions'], [dict(rva='0x1000')])
+        self.assertFalse((task / 'attempts/001/0x1010/report.json').exists())
+        self.assertTrue((retry / 'attempts/001/0x1010/report.json').is_file())
+
+    def test_an_isolated_mismatch_stays_failed(self):
+        results, task, retry = self.compare(retry_passes=False)
+        self.assertEqual(results, {0x1000: 'pass', 0x1010: 'fail'})
+        self.assertTrue((task / 'attempts/001/0x1010/report.json').is_file())
+        self.assertFalse(retry.exists())
+
+
 class HeadCheckTests(Replay):
     """A push mid-run drops the old head before the next expensive stage instead of after it."""
 
