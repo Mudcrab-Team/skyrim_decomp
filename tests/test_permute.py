@@ -168,6 +168,17 @@ class Mutations(unittest.TestCase):
         self.assertTrue(permute.m_zero_form(tree, random.Random(0)))
         self.assertIn('const int zero_ = 0;', ' '.join(u.body_of(tree).split()))
 
+    def test_find_body_skips_constructor_initializers(self):
+        text = """
+Toy::Toy(int n)
+    : Parent<std::pair<int, int>>(n), value{n}, other(make(n, 2))
+{
+    reset();
+}
+"""
+        start, end = permute.find_body(text, 'Toy::Toy')
+        self.assertEqual(text[start:end], "{\n    reset();\n}")
+
     def test_find_body_matches_a_destructor(self):
         text = 'Toy::Toy() = default;\n\nToy::~Toy()\n{\n    Clear();\n}\n'
         start, end = permute.find_body(text, 'Toy::~Toy')

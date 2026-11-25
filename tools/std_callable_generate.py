@@ -4,9 +4,8 @@
     python tools/std_callable_generate.py --exe /path/to/SkyrimSE.exe --out .local/std-callable --compare
     python tools/std_callable_generate.py --exe /path/to/SkyrimSE.exe --only rvas.txt --out .local/std-callable-test --compare
 
-Two slot shapes of `std::_Func_impl_no_alloc<Callable, void>` are emitted: the copy and move slots of a
-callable that is one pointer wide, and the sized-delete slot of a callable of any trivially destructible
-size. Every member is one explicit instantiation over a stand-in callable derived from the single template
+Copy and move slots of empty, pointer-sized and two-word callables, plus sized-delete slots of
+trivially destructible callables, are emitted from `std::_Func_impl_no_alloc<Callable, void>`. Every member is one explicit instantiation over a stand-in callable derived from the single template
 in the unit header.
 Requires iced-x86==1.21.0. --compare uses the pinned contributor compiler and checks the full code,
 unwind information, the table reference and the delete call target for every member. `--only` takes a
@@ -14,15 +13,21 @@ file of whitespace-separated hexadecimal RVAs and keeps only those members (a pr
 committed).
 """
 from dataclasses import dataclass, replace
+import struct
 
 import leaf_family_batch
+from form_factory_generate import data, type_name
 from pecoff import Reject, SCN_MEM_EXECUTE
 
 COPY = 'StdCallableCopyMove'
+EMPTY_COPY = 'StdEmptyCallableCopyMove'
+SCALAR_COPY = 'StdScalarCallableCopyMove'
 DELETE = 'StdCallableDeleteThis'
 SHARD_SIZE = 100
 OPERATOR_DELETE = '??3@YAXPEAX_K@Z'
 COPY_SIZE = 22
+EMPTY_COPY_SIZE = 14
+SCALAR_COPY_SIZE = 30
 DELETE_SIZE = 15
 
 TEMPLATE = [
@@ -31,6 +36,20 @@ TEMPLATE = [
     'struct StdCallableState',
     '{',
     '    alignas(8) unsigned char state[Bytes];',
+    '    void operator()() const {}',
+    '};',
+]
+
+
+SCALAR_TEMPLATE = [
+    'struct SplitCallableState',
+    '{',
+    '    void* first;',
+    '    unsigned long long second;',
+    '',
+    '    SplitCallableState() = default;',
+    '    SplitCallableState(const SplitCallableState& other) noexcept : first(other.first), second(other.second) {}',
+    '    SplitCallableState(SplitCallableState&& other) noexcept : first(other.first), second(other.second) {}',
     '    void operator()() const {}',
     '};',
 ]
@@ -45,7 +64,7 @@ class Slot:
     table: int = 0     # read-only table address of the owner, copy and move only
     object_size: int = 0
     callee: int = 0
-    state: int = 8     # size of the callable in a copy or move slot: one pointer, or sixteen bytes copied with one vector move
+    state: int = 8     # callable storage copied or moved: none, one pointer, or sixteen bytes
 
     @property
     def callable(self):
@@ -93,12 +112,31 @@ def _return_destination(insn):
             and insn.op1_register == Register.RDX and insn.len == 3)
 
 
+def _copy_word(load, store, offset):
+    from iced_x86 import Code, Register
+
+    return (load.code == Code.MOV_R64_RM64 and store.code == Code.MOV_RM64_R64
+            and load.memory_base == Register.RCX and store.memory_base == Register.RDX
+            and load.memory_index == store.memory_index == Register.NONE
+            and load.memory_displacement == store.memory_displacement == offset
+            and load.op0_register == store.op1_register
+            and load.op0_register not in (Register.RCX, Register.RDX)
+            and load.len == store.len == 4)
+
+
 def classify(code, rva):
     from iced_x86 import Code, Decoder, Register
 
     insns = list(Decoder(64, code, ip=rva))
     if any(i.is_invalid for i in insns):
         return None
+    if (len(insns) == 4 and len(code) == EMPTY_COPY_SIZE and _table_store(insns[0], insns[1])
+            and _return_destination(insns[2]) and insns[3].code == Code.RETNQ):
+        return Slot(rva, len(code), EMPTY_COPY, 'copy', table=insns[0].ip_rel_memory_address, state=0)
+    if (len(insns) == 8 and len(code) == SCALAR_COPY_SIZE and _table_store(insns[0], insns[1])
+            and _copy_word(insns[2], insns[3], 8) and _copy_word(insns[4], insns[5], 16)
+            and _return_destination(insns[6]) and insns[7].code == Code.RETNQ):
+        return Slot(rva, len(code), SCALAR_COPY, 'copy', table=insns[0].ip_rel_memory_address, state=16)
     if len(insns) == 6 and len(code) == COPY_SIZE and _table_store(insns[0], insns[1]):
         lea, _store_table, third, fourth, fifth, ret = insns
         if (third.code == Code.MOV_R64_RM64 and third.op0_register == Register.RAX
@@ -148,9 +186,23 @@ def _owner_slot(image, member):
     return None
 
 
+def _standard_callable_owner(image, member):
+    """Require the standard implementation's primary vftable for additional copy shapes."""
+    try:
+        locator = int.from_bytes(data(image, member.table - 8, 8), 'little') - image.image_base
+        signature, offset, construction_offset, descriptor, _, self_rva = struct.unpack(
+            '<6I', data(image, locator, 24))
+        if (signature, offset, construction_offset, self_rva) != (1, 0, 0, locator):
+            return False
+        name = type_name(image, descriptor)
+        return name.startswith('?$_Func_impl_no_alloc@') and name.endswith('@std@@')
+    except (Reject, ValueError):
+        return False
+
+
 def discover(image, extents, inventory):
     starts = set(extents) | {begin for begin, _, _ in image.runtime_functions()}
-    raw = list(leaf_family_batch.candidates(image, extents, inventory, (COPY_SIZE, DELETE_SIZE), classify))
+    raw = list(leaf_family_batch.candidates(image, extents, inventory, (COPY_SIZE, EMPTY_COPY_SIZE, SCALAR_COPY_SIZE, DELETE_SIZE), classify))
     members = []
     for m in raw:
         if m.kind == 'delete':
@@ -158,13 +210,12 @@ def discover(image, extents, inventory):
                 members.append(m)
             continue
         index = _owner_slot(image, m)
-        if index is not None:
+        if index is not None and (m.family == COPY or _standard_callable_owner(image, m)):
             members.append(replace(m, kind=('copy', 'move')[index]))
     result = []
-    for base in (COPY, DELETE):
-        kinds = ('copy', 'move') if base == COPY else ('delete',)
-        rows = sorted((m for m in members if m.kind in kinds), key=lambda m: (m.table, m.rva))
-        if base == COPY:
+    for base in (COPY, EMPTY_COPY, SCALAR_COPY, DELETE):
+        rows = sorted((m for m in members if m.family == base), key=lambda m: (m.table, m.rva))
+        if base != DELETE:
             groups = {}
             for m in rows:
                 groups.setdefault(m.table, []).append(m)
@@ -194,7 +245,10 @@ def emit(root, family, members, build_id, label):
               '// std::_Func_impl_no_alloc slots and callable sizes: OBSERVED',
               f'// {family}, CallableTable*, CallableObject*: GUESS(low) STANDIN; callable contents and signatures unknown.',
               '// Adapted bodies: none']
-    header = prefix + ['#pragma once', '#include <functional>', '', *TEMPLATE, '', f'struct {family}', '{', '};']
+    storage = SCALAR_TEMPLATE if family.startswith(SCALAR_COPY) else TEMPLATE
+    if family.startswith(EMPTY_COPY):
+        storage = ()
+    header = prefix + ['#pragma once', '#include <functional>', '', *storage, '', f'struct {family}', '{', '};']
     source = list(prefix)
     for m in members:
         source.append(f'// 0x{m.rva:x} std::_Func_impl_no_alloc<{m.callable}, void>::{m.method}')
@@ -209,7 +263,12 @@ def emit(root, family, members, build_id, label):
             symbols[m.table_symbol] = dict(rva=m.table, size=None)
         if m.callable not in seen:
             seen.add(m.callable)
-            source.append(f'struct {m.callable} : StdCallableState<{m.bytes}> {{}};')
+            if family.startswith(SCALAR_COPY):
+                source.append(f'struct {m.callable} : SplitCallableState {{}};')
+            elif m.bytes:
+                source.append(f'struct {m.callable} : StdCallableState<{m.bytes}> {{}};')
+            else:
+                source.extend([f'struct {m.callable}', '{', '    void operator()() const {}', '};'])
             source.append(f'template class std::_Func_impl_no_alloc<{m.callable}, void>;')
         symbols[m.symbol] = dict(rva=m.rva, size=m.size)
         functions.append(dict(rva=m.rva, size=m.size, symbol=m.symbol))
