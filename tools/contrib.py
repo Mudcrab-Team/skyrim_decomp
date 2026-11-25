@@ -3188,7 +3188,24 @@ def cmd_lesson(ctx, args):
 
 def cmd_compare(ctx, args):
     draft_rva = parse_rva(args.draft) if args.draft is not None else None
-    return run_compare(ctx, args.task, retry=not args.no_retry, draft_rva=draft_rva)
+    code, result, next_action = run_compare(ctx, args.task, retry=not args.no_retry, draft_rva=draft_rva)
+    if args.dependents:
+        from scoped_memo import memo_scope
+
+        base = preflight_base(ctx, None)
+        changes = working_source_changes(ctx, git(ctx, 'merge-base', base, 'HEAD'))
+        with memo_scope():
+            problems = intake_problems(ctx, base, head=None, files=changes, scope=True) if changes else []
+            warnings = []
+            result['dependent_recheck'] = check_dependents(ctx, changes, None, problems, warnings)
+        for line in problems:
+            ctx.say('BLOCKED: ' + line)
+        for line in warnings:
+            ctx.say('warning: ' + line)
+        result['dependent_blockers'] = problems
+        if problems and code == OK:
+            return FAILED, result, f'fix the listed findings, then {ctx.cli} compare --dependents'
+    return code, result, next_action
 
 
 def cmd_bind(ctx, args):
@@ -3290,17 +3307,46 @@ def prune_unused_headers(ctx, tdir, task):
         ctx.say(f'{compiled}: removed {len(remove)} unused starter function header line(s)')
 
 
+def preflight_base(ctx, requested):
+    up, _push = upstream_remote(ctx)
+    base = requested or (f'{up}/main' if up else 'origin/main')
+    if ctx.run(['git', 'rev-parse', '--verify', '--quiet', base], cwd=ctx.repo, capture_output=True).returncode:
+        return 'HEAD'
+    return base
+
+
+def working_source_changes(ctx, fork):
+    changes = [(s, n) for s, n in changed_files(ctx, fork, head=None) if n.startswith('reconstruction/')]
+    untracked = git(ctx, 'ls-files', '-z', '--others', '--exclude-standard', '--', 'reconstruction/')
+    return changes + [('A', n) for n in untracked.split('\0') if n]
+
+
+def check_dependents(ctx, changes, head, problems, warnings):
+    from contrib_dependents import recheck
+
+    if problems:
+        return None
+    try:
+        result = recheck(ctx, changes, head)
+    except (OSError, ValueError, subprocess.SubprocessError):
+        problems.append('dependent recheck could not read the source snapshot or published target manifest')
+        return None
+    for row in result['functions']:
+        if row['result'] == 'hash-match':
+            continue
+        line = (f'dependent recheck {row["rva"]} {row["name"] or ""} in {row["unit"]}: '
+                f'{row["reason"]} after editing {", ".join(row["includes"])}')
+        (problems if row['result'] == 'mismatch' else warnings).append(line)
+    return result
+
+
 def cmd_preflight(ctx, args):
     """Check source intake and recheck accepted dependents of shared edits."""
-    from contrib_dependents import recheck
     from contrib_validation import project_reconfirmation
     from scoped_memo import memo_scope
     picked = select_tasks(ctx, args) if (args.task or args.all_dirty
                                          or not args.staged and (not args.base or task_files(ctx))) else []
-    up, _push = upstream_remote(ctx)
-    base = args.base or (f'{up}/main' if up else 'origin/main')
-    if ctx.run(['git', 'rev-parse', '--verify', '--quiet', base], cwd=ctx.repo, capture_output=True).returncode:
-        base = 'HEAD'
+    base = preflight_base(ctx, args.base)
     head = git(ctx, 'write-tree') if args.staged else None
     fork = git(ctx, 'merge-base', base, 'HEAD')
     if head:
@@ -3310,30 +3356,17 @@ def cmd_preflight(ctx, args):
             prune_unused_headers(ctx, tdir, task)
         unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
         files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
-        changes = [(s, n) for s, n in changed_files(ctx, fork, head=None) if n.startswith('reconstruction/')]
-        untracked = git(ctx, 'ls-files', '-z', '--others', '--exclude-standard', '--', 'reconstruction/')
-        changes += [('A', n) for n in untracked.split('\0') if n]
+        changes = working_source_changes(ctx, fork)
         files = list({name: (status, name) for status, name in files + changes}.values())
     reminders = [line for d_, t_ in picked
                  for line in note_reminders(ctx, t_, last_results(d_))]
     details = {}
-    dependents = None
     with memo_scope():
         problems = intake_problems(ctx, base, head=head, files=files, details=details, scope=True)
         reconfirmation = project_reconfirmation(ctx.repo, [n for _status, n in files])
-        if not problems:
-            try:
-                dependents = recheck(ctx, changes, head)
-            except (OSError, ValueError, subprocess.SubprocessError):
-                problems.append('dependent recheck could not read the source snapshot or published target manifest')
-    labels, origin, warnings = (details.get('label_findings', []), details.get('origin_findings', []),
-                                details.get('warnings', []))
-    for row in (dependents or {}).get('functions', ()):
-        if row['result'] == 'hash-match':
-            continue
-        line = (f'dependent recheck {row["rva"]} {row["name"] or ""} in {row["unit"]}: '
-                f'{row["reason"]} after editing {", ".join(row["includes"])}')
-        (problems if row['result'] == 'mismatch' else warnings).append(line)
+        warnings = details.get('warnings', [])
+        dependents = check_dependents(ctx, changes, head, problems, warnings)
+    labels, origin = details.get('label_findings', []), details.get('origin_findings', [])
     details_lines = ([f'BLOCKED: {item}' for item in problems] +
                      [f'label: {item}' for item in labels] +
                      [f'{item["file"]}:1: {item["rva"]}: {item["status"]}' for item in reconfirmation] +
@@ -3905,6 +3938,7 @@ def parser():
     s = sub.add_parser('compare')
     s.add_argument('task', nargs='?')
     s.add_argument('--draft', metavar='RVA', help='score the public draft for this RVA')
+    s.add_argument('--dependents', action='store_true', help='also recheck accepted units that include edited source')
     s.add_argument('--no-retry', action='store_true',
                    help='skip the advisory retry of failed functions under the recipe\'s alternative flag sets')
     s = sub.add_parser('bind', help='resolve bindings for the most recent compiled candidate of a task')

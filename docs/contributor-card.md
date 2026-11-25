@@ -34,7 +34,8 @@ merged cleanly in about an hour. Thank you, don't be shy.
 the index snapshot. Preflight compiles affected accepted units once each and checks their functions
 against published target hashes. It reports the number of units, elapsed time and which edited
 includes affect each failed or unavailable comparison. A configured Windows PC can prefetch
-the compiles. Local compilation uses up to four jobs.
+the compiles. Local compilation uses up to four jobs. `./sr compare --dependents` adds the
+working-tree recheck to a normal task comparison.
 
 `./sr start` keeps existing hand-written source as written. Add the declarations, bodies, function
 header lines and provenance for your new work. When it can tie a known name to the RVA, `start`

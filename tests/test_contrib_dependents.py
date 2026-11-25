@@ -103,6 +103,24 @@ class DependentChecks(unittest.TestCase):
         affected = list(dependents.affected_units(self.repo, self.records, {self.shared: 'A'}))
         self.assertEqual({unit for unit, *_ in affected}, {self.unit, self.other})
 
+    def test_compare_opt_in_reports_a_regression_after_a_passing_task(self):
+        changes = [('M', self.header)]
+        dependent = dict(functions=[dict(rva='0x1000', name='Widget::Work', unit=self.unit,
+                                         result='mismatch', reason='published hash mismatch',
+                                         includes=[self.header])])
+        with patch('contrib.run_compare', side_effect=lambda *_a, **_kw: (contrib.OK, {}, None)), \
+                patch('contrib.preflight_base', return_value='HEAD'), patch('contrib.git', return_value='HEAD'), \
+                patch('contrib.working_source_changes', return_value=changes), \
+                patch('contrib.intake_problems', return_value=[]), \
+                patch('contrib_dependents.recheck', return_value=dependent) as recheck:
+            self.assertEqual(contrib.cmd_compare(self.ctx, contrib.parser().parse_args(['compare']))[0], contrib.OK)
+            recheck.assert_not_called()
+            args = contrib.parser().parse_args(['compare', '--dependents'])
+            code, result, _ = contrib.cmd_compare(self.ctx, args)
+        recheck.assert_called_once_with(self.ctx, changes, None)
+        self.assertEqual(code, contrib.FAILED)
+        self.assertIn(f'after editing {self.header}', result['dependent_blockers'][0])
+
     def test_prefetched_object_uses_the_same_published_hash_comparison(self):
         units = list(dependents.affected_units(self.repo, self.records, {self.header: 'M'}))
         host = dict(backend='ssh', loader='native', batch=2)
