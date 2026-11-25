@@ -3,11 +3,6 @@
 // Code origin: original static-data template.
 // StaticObjectWrappers, methods and referenced symbols: GUESS(low) STANDIN; ownership and signatures unknown.
 // Adapted bodies: none
-// 0xfefbc0 StaticObjectWrappers::InvokeStaticfefbc0
-// 0xfefbe0 StaticObjectWrappers::InvokeStaticfefbe0
-// 0x1008580 StaticObjectWrappers::InvokeStatic1008580
-// 0x11c07c0 StaticObjectWrappers::InvokeStatic11c07c0
-// 0x11c07e0 StaticObjectWrappers::InvokeStatic11c07e0
 // 0x173c810 StaticObjectWrappers::InvokeStatic173c810
 // 0x17416e0 StaticObjectWrappers::InvokeStatic17416e0
 // 0x1742230 StaticObjectWrappers::InvokeStatic1742230
@@ -102,31 +97,6 @@
 // 0x17c10e0 StaticObjectWrappers::InvokeStatic17c10e0
 // 0x17c37a0 StaticObjectWrappers::InvokeStatic17c37a0
 #include "StaticObjectWrappers.h"
-
-void StaticObjectWrappers::InvokeStaticfefbc0()
-{
-    CallStaticce3250(&StaticData332e310);
-}
-
-void StaticObjectWrappers::InvokeStaticfefbe0()
-{
-    CallStaticce3510(&StaticData332e310);
-}
-
-void StaticObjectWrappers::InvokeStatic1008580()
-{
-    CallStatic101df40(&StaticData33363a0);
-}
-
-void StaticObjectWrappers::InvokeStatic11c07c0()
-{
-    CallStaticce34c0(&StaticData33508f0);
-}
-
-void StaticObjectWrappers::InvokeStatic11c07e0()
-{
-    CallStaticce3520(&StaticData33508f0);
-}
 
 void StaticObjectWrappers::InvokeStatic173c810()
 {

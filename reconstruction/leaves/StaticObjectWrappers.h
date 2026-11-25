@@ -99,9 +99,6 @@ extern "C" StaticStorage StaticData3244cc0;
 extern "C" StaticStorage StaticData325a758;
 extern "C" StaticStorage StaticData325a760;
 extern "C" StaticStorage StaticData3273940;
-extern "C" StaticStorage StaticData332e310;
-extern "C" StaticStorage StaticData33363a0;
-extern "C" StaticStorage StaticData33508f0;
 extern "C" void CallStatic14fa20(StaticStorage*);
 extern "C" void CallStatic17b860(StaticStorage*);
 extern "C" void CallStatic17b8e0(StaticStorage*);
@@ -144,14 +141,9 @@ extern "C" void CallStatic5243d0(StaticStorage*);
 extern "C" void CallStatic5eac00(StaticStorage*);
 extern "C" void CallStaticaaa700(StaticStorage*);
 extern "C" void CallStaticcd4c50(StaticStorage*);
-extern "C" void CallStaticce3250(StaticStorage*);
-extern "C" void CallStaticce34c0(StaticStorage*);
-extern "C" void CallStaticce3510(StaticStorage*);
-extern "C" void CallStaticce3520(StaticStorage*);
 extern "C" void CallStaticd0be30(StaticStorage*);
 extern "C" void CallStaticeb1100(StaticStorage*);
 extern "C" void CallStatic10148b0(StaticStorage*);
-extern "C" void CallStatic101df40(StaticStorage*);
 extern "C" void CallStatic107a820(StaticStorage*);
 extern "C" void CallStatic107a900(StaticStorage*);
 extern "C" void CallStatic10bf160(StaticStorage*);
@@ -161,11 +153,6 @@ extern "C" void CallStatic1554ed0(StaticStorage*);
 
 struct StaticObjectWrappers
 {
-    static void InvokeStaticfefbc0();
-    static void InvokeStaticfefbe0();
-    static void InvokeStatic1008580();
-    static void InvokeStatic11c07c0();
-    static void InvokeStatic11c07e0();
     static void InvokeStatic173c810();
     static void InvokeStatic17416e0();
     static void InvokeStatic1742230();

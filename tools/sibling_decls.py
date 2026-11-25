@@ -213,7 +213,7 @@ SYSTEM_INCLUDES = {'sqrt': '<math.h>', 'sqrtf': '<math.h>', 'sin': '<math.h>', '
                    'size_t': '<stddef.h>', 'MAX_PATH': '<windows.h>', 'HKEY': '<windows.h>', 'DWORD': '<windows.h>',
                    'HKEY_LOCAL_MACHINE': '<windows.h>', '_ULARGE_INTEGER': '<windows.h>', 'ULARGE_INTEGER': '<windows.h>', 'HANDLE': '<windows.h>', 'HWND': '<windows.h>', 'HINSTANCE': '<windows.h>',
                    'LPCSTR': '<windows.h>', 'BOOL': '<windows.h>', 'GUID': '<windows.h>', 'LARGE_INTEGER': '<windows.h>',
-                   '__m128': '<intrin.h>', '__m128i': '<intrin.h>', '__m128d': '<intrin.h>', 'placement new': '<new>'}
+                   '__m128': '<intrin.h>', '__m128i': '<intrin.h>', '__m128d': '<intrin.h>', 'placement new': '<new>', 'va_list': '<stdarg.h>'}
 
 
 def statements(h):
