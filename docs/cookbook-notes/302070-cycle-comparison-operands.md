@@ -1,6 +1,6 @@
 # 0x302070 TESObjectREFR::Function302070
 
-<!-- tags: construct/loop wall/register-schedule -->
+<!-- tags: construct/loop, wall/register-schedule -->
 
 - Function: 0x302070 TESObjectREFR::Function302070
 - Label: GUESS(low)

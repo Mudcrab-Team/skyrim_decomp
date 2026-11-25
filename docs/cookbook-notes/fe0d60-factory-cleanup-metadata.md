@@ -1,6 +1,6 @@
 # 0xfe0d60 BSPSysArrayEmitter::Functionfe0d60
 
-<!-- tags: abi/exception construct/allocation -->
+<!-- tags: abi/exception, construct/allocation -->
 
 - Function: 0xfe0d60 BSPSysArrayEmitter::Functionfe0d60
 - Label: GUESS(low)

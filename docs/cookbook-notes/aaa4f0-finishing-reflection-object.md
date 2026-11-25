@@ -1,6 +1,6 @@
 # 0xaaa4f0 hkSimpleLocalFrame::Functionaaa4f0
 
-<!-- tags: method/sibling sibling/f3 construct/constructor -->
+<!-- tags: method/sibling, sibling/f3, construct/constructor -->
 
 - Function: 0xaaa4f0 hkSimpleLocalFrame::Functionaaa4f0
 - Label: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)

@@ -1,6 +1,6 @@
 # 0x155ae30 BSWaterShaderMaterial::Function155ae30
 
-<!-- tags: abi/virtual construct/constructor -->
+<!-- tags: abi/virtual, construct/constructor -->
 
 - Function: 0x155ae30 BSWaterShaderMaterial::Function155ae30
 - Label: GUESS(low)

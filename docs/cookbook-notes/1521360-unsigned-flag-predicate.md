@@ -1,6 +1,6 @@
 # 0x1521360 BSShaderAccumulator::Function1521360
 
-<!-- tags: construct/bitfield wall/flag-fold -->
+<!-- tags: construct/bitfield, wall/flag-fold -->
 
 - Function: 0x1521360 BSShaderAccumulator::Function1521360
 - Label: GUESS(low)

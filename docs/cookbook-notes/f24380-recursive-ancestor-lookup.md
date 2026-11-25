@@ -1,6 +1,6 @@
 # 0xf24380 NiCollisionData::Functionf24380
 
-<!-- tags: method/sibling sibling/f3 construct/loop -->
+<!-- tags: method/sibling, sibling/f3, construct/loop -->
 
 - Function: 0xf24380 NiCollisionData::Functionf24380
 - Label: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0)

@@ -1,6 +1,6 @@
 # 0x1502e0 MagicItem::Function1502e0
 
-<!-- tags: construct/switch wall/control-flow -->
+<!-- tags: construct/switch, wall/control-flow -->
 
 - Function: 0x1502e0 MagicItem::Function1502e0
 - Label: GUESS(low)

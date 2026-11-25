@@ -1,6 +1,6 @@
 # 0x161b00 ExtraDataList::Function161b00
 
-<!-- tags: abi/calling-convention wall/layout -->
+<!-- tags: abi/calling-convention, wall/layout -->
 
 - Function: 0x161b00 ExtraDataList::Function161b00
 - Label: GUESS(low)
