@@ -245,9 +245,9 @@ public:
 
 extern WorldLookup* worldLookup;
 
-TESWorldSpace* TESObjectREFR::Function2ebcb0() const
+bool TESObjectREFR::Function2ebcb0() const
 {
-    return worldLookup->Function1a2200(parentCell, nullptr);
+    return worldLookup->Function1a2200(parentCell, false);
 }
 
 bool TESObjectREFR::Function2f5930() const
