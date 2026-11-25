@@ -192,11 +192,11 @@ class StartExistingUnitTests(unittest.TestCase):
         self.assertEqual(data['unit'], ['reconstruction/custom/Widget.h', self.unit])
         self.assertEqual(data['created'], [])
 
-    def test_a_function_the_unit_does_not_name_still_gets_its_own_header(self):
+    def test_a_new_function_is_registered_without_a_source_marker(self):
         self.run_start(rva=0x2000)
-        text = (self.repo / self.unit).read_text()
-        self.assertTrue(text.endswith(self.cpp_text))
-        self.assertIn('// 0x2000 ', text)
+        self.assertEqual((self.repo / self.unit).read_text(), self.cpp_text)
+        task = json.loads((self.tdir / 'task.json').read_text())
+        self.assertIn('0x2000', [fn['rva'] for fn in task['functions']])
 
 
 class UnitIndexTests(unittest.TestCase):

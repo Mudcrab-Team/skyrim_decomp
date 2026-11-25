@@ -2413,6 +2413,59 @@ def start_unit(ctx, cls, rvas, args, claimed_unit):
     return next(iter(candidates), None)
 
 
+def start_names(root, functions):
+    """Replace placeholders only with a name tied to the RVA."""
+    import pdb_facts
+    import pdb_types
+    from lint_reconstruction import LABEL_LINE
+
+    pending = {fn['rva'] for fn in functions if BARE_PLACEHOLDER.fullmatch(fn.get('name', '').split('::')[-1])}
+    if not pending:
+        return functions
+    claims = unit_claims(root, pending)
+    pdb = pdb_types.load_tree(root)
+    alignment = attempt_progress.read_json(root / 'data/symbol-alignment.json')
+    name_in = re.compile(r'(?<![\w:])' + PLAIN_NAME.pattern + r'(?![\w:])')
+    resolved = []
+    for fn in functions:
+        rva = fn['rva']
+        if rva not in pending:
+            resolved.append(fn)
+            continue
+        hints = {}
+        for unit in claims.get(rva, ()):
+            for path in (root / unit, (root / unit).with_suffix('.h')):
+                if not path.is_file():
+                    continue
+                text = path.read_text(encoding='utf-8-sig')
+                for claimed, declaration in rva_headers.compact_claims(text):
+                    if claimed == rva and (m := name_in.search(declaration)) and not BARE_PLACEHOLDER.fullmatch(m[2]):
+                        name = m[0]
+                        labels = [line['labels'] for line in map(LABEL_LINE.match, text.splitlines())
+                                  if line and name in re.split(r'\s*,\s*', line['names'])]
+                        hints.setdefault(name, labels[0] if labels else None)
+        owner = fn.get('name', '').rpartition('::')[0]
+        hints = {name: label for name, label in hints.items() if not owner or name.startswith(owner + '::')}
+        if len(hints) > 1:
+            hints.clear()
+        facts = pdb_facts.committed_facts(root, rva, tree=pdb, alignment=alignment)
+        for fact in (facts.get('crashlogger'), facts.get('alignment')):
+            if hints:
+                break
+            raw = (fact or {}).get('name') or ''
+            decorated = re.fullmatch(r'\?(\w+)@(\w+)@@.*', raw)
+            if decorated:
+                raw = f'{decorated[2]}::{decorated[1]}'
+            if m := (name_in.search(raw) or name_in.search(raw.replace('__', '::'))):
+                if (not owner or owner == m[1]) and not BARE_PLACEHOLDER.fullmatch(m[2]):
+                    hints.setdefault(m[0], fact['label'])
+        if hints:
+            name, label = next(iter(hints.items()))
+            fn = dict(fn, name=name, name_origin=label or fn.get('name_origin', 'GUESS'))
+        resolved.append(fn)
+    return resolved
+
+
 def start(ctx, args, quiet=False):
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
@@ -2425,6 +2478,7 @@ def start(ctx, args, quiet=False):
         if fn['status'] == 'matched' and not args.practice:
             raise Stop(USAGE, f'{text} is already matched; use --practice to try it as an exercise', f'{ctx.cli} next')
         fns.append(fn)
+    fns = start_names(ctx.repo, fns)
     given = getattr(args, 'class_name', None)
     if given is not None and not PLAIN_NAME.fullmatch(f'{given}::Function'):
         raise Stop(USAGE, f'--class must be a plain class name such as TESObjectCELL, not {given!r}')
@@ -2477,10 +2531,16 @@ def start(ctx, args, quiet=False):
     functions = {parse_rva(f['rva']): f for f in old.get('functions', [])}
     for fn in fns:
         dest, _pack = write_pack(ctx, exe, fn, names)
-        functions.setdefault(fn['rva'], {
+        entry = functions.setdefault(fn['rva'], {
             'rva': f'0x{fn["rva"]:x}', 'size': fn['size'],
             'symbol': by_rva.get(fn['rva']) or f'unbound:{fn["name"]}',
             'function_id': fn['id'], 'community_name': fn['name'], 'pack': str(dest)})
+        if BARE_PLACEHOLDER.fullmatch((entry.get('community_name') or '').split('::')[-1]):
+            entry['community_name'] = fn['name']
+            if entry['symbol'].startswith('unbound:'):
+                entry['symbol'] = by_rva.get(fn['rva']) or f'unbound:{fn["name"]}'
+        if entry['community_name'] == fn['name'] and fn.get('name_origin'):
+            entry['name_origin'] = fn['name_origin']
     recipe = args.recipe or old.get('recipe') or DEFAULT_RECIPE
     sibling = sibling_section(ctx, cls, sorted(functions))
     if sibling:
@@ -2489,7 +2549,10 @@ def start(ctx, args, quiet=False):
     from header_index import advice as header_advice
     declaration_advice = [hint for mm in m if mm for hint in header_advice(ctx.repo, mm.group(1), mm.group(2))]
     created = []
-    if not args.practice and not getattr(args, 'code_origin', None) and ctx.interactive:
+    existing = (ctx.repo / cpp).is_file()
+    from unit_skeleton import BODY_MARKER
+    extending_skeleton = existing and BODY_MARKER in (ctx.repo / cpp).read_text(encoding='utf-8-sig')
+    if not args.practice and (not existing or extending_skeleton) and not getattr(args, 'code_origin', None) and ctx.interactive:
         args.code_origin = input('Code origin: describe the actual sources and any adaptation '
                                  '(leave blank to fill the required header after drafting): ').strip() or None
     if not (ctx.repo / cpp).exists():
@@ -2518,7 +2581,7 @@ def start(ctx, args, quiet=False):
         write_source(ctx.repo / cpp, cpp_text)
         created.append(cpp)
         save_config(ctx, drafted_by=drafted)
-    if not args.practice:
+    if not args.practice and (created or extending_skeleton):
         drafted = args.drafted_by or load_config(ctx).get('drafted_by') or 'unknown'
         text = (ctx.repo / cpp).read_text()
         claimed = rva_headers.claimed_rvas([text, (ctx.repo / header).read_text() if (ctx.repo / header).is_file() else ''])
@@ -2537,6 +2600,8 @@ def start(ctx, args, quiet=False):
                 'replace each code-origin placeholder truthfully before compare. '
                 'Preflight removes unused starter header lines it can identify. '
                 'Accepted companions are re-confirmed by the project.')
+    elif not args.practice:
+        ctx.say('Existing source kept as written. Add any new function declarations, bodies, and provenance yourself.')
     if not quiet:
         for hint in declaration_advice:
             ctx.say(hint)
@@ -3226,33 +3291,55 @@ def prune_unused_headers(ctx, tdir, task):
 
 
 def cmd_preflight(ctx, args):
-    """Source-only intake checks are useful before the first local comparator pass, too."""
+    """Check source intake and recheck accepted dependents of shared edits."""
+    from contrib_dependents import recheck
     from contrib_validation import project_reconfirmation
-    picked = select_tasks(ctx, args) if not args.staged or args.task or args.all_dirty else []
+    from scoped_memo import memo_scope
+    picked = select_tasks(ctx, args) if (args.task or args.all_dirty
+                                         or not args.staged and (not args.base or task_files(ctx))) else []
     up, _push = upstream_remote(ctx)
     base = args.base or (f'{up}/main' if up else 'origin/main')
     if ctx.run(['git', 'rev-parse', '--verify', '--quiet', base], cwd=ctx.repo, capture_output=True).returncode:
         base = 'HEAD'
     head = git(ctx, 'write-tree') if args.staged else None
+    fork = git(ctx, 'merge-base', base, 'HEAD')
     if head:
-        files = changed_files(ctx, git(ctx, 'merge-base', base, 'HEAD'), head, index_tree=True)
+        changes = files = changed_files(ctx, fork, head, index_tree=True)
     else:
         for tdir, task in picked:
             prune_unused_headers(ctx, tdir, task)
         unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
         files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
+        changes = [(s, n) for s, n in changed_files(ctx, fork, head=None) if n.startswith('reconstruction/')]
+        untracked = git(ctx, 'ls-files', '-z', '--others', '--exclude-standard', '--', 'reconstruction/')
+        changes += [('A', n) for n in untracked.split('\0') if n]
+        files = list({name: (status, name) for status, name in files + changes}.values())
     reminders = [line for d_, t_ in picked
                  for line in note_reminders(ctx, t_, last_results(d_))]
     details = {}
-    problems = intake_problems(ctx, base, head=head, files=files, details=details, scope=True)
-    reconfirmation = project_reconfirmation(ctx.repo, [n for _status, n in files])
+    dependents = None
+    with memo_scope():
+        problems = intake_problems(ctx, base, head=head, files=files, details=details, scope=True)
+        reconfirmation = project_reconfirmation(ctx.repo, [n for _status, n in files])
+        if not problems:
+            try:
+                dependents = recheck(ctx, changes, head)
+            except (OSError, ValueError, subprocess.SubprocessError):
+                problems.append('dependent recheck could not read the source snapshot or published target manifest')
     labels, origin, warnings = (details.get('label_findings', []), details.get('origin_findings', []),
                                 details.get('warnings', []))
+    for row in (dependents or {}).get('functions', ()):
+        if row['result'] == 'hash-match':
+            continue
+        line = (f'dependent recheck {row["rva"]} {row["name"] or ""} in {row["unit"]}: '
+                f'{row["reason"]} after editing {", ".join(row["includes"])}')
+        (problems if row['result'] == 'mismatch' else warnings).append(line)
     details_lines = ([f'BLOCKED: {item}' for item in problems] +
                      [f'label: {item}' for item in labels] +
                      [f'{item["file"]}:1: {item["rva"]}: {item["status"]}' for item in reconfirmation] +
                      [f'warning: {item}' for item in warnings] + reminders)
-    if getattr(args, 'verbose', False) or args.staged or ctx.as_json or ctx.env.get('CI'):
+    if (getattr(args, 'verbose', False) or args.staged or ctx.as_json or ctx.env.get('CI')
+            or any(row['result'] != 'hash-match' for row in (dependents or {}).get('functions', ()))):
         for line in (reminders + [f'warning: {item}' for item in warnings] +
                      [f'BLOCKED: {item}' for item in problems] +
                      [f'{item["file"]}:1: {item["rva"]}: {item["status"]}' for item in reconfirmation] +
@@ -3265,7 +3352,8 @@ def cmd_preflight(ctx, args):
         if details_lines:
             ctx.say(details_lines[0] + (' (use --verbose for all findings)' if len(details_lines) > 1 else ''))
     return (FAILED if problems else OK), dict(problems=problems, blockers=problems, label_findings=labels,
-                                            project_reconfirmation=reconfirmation, origin_findings=origin, warnings=warnings), \
+                                            project_reconfirmation=reconfirmation, origin_findings=origin,
+                                            warnings=warnings, dependent_recheck=dependents), \
         'fix the listed findings' if problems else f'{ctx.cli} compare'
 
 

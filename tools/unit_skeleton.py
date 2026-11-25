@@ -578,7 +578,10 @@ def plan(unit, repo=None):
         label, _ = community_label(ident.get('name_source'))
         method = method_of(f, cls)
         decl = None if method in ('ctor', 'dtor') else community_declaration(f, unit['material'], method)
-        members.append({'fn': f, 'method': method, 'label': label, 'decl': decl,
+        name_origin = f.get('name_origin') or ''
+        name_label = name_origin if re.fullmatch(
+            r'CRASHLOGGER_PDB\(59818@[\w.+-]+\)|SYMBOLS\((?:tesv-2013-map|fo4-pdb|fnv-x360-pdb)\)', name_origin) else None
+        members.append({'fn': f, 'method': method, 'label': label, 'name_label': name_label, 'decl': decl,
                         'parts': split_declaration(decl) if decl else None})
         class_label = class_label or label
     # Repeated bare `dtor` names are not evidence that distinct RVAs are one C++ destructor.
@@ -663,6 +666,8 @@ def render_unit(unit, drafted_by=None, repo=None):
             '}']))
     for m in p['members']:
         f, method = m['fn'], m['method']
+        if m['name_label']:
+            add(f'{cls}::{method}', m['name_label'])
         rva, size = int(str(f['rva']), 16) if isinstance(f['rva'], str) else f['rva'], f['size']
         where = f'RVA 0x{rva:x}, {size} bytes, {f.get("community_name")}'
         kind = (f.get('destructor') or {}).get('kind')
@@ -721,7 +726,7 @@ def render_unit(unit, drafted_by=None, repo=None):
         else:
             if m['label']:
                 add(f'{cls}::{method}', m['label'])
-            else:
+            elif not m['name_label']:
                 add(f'{cls}::{method}', 'GUESS(low)')
             decls.append(f'void {method}();  // compared: 0x{rva:x}; TODO signature: no community declaration, '
                          'read it from the listing')

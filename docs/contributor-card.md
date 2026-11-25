@@ -30,6 +30,16 @@ bigger PRs help most: each PR costs a full verification and merge cycle, and lar
 merged cleanly in about an hour. Thank you, don't be shy.
 `submit <task> <task>...` (or
 `submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
+`./sr preflight --base <ref>` checks shared source edits in the working tree. Add `--staged` to check
+the index snapshot. Preflight compiles affected accepted units once each and checks their functions
+against published target hashes. It reports the number of units, elapsed time and which edited
+includes affect each failed or unavailable comparison. A configured Windows PC can prefetch
+the compiles. Local compilation uses up to four jobs.
+
+`./sr start` keeps existing hand-written source as written. Add the declarations, bodies, function
+header lines and provenance for your new work. When it can tie a known name to the RVA, `start`
+records the name and its origin in the task.
+
 `next --class REGEX` ranks matching classes across all sizes. Add `--max-size` to limit the results.
 `claim ... --skip-conflicts` claims the functions nobody holds and names the others with their claim issues.
 `next` offers callee-ready functions first. The complete list is published in shards indexed by

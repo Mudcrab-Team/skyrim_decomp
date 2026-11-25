@@ -314,18 +314,29 @@ def intake_problems(ctx, rows, head=None, details=None):
     return sorted(set(problems))
 
 
-def accepted_sources(root):
-    """Use the same accepted-unit include closures intake collects for companion regressions."""
+def accepted_records(root):
+    """Load the matched inventory and its records together, in report-shard order."""
+    from scoped_memo import memoized
+    return memoized(('accepted_records', Path(root)), lambda: list(_accepted_records(Path(root))))
+
+
+def _accepted_records(root):
     root = Path(root)
     path = root / 'data/progress.json'
     if not path.is_file():
         return
-    functions = [fn for fn in json.loads(path.read_text())['functions']
-                 if fn.get('status') == 'matched' and fn.get('report')]
+    functions = sorted((fn for fn in json.loads(path.read_text())['functions']
+                        if fn.get('status') == 'matched' and fn.get('report')), key=lambda fn: fn['rva'])
     from sparse_checkouts import reports
     for fn, (_name, record) in zip(functions, reports(root, [fn['report'] for fn in functions])):
         if record is None:
             raise ValueError('accepted companion report is missing')
+        yield fn, record
+
+
+def accepted_sources(root):
+    """Use the same accepted-unit include closures intake collects for companion regressions."""
+    for fn, record in accepted_records(root):
         yield fn, record['source']
 
 

@@ -196,11 +196,12 @@ class Preflight(fixtures.SubmitTests):
         self.git('remote', 'remove', 'fork')
         self.assertEqual(self.preflight()[0], contrib.OK)
 
-    def test_extension_headers_are_prefilled_per_function_without_inventing_origin(self):
+    def test_start_preserves_handwritten_source_and_records_the_rva_name(self):
         fn = next(f for f in contrib.inventory(ROOT)['functions'] if f['rva'] == self.RVA)
         extra = dict(fn, id='synthetic-extra', rva=self.RVA + 0x1000,
-                     name='TESActorBaseData::GetSynthetic', size=4, status='mapped')
+                     name=f'Function{self.RVA + 0x1000:x}', size=4, status='mapped')
         source = self.repo / self.unit[1]
+        original = source.read_bytes()
         (self.repo / 'reports' / fixtures.TARGET['build_id']).mkdir(parents=True)
         (self.repo / 'reports' / fixtures.TARGET['build_id'] / 'symbol-map.json').write_text('{"symbols": {}}')
         ctx = self.ctx(repo=self.repo)
@@ -211,14 +212,27 @@ class Preflight(fixtures.SubmitTests):
                 patch.object(contrib, 'require_exe', return_value={'path': 'synthetic-local-input'}), \
                 patch.object(contrib, 'public_names', return_value={}), \
                 patch.object(contrib, 'write_pack', return_value=(self.tmp / 'pack', {})), \
+                patch('pdb_facts.committed_facts', return_value={'crashlogger': {
+                    'name': 'TESActorBaseData::GetSynthetic', 'label': 'CRASHLOGGER_PDB(59818@test)'}}), \
                 patch.object(contrib, 'refresh_symbols'), patch.object(contrib, 'sibling_section', return_value=[]):
             contrib.start(ctx, args)
-        header = source.read_text().split('#include', 1)[0]
-        for text in (f'// {hex(extra["rva"])} ', 'SKELETON_TODO_CODE_ORIGIN'):
-            self.assertIn(text, header)
-        for text in (extra['build_id'], extra['evidence'], contrib.DEFAULT_RECIPE, 'Drafted by', '4 bytes'):
-            self.assertNotIn(text, header)  # the short header leaves out what the records hold
-        self.assertIn('original synthetic fixture', header)  # the older declaration was preserved
+        self.assertEqual(source.read_bytes(), original)
+        task = json.loads((self.tdir / 'task.json').read_text())
+        found = next(fn for fn in task['functions'] if fn['rva'] == hex(extra['rva']))
+        self.assertEqual(found['community_name'], 'TESActorBaseData::GetSynthetic')
+        self.assertEqual(found['name_origin'], 'CRASHLOGGER_PDB(59818@test)')
+
+    def test_start_uses_a_claiming_declaration_or_rva_aligned_symbol(self):
+        source = self.repo / self.unit[1]
+        source.write_text('// 0x2000 void TESActorBaseData::Declared()\n'
+                          '// TESActorBaseData::Declared: OBSERVED\n' + source.read_text())
+        functions = [{'rva': rva, 'name': f'Function{rva:x}'} for rva in (0x2000, 0x3000, 0x4000)]
+        with patch('pdb_facts.committed_facts', side_effect=[{}, {'alignment': {
+                'name': 'Other::Aligned', 'label': 'SYMBOLS(tesv-2013-map)'}}, {}]):
+            found = contrib.start_names(self.repo, functions)
+        self.assertEqual([(fn['name'], fn.get('name_origin')) for fn in found], [
+            ('TESActorBaseData::Declared', 'OBSERVED'), ('Other::Aligned', 'SYMBOLS(tesv-2013-map)'),
+            ('Function4000', None)])
 
 
 class AcceptanceIsUnchanged(gate.GateFixture, unittest.TestCase):
