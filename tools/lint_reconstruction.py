@@ -3,8 +3,9 @@
 These are the mechanical parts of the Reviewer's checklist (docs/verification.md, acceptance
 rule item 2), so a Reviewer pass is not spent on them and a Drafter learns them from the tool:
 
-- layout: `reconstruction/<area>/<Class>.h` and `.cpp` with a lowercase area and a class-named
-  file; the .cpp includes its own header by quoted name and the header declares the class;
+- layout: paired `.h` and `.cpp` files in a lowercase area. The .cpp includes its own header
+  by quoted name. A class-named header declares its class and a `FreeFunction_<rva>.h` header
+  declares a labelled function;
   recipes are `reconstruction/recipes/*.json`; README.md and the generated INDEX.md are the only
   other files;
 - banned constructs, checked on the spliced logical lines of tools/source_digest.py (backslash-
@@ -78,7 +79,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, logical_lines, quoted_includes  # noqa: E402
-from digest_v2 import LABEL_WORD  # noqa: E402
+from digest_v2 import LABEL_WORD, strip_comments  # noqa: E402
 import pdb_types  # noqa: E402
 import unit_paths  # noqa: E402
 
@@ -95,6 +96,12 @@ ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
 # The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
 # single-level layout is accepted too while units written against it are still landing.
 SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+FREE_FUNCTION_PREFIX = 'FreeFunction_'
+FREE_FUNCTION_UNIT = re.compile(rf'{FREE_FUNCTION_PREFIX}[0-9a-f]+')
+FREE_FUNCTION_TOKENS = re.compile(
+    r'^[ \t]*(?:extern[ \t]+"C"[ \t]+)?[A-Za-z_][\w:<>.,\s*&]*?[\s*&]'
+    r'(?P<name>[A-Za-z_]\w*)\s*\([^;{}]*\)[^;{}]*;'
+    r'|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|[{}]', re.M)
 # A second unit of a split class is named `<Class>_<lowest rva>`; the class it declares is the base.
 SPLIT_TAG = re.compile(r'_[0-9a-f]{3,8}$')
 CODEGEN_DECLSPEC = r'naked|code_seg|allocate|safebuffers'
@@ -609,6 +616,25 @@ def skeleton_problems(name, text):
     return problems
 
 
+def free_function_header_problems(blob, name, header):
+    try:
+        code = strip_comments(blob, name, keep_provenance=False)
+    except ValueError as exc:
+        return [str(exc)]
+    labelled = {n.strip() for line in header.splitlines()
+                if (label := LABEL_LINE.match(line)) and ORIGIN_LABEL.search(label['labels'])
+                for n in label['names'].split(',')}
+    depth = 0
+    for token in FREE_FUNCTION_TOKENS.finditer(code):
+        if token[0] == '{':
+            depth += 1
+        elif token[0] == '}':
+            depth -= 1
+        elif depth == 0 and token['name'] in labelled:
+            return []
+    return [f'{name}: header must declare a free function with a name-origin label']
+
+
 def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_files=None):
     """Findings for one file; `skeleton_ok` skips only the skeleton-placeholder rule, `compact` adds
     the header budget that new and changed units must meet."""
@@ -699,6 +725,8 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
     else:
         if not any(re.search(rf'\b{o}\b', header) for o in NAME_ORIGINS):
             problems.append(f'{name}: header comment must label name origin ({", ".join(NAME_ORIGINS)})')
+        if FREE_FUNCTION_UNIT.fullmatch(cls):
+            return problems + free_function_header_problems(blob, name, header)
         declared = (cls, SPLIT_TAG.sub('', cls))
         # An address-derived filename may house a class whose name came from a sibling.
         if re.fullmatch(r'Unk[0-9a-fA-F]+', declared[-1]):

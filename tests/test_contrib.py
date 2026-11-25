@@ -820,6 +820,36 @@ class TaskRoutingTests(Base):
         (self.repo / self.small).write_text('// 0x11 Owner::Small\nint Owner::Small() { return 17; }\n')
         (self.repo / self.large).write_text('// 0x22 Owner::Large\nint Owner::Large() { return 34; }\n')
 
+    def test_start_creates_a_plain_free_function_with_provenance(self):
+        fn = {'id': 'toy-free', 'build_id': 'toy', 'rva': 0x1234, 'size': 1, 'name': 'RunExample',
+              'status': 'mapped', 'name_origin': 'SYMBOLS(tesv-2013-map)'}
+        report = self.repo / 'reports/toy/symbol-map.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{"symbols": {}}')
+        args = contrib.parser().parse_args(['start', '0x1234', '--no-branch', '--drafted-by', 'tester'])
+        with unittest.mock.patch.object(contrib, 'inventory', return_value={'functions': [fn]}), \
+                unittest.mock.patch.object(contrib, 'target_manifest', return_value={'build_id': 'toy'}), \
+                unittest.mock.patch.object(contrib, 'require_exe', return_value={'path': self.tmp / 'image'}), \
+                unittest.mock.patch.object(contrib, 'write_pack', return_value=(self.tmp / 'pack', {})), \
+                unittest.mock.patch('x64_lookup.hints', return_value=({}, [])):
+            code, result, _ = contrib.start(self.ctx_, args, quiet=True)
+        self.assertEqual(code, contrib.OK)
+        header, source = result['created']
+        self.assertEqual(source, 'reconstruction/unmapped/support/FreeFunction_1234.cpp')
+        header_text = (self.repo / header).read_text()
+        source_text = (self.repo / source).read_text()
+        self.assertNotIn('class ', header_text)
+        self.assertIn('\nvoid RunExample();', header_text)
+        self.assertIn('// RunExample: SYMBOLS(tesv-2013-map)', header_text)
+        self.assertIn('// 0x1234 RunExample\n', source_text)
+        self.assertIn('SKELETON_TODO_CODE_ORIGIN', source_text)
+        self.assertIn('#include "FreeFunction_1234.h"', source_text)
+        self.assertIn('\nvoid RunExample()\n{\n    SKELETON_TODO_BODY;', source_text)
+        for path in (header, source):
+            self.assertEqual(lint_reconstruction.lint_file(self.repo, path, 'toy', skeleton_ok=True), [])
+        task = json.loads((self.private / 'tasks' / result['task'] / 'task.json').read_text())
+        self.assertEqual(task['functions'][0]['community_name'], 'RunExample')
+
     def test_start_targets_the_claimed_unit_instead_of_the_other_class_task(self):
         task = self.private / 'tasks/contrib-owner'
         task.mkdir(parents=True)
@@ -1157,10 +1187,11 @@ class FollowUpTests(Base):
 
     def test_start_names_the_class_of_a_bare_placeholder_entry_only_when_given(self):
         stop, seen = self._bare_entry_start()
-        self.assertIn('--class', stop.message)
-        self.assertNotIn('named', seen)
+        self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'FreeFunction_2c5ce0')
         stop, seen = self._bare_entry_start('--class', 'TESObjectCELL')
         self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'TESObjectCELL')
         stop, seen = self._bare_entry_start('--class', 'not a class')
         self.assertIn('--class must be', stop.message)
         self.assertNotIn('named', seen)
@@ -1169,6 +1200,11 @@ class FollowUpTests(Base):
         stop, seen = self._bare_entry_start('--class', 'TESObjectCELL', name='TESObjectCell::GetValue')
         self.assertTrue(seen.get('named'), stop.message)
         self.assertEqual(seen['class'], 'TESObjectCELL')
+
+    def test_start_explains_why_class_does_not_apply_to_a_named_free_function(self):
+        stop, seen = self._bare_entry_start('--class', 'TESObjectCELL', name='RunExample')
+        self.assertIn('--class does not apply to free function RunExample', stop.message)
+        self.assertNotIn('named', seen)
 
     def test_redact_hides_checkout_and_home(self):
         home = str(self.tmp / 'home')

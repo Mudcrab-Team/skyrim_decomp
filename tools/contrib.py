@@ -86,6 +86,7 @@ DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 SELF_TEST_RVA = 0xef8900
 UNIT_PATH = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
 PLAIN_NAME = re.compile(r'((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)::(~?[A-Za-z_][A-Za-z0-9_]*)')
+FREE_NAME = re.compile(r'[A-Za-z_][A-Za-z0-9_]*')
 # A claim-time entry with no class: the bare RVA placeholder (tools/claimable.py).
 BARE_PLACEHOLDER = re.compile(r'Function[0-9a-f]+')
 RVA_TOKEN = re.compile(r'(?<![0-9A-Za-z])0x([0-9a-fA-F]{3,8})(?![0-9A-Za-z])')
@@ -2382,7 +2383,7 @@ def practice_unit(root, rvas):
     return units.pop()
 
 
-def start_unit(ctx, cls, rvas, args, claimed_unit):
+def start_unit(ctx, stem, rvas, args, claimed_unit):
     import pdb_types
 
     requested = getattr(args, 'unit', None)
@@ -2402,8 +2403,8 @@ def start_unit(ctx, cls, rvas, args, claimed_unit):
         return cpp
 
     candidates = set.intersection(*claims.values()) if claims else {
-        rel for p in (ctx.repo / 'reconstruction').rglob(f'{cls}*.cpp')
-        if (p.stem == cls or p.stem.startswith(cls + '_'))
+        rel for p in (ctx.repo / 'reconstruction').rglob(f'{stem}*.cpp')
+        if (p.stem == stem or p.stem.startswith(stem + '_'))
         and (rel := p.relative_to(ctx.repo).as_posix()) and UNIT_PATH.fullmatch(rel)
         and not pdb_types.is_generated(rel)}
     if args.area and not claims:
@@ -2467,6 +2468,8 @@ def start_names(root, functions):
 
 
 def start(ctx, args, quiet=False):
+    from unit_skeleton import BODY_MARKER, SkeletonError, contributor_files, unit_stem
+
     data = inventory(ctx.repo)
     target = target_manifest(ctx.repo)
     fns = []
@@ -2487,33 +2490,42 @@ def start(ctx, args, quiet=False):
         for i, fn in enumerate(fns):
             name = fn.get('name') or ''
             owner, qualified, method = name.rpartition('::')
+            if not qualified and FREE_NAME.fullmatch(method) and not BARE_PLACEHOLDER.fullmatch(method):
+                raise Stop(USAGE, f'--class does not apply to free function {name}; omit --class to start it',
+                           f'{ctx.cli} start {fn["rva"]:#x}')
             if owner == given or not (qualified or BARE_PLACEHOLDER.fullmatch(method)):
                 continue
             if qualified and method in (owner, f'~{owner}'):
                 method = f'~{given}' if method.startswith('~') else given
             fns[i] = dict(fn, name=f'{given}::{method}', name_origin='GUESS')
-    m = [PLAIN_NAME.fullmatch(fn.get('name') or '') for fn in fns]
-    claimed_unit = practice_unit(ctx.repo, {fn['rva'] for fn in fns}) if args.practice else None
-    if not claimed_unit and not all(m):
-        bare = any(BARE_PLACEHOLDER.fullmatch(fn.get('name') or '') for fn in fns)
-        raise Stop(USAGE, 'only plain Class::Method names can be started with a skeleton'
-                   + ('; an entry named Function<rva> has no class yet: pass --class <ClassName>, '
-                      'your reading of the owner (label it GUESS unless a public table names it)' if bare else ''),
-                   f'{ctx.cli} next')
-    classes = {x.group(1) for x in m if x}
-    if not claimed_unit and len(classes) != 1:
-        raise Stop(USAGE, 'one unit per task: give functions of one class')
-    cls = Path(claimed_unit).stem if claimed_unit else classes.pop()
+    member_names = [PLAIN_NAME.fullmatch(fn.get('name') or '') for fn in fns]
+    free = all(FREE_NAME.fullmatch(fn.get('name') or '') for fn in fns)
+    rvas = {fn['rva'] for fn in fns}
+    claimed_unit = practice_unit(ctx.repo, rvas) if args.practice else None
+    if not claimed_unit:
+        if free and len(fns) != 1:
+            raise Stop(USAGE, 'one unit per task: start free functions one RVA at a time')
+        if not free and not all(member_names):
+            raise Stop(USAGE, 'start takes one plain free-function name or plain Class::Method names from one class',
+                       f'{ctx.cli} next')
+        if len({match[1] for match in member_names if match}) > 1:
+            raise Stop(USAGE, 'one unit per task: give functions of one class')
+    if claimed_unit:
+        stem = Path(claimed_unit).stem
+        cls = None if free else stem
+    else:
+        cls = None if free else member_names[0][1]
+        stem = unit_stem(cls, fns[0]['rva'])
     import unit_paths
     if args.area is not None and not unit_paths.area_accepted(args.area):
         raise Stop(USAGE, f'--area must be one of the areas in tools/unit_paths.py (for example skyrim/ai), '
                    f'not {args.area!r}')
-    cpp = start_unit(ctx, cls, {fn['rva'] for fn in fns}, args, claimed_unit)
+    cpp = start_unit(ctx, stem, rvas, args, claimed_unit)
     if cpp:
         header = Path(cpp).with_suffix('.h').as_posix()
         area = Path(cpp).parent.relative_to('reconstruction').as_posix()
     else:
-        area, header, cpp = unit_files(ctx.repo, cls, args.area, index={})
+        area, header, cpp = unit_files(ctx.repo, stem, args.area or ('unmapped/support' if free else None), index={})
     if area is None:
         raise Stop(USAGE, f'no area rule for class {cls} (reconstruction/README.md, "Layout")',
                    f'{ctx.cli} start {" ".join(args.rva)} --area <area>  (ask in your claim issue which area)')
@@ -2542,15 +2554,14 @@ def start(ctx, args, quiet=False):
         if entry['community_name'] == fn['name'] and fn.get('name_origin'):
             entry['name_origin'] = fn['name_origin']
     recipe = args.recipe or old.get('recipe') or DEFAULT_RECIPE
-    sibling = sibling_section(ctx, cls, sorted(functions))
+    sibling = sibling_section(ctx, cls, sorted(functions)) if cls else []
     if sibling:
         (tdir / 'sibling.md').write_text(f'# {cls}: pointers into the FNV decompilation (private)\n'
                                          + '\n'.join(sibling) + '\n')
     from header_index import advice as header_advice
-    declaration_advice = [hint for mm in m if mm for hint in header_advice(ctx.repo, mm.group(1), mm.group(2))]
+    declaration_advice = [hint for match in member_names if match for hint in header_advice(ctx.repo, *match.groups())]
     created = []
     existing = (ctx.repo / cpp).is_file()
-    from unit_skeleton import BODY_MARKER
     extending_skeleton = existing and BODY_MARKER in (ctx.repo / cpp).read_text(encoding='utf-8-sig')
     if not args.practice and (not existing or extending_skeleton) and not getattr(args, 'code_origin', None) and ctx.interactive:
         args.code_origin = input('Code origin: describe the actual sources and any adaptation '
@@ -2562,7 +2573,6 @@ def start(ctx, args, quiet=False):
         if not drafted:
             raise Stop(CONSENT, 'say who drafts the unit (a person, and the AI model if one writes code)',
                        f'{ctx.cli} start {" ".join(args.rva)} --drafted-by "<your name>, assisted by <model or none>"')
-        from unit_skeleton import contributor_files, SkeletonError
         inputs = [dict(fn, pack=functions[fn['rva']].get('pack')) for fn in fns]
         if cleanup := getattr(args, 'deleting_cleanup', None):
             for fn in inputs:
@@ -2589,9 +2599,9 @@ def start(ctx, args, quiet=False):
         claimed.update(int(marker[1], 16) for line in text.splitlines()
                        if (marker := HEADER_COMPARED.match(line.lstrip())))
         additions = []
-        for fn, mm in zip(fns, m):
+        for fn, match in zip(fns, member_names):
             if fn['rva'] not in claimed:
-                _h, metadata = skeleton(fn, cls, mm.group(2), area, drafted, recipe,
+                _h, metadata = skeleton(fn, cls, match[2] if match else fn['name'], area, drafted, recipe,
                                         getattr(args, 'code_origin', None))
                 additions.append(metadata.split('#include', 1)[0])
         if additions:
@@ -2646,8 +2656,9 @@ def start(ctx, args, quiet=False):
             ctx.say(f'sibling source pointers (FNV; shape and names only, never evidence): {tdir / "sibling.md"}')
         for line in pdb_hints(ctx.repo, fns):
             ctx.say(line)
-        for line in symbol_name_hints(ctx.repo, cls, fns):
-            ctx.say(line)
+        if cls:
+            for line in symbol_name_hints(ctx.repo, cls, fns):
+                ctx.say(line)
         for line in pdb_fact_lines(ctx, fns):
             ctx.say(line)
         ctx.say(f'unit: {header} and {cpp}' + (' (skeleton created)' if created else ''))
@@ -3925,7 +3936,7 @@ def parser():
     s.add_argument('--area')
     s.add_argument('--unit', metavar='PATH', help='choose an existing reconstruction .cpp when several units fit')
     s.add_argument('--class', dest='class_name', metavar='CLASS',
-                   help='use this owner class for the unit and its functions (label inferred names GUESS)')
+                   help='use this owner for members or Function<rva> placeholders (label inferred names GUESS)')
     s.add_argument('--recipe')
     s.add_argument('--deleting-cleanup', choices=('inline', 'out-of-line'),
                    help='for a scalar deleting destructor identified locally: inline complete cleanup or call out')

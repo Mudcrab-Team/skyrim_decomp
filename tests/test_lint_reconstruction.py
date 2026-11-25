@@ -63,6 +63,19 @@ class LintTests(unittest.TestCase):
     def test_good_unit_passes(self):
         self.assertEqual(self.problems(), [])
 
+    def test_free_function_header_requires_a_labelled_declaration(self):
+        path = 'reconstruction/misc/FreeFunction_1234.h'
+        header = '// Source exposure: binary-analysis\n// RunExample: GUESS(low)\n#pragma once\n'
+        for declaration, allowed in (('void RunExample();', True), ('void\nRunExample();', True),
+                                     ('void DifferentName();', False), ('/*\nvoid RunExample();\n*/', False),
+                                     ('void Owner::RunExample();', False),
+                                     ('class Owner {\npublic:\n    void RunExample();\n};', False)):
+            with self.subTest(declaration=declaration):
+                (self.root / path).write_text(header + declaration + '\n')
+                problems = lint.lint_file(self.root, path, BUILD)
+                expected = [] if allowed else [f'{path}: header must declare a free function with a name-origin label']
+                self.assertEqual(problems, expected)
+
     def test_standard_instantiation_unit_passes(self):
         header = ("// Source exposure: binary-analysis\n"
                   "// Labels: v2\n"
