@@ -1,6 +1,6 @@
 // Source exposure: mixed (pinned-image observations and community declarations).
 // Code origin: original; partial layouts preserve the observed fields
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // NiStream, NiBinaryStream, oStr, _absoluteCurrentPos, _writeFn: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiStream, NiBinaryStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); partial layouts preserving observed fields.
 // Functionf09010: GUESS(low); byte-oriented output dispatch inferred from accesses.

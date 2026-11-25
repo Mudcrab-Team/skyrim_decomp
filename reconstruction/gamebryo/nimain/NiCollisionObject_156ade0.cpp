@@ -1,6 +1,6 @@
 // Source exposure: mixed (community declarations; pinned-image observations).
 // Code origin: original; body reconstructed from local target observations
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x156ade0 NiCollisionObject::RegisterStreamables
 // NiCollisionObject::RegisterStreamables: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
