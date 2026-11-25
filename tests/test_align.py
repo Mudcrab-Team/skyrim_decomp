@@ -5,6 +5,7 @@ import re
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
@@ -85,7 +86,7 @@ def listing(rows, candidate=False, symbols=None):
 def run(target_rows, cand_rows, symbols=None, unwind=None):
     text, data = align.summarise(listing(target_rows), listing(cand_rows, candidate=True),
                                  symbols=SYMBOLS if symbols is None else symbols, image_base=BASE,
-                                 unwind=unwind)
+                                 unwind=unwind, signature=True)
     return text, data
 
 
@@ -200,6 +201,7 @@ class Classes(unittest.TestCase):
                                 (None, '89 44 24 38', 'mov dword ptr [rsp + 0x38], eax', None)] + BASE_ROWS[4:]
         _, data = run(BASE_ROWS, rows)
         self.assertEqual(self.classes(data), {'extra-instruction'})
+        self.assertEqual(data['diff_signature'], {'extra-instruction': {'extra': 2}})
         self.assertEqual(data['distance'], 2 * align.WEIGHT['extra'])
         self.assertIn(9, data['cookbook_rules'])
 
@@ -221,6 +223,7 @@ class Classes(unittest.TestCase):
         rows = replace(BASE_ROWS, 7, (None, '48 8b 4f 10', 'mov rcx, qword ptr [rdi + 0x10]', None))
         _, data = run(BASE_ROWS, rows)
         self.assertEqual(self.classes(data), {'operand-width-or-signedness'})
+        self.assertEqual(data['diff_signature'], {'operand-width-or-signedness': {'pair': 1}})
         self.assertEqual(data['distance'], align.WEIGHT['width'])
 
     def test_reordered_independent_instructions(self):
@@ -228,6 +231,7 @@ class Classes(unittest.TestCase):
         rows = BASE_ROWS[:4] + [(None, 'b8 01 00 00 00', 'mov eax, 0x1', None)] + BASE_ROWS[4:]
         _, data = run(target, rows)
         self.assertEqual(self.classes(data), {'reordered-instructions'})
+        self.assertEqual(data['diff_signature'], {'reordered-instructions': {'moved': 1}})
         self.assertEqual(data['distance'], align.WEIGHT['moved'])
         self.assertIn(4, data['cookbook_rules'])
 
@@ -356,6 +360,25 @@ class Distance(unittest.TestCase):
 
 
 class Output(unittest.TestCase):
+    def test_diff_signature_counts_only_mismatching_operation_kinds(self):
+        target = BASE_ROWS
+        candidate = target[:5] + target[7:]
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / '.local/task/attempts/001'
+            fdir = work / '0x1000'
+            fdir.mkdir(parents=True)
+            (work / 'candidate.obj').touch()
+            (fdir / 'report.json').write_text(json.dumps({
+                'result': 'fail', 'function': {'rva': 0x1000, 'size': 100, 'symbol': 'f'},
+            }))
+            symbols = work / 'symbols.json'
+            symbols.write_text(json.dumps(SYMBOLS))
+            with patch.object(align, 'objdump_target', return_value=(listing(target), BASE)), \
+                 patch.object(align, 'objdump_candidate', return_value=listing(candidate, candidate=True)):
+                list(align.run_attempt_dir(work, symbols_path=symbols))
+            data = json.loads((fdir / 'align.json').read_text())
+        self.assertEqual(data['diff_signature'], {'missing-instruction': {'missing': 2}})
+
     def test_summary_is_short_and_has_no_bytes_or_instruction_text(self):
         rows = replace(swapped(BASE_ROWS), 10, (None, 'e8 ?? ?? ?? ??', 'call {T}', ('sym', '?Other@@YAXH@Z')))
         rows = rows[:5] + rows[7:]
@@ -381,6 +404,7 @@ class Output(unittest.TestCase):
         self.assertEqual(data['schema'], align.SCHEMA)
         self.assertEqual(len(data['alignment']), len(BASE_ROWS))
         self.assertTrue(set(data['classes']) <= set(align.CLASSES))
+        self.assertNotIn('diff_signature', data)
 
     def test_rows_input_is_accepted(self):
         rows = align.parse_listing(listing(BASE_ROWS))

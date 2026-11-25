@@ -74,3 +74,28 @@ Merged PRs by public GitHub login
 - `aivv73` (96), `TaylorTurnerIT` (50), `Hinkiii` (23), `eclepso` (21)
 - `V0id-array` (17), `v-macrev` (14), `moreirapenna2` (5), `RedWatchWanderer` (5)
 - `ariiZona` (2), `SaminTanim` (2), `wardboumans` (2), `lemiur` (1)
+
+## What's next
+
+The ranks weigh past results, screened candidate counts and how much drafting each approach can share.
+Candidate pools overlap. Acceptance requires passes on two verifiers, review and integration.
+
+1. **Seed strict groups with shared BST callees.** Draft one exemplar per group and use it to generate and verify the rest. A pilot is running.
+   Earlier seed pilots passed 22 of 22 held-out functions. Screening found 5,336 candidates in 107 groups of at least 20 with no accepted member, including 396 across three BST groups.
+   The prior 95.7% strict-twin pass rate gives an estimate of 379 local passes if all 396 are in scope and have usable seeds. Exception handling and allocator references are the main risks.
+2. **Extend the existing generators.** Start with 93 classifier hits, including complete strict groups of 26 range-copy functions and 30 guarded callbacks.
+   The earlier generator round landed 150 of 150 at an estimated 230 accepted per hour. Active work and engine ownership limit the eligible pool, and each new template needs a held-out pass.
+3. **Reuse sibling sources for numeric-only near pairs.** Use differences confined to numeric operands to guide source adaptation. Screening left 180 F3/FNV object passes and 1,378 additional numeric-only or identical shape leads.
+   The earlier guided round passed all eight selected numeric-only leads, with 27 of 30 local passes and 26 accepted overall. Declaration mismatches and source authorization can reduce the usable pool.
+4. **Instantiate game-used standard-library and BST templates.** Build explicit instantiations with the pinned headers. The previous standard-library round passed 488 functions locally.
+   Screening found 440 residual standard-library shape leads and 118 BST owners under a narrow owner match. Type and allocator combinations and exception handling make the residual hit rate uncertain.
+5. **Sweep ABI and parameter widths on source-ready pairs.** Recompile a finite set of types supported by the source and call sites. Screening left 42 width-only pairs.
+   One earlier recompile resolved four width differences. Full-match yield is unmeasured, and a width fix can leave other compiler differences unresolved.
+6. **Generate small virtual leaves from CommonLibSSE-NG slots.** Use class and slot information to select targets with understood body shapes. The tight screen left 109 candidates.
+   One same-callee family passed zero of six trials. Inheritance and folded implementations can make a slot label ambiguous.
+7. **Probe layout constraints and unresolved base classes.** Use pinned compiler probes to check base offsets and field widths. Screening left 402 candidates with numeric layout facts.
+   Earlier loose-layout retries passed 55 of 517 locally. Matching the class size can still leave a field or inherited subobject at the wrong offset.
+8. **Add translation-unit context selectively.** Test one missing declaration or inline dependency at a time. The earlier x64 census found 14 of 281 repeated source or symbol groups compiled differently, giving a ceiling of 14 groups for a paired trial.
+   The gain is unmeasured. Historical translation-unit boundaries, visibility and folding may differ from the target build.
+9. **Propagate names by vtable order.** Join names where class, base subobject, slot and folding agree. There are 6,460 unmatched vtable-owned RVAs without a CommonLibSSE-NG or po3 slot name.
+   The join can help select and bind seeds and produces zero direct matches. Wrong subobject or fold assignments can propagate incorrect names.

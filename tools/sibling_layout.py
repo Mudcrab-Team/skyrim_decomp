@@ -180,30 +180,33 @@ class Engine:
     """The part of the MSVC x64 layout rules these classes need; anything else is 'unknown' and
     a member after it gets no offset (the caller then refuses the unit)."""
 
-    def __init__(self, classes, text):
+    def __init__(self, classes, text, *, enum_types=None, use_community_sizes=True, multiple_bases=False):
         self.classes = classes
         self.memo = {}
         self.typedefs = {}
         for m in re.finditer(rf'typedef\s+([^;{{}}()]+?)\s+({IDENT})\s*;', text):
             self.typedefs[m.group(2)] = m.group(1)
-        self.enums = set(re.findall(rf'\benum\s+(?:class\s+)?({IDENT})', text))
-        self.community = community_sizes()
+        self.enums = ({name: 'int' for name in re.findall(rf'\benum\s+(?:class\s+)?({IDENT})', text)}
+                      if enum_types is None else enum_types)
+        self.community = community_sizes() if use_community_sizes else {}
+        self.multiple_bases = multiple_bases
 
     def type_info(self, typ, decl, depth=0):
-        if decl.startswith(('*', '&', '(*')):
-            return 8, 8
         count = 1
         for dim in re.findall(r'\[([^\]]*)\]', decl):
-            if not dim.strip().isdigit():
+            dim = dim.strip().lower()
+            if not re.fullmatch(r'(?:0x[0-9a-f]+|[1-9][0-9]*)', dim):
                 return None
-            count *= int(dim)
+            count *= int(dim, 0)
         t = ' '.join(QUALIFIERS.sub(' ', typ).split())
-        if t.endswith(('*', '&')):
+        if t.startswith('std::') and t[5:] in BUILTIN:
+            t = t[5:]
+        if decl.startswith(('*', '&', '(*')) or t.endswith(('*', '&')):
             info = (8, 8)
         elif t in BUILTIN:
             info = (BUILTIN[t], BUILTIN[t])
-        elif t in self.enums:
-            info = (4, 4)
+        elif t in self.enums and depth < 6:
+            info = self.type_info(self.enums[t], '', depth + 1)
         elif t in self.typedefs and depth < 6:
             info = self.type_info(self.typedefs[t], '', depth + 1)
         elif t in self.classes:
@@ -228,13 +231,18 @@ class Engine:
             return None
         lay = Layout()
         own_virtuals = [m for m in c.methods if m['virtual']]
-        base = None
-        if c.bases:
-            if len(c.bases) > 1:
-                return None
-            base = self.layout(c.bases[0])
-            if base is None or base.size is None:
-                return None
+        if len(c.bases) > 1 and not self.multiple_bases:
+            return None
+        bases = [self.layout(name) for name in c.bases]
+        if any(b is None or b.size is None for b in bases):
+            return None
+        if len(bases) > 1:
+            if any(b.size == 1 and not b.poly and not b.offsets for b in bases):
+                return None  # Multiple empty bases require tracking distinct subobject addresses.
+            # MSVC first lays out the primary vptr-containing base, then the others.
+            primary = next((i for i, b in enumerate(bases) if b.poly), 0)
+            bases.insert(0, bases.pop(primary))
+        base = bases[0] if bases else None
         lay.base = base
         cur = 0
         lay.poly = bool(own_virtuals) or bool(base and base.poly)
@@ -249,6 +257,9 @@ class Engine:
             cur = 8
         if lay.poly:
             lay.align = max(lay.align, 8)
+        for other in bases[1:]:
+            cur = (cur + other.align - 1) // other.align * other.align + other.size
+            lay.align = max(lay.align, other.align)
         for m in own_virtuals:
             if m['name'] not in lay.slots:
                 lay.slots[m['name']] = lay.nslots

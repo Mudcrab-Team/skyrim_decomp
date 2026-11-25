@@ -15,12 +15,15 @@ with names replaced by stand-ins that claim nothing:
 Unsupported shapes raise `Unsupported` with a short reason; the planner counts them by reason.
 """
 from dataclasses import dataclass, field
+import json
 from pathlib import Path
 import re
 
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import rva_headers  # noqa: E402
+import record_store  # noqa: E402
+from source_digest import include_closure  # noqa: E402
 import twin_source as S  # noqa: E402
 
 HEADER_LIMIT = 6
@@ -49,6 +52,7 @@ class Exemplar:
     header_path: str = None   # reconstruction-relative path of the unit's own header
     header: str = None
     ci_hash: str = None       # decorated symbol of the exemplar's `// CI hash:` line, if any
+    deleting_symbol: str = '' # externally emitted scalar deleting destructor
 
     @property
     def hex(self):
@@ -104,7 +108,31 @@ def load_exemplar(root, rva, stem):
         m = CI_HASH.match(line.strip())
         if m and int(m.group(1), 16) == rva:
             ci = m.group(2)
-    return Exemplar(rva, stem, cpp, Path(stem).name, mine[0], funcs, header_path, header, ci)
+    deleting = deleting_symbol(root, rva, stem)
+    return Exemplar(rva, stem, cpp, Path(stem).name, mine[0], funcs, header_path, header, ci, deleting)
+
+
+def deleting_symbol(root, rva, stem):
+    path = root / 'reports' / 'sse-steam-1-7-104' / f'0x{rva:x}.json'
+    try:
+        record = json.loads(record_store.read_text(path))
+    except FileNotFoundError:
+        return ''
+    runs = record.get('runs') or []
+    if not runs or record.get('source', {}).get('compiled') != 'reconstruction/' + stem + '.cpp':
+        return ''
+    report = runs[0]['report']
+    symbol = report.get('function', {}).get('symbol', '')
+    return symbol if report.get('contract_version') == 2 and re.fullmatch(r'\?\?_G[A-Za-z_]\w*@@\w+@Z', symbol) else ''
+
+
+def included_headers(root, ex):
+    path = 'reconstruction/' + ex.stem + '.cpp'
+    try:
+        return [(Path(root) / p).read_text(encoding='utf-8-sig')
+                for p in include_closure(root, path) if p != path]
+    except ValueError as exc:
+        raise Unsupported('include-closure') from exc
 
 
 # ------------------------------------------------------------------ slicing
@@ -114,6 +142,8 @@ def definition_for(ex, segs):
 
     A unit whose header line names the function by description (generated units) is matched by the
     one definition whose qualified name carries the exemplar's RVA; the exemplar then takes that name."""
+    if ex.deleting_symbol:
+        return None
     want = ex.name
     hits = [s for s in segs if s.kind == 'function' and s.name == want]
     if len(hits) == 1:
@@ -137,7 +167,9 @@ def keep_segments(ex, segs):
     others = other_compared_names(ex)
     owner = ex.owner
     simple_owner = S.simple_name(owner)
-    defs = [s for s in segs if s.kind in ('function', 'other') and s.name not in others]
+    defs = [s for s in segs if s.kind in ('function', 'other') and (
+        s.name not in others or (ex.deleting_symbol and S.owner_of(s.name) == owner
+                                 and S.simple_name(s.name).lstrip('~') == simple_owner))]
     chosen = set()
     if target is not None:
         chosen.add(id(target))
@@ -148,6 +180,8 @@ def keep_segments(ex, segs):
             chosen.add(id(s))
     if not chosen:
         raise Unsupported('no-definition-for-compared-symbol')
+    if ex.deleting_symbol and not any(id(s) in chosen and S.simple_name(s.name) == '~' + simple_owner for s in defs):
+        raise Unsupported('no-destructor-definition')
     changed = True
     while changed:
         changed = False
@@ -357,8 +391,8 @@ def build(root, ex, rva, note=None):
         cc = [sub(l) if 'Stamped as a twin of' not in l else sub(l.split(' Stamped as a twin of')[0]) + ' Stamped as a twin of' + l.split(' Stamped as a twin of')[1] for l in cc]
         name = sub(ex.name)
         cc.append('// 0x%x %s' % (rva, name))
-        if ex.ci_hash:
-            cc.append('// CI hash: 0x%x %s' % (rva, sub(ex.ci_hash)))
+        if ex.deleting_symbol or ex.ci_hash:
+            cc.append('// CI hash: 0x%x %s' % (rva, sub(ex.deleting_symbol or ex.ci_hash)))
         if len(counted(cc)) > HEADER_LIMIT:
             raise Unsupported('header-budget')
         twin.name = name
@@ -410,7 +444,8 @@ def build_standin(root, ex, twin, keep, kept_text, pre, cpp_head, note):
     new_owner = 'Owner' + new_hex
     mapping = {owner: new_owner}
     method = ex.method
-    plain = not SPECIAL_METHOD.match(method) and method != owner and method.lower() not in ('dtor', 'destructor', 'ctor', 'constructor')
+    plain = (not ex.deleting_symbol and bool(S.IDENT.fullmatch(method)) and not SPECIAL_METHOD.match(method)
+             and method != owner and method.lower() not in ('dtor', 'destructor', 'ctor', 'constructor'))
     # keep the method's name when it is virtual or overrides: renaming would make a new virtual
     if plain and re.search(r'\bvirtual\b[^;{}]*\b%s\s*\(|\b%s\s*\([^;{}]*\)[^;{}]*\boverride\b' % (re.escape(method), re.escape(method)), S.mask_text(cls.text)):
         plain = False
@@ -463,7 +498,11 @@ def build_standin(root, ex, twin, keep, kept_text, pre, cpp_head, note):
         new_method = method
     name = '%s::%s' % (new_owner, new_method)
     cc.append('// 0x%x %s' % (rva, name))
-    if ex.ci_hash:
+    if ex.deleting_symbol:
+        if not ex.deleting_symbol.startswith('??_G' + owner + '@@'):
+            raise Unsupported('deleting-symbol-owner')
+        cc.append('// CI hash: 0x%x %s' % (rva, '??_G' + new_owner + ex.deleting_symbol[4 + len(owner):]))
+    elif ex.ci_hash:
         cc.append('// CI hash: 0x%x %s' % (rva, ex.ci_hash.replace(ex.hex, new_hex)))
     cpp_lines = ['#include "%s"' % h_name]
     for l in pre:
@@ -495,16 +534,19 @@ def apply_constants(twin, imap):
         raise Unsupported('definition-not-found')
     seg = segs[-1]
     new, count, missing = subst.substitute_literals(seg.text, imap)
-    if missing or not count:
+    edits = subst.named_constants(body, seg, {v: imap[v] for v in missing}) if missing else []
+    if edits is None or not (count or edits):
         raise Unsupported('constant-not-literal')
-    body = body[:seg.start] + new + body[seg.end:]
+    edits.append((seg.start, seg.end, new))
+    for start, end, replacement in sorted(edits, reverse=True):
+        body = body[:start] + replacement + body[end:]
     note = 'Constants differ from the exemplar: loose twin (same code shape).'
     twin.files[path] = '\n'.join(head) + '\n' + body
     twin.notes.append(note)
     return twin
 
 
-def apply_layout(twin, moves):
+def apply_layout(twin, moves, *, headers=()):
     """Loose twin: re-lay out the stand-in owner so members sit at the twin's displacements."""
     import twin_layout as layout
     if twin.mode != 'standin':
@@ -518,7 +560,7 @@ def apply_layout(twin, moves):
     if not cls:
         raise Unsupported('owner-not-in-header')
     checks = [s for s in segs if s.text.lstrip().startswith('static_assert') and owner in s.mentions]
-    new_cls, delta, new_checks = layout.relocate(cls[0].text, moves, [c.text for c in checks])
+    new_cls, delta, new_checks = layout.relocate(cls[0].text, moves, [c.text for c in checks], headers=headers)
     pieces = [(cls[0], new_cls)] + list(zip(checks, new_checks))
     for seg, new in sorted(pieces, key=lambda p: -p[0].start):
         body = body[:seg.start] + new + body[seg.end:]
