@@ -312,7 +312,18 @@ def apply(root, build_id, rvas, review_blob, *, model, task_id, author=None, rec
 
 
 def git(root, *args, check=True):
-    return subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True, check=check)
+    done = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True)
+    if check and done.returncode:
+        raise RuntimeError(git_failure(args[0], done))
+    return done
+
+
+def git_failure(action, done):
+    lines = (done.stderr + '\n' + done.stdout).strip().splitlines()
+    detail = (next((line for line in lines if line.startswith(('fatal:', 'remote: error:'))), None)
+              or next((line.split('\t')[-1] for line in lines if line.startswith('!\t')), None)
+              or (lines[-1] if lines else 'no git output'))
+    return f'git {action} exited {done.returncode}: {detail}'
 
 
 def record_and_push(root, build_id, rvas, review_blob, message, push=True, **kwargs):
@@ -338,11 +349,13 @@ def record_and_push(root, build_id, rvas, review_blob, message, push=True, **kwa
             git(root, 'commit', '-q', '-m', message)
         if not push:
             return last
-        pushed = git(root, 'push', '-q', 'origin', 'HEAD:main', check=False)
+        pushed = git(root, 'push', '--porcelain', 'origin', 'HEAD:main', check=False)
         if pushed.returncode == 0:
             last['pushed'] = True
             return last
-    raise RuntimeError('push to main kept losing the race')
+        if '\t[remote rejected]' in pushed.stdout:
+            break
+    raise RuntimeError(git_failure('push', pushed))
 
 
 def main(argv=None):

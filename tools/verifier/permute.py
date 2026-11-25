@@ -298,6 +298,34 @@ def emit(block, tail=''):
 # --------------------------------------------------------------------------------------------
 # Locating the function definition in the compiled file.
 
+def _after_initializers(toks, start):
+    """Skip a constructor's comma-separated parenthesized or braced initializers."""
+    i = start
+    while i < len(toks):
+        depth = 0
+        while i < len(toks):
+            token = toks[i].text
+            if depth == 0 and token in ('(', '{', ';'):
+                break
+            if depth and token in ('(', '[', '{'):
+                i = _balanced(toks, i)
+                continue
+            if token == '<':
+                depth += 1
+            elif depth and token in ('>', '>>'):
+                depth = max(0, depth - len(token))
+            i += 1
+        if i == len(toks) or toks[i].text == ';':
+            break
+        i = _balanced(toks, i)
+        if i < len(toks) and toks[i].text == '...':
+            i += 1
+        if i == len(toks) or toks[i].text != ',':
+            return i
+        i += 1
+    return len(toks)
+
+
 def find_bodies(text, qualified):
     """[(start, end, parameter text)] of every `{ ... }` definition of `qualified` (e.g. "TESFile::Seek")."""
     toks, _ = lex(text)
@@ -321,6 +349,8 @@ def find_bodies(text, qualified):
         # qualifiers between ) and { : const, noexcept, override, -> type; a `;` means a declaration
         while j < len(toks) and names[j] not in ('{', ';', ':'):
             j = _balanced(toks, j) if names[j] in ('(', '[') else j + 1
+        if j < len(toks) and names[j] == ':':
+            j = _after_initializers(toks, j + 1)
         if j < len(toks) and names[j] == '{':
             end = _balanced(toks, j)
             hits.append((offsets[j], offsets[end - 1] + 1, params))
