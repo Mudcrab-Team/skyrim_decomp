@@ -150,24 +150,30 @@ GitHub-hosted Windows runner, `contents: read`, no secrets, persisted checkout c
 private inputs or object execution. The trusted checkout is the event's immutable **base SHA**.
 Only its tools, recipes, inventory and target commitments run. The head SHA is fetched as git
 objects; `prepare` reads bounded regular UTF-8 reconstruction blobs from the PR diff and overlays
-them on a separate trusted source tree. It enforces the contributor path/deletion/file-size rules
+them on a separate trusted source tree. Run `prepare` from a checkout whose `HEAD` equals `--base`
+and pass the proposed revision as `--head`. It enforces the contributor path/deletion/file-size rules
 and the same source lint; PR symlinks, recipes, response files and build commands are refused; CI tooling blobs are ignored,
 never materialized or executed.
 It never checks out PR tools or imports PR Python. Header edits trigger affected units too.
 
-Known RVA/symbol/recipe bindings come from base records. A new unit can request a public target
-in its source header with `// CI hash: 0x<RVA> <COFF-symbol>`. This is only a request to compare:
-it cannot change a target's size, committed layout, digest or fixed default v141 recipe. Unknown
-or unsupported bindings remain `no-target`. The compiler runs through `contrib.compile_unit`
+Known RVA and symbol bindings come from base records. A new unit can request a public target
+in its `.cpp` header comment with `// CI hash: 0x<RVA> <COFF-symbol>`. The request leaves the
+target's size, committed layout and digest fixed. CI uses the first recipe path in the `.cpp`,
+typically on the `Recipe:` line, and falls back to the default v141 recipe if the unit names none.
+The selected recipe must be approved by the trusted target-hash manifest. A recipe-only edit
+triggers a compile, and the regression check uses the declared recipe at each revision.
+Unknown or unsupported bindings remain `no-target`. The compiler runs through `contrib.compile_unit`
 with fixed recipe flags, cleared environment, include-closure checks, exact /showIncludes
 agreement and its timeout. All four compiler pins and the pinned SDK headers must match.
 
-Results contain only public identities/digests and `hash-match`, `mismatch` or `no-target` per
-function, with `acceptance: not-evaluated`. Compile failures are sanitized as `mismatch` with
-`compile-failed`; no compiler output, bytes or diffs enter logs or artifacts. Mismatches fail the
-advisory job, while absent coverage remains visibly `no-target`. No-target is never hash equality.
-The compiler's parser still receives untrusted C++, bounded by compile and job timeouts on a
-runner without private data. Compiler packages, objects and diagnostics stay in scratch.
+Results include public identities and digests, `hash-match`, `mismatch` or `no-target` per
+function, and `acceptance: not-evaluated`. A compile failure is a `mismatch` whose `reason` starts
+with `compile-failed`. When compiler errors are available, the CI log and the result row include
+up to five recent errors with repository-relative source locations, diagnostic codes and fixed
+messages. The bot retains the reason in its state. Raw diagnostic text, quoted source, host paths,
+bytes and objects stay in scratch. Mismatches fail the advisory job, while absent coverage remains
+visibly `no-target`. No-target is never hash equality. The compiler's parser still receives untrusted
+C++, bounded by compile and job timeouts on a runner without private data.
 
 The p123 adapter `tools/contrib_hash_signal.py:advisory_hash_signal` consumes GitHub check-run API
 metadata, selects only the latest GitHub Actions `target-hashes` job for the exact PR head SHA,

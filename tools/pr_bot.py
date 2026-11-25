@@ -1328,6 +1328,15 @@ def inherited_origin(hit, flags):
     return bool(hit.get('declared')) and declared_origin_key(hit) in flags
 
 
+def origin_units(units, changed):
+    return set(units) | {name for name in changed if name.startswith(SCOPE_PREFIX) and name.endswith('.h')}
+
+
+def origin_pairs(paths):
+    for stem in sorted({path.rsplit('.', 1)[0] for path in paths}):
+        yield stem + '.h', stem + '.cpp'
+
+
 def dropped_claims_text(rvas):
     """The sticky-comment lines for header claims that were not compared because no target row exists."""
     listed = ', '.join(f'0x{r:x}' for r in rvas[:20]) + (f' and {len(rvas) - 20} more' if len(rvas) > 20 else '')
@@ -2444,54 +2453,30 @@ class Bot:
                             carried=carried)
         return out
 
-    def binding_facts(self, rva, cpp, digest, evidence):
+    def binding_facts(self, cpp, digest, evidence):
         """({fact: bool}, report) for one function: its comparator report and CI row against the unit and the pins."""
         import check
         import prereview
         tree = self.tree
         target = json.loads((tree / 'builds/target.json').read_text())
         text = (tree / cpp).read_text()
-        recipe = re.search(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', text)
-        recipe = recipe.group(0) if recipe else 'reconstruction/recipes/msvc-19.16.27054-o2.json'
+        recipe = prereview.RECIPE.search(text)
+        recipe = recipe[0] if recipe else prereview.DEFAULT_RECIPE
         recipe_sha = hashlib.sha256((tree / recipe).read_bytes()).hexdigest() if (tree / recipe).is_file() else None
-        # The CI job compiles a function that already has an accepted record, and anything else the unit names,
-        # with the recipe the unit names (the first host's recipe); an RVA requested only by a `// CI hash:` line
-        # gets the default recipe, so the second host's hash is compared with the recipe that job selects.
-        import ci_target_hash_check as ci_job
-        requested = {int(r, 16) for r, _ in ci_job.REQUEST.findall(text[:8192])}
-        recorded = self.accepted_recipe(rva, cpp)
-        ci_file = tree / (recipe if recorded else (ci_job.DEFAULT_RECIPE if rva in requested else recipe))
-        ci_recipe_sha = hashlib.sha256(ci_file.read_bytes()).hexdigest() if ci_file.is_file() else None
         report = None
         if evidence.get('report'):
             try:
                 report = json.loads(Path(evidence['report']).read_text())
             except (OSError, ValueError):
                 report = None
-        facts = prereview.binding_facts(report, evidence.get('row'), digest, cpp, recipe_sha, ci_recipe_sha,
+        facts = prereview.binding_facts(report, evidence.get('row'), digest, cpp, recipe_sha,
                                         check.pinned_compiler_sha256(tree), target.get('image_sha256'))
         return facts, report
 
-    def accepted_recipe(self, rva, cpp):
-        """The recipe path of the accepted record the CI hash job binds `rva` to, read as its `bindings` does, or None."""
-        tree = self.tree
-        for fn in json.loads((tree / 'data/progress.json').read_text())['functions']:
-            if fn['rva'] != rva or not fn.get('report'):
-                continue
-            try:
-                record = json.loads(record_store.read_text((tree / fn['report'])))
-                report = record['runs'][0]['report']
-            except (OSError, ValueError, KeyError, IndexError, TypeError):
-                return None
-            if record.get('source', {}).get('compiled') != cpp or report.get('contract_version') != 2:
-                return None
-            return (record.get('recipe') or {}).get('path')
-        return None
-
-    def binding_lines(self, rva, cpp, digest, evidence):
+    def binding_lines(self, cpp, digest, evidence):
         """Agreement of one function's comparator report and CI row with the files and pins, as computed here."""
         import prereview
-        facts, report = self.binding_facts(rva, cpp, digest, evidence)
+        facts, report = self.binding_facts(cpp, digest, evidence)
         lines = []
         if report is None:
             lines.append('  first-host comparator report: NOT available')
@@ -2557,7 +2542,7 @@ class Bot:
                 fn = rows.get(rva) or claimable.resolve(tree, target['build_id'], rva, set(rows))
                 out.append(f'  0x{rva:x}: ' + (f'inventory size {fn["size"]}, status {fn["status"]}, name '
                            f'{fn.get("name")} ({fn.get("name_origin")})' if fn else 'NOT in the inventory'))
-                out += self.binding_lines(rva, cpp, digest, evidence.get(rva, {}))
+                out += self.binding_lines(cpp, digest, evidence.get(rva, {}))
                 pack = tree / '.local/packs' / target['build_id'] / f'0x{rva:x}'
                 if pack.is_dir():
                     packs.append(f'.local/packs/{target["build_id"]}/0x{rva:x}/')
@@ -2624,7 +2609,8 @@ class Bot:
         runs only the chunks without an answer.
         """
         self.check_head(number, head, 'review')
-        old_flags = self.base_origin_flags(units, base, f'{number}-{head[:8]}') if units else set()
+        paths = origin_units(units or (), changed or ())
+        old_flags = self.base_origin_flags(paths, base, f'{number}-{head[:8]}') if paths else set()
         chunks = review_chunks(functions, units, self.config['review_chunk']) if units else [sorted(functions)]
         out = self.work / 'reviews' / f'pr{number}-{head[:12]}.txt'
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -2763,8 +2749,9 @@ class Bot:
         for r in functions:
             row = {}
             if host1.get(r) not in (None, 'pass', 'preexisting-fail'):
-                detail = (rows.get(str(r)) or {}).get('result')
-                row['host1'] = host_category(detail)
+                ci = rows.get(str(r)) or {}
+                reason = str(ci.get('reason') or '').partition('\n')[0]
+                row['host1'] = 'compile' if reason == 'compile-failed' else host_category(ci.get('result'))
             if host2.get(r) not in (None, 'pass', 'preexisting-fail'):
                 row['host2'] = mac.get(str(r)) or 'bytes differ'
             if row:
@@ -3833,9 +3820,10 @@ class Bot:
             # The claim is checked against the origin tool: a body that only resembles an admitted,
             # correctly labelled sibling is provenance the project allows, not a leak. A finding the
             # unit already had at the merge base is earlier provenance the PR did not add.
-            hits, headers, unverified = self.origin_hits(check_units)
+            paths = origin_units(check_units, (f['filename'] for f in files if f.get('status') != 'removed'))
+            hits, headers, unverified = self.origin_hits(paths)
             try:
-                inherited = self.base_origin_flags(check_units, base, f'{number}-{head[:8]}')
+                inherited = self.base_origin_flags(paths, base, f'{number}-{head[:8]}')
             except (OSError, ValueError, Stop):
                 inherited = set()
             kept = [h for h in hits if not inherited_origin(h, inherited)]
@@ -3906,8 +3894,9 @@ class Bot:
         changed = [f['filename'] for f in files if f.get('status') != 'removed']
         build = json.loads((tree / 'builds/target.json').read_text())['build_id']
         findings = prereview.unit_findings(tree, changed, build)
-        hits, headers, _unverified = self.origin_hits(units)
-        old_flags = self.base_origin_flags(units, state.get('base_sha'), tag)
+        paths = origin_units(units, changed)
+        hits, headers, _unverified = self.origin_hits(paths)
+        old_flags = self.base_origin_flags(paths, state.get('base_sha'), tag)
         hits = [h for h in hits if not inherited_origin(h, old_flags)]
         findings += [(file, f'{file}: {text}') for file, text in prereview.origin_problems(hits, headers)]
         evidence = self.review_evidence(tag, sorted(passed), host1, host2, state)
@@ -3920,7 +3909,7 @@ class Bot:
             for rva in rvas:
                 if rva not in passed:
                     continue
-                facts, _report = self.binding_facts(rva, cpp, digest, evidence.get(rva, {}))
+                facts, _report = self.binding_facts(cpp, digest, evidence.get(rva, {}))
                 mine, theirs = prereview.binding_split(facts)
                 bot_side += [f'0x{rva:x}: {fact}' for fact in theirs]
                 lines = list(unit_lines) + [f'0x{rva:x}: {prereview.BINDING_ADVICE[fact]}' for fact in mine]
@@ -3957,10 +3946,9 @@ class Bot:
         shutil.rmtree(scratch, ignore_errors=True)
         flags = set()
         try:
-            for cpp in sorted(units):
-                stem = cpp.rsplit('.', 1)[0]
+            for pair in origin_pairs(units):
                 files = []
-                for name in (stem + '.h', cpp):
+                for name in pair:
                     shown = self.run(['git', 'show', f'{base}:{name}'], check=False)
                     if shown.returncode:
                         continue
@@ -3995,9 +3983,10 @@ class Bot:
         except (OSError, ValueError):
             return [], {}, True
         hits, headers, unverified = [], {}, False
-        for cpp in sorted(units):
-            stem = cpp.rsplit('.', 1)[0]
-            files = [self.tree / name for name in (stem + '.h', cpp) if (self.tree / name).is_file()]
+        for pair in origin_pairs(units):
+            files = [self.tree / name for name in pair if (self.tree / name).is_file()]
+            if not files:
+                continue
             header = '\n'.join(check_origin.leading_comment(f.read_text(errors='replace')) for f in files)
             unverified |= any(f'{repo}@' in header for repo in missing)
             for f in files:

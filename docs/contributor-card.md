@@ -118,7 +118,8 @@ Source rules:
   `"<area>/Y.h"`, for example `"skyrim_shared/forms/TESForm.h"`. A relative path with `..` is fine when it
   resolves to a regular file inside the repository; host paths and paths that leave it are refused.
 - `compare` builds with the recipe the unit's own `Recipe:` line names (the first `reconstruction/recipes/*.json`
-  path in the source), as CI does, and with the task's recipe when the unit names none.
+  path in the `.cpp`), and with the task's recipe when the unit names none. CI uses that same declared recipe
+  for `// CI hash:` requests and falls back to the default v141 recipe for a unit that names none.
 - PDB layouts: when `start` prints `PDB layout`, read that class header for field names, offsets and bases. A unit that
   already declares the class takes just the members it needs into its own header (a second definition of the class
   in one include closure fails); a unit that does not may include it as `"generated/crashlogger_pdb/types/X.h"` with

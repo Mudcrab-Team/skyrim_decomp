@@ -13,7 +13,7 @@ punishment; no one is banned for being active.
 | A push after review swaps the content | Merge with `--match-head-commit`: a changed head fails the merge and the bot starts over |
 | A shared header edit silently breaks matched functions elsewhere | CI recompiles matched functions whose include closure contains a changed header; a regression blocks |
 | Provenance: unlicensed code, pasted decompiler output, byte steering | The one review (blocking grounds in `docs/verification.md`), `Origin` and label lint, family template plus sample review |
-| Untrusted C++ makes the verifier host leak host files via `#include` or diagnostics | Include allowlist (repository-relative paths and standard headers) in `leakgrep.py`; compiler diagnostics are never published |
+| Untrusted C++ makes the verifier host leak host files via `#include` or diagnostics | Include allowlist (repository-relative paths and standard headers) in `leakgrep.py`. Advisory CI reports a bounded error tail using public source locations, diagnostic codes and fixed messages. Raw compiler output stays in scratch. |
 | PR text instructs the reviewing model | The review treats PR text as untrusted; it can block but never override the byte match |
 | Fork CI abuse | Workflows hold no secrets and a read-only token; the bot approves pending fork runs |
 

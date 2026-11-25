@@ -510,6 +510,26 @@ class OriginProcessTests(unittest.TestCase):
                                                origin_permitted=[UNIT]))
         self.assertIn('Note, not a block', text)
 
+    def test_a_labelled_shared_header_confirms_the_reviewers_origin_flag(self):
+        import check_origin
+        shared = 'reconstruction/a/Shared.h'
+        bot = FakeBot(self.work, files=[{'filename': UNIT, 'status': 'added'},
+                                        {'filename': shared, 'status': 'added'}], review=ORIGIN_REVIEW)
+        header = bot.tree / shared
+        header.parent.mkdir(parents=True)
+        header.write_text(FNV_HEADER + '\ninline int f() { return 1; }\n')
+
+        def check_unit(files, clones, root):
+            if root == bot.tree and files == [header]:
+                return [origin_hit(file=shared)]
+            return []
+
+        with mock.patch.object(check_origin, 'open_clones', return_value=([], [])), \
+                mock.patch.object(check_origin, 'check_unit', side_effect=check_unit):
+            result = bot.process(PR)
+        self.assertEqual(result['verdicts'], {'0x10': 'matched', '0x20': 'matched'})
+        self.assertEqual(result['origin_note'], [shared])
+
     def test_an_unlabelled_match_blocks_and_the_comment_names_the_file_and_reason(self):
         bot = OriginBot(self.work, [origin_hit(declared=False)])
         out = bot.process(PR)
@@ -1393,6 +1413,15 @@ class Host1Tests(unittest.TestCase):
         self.assertEqual(set(ci['rows']), {'16'})
         self.assertEqual(ci['report']['base_sha'], BASE)
 
+    def test_compile_failure_reason_is_retained_in_state(self):
+        reason = 'compile-failed\nreconstruction/a/B.cpp:4: C1083: cannot open include file'
+        self.files['target-result.json']['functions'].append(
+            dict(rva='0x20', unit='reconstruction/a/B.cpp', status='fail', result='mismatch', reason=reason))
+        got, state = self.host1()
+        stored = pr_bot.State(self.work / 's', 7, HEAD)
+        self.assertEqual(stored.get('ci')['rows']['32']['reason'], reason)
+        self.assertEqual(self.bot.host_failures(state, '', [0x20], got, {}), {0x20: {'host1': 'compile'}})
+
     def test_a_run_that_skipped_its_compile_has_an_empty_map_instead_of_a_reprobe(self):
         self.files = {}
         self.jobs_of_run = [{'name': 'hash', 'steps': [
@@ -1959,10 +1988,14 @@ class ReviewContextTests(unittest.TestCase):
         evidence = self.evidence()
         return evidence
 
-    def test_a_requested_rva_is_compared_with_the_default_recipe_the_ci_job_selects(self):
+    def test_a_requested_rva_must_match_the_recipe_the_unit_names(self):
         evidence = self.declare_other_recipe('// CI hash: 0x10 ?f@@YAHXZ\n')
-        self.bot.review(7, HEAD, BASE, [0x10], (False, []), {'reconstruction/a/B.cpp': [0x10]}, evidence)
-        self.assertIn('its recipe hash agrees', self.prompts[0])
+        units = {'reconstruction/a/B.cpp': [0x10]}
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, evidence)
+        self.assertIn('its recipe hash DIFFERS', self.prompts[0])
+        evidence[0x10]['row']['recipe_sha256'] = hashlib.sha256(b'{"x": 1}').hexdigest()
+        self.bot.review(7, HEAD, BASE, [0x10], (False, []), units, evidence)
+        self.assertIn('its recipe hash agrees', self.prompts[1])
 
     def test_an_unrequested_rva_must_match_the_recipe_the_unit_names(self):
         evidence = self.declare_other_recipe('')

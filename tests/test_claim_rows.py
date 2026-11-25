@@ -415,7 +415,7 @@ class CarriedEvidenceLineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             bot = pr_bot.Bot(root=ROOT, work=Path(tmp))
             bot.binding_facts = lambda *a: ({}, None)
-            return '\n'.join(bot.binding_lines(0x10, 'reconstruction/a/B.cpp', 'd', dict(carried=reason, host1='fail')))
+            return '\n'.join(bot.binding_lines('reconstruction/a/B.cpp', 'd', dict(carried=reason, host1='fail')))
 
     def test_a_digest_carry_names_the_two_host_build_and_not_the_missing_target(self):
         text = self.lines(pr_bot.CARRY_REASON_DIGEST)

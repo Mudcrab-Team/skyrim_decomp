@@ -1,10 +1,13 @@
 """The hash job asks for no compile of a unit file whose change is only in prose comments."""
+import contextlib
+import io
 import json
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools'), str(ROOT / 'tests')]
@@ -13,6 +16,7 @@ from test_lint_reconstruction import HEADER, SOURCE, BUILD  # noqa: E402
 
 CPP = 'reconstruction/misc/Widget.cpp'
 HDR = 'reconstruction/misc/Widget.h'
+RECIPE = 'reconstruction/recipes/fixture-root-includes.json'
 
 
 def run(root, *args):
@@ -27,7 +31,7 @@ class CommentOnlyTests(unittest.TestCase):
         self.root.mkdir()
         run(self.root, 'init', '-q', '-b', 'main')
         files = {'builds/target.json': json.dumps(dict(build_id=BUILD)), 'findings/x.md': 'x\n', 'reports/x.md': 'x\n',
-                 CPP: SOURCE, HDR: HEADER}
+                 CPP: SOURCE, HDR: HEADER, RECIPE: '{}\n'}
         for name, text in files.items():
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -65,6 +69,25 @@ class CommentOnlyTests(unittest.TestCase):
         request = '// CI hash: 0x10 ?Value@Widget@@QEAAHXZ\n'
         changed = self.prepare(reconstruction__misc__Widget_cpp=SOURCE.replace('#include', request + '#include', 1))
         self.assertEqual(changed, [CPP])
+
+    def test_a_recipe_only_change_still_asks(self):
+        recipe = f'// Recipe: {RECIPE}\n'
+        changed = self.prepare(reconstruction__misc__Widget_cpp=SOURCE.replace('#include', recipe + '#include', 1))
+        self.assertEqual(changed, [CPP])
+
+    def test_prepare_reports_how_to_fix_a_checkout_of_the_wrong_commit(self):
+        head = self.commit_files(tools__x_py='print(1)\n')
+        run(self.root, 'checkout', '-q', head)
+        out = Path(self.tmp.name) / 'result.json'
+        output = io.StringIO()
+        with patch.object(ci, 'ROOT', self.root), patch.dict(ci.os.environ, GITHUB_STEP_SUMMARY=''), \
+                contextlib.redirect_stdout(output):
+            code = ci.main(['prepare', '--base', self.base, '--head', head,
+                            '--work', str(out.parent / 'work'), '--out', str(out)])
+        self.assertEqual(code, 1)
+        error = json.loads(out.read_text())['error']
+        self.assertIn('HEAD to equal --base', error)
+        self.assertIn('Check out the trusted base commit', output.getvalue())
 
     def commit_files(self, **files):
         for name, text in files.items():

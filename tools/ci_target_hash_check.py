@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Advisory PR compilation using trusted base tools and target-hash commitments only.
 
-Never run PR tools or resulting objects. Compiler output remains in scratch. No image input,
-acceptance record, network credential, artifact upload or cache is part of this check.
+Never run PR tools or resulting objects. Raw compiler output remains in scratch. This check
+needs no image input, acceptance record or network credential.
 """
 import argparse
 import json
@@ -38,7 +38,6 @@ DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # rather than fail the whole unit.
 REQUEST = re.compile(r'^// CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S+)\s*$', re.M)
 SHA = re.compile(r'[0-9a-f]{40}')
-UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.
 MAX_CLAIMS_PER_UNIT = 2000
 # Same pattern as cookbook_notes.NOTE_FILE (a test keeps them equal); that module pulls in POSIX-only imports
@@ -78,12 +77,12 @@ def comment_only_change(root, base, name, blob):
     old = subprocess.run(['git', '-C', str(root), 'show', f'{base}:{name}'], capture_output=True)
     if old.returncode != 0:
         return False
-    def requests(text):
-        return REQUEST.findall(text.decode('utf-8-sig', 'replace')[:8192])
-
-    # A `// CI hash:` line is a request to compare, not prose: stripping it as a comment would let a PR that
-    # only adds the request skip the very compile the request asks for.
-    if requests(old.stdout) != requests(blob):
+    before = old.stdout.decode('utf-8-sig', 'replace')
+    after = blob.decode('utf-8-sig')
+    # Request and recipe comments control the compile even when the source code is unchanged.
+    if REQUEST.findall(before[:8192]) != REQUEST.findall(after[:8192]):
+        return False
+    if name.endswith('.cpp') and unit_recipe(before) != unit_recipe(after):
         return False
     try:
         return digest_v2.strip_comments(old.stdout, name) == digest_v2.strip_comments(blob, name)
@@ -104,11 +103,16 @@ class LintFailure(ValueError):
         self.findings = findings
 
 
+class PrepareRevisionError(ValueError):
+    """A prepare invocation with the wrong checkout or revision arguments."""
+
+
 def prepare(root, base, head, work):
-    if not SHA.fullmatch(base) or not SHA.fullmatch(head):
-        raise ValueError('revision must be a full SHA')
+    if not SHA.fullmatch(base or '') or not SHA.fullmatch(head or ''):
+        raise PrepareRevisionError('prepare requires full commit SHAs for --base and --head')
     if git(root, 'rev-parse', 'HEAD').decode().strip() != base:
-        raise ValueError('tools must be from the trusted base revision')
+        raise PrepareRevisionError('prepare requires HEAD to equal --base. Check out the trusted base commit '
+                                   'and pass the proposed commit separately as --head.')
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only, deleted, carried = [], set(), [], []
@@ -228,6 +232,11 @@ def bindings(root):
     return result
 
 
+def unit_recipe(text):
+    found = contrib.UNIT_RECIPE.search(text)
+    return found[0] if found else DEFAULT_RECIPE
+
+
 def requests(tree, changed, known):
     from check_source_digest import include_closure as cached_closure, source_digest_cache
     import revision_cache
@@ -252,29 +261,21 @@ def requests(tree, changed, known):
     result = []
     for unit in sorted(units):
         unit_text = (tree / unit).read_text(encoding='utf-8-sig')
-        declared = UNIT_RECIPE.search(unit_text)
-        entries = {r['rva']: dict(r) for r in known.get(unit, [])}
-        # The first host compiles the whole unit with the recipe the unit declares, or the default one when
-        # it declares none; an accepted function's older recorded recipe would give a second-host row whose
-        # recipe the record cannot bind.
-        for entry in entries.values():
-            entry['recipe'] = declared[0] if declared else DEFAULT_RECIPE
-        # New source may request an RVA/symbol, but cannot select the target mask, size or recipe.
-        for rva, symbol in REQUEST.findall((tree / unit).read_text(encoding='utf-8-sig')[:8192]):
+        recipe = unit_recipe(unit_text)
+        entries = {r['rva']: dict(r, recipe=recipe) for r in known.get(unit, [])}
+        for rva, symbol in REQUEST.findall(unit_text[:8192]):
             value = int(rva, 16)
-            if value not in entries:
-                entries[value] = dict(rva=value, symbol=symbol, recipe=DEFAULT_RECIPE)
+            entries.setdefault(value, dict(rva=value, symbol=symbol, recipe=recipe))
         # A new function has no accepted record to name its symbol. Its header claims the RVA and
         # the object is searched for the function whose hash equals that published target, so the
         # symbol is found by the comparison, never taken from the PR.
-        recipe = (UNIT_RECIPE.search((tree / unit).read_text(encoding='utf-8-sig')) or [DEFAULT_RECIPE])[0]
         stem = unit.rsplit('.', 1)[0]
         texts = [(tree / (stem + ext)).read_text(encoding='utf-8-sig') for ext in ('.h', '.cpp')
                  if (tree / (stem + ext)).is_file()]
         for value in sorted(claimed_rvas(texts))[:MAX_CLAIMS_PER_UNIT]:
             entries.setdefault(value, dict(rva=value, symbol=None, recipe=recipe))
         if not entries:
-            result.append(dict(unit=unit, rva=None, symbol=None, recipe=DEFAULT_RECIPE))
+            result.append(dict(unit=unit, rva=None, symbol=None, recipe=recipe))
         else:
             result += [dict(unit=unit, **r) for r in entries.values()]
     return result
@@ -311,11 +312,73 @@ def defines(blob, name):
         return False
 
 
+DIAGNOSTIC = re.compile(r'(?:(?P<file>[^\r\n]+)\((?P<line>[0-9]{1,7})(?:,[0-9]{1,5})?\)'
+                        r'|cl) *: *(?:Command line )?(?:fatal )?error (?P<code>[CD][0-9]{4}): (?P<message>.+)')
+DIAGNOSTIC_MESSAGES = {
+    'C1001': 'internal compiler error',
+    'C1010': 'unexpected end of file while looking for a precompiled header',
+    'C1083': 'cannot open file',
+    'C1189': 'an #error directive stopped compilation',
+    'C1903': 'unable to recover from previous errors',
+    'C2001': 'newline in constant',
+    'C2059': 'syntax error',
+    'C2065': 'undeclared identifier',
+    'C2079': 'uses an undefined class, struct or union',
+    'C2143': 'syntax error: missing token',
+    'C2338': 'static assertion failed',
+    'C2440': 'cannot convert between types',
+    'C2504': 'base class undefined',
+    'C2660': 'function does not take this number of arguments',
+    'C2664': 'cannot convert a function argument',
+    'D8021': 'invalid numeric argument to a compiler option',
+}
+DIAGNOSTIC_LIMIT = 5
+DIAGNOSTIC_READ_LIMIT = 64 * 1024
+DIAGNOSTIC_LINE_LIMIT = 4096
+
+
+def diagnostic_tail(log, tree):
+    """Reconstruct a short error tail from public source locations and fixed diagnostic text."""
+    try:
+        with log.open('rb') as stream:
+            size = stream.seek(0, os.SEEK_END)
+            stream.seek(max(0, size - DIAGNOSTIC_READ_LIMIT))
+            if size > DIAGNOSTIC_READ_LIMIT:
+                stream.readline()
+            lines = stream.read(DIAGNOSTIC_READ_LIMIT).decode(errors='replace').split('\n')
+    except OSError:
+        return []
+    tree = tree.resolve()
+    tail = []
+    for line in reversed(lines):
+        match = DIAGNOSTIC.fullmatch(line[:DIAGNOSTIC_LINE_LIMIT].strip())
+        if not match:
+            continue
+        file, number, code, message = match.group('file', 'line', 'code', 'message')
+        location = ''
+        if file:
+            try:
+                path = (tree / file.replace('\\', '/')).relative_to(tree).as_posix()
+            except ValueError:
+                continue
+            if len(path) > 240 or not contrib.UNIT_PATH.fullmatch(path) or not (tree / path).is_file():
+                continue
+            location = f'{path}:{number}: '
+        # Error text can quote arbitrary source, including directives and assertion messages.
+        safe = DIAGNOSTIC_MESSAGES.get(code, 'compiler error')
+        if code == 'C1083' and message.startswith('Cannot open include file:'):
+            safe = 'cannot open include file'
+        tail.append(f'{location}{code}: {safe}')
+        if len(tail) == DIAGNOSTIC_LIMIT:
+            break
+    return tail[::-1]
+
+
 def compile_requests(root, tree, requests_, bindir, work, manifest):
     ctx = contrib.Ctx(repo=root, platform='win32', interactive=False)
     tool = dict(status='ok', flavour='native', bin=str(bindir), root=str(bindir.parents[6]))
     targets = {row['rva']: row for row in manifest['functions']}
-    built = {}
+    built, failed = {}, {}
     rows = []
     for ref in requests_:
         target = targets.get(ref['rva'])
@@ -326,17 +389,21 @@ def compile_requests(root, tree, requests_, bindir, work, manifest):
             continue
         key = ref['unit'], ref['recipe']
         if key not in built:
+            out_dir = work / str(len(built))
             try:
                 recipe = json.loads((root / ref['recipe']).read_text())
                 _, includes = contrib.sdk_include_dirs(ctx, tool['root'], recipe['sdk'])
                 if not includes or includes[0].parent.name != recipe['sdk']:
                     raise ValueError('pinned SDK missing')
                 built[key] = contrib.compile_unit(ctx, tree, ref['unit'], ref['recipe'],
-                                                work / str(len(built)), tool)['object'].read_bytes()
-            except (ValueError, OSError, Reject, contrib.Stop, subprocess.TimeoutExpired):
+                                                out_dir, tool)['object'].read_bytes()
+            except (ValueError, OSError, Reject, contrib.Stop, subprocess.TimeoutExpired) as exc:
                 built[key] = None
+                tail = (diagnostic_tail(out_dir / 'compile.log', tree)
+                        if isinstance(exc, contrib.Stop) and exc.data.get('log') else [])
+                failed[key] = '\n'.join(['compile-failed', *tail])
         if built[key] is None:
-            row['result'], row['reason'] = 'mismatch', 'compile-failed'
+            row['result'], row['reason'] = 'mismatch', failed[key]
         elif target is None or (ref['symbol'] is None and ref['rva'] is None) \
                 or target['extraction'] == 'unmasked-unsupported':
             row['reason'] = 'published-target-or-binding-unavailable'
@@ -400,7 +467,9 @@ def classify(head_rows, base_rows):
 def regress(root, tree, refs, bindir, work, manifest):
     head = compile_requests(root, tree, refs, bindir, work / 'head', manifest)
     # Units absent from the base tree are new; compiling them there would only add noise.
-    old = [r for r in refs if (root / r['unit']).is_file()]
+    base_recipes = {unit: unit_recipe((root / unit).read_text(encoding='utf-8-sig'))
+                    for unit in {r['unit'] for r in refs} if (root / unit).is_file()}
+    old = [dict(r, recipe=base_recipes[r['unit']]) for r in refs if r['unit'] in base_recipes]
     base = compile_requests(root, root, old, bindir, work / 'base', manifest) if old else []
     return classify(head, base)
 
@@ -435,10 +504,10 @@ def main(argv=None):
                   base_sha=a.base, normalization_version=hashes.VERSION, acceptance='not-evaluated')
     try:
         a.work.mkdir(parents=True, exist_ok=True)
-        report.update(trusted_inputs(ROOT))
-        manifest = hashes.load_manifest(ROOT)
         if a.command == 'prepare':
             tree, changed = prepare(ROOT, a.base, a.head, a.work)
+        report.update(trusted_inputs(ROOT))
+        if a.command == 'prepare':
             refs = requests(tree, changed, without_rebound(bindings(ROOT), rebound_units(ROOT, a.base, a.head)))
             (a.work / 'requests.json').write_text(json.dumps(refs))
             report['intake'] = 'pass'
@@ -447,6 +516,7 @@ def main(argv=None):
                 with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
                     out.write('mode=' + ('check' if changed else 'sample') + '\n')
         else:
+            manifest = hashes.load_manifest(ROOT)
             if not a.bin or public.probe(ROOT, a.bin)['toolset'] != 'MATCH':
                 raise ValueError('compiler pin mismatch')
             report['toolset'] = 'MATCH'
@@ -466,7 +536,9 @@ def main(argv=None):
     except (ValueError, OSError, KeyError, StopIteration, Reject, contrib.Stop,
             subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         report['error'] = type(exc).__name__
-        if isinstance(exc, LintFailure):
+        if isinstance(exc, PrepareRevisionError):
+            report['error'] = str(exc)
+        elif isinstance(exc, LintFailure):
             report['findings'] = exc.findings
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(report, indent=2) + '\n')

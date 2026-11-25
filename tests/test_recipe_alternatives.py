@@ -64,7 +64,7 @@ class Registry(unittest.TestCase):
         import ci_target_hash_check as ci
         import contrib
         line = '// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-noeh.json\n'
-        self.assertEqual(ci.UNIT_RECIPE.search(line).group(0), 'reconstruction/recipes/msvc-19.16.27054-o2-noeh.json')
+        self.assertEqual(ci.unit_recipe(line), 'reconstruction/recipes/msvc-19.16.27054-o2-noeh.json')
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / 'reconstruction/recipes').mkdir(parents=True)

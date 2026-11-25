@@ -52,8 +52,8 @@ BINDING_ADVICE = {
         'the local compare and the CI hash run compiled different source (the branch is behind main or a shared '
         'header differs): merge current main into your branch and push',
     'second-host recipe hash equals the recipe the job selects':
-        'the CI hash run used a different recipe than the unit names (a `// CI hash:` request line is '
-        'compiled with the default recipe): align the `Recipe:` line with the recipe the request needs',
+        'the CI hash run used a different recipe than the unit names: check the `Recipe:` line and '
+        'push again so the run compiles with the recipe you compared locally',
 }
 BOT_SIDE_FACTS = ('result pass', 'compiler hash equals the pinned cl.exe', 'target image equals builds/target.json')
 
@@ -110,7 +110,7 @@ def unit_problems(root, names, build_id):
     return sorted({line for _name, line in unit_findings(root, names, build_id)})
 
 
-def binding_facts(report, row, digest, cpp, recipe_sha, ci_recipe_sha, compiler_pin, image_sha):
+def binding_facts(report, row, digest, cpp, recipe_sha, compiler_pin, image_sha):
     """{fact: bool} for one function's comparator report and CI row against the unit and the pins.
 
     `report` is the first host's comparator report (or None), `row` the CI job's row for the function
@@ -133,7 +133,7 @@ def binding_facts(report, row, digest, cpp, recipe_sha, ci_recipe_sha, compiler_
         if report is not None:
             facts[HOSTS_AGREE] = (report.get('source') or {}).get('source_revision') == row.get('source_sha256')
         facts['second-host recipe hash equals the recipe the job selects'] = (
-            ci_recipe_sha is not None and row.get('recipe_sha256') == ci_recipe_sha)
+            recipe_sha is not None and row.get('recipe_sha256') == recipe_sha)
     return facts
 
 
