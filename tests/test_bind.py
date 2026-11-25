@@ -4,7 +4,9 @@ import json
 from pathlib import Path
 import sys
 import os
+import shutil
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -132,6 +134,27 @@ class BindTests(unittest.TestCase):
         text = '\n'.join(bind.describe(report, self.task_dir))
         self.assertIn(f'UNBOUND reference {fx.COUNTER}', text)
         self.assertIn(bind.HINTS, text)
+
+    def test_permuter_binds_private_header_hints_in_its_scratch_task(self):
+        import permute
+
+        private = self.root / 'private'
+        private.mkdir()
+        raw = json.loads((self.task_dir / 'task.json').read_text())
+        raw['compiled'] = 'unit.cpp'
+        original = json.dumps(raw)
+        (self.task_dir / 'task.json').write_text(original)
+        address = fx.LAYOUT[fx.FUNCTION]
+        (private / 'unit.cpp').write_text(f'// CI hash: {hex(address)} {fx.FUNCTION}\n')
+        task = {'dir': self.task_dir, 'symbols_local': self.task_dir / 'symbols.json'}
+        transport = SimpleNamespace(join=lambda *parts: Path(*parts), get=lambda _, out: shutil.copyfile(self.root / 'obj', out))
+        host = SimpleNamespace(transport=transport, _remote=lambda run: run, _run=self.root)
+        out = self.root / 'out'
+        out.mkdir()
+        _, _, bound, lines = permute.bound_scoring_maps(task, host, out, self.root / 'image', None, address, private)
+        self.assertEqual(bound[address], fx.FUNCTION)
+        self.assertTrue(any('hint' in line and fx.FUNCTION in line for line in lines), lines)
+        self.assertEqual((self.task_dir / 'task.json').read_text(), original)
 
     def test_reference_stored_with_a_member_offset_binds_the_symbol_itself(self):
         # A store to a member of a global puts the member offset in the object's field; the image
@@ -428,7 +451,7 @@ class OverloadAndOrderTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def run_bind(self, defined, functions, header=None, hints=None, matcher=None, symbols=None):
+    def run_bind(self, defined, functions, header=None, hints=None, matcher=None, symbols=None, source_root=None):
         """`defined` is {decorated name: section bytes}; `functions` [(rva, size, community name)]."""
         unit = fx.Unit()
         for name, code in defined.items():
@@ -445,7 +468,7 @@ class OverloadAndOrderTests(unittest.TestCase):
         if hints is not None:
             (self.task_dir / bind.HINTS).write_text(json.dumps(hints))
         with mock.patch.object(bind, 'target_matcher', return_value=matcher):
-            report = bind.bind(self.task_dir, self.root / 'obj', None, repo=self.root)
+            report = bind.bind(self.task_dir, self.root / 'obj', None, repo=self.root, source_root=source_root)
         bound = {f['rva']: f['symbol'] for f in json.loads((self.task_dir / 'task.json').read_text())['functions']}
         return report, bound
 
@@ -537,6 +560,17 @@ class OverloadAndOrderTests(unittest.TestCase):
         report, bound = self.run_bind({COLL: 9, COLL_CONST: 9}, [('0x1900a0', 9, 'NiAVObject::GetCollisionObject')],
                                       header=['0x1900a0 NiAVObject::GetCollisionObject', f'CI hash: 0x1900a0 {COLL}'])
         self.assertEqual(bound['0x1900a0'], COLL)
+        self.assertEqual(report['functions'][0]['how'], 'hint')
+
+    def test_ci_hash_line_comes_from_the_private_source_root(self):
+        cache_name = '?Use@Toy@@QEAAXXZ'
+        private_name = '?Use@Toy@@QEBAXXZ'
+        private = self.root / 'private'
+        private.mkdir()
+        (private / 'unit.cpp').write_text(f'// CI hash: 0x1000 {private_name}\n')
+        report, bound = self.run_bind({cache_name: 9, private_name: 9}, [('0x1000', 9, 'Toy::Use')],
+                                      header=[f'CI hash: 0x1000 {cache_name}'], source_root=private)
+        self.assertEqual(bound['0x1000'], private_name)
         self.assertEqual(report['functions'][0]['how'], 'hint')
 
     def test_decoration_traits(self):

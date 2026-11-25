@@ -21,8 +21,17 @@
 // 0x300310 TESObjectREFR::Function300310
 // WorldLookup, worldLookup, WorldLookup::Function1a2200: GUESS(low)
 // ForwardExtraList, QueryExtraList, ExtraDataList::Unk15eb00, ExtraDataList::Unk166af0: GUESS(low)
-// Code origin: brown-room reconstruction from disassembly; the listing and community declarations only
+// Code origin: brown-room reconstruction from disassembly; the listing and community declarations only; Written for this reconstruction from the listing; names are placeholders from the unit, field names from the header.
 // Adapted bodies: none
+// 0x2e3c40 TESObjectREFR::Function2e3c40
+// 0x1e64c0 TESObjectREFR::Function1e64c0
+// 0x2e4920 TESObjectREFR::Function2e4920
+// 0x2e49f0 TESObjectREFR::Function2e49f0
+// 0x2e4a30 TESObjectREFR::Function2e4a30
+// 0x2e4a60 TESObjectREFR::Function2e4a60
+// 0x2e4a90 TESObjectREFR::Function2e4a90
+// 0x2e4800 TESObjectREFR::Function2e4800
+// Drafted by v-macrev, assisted by claude-sonnet-5-5.
 #include "TESObjectREFR.h"
 
 #include <limits>
@@ -227,19 +236,18 @@ void* TESObjectREFR::QueryExtraList() const
     return list ? list->Unk166af0() : nullptr;
 }
 
-// WorldLookup, worldLookup: GUESS(low); the singleton-global the lookup goes through and its
-// cell-to-worldspace entry point.
+// WorldLookup, worldLookup: GUESS(low); stand-ins for the receiver of the cell query.
 class WorldLookup
 {
 public:
-    TESWorldSpace* Function1a2200(TESObjectCELL* a_cell, const void* a_context);
+    bool Function1a2200(TESObjectCELL* a_cell, bool a_flag);
 };
 
 extern WorldLookup* worldLookup;
 
-TESWorldSpace* TESObjectREFR::Function2ebcb0() const
+bool TESObjectREFR::Function2ebcb0() const
 {
-    return worldLookup->Function1a2200(parentCell, nullptr);
+    return worldLookup->Function1a2200(parentCell, false);
 }
 
 bool TESObjectREFR::Function2f5930() const
@@ -260,4 +268,74 @@ bool TESObjectREFR::Function300310() const
         return extraList.Function16cb90();
     }
     return false;
+}
+
+bool TESObjectREFR::Function2e3c40() const
+{
+    return data.objectReference->formType == static_cast<FormType>(0x24) && (formFlags & 0x200) != 0;
+}
+
+void TESObjectREFR::Function1e64c0(bool a_set)
+{
+    if (a_set) {
+        formFlags |= (1u << 0xD);
+    } else {
+        formFlags &= ~(1u << 0xD);
+    }
+}
+
+void TESObjectREFR::Function2e4920(bool a_set)
+{
+    if (a_set) {
+        formFlags |= (1u << 0x12);
+    } else {
+        formFlags &= ~(1u << 0x12);
+    }
+}
+
+void TESObjectREFR::Function2e49f0(bool a_set)
+{
+    if (a_set) {
+        formFlags |= (1u << 0xF);
+    } else {
+        formFlags &= ~(1u << 0xF);
+    }
+}
+
+void TESObjectREFR::Function2e4a30(bool a_set)
+{
+    if (a_set) {
+        formFlags |= (1u << 0x13);
+    } else {
+        formFlags &= ~(1u << 0x13);
+    }
+}
+
+bool TESObjectREFR::Function2e4a60() const
+{
+    if (!parentCell) {
+        return false;
+    }
+    return worldLookup->Function1a2200(parentCell, false);
+}
+
+bool TESObjectREFR::Function2e4a90() const
+{
+    if (!parentCell) {
+        return false;
+    }
+    return worldLookup->Function1a2200(parentCell, true);
+}
+
+
+
+bool TESObjectREFR::Function2e4800() const
+{
+    bool result = false;
+    if (data.objectReference->formType == static_cast<FormType>(0x1D)) {
+        if (formFlags & 0x100) {
+            result = true;
+        }
+    }
+    return result;
 }

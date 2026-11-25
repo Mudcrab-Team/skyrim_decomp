@@ -34,6 +34,9 @@ public:
     virtual ~TESObjectWEAP();  // compared: 0x28e500 (scalar deleting destructor)
     void* Function28c020();  // compared: 0x28c020
     std::uint32_t Function28c260();  // compared: 0x28c260
+    // Function241120, Function28baf0: GUESS(low); both read the 19C/19D/19E bytes
+    bool Function241120() const;  // compared: 0x241120
+    std::uint32_t Function28baf0() const;  // compared: 0x28baf0
 
     // RangedData, RangedData::numProjectiles, rangedData: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
     struct RangedData
@@ -49,7 +52,8 @@ public:
     // Members read by the compared bodies, split out of the padding; the size assert keeps the layout.
     std::uint8_t unknown20[0x148];  // 20
     RangedData* rangedData;         // 168
-    std::uint8_t unknown170[0x2D];  // 170
+    std::uint8_t unknown170[0x2C];  // 170
+    std::uint8_t unk19C;  // 19C, read by Function28baf0
     std::int8_t unk19D;             // 19D, signed index into the name table
     std::uint8_t unk19E;            // 19E, flags; bit 7 is tested
     std::uint8_t unknown19F[0x59];  // 19F

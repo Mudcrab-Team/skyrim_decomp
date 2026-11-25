@@ -122,9 +122,11 @@ class ExportV2Tests(unittest.TestCase):
     def test_funclet_bytes_that_only_look_like_a_branch_are_ignored(self):
         class Sec:
             flags = 0x20000000
+            vaddr = 0x1000
+            vsize = raw_size = 0x7000
 
         class Img:
-            pdata_at = {0x5000: (0x5010, 0)}
+            pdata_at = {0x5000: (0x5010, 0), 0x6000: (0x6010, 0)}
 
             def section(self, rva):
                 return Sec()
@@ -135,14 +137,16 @@ class ExportV2Tests(unittest.TestCase):
             def read(self, rva, size):
                 if size == 1:
                     return b'\xcc' if rva in (0x6fff,) else b'\x00'
-                # jmp to a .pdata start, call to an unaligned spot, jmp to an aligned leaf after int3
-                # padding, jmp to an aligned spot that follows no padding or range end, then int3.
-                return (b'\xe9' + (0x5000 - 0x1005).to_bytes(4, 'little') + b'\xe8' + bytes(4)
-                        + b'\xe9' + (0x7000 - 0x100f).to_bytes(4, 'little')
-                        + b'\xe9' + (0x8000 - 0x1014).to_bytes(4, 'little') + b'\xcc' * 8)
+                # A real call, a MOV immediate that resembles a jump, and a jump whose
+                # displacement contains 0xcc. The call after the tail jump is outside the leaf.
+                return (b'\xe8' + (0x5000 - 0x1005).to_bytes(4, 'little')
+                        + b'\x48\xb8\xe9' + (0x6000 - 0x100c).to_bytes(4, 'little') + bytes(3)
+                        + b'\x90' * (0x2f - 15)
+                        + b'\xe9' + (0x7000 - 0x1034).to_bytes(4, 'little')
+                        + b'\xe8' + (0x6000 - 0x1039).to_bytes(4, 'little'))
 
         hit = ep.funclet_branch_refs(Img(), 0x1000, [(0x1000, None)])
-        self.assertEqual([(h['target'], h['mnemonic']) for h in hit], [(0x5000, 'JMP'), (0x7000, 'JMP')])
+        self.assertEqual([(h['target'], h['mnemonic']) for h in hit], [(0x5000, 'CALL'), (0x7000, 'JMP')])
 
     def test_seh_scope_table_with_filter_funclet(self):
         unit = fx.seh_unit()

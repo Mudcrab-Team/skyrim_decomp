@@ -13,6 +13,7 @@
 // NiPoint3, NiPlane, NiBound, NiFrustum, NiFrustumPlanes, NiFrustumPlanes::cullingPlanes, NiFrustumPlanes::activePlanes, NiFrustumPlanes::basePlaneStates, NiFrustumPlanes::unk68, NiFrustumPlanes::unk6C, NiFrustumPlanes::Plane::kTotal, NiTransform, NiMatrix3: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiAVObject::AsFadeNode, NiAVObject::AsNode, NiAVObject::AsSwitchNode, NiAVObject::DeleteThis, NiAVObject::worldBound, NiAVObject::flags, NiAVObject::parent, NiAVObject::parentIndex, NiAVObject::collisionObject, NiAVObject::local, NiAVObject::world, NiAVObject::previousWorld, NiAVObject::userData, NiAVObject::fadeAmount, NiAVObject::lastUpdatedFrameCounter, NiAVObject::unk03C, NiAVObject::unk108, NiAVObject::flags02, NiAVObject::unk10A, NiCullingProcess::unk120, NiCullingProcess::unk121, NiAVObject::Flag::kMeshLOD, NiAVObject::Flag::kNoDismember: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiAVObject::unk00C, NiAVObject::unk02C, NiAVObject::unknown10C, NiCullingProcess::unk008, NiCullingProcess::unk00C, NiCullingProcess::unk11C, NiCullingProcess::unknown122, NiCullingProcess::unknown124: GUESS(low); meaning unknown, bytes not reachable from the compared function; typed by width to keep the pinned offsets.
+// 0x1555fc0 BSFadeNodeCuller::Function1555fc0: GUESS(low); stores its single pointer argument at +0x18 (camera slot).
 #pragma once
 
 #include <cstdint>
@@ -221,5 +222,8 @@ public:
 	virtual void Process1(NiAVObject* a_object, std::int32_t a_arg2);  // compared: 0x1555fd0  // slot 16
 	void Process2(const NiCamera* a_camera, NiAVObject* a_scene, NiVisibleArray* a_visibleSet) override;  // 17
 	virtual void AppendVirtual(BSGeometry& a_visible, std::int32_t a_arg2);  // 18
+
+	// 0x1555fc0: GUESS(low); single-pointer setter for the camera slot (+0x18).
+	void Function1555fc0(const NiCamera* a_camera);
 };
 static_assert(sizeof(BSFadeNodeCuller) == 0x128, "BSFadeNodeCuller size");

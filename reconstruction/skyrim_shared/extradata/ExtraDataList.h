@@ -118,6 +118,8 @@ EnableStateChildren* GetEnableStateChildren() const;
 TESObjectREFR* GetLinkedRef(BGSKeyword* keyword);
     BaseExtraList list;
     BSReadWriteLock lock;
+    unsigned int Function1573b0() const;
+    bool Function1573e0(unsigned int type) const;
 };
 static_assert(sizeof(BaseExtraList) == 0x18, "AE BaseExtraList representation");
 static_assert(offsetof(ExtraDataList, lock) == 0x18, "observed list lock offset");

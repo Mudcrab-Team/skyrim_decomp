@@ -4,6 +4,7 @@
 // Code origin: original; the listing and community declarations only
 // 0x2a5c10 TESClimate::InitializeData
 // Adapted bodies: none
+// Drafted by v-macrev, assisted by claude-haiku-5-5.
 #include "TESClimate.h"
 
 void TESClimate::InitializeData()
