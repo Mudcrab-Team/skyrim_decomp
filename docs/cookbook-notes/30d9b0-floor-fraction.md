@@ -4,16 +4,16 @@
 
 - Function: 0x30d9b0 TESWorldSpace::Function30d9b0
 - Label: CRASHLOGGER_PDB(59818@2026.10.24); Function30d9b0: GUESS(low)
-- Outcome: unsolved
+- Outcome: fixed
 - Cause: float-codegen
-- Best score: 87/95 matching bytes
-- Attempts: 5
+- Best score: 95/95 code bytes; comparator PASS, unwind none in range
+- Attempts: 4 counted comparisons on this lead (plus earlier history)
 
 ## What differed
-The local target observations include a rounded fractional subtraction before each floor correction. The best handwritten cast-and-correct version omits both subtractions under the pinned floating-point recipe. Its branch behavior also requires the negation of a greater-or-equal comparison; a less-than comparison changes unordered handling. The generated CrashLogger layout supports the TESWorldSpace maximum-coordinate fields, but the method name remains a guess. Source exposure was local target observations and generated layout declarations; no sibling body was used.
+Two floor-and-shift computations on the two world coordinates. Under /fp:precise the draft's `x -= 1.0f` after a conditional compiled to an add of a negated constant, while the target subtracts the shared 1.0 constant; both loads of the constant were hoisted the same way.
 
 ## Spellings tried that did not help
-The initial less-than branch measured 77/95. Preserving unordered behavior improved to 87/95. Standard library floor calls measured 23/95 with a size mismatch. An explicit packed conversion helper measured 16/95. Explicit scalar SIMD fractional subtraction measured 40/95 with a size mismatch. All five comparisons and source snapshots remain private; the final source restores the best draft. Three consecutive comparisons did not improve the best score. Retrieved lessons had no tags or applicable indexed entry.
+- `x = x - 1.0f`, `--x` and the original `x -= 1.0f` inside an `if`: all produced the add form.
 
 ## Spelling that fixed it
-none. The remaining arithmetic and inlining difference needs further investigation; this is a near-miss, not a byte-match claim.
+Write the floor once as an inline helper that picks between the truncated value and the decremented value with a conditional expression, then shift: `float floored = value - truncated >= 0.0f ? truncated : truncated - 1.0f;`. The select form keeps the subtraction as written. Call the helper for x and y.

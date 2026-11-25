@@ -18,5 +18,7 @@ The candidate folds the absent target and absent actor paths directly into the f
 - A local immediately invoked lambda returning the nullable process: unchanged at 61/69.
 - Two conditional expressions, first selecting the actor and then its process: unchanged at 61/69.
 
+- Structural pass: nested ifs that assign the process only inside the non-null branches compile to the same threaded layout as the two conditional expressions. The target keeps the process-null test after a shared null block, so something after the join still reads the process (a second use) or the join is not threaded; neither spelling tried produced that.
+
 ## Spelling that fixed it
 None. Three consecutive comparisons without improvement ended drafting. The final source and every attempted source are retained privately. The residue changes control flow and instruction count, so it is not a register or scheduling-only near-miss and no permutation search was indicated. This source is withheld from the passing-source set; no acceptance claim is made.

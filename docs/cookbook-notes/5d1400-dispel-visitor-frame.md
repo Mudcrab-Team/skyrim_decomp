@@ -4,19 +4,17 @@
 
 - Function: 0x5d1400 MagicTarget::DispelAllSpells_140552E10
 - Label: CRASHLOGGER_PDB(59818@2026.10.24)
-- Outcome: unsolved
+- Outcome: fixed
 - Cause: prologue-epilogue
-- Best score: 49/101 aligned matching bytes initially; final corrected draft 33/101
-- Attempts: 3
+- Best score: 101/101 code bytes; comparator PASS, unwind covered
+- Attempts: 2 counted comparisons after the structural reading
 
 ## What differed
-
-The target includes an exception-state frame slot absent from the candidate. The visitor loop and callback setup also differ. A permitted game-code sibling algorithm lead confirmed a list visitor with an immediate-dispel flag; its body was not copied. The source explicitly models the observed visitor table and list fields. No score establishes equivalence.
+The target stores an exception-state slot, places a visitor object with a virtual-table pointer and a flag byte above it, and walks the effect list calling the visitor through its table. The earlier draft used a plain struct and a hand-made table, so there was no frame slot and the call shape differed. The loop is the one of 0x5d18b0.
 
 ## Spellings tried that did not help
-
-The first draft used a continue value of one and an early empty-list return. Correcting the callback result to a byte, using stop value one, and keeping the empty-list selection before the loop reduced the diagnostic score to 33/101. This semantic correction is retained. An empty visitor destructor left that score unchanged. Every draft remains in private attempt snapshots.
+- An empty destructor on the plain struct.
+- A polymorphic visitor used directly in the function: the compiler resolved Accept statically and emitted a direct call.
 
 ## Spelling that fixed it
-
-None. Cookbook rule 13 identifies the exception-state slot without a handler as an open triage case. The initial higher-scoring draft is evidence of a failed spelling, not a recommended implementation. Investigate the actual visitor class and cleanup boundary before further source search.
+A polymorphic visitor class with an inline empty virtual destructor (the exception-state slot appears with it), and a list-walk helper that takes the visitor by base reference so Accept stays a virtual call. The walk is the 32-bit result seed and `while (node && result == 1)` of 0x5d18b0. The virtual-table address bound without a hint.

@@ -15,5 +15,7 @@ The candidate loads the model count into a register for its initial test and ret
 ## Spellings tried that did not help
 A combined guard and two separate early guards both measured 45/64. Initializing one scalar result and assigning it in the model branch measured 36/64 with a 58-byte candidate. A single-job bounded permutation search tested 225 candidates and kept distance 2 with no zero-distance winner.
 
+- The three sibling accessors 0x93e360, 0x93e3d0 and 0x93e430 share the wall: the target tests the model count in memory first and reloads it after choosing the storage, while the compiler loads it once. No source order or accessor boundary tried made the compiler keep two loads; fixing one of the three should close all three.
+
 ## Spelling that fixed it
 None. The final source restores the original combined guard, reproduces the best score and stops after three comparisons without a new best. The failed source, attempted spellings and reports remain private.

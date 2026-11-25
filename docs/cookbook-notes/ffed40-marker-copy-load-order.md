@@ -21,6 +21,8 @@ The best copy implementation has one reordered pair of independent member loads.
 - Bounded PC permutation search: 257 candidates improved distance from 1.5 to 0.5 by swapping the first two short declarations; normal comparison measured 63/68.
 - Split declaration of the second short followed by source-order assignments: 47/68, distance 1.5.
 
+- Structural pass: no spelling reached the target's order of the first two short loads other than the declaration swap already recorded; every other order leaves the two short loads in declaration order, so the target's order probably comes from how the original copied the members (a different helper boundary), not from statement order.
+
 ## Spelling that fixed it
 
 none. The best declaration-swap source was restored for the final comparison at the six-comparison cap. Failed drafts, search results and diagnostics remain private for scheduling investigation.

@@ -25,5 +25,7 @@ candidates, 63 distinct objects, best distance unchanged at 5.0. It stopped on p
 best draft was compared again at attempt six, still 68/83 and FAIL. Label, origin and lint checks passed.
 Cookbook rule 6 was retrieved as a lead but did not supply a closing spelling.
 
+- Structural pass: an unsigned-byte cursor (distance 8, worse than the signed `const char*` cursor at 5), reading the first case through the cursor directly, indexing instead of adding, and a local copy of the buffer position all kept the add of the base pointer in the other operand order; the target reloads the tag byte in the first case.
+
 ## Spelling that fixed it
 none

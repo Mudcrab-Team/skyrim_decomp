@@ -27,5 +27,7 @@ original-signature spelling and final provenance reproduced 56/65 at attempt fiv
 consecutive comparisons without improvement. Cookbook rule 66 was retrieved, but changing this
 virtual bool method's return type was not justified by the prototype evidence.
 
+- Structural pass: `return base && other->f == f`, `return other->f == f` after an early return, a bool accumulator and an int-typed accumulator all leave the only difference at the true constant (a one-byte move where the target uses a full-width move). Declaring the whole method with an `int` return reproduces the full-width constant and the target's block layout, but then the base call's test and the false constant also widen (the target keeps them byte-wide), so the target mixes a byte-typed base result with a full-width true result. Operand order `other->f == f` matches the target's operand order.
+
 ## Spelling that fixed it
 none

@@ -25,6 +25,8 @@ worse distance-6.0 state. A one-worker native Windows permutation search retaine
 81 candidates and stopped on patience. Cookbook rules 40 and 65 guided the helper experiments but
 did not close this function. Three subsequent comparisons failed to improve the best alignment.
 
+- A static inline cast helper (`formType == Static ? static_cast<T*>(p) : nullptr`) applied after the null test gives the target's size and one conditional move (distance 3.0), but keeps the object in the return register with the zero in the argument register and flips the move's condition; the target keeps the object in the argument register.
+
 ## Spelling that fixed it
 None. Preserve the first draft as the near miss; all four failed source snapshots and their comparator
 reports remain private. No excluded middleware sibling bodies were read or adapted.

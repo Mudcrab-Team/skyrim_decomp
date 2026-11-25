@@ -19,6 +19,8 @@ The linked-list search and count update compile without the target's exception-s
 - A minimal iterator with an explicit destructor that clears its current node gave the same score.
 - Removing explicit nonthrowing annotations from the iterator methods also left the score unchanged.
 
+- Structural pass: a local visitor object with a virtual destructor and an inline virtual predicate (devirtualised and inlined by the compiler) does not create the exception-state slot; the slot of the neighbouring visitor units (0x5d18b0, 0x5d1400) appears only when a virtual Accept call survives.
+
 ## Spelling that fixed it
 
 None. The direct search is retained privately as the simplest best candidate, with its exact-source PC report. The iterator trials and diagnostics remain private. No recipe or comparator changes were made; this is not a comparator pass.

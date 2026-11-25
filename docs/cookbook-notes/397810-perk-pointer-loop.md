@@ -6,8 +6,8 @@
 - Label: SIBLING(fo4-private@1b765c70, author-permission)
 - Outcome: unsolved
 - Cause: loop-shape
-- Best score: 46/81 aligned matching bytes; distance 9.5; candidate extent 104, target extent 81
-- Attempts: 4 counted comparisons; 5 invocations total, including binding-only and final-source provenance checks as applicable
+- Best score: distance 2.0 (from 9.5); one loop-alignment byte run and one branch placement left
+- Attempts: 5 counted comparisons in total
 
 ## What differed
 
@@ -22,6 +22,8 @@ The body is adapted from the permitted anonymous sibling's RemovePerk walk, with
 - A small iterator with begin/end factories and inline dereference, increment and inequality: 46/81, distance 16, extent 112. The factories remained calls and their references could not be bound from this pack.
 - Force-inlining the tiny factories with a hot-traversal justification: unchanged at 46/81, distance 16, extent 112. No binding was invented for the extra calls.
 
-## Spelling that fixed it
+- The `while (it != end)` form and an index form made the compiler rewrite the pointer walk into a counted loop with a clamped trip count (extra arithmetic, 104 bytes against 81). A `do { } while (it != end)` form lost the target's second guard (distance 2.5).
+- Taking the element and advancing the pointer in one statement inside the loop body (`BGSPerkEntry* entry = *it++;`) keeps the pointer walk and both guards and brings the distance to 2.0. What is left: the loop head is padded to an aligned address in the candidate and the target's increment follows the call.
 
-none. Three consecutive counted comparisons made no progress. The best raw-pointer draft is retained privately and withheld from passing-source paths. Permutation was not run because the best residue includes loop structure and extra arithmetic rather than register selection alone.
+## Spelling that fixed it
+None; the post-increment form is the best spelling and does not match yet.

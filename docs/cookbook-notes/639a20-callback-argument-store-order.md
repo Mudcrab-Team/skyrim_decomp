@@ -15,5 +15,7 @@ The initial callback declaration used a boolean final argument, making that stac
 ## Spellings tried that did not help
 The direct callback spelling, an ordinary inline file-callback facade with a local element size, and the same facade taking that element size by value all scored 68/84 after the width correction. The bounded PC permuter used one job, batches of eight and a 60-second budget; its pool exhausted after 241 candidates at unchanged distance 1.0. The simpler direct-call source was restored and compared once more; three consecutive comparisons without improvement reached the assigned stop rule. All failed sources remain in the private task history.
 
+- The same two-store inversion (stack literal one against the element-size local) occurs in 0xef2830 in the opposite direction: the same natural spelling gives local-first here and literal-first there. Declaring the local before the branches, and an array local `{1}` in place of a scalar, did not flip it (the first hoists the store above the branches, the second is identical to the scalar).
+
 ## Spelling that fixed it
 none

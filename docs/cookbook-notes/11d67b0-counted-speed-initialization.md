@@ -21,6 +21,8 @@ The best source clears each pair of directional speed values in a pointer-bounde
 - A directional pair with a default constructor and scalar zero initializers: 38/69; bulk stores remained.
 - Restoring the range loop with final provenance: 54/69, confirming the best source after three consecutive non-improving comparisons.
 
+- Structural pass: an index loop with the two stores per pair compiles to vector stores (distance 13), the pointer range-for stays at 13 with a pointer-compare loop; the target is a five-iteration loop with one eight-byte zero store per pair and a decrementing counter, so the original zeroes whole pairs (a pair type with an assignment or constructor), not floats.
+
 ## Spelling that fixed it
 
 none. The best source and its companion header remain private for further loop-shape investigation. The residue changes the initialization instruction sequence, so it was not classified as register-only or scheduling-only and no permutation search was run.

@@ -22,6 +22,8 @@ The signed blend-mode switch and bounded float calculation are complete in the c
 - Returning early on a negated lower-bound test and assigning the upper clamp regressed to 43/58 and distance 7.0.
 - Restoring the best spelling reproduced 45/58 and distance 3.5 on the final compare. No exact candidate was found.
 
+- Structural pass: a plain clamp (`if (r < 0) return 0; if (r > 1) return 1; return r;`) and a single-result clamp both moved the distance up (4.0 and 7.0); the target tests the lower bound with a branch to the upper-bound test and returns the zero already held in the comparison register.
+
 ## Spelling that fixed it
 
 None. Six counted comparisons exhausted the assigned cap. Best source, all failures and the permuter history remain private; the failing reconstruction is withheld from passing-source paths.

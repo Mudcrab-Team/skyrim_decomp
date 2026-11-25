@@ -6,8 +6,8 @@
 - Label: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 - Outcome: unsolved
 - Cause: float-codegen
-- Best score: 13/43 aligned matching bytes
-- Attempts: 4
+- Best score: distance 9 (from 14) with the o2-fpfast recipe named in the unit; not a byte match
+- Attempts: 5 counted comparisons in total
 
 ## What differed
 
@@ -17,6 +17,8 @@ The original handler draft toggles the running flag on the observed button trans
 
 Explicit equality and inequality against zero, direct floating-to-boolean conditions, and expressing the nonnegative duration condition as a negated negative test each measured 13/43. All four failed snapshots and reports remain private. The wall includes function size and branch structure, so it was not diagnosed as register allocation alone. Lesson retrieval returned no applicable indexed tags.
 
-## Spelling that fixed it
+- Naming the o2-fpfast recipe in the unit header (cookbook rule 48) removed the parity branches and took the distance from 14 to 9. Reversed comparison operands, and two sequential guarded statements with an early return, did not move it (9 and 9.5).
+- What is left: the target tests the held-down value twice (once on each side of the value test) while the compiler folds both tests and emits a shorter body (38 against 43 bytes).
 
-None. The first three comparisons triggered the no-improvement stop. The parent then authorized one confirmation of the documented rule 48 recipe fix; it removed the exceptional-value checks but did not improve the score. The final draft retains the negated-negative duration condition and explicitly names `o2-fpfast`. Further work needs a source/branch-shape explanation rather than a register-only permutation. Drafted 2026-11-25 with the assigned gpt-6.1-sol workflow.
+## Spelling that fixed it
+None. The unit now names the fast-float recipe.
