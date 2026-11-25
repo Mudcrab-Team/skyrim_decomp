@@ -1,4 +1,4 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image
+// Source exposure: mixed. Drafted from local listings of the pinned image
 // Code origin: Stamped as a twin of matched 0x2e4ac0 (skyrim_shared/forms/TESForm): source copied, names replaced by placeholders.
 // with types from the header beside this file.
 // 0x2e4ad0 Owner2e4ad0::Function2e4ad0

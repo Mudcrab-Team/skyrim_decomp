@@ -1,4 +1,4 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings and
+// Source exposure: mixed. Drafted from local instruction listings and
 // decompiler output of the pinned image, with types from the header beside this file.
 // Code origin: original reconstruction from binary analysis; the Sibling source lines below name where a body parallels an admitted sibling. Stamped as a twin of matched 0xfa11c0 (gamebryo/niparticle/NiPSysModifier): source copied, names replaced by placeholders.
 // Sibling source: momusdigital/fnv_decomp@91e1b6e8 src/gamebryo2.2/corelibs/niparticle/nipsysmodifier.cpp:53

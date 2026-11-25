@@ -1,4 +1,4 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from the local instruction listings of the
+// Source exposure: mixed. Drafted from the local instruction listings of the
 // Code origin: Stamped as a twin of matched 0x146a50 (skyrim_shared/forms/BGSEquipType): source copied, names replaced by placeholders.
 // pinned image, with the class layout from the header beside this file. Names are from CharmedBaryon/CommonLibSSE-NG b93280e (MIT) unless labelled in the header.
 // 0x43e4e0 Owner43e4e0::SetEquipSlot

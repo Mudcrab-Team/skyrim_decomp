@@ -1,15 +1,18 @@
 """Constrained substitutions for loose twins: constants that differ between exemplar and twin.
 
 A loose twin has the exemplar's code shape with other displacements or immediates. Only a change
-the source can state plainly is made here: an integer literal of the exemplar's function becomes
-the twin's value when every immediate operand of that value changes the same way. A value that is
-not spelled as a literal (a named constant, a sizeof, a member offset) is reported, never guessed.
+the source can state plainly is made here: an integer literal or a uniquely used integral constexpr
+becomes the twin's value when every immediate operand of that value changes the same way.
 """
 import re
 
 import twin_source as S
 
 INT = re.compile(r'(?<![\w.])(0[xX][0-9A-Fa-f]+|\d+)([uUlL]*)(?![\w.])')
+CONSTEXPR = re.compile(
+    r'^\s*(?:static\s+)?constexpr\s+(?:auto|(?:unsigned\s+)?(?:int|long(?:\s+long)?|short)|'
+    r'(?:std::)?(?:size_t|u?int(?:8|16|32|64)_t))\s+([A-Za-z_]\w*)\s*=\s*'
+    r'(-?(?:0[xX][0-9a-fA-F]+|[1-9]\d*|0)[uUlL]*)\s*;\s*$')
 
 
 def immediate_map(exemplar_ops, diffs):
@@ -53,3 +56,43 @@ def substitute_literals(body, mapping):
                 break
     out.append(body[last:])
     return ''.join(out), replaced, set(mapping) - hit
+
+
+def named_constants(body, seg, mapping):
+    """Change a standalone constexpr only when its declaration and sole use are in this TU."""
+    changes = {}
+    sources = S.segments(body)
+    target = S.mask_text(seg.text)
+    for declaration in sources:
+        if declaration.end > seg.start:
+            continue
+        match = CONSTEXPR.fullmatch(S.mask_text(declaration.text))
+        if not match:
+            continue
+        name, literal = match.groups()
+        word = re.compile(rf'\b{name}\b')
+        uses = list(word.finditer(target))
+        if len(uses) != 1 or any(word.search(S.mask_text(s.text)) for s in sources
+                                   if s.start not in (seg.start, declaration.start)):
+            continue
+        if re.search(r'[:.>]\s*$', target[:uses[0].start()]):
+            continue
+        plain = literal.rstrip('uUlL')
+        value = int(plain, 0)
+        if value not in mapping:
+            continue
+        replacement, width = mapping[value]
+        if plain.startswith('-') and literal != plain:
+            continue
+        # Preserve the literal's deduced type for constexpr auto.
+        if (literal != plain and replacement < 0
+                or not -(1 << 31) <= replacement < (1 << 31)
+                or plain.lower().startswith('0x') and value >= (1 << 31)):
+            continue
+        if replacement >= 0 and plain.lower().startswith('0x'):
+            replacement = hex(replacement)
+        start = declaration.start + match.start(2)
+        end = declaration.start + match.end(2)
+        changes.setdefault(value, []).append((start, end, str(replacement) + literal[len(plain):]))
+    return [items[0] for items in changes.values() if len(items) == 1] if (
+        set(changes) == set(mapping) and all(len(v) == 1 for v in changes.values())) else None

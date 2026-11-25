@@ -20,8 +20,7 @@ class PrCheckWorkflow(unittest.TestCase):
         self.assertIn('\n  scope:', self.text)
         self.assertIn('\n  hash:', self.text)
         self.assertIn('ci_target_hash_check.py regress', self.text)
-        self.assertIn('tools/leakgrep.py', self.text)
-        self.assertIn('tools/header_check.py', self.text)
+        self.assertIn('python tools/scope_check.py --base "$BASE_SHA" --head "$PR_HEAD"', self.text)
 
     def test_the_mapping_lane_replaces_scope_and_hash_for_a_mapping_only_pr(self):
         self.assertIn('\n  mapping:', self.text)

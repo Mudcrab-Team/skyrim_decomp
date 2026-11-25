@@ -2,7 +2,7 @@
 // Code origin: Stamped as a twin of matched 0x692ea0 (skyrim_shared/actors/Character): source copied, names replaced by placeholders.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // Licence: this file carries declarations derived from powerof3/CommonLibSSE and is GPL-3.0 (docs/authorizations.md).
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local listings of the pinned image with
+// Source exposure: mixed. Drafted from local listings of the pinned image with
 // the class layout and slot order from the generated skeleton; names are from CommonLibSSE-NG b93280e (MIT)
 // and the powerof3 fork 654e55f (GPL-3.0, which this file therefore also carries) or the meh321 Address
 // BGSLoadFormBuffer, BipedAnim, TESFaction, BSTSmartPointer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); the type names only

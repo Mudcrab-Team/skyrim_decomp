@@ -64,7 +64,8 @@ class Layout(unittest.TestCase):
         self.assertNotIn('tail', sl.Engine(classes, text).layout('Holder').offsets)
         with tempfile.TemporaryDirectory() as d:
             path = os.path.join(d, 'sizes.json')
-            json.dump({'Widget': {'LibA': 12, 'LibB': 12}, 'Clash': {'LibA': 4, 'LibB': 8}}, open(path, 'w'))
+            with open(path, 'w', encoding='utf-8') as handle:
+                json.dump({'Widget': {'LibA': 12, 'LibB': 12}, 'Clash': {'LibA': 4, 'LibB': 8}}, handle)
             os.environ['SIBLING_COMMUNITY_SIZES'] = path
             try:
                 lay = sl.Engine(classes, text).layout('Holder')

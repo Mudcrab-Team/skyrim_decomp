@@ -386,6 +386,9 @@ class LocalTransport:
         for path in paths:
             shutil.copyfile(path, Path(remote_dir) / Path(path).name)
 
+    def mkdir(self, path):
+        Path(path).mkdir(parents=True, exist_ok=True)
+
     def get(self, remote_file, local_file):
         shutil.copyfile(remote_file, local_file)
 
@@ -427,9 +430,11 @@ class SshTransport:
         with self._lock:
             if self.prepared:
                 return
-            self.run(['mkdir', self.host['work'].replace('/', '\\') if ':' in self.host['work']
-                      else self.host['work']], 60)
+            self.mkdir(self.host['work'])
             self.prepared = True
+
+    def mkdir(self, path):
+        self.run(['mkdir', path.replace('/', '\\') if ':' in path else path], 60)
 
     def _scp(self, *args, timeout=900):
         proc = self._call('scp', ['scp', *self.base, '-q', *args], timeout,

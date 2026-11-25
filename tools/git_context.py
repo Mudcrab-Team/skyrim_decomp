@@ -5,8 +5,7 @@ from pathlib import Path, PurePosixPath
 import subprocess
 
 
-def tree_entries(root, ref):
-    revision = subprocess.check_output(['git', 'rev-parse', f'{ref}^{{tree}}'], cwd=root).decode().strip()
+def cached_tree_bytes(root, revision):
     cache = Path(root) / '.local/git-context' / (revision + '.json')
     try:
         saved = json.loads(cache.read_text())
@@ -21,6 +20,13 @@ def tree_entries(root, ref):
             cache.write_text(json.dumps(dict(raw=raw.hex(), sha256=hashlib.sha256(raw).hexdigest())))
         except OSError:
             pass
+    return raw
+
+
+def tree_entries(root, ref, *, cached=True):
+    revision = subprocess.check_output(['git', 'rev-parse', f'{ref}^{{tree}}'], cwd=root).decode().strip()
+    raw = (cached_tree_bytes(root, revision) if cached else
+           subprocess.check_output(['git', 'ls-tree', '-rz', revision], cwd=root))
     entries = {}
     for row in filter(None, raw.split(b'\0')):
         meta, name = row.split(b'\t', 1)

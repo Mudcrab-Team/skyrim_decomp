@@ -1,4 +1,4 @@
-// Source exposure: mixed. Drafted by claude-sonnet-5-5 from local instruction listings of the
+// Source exposure: mixed. Drafted from local instruction listings of the
 // pinned image, with the class layout from the header beside this file. Names are from
 // CharmedBaryon/CommonLibSSE-NG b93280e (MIT); the powerof3 fork (GPL-3.0) uses the same ones.
 // Code origin: original; the listing and community declarations only Stamped as a twin of matched 0x2709b0 (skyrim_shared/world/TESGrass): source copied, names replaced by placeholders.

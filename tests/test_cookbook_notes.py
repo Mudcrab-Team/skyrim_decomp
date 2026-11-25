@@ -14,6 +14,7 @@ import contrib
 import cookbook_notes
 import leakgrep
 import pr_bot
+import scope_check
 import test_contrib as fixtures
 
 NOTE = 'docs/cookbook-notes/1de5e0-test-note.md'
@@ -59,10 +60,10 @@ class Scope(unittest.TestCase):
         self.assertFalse(pr_bot.notes_lane([dict(note, status='renamed', previous_filename='docs/x.md')]))
         self.assertTrue(pr_bot.tooling_lane([{'filename': 'docs/cookbook-notes/README.md', 'status': 'modified'}]))
 
-    def test_workflow_scope_pattern_matches_the_bot_pattern(self):
-        text = (ROOT / '.github/workflows/pr-check.yml').read_text()
-        self.assertIn('docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]*\\.md', text)
-        self.assertIn('cookbook_notes.py --base', text)
+    def test_ci_scope_accepts_note_paths_and_runs_the_note_validator(self):
+        self.assertIsNotNone(scope_check.OUTSIDE_RECONSTRUCTION.fullmatch(NOTE))
+        self.assertIsNone(scope_check.OUTSIDE_RECONSTRUCTION.fullmatch('docs/cookbook-notes/README.md'))
+        self.assertIn('cookbook_notes', scope_check.CHECKS)
 
 
 class Validate(unittest.TestCase):

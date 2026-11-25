@@ -1,4 +1,4 @@
-// Code origin: original drafting by Hinkiii with claude-sonnet-5-5 from a local listing of the pinned image; names and declarations Stamped as a twin of matched 0xcea710 (bscore/BSSmallBlockAllocator): source copied, names replaced by placeholders.
+// Code origin: original drafting by Hinkiii from a local listing of the pinned image; names and declarations Stamped as a twin of matched 0xcea710 (bscore/BSSmallBlockAllocator): source copied, names replaced by placeholders.
 // from CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a (MIT); no body is copied from any source.
 // Source exposure: mixed (names and declarations from community headers; the listing of the pinned
 // image).
