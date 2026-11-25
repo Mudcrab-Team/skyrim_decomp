@@ -188,7 +188,7 @@ def recipe_flag_problem(flags):
     return None
 
 
-def include_closure(root, compiled, roots=None, *, read=None):
+def include_closure(root, compiled, roots=None):
     """Every repository file of the translation unit of `compiled`, sorted; see the module doc.
 
     `roots` replaces INCLUDE_ROOTS for one call. The match gate always uses the default; a narrower
@@ -197,28 +197,7 @@ def include_closure(root, compiled, roots=None, *, read=None):
     """
     roots = INCLUDE_ROOTS if roots is None else tuple(roots)
     root = Path(root)
-    if read is None:
-        def file_at(name):
-            return _repo_file(root, name)
-
-        def read(name):
-            return (root / name).read_bytes()
-
-        def present_loosely(name):
-            return _present_loosely(root, name)
-    else:
-        # An immutable tree reader returns bytes for regular files and None for absent paths.
-        def file_at(name):
-            name = os.path.normpath(name).replace(os.sep, '/')
-            if (name.startswith(('../', '/')) or name == '..' or '\\' in name
-                    or name.split('/')[0] in PRIVATE_DIRS):
-                return None
-            return name if read(name) is not None else None
-
-        def present_loosely(name):
-            return False
-
-    start = file_at(compiled)
+    start = _repo_file(root, compiled)
     if start is None or start != PurePosixPath(compiled).as_posix():
         raise ValueError(f'compiled file {compiled} is not a repository-relative regular file')
     seen = {start}
@@ -233,7 +212,7 @@ def include_closure(root, compiled, roots=None, *, read=None):
         if key in visited:
             continue
         visited.add(key)
-        for kind, target in quoted_includes(read(name), name):
+        for kind, target in quoted_includes((root / name).read_bytes(), name):
             shown = f'"{target}"' if kind == '"' else f'<{target}>'
             # Angle includes search only the /I roots (then the toolchain), never the includer's directory.
             bases = (dirs if kind == '"' else []) + [PurePosixPath(r) for r in roots]
@@ -242,10 +221,10 @@ def include_closure(root, compiled, roots=None, *, read=None):
             found = []
             if not PurePosixPath(target).is_absolute():
                 for base in bases:
-                    hit = file_at((base / target).as_posix())
+                    hit = _repo_file(root, (base / target).as_posix())
                     if hit is not None and hit not in found:
                         found.append(hit)
-                    elif hit is None and kind == '<' and present_loosely((base / target).as_posix()):
+                    elif hit is None and kind == '<' and _present_loosely(root, (base / target).as_posix()):
                         # A Windows host could still open it (other case, symlink), so it is not a
                         # toolchain header; the closure cannot bind it either.
                         raise ValueError(f'{name}: #include {shown} names a repository path that is not admissible')

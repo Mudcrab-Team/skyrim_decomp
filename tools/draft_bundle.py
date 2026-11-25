@@ -3,6 +3,7 @@ import os
 from pathlib import Path, PurePosixPath
 import posixpath
 import re
+import tempfile
 
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, include_closure, quoted_includes
 
@@ -99,8 +100,41 @@ def gather(root, name, source, declarations=None):
     return files
 
 
+def materialize(root, name, read):
+    """Export the source and candidate include paths from a tree of regular files."""
+    pending = [(name, ())]
+    visited = set()
+    while pending:
+        member, parents = pending.pop()
+        if (member, parents) in visited:
+            continue
+        visited.add((member, parents))
+        blob = read(member)
+        if blob is None:
+            continue
+        path = root / member
+        if not path.is_file():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(blob)
+        chain = (member, *parents)
+        includers = tuple(posixpath.dirname(path) for path in chain)
+        for kind, target in quoted_includes(blob, member):
+            if '\\' in target or ':' in target or target.startswith('/'):
+                raise ValueError('draft include uses a host path')
+            bases = dict.fromkeys((includers if kind == '"' else ()) + INCLUDE_ROOTS)
+            for base in bases:
+                candidate = posixpath.normpath(posixpath.join(base, target))
+                if allowed_header(name, candidate) and candidate not in chain:
+                    pending.append((candidate, chain))
+
+
 def closure(root, name, *, read=None):
-    members = include_closure(root, name, read=read)
+    if read is not None:
+        with tempfile.TemporaryDirectory(prefix='draft-closure-') as directory:
+            snapshot = Path(directory)
+            materialize(snapshot, name, read)
+            return closure(snapshot, name)
+    members = include_closure(root, name)
     if any(p != name and not allowed_header(name, p) for p in members):
         raise ValueError('draft includes a file outside its header bundle and shared headers')
     return members
