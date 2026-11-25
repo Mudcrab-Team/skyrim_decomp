@@ -345,6 +345,20 @@ class DestructorTests(unittest.TestCase):
         self.assertIn('scalar deleting destructor', text)
         self.assertIn('constructor', text)
 
+    def test_delivers_the_required_destructor_kind_for_the_declared_class(self):
+        declared_plain = '??1LocalBox@@UEAA@XZ'
+        declared_scalar = '??_GLocalBox@@UEAAPEAXI@Z'
+        self.setup_task({declared_plain: 29, declared_scalar: 29})
+        path = self.task_dir / 'task.json'
+        task = json.loads(path.read_text())
+        task['compiled'] = 'Test.cpp'
+        path.write_text(json.dumps(task))
+        (self.root / 'Test.cpp').write_text('// 0x1000 LocalBox::~LocalBox\n')
+
+        report, fn = self.run_bind()
+        self.assertEqual(fn['symbol'], declared_scalar)
+        self.assertEqual(report['unbound_functions'], [])
+
     def test_undecided_binds_by_size_and_reports_choice(self):
         self.setup_task({PLAIN: 12, SCALAR: 29, VECTOR: 40}, listing=None)
         report, fn = self.run_bind()

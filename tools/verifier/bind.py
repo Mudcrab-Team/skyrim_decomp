@@ -1095,7 +1095,7 @@ def resolve_functions(task, defined, names, hints, size_of, matcher=None, header
         decl = header.get(rva)
         spec = fn.get('destructor')
         if spec is not None:
-            results[fn['rva']] = resolve_destructor(fn, spec, defined, taken, size_of, matcher)
+            results[fn['rva']] = resolve_destructor(fn, spec, defined, taken, size_of, matcher, decl)
             if results[fn['rva']]['symbol']:
                 taken.add(results[fn['rva']]['symbol'])
             continue
@@ -1181,7 +1181,7 @@ def class_thunk_candidates(name, defined, taken):
     return sorted(hits)
 
 
-def resolve_destructor(fn, spec, defined, taken, size_of, matcher):
+def resolve_destructor(fn, spec, defined, taken, size_of, matcher, decl=None):
     """One function the pack's evidence says is a destructor: plain, deleting, or a deleting thunk."""
     community = community_qualified(fn.get('community_name'))
     cls = community.rsplit('::', 1)[0] if community and '::' in community else None
@@ -1189,6 +1189,11 @@ def resolve_destructor(fn, spec, defined, taken, size_of, matcher):
     thunks = sorted(d for d in defined if d not in taken and cls and dtor_thunk_decoration(d)
                     and dtor_thunk_decoration(d)[0] in spec['symbols']
                     and member(dtor_thunk_decoration(d)[1]) == member(cls))
+    declared = (decl or {}).get('name')
+    if not hits and not thunks and is_destructor_name(declared):
+        declared_class = declared.rsplit('::', 1)[0]
+        hits = sorted(d for d in defined if d not in taken and (dec := dtor_decoration(d))
+                      and dec[0] in spec['symbols'] and dec[1] == declared_class)
     out = {'symbol': None, 'how': None, 'candidates': [], 'warnings': [], 'choice': None}
     if len(hits) == 1 and not thunks:
         out.update(symbol=hits[0], how='destructor kind')

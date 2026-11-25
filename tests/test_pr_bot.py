@@ -206,9 +206,10 @@ class MainRedTests(unittest.TestCase):
         state = ['deadbeef']
         bot.main_watch = pr_bot.MainWatch(lambda: state[0], ttl=0)
         err = io.StringIO()
-        with contextlib.redirect_stderr(err), self.assertRaises(pr_bot.Waiting):
+        with contextlib.redirect_stderr(err), self.assertRaisesRegex(
+                pr_bot.Waiting, 'main red at deadbeef; holding merges'):
             bot.process(PR)
-        self.assertIn('main red at deadbeef; holding merges', err.getvalue())
+        self.assertEqual(err.getvalue(), '')
         self.assertEqual(bot.seen('gh', 'pr', 'merge'), [])
         state[0] = None
         out = bot.process(PR)

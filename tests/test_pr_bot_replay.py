@@ -1913,6 +1913,63 @@ class StaleBotFailureTests(Replay):
         self.assertFalse(pr_bot.stale_bot_failure(state, 'a' * 40))
 
 
+class LeakScanReplayTests(Replay):
+    def setUp(self):
+        super().setUp()
+        self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+
+    def test_a_deploy_replaces_a_legacy_scan_block_on_the_same_head(self):
+        with mock.patch.object(ReplayBot, 'leakgrep', return_value=(True, ['include-outside-roots'])) as scan:
+            self.w.poll(self.bot)
+            self.w.poll(self.bot)
+        scan.assert_called_once()
+        state = self.w.state(self.bot, 7)
+        self.assertEqual(state.get('summary')['blocked'], 'leak')
+        self.assertEqual(state.get('decision')['leak_source'], 'leakgrep')
+        state.set('leakgrep', state.get('leakgrep')['result'])
+
+        redeployed = self.w.bot(code_sha='e' * 40)
+        with mock.patch.object(ReplayBot, 'leakgrep', return_value=(False, [])):
+            log = self.w.poll(redeployed)
+        self.assertTrue(self.merged(7), log)
+        updated = self.w.state(redeployed, 7)
+        self.assertEqual(updated.get('done_code'), 'e' * 40)
+        self.assertEqual(updated.get('leakgrep')['result'], [False, []])
+
+    def test_a_private_list_change_retries_without_a_deploy(self):
+        private = self.bot.root / '.local/leakgrep-private.txt'
+        private.parent.mkdir(exist_ok=True)
+        private.write_text('toy-private-name\n')
+        with mock.patch.object(ReplayBot, 'leakgrep', return_value=(True, ['private-name'])):
+            self.w.poll(self.bot)
+        self.assertFalse(self.merged(7))
+        private.unlink()
+
+        with mock.patch.object(ReplayBot, 'leakgrep', return_value=(False, [])):
+            log = self.w.poll(self.bot)
+        self.assertTrue(self.merged(7), log)
+        self.assertEqual(self.w.state(self.bot, 7).get('leakgrep')['result'], [False, []])
+
+    def test_a_review_leak_block_stays_settled_after_a_deploy(self):
+        state = self.w.state(self.bot, 7)
+        state.set('summary', dict(blocked='leak', verdicts={'0x1000': 'blocked'}))
+        state.set('decision', dict(blocked='leak', leak_source='review'))
+        self.bot.mark_done(state)
+        redeployed = self.w.bot(code_sha='e' * 40)
+        with mock.patch.object(ReplayBot, 'leakgrep') as scan:
+            self.w.poll(redeployed)
+        scan.assert_not_called()
+        self.assertFalse(self.merged(7))
+
+    def test_main_red_logs_once_with_the_pr_number(self):
+        self.bot.main_watch = pr_bot.MainWatch(lambda: 'deadbeef')
+        with mock.patch.object(ReplayBot, 'land_with_records', return_value=False):
+            log = self.w.poll(self.bot)
+        self.assertEqual(log.count('holding merges'), 1, log)
+        self.assertIn('pr 7: Waiting: main red at deadbeef', log)
+        self.assertFalse(self.merged(7))
+
+
 class SignatureTests(unittest.TestCase):
     def test_numbers_hashes_and_hex_do_not_split_one_error_into_many(self):
         a = error_of(pr_bot.Stop('hash run 123456 for deadbeefcafe0123 failed at 0x1f40'))

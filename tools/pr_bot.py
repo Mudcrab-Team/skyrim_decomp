@@ -536,7 +536,7 @@ def conflict_cleared(state, pr):
 # Verdicts that come from the bot's own checks and hosts rather than from a judgement of the PR's content, so a
 # fix to the bot can change them. A review rejection is a paid judgement and is never in this set.
 BOT_SIDE_VERDICTS = frozenset({'fail:record', 'fail:missing', 'fail:host1', 'fail:host2', 'fail:precheck'})
-# Cached stage results a retry recomputes; the review, the leak scan and the hash-run result stay.
+# A retry preserves the review and the hash-run result. The scan has its own cache key.
 RETRY_DROPS = ('done', 'commented', 'summary', 'decision', 'host2', 'host2_why', 'host2_base', 'precheck', 'records',
                'failure', 'bot_error', 'blocked', 'probe_blocked')
 # Re-run the rejected check after a deploy, leaving successful comparisons and reviews cached.
@@ -549,30 +549,38 @@ def rejection_info(state):
     return cached if isinstance(cached, dict) else dict(reason=cached)
 
 
-def stale_bot_failure(state, code):
-    """True when a head ended on a bot-side failure under a different revision of the bot's code than `code`.
+def stale_bot_failure(state, code, leak_policy=None):
+    """True when a finished head was blocked by an older revision or scan policy.
 
     Such a head waited for a push forever, though the fix that made the failure wrong may have been deployed
     since. A head finished before the revision was stamped counts as another revision. A merged head and a
     head blocked on the contributor never qualify.
     """
-    if not code or not state.get('done') or state.get('merged') or state.get('done_code') == code:
+    if not code or not state.get('done') or state.get('merged'):
         return False
     summary = state.get('summary') or {}
+    decision = state.get('decision') or {}
+    blocked = summary.get('blocked')
+    if blocked == 'scan' or (blocked == 'leak' and decision.get('leak_source') == 'leakgrep'):
+        scan = state.get('leakgrep')
+        return state.get('done_code') != code or (
+            leak_policy is not None and (not isinstance(scan, dict) or scan.get('policy') != leak_policy))
+    if blocked == 'leak' or state.get('done_code') == code:
+        return False
     return summary.get('blocked') == 'record' or bool(BOT_SIDE_VERDICTS & set((summary.get('verdicts') or {}).values()))
 
 
-def settled(state, pr=None, code=None):
+def settled(state, pr=None, code=None, leak_policy=None):
     """True when a head needs no further look from the poll.
 
     A head that ended blocked on `record` (the bot or its host could not write a record for an accepted
     function) is not settled: that is a fault on our side, not a verdict on the PR, so it is tried again
     and the circuit breaker bounds the tries. So is a head that ended on a bot-side failure under an
-    older revision of the bot's code (`code` is the running revision).
+    older revision or scan policy.
     """
     if not state.get('done'):
         return False
-    if conflict_cleared(state, pr) or stale_bot_failure(state, code):
+    if conflict_cleared(state, pr) or stale_bot_failure(state, code, leak_policy):
         return False
     return state.get('merged') or (state.get('summary') or {}).get('blocked') != 'record'
 
@@ -2119,7 +2127,6 @@ class Bot:
         self.refuse_repeats_from_main(number, head)
         red = self.main_watch.red_sha()
         if red:
-            print(f'main red at {red}; holding merges', file=sys.stderr)
             raise Waiting(f'main red at {red}; holding merges')
         return self.run(merge_command(number, head, subject, body), check=check)
 
@@ -2246,6 +2253,26 @@ class Bot:
                 continue
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(blob)
+
+    @property
+    def leak_policy(self):
+        path = self.root / '.local/leakgrep-private.txt'
+        try:
+            private = hashlib.sha256(path.read_bytes()).hexdigest()
+        except FileNotFoundError:
+            private = None
+        return [self.code_sha, private]
+
+    def leak_scan(self, state, base, head, units_only=False):
+        policy = self.leak_policy
+        cached = state.get('leakgrep')
+        if (isinstance(cached, dict) and cached.get('policy') == policy and cached.get('base') == base
+                and cached.get('units_only') == units_only):
+            return cached['result']
+        scan = self.leakgrep_units if units_only else self.leakgrep
+        result = list(scan(base, head))
+        state.set('leakgrep', dict(policy=policy, base=base, units_only=units_only, result=result))
+        return result
 
     def leakgrep(self, base, head):
         """(hit, codes) from tools/leakgrep.py: exit code plus rule codes on stdout, never matched text."""
@@ -3301,7 +3328,8 @@ class Bot:
     def warm(self, pr):
         """Start the hash run for a head that will need one, so a queue of PRs waits in parallel, not in turn."""
         number, head = pr['number'], pr['headRefOid']
-        if settled(State(self.work / 'state', number, head), pr, self.code_sha) or pr.get('mergeable') == 'CONFLICTING':
+        if (settled(State(self.work / 'state', number, head), pr, self.code_sha, self.leak_policy)
+                or pr.get('mergeable') == 'CONFLICTING'):
             return
         if self.latest_hash_run(head):
             return
@@ -3617,7 +3645,8 @@ class Bot:
         number, head = pr['number'], pr['headRefOid']
         directory = self.work / ('dry' if self.dry_run else 'state')
         state = State(directory, number, head)
-        if settled(state, pr, self.code_sha):
+        leak_policy = self.leak_policy
+        if settled(state, pr, self.code_sha, leak_policy):
             return state.data
         self.progress_by_tag[f'{number}-{head[:8]}'] = Progress(directory, number, head)
         rejected = rejection_info(state)
@@ -3625,10 +3654,14 @@ class Bot:
             if stage := REJECTED_STAGE.get(rejected['reason']):
                 state.drop(stage)
             state.drop('rejected')
-        if stale_bot_failure(state, self.code_sha):
+        if stale_bot_failure(state, self.code_sha, leak_policy):
             # Retry under the deployed code; the stored review stays, so nothing paid is repeated.
             for key in RETRY_DROPS:
                 state.drop(key)
+        cached_scan = state.get('leakgrep')
+        if cached_scan is not None and (not isinstance(cached_scan, dict) or cached_scan.get('policy') != leak_policy):
+            state.drop('decision')
+            state.drop('leakgrep')
         if conflict_cleared(state, pr):
             # The conflict answer is out of date: drop it, and its comment mark so the new outcome replaces the
             # sticky "conflicts with main" text. A crash from here on leaves the head not done, so it is retried.
@@ -3712,7 +3745,7 @@ class Bot:
         note_found = state.once('notes', lambda: self.note_problems(head, files))
         if note_found:
             raise Rejected('notes', notes_rejection(note_found))
-        grep = state.once('leakgrep', lambda: list(self.leakgrep(base, head)))
+        grep = self.leak_scan(state, base, head)
         # Accepted functions of the changed units are confirmed and reviewed with the PR's own. Results cached
         # before the companions were known are for a smaller set, so these stages use their own cache keys.
         extra_units = state.once('companions', lambda: self.companions(units, files, functions))
@@ -3996,7 +4029,7 @@ class Bot:
         found = state.once('notes', lambda: self.note_problems(head, files))
         if found:
             return dict(blocked, blocked='notes', found=found)
-        if state.once('leakgrep', lambda: list(self.leakgrep(base, head)))[0]:
+        if self.leak_scan(state, base, head)[0]:
             return dict(blocked, blocked='scan')
         run = self.latest_check_run(head, SCOPE_CHECKS)
         if run is None:
@@ -4092,7 +4125,7 @@ class Bot:
         found = state.once('findings', lambda: self.findings_problems(head, files))
         if found:
             return dict(blocked, blocked='findings', found=found)
-        if state.once('leakgrep', lambda: list(self.leakgrep(base, head)))[0]:
+        if self.leak_scan(state, base, head)[0]:
             return dict(blocked, blocked='scan')
         # The path scope job is red for every findings PR by design; the repository check job validates
         # metadata and the files the PR touches, and the PR changes no workflow, so its definition is main's.
@@ -4340,7 +4373,7 @@ class Bot:
     def carried_decision(self, pr, state, files, base):
         number, head = pr['number'], pr['headRefOid']
         blocked = dict(merge=False, verdicts={})
-        hit, codes = state.once('leakgrep', lambda: list(self.leakgrep_units(base, head)))
+        hit, codes = self.leak_scan(state, base, head, units_only=True)
         if hit:
             return dict(blocked, blocked='leak', leak_source='leakgrep', leak_evidence=codes)
         tip = self.run(['git', 'rev-parse', 'origin/main']).stdout.decode().strip()
@@ -4398,7 +4431,7 @@ class Bot:
         number, head = pr['number'], pr['headRefOid']
         decision = state.get('decision')
         if not decision:
-            hit, codes = state.once('leakgrep', lambda: list(self.leakgrep_units(base, head)))
+            hit, codes = self.leak_scan(state, base, head, units_only=True)
             blocked = dict(merge=False, verdicts={})
             if hit:
                 decision = dict(blocked, blocked='leak', leak_source='leakgrep', leak_evidence=codes)
@@ -5860,11 +5893,13 @@ def _poll(bot, interval, restart_after, workers, gh, sleep, rounds, refill_every
                 continue
             now = time.time()
             bot.demand[0] = 0
+            leak_policy = bot.leak_policy
             for pr in outside_first(pollable(prs)):
                 state = State(directory, pr['number'], pr['headRefOid'])
                 ledger = state.get('failure') or {}
                 # Rejections by this revision skip warming and queueing to avoid redundant GitHub calls.
-                if (pr['number'] in inflight or settled(state, pr, bot.code_sha) or ledger.get('next', 0) > now
+                if (pr['number'] in inflight or settled(state, pr, bot.code_sha, leak_policy)
+                        or ledger.get('next', 0) > now
                         or bot.already_rejected(pr) or bot.bot_error_blocked(pr)):
                     continue
                 try:
