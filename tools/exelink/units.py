@@ -46,6 +46,7 @@ def function_spec(rec):
     hashes.discard(None)
     if len(hashes) == 1:
         spec['record_code_section_sha256'] = next(iter(hashes))
+        spec['record_code_sections'] = run.get('candidate', {}).get('code_sections')
     return spec
 
 
@@ -164,11 +165,12 @@ def compile_batch(repo, cl, env, flags, batch, objects, scratch, timeout=600):
     return failed
 
 
-def build_units(repo, units, objects, msvc, jobs=1, batch_size=24, on_batch=None):
+def build_units(repo, units, objects, msvc, jobs=1, batch_size=24, on_batch=None, extra_flags=()):
     """Compile every unit into `objects/<unit id>.obj`, `jobs` compiler runs at a time.
 
     `on_batch(batch, failed)` is called from the calling thread as each batch finishes, so the
     caller can use the objects while later batches still compile. Returns the failed units.
+    `extra_flags` appends caller-specific options to the recipe.
     """
     repo = Path(repo)
     Path(objects).mkdir(parents=True, exist_ok=True)
@@ -176,7 +178,7 @@ def build_units(repo, units, objects, msvc, jobs=1, batch_size=24, on_batch=None
     recipes = {}
     for unit in units:
         if unit['recipe'] not in recipes:
-            recipes[unit['recipe']] = json.loads((repo / unit['recipe']).read_text())['flags']
+            recipes[unit['recipe']] = json.loads((repo / unit['recipe']).read_text())['flags'] + list(extra_flags)
     work = list(batches(units, recipes, batch_size))
     scratch = Path(objects) / '.build'
     failed_all = []
