@@ -15,7 +15,7 @@ PRIVATE_LIST = ROOT / '.local/leakgrep-private.txt'
 # Pinned compiler headers (the standard containers are here for units that instantiate std:: templates); anything else quoted must be a repo-relative reconstruction header.
 STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath', 'type_traits',
                               'utility', 'new', 'limits', 'memory', 'typeinfo', 'atomic', 'algorithm', 'stddef.h', 'stdint.h',
-                              'intrin.h', 'math.h',
+                              'intrin.h', 'math.h', 'cstdarg', 'cstdio',
                               'vector', 'deque', 'list', 'forward_list', 'set', 'map', 'unordered_map', 'unordered_set',
                               'array', 'queue', 'functional', 'bitset', 'string', 'string.h'))
 MNEMONICS = ('mov movzx movsx movaps movups movss movsd lea push pop call jmp je jne jz jnz ja jae jb jbe jg jge '
