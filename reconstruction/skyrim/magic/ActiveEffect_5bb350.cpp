@@ -1,4 +1,5 @@
 // Source exposure: mixed
+// Code origin: original reconstruction from the pinned image; labelled naming sources
 // 0x5bb350 ActiveEffect::CheckDisplacementSpellOnTarget
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ActiveEffect, MagicItem, MagicTarget, ForEachActiveEffectVisitor, VisitEffects, Accept, spell, target, displacementSpell: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
