@@ -2067,7 +2067,8 @@ class Bot:
             raise HeadMoved(message)
 
     def check_tag_head(self, tag, stage):
-        number, _, short = tag.partition('-')
+        """Check the PR behind either a head compare tag or a base compare tag."""
+        number, _, short = tag.removeprefix('base-pr').partition('-')
         self.check_head(int(number), short, stage)
 
     def fetch_main_red(self):
@@ -2089,8 +2090,11 @@ class Bot:
             return
         if clash:
             shown = ', '.join(f'0x{rva:x}' for rva in list(clash)[:5])
-            raise Stop(f'pr{number} repeats RVA(s) {shown} that main marks in another unit; not merging, '
-                       'the branch needs main merged in so the duplicate check sees them')
+            if len(clash) > 5:
+                shown += f', and {len(clash) - 5} more'
+            raise Rejected('duplicate-rva', f'Main already contains these RVAs in other reconstruction units: '
+                           f'{shown}. Merge main into your branch, remove the duplicate functions and their RVA '
+                           'markers from your units, then push. The next check will run on the updated branch.')
 
     def merge_pr(self, number, head, subject, body, check=False):
         """Squash-merge, unless main's newest finished check failed: then wait (not an error) until it is green."""

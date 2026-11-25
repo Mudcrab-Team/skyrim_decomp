@@ -1017,6 +1017,22 @@ class ListedPathMissingTests(Replay):
 
 
 class MainMovesTests(Replay):
+    def test_a_duplicate_from_main_updates_the_sticky_without_tripping_the_breaker(self):
+        head = self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
+        self.bot.say(7, pr_bot.sticky_body(head, pr_bot.BOT_ERROR_COMMENT))
+        self.w.on_compile = lambda: self.w.move_main({'reconstruction/fx/other.cpp': unit(0x1000)})
+
+        log = self.w.poll(self.bot, times=4)
+
+        self.assertFalse(self.merged(7), log)
+        state = self.w.state(self.bot, 7)
+        self.assertEqual(state.get('rejected')['reason'], 'duplicate-rva')
+        self.assertIsNone(state.get('bot_error'))
+        self.assertEqual(len(self.w.sticky(7)), 1)
+        self.assertIn('0x1000', self.w.sticky(7)[0])
+        self.assertIn('Merge main into your branch', self.w.sticky(7)[0])
+        self.assertNotIn(pr_bot.BOT_ERROR_COMMENT, self.w.sticky(7)[0])
+
     def test_main_moving_during_the_compile_does_not_stale_the_landing(self):
         self.w.make_pr(7, {unit_path(0x1000): unit(0x1000)})
         self.w.on_compile = lambda: self.w.move_main({'reconstruction/fx/other.txt': 'moved\n'})
@@ -1274,6 +1290,19 @@ class HeadCheckTests(Replay):
                                   lambda units, tag, before=None: (before(), {})[1]):
             self.bot.mac_compare({}, '7-aaaaaaaa')
         self.assertEqual(stages, ['pack export', 'compare'])
+
+    def test_base_compare_checks_the_pr_head_from_the_state_tag(self):
+        state = pr_bot.State(self.bot.work / 'state', 7, self.OLD)
+        tag = f'base-{state.path.stem}'
+
+        def compare(units, compare_tag, before_attempts):
+            self.assertEqual(compare_tag, tag)
+            self.w.github.prs[7]['head'] = self.NEW
+            before_attempts()
+
+        with mock.patch.object(self.bot, 'compare_on_host', compare), self.assertRaises(pr_bot.HeadMoved):
+            pr_bot.Bot.mac_compare(self.bot, {}, tag)
+        self.assertEqual(self.w.github.head_reads, [7, 7])
 
     def test_merge_checks_before_asking_main_watch(self):
         self.w.github.prs[7]['head'] = self.NEW
