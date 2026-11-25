@@ -1,9 +1,0 @@
-// Source exposure: mixed (names from the community PDB table where labelled; the pinned image listing).
-// Code origin: original; the compiler-generated deleting destructor of a class declaration.
-// Adapted bodies: none
-// 0x8c0220 CombatPathingRequestGeneric_CombatPathingGoalPolicyExitWater_CombatPathingSearchPolicyStandard_::~CombatPathingRequestGeneric_CombatPathingGoalPolicyExitWater_CombatPathingSearchPolicyStandard_
-#include "CombatPathingRequestGeneric_CombatPathingGoalPolicyExitWater_CombatPathingSearchPolicyStandard__8c0220.h"
-
-CombatPathingRequestGeneric_CombatPathingGoalPolicyExitWater_CombatPathingSearchPolicyStandard_::CombatPathingRequestGeneric_CombatPathingGoalPolicyExitWater_CombatPathingSearchPolicyStandard_()
-{
-}
