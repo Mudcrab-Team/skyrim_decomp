@@ -699,6 +699,40 @@ class FuncletTests(unittest.TestCase):
         self.assertEqual(result['result'], 'pass', result.get('detail'))
         self.assertGreater(result['coverage']['funclet_sections'], 0)
 
+    def test_contributor_bind_writes_the_crt_call_rva(self):
+        import contrib
+        name = '_Init_thread_header'
+        callee = fx.LAYOUT[fx.CALLEE]
+        task_path = self.task_dir / 'task.json'
+        task = {'build_id': 'toy', 'symbols': 'symbols.json', 'functions': [
+            {'rva': hex(fx.LAYOUT[fx.FUNCTION]), 'size': len(fx.CODE), 'symbol': fx.FUNCTION}]}
+        (self.task_dir / 'symbols.json').write_text('{"symbols": {}}')
+        (self.root / 'image').write_bytes(fx.pe_image())
+        task_path.write_text(json.dumps(task))
+        defaults = self.root / bind.CRT_DEFAULTS
+        defaults.parent.mkdir()
+        defaults.write_text(json.dumps({'toy': {name: hex(callee)}}))
+        unit = fx.Unit()
+        section = unit.section('.text$mn', fx.CODE, fx.SCN_CODE)
+        unit.define(fx.FUNCTION, section, storage=fx.STORAGE_EXTERNAL, function=True)
+        for offset, symbol, kind in fx.RELOCS:
+            unit.reloc(section, offset, unit.external(name if symbol == fx.CALLEE else symbol), kind)
+        (self.root / 'candidate.obj').write_bytes(unit.coff())
+        (self.task_dir / bind.HINTS).write_text(json.dumps({'_note': 'written by the drafter'}))
+
+        _, lines = contrib.bind_attempt(self.root, self.task_dir, self.root, self.root / 'image', None)
+        self.assertEqual(bind.load_hints(self.task_dir), {name: callee})
+        self.assertIn(f'{name}": "{hex(callee)}"', '\n'.join(lines))
+        self.assertEqual(json.loads((self.task_dir / bind.HINTS).read_text())['_note'], 'written by the drafter')
+
+    def test_contributor_bind_writes_the_funclet_destructor_rva(self):
+        import contrib
+        self.setup_task([hex(DTOR_RVA)], hints={fx.BASE: hex(self.externals[fx.BASE])})
+        (self.root / 'obj').rename(self.root / 'candidate.obj')
+        _, lines = contrib.bind_attempt(self.root, self.task_dir, self.root, self.root / 'image', None)
+        self.assertEqual(bind.load_hints(self.task_dir)[DTOR], DTOR_RVA)
+        self.assertIn(f'{DTOR}": "{hex(DTOR_RVA)}"', '\n'.join(lines))
+
     def test_without_position_single_lifetime_call_binds(self):
         self.setup_task([hex(DTOR_RVA) + ' Synthetic::~Synthetic'], hints={fx.BASE: '0x3100'}, funclet=False)
         report, symbols = self.run_bind(image=False)
@@ -849,7 +883,18 @@ class ThreadLocalBindTests(unittest.TestCase):
         self.assertEqual(report['unbound_references'], [])
         self.assertNotIn(fx.TLS_VAR, symbols)
         self.assertNotIn(fx.TLS_INDEX, symbols)
-        self.assertIn('tls:0x<offset>', '\n'.join(bind.describe(report, self.task_dir)))
+        self.assertIn('add a tls: hint', '\n'.join(bind.describe(report, self.task_dir)))
+
+    def test_contributor_bind_writes_and_applies_the_aligned_tls_hint(self):
+        import contrib
+        (self.root / 'obj').rename(self.root / 'candidate.obj')
+        run = self.root / '0x1000'
+        run.mkdir()
+        (run / 'align.json').write_text(json.dumps({'reference_pairs': {'thread_locals': {fx.TLS_VAR: {'0x768': 1}}}}))
+        report, lines = contrib.bind_attempt(self.root, self.task_dir, self.root, self.root / 'image', 'unused')
+        self.assertEqual(report['unbound_thread_locals'], [])
+        self.assertEqual(bind.load_tls_hints(self.task_dir), {fx.TLS_VAR: 0x768})
+        self.assertIn(f'{fx.TLS_VAR}": "tls:0x768"', '\n'.join(lines))
 
     def test_tls_hint_writes_thread_local_entry(self):
         report, symbols = self.run_bind({fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')})
@@ -941,8 +986,9 @@ class ThreadLocalBindTests(unittest.TestCase):
         self.assertEqual(report['unused_hints'], ['MissingThing'])
         self.assertIn('MissingThing', '\n'.join(bind.describe(report, self.task_dir)))
 
-    def test_describe_names_every_unbound_reference_and_pastes_a_hint_object(self):
-        report = {'functions': [], 'references': [], 'renamed': [], 'unbound_functions': [],
+    def test_describe_names_every_unbound_reference_and_pastes_only_real_rvas(self):
+        report = {'functions': [], 'references': [], 'renamed': [], 'unbound_functions': [
+                      {'rva': '0x1100', 'community_name': 'Toy::Function', 'suggested': '?Function@Toy@@YAXXZ'}],
                   'unbound_references': ['?a@@3HA', '?b@@3HA', '??_C@_01ABCDEFGH@x@'],
                   'unbound_thread_locals': ['?t@@3HA']}
         lines = bind.describe(report, self.task_dir)
@@ -952,9 +998,8 @@ class ThreadLocalBindTests(unittest.TestCase):
             self.assertIn(name, text)
         paste = [line for line in lines if 'paste into' in line]
         self.assertEqual(len(paste), 1)
-        self.assertEqual(json.loads(paste[0].split(': ', 1)[1]),
-                         {'?a@@3HA': '0x<rva>', '?b@@3HA': '0x<rva>', '??_C@_01ABCDEFGH@x@': '0x<rva>',
-                          '?t@@3HA': 'tls:0x<offset>'})
+        self.assertEqual(json.loads(paste[0].split(': ', 1)[1]), {'?Function@Toy@@YAXXZ': '0x1100'})
+        self.assertNotIn('0x<', text)
 
     def test_used_tls_hint_stays_used_once_bound(self):
         hints = {fx.TLS_VAR: hex(fx.TLS_OFFSET).replace('0x', 'tls:0x')}

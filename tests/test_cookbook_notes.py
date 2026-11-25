@@ -257,24 +257,19 @@ class NoteCommand(fixtures.SubmitTests):
         self.assertEqual((self.repo / rel).read_text(), 'kept\n')
 
     def test_the_reminders_name_the_lesson_command(self):
-        for n in range(1, contrib.NOTE_ATTEMPTS + 1):
-            (self.tdir / 'runs' / f'{n:03d}').mkdir(parents=True)
-        hard = contrib.note_reminders(self.ctx(repo=self.repo), self.tdir, self.task,
-                                      self.summary['functions'], contrib.task_attempts(self.tdir))
+        self.summary['functions'][0]['attempts'] = contrib.NOTE_ATTEMPTS
+        hard = contrib.note_reminders(self.ctx(repo=self.repo), self.task, self.summary['functions'])
         self.assertIn(f'lesson 0x{self.RVA:x}', hard[0])
         self.summary['functions'][0]['result'] = 'fail'
-        near = contrib.note_reminders(self.ctx(repo=self.repo), self.tdir, self.task,
-                                      self.summary['functions'], contrib.task_attempts(self.tdir))
+        near = contrib.note_reminders(self.ctx(repo=self.repo), self.task, self.summary['functions'])
         self.assertEqual(len(near), 1)
         self.assertIn('lesson <rva>', near[0])
 
     def test_a_clean_first_pass_needs_no_note_but_a_hard_won_one_does(self):
         code, _ = self.run_cli('note', self.tdir.name)
         self.assertEqual(code, contrib.USAGE)
-        for n in range(1, contrib.NOTE_ATTEMPTS + 1):
-            (self.tdir / 'runs' / f'{n:03d}').mkdir(parents=True)
-        lines = contrib.note_reminders(self.ctx(repo=self.repo), self.tdir, self.task,
-                                       self.summary['functions'], contrib.task_attempts(self.tdir))
+        self.summary['functions'][0]['attempts'] = contrib.NOTE_ATTEMPTS
+        lines = contrib.note_reminders(self.ctx(repo=self.repo), self.task, self.summary['functions'])
         self.assertEqual(len(lines), 1)
         self.assertIn('pass after', lines[0])
         self.assertIn('matching-cookbook.md', lines[0])

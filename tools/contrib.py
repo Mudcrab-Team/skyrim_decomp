@@ -10,6 +10,7 @@ compare locally and open a pull request. Python 3.11+ standard library only; Lin
     ./sr start 0x<rva>      # branch, unit skeleton, local pack from your exe
     ./sr decomp 0x<rva>     # private Ghidra pseudo-C hint (once background analysis is ready)
     ./sr compare            # compile with the pinned MSVC and run the comparator
+    ./sr bind               # resolve bindings for the most recent compiled candidate
     ./sr preflight          # shared deterministic intake checks, before or after compare
     ./sr submit [--dry-run] # checks, commit, push, pull request
     ./sr feedback          # review feedback and failing checks on your open PRs
@@ -1236,19 +1237,23 @@ def changed_paths(ctx):
 
 
 def pick_current_task(ctx, pick):
-    """Of several tasks, the one whose unit the working tree changes, else the most recently touched."""
+    """Use unit and worktree evidence to narrow the choices in a shared task store."""
+    present = [(d, t) for d, t in pick if (ctx.repo / t['compiled']).is_file()]
+    pick = present or pick
     changed = changed_paths(ctx)
-    hits = [(d, t) for d, t in pick if t.get('compiled') in changed or set(t.get('contrib', {}).get('unit', [])) & changed]
-    if len(hits) == 1:
-        chosen, why = hits[0], 'its unit has uncommitted changes'
-    else:
-        def touched(item):
-            d = item[0]
-            times = [p.stat().st_mtime for p in (d / 'task.json', d / 'runs') if p.exists()]
-            return max(times, default=0)
-        chosen, why = max(hits or pick, key=touched), 'most recently modified task'
-    ctx.say(f'several tasks; using {chosen[0].name} ({why}); name one to choose another')
-    return chosen
+    branch = git(ctx, 'symbolic-ref', '--quiet', '--short', 'HEAD', check=False)
+    worktree = str(ctx.repo.resolve())
+    for matches in (
+        lambda d, t: t['compiled'] in changed or bool(set(t.get('contrib', {}).get('unit', [])) & changed),
+        lambda d, t: bool(branch) and branch in (t.get('contrib', {}).get('branch'),
+                                                f'contrib/{d.name.removeprefix("contrib-")}'),
+        lambda d, t: t.get('contrib', {}).get('worktree') == worktree,
+    ):
+        pick = [(d, t) for d, t in pick if matches(d, t)] or pick
+        if len(pick) == 1:
+            return pick[0]
+    raise Stop(USAGE, 'several tasks fit this worktree; name one: '
+               + ', '.join(f'{d.name} ({t["compiled"]})' for d, t in pick))
 
 
 def task_files(ctx):
@@ -2334,14 +2339,14 @@ def pdb_warnings(ctx, task, root):
     return out
 
 
-def practice_unit(root, rvas):
-    """Select the source unit whose leading comment claims each requested RVA."""
+def unit_claims(root, rvas):
+    """Find source units that claim any of the requested RVAs."""
     import pdb_types
     paths = None
     if rvas and (root / '.git').exists():
         addresses = '|'.join(f'{rva:x}' for rva in sorted(rvas))
         scan = subprocess.run(['git', 'grep', '-ilz', '--untracked', '-E',
-                               rf'^[[:space:]]*//[[:blank:]]*0x0*({addresses})[[:blank:]]',
+                               rf'0x0*({addresses})([^[:xdigit:]]|$)',
                                '--', ':(glob)reconstruction/**/*.cpp', ':(glob)reconstruction/**/*.h',
                                ':(exclude)reconstruction/generated/crashlogger_pdb/**'],
                               cwd=root, capture_output=True)
@@ -2358,13 +2363,14 @@ def practice_unit(root, rvas):
             continue
         if path.suffix == '.h' and not (root / unit).is_file():
             continue
-        with path.open(encoding='utf-8-sig', errors='replace') as lines:
-            for line in lines:
-                if line.strip() and not line.lstrip().startswith('//'):
-                    break
-                for rva, _ in rva_headers.compact_claims(line):
-                    if rva in rvas:
-                        found.setdefault(rva, set()).add(unit)
+        source = path.read_text(encoding='utf-8-sig', errors='replace')
+        for rva in rva_headers.claimed_rvas([source]) & rvas:
+            found.setdefault(rva, set()).add(unit)
+    return found
+
+
+def practice_unit(root, rvas):
+    found = unit_claims(root, rvas)
     for rva, units in found.items():
         if len(units) > 1:
             raise Stop(USAGE, f'{rva:#x} is claimed by several units: {", ".join(sorted(units))}')
@@ -2374,6 +2380,37 @@ def practice_unit(root, rvas):
     if len(units) != 1 or len(found) != len(rvas):
         raise Stop(USAGE, 'one unit per practice task: give RVAs claimed by the same unit')
     return units.pop()
+
+
+def start_unit(ctx, cls, rvas, args, claimed_unit):
+    import pdb_types
+
+    requested = getattr(args, 'unit', None)
+    if requested and (not UNIT_PATH.fullmatch(requested) or not requested.endswith('.cpp')
+                      or pdb_types.is_generated(requested) or not (ctx.repo / requested).is_file()):
+        raise Stop(USAGE, '--unit must be an existing reconstruction .cpp path')
+    claims = unit_claims(ctx.repo, rvas) if not args.practice else {}
+    claimants = set().union(*claims.values())
+    if claims and not set.intersection(*claims.values()):
+        raise Stop(USAGE, 'the requested RVAs are claimed by different units; start them separately: '
+                   + ', '.join(f'{rva:#x} ({", ".join(sorted(units))})' for rva, units in sorted(claims.items())))
+    if requested and (claimed_unit and requested != claimed_unit or claims and
+                      any(requested not in units for units in claims.values())):
+        raise Stop(USAGE, '--unit must claim the requested RVAs already assigned to a unit: '
+                   + ', '.join(sorted(claimants or {claimed_unit})))
+    if cpp := (requested or claimed_unit):
+        return cpp
+
+    candidates = set.intersection(*claims.values()) if claims else {
+        rel for p in (ctx.repo / 'reconstruction').rglob(f'{cls}*.cpp')
+        if (p.stem == cls or p.stem.startswith(cls + '_'))
+        and (rel := p.relative_to(ctx.repo).as_posix()) and UNIT_PATH.fullmatch(rel)
+        and not pdb_types.is_generated(rel)}
+    if args.area and not claims:
+        candidates = {p for p in candidates if Path(p).parent.as_posix() == f'reconstruction/{args.area}'}
+    if len(candidates) > 1:
+        raise Stop(USAGE, 'several units fit; rerun start with --unit and one of:\n  ' + '\n  '.join(sorted(candidates)))
+    return next(iter(candidates), None)
 
 
 def start(ctx, args, quiet=False):
@@ -2417,28 +2454,22 @@ def start(ctx, args, quiet=False):
     if args.area is not None and not unit_paths.area_accepted(args.area):
         raise Stop(USAGE, f'--area must be one of the areas in tools/unit_paths.py (for example skyrim/ai), '
                    f'not {args.area!r}')
-    tdir = task_dir(ctx, task_id_for(cls, args.practice))
-    try:
-        old = json.loads((tdir / 'task.json').read_text())
-    except (OSError, ValueError):
-        old = {}
-    if claimed_unit:
-        cpp = claimed_unit
+    cpp = start_unit(ctx, cls, {fn['rva'] for fn in fns}, args, claimed_unit)
+    if cpp:
         header = Path(cpp).with_suffix('.h').as_posix()
         area = Path(cpp).parent.relative_to('reconstruction').as_posix()
     else:
-        area, header, cpp = unit_files(ctx.repo, cls, args.area)
-    kept = (old.get('contrib') or {}).get('unit') or []
-    if not claimed_unit and len(kept) == 2 and old.get('compiled') == kept[1] and (ctx.repo / kept[1]).is_file():
-        header, cpp = kept
-        area = Path(cpp).parent.relative_to('reconstruction').as_posix()
-    if old.get('compiled') != cpp:
-        old = {}
+        area, header, cpp = unit_files(ctx.repo, cls, args.area, index={})
     if area is None:
         raise Stop(USAGE, f'no area rule for class {cls} (reconstruction/README.md, "Layout")',
                    f'{ctx.cli} start {" ".join(args.rva)} --area <area>  (ask in your claim issue which area)')
+    tid = task_id_for(Path(cpp).stem, args.practice)
+    tdir = task_dir(ctx, tid)
+    old = attempt_progress.read_json(tdir / 'task.json')
+    if old and old.get('compiled') != cpp:
+        tdir = task_dir(ctx, f'{tid}-{hashlib.sha256(cpp.encode()).hexdigest()[:12]}')
+        old = attempt_progress.read_json(tdir / 'task.json')
     exe = require_exe(ctx, target)['path']
-    unit_existed = (ctx.repo / cpp).is_file()
     tdir.mkdir(parents=True, exist_ok=True)
     names = public_names(ctx.repo, data)
     smap = json.loads(symbol_map_path(ctx.repo, target['build_id']).read_text())['symbols']
@@ -2490,12 +2521,10 @@ def start(ctx, args, quiet=False):
     if not args.practice:
         drafted = args.drafted_by or load_config(ctx).get('drafted_by') or 'unknown'
         text = (ctx.repo / cpp).read_text()
+        claimed = rva_headers.claimed_rvas([text, (ctx.repo / header).read_text() if (ctx.repo / header).is_file() else ''])
         additions = []
         for fn, mm in zip(fns, m):
-            # A function the unit already names (in any spelling or position) keeps its own header.
-            if unit_existed and re.search(rf'0x0*{fn["rva"]:x}\b', text, re.I):
-                continue
-            if fn['rva'] not in rva_headers.claimed_rvas([text]):
+            if fn['rva'] not in claimed:
                 _h, metadata = skeleton(fn, cls, mm.group(2), area, drafted, recipe,
                                         getattr(args, 'code_origin', None))
                 additions.append(metadata.split('#include', 1)[0])
@@ -2514,14 +2543,16 @@ def start(ctx, args, quiet=False):
             'symbols': 'symbols.json', 'functions': sorted(functions.values(), key=lambda f: parse_rva(f['rva'])),
             'drafter_model': getattr(args, 'model', None) or load_config(ctx).get('model') or load_config(ctx).get('drafted_by'),
             'contrib': {'practice': bool(args.practice), 'unit': [header, cpp], 'profile': prof['name']}}
-    (tdir / 'task.json').write_text(json.dumps(task, indent=2) + '\n')
-    refresh_symbols(ctx, tdir, target['build_id'])
     branch = None
     if not args.no_branch and not args.practice:
         branch = f'contrib/{tdir.name[len("contrib-"):]}'
         exists = ctx.run(['git', 'rev-parse', '--verify', '--quiet', branch], cwd=ctx.repo,
                          capture_output=True).returncode == 0
         git(ctx, 'switch', *([] if exists else ['-c']), branch)
+    task['contrib'].update(worktree=str(ctx.repo.resolve()),
+                           branch=branch or git(ctx, 'symbolic-ref', '--quiet', '--short', 'HEAD', check=False))
+    (tdir / 'task.json').write_text(json.dumps(task, indent=2) + '\n')
+    refresh_symbols(ctx, tdir, target['build_id'])
     packs = [f['pack'] for f in task['functions']]
     pdb, suggestions = pdb_names(ctx), {}
     for fn in fns:
@@ -2762,14 +2793,89 @@ def prepare_draft_compare(ctx, root, target, rva, ident):
     return draft_task, task
 
 
+def bind_attempt(root, tdir, out, exe, objdump):
+    import auto_hints
+    import bind
+
+    candidate = out / 'candidate.obj'
+    report = bind.bind(tdir, candidate, exe, objdump, repo=root)
+    task = json.loads((tdir / 'task.json').read_text())
+    if task.get('symbols', 'symbols.json').startswith('reports/'):
+        return report, bind.describe(report, tdir)
+    default_rvas, default_tls = bind.split_hints(bind.crt_defaults(root, task.get('build_id')))
+    definitions = {parse_rva(fn['rva']) for fn in task['functions']}
+    resolved = {}
+    for row in report['references']:
+        name, how = row['symbol'], row['how']
+        if how.endswith('replaced'):
+            continue
+        if 'tls_offset' in row:
+            value = f'tls:{row["tls_offset"]}'
+            verified_default = default_tls.get(name) == parse_rva(row['tls_offset'])
+        else:
+            value = row['rva']
+            rva = parse_rva(value)
+            if rva in definitions:
+                continue
+            verified_default = default_rvas.get(name) == rva
+        if verified_default or how == 'thread-local name' or (row.get('from') == 'funclet' and not how.endswith('hint')):
+            resolved[name] = value
+    written = auto_hints.write(tdir, resolved) if resolved else {}
+    lines = [f'  wrote {bind.HINTS}: {json.dumps(written)}'] if written else []
+    if objdump and (report['unbound_references'] or report['unbound_thread_locals']):
+        for row in report['functions']:
+            (out / row['rva']).mkdir(exist_ok=True)
+        config = {'objdump': objdump, 'image': exe}
+        added, skipped, notes = auto_hints.derive(tdir, out, report, config, repo=root)
+        if added:
+            lines.append(f'  wrote {bind.HINTS}: {json.dumps(added)}')
+        lines += auto_hints.describe({}, skipped, notes)
+        if added:
+            second = bind.bind(tdir, candidate, exe, objdump, repo=root)
+            report = auto_hints.merge_reports(report, second)
+    return report, lines + bind.describe(report, tdir)
+
+
+def count_attempts(root, task, results, history, digest):
+    from bind import fallback_qualified, header_declarations
+    from pr_autofix import function_span
+
+    unit = root / task['compiled']
+    sources = [p.read_text(encoding='utf-8-sig', errors='replace') for p in (unit, unit.with_suffix('.h')) if p.is_file()]
+    declarations = header_declarations(root, task['compiled'])
+    previous = {row['rva']: (run.get('source_revision'), row)
+                for run in history for row in run.get('functions', [])}
+    counted = set()
+    for fn, row in zip(task['functions'], results):
+        rva = row['rva']
+        name = (declarations.get(parse_rva(rva), {}).get('name') or fallback_qualified(fn['symbol'])
+                or fn.get('community_name'))
+        bodies = []
+        for source in sources:
+            if name and (span := function_span(source, name)):
+                bodies.append(source[span[0]:span[1]])
+        revision = hashlib.sha256(bodies[0].encode()).hexdigest() if len(bodies) == 1 else None
+        prior_digest, prior = previous.get(rva, (None, {}))
+        prior_revision = prior.get('body_revision')
+        changed = (revision != prior_revision if revision and prior_revision else
+                   digest != prior_digest and bool(row['code_section_sha256'])
+                   and row['code_section_sha256'] != prior.get('code_section_sha256'))
+        if not prior or (changed and 'attempts' in prior):
+            counted.add(rva)
+        row['body_revision'] = revision
+        row['attempts'] = prior.get('attempts', int(bool(prior))) + int(rva in counted)
+    return counted
+
+
 def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=None):
     """Compile the task's unit and compare each function; returns (code, data, next)."""
-    import bind
     import verify_function
     say = (lambda _line: None) if quiet else ctx.say
     root = Path(root or ctx.repo)
     if draft_rva is None:
         tdir, task = load_task(ctx, ident, pick_current=True)
+        if ident is None:
+            say(f'using task {tdir.name} ({task["compiled"]})')
         target = target_manifest(root)
         if task.get('contrib', {}).get('practice'):
             unit = practice_unit(root, {parse_rva(fn['rva']) for fn in task['functions']})
@@ -2799,8 +2905,7 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
         say(f'compiler: toolset {Path(tool["bin"]).parents[2].name} at {tool["root"]} (recipe pin)')
     built = compile_unit(ctx, root, task['compiled'], recipe, out, tool)
     objdump = find_objdump(ctx)
-    bound = bind.bind(tdir, built['object'], exe, objdump, repo=root)
-    bind_lines = bind.describe(bound, tdir)
+    _, bind_lines = bind_attempt(root, tdir, out, exe, objdump)
     task = json.loads((tdir / 'task.json').read_text())
     task['recipe'] = recipe
     results, current = [], {}
@@ -2837,7 +2942,9 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     prof = contrib_profile(ctx, task.get('contrib', {}).get('profile'))
     history = [attempt_progress.read_json(path / 'summary.json') for path in sorted(runs.glob('[0-9][0-9][0-9]')) if path != out]
     finished_at = time.time()
-    progress = attempt_progress.update(current, history, now=finished_at)
+    counted = count_attempts(root, task, results, history, built['digest'])
+    measured = [run for run in history if any('attempts' in row for row in run.get('functions', []))]
+    progress = attempt_progress.update(current, measured, counted=counted, now=finished_at)
     summary = {'model': model, 'progress': progress, 'task': task['task_id'], 'run': number, 'unit': task['compiled'], 'source_revision': built['digest'],
                'recipe': task['recipe'], 'recipe_sha256': built['recipe_sha256'],
                'compiler': 'pinned' if built['compiler'] in ('wine', 'native') else 'override',
@@ -2849,7 +2956,8 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     say(f'run {number}: {passed}/{len(results)} pass ({summary["compiler"]} compiler)')
     for r in results:
         size = f'{r["candidate_size"]}/{r["target_size"]} B'
-        say(f'  {r["rva"]} {r["name"]}: {r["result"].upper()} {r["reason"]} {r["first_mismatch"] or ""} {size}')
+        say(f'  {r["rva"]} {r["name"]}: {r["result"].upper()} {r["reason"]} {r["first_mismatch"] or ""} '
+            f'{size} (attempts: {r["attempts"]})')
         if r['result'] != 'pass':
             say(f'    hint: {r["hint"]}')
     for line in retry_notes:
@@ -2872,12 +2980,12 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     for advice in stuck:
         say(advice)
     say(attempt_progress.guidance(prof['stuck_after']))
-    for line in note_reminders(ctx, tdir, task, results, number):
+    for line in note_reminders(ctx, task, results):
         say(line)
     if failed and len(stuck) == len(failed) and not summary['practice']:
         nxt = ' | '.join(stuck)
-    elif failed and number >= prof['contrib_max_tries'] and not summary['practice']:
-        first_rva = task['functions'][0]['rva']
+    elif failed and all(r['attempts'] >= prof['contrib_max_tries'] for r in results if r['rva'] in failed) and not summary['practice']:
+        first_rva = failed[0]
         nxt = (f'stop: hard cap {prof["contrib_max_tries"]} reached under profile {prof["name"]}; tell the person, then '
                f'{ctx.cli} release {first_rva} --reason "<one line>"'
                + (f', or continue with a stronger model ({ctx.cli} start {first_rva} --profile full)'
@@ -2892,14 +3000,14 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
 NOTE_ATTEMPTS = 4  # a pass that took this many compares is a hard-won one
 
 
-def note_needs(task, results, attempts):
+def note_needs(task, results):
     """[(function, kind)] worth a look for a lesson note: unmatched ones, and a pass after many attempts."""
     out = []
     for fn in task['functions']:
         row = next((r for r in results if r.get('rva') == fn['rva']), None) or {}
         if row.get('result') != 'pass':
             out.append((fn, 'near-miss'))
-        elif attempts >= NOTE_ATTEMPTS:
+        elif row.get('attempts', 1) >= NOTE_ATTEMPTS:
             out.append((fn, 'hard-won pass'))
     return out
 
@@ -2909,15 +3017,16 @@ def note_exists(ctx, fn):
     return any((ctx.repo / cookbook_notes.NOTES_DIR).glob(f'{rva:x}-*.md'))
 
 
-def note_reminders(ctx, tdir, task, results, attempts):
+def note_reminders(ctx, task, results):
     """A line per hard-won pass that has no note yet, and one line for all near-misses.
 
     A note records what the cookbook lacks: the cause of a near-miss, or the spelling of a pass that took many
     compares. The lines name the one command that writes the template; whether the cause is already in the
     cookbook is the drafter's call.
     """
-    todo = [(fn, kind) for fn, kind in note_needs(task, results, attempts) if not note_exists(ctx, fn)]
-    lines = [f'note: {fn["rva"]} {fn.get("community_name")}: pass after {attempts} attempt(s); if the spelling that '
+    todo = [(fn, kind) for fn, kind in note_needs(task, results) if not note_exists(ctx, fn)]
+    attempts = {row['rva']: row.get('attempts', 1) for row in results}
+    lines = [f'note: {fn["rva"]} {fn.get("community_name")}: pass after {attempts[fn["rva"]]} attempt(s); if the spelling that '
              f'fixed it is not in docs/matching-cookbook.md, send it as a lesson note: `{ctx.cli} lesson {fn["rva"]}` '
              '(docs/cookbook-notes/README.md)' for fn, kind in todo if kind == 'hard-won pass']
     near = [fn['rva'] for fn, kind in todo if kind == 'near-miss']
@@ -2925,11 +3034,6 @@ def note_reminders(ctx, tdir, task, results, attempts):
         lines.append(f'note: {len(near)} unmatched ({", ".join(near)}); if the cause is not in docs/matching-cookbook.md, '
                      f'send it as a lesson note: `{ctx.cli} lesson <rva>` (words and short plain C++; credited in the merge)')
     return lines
-
-
-def task_attempts(tdir):
-    runs = tdir / 'runs'
-    return len(list(runs.glob('[0-9][0-9][0-9]'))) if runs.is_dir() else 0
 
 
 def last_results(tdir):
@@ -2954,14 +3058,14 @@ def cmd_note(ctx, args):
         record = file_giveup(ctx, parse_rva(args.rva), args)
         return OK, {'giveup': record}, f'{ctx.cli} submit --notes-only --dry-run'
     tdir, task = load_task(ctx, args.task, pick_current=True)
-    results, attempts = last_results(tdir), task_attempts(tdir)
+    results = last_results(tdir)
     if args.rva:
         wanted = parse_rva(args.rva)
         picked = [(fn, 'requested') for fn in task['functions'] if parse_rva(fn['rva']) == wanted]
         if not picked:
             raise Stop(USAGE, f'{args.rva} is not a function of task {tdir.name}')
     else:
-        picked = note_needs(task, results, attempts)
+        picked = note_needs(task, results)
         if not picked:
             raise Stop(USAGE, 'no near-miss or hard-won pass in this task; name a function with --rva to write one anyway')
     progress = {}
@@ -2982,7 +3086,7 @@ def cmd_note(ctx, args):
             written.append(path.relative_to(ctx.repo).as_posix())
             continue
         outcome = 'fixed' if row.get('result') == 'pass' else 'unsolved'
-        text = cookbook_notes.render(rva, name, fn.get('label'), outcome, score, attempts)
+        text = cookbook_notes.render(rva, name, fn.get('label'), outcome, score, row.get('attempts', int(bool(row))))
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
         written.append(path.relative_to(ctx.repo).as_posix())
@@ -3017,6 +3121,21 @@ def cmd_lesson(ctx, args):
 def cmd_compare(ctx, args):
     draft_rva = parse_rva(args.draft) if args.draft is not None else None
     return run_compare(ctx, args.task, retry=not args.no_retry, draft_rva=draft_rva)
+
+
+def cmd_bind(ctx, args):
+    tdir, task = load_task(ctx, args.task, pick_current=True)
+    candidates = sorted((tdir / 'runs').glob('[0-9][0-9][0-9]/candidate.obj'))
+    if not candidates:
+        raise Stop(USAGE, f'no compiled candidate for {tdir.name}; run {ctx.cli} compare {tdir.name} first')
+    ctx.say(f'using task {tdir.name} ({task["compiled"]})')
+    exe = require_exe(ctx, target_manifest(ctx.repo))['path']
+    report, lines = bind_attempt(ctx.repo, tdir, candidates[-1].parent, exe, find_objdump(ctx))
+    for line in lines:
+        ctx.say(line)
+    unbound = any(report[key] for key in ('unbound_functions', 'unbound_references', 'unbound_thread_locals',
+                                         'ignored_hints'))
+    return (FAILED if unbound else OK), {'task': tdir.name, 'bind': [line.strip() for line in lines]}, None
 
 
 # ------------------------------------------------------------------ intake rules and submit
@@ -3120,7 +3239,7 @@ def cmd_preflight(ctx, args):
         unit = list(dict.fromkeys(n for _d, t_ in picked for n in t_['contrib']['unit']))
         files = submission_files(ctx, base, unit + [n for n in pending_notes(ctx) if n not in unit])
     reminders = [line for d_, t_ in picked
-                 for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_))]
+                 for line in note_reminders(ctx, t_, last_results(d_))]
     details = {}
     problems = intake_problems(ctx, base, head=head, files=files, details=details, scope=True)
     reconfirmation = project_reconfirmation(ctx.repo, [n for _status, n in files])
@@ -3167,12 +3286,50 @@ def upstream_remote(ctx):
     return up, push
 
 
-def submit_preflight(ctx, push):
+def submit_remote(ctx, fork):
+    """Prefer origin when it is upstream and the authenticated user can write there."""
+    gh = ctx.github()
+    origin = git(ctx, 'remote', 'get-url', 'origin', check=False)
+    origin_match = GITHUB_REMOTE.fullmatch(origin)
+    if not origin_match or not repo_slug.same_repo('/'.join(origin_match.groups()), gh.repo):
+        return fork, False
+    authenticated = gh.gh()
+    if authenticated:
+        try:
+            permissions = gh.api(f'repos/{gh.repo}').get('permissions') or {}
+        except (Offline, OSError, ValueError, subprocess.TimeoutExpired):
+            raise Stop(NETWORK, 'could not check upstream push permission; restore GitHub access and retry submit') from None
+        if not permissions.get('push'):
+            return fork, False
+    urls = git(ctx, 'remote', 'get-url', '--push', '--all', 'origin', check=False).splitlines()
+    target = GITHUB_REMOTE.fullmatch(urls[0]) if len(urls) == 1 else None
+    if not target or not repo_slug.same_repo('/'.join(target.groups()), gh.repo):
+        raise Stop(USAGE, 'origin must have a single push URL pointing to the upstream repository')
+    if not authenticated:
+        # Check write access without requiring a separate account login or updating a remote ref.
+        try:
+            probe = ctx.run(['git', 'push', '--dry-run', 'origin',
+                             f'HEAD:refs/heads/sr-write-check-{os.getpid()}'], cwd=ctx.repo,
+                            env=dict(ctx.env, GIT_TERMINAL_PROMPT='0'), capture_output=True, text=True, timeout=15)
+        except (OSError, subprocess.TimeoutExpired):
+            raise Stop(NETWORK, 'upstream push permission probe did not complete; retry submit') from None
+        if probe.returncode:
+            return fork, False
+    if git(ctx, 'symbolic-ref', '--quiet', '--short', 'HEAD', check=False) in ('', 'main'):
+        raise Stop(USAGE, 'switch to a contribution branch before submitting to origin/main')
+    return 'origin', True
+
+
+GITHUB_REMOTE = re.compile(r'(?:https://github\.com/|git@github\.com:|ssh://git@github\.com/)'
+                           r'([A-Za-z0-9-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?', re.I)
+
+
+def submit_preflight(ctx, push, internal=False):
     blockers, actions = [], []
     owner = None
     if push:
         url = git(ctx, 'remote', 'get-url', '--push', push, check=False)
-        match = re.fullmatch(r'(?:https://github.com/|git@github.com:)([A-Za-z0-9-]+)/([A-Za-z0-9_.-]+?)(?:\.git)?/?', url)
+        match = GITHUB_REMOTE.fullmatch(url)
         if match:
             owner = match.group(1)
         else:
@@ -3188,7 +3345,8 @@ def submit_preflight(ctx, push):
     if not authenticated:
         actions.append('gh auth login (recommended for claims, API quota and automatic PR creation); '
                        'or configure Git push credentials and use the browser PR link')
-    return dict(fork_remote=push, fork_owner=owner, authenticated=authenticated, git_push_auth='not-checked',
+    return dict(fork_remote=None if internal else push, fork_owner=None if internal else owner,
+                push_remote=push, internal=internal, authenticated=authenticated, git_push_auth='not-checked',
                 blockers=blockers, actions=actions)
 
 
@@ -3299,11 +3457,14 @@ def cmd_submit(ctx, args):
         r for s_ in summaries for r in s_['functions']])
     notes = [n for n in pending_notes(ctx) if n not in unit]
     for d_, t_ in picked:
-        for line in note_reminders(ctx, d_, t_, last_results(d_), task_attempts(d_)):
+        for line in note_reminders(ctx, t_, last_results(d_)):
             ctx.say(line)
     unit = unit + notes
     up, push = upstream_remote(ctx)
-    preflight = submit_preflight(ctx, push)
+    push, internal = submit_remote(ctx, push)
+    if internal:
+        up = push
+    preflight = submit_preflight(ctx, push, internal)
     blockers += preflight['blockers']
     warnings += preflight['actions']
     base = args.base or (f'{up}/main' if up else 'origin/main')
@@ -3370,11 +3531,14 @@ def submit_notes(ctx, args):
         raise Stop(USAGE, '--notes-only takes no tasks')
     unit = pending_notes(ctx)
     up, push = upstream_remote(ctx)
+    push, internal = submit_remote(ctx, push)
+    if internal:
+        up = push
     base = args.base or (f'{up}/main' if up else 'origin/main')
     files = submission_files(ctx, base, unit)
     if not files or any(not auxiliary(name) for _status, name in files):
         raise Stop(USAGE, '--notes-only needs a branch containing only drafts, give-ups or lessons')
-    preflight = submit_preflight(ctx, push)
+    preflight = submit_preflight(ctx, push, internal)
     blockers = preflight['blockers'] + intake_problems(ctx, base, head=None, files=files)
     for finding in blockers:
         ctx.say(f'BLOCKED: {finding}')
@@ -3391,12 +3555,15 @@ def submit_notes(ctx, args):
 def publish_submission(ctx, data, push, files, picked):
     title, body_file = data['title'], data['body_file']
     unit, base, blockers, preflight = (data[k] for k in ('files', 'base', 'blockers', 'preflight'))
+    internal = preflight['internal']
+    branch = git(ctx, 'rev-parse', '--abbrev-ref', 'HEAD') if internal else None
+    refspec = f'HEAD:refs/heads/{branch}' if internal else 'HEAD'
     if data['dry_run']:
-        plan = [f'git push --dry-run {push or "<your fork remote>"} HEAD']
+        plan = [f'git push --dry-run {push or "<your fork remote>"} {refspec}']
         if unit:
             plan += [f'git add {" ".join(unit)}', f'{ctx.cli} preflight --staged --base {base}',
                      f'git commit -m "{title}" -- {" ".join(unit)}']
-        plan += [f'git push {push or "<your fork remote>"} HEAD',
+        plan += [f'git push {push or "<your fork remote>"} {refspec}',
                  f'gh pr create --repo {ctx.github().repo} --title "{title}" --body-file {body_file}']
         for p in plan:
             ctx.say(f'would run: {p}')
@@ -3408,17 +3575,17 @@ def publish_submission(ctx, data, push, files, picked):
     if other:
         raise Stop(USAGE, 'other files are staged: ' + ', '.join(other[:5]) + '; submit commits only the unit',
                    'git restore --staged <those files>, then submit again', **data)
-    # gh authentication is optional: SSH/credential helpers and browser PR creation also work.
-    # Probe actual fork push credentials without changing any remote ref, before a local commit.
+    # Push credentials can differ from the account used for repository permissions.
+    destination = 'upstream' if internal else 'fork'
     try:
-        probe = ctx.run(['git', 'push', '--dry-run', push, 'HEAD'], cwd=ctx.repo,
+        probe = ctx.run(['git', 'push', '--dry-run', push, refspec], cwd=ctx.repo,
                         env=dict(ctx.env, GIT_TERMINAL_PROMPT='0'), capture_output=True, text=True, timeout=60)
     except (OSError, subprocess.TimeoutExpired):
-        raise Stop(NETWORK, 'fork push preflight did not complete; nothing committed',
-                   'configure Git push credentials for your fork, then rerun submit', **data)
+        raise Stop(NETWORK, f'{destination} push preflight did not complete; nothing committed',
+                   f'configure Git push credentials for the {destination}, then rerun submit', **data)
     if probe.returncode:
-        raise Stop(NETWORK, 'fork push authentication/permission preflight failed; nothing committed',
-                   'configure Git push credentials for your fork, then rerun submit', **data)
+        raise Stop(NETWORK, f'{destination} push authentication/permission preflight failed; nothing committed',
+                   f'configure Git push credentials for the {destination}, then rerun submit', **data)
     preflight['git_push_auth'] = 'passed'
     if unit:
         git(ctx, 'add', '--', *unit)
@@ -3433,21 +3600,21 @@ def publish_submission(ctx, data, push, files, picked):
     if not push:
         raise Stop(USAGE, 'no fork remote to push to', 'fork the repository on GitHub, then '
                    f'git remote add fork https://github.com/<you>/{UPSTREAM.split("/")[-1]}.git and run submit again', **data)
-    branch = git(ctx, 'rev-parse', '--abbrev-ref', 'HEAD')
-    git(ctx, 'push', '-u', push, branch)
+    branch = branch or git(ctx, 'rev-parse', '--abbrev-ref', 'HEAD')
+    git(ctx, 'push', push, refspec if internal else branch)
     for tdir_i, task_i in picked:
         task_i['contrib']['submitted'] = branch
         (tdir_i / 'task.json').write_text(json.dumps(task_i, indent=2) + '\n')
+    head = branch if internal else f"{preflight['fork_owner']}:{branch}"
     gh = ctx.github().gh()
     if gh:
-        owner = preflight['fork_owner']
-        proc = ctx.run([gh, 'pr', 'create', '--repo', ctx.github().repo, '--head', f'{owner}:{branch}',
+        proc = ctx.run([gh, 'pr', 'create', '--repo', ctx.github().repo, '--head', head,
                         '--title', title, '--body-file', body_file], capture_output=True, text=True)
         if proc.returncode == 0:
             url = proc.stdout.strip().splitlines()[-1]
             ctx.say(f'pull request: {url}')
             return OK, dict(data, pull_request=url), 'wait for the project to confirm; watch the pull request'
-    head = urllib.parse.quote(f"{preflight['fork_owner']}:{branch}", safe=':')
+    head = urllib.parse.quote(head, safe=':')
     link = f'https://github.com/{ctx.github().repo}/compare/main...{head}?expand=1'
     ctx.say(f'open this link and paste {body_file} as the description: {link}')
     return OK, dict(data, link=link), 'open the link and create the pull request'
@@ -3632,6 +3799,7 @@ def parser():
     s.add_argument('rva', nargs='+')
     s.add_argument('--drafted-by')
     s.add_argument('--area')
+    s.add_argument('--unit', metavar='PATH', help='choose an existing reconstruction .cpp when several units fit')
     s.add_argument('--class', dest='class_name', metavar='CLASS',
                    help='use this owner class for the unit and its functions (label inferred names GUESS)')
     s.add_argument('--recipe')
@@ -3648,6 +3816,8 @@ def parser():
     s.add_argument('--draft', metavar='RVA', help='score the public draft for this RVA')
     s.add_argument('--no-retry', action='store_true',
                    help='skip the advisory retry of failed functions under the recipe\'s alternative flag sets')
+    s = sub.add_parser('bind', help='resolve bindings for the most recent compiled candidate of a task')
+    s.add_argument('task', nargs='?')
     s = sub.add_parser('note')
     s.add_argument('task', nargs='?')
     s.add_argument('--rva', help='write a note for this function even when it is not a near-miss')
@@ -3700,7 +3870,8 @@ def parser():
 
 
 COMMANDS = {'sheet': cmd_sheet, 'lessons': cmd_lessons, 'doctor': cmd_doctor, 'setup': cmd_setup, 'next': cmd_next, 'claim': cmd_claim, 'release': cmd_release,
-            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'note': cmd_note, 'lesson': cmd_lesson, 'submit': cmd_submit,
+            'start': cmd_start, 'facts': cmd_facts, 'decomp': cmd_decomp, 'compare': cmd_compare, 'bind': cmd_bind,
+            'note': cmd_note, 'lesson': cmd_lesson, 'submit': cmd_submit,
             'preflight': cmd_preflight, 'intake': cmd_intake, 'go': cmd_go, 'feedback': cmd_feedback}
 
 

@@ -48,7 +48,7 @@ def update(current, history, counted=True, now=None):
         out[rva] = dict(metric, previous=prior['value'] if prior else None,
                         delta=value - prior['value'] if prior else None, best=best,
                         no_improvement=(0 if prior is None or improved else
-                                        prior['no_improvement'] + int(counted)))
+                                        prior['no_improvement'] + int(counted if isinstance(counted, bool) else rva in counted)))
         if now is not None:
             out[rva]['best_at'] = now if prior is None or improved else prior.get('best_at', now)
     return out

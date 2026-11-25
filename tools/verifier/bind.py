@@ -1600,6 +1600,8 @@ def bind(task_dir, obj_path, image_path=None, objdump=None, repo=REPO, *, source
     compared_rvas = {parse_rva(f['rva']) for f in task['functions']}
     in_object = {hint_key(s.name, hints) for s in obj.symbols.values()}
     report['unused_hints'] = sorted(h for h, r in hints.items() if h not in in_object and r not in compared_rvas)
+    for key in ('unbound_references', 'unbound_thread_locals'):
+        report[key] = [name for name in report[key] if name not in symbols]
     if report['changed']:
         if public:
             publish(Path(repo), map_name, smap, before, found)
@@ -1674,19 +1676,18 @@ def describe(report, task_dir):
         elif f['defined_in_object']:
             lines.append('    defined in object: ' + ', '.join(f['defined_in_object'][:6]))
     for name in report['unbound_references']:
-        lines.append(f'  UNBOUND reference {name}: add {{"{name}": "0x<rva from the pack table>"}} to {hints}')
+        lines.append(f'  UNBOUND reference {name}: find its target in the pack and add the RVA to {hints}')
     for name in report.get('unbound_thread_locals', []):
-        lines.append(f'  UNBOUND thread-local {name}: add {{"{name}": "tls:0x<offset>"}} to {hints}; the offset is '
-                     'the displacement the target adds to the TLS block, the same for every function using it')
+        lines.append(f'  UNBOUND thread-local {name}: add a tls: hint to {hints} with the displacement the target '
+                     'adds to the TLS block')
     if report.get('unused_hints'):
         shown = report['unused_hints']
         lines.append(f'  unused bind hints ({len(shown)}): no symbol of the object has these names '
                      '(misspelt, or the unit no longer references them): ' + ', '.join(shown[:12])
                      + (f' ... {len(shown) - 12} more' if len(shown) > 12 else ''))
-    open_names = ([(n, '0x<rva>') for n in report['unbound_references']]
-                  + [(n, 'tls:0x<offset>') for n in report.get('unbound_thread_locals', [])])
-    if len(open_names) > 3:
-        lines.append(f'  paste into {hints.name}: ' + json.dumps({n: v for n, v in open_names}))
+    suggestions = {f['suggested']: f['rva'] for f in report['unbound_functions'] if f.get('suggested')}
+    if suggestions:
+        lines.append(f'  paste into {hints.name} after verifying the binding: ' + json.dumps(suggestions))
     return lines
 
 

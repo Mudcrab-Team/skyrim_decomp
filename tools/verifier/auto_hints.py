@@ -150,9 +150,10 @@ def derive(task_dir, dest, report, config=None, repo=bind.REPO, correct=False):
         return {}, {}, notes
     starts = bind.function_starts(repo)
     known = known_targets(repo, task)
+    definitions = {bind.parse_rva(fn['rva']) for fn in task['functions']}
 
     def listed(value):
-        return value in known or (starts is not None and value in starts)
+        return value not in definitions and (value in known or (starts is not None and value in starts))
 
     added, skipped = {}, {}
     for name in wanted:
