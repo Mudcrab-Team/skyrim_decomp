@@ -320,6 +320,9 @@ class FakeBot(pr_bot.Bot):
         self.pre = {}  # rva -> mechanical findings the pre-review gate returns
         self.lint = []  # source-lint findings the intake stage returns
 
+    def refresh_rendering(self):
+        pass
+
     def run(self, argv, **kw):
         argv = [str(a) for a in argv]
         self.calls.append(argv)

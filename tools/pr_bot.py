@@ -4784,6 +4784,38 @@ class Bot:
         self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
         return claims.sweep(claims.GitHub(self.tree), claims.git_json(self.tree, 'origin/main'))
 
+    def refresh_rendering(self):
+        """Publish the rendering milestone from main when the public progress inventory changes."""
+        import render_inventory
+
+        state_path = self.work / 'rendering-refresh.json'
+        state = read_json(state_path) or {}
+        now = self.clock()
+        if now - state.get('attempted_at', -CLAIM_SWEEP_EVERY) < CLAIM_SWEEP_EVERY:
+            return
+        self.run(['git', 'fetch', '--quiet', 'origin', 'main'], cwd=self.tree)
+        main = self.run(['git', 'rev-parse', 'origin/main'], cwd=self.tree).stdout.decode().strip()
+        blob = self.run(['git', 'rev-parse', f'{main}:data/progress.json'], cwd=self.tree).stdout.decode().strip()
+        if blob == state.get('progress_blob'):
+            return
+
+        state['attempted_at'] = now
+        write_json_atomic(state_path, state)
+        self.run(['git', 'checkout', '--quiet', '--force', '--detach', main], cwd=self.tree)
+        inv = render_inventory.build(self.tree, render_inventory.fetch_claims(self.tree))
+        doc = 'docs/milestones/rendering.md'
+        changed = render_inventory.update_doc(self.tree / doc, inv)
+        if changed:
+            with self.land_lock:
+                self.run(['git', 'commit', '--quiet', '-m', 'Refresh rendering milestone [skip ci]', '--', doc],
+                         cwd=self.tree)
+                self.run(['git', 'push', '--quiet', 'origin', 'HEAD:main'], cwd=self.tree)
+        issues = render_inventory.update_issues(self.tree, inv)
+        state['progress_blob'] = blob
+        write_json_atomic(state_path, state)
+        if changed or issues:
+            print(f'{stamp()} rendering inventory: doc updated={changed}, issues updated={issues}', flush=True)
+
     def task_slot(self, number, head):
         """The slot whose tree still holds the PR's confirm tasks, else this one."""
         for index in (*range(POOL_SIZE), 'merge'):
@@ -5771,6 +5803,10 @@ def _housekeeping(bot, directory, due):
                 print(f'{stamp()} claim #{number}: lapsed, closed', flush=True)
         except errors + (RuntimeError,) as exc:
             print(f'{stamp()} claim sweep: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
+        try:
+            slot.refresh_rendering()
+        except errors + (RuntimeError,) as exc:
+            print(f'{stamp()} rendering inventory: {type(exc).__name__}: {exc}', file=sys.stderr, flush=True)
     if 'probes' in due:
         try:
             for number in slot.sweep_probes():

@@ -612,6 +612,23 @@ class OverloadAndOrderTests(unittest.TestCase):
         self.assertEqual(decls[0x10], {'name': 'A::F', 'params': None, 'cv': None})
         self.assertEqual(decls[0x20], {'name': 'A::G', 'params': 'int,charconst*', 'cv': 'const'})
 
+    def test_template_claim_keeps_the_specialization_when_hashes_are_identical(self):
+        left, right = '?Left@@YAXXZ', '?Right@@YAXXZ'
+        names = bind.Names()
+        for symbol, base in ((left, 'Left'), (right, 'Right')):
+            names.cache[symbol] = 'Array::Add'
+            names.text[symbol] = f'public: void __cdecl Array<struct N::Pointer<class {base}>, struct Alloc>::Add<{base} *>(void)'
+        (self.root / 'u.cpp').write_text('// 0x10 Array<N::Pointer<Left>, Alloc>::Add\n'
+                                         '// 0x20 Array<N::Pointer<Right>, Alloc>::Add\n')
+        header = bind.header_declarations(self.root, 'u.cpp')
+        task = {'functions': [
+            {'rva': '0x10', 'symbol': right, 'size': 3, 'community_name': 'Array::Add'},
+            {'rva': '0x20', 'symbol': left, 'size': 3, 'community_name': 'Array::Add'},
+        ]}
+        results = bind.resolve_functions(task, [left, right], names, {}, lambda _: 3,
+                                         matcher=lambda *_: True, header=header)
+        self.assertEqual({rva: value['symbol'] for rva, value in results.items()}, {'0x10': left, '0x20': right})
+
 
 class FuncletTests(unittest.TestCase):
     """References made only from funclets, on the synthetic catch unit (catch$0 and dtor$0)."""

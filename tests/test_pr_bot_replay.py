@@ -535,6 +535,9 @@ class ReplayBot(pr_bot.Bot):
     def close_done_claims(self):
         return ([], [])
 
+    def refresh_rendering(self):
+        pass
+
     def build_records(self, tag, units, rvas, state):
         records = self.work / 'records' / tag.replace('/', '-')
         records.mkdir(parents=True, exist_ok=True)

@@ -8,6 +8,11 @@
 
 Dates below are in November 2026 UTC. The **When** column links to landed commits or PRs. Open PRs are dated by submission. A local comparator pass, a shape lead and a match recorded in the merged inventory are different results.
 
+## Milestone plans
+
+- [Rendering 1:1](milestones/rendering.md)
+- [Skyrim DevTools](milestones/devtools.md)
+
 ## Foundations
 
 | Name | When | What it is | Brief | Effect |

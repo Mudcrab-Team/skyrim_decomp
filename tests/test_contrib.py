@@ -194,6 +194,28 @@ class ExecutableTests(Base):
 
 
 class ToolchainTests(Base):
+    def test_wrapper_bindir_accepts_a_spelling_of_the_same_directory(self):
+        import unit_build
+        root = self.tmp / 'source'
+        root.mkdir()
+        (root / 'Unit.cpp').write_text('int f();\n')
+        (root / 'recipe.json').write_text(json.dumps({'flags': ['/O2']}))
+        bindir = root / 'Toolset'
+        bindir.mkdir()
+        alternate = root / 'toolset'
+        if not alternate.is_dir():
+            self.skipTest('requires a case-insensitive filesystem')
+        other = root / 'different'
+        other.mkdir()
+        ctx = self.ctx(platform='darwin')
+        tool = dict(status='ok', flavour='wine', root=str(root), bin=str(bindir))
+        for actual, expected in ((alternate, 'sentinel include check'), (other, 'different toolset')):
+            with unittest.mock.patch.object(unit_build, 'wrapper_settings',
+                                            return_value={'BINDIR': str(actual), 'BASE': '', 'INCLUDE': ''}), \
+                    unittest.mock.patch.object(unit_build, 'include_problem', return_value='sentinel include check'), \
+                    self.assertRaisesRegex(contrib.Stop, expected):
+                contrib.compile_unit(ctx, root, 'Unit.cpp', 'recipe.json', root / 'out', tool)
+
     def test_autodetect_uses_all_pins_for_the_selected_recipe(self):
         roots = [self.tmp / name for name in ('msvc-old', 'msvc-broken', 'msvc-correct')]
         files = ('cl.exe', 'c1xx.dll', 'c2.dll', 'link.exe')
@@ -1070,6 +1092,19 @@ class FollowUpTests(Base):
             (d / 'task.json').write_text(json.dumps({'compiled': 'x', 'functions': [],
                                                      'contrib': {'practice': practice}}))
         self.assertEqual(contrib.load_task(self.ctx())[0].name, 'contrib-ninode')
+
+    def test_practice_uses_the_unit_claiming_the_template_instance(self):
+        root = self.tmp / 'fixture'
+        area = root / 'reconstruction/synthetic'
+        area.mkdir(parents=True)
+        (area / 'Owner.cpp').write_text('// Calls the function at RVA 0x1010.\nint f();\n')
+        (area / 'Owner_Members.cpp').write_text('// 0x1010 Array<Pointer<Owner>, Allocator>::Add\n'
+                                               '// 0x1020 Array<Pointer<Twin>, Allocator>::Add\n')
+        self.assertEqual(contrib.practice_unit(root, {0x1010, 0x1020}),
+                         'reconstruction/synthetic/Owner_Members.cpp')
+        (area / 'Other.cpp').write_text('// 0x1010 ?Add@Other@@YAXXZ\n')
+        with self.assertRaisesRegex(contrib.Stop, 'claimed by several units'):
+            contrib.practice_unit(root, {0x1010})
 
     def test_self_test_is_skipped_not_passed_without_its_function(self):
         repo = self.tmp / 'repo'

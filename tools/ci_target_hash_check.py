@@ -8,6 +8,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import posixpath
 import re
 import shutil
 import subprocess
@@ -18,14 +19,15 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import record_store
 import ci_hash_check as public
 import contrib
+import bind
 import draft_bundle
 import giveup
 import pdb_types
 import lint_reconstruction as lint
 import compare
 from pecoff import CoffObject, Reject
-from rva_headers import claimed_rvas
-from source_digest import include_closure
+from rva_headers import claimed_rvas, compact_claims
+from source_digest import STRICT_INCLUDE, include_closure
 import digest_v2
 from digest_v2 import tu_digest
 import target_hashes as hashes
@@ -237,27 +239,59 @@ def unit_recipe(text):
     return found[0] if found else DEFAULT_RECIPE
 
 
+INCLUDE_LINES = re.compile('^' + STRICT_INCLUDE.pattern + '$', re.M)
+
+
+def include_candidates(tree, changed):
+    """Find possible includers by basename before resolving full translation units."""
+    files = {}
+    for folder in ('reconstruction', 'builds', 'findings', 'reports'):
+        for directory, _dirs, names in os.walk(tree / folder):
+            for name in names:
+                files.setdefault(name, []).append(Path(directory) / name)
+    units = {p for name, paths in files.items() if name.endswith('.cpp')
+             for p in paths if p.is_relative_to(tree / 'reconstruction')}
+    scanned, reverse = set(), {}
+    pending = list(units)
+    while pending:
+        path = pending.pop()
+        if path in scanned or path.is_symlink():
+            continue
+        scanned.add(path)
+        text = path.read_text(encoding='utf-8-sig', errors='replace').replace('\\\n', '')
+        for match in INCLUDE_LINES.finditer(text):
+            basename = posixpath.basename(posixpath.normpath(match[1] or match[2]))
+            reverse.setdefault(basename, set()).add(path)
+            pending.extend(p for p in files.get(basename, ()) if p not in scanned)
+    names = {posixpath.basename(path) for path in changed}
+    pending_names = list(names)
+    includers = set()
+    while pending_names:
+        for path in reverse.get(pending_names.pop(), ()):
+            includers.add(path)
+            if path.name not in names:
+                names.add(path.name)
+                pending_names.append(path.name)
+    return {p.relative_to(tree).as_posix() for p in includers & units}
+
+
 def requests(tree, changed, known):
     from check_source_digest import include_closure as cached_closure, source_digest_cache
     import revision_cache
     tree = Path(tree)
-    key = None
-    # Scratch CI trees have no git metadata; scoped resolution still avoids repeated directory scans.
-    if (tree / '.git').exists():
-        key = revision_cache.snapshot(tree)
-    index = revision_cache.read(tree, 'include-index', key) if key else None
-    if index is None:
-        index = {}
+    changed = set(changed)
+    if not changed:
+        return []
+    snapshot = revision_cache.snapshot(tree) if (tree / '.git').exists() else None
+    key = hashes.digest(json.dumps([snapshot, sorted(changed)]).encode()) if snapshot else None
+    units = revision_cache.read(tree, 'affected-units', key) if key else None
+    if units is None:
+        units = {name for name in changed if name.endswith('.cpp')}
+        candidates = units | include_candidates(tree, changed)
         with source_digest_cache():
-            for path in sorted((tree / 'reconstruction').rglob('*.cpp')):
-                unit = path.relative_to(tree).as_posix()
-                for name in cached_closure(tree, unit):
-                    index.setdefault(name, []).append(unit)
-        if key and revision_cache.snapshot(tree) == key:
-            revision_cache.save(tree, 'include-index', key, index)
-    units = {name for name in changed if name.endswith('.cpp')}
-    for name in changed:
-        units.update(index.get(name, []))
+            units = sorted(unit for unit in candidates if changed.intersection(cached_closure(tree, unit)))
+        if key and revision_cache.snapshot(tree) == snapshot:
+            revision_cache.save(tree, 'affected-units', key, units)
     result = []
     for unit in sorted(units):
         unit_text = (tree / unit).read_text(encoding='utf-8-sig')
@@ -265,15 +299,19 @@ def requests(tree, changed, known):
         entries = {r['rva']: dict(r, recipe=recipe) for r in known.get(unit, [])}
         for rva, symbol in REQUEST.findall(unit_text[:8192]):
             value = int(rva, 16)
-            entries.setdefault(value, dict(rva=value, symbol=symbol, recipe=recipe))
-        # A new function has no accepted record to name its symbol. Its header claims the RVA and
-        # the object is searched for the function whose hash equals that published target, so the
-        # symbol is found by the comparison, never taken from the PR.
-        stem = unit.rsplit('.', 1)[0]
-        texts = [(tree / (stem + ext)).read_text(encoding='utf-8-sig') for ext in ('.h', '.cpp')
-                 if (tree / (stem + ext)).is_file()]
+            entries.setdefault(value, dict(rva=value, symbol=symbol, recipe=recipe, claim=symbol))
+        header = (tree / unit).with_suffix('.h')
+        texts = [unit_text]
+        if header.is_file():
+            texts.append(header.read_text(encoding='utf-8-sig'))
+        claims = {}
+        for text in texts:
+            for value, name in compact_claims(text):
+                claims.setdefault(value, bind.claim_identity(name))
         for value in sorted(claimed_rvas(texts))[:MAX_CLAIMS_PER_UNIT]:
-            entries.setdefault(value, dict(rva=value, symbol=None, recipe=recipe))
+            entry = entries.setdefault(value, dict(rva=value, symbol=None, recipe=recipe))
+            if claims.get(value):
+                entry.setdefault('claim', claims[value])
         if not entries:
             result.append(dict(unit=unit, rva=None, symbol=None, recipe=recipe))
         else:
@@ -281,7 +319,7 @@ def requests(tree, changed, known):
     return result
 
 
-def matching_symbols(blob, target):
+def matching_symbols(blob, target, claim=None):
     """Names of the object's functions whose normalized hash and layout equal the published target.
 
     Only sections of the target's size are hashed. The validator requires the first host's symbol
@@ -294,6 +332,11 @@ def matching_symbols(blob, target):
             sec = obj.section(sym.section)
             if sec.data is not None and len(sec.data) == target['size']:
                 names.add(sym.name)
+    if claim:
+        demangler = bind.Names(bind.find_undname())
+        if not claim.startswith('?'):
+            demangler.load(sorted(names))
+        names = {name for name in names if bind.matches_claim(name, claim, demangler)}
     found = []
     for name in sorted(names):
         try:
@@ -409,17 +452,26 @@ def compile_requests(root, tree, requests_, bindir, work, manifest):
             row['reason'] = 'published-target-or-binding-unavailable'
         else:
             try:
-                # A record's or request line's decorated name goes stale when the declaration changes
-                # (a void return made bool, a parameter retyped); the function is then found by its
-                # hash like a header-claimed one, never by the stale name.
-                if ref['symbol'] is None or not defines(built[key], ref['symbol']):
-                    symbols = matching_symbols(built[key], target)
-                    row['result'] = 'hash-match' if symbols else 'mismatch'
+                # A stale record can fall back to the hash. An explicit source claim still selects
+                # its own definition when other definitions have the same hash.
+                claim = ref.get('claim')
+                symbol = ref['symbol']
+                if claim and (claim.startswith('?') or claim == symbol):
+                    if defines(built[key], claim):
+                        row['result'] = hashes.candidate(built[key], claim, target)
+                        symbols = [claim]
+                    else:
+                        row['result'], row['reason'] = 'mismatch', 'no-matching-function'
+                elif claim or symbol is None or not defines(built[key], symbol):
+                    symbols = matching_symbols(built[key], target, claim)
+                    row['result'] = 'hash-match' if symbols and (not claim or len(symbols) == 1) else 'mismatch'
                     if not symbols:
                         row['reason'] = 'no-matching-function'
+                    elif claim and len(symbols) > 1:
+                        row['reason'] = 'ambiguous-function-claim'
                 else:
-                    row['result'] = hashes.candidate(built[key], ref['symbol'], target)
-                    symbols = [ref['symbol']]
+                    row['result'] = hashes.candidate(built[key], symbol, target)
+                    symbols = [symbol]
                 if row['result'] == 'hash-match':
                     row['symbols'] = symbols
                 row['source_sha256'] = tu_digest(tree, include_closure(tree, ref['unit']))

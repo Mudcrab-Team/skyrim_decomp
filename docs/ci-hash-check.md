@@ -120,9 +120,12 @@ funclets are outside this advisory digest and remain the local comparator's job.
 
 A linked PE does not retain the original COFF relocations. The local extractor infers RIP-relative
 four-byte reference fields (including REL32 trailing-immediate variants), four-byte direct calls
-(including self calls) and branches outside the function. Other internal branches stay unmasked. It never guesses address-like immediates.
+(including self calls) and branches outside the function. It also infers the four-byte TLS
+section offset in a local-static guard or in an access to the block obtained through the image's
+TLS index. A block access may encode the offset as a memory displacement or add it to the block
+pointer. Other internal branches and unrelated immediates stay unmasked.
 This is labelled `linked-reference-inference`, **not a claim of recovered original relocations**.
-ADDR32NB, SECREL, linker transformations and unusual instruction streams can require additional
+Other relocation forms, linker transformations and unusual instruction streams can require additional
 local evidence. An optional private layout file can supply comparator-checked fields; it never
 leaves `.local/`. Undecodable ranges receive an explicitly unmasked digest and
 `unmasked-unsupported`; the CI checker always returns `no-target` for these. A different candidate
@@ -155,6 +158,8 @@ and pass the proposed revision as `--head`. It enforces the contributor path/del
 and the same source lint; PR symlinks, recipes, response files and build commands are refused; CI tooling blobs are ignored,
 never materialized or executed.
 It never checks out PR tools or imports PR Python. Header edits trigger affected units too.
+Intake identifies possible transitive includers before resolving the exact include closure for
+those units and changed C++ files.
 
 Known RVA and symbol bindings come from base records. A new unit can request a public target
 in its `.cpp` header comment with `// CI hash: 0x<RVA> <COFF-symbol>`. The request leaves the
@@ -162,7 +167,10 @@ target's size, committed layout and digest fixed. CI uses the first recipe path 
 typically on the `Recipe:` line, and falls back to the default v141 recipe if the unit names none.
 The selected recipe must be approved by the trusted target-hash manifest. A recipe-only edit
 triggers a compile, and the regression check uses the declared recipe at each revision.
-Unknown or unsupported bindings remain `no-target`. The compiler runs through `contrib.compile_unit`
+Unknown or unsupported bindings remain `no-target`. A compact claim may also name the decorated
+symbol or the full template specialization. The checker tests that definition even when other
+definitions have the same hash. A claim that selects no matching definition or several identical
+definitions fails the check. The compiler runs through `contrib.compile_unit`
 with fixed recipe flags, cleared environment, include-closure checks, exact /showIncludes
 agreement and its timeout. All four compiler pins and the pinned SDK headers must match.
 

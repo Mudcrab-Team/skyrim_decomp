@@ -54,40 +54,100 @@ def section_hash(section):
                 layout_sha256=layout_hash(len(section.data), spans))
 
 
-def target_section(data, rva):
-    """Infer link-dependent REL32 fields; no candidate controls target masking.
+def target_section(data, rva, tls_index=None, tls_size=None):
+    """Infer link-dependent REL32 and TLS SECREL fields from the linked image.
 
     A linked PE has no original COFF relocation table. These inferred fields are advisory;
-    ADDR32NB/SECREL and linker transformations need a private, locally checked override.
+    other relocation shapes and linker transformations can use a private, checked override.
     No other immediates, register operands, internal branches or padding are erased.
     """
-    from iced_x86 import Decoder, FlowControl, Mnemonic, OpKind, Register, RegisterExt
+    from iced_x86 import (Decoder, FlowControl, InstructionInfoFactory, Mnemonic, OpAccess,
+                          OpKind, Register, RegisterExt)
     decoder = Decoder(64, data, ip=rva)
     relocs = []
-    # MSVC's thread-safe local-static guard loads the thread-local epoch's section offset into a register
-    # and then indexes the thread's TLS block with it; the linker writes the offset into the immediate.
-    # Only that exact shape is inferred, so any other immediate stays exact code.
-    imm_loads = {}  # full register -> (instruction index, immediate field offset)
-    tls_seen = None
+    secrel_fields = set()
+    info = None
+    tls_regs = {}
+    offset_loads = {}
+    guard_loads = {}
+    guard_start = None
+    writes = {OpAccess.WRITE, OpAccess.COND_WRITE, OpAccess.READ_WRITE, OpAccess.READ_COND_WRITE}
+    full = RegisterExt.full_register
+
+    def in_template(value):
+        return 0 <= value < (tls_size if tls_size is not None else 1 << 31)
+
     for number, ins in enumerate(decoder):
         if ins.is_invalid:
             raise ValueError('unsupported target instruction')
         fields = decoder.get_constant_offsets(ins)
         offset = ins.ip - rva
-        if (ins.mnemonic == Mnemonic.MOV and ins.op0_kind == OpKind.REGISTER and ins.op1_kind == OpKind.IMMEDIATE32
-                and fields.immediate_size == 4):
-            imm_loads[RegisterExt.full_register(ins.op0_register)] = (number, offset + fields.immediate_offset)
-        elif (ins.mnemonic == Mnemonic.MOV and ins.op1_kind == OpKind.MEMORY and ins.memory_segment == Register.GS
-              and ins.memory_base == Register.NONE and ins.memory_index == Register.NONE
-              and ins.memory_displacement == 0x58):
-            tls_seen = number
-        elif (tls_seen is not None and number - tls_seen <= 8 and ins.memory_base != Register.NONE
+        memory = any(ins.op_kind(k) == OpKind.MEMORY for k in range(ins.op_count))
+        tls_array = (memory and ins.memory_segment == Register.GS and ins.memory_base == Register.NONE
+                     and ins.memory_index == Register.NONE and ins.memory_displacement == 0x58)
+        imm32_load = (ins.mnemonic == Mnemonic.MOV and ins.op0_kind == OpKind.REGISTER
+                      and ins.op1_kind == OpKind.IMMEDIATE32 and fields.immediate_size == 4)
+        # Keep the local-static guard's existing immediate mask.
+        if imm32_load:
+            guard_loads[full(ins.op0_register)] = (number, offset + fields.immediate_offset)
+        elif tls_array and ins.mnemonic == Mnemonic.MOV and ins.op1_kind == OpKind.MEMORY:
+            guard_start = number
+        elif (guard_start is not None and number - guard_start <= 8 and ins.memory_base != Register.NONE
               and ins.memory_index != Register.NONE and ins.memory_index_scale == 1
               and ins.memory_displacement == 0 and not ins.is_ip_rel_memory_operand):
             for reg in (ins.memory_base, ins.memory_index):
-                loaded = imm_loads.pop(RegisterExt.full_register(reg), None)
+                loaded = guard_loads.pop(full(reg), None)
                 if loaded and number - loaded[0] <= 8:
-                    relocs.append(Reloc(loaded[1], 0, compare.SECREL))
+                    secrel_fields.add(loaded[1])
+
+        index_load = (tls_index is not None and ins.is_ip_rel_memory_operand
+                      and ins.ip_rel_memory_address == tls_index)
+        if tls_array or index_load or tls_regs:
+            base, index = ins.memory_base, ins.memory_index
+            dest, rhs = full(ins.op0_register), full(ins.op1_register)
+            block = tls_regs.get(base) == 'block'
+            field = None
+            # The section offset can be a disp32, or an imm32 added to the block.
+            if (memory and ins.segment_prefix == Register.NONE and block and index == Register.NONE
+                    and fields.displacement_size == 4 and in_template(ins.memory_displacement)):
+                field = offset + fields.displacement_offset
+            if ins.mnemonic == Mnemonic.ADD and ins.op0_kind == OpKind.REGISTER and tls_regs.get(dest) == 'block':
+                if fields.immediate_size == 4 and in_template(ins.immediate(1)):
+                    field = offset + fields.immediate_offset
+                elif ins.op1_kind == OpKind.REGISTER:
+                    loaded = offset_loads.pop(rhs, None)
+                    if loaded and number - loaded[0] <= 8:
+                        field = loaded[1]
+            if field is not None:
+                secrel_fields.add(field)
+
+            state = None
+            if ins.mnemonic == Mnemonic.MOV and ins.op0_kind == OpKind.REGISTER:
+                if tls_array and RegisterExt.size(ins.op0_register) == 8:
+                    state = 'array'
+                elif index_load and RegisterExt.size(ins.op0_register) == 4:
+                    state = 'index'
+                elif (memory and ins.segment_prefix == Register.NONE and tls_regs.get(base) == 'array'
+                      and ins.memory_displacement == 0 and ins.memory_index_scale == 8
+                      and index != Register.NONE and (tls_index is None or tls_regs.get(index) == 'index')
+                      and RegisterExt.size(ins.op0_register) == 8):
+                    state = 'block'
+                elif ins.op1_kind == OpKind.REGISTER and RegisterExt.size(ins.op0_register) == 8:
+                    state = tls_regs.get(rhs)
+            if info is None:
+                info = InstructionInfoFactory()
+            for used in info.info(ins).used_registers():
+                if used.access in writes:
+                    reg = full(used.register)
+                    tls_regs.pop(reg, None)
+                    offset_loads.pop(reg, None)
+            if state:
+                tls_regs[dest] = state
+            if imm32_load and in_template(ins.immediate32):
+                offset_loads[dest] = (number, offset + fields.immediate_offset)
+            if ins.flow_control != FlowControl.NEXT:
+                tls_regs.clear()
+                offset_loads.clear()
         if ins.is_ip_rel_memory_operand:
             if ins.memory_base != Register.RIP or fields.displacement_size != 4:
                 raise ValueError('unsupported IP-relative field')
@@ -103,6 +163,7 @@ def target_section(data, rva):
                     raise ValueError('unsupported external branch')
                 relocs.append(Reloc(offset + fields.immediate_offset, 0, 0x04))
     sec = Section(1, '.text', 0, 0, 0, 0, 0, 0, 0)
+    relocs.extend(Reloc(field, 0, compare.SECREL) for field in secrel_fields)
     sec.data, sec.relocs = data, sorted(relocs, key=lambda r: r.offset)
     layout(sec)
     return sec
@@ -173,6 +234,7 @@ def generate(root, image_path, overrides=None):
     if target['status'] != 'pinned' or digest(image_bytes) != target['image_sha256']:
         raise ValueError('image is not the pinned target')
     image = PeImage(image_bytes)
+    tls_start, tls_end, tls_index = image.tls_template() if image.tls_dir[0] else (0, 0, None)
     inventory_bytes = (root / 'data/progress.json').read_bytes()
     inventory = json.loads(inventory_bytes)
     offered_bytes = (root / OFFERED).read_bytes()  # binds the parts by their digests
@@ -190,7 +252,7 @@ def generate(root, image_path, overrides=None):
             raise ValueError('inventory identity invalid')
         data = image.read(fn['rva'], fn['size'], 'target hash')[1]
         try:
-            sec = target_section(data, fn['rva'])
+            sec = target_section(data, fn['rva'], tls_index, tls_end - tls_start)
             extraction = 'linked-reference-inference'
         except ValueError:
             # Preserve exact bytes for unsupported instruction streams. Such rows are available

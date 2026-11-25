@@ -6,6 +6,7 @@
     python3 tools/render_inventory.py --fetch-claims      # also exclude functions under open claim issues
     python3 tools/render_inventory.py --claims FILE.json  # the same, from a saved list of claims
     python3 tools/render_inventory.py --update-doc docs/milestones/rendering.md
+    python3 tools/render_inventory.py --fetch-claims --update-issues
 
 Inputs: reconstruction/generated/crashlogger_pdb/{names,boundaries}, data/symbol-names.json,
 data/progress.json, the published ready queue, data/giveups and reconstruction/INDEX.md. Only RVAs, names,
@@ -30,6 +31,9 @@ PDB_DIR = 'reconstruction/generated/crashlogger_pdb'
 ENTRY_POINTS = 15
 BLOCK_START, BLOCK_END = '<!-- inventory:start -->', '<!-- inventory:end -->'
 SLOTS = 'ABCDE'
+TRACKING_ISSUE = 1185
+TASK_ISSUES = dict(zip(SLOTS, (1186, 1187, 1188, 1189, 1191)))
+ENTRY_HEADER = '| RVA | Name | Size | State | Callers unlocked |\n|---|---|---:|---|---:|'
 
 WORKSTREAMS = {
     'A': 'Foundation',
@@ -353,13 +357,16 @@ def render_entry_points(inv, limit, letters=SLOTS):
         lines.append(f'**Workstream {letter} entry points** (names are CrashLogger-derived, '
                      f'CRASHLOGGER_PDB(59818@2026.10.24))')
         lines.append('')
-        lines.append('| RVA | Name | Size | State | Callers unlocked |')
-        lines.append('|---|---|---:|---|---:|')
-        for r in entry_points(inv, letter, limit):
-            state = 'ready' if r['state'] == 'ready' else 'unlisted'
-            unlocked = r['unlocks'] if state == 'ready' else ''
-            lines.append(f'| `0x{r["rva"]:x}` | {r["name"]} | {r["size"]} | {state} | {unlocked} |')
+        lines.append(entry_table(inv, letter, limit))
         lines.append('')
+    return '\n'.join(lines)
+
+
+def entry_table(inv, letter, limit):
+    lines = [ENTRY_HEADER]
+    for row in entry_points(inv, letter, limit):
+        unlocked = row['unlocks'] if row['state'] == 'ready' else ''
+        lines.append(f'| `0x{row["rva"]:x}` | {row["name"]} | {row["size"]} | {row["state"]} | {unlocked} |')
     return '\n'.join(lines)
 
 
@@ -380,6 +387,25 @@ def count_cells(c):
     return (f'{c["known"]} | {c["matched"]} | {c["claimed"]} | {c["ready"]} | {c["blocked"]} | {c["unlisted"]}')
 
 
+def progress_table(letters, adjacent=False):
+    lines = ['| Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |',
+             '|---|---:|---:|---:|---:|---:|---:|---:|---:|']
+
+    def row(title, c):
+        return (f'| {title} | {c["known"]} | {c["matched"]} | {pct(c["matched"], c["known"])} | '
+                f'{c["claimed"]} | {c["ready"]} | {c["blocked"]} | {c["unlisted"]} | {c["open_bytes"]} |')
+
+    grand = collections.Counter()
+    for letter in SLOTS:
+        c = letters.get(letter, collections.Counter())
+        grand.update(c)
+        lines.append(row(f'{letter}: {WORKSTREAMS[letter]}', c))
+    lines.append(row('**Total A-E**', grand))
+    if adjacent:
+        lines.append(row('Adjacent, not assigned', letters.get('-', collections.Counter())))
+    return '\n'.join(lines)
+
+
 def render(inv):
     groups, classes = summarize(inv)
     letters = workstream_cells(inv, groups)
@@ -392,20 +418,7 @@ def render(inv):
     lines.append(f'Build `{inv["build_id"]}`. {coverage}. Matched functions come from '
                  f'`data/progress.json`, and {claims}.')
     lines.append('')
-    lines.append('| Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |')
-    lines.append('|---|---:|---:|---:|---:|---:|---:|---:|---:|')
-    grand = collections.Counter()
-    for letter in SLOTS:
-        c = letters.get(letter, collections.Counter())
-        grand.update(c)
-        lines.append(f'| {letter}: {WORKSTREAMS[letter]} | {c["known"]} | {c["matched"]} | '
-                     f'{pct(c["matched"], c["known"])} | {c["claimed"]} | {c["ready"]} | {c["blocked"]} | '
-                     f'{c["unlisted"]} | {c["open_bytes"]} |')
-    lines.append(f'| **Total A-E** | {grand["known"]} | {grand["matched"]} | {pct(grand["matched"], grand["known"])} | '
-                 f'{grand["claimed"]} | {grand["ready"]} | {grand["blocked"]} | {grand["unlisted"]} | {grand["open_bytes"]} |')
-    adj = letters.get('-', collections.Counter())
-    lines.append(f'| Adjacent, not assigned | {adj["known"]} | {adj["matched"]} | {pct(adj["matched"], adj["known"])} | '
-                 f'{adj["claimed"]} | {adj["ready"]} | {adj["blocked"]} | {adj["unlisted"]} | {adj["open_bytes"]} |')
+    lines.append(progress_table(letters, adjacent=True))
     lines.append('')
     lines.append('Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts '
                  'available functions in the published queue. Waiting covers give-ups, functions of unknown size '
@@ -458,11 +471,87 @@ def to_json(inv):
 
 
 def replace_block(text, body):
-    if BLOCK_START not in text or BLOCK_END not in text:
-        raise SystemExit(f'document lacks {BLOCK_START} / {BLOCK_END}')
-    head, rest = text.split(BLOCK_START, 1)
-    tail = rest.split(BLOCK_END, 1)[1]
+    head, start, rest = text.partition(BLOCK_START)
+    _, end, tail = rest.partition(BLOCK_END)
+    if not start or not end or text.count(BLOCK_START) != 1 or text.count(BLOCK_END) != 1:
+        raise ValueError(f'expected one {BLOCK_START} / {BLOCK_END} block')
     return f'{head}{BLOCK_START}\n\n{body}\n{BLOCK_END}{tail}'
+
+
+def update_doc(path, inv):
+    old = path.read_text(encoding='utf-8')
+    new = replace_block(old, render(inv))
+    if old != new:
+        path.write_text(new, encoding='utf-8')
+    return old != new
+
+
+TASK_COUNTS = re.compile(r'^Known functions: [^\n]+\n\nClasses(?: and named helpers)? \(open of known\): [^\n]+', re.M)
+TASK_ENTRIES = re.compile(r'^(## First entry points \(easiest first\)\n\n)The current queue lists [^\n]+\n\n'
+                          + re.escape(ENTRY_HEADER) + r'(?:\n\| [^\n]+ \|)*', re.M)
+OLD_CLAIM_NOTES = (
+    'Functions under any open claim issue, including the 300-function claim #1180, are excluded; '
+    'the inventory reads them automatically.',
+    'The inventory excludes functions under open claims, including #1180.',
+)
+
+
+def render_tracking_issue(body, letters):
+    summary = ('Counts cover functions with public names. Matched counts come from `data/progress.json`.\n\n'
+               + progress_table(letters) + '\n')
+    if BLOCK_START not in body and BLOCK_END not in body:
+        body = f'{body.rstrip()}\n\n## Progress\n\n{BLOCK_START}\n{BLOCK_END}\n'
+    body = body.replace('Open claims, including the 300-function claim #1180, are excluded from the counts and '
+                        'from `./sr next`.', 'Functions under open claims are excluded from the available counts '
+                        'and from `./sr next`.')
+    return replace_block(body, summary)
+
+
+def render_task_issue(body, inv, letter, totals, classes):
+    available = totals['ready'] + totals['blocked'] + totals['unlisted']
+    counts = (f'Known functions: {totals["known"]}, matched: {totals["matched"]}, '
+              f'under open claims: {totals["claimed"]}, open and available: {available} '
+              f'({totals["ready"]} listed ready). The inventory counts functions with public names.')
+    ranked = []
+    for (gid, cls), cell in classes.items():
+        remaining = cell['known'] - cell['matched'] - cell['claimed']
+        if GROUP_META[gid][1] == letter and remaining:
+            ranked.append((remaining, cls, cell['known']))
+    ranked.sort(key=lambda item: (-item[0], item[1]))
+    listed = ', '.join(f'`{cls}` ({remaining} open of {known})' for remaining, cls, known in ranked[:30])
+    if len(ranked) > 30:
+        listed += f', and {len(ranked) - 30} smaller groups in the milestone document'
+    counts += '\n\nClasses and named helpers (open of known): ' + (listed or 'none') + '.'
+    entries = (f'The current queue lists {totals["ready"]} ready functions for this workstream after excluding open claims.'
+               f'\n\n{entry_table(inv, letter, ENTRY_POINTS)}')
+    body, counts_found = TASK_COUNTS.subn(lambda _: counts, body)
+    body, entries_found = TASK_ENTRIES.subn(lambda m: m[1] + entries, body)
+    if (counts_found, entries_found) != (1, 1):
+        raise ValueError(f'expected one counts and entry-point section in workstream {letter}')
+    for note in OLD_CLAIM_NOTES:
+        body = body.replace(note, 'Functions under open claims are excluded from the available counts and entry points.')
+    return body
+
+
+def update_issues(root, inv, gh=None):
+    """Edit the tracking and workstream issue bodies in place. Return the numbers that changed."""
+    from claims import GitHub, REPO
+
+    gh = gh or GitHub(root)
+    groups, classes = summarize(inv)
+    letters = workstream_cells(inv, groups)
+    updated = []
+    for number, letter in [(TRACKING_ISSUE, None), *((n, l) for l, n in TASK_ISSUES.items())]:
+        issue = gh.api(f'repos/{REPO}/issues/{number}')
+        if 'pull_request' in issue or not issue.get('body'):
+            raise ValueError(f'expected an issue with a body at #{number}')
+        old = issue['body']
+        new = (render_tracking_issue(old, letters) if letter is None else
+               render_task_issue(old, inv, letter, letters.get(letter, collections.Counter()), classes))
+        if new != old:
+            gh.run('issue', 'edit', number, '--repo', REPO, body=new)
+            updated.append(number)
+    return updated
 
 
 def fetch_claims(root):
@@ -478,7 +567,10 @@ def main(argv=None):
     ap.add_argument('--json', type=Path, dest='json_out')
     ap.add_argument('--entry-points', type=int, metavar='N', help='print N entry points per workstream and exit')
     ap.add_argument('--update-doc', type=Path, help='rewrite the inventory block of a milestone document')
+    ap.add_argument('--update-issues', action='store_true', help='refresh the tracking and workstream issue bodies')
     args = ap.parse_args(argv)
+    if args.update_issues and (not args.fetch_claims or args.claims or args.entry_points is not None):
+        ap.error('--update-issues requires --fetch-claims and cannot be used with --claims or --entry-points')
     claims = None
     if args.claims:
         claims = load_json(args.claims)
@@ -490,11 +582,16 @@ def main(argv=None):
         return 0
     if args.json_out:
         args.json_out.write_text(json.dumps(to_json(inv), indent=1) + '\n', encoding='utf-8')
-    body = render(inv)
     if args.update_doc:
-        args.update_doc.write_text(replace_block(args.update_doc.read_text(encoding='utf-8'), body), encoding='utf-8')
-    elif not args.json_out:
-        sys.stdout.write(body)
+        try:
+            update_doc(args.update_doc, inv)
+        except ValueError as exc:
+            ap.error(str(exc))
+    if args.update_issues:
+        updated = update_issues(args.root, inv)
+        print('Updated issues ' + ', '.join(f'#{n}' for n in updated) if updated else 'Rendering issues are current')
+    if not (args.update_doc or args.update_issues or args.json_out):
+        sys.stdout.write(render(inv))
     return 0
 
 
