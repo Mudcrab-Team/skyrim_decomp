@@ -12,12 +12,12 @@ the missing links, so the toolkit in docs/drafter-toolkit.md works from any work
   and sibling-build data, toolchains, symbol inputs) become symlinks to the main checkout's copy;
 - entries that a worktree may already hold a private version of (`analysis/`, `contrib/`,
   `verifier/`) are merged: only what is missing is added, and nothing existing is replaced;
-- `verifier/config.json` (image and objdump paths) is copied, `verifier/runners.json` is linked, and
+- `verifier/config.json` (image and objdump paths) and `verifier/runners.json` are copied, and
   the executable path is written to `contrib/config.json` when the worktree has none (an existing
   file is never edited; the output then says to export SR_SKYRIM_EXE).
 
-It is idempotent, only ever creates entries under `<worktree>/.local/`, never replaces or deletes
-one and never writes through a symlinked directory, so it is safe on a worktree a drafter is using.
+It is idempotent and only updates entries under `<worktree>/.local/`. Legacy verifier config links
+become private copies. Existing regular files are kept, and writes through linked directories are refused.
 `--check` prints the same table without changing anything. Output names resources only; nothing
 game-derived is read or printed.
 """
@@ -27,6 +27,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 # name -> why a drafter wants it (shown by --check)
@@ -52,6 +53,7 @@ ALIASES = (
     ('contrib/analysis/fnv_index.jsonl', 'analysis/fnv_index.jsonl'),
     ('contrib/analysis/fnv_index.meta.json', 'analysis/fnv_index.meta.json'),
 )
+VERIFIER_CONFIGS = {'config.json': 'image and objdump paths', 'runners.json': 'runner hosts for attempt and confirm'}
 
 
 def main_local(worktree, main=None):
@@ -71,11 +73,46 @@ def exists(path):
 def through_link(local, rel):
     """True when a parent directory of `local/rel` is a symlink, so creating it would write elsewhere."""
     path = Path(local)
+    if path.is_symlink():
+        return True
     for part in Path(rel).parts[:-1]:
         path = path / part
         if path.is_symlink():
             return True
     return False
+
+
+def link_target(source, dest, local):
+    target = source.resolve()
+    if target.is_relative_to(local.parent.resolve()) or dest.resolve().is_relative_to(target):
+        raise ValueError(f'cannot link .local/{dest.relative_to(local)} to a target within the worktree or an ancestor')
+    return target
+
+
+def link_input(source, dest, local):
+    if exists(dest):
+        return
+    if through_link(local, dest.relative_to(local)):
+        raise ValueError(f'cannot link .local/{dest.relative_to(local)} through a symlinked directory')
+    target = link_target(source, dest, local)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.symlink_to(target, target_is_directory=target.is_dir())
+
+
+def copy_config(source, dest):
+    """Keep a regular config or replace an old link with a private copy of its contents."""
+    if exists(dest) and not dest.is_symlink():
+        return
+    with tempfile.TemporaryDirectory(dir=dest.parent) as tmp:
+        copy = Path(tmp) / dest.name
+        shutil.copy2(dest if dest.is_file() else source, copy)
+        if dest.is_symlink():
+            copy.replace(dest)
+        else:
+            try:
+                os.link(copy, dest)
+            except FileExistsError:
+                pass
 
 
 def plan(worktree, source):
@@ -84,6 +121,8 @@ def plan(worktree, source):
     local = worktree / '.local'
     if source == local.resolve():
         return []
+    if local.is_symlink():
+        raise ValueError('worktree .local must be its own directory')
     todo = []
 
     def add_link(rel, why=''):
@@ -110,10 +149,10 @@ def plan(worktree, source):
             todo.append(('missing', rel, f'built from {origin}'))
     verifier = local / 'verifier'
     if not verifier.is_symlink():
-        if exists(source / 'verifier/config.json') and not exists(verifier / 'config.json'):
-            todo.append(('copy', 'verifier/config.json', 'image and objdump paths'))
-        if exists(source / 'verifier/runners.json') and not exists(verifier / 'runners.json'):
-            todo.append(('link', 'verifier/runners.json', 'runner hosts for attempt and confirm'))
+        for name, detail in VERIFIER_CONFIGS.items():
+            src, dest = source / 'verifier' / name, verifier / name
+            if (src.is_file() or dest.is_file()) and (dest.is_symlink() or not exists(dest)):
+                todo.append(('copy', f'verifier/{name}', detail))
     exe = exe_path(source)
     contrib = local / 'contrib'
     if exe and not contrib.is_symlink() and 'exe' not in read_json(contrib / 'config.json'):
@@ -121,6 +160,9 @@ def plan(worktree, source):
             todo.append(('note', 'contrib/config.json', f'names no exe; export SR_SKYRIM_EXE="{exe}" in the shell'))
         else:
             todo.append(('config', 'contrib/config.json', 'game executable path'))
+    for kind, rel, _detail in todo:
+        if kind == 'link':
+            link_target(source / dict(ALIASES).get(rel, rel), local / rel, local)
     return todo
 
 
@@ -148,19 +190,17 @@ def apply(worktree, source, todo=None):
         if kind in ('missing', 'note'):
             continue
         dest = local / rel
-        if kind in ('link', 'copy', 'config') and (exists(dest) or through_link(local, rel)):
+        if through_link(local, rel) or (exists(dest) and not (kind == 'copy' and dest.is_symlink())):
             continue
-        dest.parent.mkdir(parents=True, exist_ok=True)
         if kind == 'link':
-            src = (source / dict(ALIASES).get(rel, rel)).resolve()
-            dest.symlink_to(src, target_is_directory=src.is_dir())
-        elif kind == 'copy':
-            shutil.copy2(source / rel, dest)
-        elif kind == 'config':
-            cfg = {'exe': exe_path(source)}
-            tmp = dest.with_name(dest.name + '.tmp')
-            tmp.write_text(json.dumps(cfg, indent=2, sort_keys=True) + '\n')
-            tmp.replace(dest)
+            link_input(source / dict(ALIASES).get(rel, rel), dest, local)
+        else:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            if kind == 'copy':
+                copy_config(source / rel, dest)
+            elif kind == 'config':
+                with dest.open('x') as handle:
+                    handle.write(json.dumps({'exe': exe_path(source)}, indent=2, sort_keys=True) + '\n')
         done.append((kind, rel, detail))
     return done
 
@@ -195,8 +235,12 @@ def main(argv=None):
     if not source.is_dir():
         print(f'error: no private directory at {source}', file=sys.stderr)
         return 2
-    todo = plan(args.worktree, source)
-    done = [] if args.check else apply(args.worktree, source, todo)
+    try:
+        todo = plan(args.worktree, source)
+        done = [] if args.check else apply(args.worktree, source, todo)
+    except (OSError, ValueError) as exc:
+        print(f'error: {exc}', file=sys.stderr)
+        return 2
     missing = [t for t in todo if t[0] == 'missing']
     if args.json:
         print(json.dumps({'main_local': str(source), 'added': [list(d) for d in done],

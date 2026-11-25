@@ -1896,15 +1896,15 @@ def score_all_objects(items, ctx, jobs):
 
 
 def bound_scoring_maps(task, host, out, image, objdump, rva, source_root):
-    """Symbol maps from the baseline object bound with the task and source unit's hints.
+    """Bind the baseline object, including alignment-derived hints, in a scratch copy of the task.
 
     The host's baseline run leaves candidate.obj in its run directory. It is fetched and bound in a
     scratch copy of the task (private map, the task's bind-hints.json), never in the task directory or
     the repository map, so thread-local entries and the references the hints and positions name are
-    scored as bound. Returns (symbols, tls, function symbol by rva, report lines); any failure falls
-    back to the task's own map with a line saying so.
+    scored as bound. Returns (symbols, tls, function symbol by rva, report lines).
     """
     import align
+    import auto_hints
     import bind
     scratch = Path(out) / 'bind'
     shutil.rmtree(scratch, ignore_errors=True)
@@ -1917,25 +1917,34 @@ def bound_scoring_maps(task, host, out, image, objdump, rva, source_root):
     if hints.is_file():
         shutil.copyfile(hints, scratch / bind.HINTS)
     lines = []
-    try:
+    if not any('internal_selector' in fn for fn in raw['functions']):
         tr, remote = host.transport, host._remote(host._run)
-        obj = Path(out) / 'baseline.obj'
+        obj = scratch / 'candidate.obj'
         tr.get(tr.join(remote, 'work', 'permute', 'candidate.obj'), obj)
         report = bind.bind(scratch, obj, image, objdump, source_root=source_root)
-        lines = bind.describe(report, task['dir'])
-        lines.insert(0, f'scoring maps: {len(report["references"])} references bound for scoring, '
-                        f'{len(report["unbound_references"])} references and {len(report["unbound_thread_locals"])} '
-                        'thread-locals unbound')
+        if report['unbound_references'] or report['unbound_thread_locals']:
+            if objdump:
+                for fn in raw['functions']:
+                    (scratch / hex(bind.parse_rva(fn['rva']))).mkdir()
+                second, _ = auto_hints.derive_and_bind(scratch, scratch, report, {'image': image, 'objdump': objdump},
+                                                       source_root=source_root)
+                if second is not None:
+                    report = auto_hints.merge_reports(report, second)
+            elif not hints.is_file() or not json.loads((scratch / bind.HINTS).read_text()).get(auto_hints.DERIVED_NOTE):
+                raise SystemExit('Run tools/verifier/attempt on this draft to derive bind hints, or install local llvm-objdump.')
+        lines.append(f'scoring maps: {len(report["references"])} references bound for scoring, '
+                     f'{len(report["unbound_references"])} references and {len(report["unbound_thread_locals"])} '
+                     'thread-locals unbound')
+        lines.extend(bind.describe(report, scratch))
         if objdump:
             symbols, tls = align.load_scoring(scratch / 'symbols.json', image)
             symbol = next((f['symbol'] for f in json.loads((scratch / 'task.json').read_text())['functions']
-                           if int(str(f['rva']), 0) == rva), None)
+                           if bind.parse_rva(f['rva']) == rva), None)
             listing = align.objdump_candidate(objdump, obj, symbol) if symbol else ''
             open_refs = align.unresolved_references(listing, symbols, tls)
             lines.append(f'scoring: {len(open_refs)} references of the function stay unresolved in the score'
                          + (': ' + ', '.join(align.display_name(n) for n in open_refs[:40]) if open_refs else ''))
-    except Exception as exc:  # noqa: BLE001 - scoring then uses the task's own map, as before
-        lines.append(f'scoring maps: baseline binding failed ({type(exc).__name__}: {exc}); using the task map as is')
+        obj.replace(Path(out) / 'baseline.obj')
     symbols, tls = align.load_scoring(scratch / 'symbols.json', image)
     bound = {bind.parse_rva(f['rva']): f['symbol']
              for f in json.loads((scratch / 'task.json').read_text())['functions']}
@@ -2083,6 +2092,13 @@ def run(args):
     out.mkdir(parents=True, exist_ok=True)
     compiled = task['compiled']
     text = (source_root / compiled).read_text()
+    from source_digest import include_closure
+    closure = include_closure(source_root, compiled)
+    lint = lint_gate(make_lint_root(out / 'lintroot', source_root, closure), compiled, task['build_id'])
+    problems = lint(text)
+    if problems:
+        print('base lint: FAIL' + ''.join(f'\n  {problem}' for problem in problems))
+        return 1
     params = None
     if args.function:
         qualified = args.function
@@ -2103,13 +2119,10 @@ def run(args):
                 raise SystemExit(f'{exc}; give --function Class::Name') from None
         print(f'permute: mutating {qualified} (from the unit, community name or bound symbol)')
     unit = Unit(text, qualified, args.also or (), params)
-    from source_digest import include_closure
-    closure = include_closure(source_root, compiled)
     files = {name: REPO / name for name in pipeline.TOOL_FILES + REMOTE_TOOLS}
     files.update({name: source_root / name for name in closure})
     files[task['recipe']] = REPO / task['recipe']
     files[task['symbols_repo'] or pipeline.PRIVATE_SYMBOLS] = task['symbols_local']
-    lint = lint_gate(make_lint_root(out / 'lintroot', source_root, closure), compiled, task['build_id'])
     if args.dry_run:
         return dry_run(unit, lint, random.Random(args.seed), args.batch)
     import runners
@@ -2143,10 +2156,17 @@ def run(args):
         host.clean()
         return 2
     import local_load
-    with local_load.heavy('permute baseline binding'):
-        symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, out, image, objdump, rva, source_root)
-    for line in bind_lines:
-        log(line)
+    try:
+        with local_load.heavy('permute baseline binding'):
+            symbols, tls, bound, bind_lines = bound_scoring_maps(task, host, out, image, objdump, rva, source_root)
+    except (OSError, ValueError, runners.RunnerError) as exc:
+        host.clean()
+        raise SystemExit(f'permute: baseline binding failed ({type(exc).__name__}); check the task and verifier config') from None
+    except SystemExit:
+        host.clean()
+        raise
+    if bind_lines:
+        log(bind_lines[0])
     (out / 'bind-report.txt').write_text('\n'.join(bind_lines) + '\n')
     scored_fn = dict(fn, symbol=bound.get(rva, fn['symbol']))
     import concurrent.futures

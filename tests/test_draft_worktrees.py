@@ -820,11 +820,17 @@ class DraftWorktrees(unittest.TestCase):
         shared = self.root / '.local/verifier'
         (shared / 'runner-slots').mkdir(parents=True)
         drafts.save(shared / 'config.json', {})
+        drafts.save(shared / 'runners.json', {'limit': 2})
         unit = self.claim()
         verifier = Path(unit['draft']['tree']) / '.local/verifier'
         self.assertFalse(verifier.is_symlink())
         self.assertEqual((verifier / 'runner-slots').resolve(), (shared / 'runner-slots').resolve())
-        self.assertEqual((verifier / 'config.json').resolve(), (shared / 'config.json').resolve())
+        self.assertFalse((verifier / 'config.json').is_symlink())
+        self.assertFalse((verifier / 'runners.json').is_symlink())
+        self.assertEqual(drafts.read(verifier / 'config.json'), {})
+        self.assertEqual(drafts.read(verifier / 'runners.json'), {'limit': 2})
+        (verifier / 'runners.json').write_text('{"limit": 1}')
+        self.assertEqual(drafts.read(shared / 'runners.json'), {'limit': 2})
         (verifier / 'diagnostics').mkdir()
         self.assertTrue((verifier / 'diagnostics').resolve().is_relative_to(Path(unit['draft']['tree'])))
 

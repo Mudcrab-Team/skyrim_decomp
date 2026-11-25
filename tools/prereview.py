@@ -61,6 +61,19 @@ def safe_name(name):
     return name if SAFE.fullmatch(name) else 'reconstruction/<unprintable path>'
 
 
+def readiness_problems(root, name, text, included_only=None):
+    """Readiness and recipe findings for a single source file."""
+    if included_only is None:
+        included_only = {name} if name.endswith('.h') else set()
+    problems = lint_review_readiness.lint_files(root, [name], included_only)
+    if name.endswith('.cpp'):
+        for recipe in dict.fromkeys(RECIPE.findall(text)):
+            if not (root / recipe).is_file():
+                problems.append(f'{name}: names recipe {recipe}, which does not exist; '
+                                'fix: name a recipe under reconstruction/recipes/')
+    return problems
+
+
 def unit_findings(root, names, build_id):
     """[(file, message)] from the source lint and the readiness lint on unit files.
 
@@ -73,20 +86,12 @@ def unit_findings(root, names, build_id):
     for name in names:
         try:
             lines = lint_reconstruction.lint_file(root, name, build_id)
-            # The origin statement lives in the .cpp header; a class header only declares, and the Reviewer
-            # has always accepted one without it.
-            lines += [l for l in lint_review_readiness.lint_files(root, [name])
-                      if not (name.endswith('.h') and 'missing reconstruction origin statement' in l)]
             text = (root / name).read_text(errors='replace')
+            lines += readiness_problems(root, name, text)
         except (OSError, ValueError) as exc:
             found.append((name, f'{name}: cannot be read for lint ({type(exc).__name__})'))
             continue
         found += [(name, line) for line in lines]
-        if name.endswith('.cpp'):
-            for recipe in dict.fromkeys(RECIPE.findall(text)):
-                if not (root / recipe).is_file():
-                    found.append((name, f'{name}: names recipe {recipe}, which does not exist; '
-                                  'fix: name a recipe under reconstruction/recipes/'))
     return sorted(set(found))
 
 

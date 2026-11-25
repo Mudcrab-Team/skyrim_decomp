@@ -26,13 +26,13 @@ returns rows only, so the calling machine only mutates, lints and orchestrates. 
 objects come back and are scored on the calling machine, which then needs `llvm-objdump` and the local
 image (`.local/verifier/config.json`). The local image is needed in both cases to bind the baseline.
 **Bind hints count.** After the baseline compile the run fetches its object and binds it in a scratch copy
-of the task (never the task directory or the repository map) with the task's `bind-hints.json`, the
-pack and the target image, as `attempt` does. The resulting map, with its thread-local entries (a SECREL
+of the task with the task's `bind-hints.json`, the pack and the target image. It uses the same
+alignment-derived hints as `attempt` when local `llvm-objdump` is available. With host-only scoring,
+run `attempt` first if the baseline has unbound references and no derived hints. The resulting map, with its thread-local entries (a SECREL
 field is scored as the declared offset plus its addend) and `_tls_index`, is what every candidate is
-scored against, so a referent the hints bind no longer sits in the distance as a floor. The run prints
-the binding result and the names of the references that stay unresolved in the score (`bind-report.txt`
-in the output directory; a string literal is shown by its hash only) and keeps `baseline.obj` there. The
-unit's `// CI hash:` lines and header declarations are read from this checkout, not from `--source-root`.
+scored against. The run saves binding details and unresolved reference names in the private
+`bind-report.txt` beside `baseline.obj`. It reads the unit's `// CI hash:` lines and header
+declarations from the selected source tree.
 The host keeps its files under its work directory for the run and removes them at the end.
 
 Outputs go to `<task-dir>/permute/0x<rva>/` (private): `best.cpp` (the whole unit with the best

@@ -1,4 +1,4 @@
-"""tools/worktree_kit.py adds missing private inputs to a worktree and never replaces anything."""
+"""The worktree kit shares inputs and keeps verifier configs private."""
 import contextlib
 import io
 import json
@@ -90,6 +90,36 @@ class WorktreeKit(unittest.TestCase):
         before = sorted(p.name for p in (self.main / 'contrib').iterdir())
         kit.apply(self.tree, self.main)
         self.assertEqual(sorted(p.name for p in (self.main / 'contrib').iterdir()), before)
+
+    def test_runner_config_is_copied_even_when_an_old_link_exists(self):
+        source = self.main / 'verifier/runners.json'
+        dest = self.tree / '.local/verifier/runners.json'
+        dest.parent.mkdir(parents=True)
+        for legacy in (False, True):
+            with self.subTest(legacy=legacy):
+                if legacy:
+                    dest.symlink_to(source)
+                kit.apply(self.tree, self.main)
+                self.assertFalse(dest.is_symlink())
+                self.assertEqual(dest.read_text(), '{}')
+                dest.write_text('{"limit": 1}')
+                self.assertEqual(source.read_text(), '{}')
+                dest.unlink()
+
+    def test_link_into_destination_is_refused(self):
+        within = self.tree / '.local/inputs'
+        within.mkdir(parents=True)
+        (self.main / 'toolchains').symlink_to(within, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'target within the worktree'):
+            kit.apply(self.tree, self.main)
+        self.assertFalse((self.tree / '.local/toolchains').is_symlink())
+
+    def test_shared_local_root_never_gets_new_links(self):
+        local = self.tree / '.local'
+        local.symlink_to(self.main, target_is_directory=True)
+        before = sorted(p.name for p in self.main.iterdir())
+        self.assertEqual(kit.apply(self.tree, self.main), [])
+        self.assertEqual(sorted(p.name for p in self.main.iterdir()), before)
 
     def test_check_mode_changes_nothing(self):
         with contextlib.redirect_stdout(io.StringIO()) as out:

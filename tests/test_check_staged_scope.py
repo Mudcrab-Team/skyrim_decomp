@@ -1,6 +1,5 @@
 """`check.py --staged` judges new unit sources on their own, with the same verdicts as the full lint."""
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -11,10 +10,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 import check  # noqa: E402
 from lint_reconstruction import lint_tree  # noqa: E402
 
-REAL = check.ROOT
-UNIT = 'reconstruction/skyrim_shared/dialogue/BGSDialogueBranch'
-RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json'
-SUPPORT = ('builds/target.json', 'licenses/CommonLibSSE-NG.txt', RECIPE)
+UNIT = 'reconstruction/misc/Widget'
+HEADER = '''// Source exposure: black-box
+// Widget, Read: GUESS(low)
+#pragma once
+class Widget {
+public:
+    int Read(int value) const;
+};
+'''
+SOURCE = '''// Source exposure: black-box
+// Code origin: original toy implementation
+// 0x1234 Widget::Read
+#include "Widget.h"
+
+int Widget::Read(int value) const { return value + 1; }
+'''
 
 
 def git(root, *args):
@@ -28,12 +39,11 @@ class ScopedStagedTests(unittest.TestCase):
         git(self.root, 'init', '-q')
         git(self.root, 'config', 'user.email', 'a@example.invalid')
         git(self.root, 'config', 'user.name', 'a')
-        for name in SUPPORT:
-            self.put(name, (REAL / name).read_text())
+        self.put('builds/target.json', '{"build_id": "toy"}\n')
         git(self.root, 'add', '--all')
         git(self.root, 'commit', '-qm', 'base')
-        self.cpp = (REAL / (UNIT + '.cpp')).read_text()
-        self.h = (REAL / (UNIT + '.h')).read_text()
+        self.cpp = SOURCE
+        self.h = HEADER
 
     def tearDown(self):
         self.tmp.cleanup()
@@ -82,17 +92,34 @@ class ScopedStagedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'private decompiler'):
             self.scoped()
 
+    def test_prereview_reads_origin_from_the_index(self):
+        broken = self.cpp.replace('// Code origin: original toy implementation\n', '')
+        self.stage(cpp=broken)
+        self.put(UNIT + '.cpp', self.cpp)
+        self.assertEqual(lint_tree(self.root, [UNIT + '.cpp']), [])
+        with self.assertRaisesRegex(ValueError, 'missing reconstruction origin statement'):
+            self.scoped()
+
+    def test_prereview_also_checks_edits_to_existing_units(self):
+        self.stage()
+        git(self.root, 'commit', '-qm', 'unit')
+        self.stage(cpp=self.cpp.replace('// Code origin: original toy implementation\n', ''))
+        with mock.patch.object(check, 'ROOT', self.root), \
+                mock.patch.object(check, 'load', side_effect=AssertionError('metadata validation')):
+            with self.assertRaisesRegex(ValueError, 'missing reconstruction origin statement'):
+                check.run(staged=True)
+
     def test_a_named_evidence_file_is_found_from_the_index(self):
         evidence = 'findings/example-evidence.md'
         self.put(evidence, 'note\n')
         git(self.root, 'add', evidence)
         git(self.root, 'commit', '-qm', 'evidence')
-        self.stage(cpp=self.cpp.replace('// Adapted bodies', f'// Evidence: {evidence}\n// Adapted bodies', 1))
+        self.stage(cpp=f'// Evidence: {evidence}\n' + self.cpp)
         self.assertEqual(self.full_lint(), [])
         self.assertEqual(self.scoped(), (2, None))
 
     def test_missing_evidence_file_fails_like_the_full_lint(self):
-        self.stage(cpp=self.cpp.replace('// Adapted bodies', '// Evidence: findings/absent.md\n// Adapted bodies', 1))
+        self.stage(cpp='// Evidence: findings/absent.md\n' + self.cpp)
         expected = self.full_lint()
         self.assertTrue(expected)
         with self.assertRaises(ValueError) as caught:

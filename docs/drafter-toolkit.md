@@ -85,14 +85,15 @@ directory (`.local/tasks/<id>` or `.local/contrib/tasks/<id>`).
 ## What a fresh worktree has
 
 A git worktree starts without `.local/`. Several tools fall back to the main checkout's private
-folder per resource, but raw paths and scripts do not. `tools/worktree_kit.py` adds, without
-replacing or deleting anything and only below the worktree's own `.local/`:
+folder per resource, but raw paths and scripts do not. `tools/worktree_kit.py` adds these resources
+under the worktree's own `.local/`:
 
 - links to `sources`, `f3x64`, `fnvx64`, `msvclib`, `toolchains`, `inputs` and `config`;
 - missing analysis tables (`functions.jsonl`, `classes.jsonl`, the FNV index and its metadata,
   `origin-index`), the sibling x64 index under `contrib/x64-index` and the FNV index under
   `contrib/analysis/`, which `./sr start` reads for the "Sibling source" section;
-- `verifier/config.json` (a copy: image and objdump paths) and `verifier/runners.json` (a link);
+- private copies of `verifier/config.json` and `verifier/runners.json`. Existing regular configs
+  are preserved, and older per-file config links become private copies;
 - a `contrib/config.json` with the executable path when none exists. An existing config is never
   edited; the command then prints the `SR_SKYRIM_EXE` line to export.
 

@@ -681,7 +681,8 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
         problems.append(f'{name}: header comment needs "Source exposure: <{"|".join(EXPOSURE)}>"')
     if ext == 'cpp':
         if not COMPARED_LINE.search(header) and not re.search(r'\bRVA 0x[0-9a-fA-F]+', header):
-            problems.append(f'{name}: header comment needs one "// 0x<rva> <Name>" line per compared function')
+            problems.append(f'{name}: for each compared function, add or move its "// 0x<rva> <Name>" line '
+                            'to the leading comment above the first include')
         for ref in re.findall(r'Evidence:\s*([^\s,;]+)', header):
             ref = ref.rstrip('.')
             if PurePosixPath(ref).parts[:1] not in {('findings',), ('reports',)} or not (root / ref).is_file():

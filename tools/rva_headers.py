@@ -22,9 +22,12 @@ COMPARED = re.compile(r'//[ \t]*(0x[0-9a-fA-F]+)[ \t]+\S')
 
 
 def leading_lines(text):
-    """The `//` lines at the top of a file, up to the first line that is not one."""
+    """The `//` lines at the top of a file, allowing blank lines before and between them."""
     out = []
     for line in text.splitlines():
+        line = line.lstrip()
+        if not line:
+            continue
         if not line.startswith('//'):
             break
         out.append(line)

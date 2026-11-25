@@ -211,21 +211,15 @@ def worker_default(tree, config):
         return False
     if active(tree) or git(tree, 'status', '--porcelain', '--untracked-files=all').strip():
         return False
+    import worktree_kit
     set_patterns(tree, cone_dirs(tree, skip=('site',)))
     # Existing kit links are retained. New workers share the canonical private inputs.
     for name, source in config.get('shared', {}).items():
         if name not in ('toolchains', 'wineprefix', 'sources', 'analysis'):
             raise ValueError('unsupported shared private input')
-        target = tree / '.local' / name
-        target.parent.mkdir(exist_ok=True)
-        if not target.exists() and not target.is_symlink():
-            target.symlink_to(Path(source).resolve(), target_is_directory=True)
-    # Sources, indexes and configs a drafter reads by raw path (tools/worktree_kit.py); additive only.
-    try:
-        import worktree_kit
-        worktree_kit.kit(tree)
-    except (ImportError, OSError, ValueError):
-        pass
+        local = tree / '.local'
+        worktree_kit.link_input(Path(source), local / name, local)
+    worktree_kit.kit(tree)
     return True
 
 

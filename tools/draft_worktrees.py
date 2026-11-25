@@ -49,34 +49,29 @@ def label(tree, owner, task, kind, branch=None):
 
 def link_private(root, tree):
     # Keep the worktree's own lifecycle metadata private to it; share kit inputs and task logs.
+    import worktree_kit
     local = Path(tree) / '.local'
+    source = (Path(root) / '.local').resolve()
+    if local.is_symlink() or local.resolve() == source:
+        raise ValueError('draft worktree .local must be its own directory')
     local.mkdir(exist_ok=True)
     names = {'tasks', 'queue', 'packs', 'sources', 'analysis', 'material',
              'briefs', 'reviews', 'flow', 'toolchains'}
-    names.update(p.name for p in (Path(root) / '.local').iterdir()
+    names.update(p.name for p in source.iterdir()
                  if p.is_dir() and p.name not in {'worktrees', 'verifier'})
-    for name in names:
-        dest = local / name
-        if not dest.exists() and not dest.is_symlink():
-            dest.symlink_to((Path(root) / '.local' / name).resolve(), target_is_directory=True)
-    # Diagnostics must resolve inside the checkout checked by verify_function. Host slots and
-    # configuration remain shared, so changing the diagnostic location cannot bypass concurrency.
+    for name in sorted(names):
+        worktree_kit.link_input(source / name, local / name, local)
+    # Keep diagnostics and editable configuration local, and share host slots.
     verifier = local / 'verifier'
     if verifier.is_symlink():
         verifier.unlink()
     verifier.mkdir(exist_ok=True)
-    shared = Path(root) / '.local/verifier'
+    shared = source / 'verifier'
     if shared.is_dir():
         for entry in shared.iterdir():
-            dest = verifier / entry.name
-            if entry.name != 'diagnostics' and not dest.exists() and not dest.is_symlink():
-                dest.symlink_to(entry.resolve(), target_is_directory=entry.is_dir())
-    # Fill what the links above do not cover (tools/worktree_kit.py); additive only.
-    try:
-        import worktree_kit
-        worktree_kit.kit(tree, Path(root) / '.local')
-    except (ImportError, OSError, ValueError):
-        pass
+            if entry.name != 'diagnostics' and entry.name not in worktree_kit.VERIFIER_CONFIGS:
+                worktree_kit.link_input(entry, verifier / entry.name, local)
+    worktree_kit.apply(tree, source)
 
 
 def current(root, unit):

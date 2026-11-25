@@ -532,10 +532,7 @@ def attempt(task_dir, tier='first', qdir=None, model=None, agent=None, profile=N
                 # aligned every failing function there; hints go to bind-hints.json and bind reads them next.
                 try:
                     with local_load.heavy('attempt hints'):
-                        added, skipped, notes = auto_hints.derive(task_dir, dest, report, config, correct=correct)
-                        hint_lines = auto_hints.describe(added, skipped, notes)
-                        second = (bind.bind(task_dir, dest / 'candidate.obj', config.get('image'), config.get('objdump'))
-                                  if added else None)
+                        second, hint_lines = auto_hints.derive_and_bind(task_dir, dest, report, config, correct=correct)
                     if second is not None:
                         final = auto_hints.merge_reports(report, second)
                         if second['changed']:

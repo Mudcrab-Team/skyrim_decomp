@@ -1,12 +1,15 @@
 """Tests for tools/verifier/permute.py on original synthetic C++ (no game data, no Boat machine)."""
+import contextlib
 import copy
 import difflib
+import io
 import json
 from pathlib import Path
 import random
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
@@ -633,6 +636,88 @@ class LintRoot(unittest.TestCase):
             check = permute.lint_gate(root, 'reconstruction/toys/Toy.cpp', 'sse-steam-1-7-104')
             problems = check('#include "Toy.h"\nvoid F() { __asm { nop } }\n')
             self.assertTrue(any('inline assembly' in p for p in problems), problems)
+
+
+class RunPreflight(unittest.TestCase):
+    def run_toy(self, header):
+        import pipeline
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp)
+            task_dir = repo / '.local/task'
+            task_dir.mkdir(parents=True)
+            compiled = 'reconstruction/misc/Toy.cpp'
+            (repo / compiled).parent.mkdir(parents=True)
+            (repo / compiled).write_text(header + 'int Toy::Read(int value) { return value + 1; }\n'
+                                         'int Toy::Other() { return 2; }\n')
+            (repo / compiled).with_suffix('.h').write_text(
+                '#pragma once\nclass Toy { public: int Read(int value); int Other(); };\n')
+            functions = [{'rva': 0x1234, 'size': 4, 'symbol': 'unbound:Toy::Function1234',
+                          'community_name': 'Toy::Function1234'}]
+            (task_dir / 'task.json').write_text(json.dumps({'functions': functions}))
+            task = dict(dir=task_dir, functions=functions, compiled=compiled, build_id='toy',
+                        recipe='reconstruction/recipes/toy.json', symbols_repo=None,
+                        symbols_local=task_dir / 'symbols.json')
+            output = io.StringIO()
+            with mock.patch.object(pipeline, 'load_task', return_value=task), contextlib.redirect_stdout(output):
+                code = permute.main(['run', str(task_dir), '--source-root', str(repo), '--rva', '0x1234', '--dry-run'])
+            return code, output.getvalue()
+
+    def test_infers_placeholder_from_rva_line_in_the_header(self):
+        code, output = self.run_toy('// Source exposure: black-box\n\n // 0x1234 Toy::Read\n#include "Toy.h"\n')
+        self.assertEqual(code, 0, output)
+        self.assertIn('mutating Toy::Read', output)
+
+    def test_bad_header_reports_exact_rva_placement_and_spdx_text(self):
+        code, output = self.run_toy('// Source exposure: black-box\n// SPDX-License-Identifier: CC0-1.0 (old wording)\n'
+                                    '#include "Toy.h"\n// 0x1234 Toy::Read\n')
+        self.assertEqual(code, 1, output)
+        self.assertIn('write the dedication as "// SPDX-License-Identifier: CC0-1.0"', output)
+        self.assertIn('leading comment above the first include', output)
+
+
+class BaselineBinding(unittest.TestCase):
+    def test_existing_or_newly_derived_hints_give_the_same_scoring_map(self):
+        import align
+        import auto_hints
+        import bind
+
+        def bind_toy(directory, *_args, **_kwargs):
+            hints = bind.load_hints(directory)
+            (directory / 'symbols.json').write_text(json.dumps({'symbols': hints}))
+            return dict(functions=[], references=[], renamed=[], unbound_functions=[],
+                        unbound_references=[] if 'toy_ref' in hints else ['toy_ref'],
+                        unbound_thread_locals=[], changed=bool(hints))
+
+        def align_toy(fdir, *_args):
+            (fdir / 'align.json').write_text(json.dumps({'reference_pairs': {'references': {'toy_ref': {'0x3456': 2}}}}))
+            return []
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            task_dir = root / 'task'
+            task_dir.mkdir()
+            task_file = task_dir / 'task.json'
+            task_file.write_text(json.dumps({'functions': [{'rva': '0x1234', 'size': 4, 'symbol': 'ToyRead'}]}))
+            symbols_file = task_dir / 'symbols.json'
+            symbols_file.write_text('{"symbols": {}}')
+            hints_file = task_dir / bind.HINTS
+            task = {'dir': task_dir, 'symbols_local': symbols_file}
+            host = mock.Mock()
+            host.transport.get.side_effect = lambda _remote, dest: dest.write_bytes(b'toy object')
+            with mock.patch.object(bind, 'bind', side_effect=bind_toy), \
+                    mock.patch.object(bind, 'function_starts', return_value=set()), \
+                    mock.patch.object(auto_hints, 'known_targets', return_value={0x3456}), \
+                    mock.patch.object(align, 'attempt_summary', side_effect=align_toy), \
+                    mock.patch.object(align, 'objdump_candidate', return_value=''):
+                with self.assertRaisesRegex(SystemExit, 'Run tools/verifier/attempt'):
+                    permute.bound_scoring_maps(task, host, root / 'out', None, None, 0x1234, root)
+                before = permute.bound_scoring_maps(task, host, root / 'out', None, 'toy-objdump', 0x1234, root)
+                self.assertFalse(hints_file.exists())
+                self.assertEqual(symbols_file.read_text(), '{"symbols": {}}')
+                auto_hints.write(task_dir, {'toy_ref': '0x3456'})
+                after = permute.bound_scoring_maps(task, host, root / 'out', None, None, 0x1234, root)
+            self.assertEqual(before[:3], after[:3])
+            self.assertEqual(before[0], {'toy_ref': 0x3456})
 
 
 class ScoreRows(unittest.TestCase):

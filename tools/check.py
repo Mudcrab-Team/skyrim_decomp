@@ -8,7 +8,7 @@ import hashlib
 import json
 import multiprocessing
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
@@ -1311,14 +1311,33 @@ def scoped_context(root, names):
     """
     from lint_reconstruction import LICENCE_TEXT
     tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode('utf-8').split('\0'))
-    wanted = {'builds/target.json', LICENCE_TEXT} | {t for t in tracked if t.startswith('reconstruction/recipes/')}
+    wanted = {'builds/target.json', LICENCE_TEXT} & tracked
+    wanted.update(t for t in tracked if t.startswith('reconstruction/recipes/'))
     for name in names:
         blob = subprocess.check_output(['git', 'show', f':{name}'], cwd=root).decode('utf-8', 'replace')
         base = name.rsplit('/', 1)[0]
+        wanted.update({str(PurePosixPath(name).with_suffix('.h'))} & tracked)
         for word in set(re.findall(r'[A-Za-z0-9_][A-Za-z0-9_./+-]*', blob)):
-            wanted.update(c for c in (word, f'reconstruction/{word}', f'{base}/{word}', f'{base}/{name[len(base) + 1:].split(".")[0]}.h')
+            wanted.update(c for c in (word, f'reconstruction/{word}', f'{base}/{word}')
                           if c in tracked)
     return sorted(wanted - set(names))
+
+
+def check_staged_sources(root, sources):
+    """Run source lint and prereview against the staged source and its dependencies."""
+    if not sources:
+        return
+    import prereview
+    import staged_exports
+    with staged_exports.directory(root) as tmp:
+        wanted = [*sources, *scoped_context(root, sources)]
+        subprocess.run(['git', 'checkout-index', '-z', f'--prefix={tmp}/', '--stdin'], cwd=root,
+                       input='\0'.join(wanted).encode('utf-8') + b'\0', check=True)
+        exported = Path(tmp)
+        lint(exported, sources)
+        problems = [problem for name in sources
+                    for problem in prereview.readiness_problems(exported, name, (exported / name).read_text())]
+        require(not problems, 'Prereview: ' + '\n'.join(problems))
 
 
 def check_staged_scoped(root, names):
@@ -1332,14 +1351,7 @@ def check_staged_scoped(root, names):
         if problems:
             raise ValueError('\n'.join(f'{name}: {", ".join(codes)}' for name, codes in problems))
     sources = [n for n in names if n.startswith('reconstruction/')]
-    if not sources:
-        return count, None
-    import staged_exports
-    with staged_exports.directory(root) as tmp:
-        wanted = [*sources, *scoped_context(root, sources)]
-        subprocess.run(['git', 'checkout-index', '-z', f'--prefix={tmp}/', '--stdin'], cwd=root,
-                       input='\0'.join(wanted).encode('utf-8') + b'\0', check=True)
-        lint(Path(tmp), sources)
+    check_staged_sources(root, sources)
     return count, None
 
 
@@ -1357,6 +1369,10 @@ def run(staged=False, then=None, full=False):
     with sparse.full(ROOT):
         content_revision = []
         count = check_git(staged=staged, content_revision=content_revision)
+        if staged:
+            names = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '--no-renames',
+                                             '--diff-filter=AM', '-z', '--', 'reconstruction/'], cwd=ROOT)
+            check_staged_sources(ROOT, [n for n in names.decode('utf-8').split('\0') if n.endswith(('.cpp', '.h'))])
         with source_digest_cache():
             data = load(staged=staged, publication_revision=content_revision[0] if content_revision else None)
             if then is not None:
@@ -1376,7 +1392,7 @@ def main():
         print(f'FAIL: {exc}', file=sys.stderr)
         return 1
     if data is None:
-        print(f'PASS: {count} staged files (publication scan and new-unit lint where applicable). '
+        print(f'PASS: {count} staged files (publication scan, source lint and prereview where applicable). '
               'No Skyrim byte comparison performed.')
         return 0
     print(f'PASS: metadata and {count} tracked files. No Skyrim byte comparison performed.')

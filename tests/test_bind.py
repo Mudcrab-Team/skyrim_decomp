@@ -136,6 +136,8 @@ class BindTests(unittest.TestCase):
         self.assertIn(bind.HINTS, text)
 
     def test_permuter_binds_private_header_hints_in_its_scratch_task(self):
+        import align
+        from unittest.mock import patch
         import permute
 
         private = self.root / 'private'
@@ -151,7 +153,8 @@ class BindTests(unittest.TestCase):
         host = SimpleNamespace(transport=transport, _remote=lambda run: run, _run=self.root)
         out = self.root / 'out'
         out.mkdir()
-        _, _, bound, lines = permute.bound_scoring_maps(task, host, out, self.root / 'image', None, address, private)
+        with patch.object(align, 'attempt_summary', return_value=[]), patch.object(align, 'objdump_candidate', return_value=''):
+            _, _, bound, lines = permute.bound_scoring_maps(task, host, out, self.root / 'image', 'toy-objdump', address, private)
         self.assertEqual(bound[address], fx.FUNCTION)
         self.assertTrue(any('hint' in line and fx.FUNCTION in line for line in lines), lines)
         self.assertEqual((self.task_dir / 'task.json').read_text(), original)

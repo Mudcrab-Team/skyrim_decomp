@@ -221,3 +221,11 @@ def merge_reports(first, second):
         out[key] = list(first.get(key) or []) + list(second.get(key) or [])
     out['changed'] = bool(first.get('changed') or second.get('changed'))
     return out
+
+
+def derive_and_bind(task_dir, dest, report, config, *, correct=False, source_root=None):
+    """Apply alignment-derived hints to the compiled object, returning the second bind and diagnostics."""
+    added, skipped, notes = derive(task_dir, dest, report, config, correct=correct)
+    second = (bind.bind(task_dir, Path(dest) / 'candidate.obj', config.get('image'), config.get('objdump'),
+                        source_root=source_root) if added else None)
+    return second, describe(added, skipped, notes)

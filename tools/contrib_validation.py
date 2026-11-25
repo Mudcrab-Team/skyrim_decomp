@@ -14,7 +14,7 @@ import draft_bundle
 import giveup
 import leakgrep
 import lint_reconstruction
-import lint_review_readiness
+import prereview
 import unit_paths
 from source_digest import include_closure, _repo_file
 from digest_v2 import tu_digest
@@ -180,7 +180,8 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
             problems += leakgrep_diagnostics(blob, name)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
-            problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]
+            problems += [diagnostic(p) for p in prereview.readiness_problems(root, name, blob.decode('utf-8'),
+                                                                            included_only)]
         except (UnicodeError, ValueError) as exc:
             problems.append(diagnostic(f'{name}: source lint failed ({type(exc).__name__})'))
     # R38-R40 of docs/code-rules.md apply to the files this change touches, not to the include closure:
@@ -299,7 +300,8 @@ def intake_problems(ctx, rows, head=None, details=None):
         # Headers are small public source. Include all repository headers so the canonical closure
         # resolver sees ambiguity, transitive and includer-chain resolution exactly as intake does.
         wanted = set(names) | {PurePosixPath(n).with_suffix('.cpp').as_posix() for n in names} | companions
-        wanted.update(n for n in entries if n.startswith('reconstruction/') and n.endswith('.h'))
+        wanted.update(n for n in entries if n.startswith('reconstruction/') and
+                      (n.endswith('.h') or n.startswith('reconstruction/recipes/')))
         sources = blobs(ctx.repo, entries, wanted)
         sources.update(blobs(ctx.repo, entries, lint_dependencies(sources)))
         with tempfile.TemporaryDirectory() as directory:
