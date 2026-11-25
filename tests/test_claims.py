@@ -358,7 +358,7 @@ class ClaimsTests(unittest.TestCase):
         fake = FakeGh()
         # Contributor adapter uses the same parser/index and retains its existing exit codes.
         class Adapter:
-            def open_items(self, refresh=False): return index
+            def open_items(self, refresh=False, **_scope): return index
             def user(self): return 'project'
         ctx = contrib.Ctx(repo=self.root, private=self.root / '.local/contrib', github=Adapter(), as_json=True, interactive=False)
         with patch.object(contrib, 'inventory', return_value=PUBLIC), contextlib.redirect_stdout(io.StringIO()):

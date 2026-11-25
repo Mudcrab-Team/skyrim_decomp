@@ -226,6 +226,13 @@ class BindTests(unittest.TestCase):
         report, _ = self.run_bind()
         self.assertEqual(report['functions'], [])
         self.assertIn(fx.FUNCTION, report['unbound_functions'][0]['defined_in_object'])
+        suggestion = f'Suggested binding (verify the target): // CI hash: {hex(fx.LAYOUT[fx.FUNCTION])} {fx.FUNCTION}'
+        self.assertTrue(any(suggestion in line for line in bind.describe(report, self.task_dir)))
+        other = dict(task['functions'][0], rva='0x2000')
+        (self.task_dir / 'task.json').write_text(json.dumps(dict(task, functions=task['functions'] + [other])))
+        report, _ = self.run_bind()
+        self.assertFalse(any('Suggested binding' in line for line in bind.describe(report, self.task_dir)))
+        (self.task_dir / 'task.json').write_text(json.dumps(task))
         (self.task_dir / bind.HINTS).write_text(json.dumps({fx.FUNCTION: hex(fx.LAYOUT[fx.FUNCTION])}))
         report, _ = self.run_bind()
         self.assertEqual(report['functions'][0]['how'], 'hint')
