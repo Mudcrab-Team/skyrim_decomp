@@ -5,15 +5,9 @@
 // Adapted bodies: none
 #pragma once
 
-extern "C" unsigned long long StaticData3270908;
-extern "C" unsigned long long StaticData3270910;
-extern "C" unsigned long long StaticData3270918;
 extern "C" unsigned int StaticData333ae2c;
 
 struct StaticScalarReaders
 {
-    static unsigned long long ReadStaticb2e4f0();
-    static unsigned long long ReadStaticb2e500();
-    static unsigned long long ReadStaticb2e510();
     static unsigned int ReadStatic1124500();
 };
