@@ -252,6 +252,19 @@ class Ranking(unittest.TestCase):
         self.assertTrue(result['claims_checked'])
         self.assertTrue(all(r['reason'] for r in result['candidates']))
 
+    def test_next_class_uses_all_sizes_unless_given_a_limit(self):
+        self.data['functions'].append(self.fn(0x5000, 'TESReady::Big', 300))
+        ctx = contrib.Ctx(repo=self.root, github=fixtures.FakeGitHub(), as_json=True)
+        with patch.object(contrib, 'inventory', return_value=self.data), \
+                patch.object(contrib.ready_queue, 'load_queue', return_value={0x5000: {'unlock_rank': 1}}):
+            for args, expected in ((['next'], False), (['next', '--class', '^TESReady$'], True),
+                                   (['next', '--class', '^TESReady$', '--max-size', '64'], False)):
+                with self.subTest(args=args):
+                    _, result, _ = contrib.cmd_next(ctx, contrib.parser().parse_args(args))
+                    self.assertEqual('0x5000' in {c['rva'] for c in result['candidates']}, expected)
+                    if expected:
+                        self.assertEqual(result['candidates'][0]['rva'], '0x5000')
+
     def test_next_demotes_an_rva_with_a_conflicting_binding(self):
         old_name = '?OldHelper@@YAHPEAVTESReady@@@Z'
         offered_name = '?HasFlag@TESReady@@QEAA_NH@Z'

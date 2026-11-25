@@ -24,9 +24,11 @@ code, first mismatch offset, candidate/target size and matching-byte progress ve
 Name your actual model at claim time; `attempt` and `done` inherit it. For a standalone task use
 `attempt --model <model-id>` (or `--agent <tool-name>`); project agents may use `--profile <profile>`.
 If a cookbook rule fixed it, pass `--rule N` (or `--rule N,M`) on the attempt that passes.
-Keep going while matching bytes rise, even if the first mismatch stays put. Stop after the brief's
-N counted attempts with no improvement over the best score (default 3, full profile 4), or the existing
-hard attempt cap. Missing progress is unknown, not zero; the score never proves a match. Read locally
+Keep going while matching bytes rise, even if the first mismatch stays put. A function is stuck after
+3 scored, counted attempts (4 under `full`) or 5 minutes without a new best matching-byte score.
+Start the clock at the first comparable score and reset it on a new best. The hard attempt cap still
+applies. If progress is unavailable, fix the diagnostics before routing by score. See the
+[threshold evidence](contributor-card.md#stuck-thresholds). Read locally
 `attempts/<NNN>/0x<rva>/side-by-side.txt` (target vs candidate disassembly; `*` marks rows that
 differ outside relocated fields) and `compile.log`, revise, repeat. Never stop the machine; it
 stops itself at its deadline. One unit per shell command: never chain several `attempt` runs in one
@@ -195,14 +197,16 @@ also lints other Drafters' unfinished files; a Reviewer rejects the rest):
   invented names.
 
 **Budget.** The budget is what `attempt` prints (`counted N/M`); it refuses past it (exit 5).
-Stop work on a function after three counted attempts with no progress on its first mismatch
-offset. If the only difference is a compiler-mode artefact (for example a parity branch `jp`
+If the only difference is a compiler-mode artefact (for example a parity branch `jp`
 after `ucomiss`, which `/fp:fast` omits), stop and report it as the blocker: recipes are not
 yours to change. **Never** edit tools/, reports/, data/, recipes or another unit, mark anything
 `matched`, commit, push, post, start agents or drive Boat by hand.
 
-**When a function is stuck**, take it out of the unit so the rest still passes, but never lose
-it: save the function, and any header lines only it needs, to
+**When a function is stuck**, route a best score of at least 90% to one
+[permuter run](permuter.md) with `--budget 300 --outage 0`, using the best source.
+Verify any winner through the usual comparison and review. For lower scores or an unsuccessful
+run, park the best try in the near-miss pool. Take the function out of the unit so the rest still
+passes. Save the function, and any header lines only it needs, to
 `.local/tasks/<task-id>/near-miss/<rva>.cpp`, starting with two comment lines: the reason code,
 sizes and attempt number of the best try, then the remaining difference in a sentence. Run
 `attempt` once more to show the remaining functions pass, and name the file in your result line.

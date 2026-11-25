@@ -27,8 +27,13 @@ and shared class context; preserve the existing layout and function bodies.
 5. A normal unit gets three counted attempts per selected function plus four for shared setup.
    The sheet gives the exact total. The first three compile failures are free, as in the small kit.
    Keep going while matching bytes rise, even if the first mismatch stays put.
-   Stop changing a function after three counted attempts with no improvement over the best
-   matching-byte progress, or when the hard unit budget is spent. Save it under `<unit dir>/near-miss/<rva>.cpp`, explaining the difference.
+   A function is stuck after three scored, counted attempts (four under `full`) or five minutes
+   without a new best matching-byte score. Keep the hard unit budget. Run the
+   [permuter](permuter.md) once on the best source at 90% or higher with `--budget 300 --outage 0`.
+   Verify any winner through the usual comparison and review. For lower scores or an unsuccessful
+   run, park it in the near-miss pool under `<unit dir>/near-miss/<rva>.cpp`, explaining the difference.
+   Fix missing diagnostics before routing by score. See the
+   [threshold evidence](contributor-card.md#stuck-thresholds).
 6. Run attempt again after setting aside a function so the remaining functions still compile.
    Run `tools/lint_reconstruction.py <h> <cpp>` and `tools/check_labels.py <h> <cpp>`; fix every
    finding, attempt again after a code change, then report with `work_queue.py done` and take the

@@ -30,11 +30,11 @@ bigger PRs help most: each PR costs a full verification and merge cycle, and lar
 merged cleanly in about an hour. Thank you, don't be shy.
 `submit <task> <task>...` (or
 `submit --all-dirty`) puts several tasks' units in one PR; `preflight` takes the same arguments.
-`next --class REGEX` ranks only classes whose name matches, and `claim ... --skip-conflicts` claims
-the functions nobody holds and names the others with their claim issues.
-`next` offers callee-ready functions first (every callee already matched; `data/ready-queue.json`,
-regenerated with `tools/ready_queue.py`); the 500 ready functions that unblock the most callers per byte
-(`unlock_rank`) come before the rest. The ordering is advisory.
+`next --class REGEX` ranks matching classes across all sizes. Add `--max-size` to limit the results.
+`claim ... --skip-conflicts` claims the functions nobody holds and names the others with their claim issues.
+`next` offers callee-ready functions first. The complete list is published in shards indexed by
+`data/ready-queue.json` and regenerated with `tools/ready_queue.py`. The 500 ready functions that
+unblock the most callers per byte (`unlock_rank`) come before the rest. The ordering is advisory.
 `data/target-hashes/contributor-target-facts.json` (from `tools/target_facts.py`) lists the committed PDB name,
 prototype, size and alignment proposal per offered target, as hints only. The file is an index; the entries are in
 `contributor-target-facts-part-NNN.json` beside it (`tools/target_facts.py` reads them back together).
@@ -132,9 +132,10 @@ Source rules:
 - A tail jump (`JMP <function>`) is `return Callee(...);` as the last statement.
 
 Diagnostics: read `functions[].reason`, sizes, `first_mismatch` and `hint` from `compare`. A compile or include
-failure is not comparison evidence. Under `cheap`, stop after 3 attempts without an improvement in
-matching bytes (hard cap 6 comparisons); under `full`, 4 and 10. Keep the source and the sanitized
-reason when you stop.
+failure is not comparison evidence. A function is stuck after 3 scored comparisons (4 under `full`)
+or 5 minutes without a new best matching-byte score. Start timing at the first comparable score
+and reset on a new best. The comparison caps are still 6 under `cheap` and 10 under `full`. Fix
+missing diagnostics before routing by score. Keep the best source and the sanitized reason.
 
 A local PASS is a candidate, not acceptance: the project confirms on two hosts and one review
 approves the source before a function counts as `matched`. Ask once before reading listings or
@@ -157,7 +158,10 @@ destructors and their adjustor thunks, and overrides named for their base class.
 
 ## If you can't match it
 
-Stop on the profile's numbers (the card above), then keep what you learned instead of losing it:
+A stuck function at a best score of 90% or higher goes to one [permuter run](permuter.md) with
+`--budget 300 --outage 0`. Use the best source, or hand it to an Engineer with a runner.
+Verify any winner with `compare` and submit it through the usual flow. For a lower score or
+a run that does not recover a match, park it in the near-miss pool with a give-up record:
 `./sr release 0x<rva> --reason "<one line>" --category <control-flow|register-schedule|inline-set|layout-unknown|eh-frame|callee-missing|signature-wrong|other> --tried "<one short try>" --tried "..." --still-differs "<in words>" --suspected-cause "<one sentence>"`
 releases the claim and writes `data/giveups/<build id>/<rva>.json` with those words, the best similarity of your last compare, your model and `./sr`. The file is committed by your next `submit`
 (a PR may carry it with units or notes, or alone); it is words and numbers only, and the leak scan and `tools/giveup.py check` refuse instructions, bytes and paths.
@@ -177,6 +181,17 @@ A record is a lead, never evidence.
 
 If `compare` fails on a function whose image has no exception frame, it also retries the unit without `/EHsc` and prints `MATCH (under <flags>)` with the `Recipe:` line to add;
 the verdict stays a failure until the unit names that recipe (`docs/verification.md`, "Alternative flag sets"). `--no-retry` skips it.
+
+### Stuck thresholds
+
+Keep the existing profile count of 3 or 4. A sample of local attempt logs had 136 scored
+observations across 77 task/function/tier/metric series. One reached three consecutive
+no-gain attempts. The tracked `reports/` holds acceptance evidence and symbol history,
+with no per-attempt score series. In `data/costs.json`, 24 complete, non-estimated Drafter
+sessions had a median wall time of about 3 minutes and a 75th percentile of about
+3¼ minutes. The 674 measured verifier draft records had a median of about 10 seconds.
+Five minutes allows for edits between checks. It is an advisory wall-clock budget, based on
+session costs and a small score-history sample.
 
 ## Verdicts
 

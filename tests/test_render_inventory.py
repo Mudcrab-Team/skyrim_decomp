@@ -8,6 +8,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools')]
 import render_inventory as inv_tool
+from claimable import write_sharded
 
 PDB = 'reconstruction/generated/crashlogger_pdb'
 
@@ -33,6 +34,7 @@ def fixture(root):
             {'rva': 0x1700, 'size': 12, 'status': 'mapped', 'name': 'BSImagespaceShaderBlur3::Func'},
         ]})
     write(root, 'data/ready-queue.json', {
+        'build_id': 'b1',
         'progress_updated_at': 'queue-stamp',
         'counts': {'ready': 10, 'listed': 2},
         'entries': [{'rva': '0x1400', 'size': 14, 'blocks': 3, 'unlocks': 0},
@@ -64,6 +66,16 @@ class Naming(unittest.TestCase):
         self.assertTrue({g[1] for g in inv_tool.GROUPS} <= set(inv_tool.WORKSTREAMS))
         self.assertEqual(len({g[0] for g in inv_tool.GROUPS}), len(inv_tool.GROUPS))
 
+    def test_shadow_classes_and_passes_are_in_workstream_e(self):
+        for name in ('BSShadowLight::Run', 'BSShadowDirectionalLight::SetupMaps',
+                     'BSShadowParabolicLight::Run', 'BSShadowFrustumLight::Run',
+                     'ShadowSceneNode::Update', 'DrawWorld_RenderShadowCasters', 'RenderShadowmasks',
+                     'UpdateOrAssignShadowCSTexture'):
+            with self.subTest(name=name):
+                self.assertEqual(inv_tool.group_of(name)[0], 'E1')
+        self.assertEqual(inv_tool.group_of('Sky::Update')[0], 'D3')
+        self.assertEqual(inv_tool.group_of('TESWaterSystem::Update')[0], 'D4')
+
 
 class Counting(unittest.TestCase):
     def setUp(self):
@@ -85,7 +97,7 @@ class Counting(unittest.TestCase):
         self.assertEqual(rows[0x1200], ('C1', 'open', 'ready'))
         self.assertEqual(rows[0x1300], ('A1', 'open', 'unlisted'))
         self.assertEqual(rows[0x1400], ('A1', 'open', 'ready'))
-        self.assertEqual(rows[0x1500], ('D1', 'open', 'unlisted'))
+        self.assertEqual(rows[0x1500], ('E1', 'open', 'unlisted'))
         self.assertEqual(rows[0x1700], ('D2', 'open', 'blocked'))
         self.assertNotIn(0x1600, rows)
         self.assertEqual(inv['complete_below'], 16)
@@ -118,11 +130,14 @@ class Counting(unittest.TestCase):
 
     def test_complete_ready_list_leaves_nothing_unlisted(self):
         queue = json.loads((self.root / 'data/ready-queue.json').read_text())
-        queue['counts']['ready'] = 2
-        write(self.root, 'data/ready-queue.json', queue)
+        queue['entries'].append({'rva': '0x1500', 'size': 40, 'blocks': 3, 'unlocks': 1})
+        queue['counts'] = {'ready': 3, 'listed': 3}
+        write_sharded(self.root, 'data/ready-queue.json', queue, 'entries', 2)
         rows, inv = self.states()
         self.assertIsNone(inv['complete_below'])
         self.assertEqual(rows[0x1300][2], 'blocked')
+        self.assertEqual(rows[0x1500][2], 'ready')
+        self.assertEqual(inv_tool.entry_points(inv, 'E', 1)[0]['unlocks'], 1)
 
 
 class Output(unittest.TestCase):
@@ -137,6 +152,8 @@ class Output(unittest.TestCase):
     def test_report_names_the_workstreams_and_the_ready_function(self):
         text = inv_tool.render(inv_tool.build(self.root))
         self.assertIn('| A: Foundation |', text)
+        self.assertIn('| E: Shadows |', text)
+        self.assertIn('**Total A-E**', text)
         self.assertIn('`0x1400` | Renderer::Lock', text)
         self.assertIn('no claim list was read', text)
 

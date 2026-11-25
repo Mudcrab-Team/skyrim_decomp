@@ -8,12 +8,10 @@
     python3 tools/render_inventory.py --update-doc docs/milestones/rendering.md
 
 Inputs: reconstruction/generated/crashlogger_pdb/{names,boundaries}, data/symbol-names.json,
-data/progress.json, data/ready-queue.json, data/giveups and reconstruction/INDEX.md. Only RVAs, names,
+data/progress.json, the published ready queue, data/giveups and reconstruction/INDEX.md. Only RVAs, names,
 sizes and counts are read or written. Nothing here is evidence of a match.
 
-Every number is a count of what those files already say, so it is a lower bound on the real subsystem: a
-function with no public name is invisible to this script, and the committed ready list is capped, so a
-function missing from it is "not listed", not "proven blocked". The report states both limits.
+The inventory is a lower bound on the subsystem because it can only place functions with a public name.
 """
 import argparse
 import collections
@@ -23,32 +21,43 @@ from pathlib import Path
 import re
 import sys
 
+import ready_queue
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'tools')]
 
 PDB_DIR = 'reconstruction/generated/crashlogger_pdb'
-BUCKETS = (16, 64, 256, 1024)
 ENTRY_POINTS = 15
 BLOCK_START, BLOCK_END = '<!-- inventory:start -->', '<!-- inventory:end -->'
+SLOTS = 'ABCDE'
 
 WORKSTREAMS = {
     'A': 'Foundation',
     'B': 'Shaders and materials',
     'C': 'Batching, passes, camera, culling',
-    'D': 'Shadows, image space, sky, water system',
+    'D': 'Image space, sky, water system',
+    'E': 'Shadows',
     '-': 'Adjacent',
 }
 WORKSTREAM_SCOPE = {
     'A': 'BSGraphics state, render targets, buffers, textures and resources, render geometry, lights',
     'B': 'shader classes, shader properties, materials, sky and water shaders',
     'C': 'render passes, batch renderer, accumulators, camera, frustum, culling, portals',
-    'D': 'shadows, image space, sky, weather, fog, water',
+    'D': 'image space, sky, weather, fog, water',
+    'E': 'shadow lights, shadow scene node, shadow-map setup and shadow passes',
     '-': 'listed for context, owned by the general rounds',
 }
 
 # (id, workstream, title, rules). A rule is ('class', regex) tested on the class key or ('name', regex) tested
 # on the whole cleaned name. The first group with a matching rule wins, so a narrow group sits above a broad one.
 GROUPS = [
+    ('E1', 'E', 'Shadow lights, scene node, maps and passes', [
+        ('class', r'^(BSShadowLight|BSShadowDirectionalLight|BSShadowParabolicLight|BSShadowFrustumLight|'
+                  r'ShadowSceneNode|ShadowmapDescriptor|BSTArray_ShadowmapDescriptor_)$'),
+        ('name', r'^(ShadowSceneNode_|BSShadowParabolicLight_|RenderActiveShadowCasterLights|'
+                 r'CalculateAndDrawShadowCasterLights|CalculateActiveShadowCasterLights|'
+                 r'ResetCalculatedShadowCasterLights|ProcessAllQueuedLights|RenderVolumetricLightingShadowMaps|'
+                 r'DrawWorld_RenderShadowCasters|RenderShadowmasks|UpdateOrAssignShadowCSTexture)')]),
     ('C1', 'C', 'Render passes, batch renderer, accumulators', [
         ('class', r'^BSShaderProperty::RenderPassArray$'),
         ('class', r'^(BSBatchRenderer(::.*)?|BSRenderPass|BSRenderPassCache|BSShaderAccumulator|NiAccumulator|'
@@ -62,7 +71,7 @@ GROUPS = [
     ('A2', 'A', 'Render targets, buffers and depth-stencil', [
         ('class', r'^(BSGraphics::RenderTargetManager|RenderTargetManager|BSShaderRenderTargets)$'),
         ('name', r'^(CreateIndexBuffer|GetID3D11Resource|GetDepthStencilTarget_|GetImageSpaceRenderTarget|'
-                 r'SetPSTextureFilterMode|UpdateOrAssignShadowCSTexture|PollOcclusionQuery)')]),
+                 r'SetPSTextureFilterMode|PollOcclusionQuery)')]),
     ('A3', 'A', 'Shader manager, shader resources and textures', [
         ('class', r'^(BSShaderManager|BSShaderResourceManager|NiTexture|NiSourceTexture|BSScaleformExternalTexture|'
                   r'ITextureDB|BSTextureDB.*)$'),
@@ -95,12 +104,6 @@ GROUPS = [
         ('class', r'^(NiGeometry|BSGeometry|NiGeometryData|BSTriShape|BSLODTriShape|BSMeshLODTriShape|'
                   r'BSDynamicTriShape|BSSubIndexTriShape|BSLODMultiIndexTriShape|BSMultiIndexTriShape|'
                   r'NiAdditionalGeometryData|NiSkinInstance|NiSkinData|NiSkinPartition)$')]),
-    ('D1', 'D', 'Shadow lights and shadow scene node', [
-        ('class', r'^(BSShadowLight|BSShadowDirectionalLight|BSShadowParabolicLight|BSShadowFrustumLight|'
-                  r'ShadowSceneNode|ShadowmapDescriptor|BSTArray_ShadowmapDescriptor_)$'),
-        ('name', r'^(ShadowSceneNode_|RenderActiveShadowCasterLights|CalculateAndDrawShadowCasterLights|'
-                 r'CalculateActiveShadowCasterLights|ResetCalculatedShadowCasterLights|ProcessAllQueuedLights|'
-                 r'RenderVolumetricLightingShadowMaps|BSShadowParabolicLight_)')]),
     ('D2', 'D', 'Image space: manager, effects and image-space shaders', [
         ('class', r'^(BSImagespaceShader\w*|ImageSpace\w*|TESImageSpace\w*|TESImagespace\w*)$'),
         ('name', r'^(GetVLTemporalAccumulationFactor|UpdateVolumetricLightingRenderData|VolumetricLightingDescriptor)')]),
@@ -163,10 +166,6 @@ def group_of(*names):
     return None
 
 
-def bucket(size):
-    return next((i for i, bound in enumerate(BUCKETS) if size < bound), len(BUCKETS))
-
-
 def read_tsv(path):
     for line in Path(path).read_text(encoding='utf-8', errors='replace').splitlines():
         if line and not line.startswith('#'):
@@ -226,11 +225,14 @@ def load_index_areas(root):
 def ready_info(queue):
     """(ready entries by RVA, size below which the committed list is complete)."""
     entries = {int(e['rva'], 16): e for e in queue.get('entries', [])}
-    total = (queue.get('counts') or {}).get('ready', len(entries))
-    ordered = queue.get('entries', [])
-    if len(entries) >= total or not ordered:
+    total = (queue.get('counts') or {}).get('ready')
+    if total == len(entries):
         return entries, None
-    return entries, (BUCKETS[bucket(ordered[-1]['size']) - 1] if bucket(ordered[-1]['size']) else 0)
+    for entry in reversed(queue.get('entries', [])):
+        if 'unlock_rank' not in entry:
+            band = ready_queue.bucket(entry['size'])
+            return entries, ready_queue.BUCKETS[band - 1] if band else 0
+    return entries, 0
 
 
 def claim_ranges(claims):
@@ -251,7 +253,7 @@ def build(root, claims=None):
     pdb = load_names(root)
     sizes = load_sizes(root)
     progress = load_json(root / 'data/progress.json')
-    queue = load_json(root / 'data/ready-queue.json')
+    queue = ready_queue.read_queue(root, progress.get('target_build_id'))
     symbols = load_json(root / 'data/symbol-names.json').get('classes', {})
     giveups = load_giveups(root)
     areas = load_index_areas(root)
@@ -274,6 +276,7 @@ def build(root, claims=None):
             row['state'], row['why'] = open_state(row, ready, complete_below, giveups, ranges)
             row['claims'] = claimed_by(ranges, rva)
             row['blocks'] = int(ready[rva]['blocks']) if rva in ready else 0
+            row['unlocks'] = int(ready[rva]['unlocks']) if rva in ready else 0
         rows.append(row)
     return dict(rows=rows, areas=areas, symbols=symbols, ready=ready, complete_below=complete_below,
                 queue_counts=queue.get('counts', {}), queue_stamp=queue.get('progress_updated_at'),
@@ -292,8 +295,8 @@ def open_state(row, ready, complete_below, giveups, ranges):
     if size is None:
         return 'blocked', 'size unknown'
     if complete_below is None or size < complete_below:
-        return 'blocked', 'unmatched callee or non-ordinary kind'
-    return 'unlisted', 'ready list capped; readiness unknown'
+        return 'blocked', 'absent from the ready queue'
+    return 'unlisted', 'readiness unknown from available queue'
 
 
 def summarize(inv):
@@ -336,16 +339,15 @@ def unplaced(inv, cls):
 def entry_points(inv, letter, limit):
     """Easiest unclaimed open functions of a workstream: ready ones first, then the smallest unlisted ones.
 
-    Within each tier the order is smallest size, then most callers unlocked. An unlisted function may be
-    ready or waiting; `./sr next --class` on a machine with the function table tells which.
+    Within each tier the order is smallest size, then most callers unlocked.
     """
     rows = [r for r in inv['rows'] if GROUP_META[r['group']][1] == letter and r['status'] == 'open'
             and r['state'] in ('ready', 'unlisted') and r['size']]
-    rows.sort(key=lambda r: (r['state'] != 'ready', r['size'], -r['blocks'], r['rva']))
+    rows.sort(key=lambda r: (r['state'] != 'ready', r['size'], -r['unlocks'], r['rva']))
     return rows[:limit]
 
 
-def render_entry_points(inv, limit, letters='ABCD'):
+def render_entry_points(inv, limit, letters=SLOTS):
     lines = []
     for letter in letters:
         lines.append(f'**Workstream {letter} entry points** (names are CrashLogger-derived, '
@@ -355,7 +357,8 @@ def render_entry_points(inv, limit, letters='ABCD'):
         lines.append('|---|---|---:|---|---:|')
         for r in entry_points(inv, letter, limit):
             state = 'ready' if r['state'] == 'ready' else 'unlisted'
-            lines.append(f'| `0x{r["rva"]:x}` | {r["name"]} | {r["size"]} | {state} | {r["blocks"] or ""} |')
+            unlocked = r['unlocks'] if state == 'ready' else ''
+            lines.append(f'| `0x{r["rva"]:x}` | {r["name"]} | {r["size"]} | {state} | {unlocked} |')
         lines.append('')
     return '\n'.join(lines)
 
@@ -383,32 +386,34 @@ def render(inv):
     lines = []
     claims = (f'functions under {inv["claim_count"]} open claim issues are counted as claimed'
               if inv['claims_used'] else 'no claim list was read, so the claimed column is 0')
-    lines.append(f'Build `{inv["build_id"]}`. The committed ready list holds {inv["queue_counts"].get("listed")} of '
-                 f'{inv["queue_counts"].get("ready")} ready functions and is filtered against '
-                 f'`data/progress.json`; {claims}.')
+    counts = inv['queue_counts']
+    coverage = (f'The published queue lists {counts["listed"]} of {counts["ready"]} ready functions'
+                if 'listed' in counts and 'ready' in counts else 'The published ready queue is unavailable')
+    lines.append(f'Build `{inv["build_id"]}`. {coverage}. Matched functions come from '
+                 f'`data/progress.json`, and {claims}.')
     lines.append('')
     lines.append('| Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |')
     lines.append('|---|---:|---:|---:|---:|---:|---:|---:|---:|')
     grand = collections.Counter()
-    for letter in 'ABCD':
+    for letter in SLOTS:
         c = letters.get(letter, collections.Counter())
         grand.update(c)
         lines.append(f'| {letter}: {WORKSTREAMS[letter]} | {c["known"]} | {c["matched"]} | '
                      f'{pct(c["matched"], c["known"])} | {c["claimed"]} | {c["ready"]} | {c["blocked"]} | '
                      f'{c["unlisted"]} | {c["open_bytes"]} |')
-    lines.append(f'| **Total A-D** | {grand["known"]} | {grand["matched"]} | {pct(grand["matched"], grand["known"])} | '
+    lines.append(f'| **Total A-E** | {grand["known"]} | {grand["matched"]} | {pct(grand["matched"], grand["known"])} | '
                  f'{grand["claimed"]} | {grand["ready"]} | {grand["blocked"]} | {grand["unlisted"]} | {grand["open_bytes"]} |')
     adj = letters.get('-', collections.Counter())
     lines.append(f'| Adjacent, not assigned | {adj["known"]} | {adj["matched"]} | {pct(adj["matched"], adj["known"])} | '
                  f'{adj["claimed"]} | {adj["ready"]} | {adj["blocked"]} | {adj["unlisted"]} | {adj["open_bytes"]} |')
     lines.append('')
-    lines.append('Known = functions with a public name in the CrashLogger tables or `data/progress.json` (a lower '
-                 'bound). Ready = every callee matched and the function is in the committed list. Waiting = proven '
-                 'blocked (a give-up record, or under 16 bytes and absent from the complete part of the list). '
-                 'Unlisted = not matched, not claimed, not in the capped list: ready or waiting, unknown here. Open bytes = '
-                 'the sizes of the Ready, Waiting and Unlisted functions together.')
+    lines.append('Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts '
+                 'available functions in the published queue. Waiting covers give-ups, functions of unknown size '
+                 'and functions absent from the portion of the queue with complete coverage. Unlisted marks '
+                 'unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the '
+                 'sizes of the Ready, Waiting and Unlisted functions.')
     lines.append('')
-    for letter in 'ABCD-':
+    for letter in SLOTS + '-':
         title = f'Workstream {letter}' if letter != '-' else 'Adjacent'
         lines.append(f'### {title}: {WORKSTREAMS[letter]}')
         lines.append('')

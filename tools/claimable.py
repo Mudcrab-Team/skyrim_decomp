@@ -34,6 +34,7 @@ def sharded_json(root, path, key):
     data = json.loads((root / path).read_text())
     if 'parts' not in data:
         return data
+    ordered = key in {'functions', 'entries'}
     rows = []
     for part in data.pop('parts'):
         blob = (root / part['path']).read_bytes()
@@ -42,8 +43,8 @@ def sharded_json(root, path, key):
         piece = json.loads(blob)[key]
         if len(piece) != part['count']:
             raise ValueError(f'{part["path"]}: wrong count')
-        rows += piece if key == 'functions' else list(piece.items())
-    data[key] = rows if key == 'functions' else dict(rows)
+        rows += piece if ordered else list(piece.items())
+    data[key] = rows if ordered else dict(rows)
     return data
 
 
@@ -55,22 +56,23 @@ def write_sharded(root, path, data, key, size):
     root = Path(root)
     target = root / path
     stem = target.name[:-len('.json')] + '-part-'
-    items = data[key] if key == 'functions' else list(data[key].items())
+    ordered = key in {'functions', 'entries'}
+    items = data[key] if ordered else list(data[key].items())
     for old in target.parent.glob(stem + '*.json'):
         old.unlink()
     parts, written = [], [path]
     for i in range(0, len(items), size):
         chunk = items[i:i + size]
         name = f'{stem}{i // size:03d}.json'
-        blob = (json.dumps({key: chunk if key == 'functions' else dict(chunk)}, indent=2 if key == 'functions' else 1,
-                           sort_keys=key != 'functions') + '\n').encode()
+        blob = (json.dumps({key: chunk if ordered else dict(chunk)}, indent=2 if ordered else 1,
+                           sort_keys=not ordered) + '\n').encode()
         (target.parent / name).write_bytes(blob)
         rel = (Path(path).parent / name).as_posix()
         parts.append({'path': rel, 'sha256': hashlib.sha256(blob).hexdigest(), 'count': len(chunk)})
         written.append(rel)
     index = {k: v for k, v in data.items() if k != key}
     index['parts'] = parts
-    target.write_text(json.dumps(index, indent=2 if key == 'functions' else 1, sort_keys=key != 'functions') + '\n')
+    target.write_text(json.dumps(index, indent=2 if ordered else 1, sort_keys=not ordered) + '\n')
     return written
 
 

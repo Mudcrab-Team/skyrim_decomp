@@ -2,6 +2,10 @@
 import json
 from pathlib import Path
 
+STUCK_MINUTES = 5
+PERMUTE_MIN_PERCENT = 90
+PERMUTE_BUDGET_SECONDS = 300
+
 
 def measure(report, alignment=None):
     if alignment and isinstance(alignment.get('matching_bytes'), int):
@@ -23,7 +27,7 @@ def read_json(path):
         return {}
 
 
-def update(current, history, counted=True):
+def update(current, history, counted=True, now=None):
     """Compare with the previous measured attempt; reset patience only on a new best.
 
     History is already scoped to a task and tier. Missing diagnostics never become fake zeroes.
@@ -35,8 +39,9 @@ def update(current, history, counted=True):
             out[rva] = None
             continue
         prior = next((row['progress'][rva] for row in reversed(history)
-                      if (row.get('progress') or {}).get(rva)
-                      and row['progress'][rva]['metric'] == metric['metric']), None)
+                      if (row.get('progress') or {}).get(rva)), None)
+        if prior and (prior['metric'], prior['total']) != (metric['metric'], metric['total']):
+            prior = None
         value = metric['value']
         best = max(value, prior['best']) if prior else value
         improved = prior is not None and value > prior['best']
@@ -44,7 +49,24 @@ def update(current, history, counted=True):
                         delta=value - prior['value'] if prior else None, best=best,
                         no_improvement=(0 if prior is None or improved else
                                         prior['no_improvement'] + int(counted)))
+        if now is not None:
+            out[rva]['best_at'] = now if prior is None or improved else prior.get('best_at', now)
     return out
+
+
+def stuck_advice(rva, metric, patience, now):
+    if not metric or metric['total'] <= 0 or not metric['no_improvement']:
+        return None
+    if metric['no_improvement'] >= patience:
+        reason = f'{metric["no_improvement"]} counted attempts'
+    elif now - metric.get('best_at', now) >= STUCK_MINUTES * 60:
+        reason = f'{STUCK_MINUTES} minutes'
+    else:
+        return None
+    route = (f'permute (one run, {PERMUTE_BUDGET_SECONDS}s search budget)'
+             if 100 * metric['best'] >= PERMUTE_MIN_PERCENT * metric['total']
+             else 'park in the near-miss pool')
+    return f'stuck {rva}: no gain in {reason} → {route}'
 
 
 def describe(rva, metric, patience):
@@ -58,5 +80,6 @@ def describe(rva, metric, patience):
 
 def guidance(patience):
     return (f'Keep going while matching bytes rise, even if the first mismatch stays put; stop after '
-            f'{patience} counted attempts with no improvement over the best, or at the hard attempt cap. '
+            f'{patience} counted attempts or {STUCK_MINUTES} minutes without a new best, '
+            'or at the hard attempt cap. '
             'Progress is diagnostic, never match evidence.')

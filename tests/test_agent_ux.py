@@ -121,6 +121,24 @@ class Progress(unittest.TestCase):
         self.assertIsNone(result['0x1000']['previous'])
         self.assertEqual(result['0x1000']['no_improvement'], 0)
 
+    def test_stuck_attempt_threshold_uses_best_score_for_routing(self):
+        history = []
+        for value in (18, 17, 17, 17):
+            result = progress.update({'0x1000': self.metric(value)}, history, now=100)
+            history.append(dict(progress=result))
+        metric = result['0x1000']
+        self.assertIn('3 counted attempts → permute', progress.stuck_advice('0x1000', metric, 3, 100))
+        self.assertIsNone(progress.stuck_advice('0x1000', metric, 4, 100))
+
+    def test_stuck_timer_resets_on_a_new_best(self):
+        rva = '0x1000'
+        first = progress.update({rva: self.metric(16)}, [], now=100)
+        best = progress.update({rva: self.metric(17)}, [dict(progress=first)], now=350)
+        later = progress.update({rva: self.metric(17)}, [dict(progress=best)], now=500)[rva]
+        self.assertIsNone(progress.stuck_advice(rva, later, 3, 649))
+        self.assertIn('5 minutes → park', progress.stuck_advice(rva, later, 3, 650))
+        self.assertIsNone(progress.stuck_advice(rva, None, 3, 650))
+
     def test_later_matching_region_rises_with_unchanged_first_mismatch(self):
         target = '1000: b8 01 00 00 00  mov eax, 1\n1005: 83 c0 02  add eax, 2\n1008: c3  ret\n'
         before = '0: b8 03 00 00 00  mov eax, 3\n5: 83 c0 04  add eax, 4\n8: c3  ret\n'
@@ -179,7 +197,7 @@ class Progress(unittest.TestCase):
                     self.assertEqual(attempt.attempt(directory), 5)
                 self.assertIn('+4 vs previous', output.getvalue())
                 self.assertIn('Next: revise the source', output.getvalue())
-                self.assertIn('stop after 3 counted attempts with no improvement', output.getvalue())
+                self.assertIn('stop after 3 counted attempts or 5 minutes without a new best', output.getvalue())
                 self.assertIn('attempt budget exhausted: 3 of 3', output.getvalue())
             rows = [json.loads(line) for line in (directory / 'attempts.jsonl').read_text().splitlines()]
             self.assertEqual(rows[-1]['model'], 'synthetic-model')

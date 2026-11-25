@@ -82,11 +82,15 @@ Never write `asm`, `##`, `#pragma` (except `once`), byte arrays, `\x` strings. N
 yours calls one. The base destructor must be an inline body in a stand-in in your own header (the form of
 `netimmerse/NiExtraData.h`); never edit a shared header. Cannot? save it as near-miss `inline base needed`.
 
-**Stuck** = three counted attempts with no improvement over the best matching-byte progress, or the hard
-attempt budget is spent. Keep going while matching bytes rise, even if the first mismatch stays put.
+**Stuck** = three scored, counted attempts (four under `full`) or five minutes without a new best
+matching-byte score. The hard attempt budget still applies. Keep going while matching bytes rise,
+even if the first mismatch stays put. See the [threshold evidence](contributor-card.md#stuck-thresholds).
 `attempt` prints current/target bytes, change from the previous run and the no-improvement count;
 missing diagnostics are unknown, not zero. The score is diagnostic, never match evidence.
-Then move the function and the header lines only it needs to `<unit dir>/near-miss/<rva>.cpp`, first
+At a best score of at least 90%, run the [permuter](permuter.md) on the best source once with
+`--budget 300 --outage 0`. Verify any winner through the usual comparison and review. For lower
+scores or an unsuccessful run, park it in the near-miss pool. Move the function and the header
+lines only it needs to `<unit dir>/near-miss/<rva>.cpp`, first
 two lines: `// <reason>, size A/B, attempt N` and one sentence on the remaining difference. Run
 `attempt` once more so the rest passes.
 

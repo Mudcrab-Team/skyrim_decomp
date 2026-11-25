@@ -1,10 +1,10 @@
 # Milestone: Rendering 1:1
 
 Decompile Skyrim SE's rendering subsystem, function by function, until each function is a byte match, so the
-renderer can be understood from source that provably compiles to the same code. The work is split into four
-workstreams (A to D) so that people can work in parallel without touching each other's classes.
+renderer can be understood from source that provably compiles to the same code. Five workstreams
+(A to E) give each class one owner.
 
-Tracking issue: [#1185](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1185). Task issues: A [#1186](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1186), B [#1187](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1187), C [#1188](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1188), D [#1189](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1189). GitHub milestone:
+Tracking issue: [#1185](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1185). Task issues: A [#1186](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1186), B [#1187](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1187), C [#1188](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1188), D [#1189](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1189), E [#1191](https://github.com/Mudcrab-Team/skyrim_decomp/issues/1191). GitHub milestone:
 [Rendering 1:1](https://github.com/Mudcrab-Team/skyrim_decomp/milestone/1).
 
 ## Goal and scope
@@ -12,7 +12,7 @@ Tracking issue: [#1185](https://github.com/Mudcrab-Team/skyrim_decomp/issues/118
 - **Goal:** every function of the render subsystem in `data/progress.json` reaches `matched`: a byte match on two
   hosts plus one admitted review, exactly the gate in [verification.md](../verification.md). Nothing about the
   acceptance rule, the PR route or the check jobs changes for this milestone.
-- **In scope:** the classes in the inventory below, workstreams A to D. They are the `BSGraphics` layer (renderer,
+- **In scope:** the classes in the inventory below, workstreams A to E. They are the `BSGraphics` layer (renderer,
   state, render targets, constant and buffer management, textures and resources), the `BSShader` hierarchy and its
   properties and materials, batching and render passes, lights, `NiCamera` and the culling paths, and the shadow,
   image-space, sky, weather and water code.
@@ -64,10 +64,11 @@ read [near-tier-lessons.md](../near-tier-lessons.md) before them.
 | A | Foundation | `BSGraphics::*` (renderer, state, utility), `RendererShadowState`, render-target and buffer helpers, `BSShaderManager`, `BSShaderResourceManager`, `NiTexture`, `NiSourceTexture`, texture database, render geometry (`BSGeometry`, `NiGeometry`, `BSTriShape` family, skin instances), lights (`BSLight`, `NiLight` family) | none |
 | B | Shaders and materials | `BSShader`, `BSLightingShader`, `BSEffectShader`, `BSGrassShader`, `BSDistantTreeShader`, `BSBloodSplatterShader`, `BSParticleShader`, `BSUtilityShader`, `BSComputeShader`, `BSSkyShader`, `BSWaterShader`, `BSShaderProperty` and subclasses and controllers, `BSLightingShaderMaterial*`, `BSEffectShaderMaterial`, `BSWaterShaderMaterial`, texture sets | A |
 | C | Batching, passes, camera, culling | `BSBatchRenderer`, `BSRenderPass`, `BSShaderAccumulator`, `NiAccumulator` family, `NiCamera`, `BSCompoundFrustum`, `NiCullingProcess` and subclasses, occlusion shapes and planes, portal graph | A, B |
-| D | Shadows, image space, sky, water | `BSShadowLight` family, `ShadowSceneNode`, `BSImagespaceShader*`, `ImageSpace*` effects and manager, `TESImageSpace*`, `Sky`, `Sun`, `Clouds`, `Atmosphere`, `Precipitation`, `TESWeather`, fog properties, `TESWater*` | A, B, C |
+| D | Image space, sky, water system | `BSImagespaceShader*`, `ImageSpace*` effects and manager, `TESImageSpace*`, `Sky`, `Sun`, `Clouds`, `Atmosphere`, `Precipitation`, `TESWeather`, fog properties, `TESWater*` | A, B, C |
+| E | Shadows | `BSShadowLight` and its directional, parabolic and frustum subclasses, `ShadowSceneNode`, shadow-map descriptors and setup, shadow passes | A, B, C |
 
-Owner slots A to D are filled by the task issues. An issue marked "Owner: open" is free: claim it by commenting.
-The coordinator and reviewer contact for the milestone is the maintainer, awarebayes.
+The task issues list the owners. TaylorTurnerIT owns D. The maintainer, awarebayes, owns E and is the
+milestone coordinator and reviewer contact.
 
 ### A. Foundation
 
@@ -107,17 +108,20 @@ The coordinator and reviewer contact for the milestone is the maintainer, awareb
 - **Feeds Mudcrab:** transparency ordering (the L1 table says retail ordering is still missing), per-geometry light
   lists, culling and interior portal admission (`findings/interior-portal-admission.md`), and object LOD fade decisions.
 
-### D. Shadows, image space, sky, water
+### D. Image space, sky, water system
 
-- **Entry points:** the image-space group is about 80 percent matched, so the remaining image-space functions are mostly
-  managers, parameters and the few non-leaf effects; then `ShadowSceneNode` and the shadow lights, then `Sky`, `Sun` and
-  weather, then `TESWater*`.
-- **Known blockers:** shadow and sky functions are large (several hundred bytes on average), so this workstream
-  carries the most bytes; if it falls behind, split the shadow group into a fifth slot. Image-space functions depend on
-  A's render-target helpers (`GetImageSpaceRenderTarget_*` has 11 callers waiting).
-- **Feeds Mudcrab:** the deferred L2 and L4 stages: sun shadows and interior shadow-light admission
-  (`findings/sun-shadows-retail-facts.md`), exterior fog and haze, sky, sun and ambient over the day, the HDR and
+- **Entry points** include image-space managers and parameters, `Sky` and weather helpers, and `TESWater*`.
+- **Known blockers** include A's render-target helpers, which image-space functions depend on.
+- **Feeds Mudcrab** with findings on exterior fog and haze, sky and ambient light over the day, the HDR and
   image-space chain, water displacement and reflections.
+
+### E. Shadows
+
+- **Entry points** include ready methods on the shadow lights and `ShadowSceneNode`. The generated inventory
+  lists them in size order.
+- **Known blockers** include larger passes that depend on the light, shadow-map and culling setup.
+- **Feeds Mudcrab** with findings on sun shadows and interior shadow-light admission.
+  [Sun shadows retail facts](../../findings/sun-shadows-retail-facts.md)
 
 ## Avoiding collisions
 
@@ -141,18 +145,19 @@ read from the repository's data, never typed in: refresh the block, do not edit 
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The committed ready list holds 5000 of 17734 ready functions and is filtered against `data/progress.json`; functions under 60 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 60 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| A: Foundation | 402 | 147 | 36.6% | 14 | 12 | 6 | 223 | 63392 |
-| B: Shaders and materials | 445 | 222 | 49.9% | 20 | 3 | 3 | 197 | 64878 |
-| C: Batching, passes, camera, culling | 327 | 83 | 25.4% | 7 | 12 | 2 | 223 | 80531 |
-| D: Shadows, image space, sky, water system | 828 | 557 | 67.3% | 20 | 4 | 2 | 245 | 124404 |
-| **Total A-D** | 2002 | 1009 | 50.4% | 61 | 31 | 13 | 888 | 333205 |
-| Adjacent, not assigned | 952 | 373 | 39.2% | 91 | 22 | 2 | 464 | 149140 |
+| A: Foundation | 413 | 169 | 40.9% | 9 | 53 | 182 | 0 | 62946 |
+| B: Shaders and materials | 454 | 236 | 52.0% | 19 | 35 | 164 | 0 | 64624 |
+| C: Batching, passes, camera, culling | 331 | 97 | 29.3% | 8 | 56 | 170 | 0 | 79842 |
+| D: Image space, sky, water system | 724 | 542 | 74.9% | 8 | 37 | 137 | 0 | 81779 |
+| E: Shadows | 113 | 26 | 23.0% | 9 | 10 | 68 | 0 | 43408 |
+| **Total A-E** | 2035 | 1070 | 52.6% | 53 | 191 | 721 | 0 | 332599 |
+| Adjacent, not assigned | 991 | 449 | 45.3% | 59 | 120 | 363 | 0 | 148859 |
 
-Known = functions with a public name in the CrashLogger tables or `data/progress.json` (a lower bound). Ready = every callee matched and the function is in the committed list. Waiting = proven blocked (a give-up record, or under 16 bytes and absent from the complete part of the list). Unlisted = not matched, not claimed, not in the capped list: ready or waiting, unknown here. Open bytes = the sizes of the Ready, Waiting and Unlisted functions together.
+Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
 ### Workstream A: Foundation
 
@@ -160,60 +165,57 @@ Scope: BSGraphics state, render targets, buffers, textures and resources, render
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| A1 BSGraphics renderer and state | 57 | 0 | 4 | 8 | 4 | 41 | ready list capped; readiness unknown (41) | - |
-| A2 Render targets, buffers and depth-stencil | 10 | 1 | 1 | 2 | 0 | 6 | ready list capped; readiness unknown (6) | unmapped |
-| A3 Shader manager, shader resources and textures | 64 | 39 | 1 | 2 | 2 | 20 | ready list capped; readiness unknown (20) | bsshader |
-| A4 Lights | 78 | 29 | 7 | 0 | 0 | 42 | ready list capped; readiness unknown (42) | gamebryo |
-| A5 Render geometry (shapes, skin instances) | 193 | 78 | 1 | 0 | 0 | 114 | ready list capped; readiness unknown (114) | gamebryo |
+| A1 BSGraphics renderer and state | 61 | 5 | 3 | 17 | 36 | 0 | absent from the ready queue (35) | bsshader |
+| A2 Render targets, buffers and depth-stencil | 9 | 3 | 0 | 3 | 3 | 0 | absent from the ready queue (3) | bsshader |
+| A3 Shader manager, shader resources and textures | 64 | 39 | 2 | 5 | 18 | 0 | absent from the ready queue (18) | bsshader |
+| A4 Lights | 78 | 33 | 3 | 12 | 30 | 0 | absent from the ready queue (30) | gamebryo |
+| A5 Render geometry (shapes, skin instances) | 201 | 89 | 1 | 16 | 95 | 0 | absent from the ready queue (95) | gamebryo |
 
 <details><summary>Classes of workstream A with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSGraphics::Renderer | A1 | 51 | 0 | 3 | 6 | 4 | 38 | 0 |
-| BSGraphics::State | A1 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
+| BSGraphics::Renderer | A1 | 55 | 5 | 2 | 15 | 33 | 0 | 0 |
+| BSGraphics::State | A1 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
 | BSGraphics | A1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
 | BSGraphics::Utility | A1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | RendererShadowState | A1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| BSGraphics::RenderTargetManager | A2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSShaderRenderTargets | A2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| CreateIndexBuffer | A2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| GetID3D11Resource | A2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
+| BSGraphics::RenderTargetManager | A2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSShaderRenderTargets | A2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| CreateIndexBuffer | A2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | GetImageSpaceRenderTarget_TAAMASK_SSRMASK_SWAP | A2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| PollOcclusionQuery | A2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| RenderTargetManager | A2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| PollOcclusionQuery | A2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | SetPSTextureFilterMode | A2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| UpdateOrAssignShadowCSTexture | A2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| NiSourceTexture | A3 | 11 | 5 | 0 | 0 | 0 | 6 | 32 |
-| NiTexture | A3 | 10 | 5 | 0 | 1 | 0 | 4 | 56 |
-| BSScaleformExternalTexture | A3 | 5 | 0 | 0 | 0 | 1 | 4 | 0 |
-| BSShaderManager | A3 | 5 | 0 | 1 | 1 | 0 | 3 | 0 |
-| BSTextureDB__QueuedHandles__dtor | A3 | 2 | 0 | 0 | 0 | 1 | 1 | 0 |
-| BSTextureDB__anonymous_namespace__NiTextureDBForwarded | A3 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| CreateSourceTexture | A3 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSLight | A4 | 20 | 5 | 0 | 0 | 0 | 15 | 105 |
-| NiPointLight | A4 | 15 | 8 | 1 | 0 | 0 | 6 | 17 |
-| NiLight | A4 | 9 | 5 | 0 | 0 | 0 | 4 | 19 |
-| NiLightColorController | A4 | 8 | 0 | 0 | 0 | 0 | 8 | 0 |
-| NiSpotLight | A4 | 8 | 1 | 4 | 0 | 0 | 3 | 0 |
-| NiLightDimmerController | A4 | 7 | 4 | 1 | 0 | 0 | 2 | 12 |
-| NiDirectionalLight | A4 | 6 | 4 | 0 | 0 | 0 | 2 | 13 |
-| NiAmbientLight | A4 | 4 | 2 | 1 | 0 | 0 | 1 | 0 |
-| CalculateActiveNonShadowCasterLights | A4 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| NiGeometry | A5 | 28 | 20 | 0 | 0 | 0 | 8 | 48 |
-| BSGeometry | A5 | 25 | 13 | 0 | 0 | 0 | 12 | 52 |
-| BSDynamicTriShape | A5 | 20 | 8 | 0 | 0 | 0 | 12 | 24 |
-| NiSkinInstance | A5 | 18 | 10 | 0 | 0 | 0 | 8 | 31 |
-| BSTriShape | A5 | 17 | 6 | 0 | 0 | 0 | 11 | 13 |
-| NiSkinPartition | A5 | 14 | 3 | 0 | 0 | 0 | 11 | 0 |
-| NiGeometryData | A5 | 13 | 7 | 0 | 0 | 0 | 6 | 84 |
-| BSMeshLODTriShape | A5 | 11 | 1 | 0 | 0 | 0 | 10 | 0 |
-| BSSubIndexTriShape | A5 | 11 | 3 | 0 | 0 | 0 | 8 | 21 |
-| BSLODTriShape | A5 | 10 | 0 | 0 | 0 | 0 | 10 | 0 |
-| BSMultiIndexTriShape | A5 | 8 | 4 | 0 | 0 | 0 | 4 | 23 |
-| NiSkinData | A5 | 7 | 2 | 0 | 0 | 0 | 5 | 0 |
-| NiAdditionalGeometryData | A5 | 6 | 0 | 1 | 0 | 0 | 5 | 0 |
-| BSLODMultiIndexTriShape | A5 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
+| NiSourceTexture | A3 | 11 | 5 | 0 | 2 | 4 | 0 | 32 |
+| NiTexture | A3 | 10 | 5 | 0 | 2 | 3 | 0 | 56 |
+| BSScaleformExternalTexture | A3 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
+| BSShaderManager | A3 | 5 | 0 | 2 | 1 | 2 | 0 | 0 |
+| BSTextureDB__QueuedHandles__dtor | A3 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
+| BSTextureDB__anonymous_namespace__NiTextureDBForwarded | A3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| CreateSourceTexture | A3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSLight | A4 | 20 | 5 | 0 | 5 | 10 | 0 | 105 |
+| NiPointLight | A4 | 15 | 8 | 1 | 0 | 6 | 0 | 17 |
+| NiLight | A4 | 9 | 5 | 0 | 0 | 4 | 0 | 19 |
+| NiLightColorController | A4 | 8 | 0 | 0 | 6 | 2 | 0 | 0 |
+| NiSpotLight | A4 | 8 | 5 | 0 | 0 | 3 | 0 | 0 |
+| NiLightDimmerController | A4 | 7 | 4 | 1 | 1 | 1 | 0 | 12 |
+| NiDirectionalLight | A4 | 6 | 4 | 0 | 0 | 2 | 0 | 13 |
+| NiAmbientLight | A4 | 4 | 2 | 1 | 0 | 1 | 0 | 0 |
+| CalculateActiveNonShadowCasterLights | A4 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| NiGeometry | A5 | 28 | 20 | 0 | 0 | 8 | 0 | 48 |
+| BSGeometry | A5 | 26 | 14 | 0 | 1 | 11 | 0 | 52 |
+| BSDynamicTriShape | A5 | 21 | 9 | 0 | 0 | 12 | 0 | 24 |
+| NiSkinInstance | A5 | 18 | 10 | 0 | 0 | 8 | 0 | 31 |
+| BSTriShape | A5 | 17 | 6 | 0 | 2 | 9 | 0 | 13 |
+| NiSkinPartition | A5 | 16 | 5 | 0 | 3 | 8 | 0 | 0 |
+| BSLODTriShape | A5 | 13 | 4 | 0 | 5 | 4 | 0 | 0 |
+| NiGeometryData | A5 | 13 | 7 | 0 | 1 | 5 | 0 | 84 |
+| BSMeshLODTriShape | A5 | 11 | 1 | 0 | 2 | 8 | 0 | 0 |
+| BSSubIndexTriShape | A5 | 11 | 5 | 0 | 0 | 6 | 0 | 21 |
+| BSMultiIndexTriShape | A5 | 9 | 5 | 0 | 0 | 4 | 0 | 23 |
+| NiSkinData | A5 | 7 | 2 | 0 | 0 | 5 | 0 | 0 |
+| NiAdditionalGeometryData | A5 | 6 | 0 | 1 | 1 | 4 | 0 | 0 |
+| BSLODMultiIndexTriShape | A5 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 
 </details>
 
@@ -223,63 +225,62 @@ Scope: shader classes, shader properties, materials, sky and water shaders.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| B1 Shader classes (lighting, effect, grass, tree, blood, particle, utility) | 52 | 12 | 7 | 2 | 1 | 30 | ready list capped; readiness unknown (30) | bsshader |
-| B2 Shader properties and their controllers | 190 | 91 | 4 | 1 | 1 | 93 | ready list capped; readiness unknown (93) | bsshader |
-| B3 Shader materials and texture sets | 155 | 99 | 7 | 0 | 1 | 48 | ready list capped; readiness unknown (48) | bsshader |
-| B4 Sky and water shaders, properties and materials | 48 | 20 | 2 | 0 | 0 | 26 | ready list capped; readiness unknown (26) | bsshader |
+| B1 Shader classes (lighting, effect, grass, tree, blood, particle, utility) | 53 | 14 | 7 | 5 | 27 | 0 | absent from the ready queue (27) | bsshader |
+| B2 Shader properties and their controllers | 190 | 93 | 4 | 15 | 78 | 0 | absent from the ready queue (78) | bsshader |
+| B3 Shader materials and texture sets | 162 | 108 | 6 | 11 | 37 | 0 | absent from the ready queue (36) | bsshader |
+| B4 Sky and water shaders, properties and materials | 49 | 21 | 2 | 4 | 22 | 0 | absent from the ready queue (22) | bsshader |
 
 <details><summary>Classes of workstream B with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSLightingShader | B1 | 10 | 4 | 0 | 0 | 0 | 6 | 70 |
-| BSEffectShader | B1 | 7 | 1 | 2 | 0 | 0 | 4 | 26 |
-| BSUtilityShader | B1 | 7 | 2 | 2 | 0 | 0 | 3 | 25 |
-| BSGrassShader | B1 | 6 | 1 | 1 | 0 | 0 | 4 | 24 |
-| BSDistantTreeShader | B1 | 5 | 1 | 1 | 0 | 0 | 3 | 34 |
-| BSParticleShader | B1 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
-| BSShader | B1 | 4 | 0 | 1 | 0 | 1 | 2 | 0 |
-| BSComputeShader | B1 | 3 | 1 | 0 | 0 | 0 | 2 | 5 |
-| BSBloodSplatterShader | B1 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
+| BSLightingShader | B1 | 12 | 6 | 0 | 1 | 5 | 0 | 70 |
+| BSEffectShader | B1 | 7 | 1 | 2 | 1 | 3 | 0 | 26 |
+| BSUtilityShader | B1 | 7 | 2 | 2 | 1 | 2 | 0 | 25 |
+| BSGrassShader | B1 | 6 | 1 | 1 | 0 | 4 | 0 | 24 |
+| BSDistantTreeShader | B1 | 5 | 1 | 1 | 0 | 3 | 0 | 34 |
+| BSParticleShader | B1 | 5 | 1 | 0 | 0 | 4 | 0 | 0 |
+| BSShader | B1 | 4 | 0 | 1 | 1 | 2 | 0 | 0 |
+| BSComputeShader | B1 | 3 | 1 | 0 | 0 | 2 | 0 | 5 |
+| BSBloodSplatterShader | B1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | BSParticleShaderMacros | B1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| ClearBSShaders | B1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| GetLightingShaderDefines | B1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSEffectShaderProperty | B2 | 57 | 13 | 0 | 0 | 0 | 44 | 55 |
-| BSLightingShaderProperty | B2 | 24 | 11 | 2 | 0 | 1 | 10 | 97 |
-| BSShaderProperty | B2 | 17 | 11 | 0 | 0 | 0 | 6 | 83 |
-| BSDistantTreeShaderProperty | B2 | 12 | 6 | 1 | 0 | 0 | 5 | 18 |
-| BSBloodSplatterShaderProperty | B2 | 11 | 7 | 0 | 0 | 0 | 4 | 11 |
-| BSEffectShaderPropertyColorController | B2 | 11 | 8 | 0 | 0 | 0 | 3 | 18 |
-| BSEffectShaderPropertyFloatController | B2 | 11 | 7 | 0 | 0 | 0 | 4 | 18 |
-| BSLightingShaderPropertyColorController | B2 | 11 | 8 | 0 | 0 | 0 | 3 | 18 |
-| BSGrassShaderProperty | B2 | 10 | 5 | 0 | 0 | 0 | 5 | 23 |
-| BSLightingShaderPropertyFloatController | B2 | 10 | 7 | 0 | 0 | 0 | 3 | 18 |
-| BSLightingShaderPropertyUShortController | B2 | 10 | 8 | 0 | 0 | 0 | 2 | 18 |
-| BSShaderPropertyLightData | B2 | 5 | 0 | 0 | 1 | 0 | 4 | 0 |
+| GetLightingShaderDefines | B1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSEffectShaderProperty | B2 | 57 | 13 | 0 | 6 | 38 | 0 | 55 |
+| BSLightingShaderProperty | B2 | 24 | 11 | 2 | 2 | 9 | 0 | 97 |
+| BSShaderProperty | B2 | 17 | 11 | 0 | 0 | 6 | 0 | 83 |
+| BSDistantTreeShaderProperty | B2 | 12 | 7 | 1 | 0 | 4 | 0 | 18 |
+| BSBloodSplatterShaderProperty | B2 | 11 | 7 | 0 | 0 | 4 | 0 | 11 |
+| BSEffectShaderPropertyColorController | B2 | 11 | 8 | 0 | 1 | 2 | 0 | 18 |
+| BSEffectShaderPropertyFloatController | B2 | 11 | 7 | 0 | 2 | 2 | 0 | 18 |
+| BSLightingShaderPropertyColorController | B2 | 11 | 8 | 0 | 1 | 2 | 0 | 18 |
+| BSGrassShaderProperty | B2 | 10 | 5 | 0 | 1 | 4 | 0 | 23 |
+| BSLightingShaderPropertyFloatController | B2 | 10 | 7 | 0 | 1 | 2 | 0 | 18 |
+| BSLightingShaderPropertyUShortController | B2 | 10 | 8 | 0 | 0 | 2 | 0 | 18 |
+| BSShaderPropertyLightData | B2 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 | OnLoadTextureSet | B2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
-| BSLightingShaderMaterialMultiLayerParallax | B3 | 13 | 8 | 2 | 0 | 0 | 3 | 9 |
-| BSLightingShaderMaterialBase | B3 | 12 | 9 | 1 | 0 | 0 | 2 | 0 |
-| BSLightingShaderMaterialEnvmap | B3 | 12 | 10 | 0 | 0 | 0 | 2 | 9 |
-| BSLightingShaderMaterialEye | B3 | 11 | 9 | 0 | 0 | 0 | 2 | 8 |
-| BSLightingShaderMaterialSnow | B3 | 11 | 10 | 0 | 0 | 0 | 1 | 0 |
-| BSLightingShaderMaterialLandscape | B3 | 10 | 5 | 0 | 0 | 0 | 5 | 0 |
-| BSLightingShaderMaterialFacegenTint | B3 | 9 | 7 | 0 | 0 | 0 | 2 | 3 |
-| BSShaderMaterial | B3 | 9 | 7 | 1 | 0 | 0 | 1 | 12 |
-| BSEffectShaderMaterial | B3 | 8 | 3 | 0 | 0 | 0 | 5 | 13 |
-| BSLightingShaderMaterialFacegen | B3 | 8 | 2 | 1 | 0 | 0 | 5 | 0 |
-| BSLightingShaderMaterialHairTint | B3 | 8 | 6 | 0 | 0 | 1 | 1 | 5 |
-| BSLightingShaderMaterialLODLandscape | B3 | 8 | 5 | 0 | 0 | 0 | 3 | 10 |
-| BSLightingShaderMaterialParallaxOcc | B3 | 8 | 3 | 0 | 0 | 0 | 5 | 14 |
-| BSShaderTextureSet | B3 | 8 | 6 | 0 | 0 | 0 | 2 | 12 |
-| BSLightingShaderMaterialParallax | B3 | 7 | 4 | 1 | 0 | 0 | 2 | 9 |
-| BSTextureSet | B3 | 5 | 2 | 1 | 0 | 0 | 2 | 0 |
-| BSLightingShaderMaterial | B3 | 4 | 2 | 0 | 0 | 0 | 2 | 0 |
-| BSLightingShaderMaterialGlowmap | B3 | 4 | 1 | 0 | 0 | 0 | 3 | 0 |
-| BSWaterShaderProperty | B4 | 14 | 8 | 1 | 0 | 0 | 5 | 24 |
-| BSWaterShaderMaterial | B4 | 13 | 6 | 0 | 0 | 0 | 7 | 9 |
-| BSSkyShaderProperty | B4 | 11 | 4 | 0 | 0 | 0 | 7 | 24 |
-| BSWaterShader | B4 | 7 | 1 | 1 | 0 | 0 | 5 | 39 |
-| BSSkyShader | B4 | 3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| BSLightingShaderMaterialBase | B3 | 13 | 10 | 1 | 1 | 1 | 0 | 0 |
+| BSLightingShaderMaterialMultiLayerParallax | B3 | 13 | 8 | 2 | 1 | 2 | 0 | 9 |
+| BSLightingShaderMaterialEnvmap | B3 | 12 | 10 | 0 | 0 | 2 | 0 | 9 |
+| BSLightingShaderMaterialEye | B3 | 11 | 9 | 0 | 1 | 1 | 0 | 8 |
+| BSLightingShaderMaterialSnow | B3 | 11 | 10 | 0 | 0 | 1 | 0 | 0 |
+| BSLightingShaderMaterialLandscape | B3 | 10 | 5 | 0 | 2 | 3 | 0 | 0 |
+| BSLightingShaderMaterialFacegen | B3 | 9 | 4 | 0 | 1 | 4 | 0 | 0 |
+| BSLightingShaderMaterialFacegenTint | B3 | 9 | 7 | 0 | 0 | 2 | 0 | 3 |
+| BSLightingShaderMaterialParallaxOcc | B3 | 9 | 4 | 0 | 2 | 3 | 0 | 14 |
+| BSShaderMaterial | B3 | 9 | 7 | 1 | 0 | 1 | 0 | 12 |
+| BSEffectShaderMaterial | B3 | 8 | 3 | 0 | 1 | 4 | 0 | 13 |
+| BSLightingShaderMaterialHairTint | B3 | 8 | 6 | 0 | 0 | 2 | 0 | 5 |
+| BSLightingShaderMaterialLODLandscape | B3 | 8 | 5 | 0 | 1 | 2 | 0 | 10 |
+| BSLightingShaderMaterialParallax | B3 | 8 | 5 | 1 | 1 | 1 | 0 | 9 |
+| BSShaderTextureSet | B3 | 8 | 6 | 0 | 0 | 2 | 0 | 12 |
+| BSLightingShaderMaterialGlowmap | B3 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
+| BSTextureSet | B3 | 5 | 2 | 1 | 0 | 2 | 0 | 0 |
+| BSLightingShaderMaterial | B3 | 4 | 2 | 0 | 0 | 2 | 0 | 0 |
+| BSWaterShaderMaterial | B4 | 14 | 7 | 0 | 4 | 3 | 0 | 9 |
+| BSWaterShaderProperty | B4 | 14 | 8 | 1 | 0 | 5 | 0 | 24 |
+| BSSkyShaderProperty | B4 | 11 | 4 | 0 | 0 | 7 | 0 | 24 |
+| BSWaterShader | B4 | 7 | 1 | 1 | 0 | 5 | 0 | 39 |
+| BSSkyShader | B4 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 
 </details>
 
@@ -289,146 +290,158 @@ Scope: render passes, batch renderer, accumulators, camera, frustum, culling, po
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| C1 Render passes, batch renderer, accumulators | 122 | 33 | 4 | 6 | 0 | 79 | ready list capped; readiness unknown (79) | bsshader |
-| C2 Camera, frustum, culling, occlusion and portals | 205 | 50 | 3 | 6 | 2 | 144 | ready list capped; readiness unknown (144) | gamebryo |
+| C1 Render passes, batch renderer, accumulators | 125 | 41 | 5 | 13 | 66 | 0 | absent from the ready queue (66) | bsshader |
+| C2 Camera, frustum, culling, occlusion and portals | 206 | 56 | 3 | 43 | 104 | 0 | absent from the ready queue (104) | gamebryo |
 
 <details><summary>Classes of workstream C with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSShaderAccumulator | C1 | 47 | 17 | 2 | 0 | 0 | 28 | 145 |
-| BSBatchRenderer | C1 | 26 | 0 | 0 | 4 | 0 | 22 | 0 |
-| NiAlphaAccumulator | C1 | 10 | 8 | 0 | 0 | 0 | 2 | 12 |
-| BSShaderProperty::RenderPassArray | C1 | 7 | 3 | 0 | 0 | 0 | 4 | 0 |
-| BSRenderPass | C1 | 6 | 0 | 2 | 1 | 0 | 3 | 0 |
+| BSShaderAccumulator | C1 | 48 | 18 | 2 | 1 | 27 | 0 | 145 |
+| BSBatchRenderer | C1 | 28 | 4 | 0 | 4 | 20 | 0 | 0 |
+| NiAlphaAccumulator | C1 | 10 | 8 | 0 | 0 | 2 | 0 | 12 |
+| BSShaderProperty::RenderPassArray | C1 | 7 | 3 | 0 | 1 | 3 | 0 | 0 |
+| BSRenderPass | C1 | 6 | 0 | 3 | 1 | 2 | 0 | 0 |
 | NiAccumulator | C1 | 5 | 4 | 0 | 1 | 0 | 0 | 0 |
-| NiBackToFrontAccumulator | C1 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
-| AccumulateNodeChildren | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| AccumulateSceneGraphNode | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| AppendRoomToAccumList | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSAccumProcess | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSBatchRenderer::GeometryGroup | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSRenderPassCache | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| CullJob_AccumulateAndFlush | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| CullJob_SetupDeferredAppend | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| DrainRenderPassDeferredFreeQueue | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| FinishAccumulatingMode20_LodLandscapePass | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| FinishAccumulatingMode25_VolumetricOrOcclusion | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| FinishAccumulatingMode28_PrecipitationOcclusionMap | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| FirstListAccumulationJob | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| ListAccumulationJob | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| RenderPassImmediately_Custom | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| RenderPassImmediately_Standard | C1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSCompoundFrustum | C2 | 29 | 2 | 0 | 0 | 1 | 26 | 0 |
-| NiCamera | C2 | 28 | 6 | 1 | 1 | 1 | 19 | 36 |
-| BSCullingProcess | C2 | 25 | 2 | 0 | 1 | 0 | 22 | 0 |
-| BSOcclusionPlane | C2 | 17 | 7 | 0 | 0 | 0 | 10 | 30 |
-| BSOcclusionBox | C2 | 15 | 7 | 0 | 0 | 0 | 8 | 19 |
-| BSPortalGraph | C2 | 15 | 5 | 0 | 0 | 0 | 10 | 0 |
-| BSParabolicCullingProcess | C2 | 12 | 1 | 0 | 1 | 0 | 10 | 0 |
-| BSPortalGraphEntry | C2 | 12 | 4 | 0 | 2 | 0 | 6 | 19 |
-| BSCubeMapCamera | C2 | 7 | 2 | 0 | 0 | 0 | 5 | 11 |
-| BSGeometryListCullingProcess | C2 | 6 | 2 | 0 | 0 | 0 | 4 | 0 |
+| NiBackToFrontAccumulator | C1 | 5 | 1 | 0 | 2 | 2 | 0 | 0 |
+| AccumulateNodeChildren | C1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| AccumulateSceneGraphNode | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| AppendRoomToAccumList | C1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| BSAccumProcess | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSBatchRenderer::GeometryGroup | C1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| BSRenderPassCache | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| CullJob_AccumulateAndFlush | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| CullJob_SetupDeferredAppend | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| DrainRenderPassDeferredFreeQueue | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| FinishAccumulatingMode25_VolumetricOrOcclusion | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| FirstListAccumulationJob | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| RenderPassImmediately_Custom | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| RenderPassImmediately_Standard | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSCompoundFrustum | C2 | 29 | 2 | 0 | 11 | 16 | 0 | 0 |
+| NiCamera | C2 | 28 | 6 | 1 | 3 | 18 | 0 | 36 |
+| BSCullingProcess | C2 | 25 | 2 | 0 | 10 | 13 | 0 | 0 |
+| BSOcclusionPlane | C2 | 17 | 7 | 0 | 1 | 9 | 0 | 30 |
+| BSOcclusionBox | C2 | 15 | 8 | 0 | 1 | 6 | 0 | 19 |
+| BSPortalGraph | C2 | 15 | 5 | 0 | 4 | 6 | 0 | 0 |
+| BSParabolicCullingProcess | C2 | 12 | 2 | 0 | 3 | 7 | 0 | 0 |
+| BSPortalGraphEntry | C2 | 12 | 6 | 0 | 3 | 3 | 0 | 19 |
+| BSCubeMapCamera | C2 | 7 | 2 | 0 | 0 | 5 | 0 | 11 |
+| BSGeometryListCullingProcess | C2 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
 | BSOcclusionShape | C2 | 5 | 4 | 0 | 1 | 0 | 0 | 0 |
-| BSPortalSharedNode | C2 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
-| BSFrustumFOVController | C2 | 4 | 1 | 1 | 0 | 0 | 2 | 0 |
-| BSPortal | C2 | 4 | 1 | 0 | 0 | 0 | 3 | 0 |
-| HighActorCuller | C2 | 4 | 1 | 0 | 0 | 0 | 3 | 3 |
-| NiCullingProcess | C2 | 4 | 1 | 0 | 0 | 0 | 3 | 0 |
-| BSFadeNodeCuller | C2 | 3 | 2 | 0 | 0 | 0 | 1 | 3 |
-| NiFrustumPlanes | C2 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
-| SubmitCullResultsJob | C2 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
+| BSPortalSharedNode | C2 | 5 | 1 | 0 | 0 | 4 | 0 | 0 |
+| BSFrustumFOVController | C2 | 4 | 1 | 1 | 0 | 2 | 0 | 0 |
+| BSPortal | C2 | 4 | 1 | 0 | 1 | 2 | 0 | 0 |
+| HighActorCuller | C2 | 4 | 1 | 0 | 1 | 2 | 0 | 3 |
+| NiCullingProcess | C2 | 4 | 1 | 0 | 2 | 1 | 0 | 0 |
+| NiFrustumPlanes | C2 | 2 | 0 | 0 | 1 | 1 | 0 | 0 |
+| SubmitCullResultsJob | C2 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
 | NiFrustum | C2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
-| PointInFrustum | C2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| PruneFrustumPlanes | C2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| SetupCullingJobManager | C2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| SetupCullingJobManager2 | C2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
+| PointInFrustum | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| PruneFrustumPlanes | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| SetupCullingJobManager | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| SetupCullingJobManager2 | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 
 </details>
 
-### Workstream D: Shadows, image space, sky, water system
+### Workstream D: Image space, sky, water system
 
-Scope: shadows, image space, sky, weather, fog, water.
+Scope: image space, sky, weather, fog, water.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| D1 Shadow lights and shadow scene node | 109 | 25 | 9 | 0 | 0 | 75 | ready list capped; readiness unknown (75) | bsshader |
-| D2 Image space: manager, effects and image-space shaders | 611 | 498 | 6 | 4 | 2 | 101 | ready list capped; readiness unknown (101) | bsshader |
-| D3 Sky, sun, clouds, weather and fog | 69 | 18 | 4 | 0 | 0 | 47 | ready list capped; readiness unknown (47) | skyrim_shared |
-| D4 Water system, displacement and reflections | 39 | 16 | 1 | 0 | 0 | 22 | ready list capped; readiness unknown (22) | skyrim_shared |
+| D2 Image space: manager, effects and image-space shaders | 614 | 504 | 5 | 21 | 84 | 0 | absent from the ready queue (84) | bsshader |
+| D3 Sky, sun, clouds, weather and fog | 71 | 21 | 3 | 8 | 39 | 0 | absent from the ready queue (39) | skyrim_shared |
+| D4 Water system, displacement and reflections | 39 | 17 | 0 | 8 | 14 | 0 | absent from the ready queue (14) | skyrim_shared |
 
 <details><summary>Classes of workstream D with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| ShadowSceneNode | D1 | 43 | 1 | 6 | 0 | 0 | 36 | 120 |
-| BSShadowLight | D1 | 18 | 10 | 0 | 0 | 0 | 8 | 55 |
-| BSShadowDirectionalLight | D1 | 17 | 6 | 1 | 0 | 0 | 10 | 10 |
-| BSShadowParabolicLight | D1 | 12 | 6 | 1 | 0 | 0 | 5 | 9 |
-| BSShadowFrustumLight | D1 | 7 | 2 | 1 | 0 | 0 | 4 | 10 |
-| BSTArray_ShadowmapDescriptor_ | D1 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| BSShadowParabolicLight_RenderImpl | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| CalculateActiveShadowCasterLights | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| CalculateAndDrawShadowCasterLights | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| ProcessAllQueuedLights | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| RenderActiveShadowCasterLights | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| RenderVolumetricLightingShadowMaps | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| ResetCalculatedShadowCasterLights | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| ShadowSceneNode_SetShadowCasterLightArrayEntry | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| ShadowmapDescriptor | D1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| BSImagespaceShader | D2 | 19 | 15 | 1 | 0 | 1 | 2 | 29 |
-| TESImageSpaceModifier | D2 | 13 | 3 | 0 | 1 | 0 | 9 | 0 |
-| ImageSpaceEffect | D2 | 7 | 1 | 0 | 0 | 0 | 6 | 0 |
-| ImageSpaceEffectNoise | D2 | 7 | 0 | 0 | 0 | 0 | 7 | 0 |
-| ImageSpaceModifierInstanceForm | D2 | 7 | 1 | 0 | 0 | 1 | 5 | 19 |
-| BSImagespaceShaderCopyCustomViewport | D2 | 6 | 4 | 0 | 0 | 0 | 2 | 0 |
-| BSImagespaceShaderWaterFlow | D2 | 6 | 4 | 0 | 0 | 0 | 2 | 0 |
-| ImageSpaceEffectGetHit | D2 | 6 | 0 | 0 | 0 | 0 | 6 | 0 |
-| TESImagespaceManager | D2 | 6 | 0 | 0 | 1 | 0 | 5 | 0 |
-| BSImagespaceShaderISBlur | D2 | 5 | 4 | 0 | 0 | 0 | 1 | 0 |
-| ImageSpaceEffectDepthOfField | D2 | 5 | 0 | 0 | 0 | 0 | 5 | 0 |
-| ImageSpaceEffectFullScreenBlur | D2 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
-| ImageSpaceEffectRefraction | D2 | 5 | 0 | 0 | 0 | 0 | 5 | 0 |
-| ImageSpaceShaderParam | D2 | 5 | 0 | 1 | 0 | 0 | 4 | 0 |
-| TESImageSpace | D2 | 5 | 1 | 1 | 0 | 0 | 3 | 0 |
-| TESImageSpaceModifiableForm | D2 | 5 | 4 | 0 | 1 | 0 | 0 | 0 |
-| BSImagespaceShaderFXAA | D2 | 4 | 3 | 0 | 0 | 0 | 1 | 2 |
+| BSImagespaceShader | D2 | 19 | 15 | 1 | 0 | 3 | 0 | 29 |
+| TESImageSpaceModifier | D2 | 13 | 3 | 0 | 3 | 7 | 0 | 0 |
+| ImageSpaceEffect | D2 | 7 | 1 | 0 | 1 | 5 | 0 | 0 |
+| ImageSpaceEffectNoise | D2 | 7 | 0 | 0 | 2 | 5 | 0 | 0 |
+| ImageSpaceModifierInstanceForm | D2 | 7 | 1 | 0 | 2 | 4 | 0 | 19 |
+| BSImagespaceShaderCopyCustomViewport | D2 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
+| BSImagespaceShaderWaterFlow | D2 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
+| ImageSpaceEffectGetHit | D2 | 6 | 1 | 0 | 0 | 5 | 0 | 0 |
+| TESImagespaceManager | D2 | 6 | 0 | 0 | 2 | 4 | 0 | 0 |
+| BSImagespaceShaderISBlur | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectDepthOfField | D2 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
+| ImageSpaceEffectFullScreenBlur | D2 | 5 | 1 | 0 | 0 | 4 | 0 | 0 |
+| ImageSpaceEffectRefraction | D2 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
+| ImageSpaceShaderParam | D2 | 5 | 0 | 1 | 2 | 2 | 0 | 0 |
+| TESImageSpace | D2 | 5 | 1 | 1 | 1 | 2 | 0 | 0 |
+| BSImagespaceShaderFXAA | D2 | 4 | 3 | 0 | 0 | 1 | 0 | 2 |
 | BSImagespaceShaderISLightingCompositeMenu | D2 | 4 | 3 | 1 | 0 | 0 | 0 | 0 |
-| BSImagespaceShaderLensFlareVisibility | D2 | 4 | 3 | 0 | 0 | 0 | 1 | 4 |
-| BSImagespaceShaderLensFlare | D2 | 3 | 2 | 0 | 0 | 0 | 1 | 0 |
-| ImageSpaceEffectBlur | D2 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| ImageSpaceEffectHDR | D2 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| ImageSpaceEffectMap | D2 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| ImageSpaceEffectVolumetricLighting | D2 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| ImageSpaceEffectWaterDisplacement | D2 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| ImageSpaceEffectWorldMap | D2 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| ImageSpaceManager | D2 | 3 | 0 | 1 | 0 | 0 | 2 | 0 |
-| ImageSpaceModifierInstance | D2 | 3 | 1 | 0 | 0 | 0 | 2 | 0 |
-| ImageSpaceModifierInstanceDOF | D2 | 3 | 1 | 1 | 0 | 0 | 1 | 0 |
-| ImageSpaceModifierInstanceTemp | D2 | 3 | 2 | 0 | 0 | 0 | 1 | 0 |
-| ImageSpaceEffectOption | D2 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
-| ImageSpaceEffectParam | D2 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
-| ImageSpaceEffectRadialBlur | D2 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
-| ImageSpaceModifierInstanceRB | D2 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
+| BSImagespaceShaderLensFlareVisibility | D2 | 4 | 3 | 0 | 0 | 1 | 0 | 4 |
+| BSImagespaceShaderLensFlare | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectBlur | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectHDR | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectMap | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectVolumetricLighting | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectWaterDisplacement | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectWorldMap | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceManager | D2 | 3 | 0 | 1 | 2 | 0 | 0 | 0 |
+| ImageSpaceModifierInstance | D2 | 3 | 1 | 0 | 2 | 0 | 0 | 0 |
+| ImageSpaceModifierInstanceDOF | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceModifierInstanceTemp | D2 | 3 | 2 | 0 | 1 | 0 | 0 | 0 |
+| ImageSpaceEffectOption | D2 | 2 | 0 | 0 | 1 | 1 | 0 | 0 |
+| ImageSpaceEffectParam | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectRadialBlur | D2 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
+| ImageSpaceModifierInstanceRB | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | GetVLTemporalAccumulationFactor | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| UpdateVolumetricLightingRenderData | D2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| VolumetricLightingDescriptor | D2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Sky | D3 | 31 | 7 | 3 | 0 | 0 | 21 | 145 |
-| BSFogProperty | D3 | 5 | 3 | 0 | 0 | 0 | 2 | 0 |
-| Precipitation | D3 | 5 | 0 | 0 | 0 | 0 | 5 | 0 |
-| Sun | D3 | 5 | 0 | 1 | 0 | 0 | 4 | 0 |
-| Atmosphere | D3 | 4 | 1 | 0 | 0 | 0 | 3 | 0 |
-| TESWeather | D3 | 4 | 0 | 0 | 0 | 0 | 4 | 0 |
-| Clouds | D3 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| Moon | D3 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
-| Stars | D3 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
-| Precipitation::OcclusionMapData | D3 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| SkyObject | D3 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| TESWaterForm | D4 | 15 | 9 | 0 | 0 | 0 | 6 | 134 |
-| TESWaterSystem | D4 | 15 | 7 | 1 | 0 | 0 | 7 | 0 |
-| TESWaterDisplacement | D4 | 4 | 0 | 0 | 0 | 0 | 4 | 0 |
-| TESWaterReflections | D4 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| TESWaterNormals | D4 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
+| UpdateVolumetricLightingRenderData | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| VolumetricLightingDescriptor | D2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Sky | D3 | 31 | 8 | 2 | 3 | 18 | 0 | 145 |
+| Sun | D3 | 6 | 1 | 1 | 3 | 1 | 0 | 0 |
+| BSFogProperty | D3 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
+| Precipitation | D3 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
+| TESWeather | D3 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
+| Atmosphere | D3 | 4 | 1 | 0 | 0 | 3 | 0 | 0 |
+| Clouds | D3 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| Moon | D3 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
+| Stars | D3 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
+| Precipitation::OcclusionMapData | D3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| SkyObject | D3 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| TESWaterForm | D4 | 15 | 9 | 0 | 3 | 3 | 0 | 134 |
+| TESWaterSystem | D4 | 15 | 8 | 0 | 2 | 5 | 0 | 0 |
+| TESWaterDisplacement | D4 | 4 | 0 | 0 | 2 | 2 | 0 | 0 |
+| TESWaterReflections | D4 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| TESWaterNormals | D4 | 2 | 0 | 0 | 1 | 1 | 0 | 0 |
+
+</details>
+
+### Workstream E: Shadows
+
+Scope: shadow lights, shadow scene node, shadow-map setup and shadow passes.
+
+| Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
+|---|---:|---:|---:|---:|---:|---:|---|---|
+| E1 Shadow lights, scene node, maps and passes | 113 | 26 | 9 | 10 | 68 | 0 | absent from the ready queue (68) | bsshader |
+
+<details><summary>Classes of workstream E with unmatched functions</summary>
+
+| Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| ShadowSceneNode | E1 | 44 | 2 | 6 | 4 | 32 | 0 | 120 |
+| BSShadowLight | E1 | 18 | 10 | 0 | 2 | 6 | 0 | 55 |
+| BSShadowDirectionalLight | E1 | 17 | 6 | 1 | 0 | 10 | 0 | 10 |
+| BSShadowParabolicLight | E1 | 12 | 6 | 1 | 0 | 5 | 0 | 9 |
+| BSShadowFrustumLight | E1 | 7 | 2 | 1 | 0 | 4 | 0 | 10 |
+| BSTArray_ShadowmapDescriptor_ | E1 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |
+| BSShadowParabolicLight_RenderImpl | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| CalculateActiveShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| CalculateAndDrawShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| DrawWorld_RenderShadowCasters | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| ProcessAllQueuedLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| RenderActiveShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| RenderShadowmasks | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| RenderVolumetricLightingShadowMaps | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| ResetCalculatedShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| ShadowSceneNode_SetShadowCasterLightArrayEntry | E1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| ShadowmapDescriptor | E1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| UpdateOrAssignShadowCSTexture | E1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 
 </details>
 
@@ -438,154 +451,154 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 531 | 200 | 66 | 2 | 0 | 263 | ready list capped; readiness unknown (263) | gamebryo |
-| X2 Scaleform UI renderer | 49 | 0 | 0 | 8 | 0 | 41 | ready list capped; readiness unknown (41) | - |
-| X3 Game cameras and camera states | 151 | 62 | 18 | 7 | 1 | 63 | ready list capped; readiness unknown (63) | skyrim |
-| X4 Render-related forms, decals, effects, grass and LOD | 221 | 111 | 7 | 5 | 1 | 97 | ready list capped; readiness unknown (97) | skyrim_shared |
+| X1 Particle systems and emitters | 562 | 264 | 35 | 75 | 188 | 0 | absent from the ready queue (188) | gamebryo |
+| X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
+| X3 Game cameras and camera states | 154 | 66 | 19 | 19 | 50 | 0 | absent from the ready queue (49) | skyrim |
+| X4 Render-related forms, decals, effects, grass and LOD | 226 | 119 | 5 | 10 | 92 | 0 | absent from the ready queue (92) | skyrim_shared |
 
 <details><summary>Classes of adjacent with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| NiPSysEmitterCtlr | X1 | 22 | 13 | 4 | 0 | 0 | 5 | 30 |
-| NiParticleSystem | X1 | 19 | 7 | 1 | 0 | 0 | 11 | 0 |
-| BSMasterParticleSystem | X1 | 16 | 7 | 0 | 0 | 0 | 9 | 0 |
-| NiPSysBombModifier | X1 | 15 | 8 | 3 | 0 | 0 | 4 | 0 |
-| NiPSysGravityModifier | X1 | 13 | 7 | 2 | 0 | 0 | 4 | 0 |
-| NiPSysMeshEmitter | X1 | 13 | 3 | 1 | 0 | 0 | 9 | 33 |
-| NiParticles | X1 | 13 | 6 | 1 | 0 | 0 | 6 | 24 |
-| NiPSysData | X1 | 12 | 0 | 1 | 0 | 0 | 11 | 22 |
-| NiPSysModifier | X1 | 11 | 8 | 3 | 0 | 0 | 0 | 14 |
-| NiPSysModifierCtlr | X1 | 11 | 8 | 1 | 0 | 0 | 2 | 0 |
-| BSPSysHavokUpdateModifier | X1 | 10 | 4 | 0 | 0 | 0 | 6 | 0 |
-| NiPSysBoundUpdateModifier | X1 | 10 | 1 | 3 | 0 | 0 | 6 | 16 |
-| BSPSysMultiTargetEmitterCtlr | X1 | 9 | 1 | 0 | 0 | 0 | 8 | 0 |
-| BSParticleSystemManager | X1 | 9 | 0 | 0 | 0 | 0 | 9 | 0 |
-| NiPSysMeshUpdateModifier | X1 | 9 | 1 | 5 | 0 | 0 | 3 | 0 |
-| NiPSysSpawnModifier | X1 | 9 | 2 | 4 | 0 | 0 | 3 | 0 |
-| BSPSysInheritVelocityModifier | X1 | 8 | 2 | 0 | 0 | 0 | 6 | 0 |
-| BSPSysRecycleBoundModifier | X1 | 8 | 0 | 2 | 0 | 0 | 6 | 0 |
-| NiPSysCollider | X1 | 8 | 0 | 2 | 1 | 0 | 5 | 0 |
-| BSPSysArrayEmitter | X1 | 7 | 3 | 0 | 0 | 0 | 4 | 23 |
-| NiPSysAgeDeathModifier | X1 | 7 | 2 | 1 | 0 | 0 | 4 | 0 |
-| NiPSysAirFieldModifier | X1 | 7 | 2 | 0 | 0 | 0 | 5 | 0 |
-| NiPSysBoxEmitter | X1 | 7 | 1 | 3 | 0 | 0 | 3 | 0 |
-| NiPSysColorModifier | X1 | 7 | 4 | 1 | 0 | 0 | 2 | 0 |
-| NiPSysDragModifier | X1 | 7 | 2 | 2 | 0 | 0 | 3 | 0 |
-| NiPSysFieldModifier | X1 | 7 | 2 | 3 | 0 | 0 | 2 | 0 |
-| NiPSysGrowFadeModifier | X1 | 7 | 1 | 1 | 0 | 0 | 5 | 0 |
-| NiPSysModifierBoolCtlr | X1 | 7 | 4 | 0 | 0 | 0 | 3 | 0 |
-| NiPSysModifierFloatCtlr | X1 | 7 | 3 | 1 | 0 | 0 | 3 | 0 |
-| NiPSysPlanarCollider | X1 | 7 | 0 | 0 | 0 | 0 | 7 | 0 |
-| NiPSysRotationModifier | X1 | 7 | 1 | 3 | 0 | 0 | 3 | 0 |
-| NiPSysSphereEmitter | X1 | 7 | 2 | 2 | 0 | 0 | 3 | 0 |
-| NiPSysVolumeEmitter | X1 | 7 | 4 | 2 | 0 | 0 | 1 | 0 |
-| BSPSysLODModifier | X1 | 6 | 2 | 0 | 0 | 0 | 4 | 0 |
-| BSPSysStripUpdateModifier | X1 | 6 | 3 | 0 | 0 | 0 | 3 | 0 |
-| BSPSysSubTexModifier | X1 | 6 | 1 | 1 | 0 | 0 | 4 | 0 |
-| NiPSysCylinderEmitter | X1 | 6 | 1 | 2 | 0 | 0 | 3 | 0 |
-| NiPSysDragFieldModifier | X1 | 6 | 1 | 2 | 0 | 0 | 3 | 0 |
-| NiPSysSphericalCollider | X1 | 6 | 0 | 0 | 0 | 0 | 6 | 0 |
-| NiPSysVortexFieldModifier | X1 | 6 | 3 | 1 | 0 | 0 | 2 | 0 |
-| NiParticleMeshesData | X1 | 6 | 0 | 0 | 0 | 0 | 6 | 0 |
-| BSPSysScaleModifier | X1 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
-| BSPSysSimpleColorModifier | X1 | 5 | 0 | 0 | 0 | 0 | 5 | 0 |
-| NiPSysEmitter | X1 | 5 | 1 | 1 | 0 | 0 | 3 | 0 |
-| NiPSysGravityFieldModifier | X1 | 5 | 2 | 1 | 0 | 0 | 2 | 0 |
-| NiPSysModifierActiveCtlr | X1 | 5 | 3 | 0 | 0 | 0 | 2 | 14 |
-| NiPSysUpdateCtlr | X1 | 5 | 1 | 0 | 0 | 0 | 4 | 0 |
-| NiParticlesData | X1 | 5 | 0 | 0 | 0 | 0 | 5 | 0 |
-| BGSShaderParticleGeometryData | X1 | 4 | 1 | 1 | 0 | 0 | 2 | 0 |
-| BSParticleShaderGeometry | X1 | 4 | 2 | 0 | 0 | 0 | 2 | 3 |
-| BSParticleShaderGeometryEmitter | X1 | 4 | 2 | 0 | 0 | 0 | 2 | 4 |
-| BSStripParticleSystem | X1 | 4 | 1 | 1 | 0 | 0 | 2 | 0 |
-| NiPSysEmitterCtlrData | X1 | 4 | 1 | 2 | 0 | 0 | 1 | 0 |
-| NiPSysEmitterDeclinationCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysEmitterDeclinationVarCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysEmitterInitialRadiusCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysEmitterLifeSpanCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysEmitterPlanarAngleCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysEmitterPlanarAngleVarCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysEmitterSpeedCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysFieldAttenuationCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysFieldMagnitudeCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysFieldMaxDistanceCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysGravityStrengthCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysInitialRotAngleCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysInitialRotAngleVarCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysInitialRotSpeedCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysInitialRotSpeedVarCtlr | X1 | 4 | 3 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysResetOnLoopCtlr | X1 | 4 | 1 | 1 | 0 | 0 | 2 | 0 |
-| NiParticleMeshes | X1 | 4 | 0 | 0 | 0 | 0 | 4 | 0 |
-| BSParticleShaderCollisionEmitter | X1 | 3 | 1 | 1 | 0 | 0 | 1 | 4 |
-| BSParticleShaderRayEmitter | X1 | 3 | 2 | 0 | 0 | 0 | 1 | 4 |
-| NiPSysAirFieldAirFrictionCtlr | X1 | 3 | 2 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysAirFieldInheritVelocityCtlr | X1 | 3 | 2 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysAirFieldSpreadCtlr | X1 | 3 | 2 | 0 | 0 | 0 | 1 | 14 |
-| NiPSysColliderManager | X1 | 3 | 0 | 0 | 0 | 0 | 3 | 0 |
-| NiPSysRadialFieldModifier | X1 | 3 | 2 | 0 | 0 | 0 | 1 | 0 |
-| NiPSysTurbulenceFieldModifier | X1 | 3 | 1 | 0 | 0 | 0 | 2 | 0 |
-| BSParticleShaderEmitter | X1 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
-| BSParticleShaderObjectEmitter | X1 | 2 | 1 | 0 | 0 | 0 | 1 | 2 |
-| NiPSysPositionModifier | X1 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
-| NiParticleInfo | X1 | 2 | 0 | 0 | 1 | 0 | 1 | 0 |
-| NiParticleSDM | X1 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::Text::DocView | X2 | 15 | 0 | 0 | 0 | 0 | 15 | 0 |
-| Scaleform::Render::Text | X2 | 6 | 0 | 0 | 0 | 0 | 6 | 0 |
-| Scaleform::Render::Text::ParagraphFormat | X2 | 4 | 0 | 0 | 1 | 0 | 3 | 0 |
-| Scaleform::Render::Text::Highlighter | X2 | 3 | 0 | 0 | 1 | 0 | 2 | 0 |
-| Scaleform::Render::Text::HighlighterRangeIterator | X2 | 2 | 0 | 0 | 1 | 0 | 1 | 0 |
-| Scaleform::Render::Text::Paragraph | X2 | 2 | 0 | 0 | 1 | 0 | 1 | 0 |
-| Scaleform::Render::Text::TextFormat | X2 | 2 | 0 | 0 | 0 | 0 | 2 | 0 |
-| Scaleform::Render::Cxform | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
+| NiPSysEmitterCtlr | X1 | 23 | 14 | 4 | 2 | 3 | 0 | 30 |
+| BSMasterParticleSystem | X1 | 19 | 10 | 0 | 1 | 8 | 0 | 0 |
+| NiParticleSystem | X1 | 19 | 7 | 1 | 3 | 8 | 0 | 0 |
+| NiPSysBombModifier | X1 | 17 | 12 | 1 | 1 | 3 | 0 | 0 |
+| BSParticleSystemManager | X1 | 13 | 4 | 0 | 1 | 8 | 0 | 0 |
+| NiPSysGravityModifier | X1 | 13 | 7 | 2 | 2 | 2 | 0 | 0 |
+| NiPSysMeshEmitter | X1 | 13 | 3 | 1 | 1 | 8 | 0 | 33 |
+| NiParticles | X1 | 13 | 7 | 0 | 0 | 6 | 0 | 24 |
+| BSPSysHavokUpdateModifier | X1 | 12 | 6 | 0 | 2 | 4 | 0 | 0 |
+| NiPSysData | X1 | 12 | 0 | 1 | 5 | 6 | 0 | 22 |
+| NiPSysModifierCtlr | X1 | 12 | 9 | 1 | 1 | 1 | 0 | 0 |
+| NiPSysModifier | X1 | 11 | 9 | 2 | 0 | 0 | 0 | 14 |
+| NiPSysBoundUpdateModifier | X1 | 10 | 3 | 1 | 0 | 6 | 0 | 16 |
+| BSPSysMultiTargetEmitterCtlr | X1 | 9 | 2 | 0 | 2 | 5 | 0 | 0 |
+| NiPSysColorModifier | X1 | 9 | 6 | 1 | 0 | 2 | 0 | 0 |
+| NiPSysMeshUpdateModifier | X1 | 9 | 4 | 2 | 0 | 3 | 0 | 0 |
+| NiPSysSpawnModifier | X1 | 9 | 4 | 2 | 2 | 1 | 0 | 0 |
+| BSPSysInheritVelocityModifier | X1 | 8 | 2 | 0 | 2 | 4 | 0 | 0 |
+| BSPSysLODModifier | X1 | 8 | 4 | 0 | 3 | 1 | 0 | 0 |
+| BSPSysRecycleBoundModifier | X1 | 8 | 1 | 1 | 4 | 2 | 0 | 0 |
+| NiPSysAgeDeathModifier | X1 | 8 | 4 | 0 | 1 | 3 | 0 | 0 |
+| NiPSysCollider | X1 | 8 | 0 | 2 | 4 | 2 | 0 | 0 |
+| NiPSysVolumeEmitter | X1 | 8 | 6 | 1 | 0 | 1 | 0 | 0 |
+| BSPSysArrayEmitter | X1 | 7 | 3 | 0 | 0 | 4 | 0 | 23 |
+| BSPSysStripUpdateModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysAirFieldModifier | X1 | 7 | 2 | 0 | 1 | 4 | 0 | 0 |
+| NiPSysBoxEmitter | X1 | 7 | 2 | 2 | 1 | 2 | 0 | 0 |
+| NiPSysDragFieldModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysDragModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysFieldModifier | X1 | 7 | 4 | 1 | 0 | 2 | 0 | 0 |
+| NiPSysGrowFadeModifier | X1 | 7 | 2 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysModifierBoolCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysModifierFloatCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysPlanarCollider | X1 | 7 | 0 | 0 | 1 | 6 | 0 | 0 |
+| NiPSysRotationModifier | X1 | 7 | 2 | 2 | 3 | 0 | 0 | 0 |
+| NiPSysSphereEmitter | X1 | 7 | 3 | 1 | 1 | 2 | 0 | 0 |
+| NiPSysVortexFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
+| BSPSysSimpleColorModifier | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
+| BSPSysSubTexModifier | X1 | 6 | 2 | 0 | 3 | 1 | 0 | 0 |
+| NiPSysCylinderEmitter | X1 | 6 | 1 | 2 | 1 | 2 | 0 | 0 |
+| NiPSysEmitter | X1 | 6 | 3 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysGravityFieldModifier | X1 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
+| NiPSysSphericalCollider | X1 | 6 | 0 | 0 | 1 | 5 | 0 | 0 |
+| NiPSysUpdateCtlr | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
+| NiParticleMeshes | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
+| NiParticleMeshesData | X1 | 6 | 0 | 0 | 3 | 3 | 0 | 0 |
+| BSPSysScaleModifier | X1 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
+| NiPSysModifierActiveCtlr | X1 | 5 | 3 | 0 | 0 | 2 | 0 | 14 |
+| NiPSysResetOnLoopCtlr | X1 | 5 | 2 | 1 | 0 | 2 | 0 | 0 |
+| NiParticlesData | X1 | 5 | 0 | 0 | 2 | 3 | 0 | 0 |
+| BGSShaderParticleGeometryData | X1 | 4 | 1 | 1 | 0 | 2 | 0 | 0 |
+| BSParticleShaderGeometry | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 3 |
+| BSParticleShaderGeometryEmitter | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 4 |
+| BSStripParticleSystem | X1 | 4 | 1 | 1 | 1 | 1 | 0 | 0 |
+| NiPSysEmitterCtlrData | X1 | 4 | 2 | 1 | 1 | 0 | 0 | 0 |
+| NiPSysEmitterDeclinationCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysEmitterDeclinationVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysEmitterInitialRadiusCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysEmitterLifeSpanCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysEmitterPlanarAngleCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysEmitterPlanarAngleVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysEmitterSpeedCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysFieldAttenuationCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysFieldMagnitudeCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysFieldMaxDistanceCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysGravityStrengthCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysInitialRotAngleCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysInitialRotAngleVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysInitialRotSpeedCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysInitialRotSpeedVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysTurbulenceFieldModifier | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
+| BSParticleShaderCollisionEmitter | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 4 |
+| BSParticleShaderRayEmitter | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 4 |
+| NiPSysAirFieldAirFrictionCtlr | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysAirFieldInheritVelocityCtlr | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysAirFieldSpreadCtlr | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 14 |
+| NiPSysColliderManager | X1 | 3 | 0 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysPositionModifier | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
+| NiPSysRadialFieldModifier | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
+| BSParticleShaderEmitter | X1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
+| BSParticleShaderObjectEmitter | X1 | 2 | 1 | 0 | 0 | 1 | 0 | 2 |
+| NiParticleInfo | X1 | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
+| NiParticleSDM | X1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Scaleform::Render::Text::DocView | X2 | 15 | 0 | 0 | 1 | 14 | 0 | 0 |
+| Scaleform::Render::Text | X2 | 6 | 0 | 0 | 1 | 5 | 0 | 0 |
+| Scaleform::Render::Text::ParagraphFormat | X2 | 4 | 0 | 0 | 2 | 2 | 0 | 0 |
+| Scaleform::Render::Text::Highlighter | X2 | 3 | 0 | 0 | 2 | 1 | 0 | 0 |
+| Scaleform::Render::Text::HighlighterRangeIterator | X2 | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
+| Scaleform::Render::Text::Paragraph | X2 | 2 | 0 | 0 | 1 | 1 | 0 | 0 |
+| Scaleform::Render::Text::TextFormat | X2 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
+| Scaleform::Render::Cxform | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | Scaleform::Render::D3D1x::ShaderManager | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| Scaleform::Render::GlyphQueue | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::GradientData | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::Matrix2x4 | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::RBGenericImpl::DepthStencilBuffer | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::RBGenericImpl::RenderBufferManager | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::ScreenToWorld | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
+| Scaleform::Render::GlyphQueue | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| Scaleform::Render::GradientData | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
+| Scaleform::Render::Matrix2x4 | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Scaleform::Render::RBGenericImpl::DepthStencilBuffer | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Scaleform::Render::RBGenericImpl::RenderBufferManager | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Scaleform::Render::ScreenToWorld | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | Scaleform::Render::Text::HighlighterPosIterator | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| Scaleform::Render::Text::LineBuffer | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
+| Scaleform::Render::Text::LineBuffer | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | Scaleform::Render::Text::LineBuffer::Line | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | Scaleform::Render::Text::Paragraph::CharactersIterator | X2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| Scaleform::Render::Text::Paragraph::TextBuffer | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::Text::SGMLParser | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| Scaleform::Render::Text::StyledText | X2 | 1 | 0 | 0 | 0 | 0 | 1 | 0 |
-| PlayerCamera | X3 | 53 | 28 | 3 | 0 | 1 | 21 | 144 |
-| DragonCameraState | X3 | 13 | 5 | 1 | 1 | 0 | 6 | 0 |
-| HorseCameraState | X3 | 13 | 5 | 0 | 1 | 0 | 7 | 6 |
-| FreeCameraState | X3 | 10 | 4 | 0 | 0 | 0 | 6 | 0 |
-| LocalMapCamera | X3 | 10 | 4 | 0 | 1 | 0 | 5 | 0 |
-| FurnitureCameraState | X3 | 8 | 2 | 0 | 0 | 0 | 6 | 0 |
-| VATSCameraState | X3 | 8 | 1 | 4 | 1 | 0 | 2 | 0 |
-| TESCamera | X3 | 7 | 4 | 2 | 0 | 0 | 1 | 9 |
-| TweenMenuCameraState | X3 | 7 | 2 | 3 | 0 | 0 | 2 | 0 |
-| PlayerCameraTransitionState | X3 | 6 | 1 | 3 | 0 | 0 | 2 | 0 |
-| BleedoutCameraState | X3 | 5 | 1 | 1 | 1 | 0 | 2 | 0 |
-| MapCamera | X3 | 5 | 0 | 1 | 2 | 0 | 2 | 0 |
-| RaceSexCamera | X3 | 2 | 1 | 0 | 0 | 0 | 1 | 0 |
-| TESGrass | X4 | 28 | 26 | 0 | 1 | 0 | 1 | 22 |
-| ReferenceEffect | X4 | 17 | 6 | 2 | 1 | 0 | 8 | 0 |
-| BGSLightingTemplate | X4 | 16 | 14 | 0 | 0 | 0 | 2 | 67 |
-| ShaderReferenceEffect | X4 | 16 | 6 | 0 | 0 | 0 | 10 | 0 |
-| BSTerrainEffect | X4 | 15 | 4 | 1 | 0 | 1 | 9 | 0 |
-| TESEffectShader | X4 | 12 | 7 | 0 | 0 | 0 | 5 | 83 |
-| BGSTerrainManager | X4 | 11 | 9 | 0 | 1 | 0 | 1 | 0 |
-| BSTempEffectSimpleDecal | X4 | 11 | 6 | 0 | 0 | 0 | 5 | 36 |
-| TESLandTexture | X4 | 11 | 5 | 1 | 0 | 0 | 5 | 0 |
-| GrassManager | X4 | 10 | 0 | 1 | 1 | 0 | 8 | 0 |
-| BGSTextureSet | X4 | 9 | 1 | 0 | 1 | 0 | 7 | 0 |
-| BSTempEffectGeometryDecal | X4 | 9 | 4 | 0 | 0 | 0 | 5 | 0 |
-| BGSMaterialType | X4 | 8 | 1 | 0 | 0 | 0 | 7 | 0 |
-| BSTempEffectParticle | X4 | 8 | 2 | 0 | 0 | 0 | 6 | 0 |
-| BGSMaterialObject | X4 | 7 | 2 | 1 | 0 | 0 | 4 | 0 |
-| TESTexture | X4 | 7 | 5 | 1 | 0 | 0 | 1 | 0 |
-| BGSReferenceEffect | X4 | 6 | 3 | 0 | 0 | 0 | 3 | 0 |
-| BGSDecalNode | X4 | 5 | 3 | 0 | 0 | 0 | 2 | 20 |
-| BSDecalPlacementVectorExtraData | X4 | 5 | 0 | 0 | 0 | 0 | 5 | 0 |
-| BGSTerrainBlock | X4 | 4 | 3 | 0 | 0 | 0 | 1 | 0 |
-| BGSVolumetricLighting | X4 | 3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| Scaleform::Render::Text::Paragraph::TextBuffer | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Scaleform::Render::Text::SGMLParser | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| Scaleform::Render::Text::StyledText | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| PlayerCamera | X3 | 53 | 28 | 3 | 5 | 17 | 0 | 144 |
+| DragonCameraState | X3 | 13 | 5 | 1 | 3 | 4 | 0 | 0 |
+| HorseCameraState | X3 | 13 | 5 | 0 | 1 | 7 | 0 | 6 |
+| LocalMapCamera | X3 | 11 | 5 | 0 | 1 | 5 | 0 | 0 |
+| FreeCameraState | X3 | 10 | 5 | 0 | 1 | 4 | 0 | 0 |
+| FurnitureCameraState | X3 | 8 | 2 | 0 | 1 | 5 | 0 | 0 |
+| TESCamera | X3 | 8 | 5 | 2 | 1 | 0 | 0 | 9 |
+| TweenMenuCameraState | X3 | 8 | 3 | 3 | 2 | 0 | 0 | 0 |
+| VATSCameraState | X3 | 8 | 1 | 4 | 1 | 2 | 0 | 0 |
+| PlayerCameraTransitionState | X3 | 6 | 1 | 3 | 1 | 1 | 0 | 0 |
+| BleedoutCameraState | X3 | 5 | 1 | 1 | 1 | 2 | 0 | 0 |
+| MapCamera | X3 | 5 | 0 | 2 | 1 | 2 | 0 | 0 |
+| RaceSexCamera | X3 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
+| TESGrass | X4 | 28 | 26 | 0 | 1 | 1 | 0 | 22 |
+| BGSLightingTemplate | X4 | 17 | 15 | 0 | 0 | 2 | 0 | 67 |
+| ReferenceEffect | X4 | 17 | 8 | 0 | 1 | 8 | 0 | 0 |
+| BSTerrainEffect | X4 | 16 | 5 | 1 | 0 | 10 | 0 | 0 |
+| ShaderReferenceEffect | X4 | 16 | 6 | 0 | 0 | 10 | 0 | 0 |
+| TESEffectShader | X4 | 12 | 7 | 0 | 0 | 5 | 0 | 83 |
+| BGSTerrainManager | X4 | 11 | 9 | 0 | 1 | 1 | 0 | 0 |
+| BSTempEffectSimpleDecal | X4 | 11 | 6 | 0 | 0 | 5 | 0 | 36 |
+| TESLandTexture | X4 | 11 | 5 | 1 | 0 | 5 | 0 | 0 |
+| BGSTextureSet | X4 | 10 | 2 | 0 | 2 | 6 | 0 | 0 |
+| GrassManager | X4 | 10 | 0 | 1 | 1 | 8 | 0 | 0 |
+| BSTempEffectGeometryDecal | X4 | 9 | 4 | 0 | 1 | 4 | 0 | 0 |
+| TESTexture | X4 | 9 | 8 | 1 | 0 | 0 | 0 | 0 |
+| BGSMaterialType | X4 | 8 | 1 | 0 | 0 | 7 | 0 | 0 |
+| BSTempEffectParticle | X4 | 8 | 2 | 0 | 0 | 6 | 0 | 0 |
+| BGSMaterialObject | X4 | 7 | 2 | 1 | 0 | 4 | 0 | 0 |
+| BGSReferenceEffect | X4 | 6 | 3 | 0 | 0 | 3 | 0 | 0 |
+| BGSDecalNode | X4 | 5 | 3 | 0 | 0 | 2 | 0 | 20 |
+| BSDecalPlacementVectorExtraData | X4 | 5 | 0 | 0 | 3 | 2 | 0 | 0 |
+| BGSTerrainBlock | X4 | 4 | 3 | 0 | 0 | 1 | 0 | 0 |
+| BGSVolumetricLighting | X4 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 
 </details>
 
@@ -595,81 +608,96 @@ Scope: listed for context, owned by the general rounds.
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
-| `0x14ec000` | BSShaderManager::SetShadowSceneNode | 15 | ready | 3 |
-| `0x101d730` | RendererShadowState::GetViewDepthRange | 16 | ready | 3 |
-| `0x1010920` | BSGraphics::Renderer::GetScaleformRendererParameters | 16 | ready | 2 |
-| `0x1008b10` | Renderer::SetWindowPosition | 20 | ready | 1 |
-| `0x10193a0` | BSGraphics::Utility::CopyNiColorAToFloat | 23 | ready | 4 |
-| `0xec1e40` | NiTexture::QLoadLevel | 28 | ready | 3 |
-| `0x101e2d0` | SetPSTextureFilterMode | 29 | ready | 2 |
-| `0x100c6f0` | BSGraphics::Renderer::UnmapDynamicBuffer | 34 | ready | 1 |
-| `0x1010290` | BSGraphics::Renderer_SetPixelShader | 36 | ready | 2 |
-| `0x100fee0` | BSGraphics::Renderer_SetShader | 41 | ready | 2 |
-| `0x153c900` | GetImageSpaceRenderTarget_TAAMASK_SSRMASK_SWAP | 46 | ready | 11 |
-| `0x1010620` | Renderer::SetScissorRect | 63 | ready | 2 |
-| `0x100c6d0` | BSGraphics::Renderer::MapDynamicShapeBuffer | 21 | unlisted |  |
-| `0xf7e7d0` | NiLightColorController::ctor | 39 | unlisted |  |
-| `0xf1b540` | BSLODTriShape::ctor_default | 40 | unlisted |  |
+| `0x1010920` | BSGraphics::Renderer::GetScaleformRendererParameters | 16 | ready | 1 |
+| `0x101d730` | RendererShadowState::GetViewDepthRange | 16 | ready | 0 |
+| `0x1008b10` | Renderer::SetWindowPosition | 20 | ready | 0 |
+| `0x10193a0` | BSGraphics::Utility::CopyNiColorAToFloat | 23 | ready | 1 |
+| `0xec1e40` | NiTexture::QLoadLevel | 28 | ready | 0 |
+| `0x101e2d0` | SetPSTextureFilterMode | 29 | ready | 0 |
+| `0x100c6f0` | BSGraphics::Renderer::UnmapDynamicBuffer | 34 | ready | 0 |
+| `0x1010290` | BSGraphics::Renderer_SetPixelShader | 36 | ready | 0 |
+| `0xf7e7d0` | NiLightColorController::ctor | 39 | ready | 0 |
+| `0xf1b540` | BSLODTriShape::ctor_default | 40 | ready | 0 |
+| `0xf7e5a0` | NiLightColorController::CopyMembers | 40 | ready | 0 |
+| `0x100fee0` | BSGraphics::Renderer_SetShader | 41 | ready | 0 |
+| `0x1245df0` | NiSkinPartition::NiSkinPartition | 46 | ready | 0 |
+| `0x153c900` | GetImageSpaceRenderTarget_TAAMASK_SSRMASK_SWAP | 46 | ready | 0 |
+| `0xf7e6c0` | NiLightColorController::IsEqual | 62 | ready | 0 |
 
 **Workstream B entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
-| `0x1569460` | BSShaderPropertyLightData::PushLightListFence | 8 | ready | 3 |
-| `0x1594070` | BSParticleShaderMacros::GetVertexShaderID | 13 | ready | 1 |
-| `0x15608d0` | ClearBSShaders | 55 | ready | 11 |
-| `0x151d650` | BSGrassShaderProperty::CopyMembers | 56 | unlisted |  |
-| `0x118c2c0` | BSEffectShaderProperty::AsLinesGeom | 59 | unlisted |  |
-| `0x118bb10` | BSEffectShaderProperty::QShader | 61 | unlisted |  |
-| `0x118d5c0` | BSEffectShaderProperty::ForEachTexture | 61 | unlisted |  |
-| `0x1526f70` | BSLightingShaderMaterialFacegenTint::ComputeCRC32 | 67 | unlisted |  |
-| `0x14e8080` | BSShaderProperty::SetPreRegisteredMaterial | 71 | unlisted |  |
-| `0x1578930` | BSEffectShader::SetAlphaTestRef | 72 | unlisted |  |
-| `0x1522440` | BSGrassShader::ctor | 76 | unlisted |  |
-| `0x154d080` | BSWaterShader::ctor | 76 | unlisted |  |
-| `0x1556690` | BSEffectShader::ctor | 76 | unlisted |  |
-| `0x1558ed0` | BSDistantTreeShader::ctor | 76 | unlisted |  |
-| `0x1566460` | BSUtilityShader::ctor | 76 | unlisted |  |
+| `0x1594070` | BSParticleShaderMacros::GetVertexShaderID | 13 | ready | 0 |
+| `0x1578930` | BSEffectShader::SetAlphaTestRef | 72 | ready | 0 |
+| `0xd6e480` | BSEffectShaderProperty::CreateClone | 90 | ready | 0 |
+| `0x154c9a0` | BSLightingShader::SetupTexture | 94 | ready | 0 |
+| `0x157c030` | BSEffectShaderPropertyFloatController::InitSDM | 101 | ready | 0 |
+| `0x15260f0` | BSLightingShaderMaterialParallax::GetTextures | 106 | ready | 0 |
+| `0x1519140` | BSLightingShaderProperty::InitINISettings | 113 | ready | 0 |
+| `0xd6e9e0` | BSEffectShaderProperty::GetRenderPasses_ShadowMapOrMask | 115 | ready | 0 |
+| `0x118f2b0` | BSEffectShaderProperty::AsGeometry | 127 | ready | 0 |
+| `0x151caa0` | BSGrassShaderProperty::ForEachTexture | 140 | ready | 0 |
+| `0x1526620` | BSLightingShaderMaterialParallaxOcc::SaveBinary | 142 | ready | 0 |
+| `0x15266c0` | BSLightingShaderMaterialParallaxOcc::LoadBinary | 142 | ready | 0 |
+| `0x1526cd0` | BSLightingShaderMaterialFacegen::ReceiveValuesFromRootMaterial | 163 | ready | 0 |
+| `0x1569260` | BSShaderPropertyLightData::RemoveLight | 164 | ready | 0 |
+| `0x1523970` | BSLightingShaderMaterialBase::DoIsCopy_1412CF0D0 | 175 | ready | 0 |
 
 **Workstream C entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
-| `0x15606d0` | BSBatchRenderer::ClearAlphaGeometryGroups | 11 | ready | 2 |
-| `0x154d070` | BSRenderPass::GetSceneLights_1412f5d40 | 14 | ready | 3 |
-| `0x1515360` | NiCamera::sub_1412C1690 | 16 | ready | 1 |
-| `0xfeea50` | BSCullingProcess::TestBaseVisibility | 20 | ready | 1 |
-| `0x15606b0` | BSBatchRenderer::InitSDM | 23 | ready | 2 |
-| `0x15606f0` | BSBatchRenderer::SortAlphaGeometryGroups | 33 | ready | 1 |
-| `0xf1eda0` | NiAccumulator::ctor | 41 | ready | 4 |
-| `0x1560940` | BSBatchRenderer::HasActivePassIndexInRange | 47 | ready | 1 |
-| `0xfdb610` | BSOcclusionShape::CopyTransformTo | 51 | ready | 3 |
-| `0x8d9500` | BSPortalGraphEntry::SetRoomRoot | 53 | ready | 5 |
-| `0xfd9500` | BSPortalGraphEntry::SetRoomRoot | 53 | ready | 4 |
-| `0x1586d80` | BSParabolicCullingProcess::SetBackHemisphereAccumulator | 59 | ready | 2 |
-| `0xef76f0` | NiCamera::ComputeFrustumPlanes | 16 | unlisted |  |
-| `0x15617d0` | BSBatchRenderer::AppendPassToAlphaGroupSorted | 19 | unlisted |  |
-| `0x1561610` | BSBatchRenderer::AppendPassToGeometryGroup | 20 | unlisted |  |
+| `0x1515360` | NiCamera::sub_1412C1690 | 16 | ready | 0 |
+| `0xfeea50` | BSCullingProcess::TestBaseVisibility | 20 | ready | 0 |
+| `0xfeea30` | BSCullingProcess::TestBaseVisibility1 | 21 | ready | 0 |
+| `0x15606b0` | BSBatchRenderer::InitSDM | 23 | ready | 0 |
+| `0x441460` | NiCullingProcess::AppendVirtual | 31 | ready | 0 |
+| `0x15606f0` | BSBatchRenderer::SortAlphaGeometryGroups | 33 | ready | 0 |
+| `0x155dd40` | BSBatchRenderer::GeometryGroup::~GeometryGroup | 40 | ready | 0 |
+| `0xf1eda0` | NiAccumulator::ctor | 41 | ready | 1 |
+| `0xfdb610` | BSOcclusionShape::CopyTransformTo | 51 | ready | 1 |
+| `0xff91e0` | BSCompoundFrustum::GetActivePlaneState | 66 | ready | 0 |
+| `0xff9230` | BSCompoundFrustum::SetActivePlaneState | 67 | ready | 0 |
+| `0x152b6d0` | BSCullingProcess::InitCullDescriptor | 68 | ready | 0 |
+| `0xff7ce0` | BSCompoundFrustum::StartGroupIntersection | 72 | ready | 0 |
+| `0x1587090` | BSParabolicCullingProcess::TestBaseVisibility2 | 72 | ready | 0 |
+| `0xff7720` | BSCompoundFrustum::Reset | 95 | ready | 0 |
 
 **Workstream D entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
-| `0x1e8630` | TESImageSpaceModifiableForm::ctor | 22 | ready | 6 |
-| `0x1530d70` | GetVLTemporalAccumulationFactor | 22 | ready | 1 |
-| `0x2a8440` | TESImageSpaceModifier::MakeDefaultGetHit | 25 | ready | 1 |
-| `0x14eedf0` | TESImagespaceManager::IsScreenshotSaved | 25 | ready | 1 |
-| `0x52af40` | TESWaterSystem::ResetWaterDisplacementSimulation | 22 | unlisted |  |
-| `0x1585b60` | ImageSpaceEffectNoise::UpdateParams | 25 | unlisted |  |
-| `0x1516b90` | ShadowSceneNode::CollectLightingShaderGeometry | 31 | unlisted |  |
-| `0x152b1b0` | ImageSpaceShaderParam::sub_1412D6730 | 32 | unlisted |  |
-| `0x40e0c0` | Sky::SetWeather | 39 | unlisted |  |
-| `0x150e300` | ShadowSceneNode::TryQueueLightRemove | 41 | unlisted |  |
-| `0x1586480` | ImageSpaceEffectNoise::Bias | 48 | unlisted |  |
-| `0x15832a0` | ImageSpaceEffectGetHit::dtor_deleting | 52 | unlisted |  |
-| `0x150ba00` | BSImagespaceShaderCopyCustomViewport::Func6_1412B8530 | 54 | unlisted |  |
-| `0x14a1250` | ShadowSceneNode::RemoveLight_1 | 59 | unlisted |  |
-| `0x41ad30` | Sun::GetSunOcclusionPercent | 64 | unlisted |  |
+| `0x52af40` | TESWaterSystem::ResetWaterDisplacementSimulation | 22 | ready | 0 |
+| `0x1530d70` | GetVLTemporalAccumulationFactor | 22 | ready | 0 |
+| `0x2a8440` | TESImageSpaceModifier::MakeDefaultGetHit | 25 | ready | 0 |
+| `0x14eedf0` | TESImagespaceManager::IsScreenshotSaved | 25 | ready | 0 |
+| `0x152b1b0` | ImageSpaceShaderParam::sub_1412D6730 | 32 | ready | 0 |
+| `0x1586480` | ImageSpaceEffectNoise::Bias | 48 | ready | 0 |
+| `0x41ad30` | Sun::GetSunOcclusionPercent | 64 | ready | 0 |
+| `0x14edb20` | ImageSpaceManager::SetupEffects | 65 | ready | 0 |
+| `0x3070b0` | TESWaterForm::sub_1402ACA10 | 67 | ready | 0 |
+| `0x419d00` | Sky::CalcSunriseEnd | 67 | ready | 0 |
+| `0x419d50` | Sky::CalcSunsetBegin | 67 | ready | 0 |
+| `0x2a8120` | TESImageSpaceModifier::InitializeData | 68 | ready | 0 |
+| `0x41cbb0` | Sun::GetSunPositionData | 69 | ready | 3 |
+| `0x41b230` | Sun::sub_1403BA8B0 | 82 | ready | 0 |
+| `0x528b30` | TESWaterDisplacement::sub_1404C4730 | 98 | ready | 0 |
+
+**Workstream E entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
+
+| RVA | Name | Size | State | Callers unlocked |
+|---|---|---:|---|---:|
+| `0x150ff00` | ShadowSceneNode::ClearShadowCasterArray | 84 | ready | 0 |
+| `0x150fe80` | ShadowSceneNode_SetShadowCasterLightArrayEntry | 85 | ready | 0 |
+| `0x155d830` | ShadowmapDescriptor::~ShadowmapDescriptor | 93 | ready | 0 |
+| `0x100f7e0` | UpdateOrAssignShadowCSTexture | 99 | ready | 0 |
+| `0x155c990` | BSShadowLight::ReturnShadowmaps | 105 | ready | 1 |
+| `0x150f830` | ShadowSceneNode::GetActiveLightAt | 121 | ready | 0 |
+| `0x150f8b0` | ShadowSceneNode::GetShadowCasterLightByIndex | 121 | ready | 0 |
+| `0x155db00` | BSTArray_ShadowmapDescriptor_::DestructRange | 133 | ready | 0 |
+| `0x150f710` | ShadowSceneNode::FindActiveLight | 152 | ready | 0 |
+| `0x155c750` | BSShadowLight::ReleaseShadowmapDescriptor | 242 | ready | 0 |
 
 </details>
 
