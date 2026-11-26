@@ -591671,6 +591671,32 @@
       "owner": "claim-time",
       "evidence": "reports/sse-steam-1-7-104/0x1521e30.json",
       "report": "reports/sse-steam-1-7-104/0x1521e30.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xcf3250",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 13578832,
+      "size": 32,
+      "status": "matched",
+      "name": "GRefCountImpl::Functioncf3250",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xcf3250; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xcf3250.json",
+      "report": "reports/sse-steam-1-7-104/0xcf3250.json"
+    },
+    {
+      "id": "sse-steam-1-7-104-0xcf3270",
+      "build_id": "sse-steam-1-7-104",
+      "rva": 13578864,
+      "size": 27,
+      "status": "matched",
+      "name": "GRefCountNTSImpl::Functioncf3270",
+      "name_origin": "GUESS",
+      "name_source": "GUESS(low): placeholder name from the RVA; the class is the vtable owner in the project function table. RVA 0xcf3270; size from the published function bounds.",
+      "owner": "claim-time",
+      "evidence": "reports/sse-steam-1-7-104/0xcf3270.json",
+      "report": "reports/sse-steam-1-7-104/0xcf3270.json"
     }
   ],
   "milestones": [
@@ -591713,7 +591739,7 @@
     "notes": "Inventory and exclusions have not been established. No completion percentage is meaningful yet."
   },
   "target_build_id": "sse-steam-1-7-104",
-  "updated_at": "2026-11-26T18:33:49Z",
+  "updated_at": "2026-11-26T20:40:38Z",
   "work_items": [
     {
       "id": "pin-target",
