@@ -25,7 +25,7 @@ import sys
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-from check import MATCH_RECORD_SCHEMA, ROOT, TOOLCHAIN_PIN, file_sha256, validate_match  # noqa: E402
+from check import MATCH_RECORD_SCHEMA, ROOT, file_sha256, recipe_toolchain_pin, validate_match  # noqa: E402
 from digest_v2 import DIGEST_METHOD, tu_digest  # noqa: E402
 
 
@@ -41,7 +41,8 @@ def build(args, root=ROOT):
         'source': {'translation_unit': sorted(args.unit), 'compiled': args.compiled,
                    'digest_method': DIGEST_METHOD, 'digest': tu_digest(root, args.unit)},
         'recipe': {'path': args.recipe, 'sha256': file_sha256(root, args.recipe)},
-        'toolchain_pin': {'path': TOOLCHAIN_PIN, 'sha256': file_sha256(root, TOOLCHAIN_PIN)},
+        'toolchain_pin': {'path': recipe_toolchain_pin(root, args.recipe),
+                          'sha256': file_sha256(root, recipe_toolchain_pin(root, args.recipe))},
         'symbol_map': {'path': args.symbols, 'sha256': file_sha256(root, args.symbols)},
         'reproduction': args.reproduction,
         'build': json.loads(Path(args.build).read_text()),

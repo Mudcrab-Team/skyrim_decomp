@@ -40,7 +40,7 @@ REQUIRES = ('target-no-eh-frame',)
 GENERATED = {
     'noeh': dict(remove=['/EHsc'], add=[], suffix='noeh', requires='target-no-eh-frame'),
 }
-BASES = ('msvc-19.16.27054-o2', 'o2-fpfast', 'o2-os')
+BASES = ('msvc-19.16.27054-o2', 'o2-fpfast', 'o2-os', 'msvc-19.00.23918-o2', 'msvc-19.00.23918-o2-fpfast')
 VARIANTS = ('', '-reconstruction', '-root-includes')
 
 

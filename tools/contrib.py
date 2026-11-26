@@ -700,6 +700,10 @@ def check_toolchain(ctx, repo=None, recipe=None):
                 'pinned': False}
     candidates = toolchain_candidates(ctx)
     fallback = {'status': 'missing', 'root': str(candidates[0]), 'pinned': False}
+    if recipe:
+        # A recipe may name a compiler other than the default one (tools/verifier/toolsets.py); that
+        # toolchain sits beside the default in an installed-toolchain directory, so search those too.
+        candidates = candidates + [c for c in toolchain_dirs(ctx, 'msvc') if c not in candidates]
     pins = None
     for root in candidates:
         ctx.remember_path(root, '<msvc>')
@@ -1375,6 +1379,13 @@ def cmd_doctor(ctx, args):
     add('compiler', tool['status'] in ('ok', 'override'), detail,
         f'{ctx.cli} setup --accept-microsoft-license   (a person must accept Microsoft\'s licence first; '
         'or set SR_MSVC to an unpacked toolchain)')
+    for tid, info in SECOND_TOOLCHAINS.items():
+        second = check_toolchain(ctx, ctx.repo, f'reconstruction/recipes/msvc-{tid}-o2.json')
+        add(f'compiler {tid} ({info["alias"]})', second['status'] == 'ok',
+            f'cl {tid} at {second.get("bin")} matches its pin file' if second['status'] == 'ok'
+            else f'not installed; only units whose Recipe: line names msvc-{tid}-* need it',
+            f'{ctx.cli} setup --toolchain {info["alias"]} --accept-vs2015-license   (a person accepts the licence first)',
+            required=False)
     objdump = find_objdump(ctx)
     add('llvm-objdump (readable listing)', bool(objdump), objdump or 'not found; byte listing only',
         f'{ctx.cli} setup --yes', required=False)
@@ -1684,6 +1695,68 @@ def install_toolchain(ctx, accept):
     return check_toolchain(ctx)
 
 
+# Compilers other than the default one that a recipe may name: toolset id -> alias, what it builds,
+# and the licence of the packages (tools/verifier/vs2015_u2.py installs it from Microsoft's own image).
+SECOND_TOOLCHAINS = {
+    '19.00.23918': dict(alias='havok', what='the Visual Studio 2015 Update 2 compiler (Havok code)',
+                        licence='https://visualstudio.microsoft.com/license-terms/microsoft-visual-studio-community-2015/'),
+}
+
+
+def second_toolchain_id(name):
+    """The toolset id for `havok` or an id such as 19.00.23918, else None."""
+    for tid, info in SECOND_TOOLCHAINS.items():
+        if name in (tid, info['alias']):
+            return tid
+    return None
+
+
+def recipe_toolset(repo, recipe):
+    """The toolset id a recipe names (tools/verifier/toolsets.py); the default one when it names none."""
+    sys.path.insert(0, str(Path(repo) / 'tools' / 'verifier'))
+    import toolsets
+    return toolsets.toolset_of_recipe(repo, recipe)
+
+
+def install_second_toolchain(ctx, toolset, accept):
+    """Install the second compiler `toolset` next to the default one and return its check_toolchain state.
+
+    Reads only the compiler packages from Microsoft's installer image (about 16 MB) and checks every one
+    by SHA-256, then the compiler binaries against their pin file. Needs the default toolchain first: its
+    Windows SDK and wrapper scripts are reused."""
+    info = SECOND_TOOLCHAINS[toolset]
+    recipe = f'reconstruction/recipes/msvc-{toolset}-o2.json'
+    pinned = check_toolchain(ctx)
+    if pinned['status'] != 'ok':
+        raise Stop(MISSING, 'the default compiler must be installed first', f'{ctx.cli} setup')
+    ctx.say(f'{info["what"]}: licence {info["licence"]}')
+    if not accept:
+        if not ctx.interactive:
+            raise Stop(CONSENT, f'installing {info["what"]} accepts Microsoft\'s licence ({info["licence"]})',
+                       f'{ctx.cli} setup --toolchain {info["alias"]} --accept-vs2015-license   '
+                       '(only after a person has read and accepted it)', licence=info['licence'])
+        if input('Do you accept this licence? Type "yes": ').strip().lower() != 'yes':
+            raise Stop(CONSENT, 'licence not accepted; no compiler installed')
+    if not ctx.windows and not ctx.which('msiextract'):
+        raise Stop(MISSING, 'msiextract (msitools) is needed to unpack the compiler packages',
+                   'install msitools (brew install msitools, or apt install msitools) and rerun')
+    dest = ctx.local / 'toolchains' / f'msvc-{toolset}'
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [sys.executable, '-I', str(ctx.repo / 'tools/verifier/vs2015_u2.py'), 'install', '--accept-license',
+           '--root', str(dest), '--sdk-from', pinned['root'], '--work', str(ctx.private / 'u2-work')]
+    if not ctx.windows:
+        cmd.append('--wrapper')
+    ctx.say(f'reading the compiler packages from Microsoft into {dest} (about 16 MB read, about 1.5 GB on disk)')
+    proc = ctx.run(cmd, capture_output=True, text=True)
+    shutil.rmtree(ctx.private / 'u2-work', ignore_errors=True)
+    if proc.returncode != 0:
+        raise Stop(FAILED, 'the compiler install failed: ' + (proc.stderr or proc.stdout).strip()[-200:],
+                   f'{ctx.cli} setup --toolchain {info["alias"]} --accept-vs2015-license   (resumes)')
+    return check_toolchain(ctx, ctx.repo, recipe)
+
+
 def cmd_setup(ctx, args):
     target = target_manifest(ctx.repo)
     steps = []
@@ -1814,6 +1887,18 @@ def cmd_setup(ctx, args):
             raise Stop(MISSING, f'toolchain after install: {tool["status"]} {tool.get("differing", "")}',
                        f'{ctx.cli} doctor', steps=steps)
         step('compiler', 'installed', tool['bin'])
+    wanted_second = second_toolchain_id(getattr(args, 'toolchain', None) or '')
+    if getattr(args, 'toolchain', None) and wanted_second is None:
+        raise Stop(USAGE, f'unknown toolchain {args.toolchain!r}; the second compiler is `havok` '
+                   '(VS2015 Update 2)')
+    if wanted_second:
+        second = check_toolchain(ctx, ctx.repo, f'reconstruction/recipes/msvc-{wanted_second}-o2.json')
+        if second['status'] != 'ok':
+            second = install_second_toolchain(ctx, wanted_second, getattr(args, 'accept_vs2015_license', False))
+        if second['status'] != 'ok':
+            raise Stop(MISSING, f'toolchain {wanted_second} after install: {second["status"]} '
+                       f'{second.get("differing", "")}', f'{ctx.cli} doctor', steps=steps)
+        step(f'compiler {wanted_second}', 'ok', second['bin'])
     import pdb_facts
     sym_ok, sym_lines = pdb_facts.setup_lines(ctx.repo, ctx.env, full=True)
     step('symbol files', 'ok' if sym_ok else 'needs-person',
@@ -2553,7 +2638,13 @@ def start(ctx, args, quiet=False):
                 entry['symbol'] = by_rva.get(fn['rva']) or f'unbound:{fn["name"]}'
         if entry['community_name'] == fn['name'] and fn.get('name_origin'):
             entry['name_origin'] = fn['name_origin']
-    recipe = args.recipe or old.get('recipe') or DEFAULT_RECIPE
+    second = None
+    if getattr(args, 'toolchain', None):
+        second = second_toolchain_id(args.toolchain)
+        if second is None:
+            raise Stop(USAGE, f'unknown toolchain {args.toolchain!r}; the second compiler is `havok` (VS2015 Update 2)')
+    recipe = args.recipe or (f'reconstruction/recipes/msvc-{second}-o2.json' if second else None) \
+        or old.get('recipe') or DEFAULT_RECIPE
     sibling = sibling_section(ctx, cls, sorted(functions)) if cls else []
     if sibling:
         (tdir / 'sibling.md').write_text(f'# {cls}: pointers into the FNV decompilation (private)\n'
@@ -2982,6 +3073,10 @@ def run_compare(ctx, ident=None, root=None, retry=True, quiet=False, draft_rva=N
     tool = check_toolchain(ctx, root, recipe)
     if tool['status'] == 'ok':
         say(f'compiler: toolset {Path(tool["bin"]).parents[2].name} at {tool["root"]} (recipe pin)')
+    elif tool['status'] in ('missing', 'mismatch') and second_toolchain_id(recipe_toolset(root, recipe)):
+        alias = SECOND_TOOLCHAINS[recipe_toolset(root, recipe)]['alias']
+        raise Stop(MISSING, f'the unit\'s recipe {recipe} names a compiler that is not installed here',
+                   f'{ctx.cli} setup --toolchain {alias} --accept-vs2015-license   (a person accepts the licence first)')
     built = compile_unit(ctx, root, task['compiled'], recipe, out, tool)
     objdump = find_objdump(ctx)
     _, bind_lines = bind_attempt(root, tdir, out, exe, objdump)
@@ -3794,7 +3889,9 @@ def cmd_go(ctx, args):
     setup_args = argparse.Namespace(exe=args.exe, accept_microsoft_license=args.accept_microsoft_license,
                                     no_install=False, no_sources=False, no_self_test=args.no_self_test,
                                     steamcmd=False, no_sibling=args.no_sibling, decompiler=getattr(args, 'decompiler', True),
-                                    accept_winget_source_agreements=args.accept_winget_source_agreements)
+                                    accept_winget_source_agreements=args.accept_winget_source_agreements,
+                                    toolchain=getattr(args, 'toolchain', None),
+                                    accept_vs2015_license=getattr(args, 'accept_vs2015_license', False))
     try:
         cmd_setup(ctx, setup_args)
     except Stop as exc:
@@ -3827,7 +3924,8 @@ def cmd_go(ctx, args):
             f'file {links}, then run {ctx.cli} claim {rva} --github-user <your-login>'
             if claim.get('claim') == 'link-only' else claim_next)
     return start(ctx, argparse.Namespace(rva=[rva], practice=False, drafted_by=args.drafted_by, area=None,
-                                         no_branch=args.no_branch, recipe=None, force=False, profile=args.profile))
+                                         no_branch=args.no_branch, recipe=None, force=False, profile=args.profile,
+                                         toolchain=getattr(args, 'toolchain', None)))
 
 
 # ------------------------------------------------------------------ main
@@ -3898,6 +3996,10 @@ def parser():
     s.add_argument('--exe')
     s.add_argument('--accept-microsoft-license', action='store_true',
                    help='a person has read and accepted the VS 2017 Build Tools licence')
+    s.add_argument('--toolchain', help='also install the second compiler for units whose recipe names it: '
+                   '`havok` (VS 2015 Update 2, recipes msvc-19.00.23918-*)')
+    s.add_argument('--accept-vs2015-license', action='store_true',
+                   help='a person has read and accepted the Visual Studio 2015 Community licence (for --toolchain havok)')
     s.add_argument('--no-install', action='store_true', help='print package commands instead of running them')
     s.add_argument('--no-sources', action='store_true')
     s.add_argument('--no-sibling', action='store_true', help='skip the optional FNV decompilation clone (about 175 MB)')
@@ -3938,6 +4040,8 @@ def parser():
     s.add_argument('--class', dest='class_name', metavar='CLASS',
                    help='use this owner for members or Function<rva> placeholders (label inferred names GUESS)')
     s.add_argument('--recipe')
+    s.add_argument('--toolchain', help='build the unit with the second compiler: `havok` (VS 2015 Update 2); '
+                   'writes the msvc-19.00.23918 recipe on the unit\'s Recipe: line')
     s.add_argument('--deleting-cleanup', choices=('inline', 'out-of-line'),
                    help='for a scalar deleting destructor identified locally: inline complete cleanup or call out')
     s.add_argument('--practice', action='store_true', help='try an already matched function as an exercise')
@@ -3994,6 +4098,8 @@ def parser():
     s.add_argument('--exe')
     s.add_argument('--drafted-by')
     s.add_argument('--accept-microsoft-license', action='store_true')
+    s.add_argument('--toolchain', help='also install the second compiler: `havok` (VS 2015 Update 2)')
+    s.add_argument('--accept-vs2015-license', action='store_true')
     s.add_argument('--accept-winget-source-agreements', action='store_true')
     s.add_argument('--no-sibling', action='store_true')
     s.add_argument('--no-self-test', action='store_true')

@@ -54,13 +54,28 @@ jobs:
         with:
           path: ${{ runner.temp }}/msvc-v141
           key: ${{ steps.key.outputs.cache_key }}
+      - name: Which extra compilers the request needs
+        id: needed
+        env:
+          CANDIDATE: ${{ inputs.candidate }}
+          REQUEST: ${{ inputs.request }}
+          REQUEST_SHA: ${{ inputs.request_sha }}
+        run: python tools/ci_confirm_batch.py --needed-toolsets --candidate "$env:CANDIDATE" --request "$env:REQUEST" --request-sha "$env:REQUEST_SHA"
+      - name: Install the VS2015 Update 2 compiler when a recipe names it
+        if: contains(steps.needed.outputs.toolsets, '19.00.23918')
+        id: u2
+        run: python tools/verifier/vs2015_u2.py install --accept-license --root "${{ runner.temp }}/msvc-v140u2" --sdk-from "${{ runner.temp }}/msvc-v141" --work "${{ runner.temp }}/u2-work"
       - name: Compile twice and verify target commitments
         env:
           CANDIDATE: ${{ inputs.candidate }}
           REQUEST: ${{ inputs.request }}
           REQUEST_SHA: ${{ inputs.request_sha }}
           MSVC_BIN: ${{ steps.setup.outputs.bin }}
-        run: python tools/ci_confirm_batch.py --candidate "$env:CANDIDATE" --request "$env:REQUEST" --request-sha "$env:REQUEST_SHA" --bin "$env:MSVC_BIN" --work "$env:RUNNER_TEMP/confirm" --out "$env:RUNNER_TEMP/result/result.json"
+          U2_BIN: ${{ steps.u2.outputs.bin }}
+        run: |
+          $extra = @()
+          if ($env:U2_BIN) { $extra += @('--toolchain', "19.00.23918=$env:U2_BIN") }
+          python tools/ci_confirm_batch.py --candidate "$env:CANDIDATE" --request "$env:REQUEST" --request-sha "$env:REQUEST_SHA" --bin "$env:MSVC_BIN" @extra --work "$env:RUNNER_TEMP/confirm" --out "$env:RUNNER_TEMP/result/result.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

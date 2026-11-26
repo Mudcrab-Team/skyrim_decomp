@@ -131,17 +131,28 @@ jobs:
         env:
           SETUP_STARTED: ${{ steps.key.outputs.started }}
         run: python tools/ci_toolchain.py setup --root "$env:RUNNER_TEMP/msvc-v141" --started "$env:SETUP_STARTED"
+      # A unit whose Recipe: line names the VS2015 Update 2 compiler (Havok code) needs it beside the
+      # pinned one. Microsoft's own image supplies it: only the compiler packages are read from it by
+      # range request and each is checked by SHA-256 (tools/verifier/vs2015_u2.py). Other PRs skip this.
+      - name: Install the VS2015 Update 2 compiler when a recipe names it
+        if: steps.prepare.outputs.mode == 'check' && contains(steps.prepare.outputs.toolsets, '19.00.23918')
+        id: u2
+        shell: pwsh
+        run: python tools/verifier/vs2015_u2.py install --accept-license --root "$env:RUNNER_TEMP/msvc-v140u2" --sdk-from "$env:RUNNER_TEMP/msvc-v141" --work "$env:RUNNER_TEMP/u2-work"
       - name: Compile at base and head; block only on regressions
         if: steps.prepare.outputs.mode == 'check'
         shell: pwsh
         env:
           MSVC_BIN: ${{ steps.setup.outputs.bin }}
+          U2_BIN: ${{ steps.u2.outputs.bin }}
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           python tools/ci_hash_check.py probe --bin "$env:MSVC_BIN" --out "$env:RUNNER_TEMP/probe.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/ci_target_hash_check.py regress --base "$env:BASE_SHA" --head "$env:PR_HEAD" --bin "$env:MSVC_BIN" --work "$env:RUNNER_TEMP/target-hash" --out "$env:RUNNER_TEMP/target-result.json" --map-out "$env:RUNNER_TEMP/hash-result.json"
+          $extra = @()
+          if ($env:U2_BIN) { $extra += @('--toolchain', "19.00.23918=$env:U2_BIN") }
+          python tools/ci_target_hash_check.py regress --base "$env:BASE_SHA" --head "$env:PR_HEAD" --bin "$env:MSVC_BIN" @extra --work "$env:RUNNER_TEMP/target-hash" --out "$env:RUNNER_TEMP/target-result.json" --map-out "$env:RUNNER_TEMP/hash-result.json"
       # Statuses and fixed reason codes only: no compiler diagnostics, objects or game bytes.
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always() && steps.prepare.outputs.mode == 'check'

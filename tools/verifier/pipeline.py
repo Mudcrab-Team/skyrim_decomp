@@ -35,6 +35,7 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 from source_digest import include_closure, recipe_flag_problem  # noqa: E402
 import boatctl  # noqa: E402
+import toolsets  # noqa: E402
 import disasm  # noqa: E402
 import vsession  # noqa: E402
 import record_store  # noqa: E402
@@ -45,7 +46,7 @@ except ImportError:
     cost_hooks = None
 
 TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
-              'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
+              'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/toolsets.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
 TASK_ID = re.compile(r'[a-z0-9][a-z0-9.-]{0,55}')
 PRIVATE_SYMBOLS = 'task/symbols.json'
 DEFAULT_TTL = int(os.environ.get('SR_VERIFIER_TTL', '3600'))
@@ -165,6 +166,10 @@ def load_task(task_dir, repo=REPO):
     if not isinstance(recipe, str) or not recipe.startswith('reconstruction/recipes/'):
         raise PipelineError('task.json: recipe must be reconstruction/recipes/<name>.json')
     recipe = unit_recipe(repo, compiled, recipe)
+    try:
+        toolset = toolsets.toolset_of_recipe(repo, recipe)
+    except toolsets.ToolsetError as exc:
+        raise PipelineError(f'{exc}; a recipe names its compiler by cl.exe hash and a pin file under tools/verifier/ must hold it') from None
     symbols = raw.get('symbols', 'symbols.json')
     if not isinstance(symbols, str):
         raise PipelineError('task.json: symbols must be a path')
@@ -221,7 +226,7 @@ def load_task(task_dir, repo=REPO):
     if max_attempts is not None:
         max_attempts = parse_int(max_attempts, 'max_attempts')
     return {'dir': task_dir, 'task_id': task_id, 'build_id': raw['build_id'], 'compiled': compiled,
-            'recipe': recipe, 'symbols_local': symbols_path,
+            'recipe': recipe, 'toolset': toolset, 'symbols_local': symbols_path,
             'symbols_repo': symbols if public_symbols else None, 'functions': functions,
             'max_attempts': max_attempts, 'record_notes': notes}
 
@@ -243,6 +248,9 @@ def unit_manifest(task, repo=REPO):
     files = {name: repo / name for name in TOOL_FILES}
     files.update({name: repo / name for name in closure})
     files[task['recipe']] = recipe
+    toolset = task.get('toolset', toolsets.DEFAULT)
+    if toolset != toolsets.DEFAULT:
+        files[toolsets.pin_path(toolset)] = repo / toolsets.pin_path(toolset)
     files[task['symbols_repo'] or PRIVATE_SYMBOLS] = task['symbols_local']
     return files, closure
 
@@ -289,8 +297,12 @@ def unit_spec(task, files, host):
             'functions': [{k: f[k] for k in ('rva', 'size', 'symbol', 'internal_selector') if k in f}
                           for f in task['functions']],
             'files': {name: sha256_file(path) for name, path in sorted(files.items())}}
-    if task.get('pins'):
-        spec['pins'] = task['pins']
+    # A unit built with a non-default compiler tells the host which one; the host picks that
+    # toolchain and unit_build checks the pin file against the unit's recipe.
+    toolset = task.get('toolset', toolsets.DEFAULT)
+    if toolset != toolsets.DEFAULT:
+        spec['toolset'] = toolset
+        spec['pins'] = toolsets.pin_path(toolset)
     return spec
 
 

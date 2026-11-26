@@ -323,7 +323,13 @@ Match record, recomputed from the tree:
   equal the inventory entry's, and the current symbol map places the symbol at that range.
 - **Recipe and compiler.** The recipe and `tools/verifier/pinned.sha256` match their recorded
   hashes. The recipe's compiler is the pinned `cl.exe`, and every report names that recipe's
-  hash, compiler and flags.
+  hash, compiler and flags. One other compiler is accepted: a recipe whose `compiler.binary_sha256`
+  is the `cl.exe` of `tools/verifier/pinned/19.00.23918.sha256` (VS 2015 Update 2, the build of the
+  target's Havok objects; `check.SECOND_TOOLCHAIN_PINS`) binds that pin file as its `toolchain_pin`
+  instead, and every host then checks its compiler binaries against that file. Which pin file applies is
+  read from the recipe, never chosen by the record; other pin files under `pinned/` (the compiler-build
+  sweep's stand-ins) are not accepted. Each host and the CI hash job build a unit with the toolchain its
+  recipe names (`tools/verifier/toolsets.py`) and refuse a unit whose compiler they lack.
 - **Symbol map.** The record pins the SHA-256 of the map version its runs used. It binds if that
   is the current map, or if it is an earlier version all of whose entries are present and
   identical now and nothing added since could have changed the result. The first part is proven

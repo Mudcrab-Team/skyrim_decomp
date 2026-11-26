@@ -37,7 +37,7 @@ import record_store  # noqa: E402
 import symbol_map  # noqa: E402
 from check import _json_or_none  # noqa: E402
 from digest_v2 import review_binds  # noqa: E402
-from check import (ROOT, DIGEST_METHOD, REVIEW_RECORD_SCHEMA, TOOLCHAIN_PIN, file_sha256,  # noqa: E402
+from check import (ROOT, DIGEST_METHOD, REVIEW_RECORD_SCHEMA, TOOLCHAIN_PIN, file_sha256, recipe_toolchain_pin,  # noqa: E402
                    record_code_section, review_record_path, validate_match, validate_review)
 
 PROGRESS = 'data/progress.json'
@@ -80,7 +80,8 @@ def assemble_record(root, task, unit, fn, report, build, ci):
         source=dict(translation_unit=unit['closure'], compiled=unit['unit'], digest_method=DIGEST_METHOD,
                     digest=unit['source_sha256']),
         recipe=dict(path=task['recipe'], sha256=unit['recipe_sha256']),
-        toolchain_pin=dict(path=TOOLCHAIN_PIN, sha256=file_sha256(root, TOOLCHAIN_PIN)),
+        toolchain_pin=dict(path=recipe_toolchain_pin(root, task['recipe']),
+                           sha256=file_sha256(root, recipe_toolchain_pin(root, task['recipe']))),
         symbol_map=dict(path=task['symbols_repo'], sha256=hashlib.sha256(Path(task['symbols_local']).read_bytes()).hexdigest()),
         reproduction='Compile with the pinned recipe and compare with tools/verifier/attempt on a registered '
                      'first host; the second host is the pr-check.yml hash job of the recorded run, which '

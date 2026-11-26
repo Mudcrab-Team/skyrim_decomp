@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "toolset": "19.00.23918",
+  "image_url": "https://download.microsoft.com/download/f/d/c/fdce5d40-87d3-4bd6-9139-2a7638b96174/vs2015.2.com_enu.iso",
+  "image_size": 7464144896,
+  "packages": [
+    {
+      "path": "packages/VisualC_D14/VC_CRT.Headers/VC_CRT.Headers.msi",
+      "size": 180224,
+      "sha256": "8ddf78cce3231d12b5043dca533d26f2bf12a685e8a40df5b6f126cb0d8d7cfd"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_CRT.Headers/cab1.cab",
+      "size": 2498437,
+      "sha256": "538d9f473ade6f9db5b757b2939285ea9d5504bf99ce17f4d3409f82e12d45b9"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.Core.Res/enu/VC_Tools.Core.Res.msi",
+      "size": 122880,
+      "sha256": "35d886225260a224760d9b4e6323022fd21b6d12af2be975bcf84bfce589835b"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.Core.Res/enu/cab1.cab",
+      "size": 34688,
+      "sha256": "db18008ff7189ff591167ae3bb0e62e94924eb58f720a107ccc833d7fdc6ccb0"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.Core/VC_Tools.Core.msi",
+      "size": 131072,
+      "sha256": "1a52d4f27a75fcadcadc2efd0fc1cffe28949997ad372e219ef43e82c2246a3a"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.Core/cab1.cab",
+      "size": 187514,
+      "sha256": "a11faf8e6b1d8c7c742166c8ae97cea28ff6ba3885b198ae07c0419ede53498a"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Base.Res/enu/VC_Tools.X64.Base.Res.msi",
+      "size": 122880,
+      "sha256": "37cc0c9fa90aa386d7a2b21d99765b87be22d3dca15430e9c988971956894b32"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Base.Res/enu/cab1.cab",
+      "size": 72159,
+      "sha256": "ffc57c67ded2fbf835739be29d72609552086ecadc0737723f550818fe71646c"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Base/VC_Tools.X64.Base.msi",
+      "size": 172032,
+      "sha256": "6300845813366a0b56a3ec84038d9cc472db8d3d4ce99350cf19d0690c91e718"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Base/cab1.cab",
+      "size": 4979207,
+      "sha256": "117e98c11a3b1b12ff6bd2a253a628d5539d99e4d11c10c5fcebfd5c3fa6a7cd"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Nat.Res/enu/VC_Tools.X64.Nat.Res.msi",
+      "size": 131072,
+      "sha256": "717a9179dc7c6f31f2e8f346bca87a53e3dece788d223c9f52f2e83d3b088367"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Nat.Res/enu/cab1.cab",
+      "size": 140633,
+      "sha256": "159ae8059eb301c594ca16ab86192e5430f54f87970e788d432648276eb7011b"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Nat/VC_Tools.X64.Nat.msi",
+      "size": 126976,
+      "sha256": "52b6873d7ddf57763cb598d22cb3556328d13906bc5f5786d00413845c3ab633"
+    },
+    {
+      "path": "packages/VisualC_D14/VC_Tools.X64.Nat/cab1.cab",
+      "size": 7566916,
+      "sha256": "70124d74f7a372825d4bfea084bbe39c876151d04f08bf7f89d2788aeb1a4317"
+    }
+  ]
+}

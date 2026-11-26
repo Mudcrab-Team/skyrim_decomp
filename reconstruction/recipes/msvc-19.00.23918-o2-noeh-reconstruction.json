@@ -1,0 +1,20 @@
+{
+  "compiler": {
+    "binary_sha256": "6eb5a82907d122084c992c75c3f5700da764aebee8fa5371fb816a9bff770902",
+    "version": "19.00.23918 for x64 (toolset dir 14.00.23918, VS 2015 Update 2 packages of Microsoft's vs2015.2.com_enu image)"
+  },
+  "flags": [
+    "/nologo",
+    "/c",
+    "/O2",
+    "/MD",
+    "/GS-",
+    "/GR",
+    "/fp:precise",
+    "/Gy",
+    "/I",
+    "reconstruction"
+  ],
+  "sdk": "10.0.19041.0",
+  "host": "wine-9.0 (Ubuntu 9.0~repack-4build3), Ubuntu 24.04 x86-64"
+}

@@ -23,6 +23,7 @@ from pecoff import CoffObject
 from source_digest import include_closure
 from digest_v2 import tu_digest
 import target_hashes
+import toolsets
 
 
 def git(*args):
@@ -87,14 +88,20 @@ def prepare(candidate, request_path, request_sha, work):
     return request, tree
 
 
-def compile_batch(request, tree, bindir, work):
+def compile_batch(request, tree, bindirs, work):
+    if not isinstance(bindirs, dict):  # a lone directory is the default toolset's
+        bindirs = {toolsets.DEFAULT: bindirs}
     manifest = target_hashes.load_manifest(ROOT)
     targets = {r['rva']: r for r in manifest['functions']}
     ctx = contrib.Ctx(repo=ROOT, platform='win32', interactive=False)
-    tool = dict(status='ok', flavour='native', bin=str(bindir), root=str(bindir.parents[6]))
     def one(unit):
         rows = []
         objects = []
+        # The unit's recipe names its compiler by cl.exe hash; a host without it refuses the unit.
+        toolset = toolsets.toolset_of_recipe(ROOT, unit['recipe'])
+        evidence.require(toolset in bindirs, 'no toolchain for the recipe compiler')
+        bindir = bindirs[toolset]
+        tool = dict(status='ok', flavour='native', bin=str(bindir), root=str(bindir.parents[6]))
         for attempt in range(2):
             built = contrib.compile_unit(ctx, tree, unit['unit'], unit['recipe'],
                 work / unit['task_id'] / str(attempt), tool)
@@ -125,10 +132,23 @@ def compile_batch(request, tree, bindir, work):
                 **({k: unit[k] for k in ('first_host', 'first_content_sha256', 'first_object_sha256')}
                    if 'first_host' in unit else {k: unit[k] for k in ('mac_content_sha256', 'mac_object_sha256')}),
                 content_sha256=contents[0], object_sha256=evidence.sha(objects[0]),
-                result='hash-match', deterministic=True, **measurements[0]))
+                result='hash-match', deterministic=True, **measurements[0],
+                **({} if toolset == toolsets.DEFAULT else dict(
+                    toolset_id=toolset, compiler_sha256=toolsets.known(ROOT)[toolset]))))
         return rows
     with ThreadPoolExecutor(max_workers=4) as pool:
         return [row for rows in pool.map(one, request['units']) for row in rows]
+
+
+def request_toolsets(candidate, request_path, request_sha):
+    """Toolset ids other than the default that the request's recipes name (the workflow installs those first)."""
+    evidence.require(bool(re.fullmatch('[0-9a-f]{40}', candidate))
+                     and bool(re.fullmatch(r'data/ci-confirm/[a-z0-9-]+\.json', request_path)), 'invalid request')
+    raw = git('show', f'{candidate}:{request_path}')
+    evidence.require(evidence.sha(raw) == request_sha, 'request digest differs')
+    ids = {toolsets.toolset_of_recipe(ROOT, unit['recipe'], strict=True) for unit in json.loads(raw)['units']
+           if re.fullmatch(r'reconstruction/recipes/[a-zA-Z0-9_.-]+\.json', unit['recipe'])}
+    return sorted(ids - {toolsets.DEFAULT})
 
 
 def main():
@@ -136,10 +156,23 @@ def main():
     p.add_argument('--candidate', required=True)
     p.add_argument('--request', required=True)
     p.add_argument('--request-sha', required=True)
-    p.add_argument('--bin', type=Path, required=True)
-    p.add_argument('--work', type=Path, required=True)
-    p.add_argument('--out', type=Path, required=True)
+    p.add_argument('--needed-toolsets', action='store_true',
+                   help='print the non-default toolsets the request needs to GITHUB_OUTPUT and exit')
+    p.add_argument('--bin', type=Path)
+    p.add_argument('--toolchain', action='append', default=[], metavar='ID=BIN',
+                   help='bin/Hostx64/x64 of another compiler build (repeatable)')
+    p.add_argument('--work', type=Path)
+    p.add_argument('--out', type=Path)
     a = p.parse_args()
+    if a.needed_toolsets:
+        needed = request_toolsets(a.candidate, a.request, a.request_sha)
+        if os.environ.get('GITHUB_OUTPUT'):
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+                out.write('toolsets=' + ','.join(needed) + '\n')
+        print(','.join(needed))
+        return 0
+    if not (a.bin and a.work and a.out):
+        p.error('--bin, --work and --out are required')
     report = dict(schema=1, kind='ci-hash', host_id='github-windows-native', machine='github-hosted-windows',
                   os='windows', loader='native', workflow=evidence.WORKFLOW,
                   base_sha=git('rev-parse', 'HEAD').decode().strip(), candidate_sha=a.candidate,
@@ -154,7 +187,12 @@ def main():
         report.update(cache_verified=True, toolset='MATCH', compiler_sha256={f['name']: f['sha256'] for f in probe['files']})
         request, tree = prepare(a.candidate, a.request, a.request_sha, a.work)
         report['build_id'] = request['build_id']
-        report['functions'] = compile_batch(request, tree, a.bin, a.work / 'objects')
+        bins = {toolsets.DEFAULT: a.bin}
+        for tid, path in toolsets.toolchain_args(a.toolchain).items():
+            extra = ci_hash_check.probe(ROOT, Path(path), tid)
+            evidence.require(extra['toolset'] == 'MATCH', 'second compiler pin mismatch')
+            bins[tid] = Path(path)
+        report['functions'] = compile_batch(request, tree, bins, a.work / 'objects')
         report['conclusion'] = 'success'
     except Exception as exc:
         # Never publish compiler diagnostics, candidate bytes or runner paths.
