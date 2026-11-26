@@ -267,6 +267,16 @@ Published corrections stay in force.
 - **Unverified.** The independent review did not re-read the technique-level reach of the Lighting setup (it rests on #946 and #1003), the grass PS multiply by `k`, the other 15 `k` readers or the derivation of `q`.
 - **Verified.** The overlaps with earlier findings were re-read and agree: the `1/fGamma` constant, the SunlightScale product in the Lighting writer, the IMAD lerp, and the Lighting `k` expression (exterior-fog finding, `E = S × (L − k × M)`). Two items that earlier findings left unverified are now resolved: the active target format by setting (G02) and the pixel-side use of the global boosts (G05).
 
+## Amendment (2026-11-25, from SPEC-2, UNREVIEWED): earlier effect slots and `usesLDR`
+
+**Scope.** Two statements of G01 and the open lists that repeat them. Addresses are RVAs. Static only. No visual result is claimed. Source: [spec-hdr-output-retail-facts.md](spec-hdr-output-retail-facts.md), sections 8 and 14. That merged file had no separate review of its final wording. Evidence: separate `claude-sonnet-5-5` runs (the author, reviewer, second binary check and finalizer of that specification).
+
+1. **G01, open items (resolution).** "**Unverified.** The identity of slots 0 to 7, the default state of `usesLDR`, and whether a stock exterior frame uses the deferred branch." is answered. **Verified.** `usesLDR` (manager `+0x210`) is 1 from the manager constructor (`0x14ed449`). The one other direct writer found is the console command `TogglePostponeBlurryEffect` (`tpbe`, handler `0x380340`), which flips it. The slots are 0 world map, 1 refraction, 2 FXAA, 3 depth of field, 4 none registered, 5 radial blur, 6 full-screen blur and 7 double vision. With defaults, slots 3 to 7 take the deferred branch after the HDR effect. Each does work only when it reports active.
+2. **G01, slot 34 (resolution).** "**Inferred.** Slot 34 is the non-HDR alternative. Its class was not resolved here." is replaced by: "**Verified.** Slot 34, the non-HDR alternative, is an effect built on the copy shader (`ISCopy`)."
+3. **Open lists.** The entries "manager effect slots 0 to 7 and 34" and "the default of `usesLDR`" in "Negative results and limitations" and in the amendment of 2026-11-25 are answered by items 1 and 2. All run-time values stay open.
+
+**Confidence: high.** The original text stays unchanged. This amendment supersedes it for the statements named here only.
+
 ## Independent review
 
 Reviewer: a separate fresh-context run of `claude-sonnet-5-5`. The reviewer is not the author. A Sol run was not available because of usage limits. The reviewer ran from 02:03 to 02:22 CST on 2026-11-24. It saved an independent extraction for the format, the HDR passes, the adaptation rule, the SunlightScale readers and the setting names before it read the body of the text under review.
