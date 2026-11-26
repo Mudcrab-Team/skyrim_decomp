@@ -935,3 +935,17 @@ Author draft, one independent review and one second binary check by separate Son
 The reconstruction unit `bsshader/ShadowSceneNode_R5B2CasterReset` names this byte `lightsFrozen`. That name is a guess, and the evidence does not support it. No read or store shows a freeze. The byte is a location rule, and the writer computes it again in each world draw. A description that follows the evidence is "no sun shadow caster: loaded interior, or world space flag `0x40` or `0x20`". A possible name is `isInteriorOrFlaggedWorld` (**GUESS**). This amendment changes no reconstruction file.
 
 **Confidence: high** for the writer and the gates. **Medium** for "no other path adds the sun". A found writer or caller, or a runtime watch that shows a sun cascade draw in a loaded interior, would change this.
+
+## Amendment (2026-11-26, from SPEC-4): frame clear colour and sky pixel outputs
+
+Transfer status: UNREVIEWED. Static only. These items come from the SPEC-4 runs (sky objects and weather; Sonnet 5.5 author, independent review, blind second binary check and finalizer, `claude-sonnet-5-5`). The original text above stays unchanged. This amendment supersedes it for the statements named here only.
+
+### Correction to earlier finding: the frame clear colour (section 8.1 and ledger L61)
+
+Published in section 8.1: "The frame clear colour is `k × fog far colour` (**V2**)." Ledger L61: "Clear colour `k × fog far`".
+
+Corrected: the clear colour is the fog far colour (`NAM0` row 12 in the sky object; indoors, the cell fog far colour in the same sky field) × the **literal 0.83332998** (constant at `0x1869de8`). It does not use `k`. All three sky update paths that write the clear-colour globals use the literal (`0x412253`, `0x412699`, `0x4127a9`); the frame start reads them (`0x656d8b`). #1080 G01 already states the literal. With the file value of `k` the difference is about 3.3 × 10⁻⁶ of the colour value. After the console command `sfbr`, `k` changes and the clear colour does not. **V2**.
+
+### Addition to section 2.4: sky pixel outputs
+
+Besides the colour in the table of section 2.4, every sky pixel shader writes output 1 = screen motion `(current − previous) × (−0.5, +0.5)` and output 2 = the constant `(0.5, 0.5, 0, 0)`. **V2**.
