@@ -145,16 +145,16 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 8 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 3 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| A: Foundation | 416 | 176 | 42.3% | 2 | 55 | 183 | 0 | 62919 |
+| A: Foundation | 416 | 176 | 42.3% | 1 | 56 | 183 | 0 | 63371 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 3 | 37 | 178 | 0 | 89018 |
 | C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 0 | 29 | 113 | 0 | 68822 |
-| D: Image space, sky, water system | 726 | 614 | 84.6% | 11 | 17 | 84 | 0 | 67624 |
+| D: Image space, sky, water system | 726 | 614 | 84.6% | 5 | 18 | 89 | 0 | 74810 |
 | E: Shadows | 132 | 92 | 69.7% | 2 | 2 | 36 | 0 | 46384 |
-| **Total A-E** | 2060 | 1308 | 63.5% | 18 | 140 | 594 | 0 | 334767 |
+| **Total A-E** | 2060 | 1308 | 63.5% | 11 | 142 | 599 | 0 | 342405 |
 | Adjacent, not assigned | 998 | 463 | 46.4% | 0 | 137 | 398 | 0 | 167923 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
@@ -168,7 +168,7 @@ Scope: BSGraphics state, render targets, buffers, textures and resources, render
 | A1 BSGraphics renderer and state | 64 | 10 | 0 | 18 | 36 | 0 | absent from the ready queue (35) | bsshader |
 | A2 Render targets, buffers and depth-stencil | 9 | 3 | 0 | 3 | 3 | 0 | absent from the ready queue (3) | bsshader |
 | A3 Shader manager, shader resources and textures | 64 | 41 | 0 | 5 | 18 | 0 | absent from the ready queue (18) | bsshader |
-| A4 Lights | 78 | 33 | 2 | 12 | 31 | 0 | absent from the ready queue (31) | gamebryo |
+| A4 Lights | 78 | 33 | 1 | 13 | 31 | 0 | absent from the ready queue (31) | gamebryo |
 | A5 Render geometry (shapes, skin instances) | 201 | 89 | 0 | 17 | 95 | 0 | absent from the ready queue (95) | gamebryo |
 
 <details><summary>Classes of workstream A with unmatched functions</summary>
@@ -193,7 +193,7 @@ Scope: BSGraphics state, render targets, buffers, textures and resources, render
 | BSTextureDB__QueuedHandles__dtor | A3 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
 | BSTextureDB__anonymous_namespace__NiTextureDBForwarded | A3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CreateSourceTexture | A3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| BSLight | A4 | 20 | 5 | 1 | 4 | 10 | 0 | 105 |
+| BSLight | A4 | 20 | 5 | 0 | 5 | 10 | 0 | 105 |
 | NiPointLight | A4 | 15 | 8 | 1 | 0 | 6 | 0 | 17 |
 | NiLight | A4 | 9 | 5 | 0 | 0 | 4 | 0 | 19 |
 | NiLightColorController | A4 | 8 | 0 | 0 | 6 | 2 | 0 | 0 |
@@ -338,8 +338,8 @@ Scope: image space, sky, weather, fog, water.
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
 | D2 Image space: manager, effects and image-space shaders | 615 | 550 | 4 | 13 | 48 | 0 | absent from the ready queue (48) | bsshader |
-| D3 Sky, sun, clouds, weather and fog | 71 | 37 | 6 | 1 | 27 | 0 | absent from the ready queue (27) | skyrim_shared |
-| D4 Water system, displacement and reflections | 40 | 27 | 1 | 3 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
+| D3 Sky, sun, clouds, weather and fog | 71 | 37 | 1 | 1 | 32 | 0 | absent from the ready queue (32) | skyrim_shared |
+| D4 Water system, displacement and reflections | 40 | 27 | 0 | 4 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
 
 <details><summary>Classes of workstream D with unmatched functions</summary>
 
@@ -374,8 +374,8 @@ Scope: image space, sky, weather, fog, water.
 | GetVLTemporalAccumulationFactor | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | UpdateVolumetricLightingRenderData | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | VolumetricLightingDescriptor | D2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| Sky | D3 | 31 | 13 | 4 | 0 | 14 | 0 | 145 |
-| Sun | D3 | 6 | 5 | 1 | 0 | 0 | 0 | 0 |
+| Sky | D3 | 31 | 13 | 0 | 0 | 18 | 0 | 145 |
+| Sun | D3 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | BSFogProperty | D3 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
 | Precipitation | D3 | 5 | 1 | 1 | 0 | 3 | 0 | 0 |
 | TESWeather | D3 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
@@ -383,7 +383,7 @@ Scope: image space, sky, weather, fog, water.
 | Clouds | D3 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | Stars | D3 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | Precipitation::OcclusionMapData | D3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| TESWaterForm | D4 | 16 | 13 | 1 | 1 | 1 | 0 | 134 |
+| TESWaterForm | D4 | 16 | 13 | 0 | 2 | 1 | 0 | 134 |
 | TESWaterSystem | D4 | 15 | 10 | 0 | 1 | 4 | 0 | 0 |
 | TESWaterDisplacement | D4 | 4 | 2 | 0 | 0 | 2 | 0 | 0 |
 | TESWaterReflections | D4 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
