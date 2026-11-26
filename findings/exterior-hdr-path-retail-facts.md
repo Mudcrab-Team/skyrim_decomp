@@ -326,3 +326,12 @@ The original text above stays unchanged. The amendment supersedes it for these t
 **Open lists after this amendment.** These entries of G03, G04, G05, G08 and "Negative results and limitations" are now answered: the meaning of `T` (item 2), the first-frame adapted texture (item 11), the native names of `t0` and `t1` (item 6) and the frame order of the modifier apply and normaliser (item 10). The adapted texture size is 2 by 2 (1 by 1 with `bUseMultipleLuminanceReferences` 0). Still open: manager effect slots 0 to 7 and 34, the default of `usesLDR`, all runtime values and visual results, and the constants `cb12[43]` and `cb12[44]` (dynamic resolution).
 
 The original text above stays unchanged. This amendment supersedes it for the statements listed above only.
+
+## Amendment (2026-11-25, UNREVIEWED): eye-adaptation step sign at rate 0
+
+**Scope.** The G04 step rule and item 3 of the earlier amendment of 2026-11-25. Addresses are RVAs. Static only. No visual result is claimed. Source: [spec-near-lighting-retail-facts.md](spec-near-lighting-retail-facts.md), section 13. That merged file had no separate review of its final wording. Evidence: two separate `claude-sonnet-5-5` runs (the review of the specification and its finalizer) decoded the adapt pixel shaders (groups 32 and 34). The finalizer also re-read the parameter update at `0x153daeb–0x153dbe3`.
+
+1. **G04, step rule (correction).** In the sentence "For each of two channels `i` it computes `Δ = n − p`, `step = sign(Δ) × min(|Δ|, max(|Δ × r_i|, 1/256))` and `out = p + step`.", the step reads `step = sign(Δ × r_i) × min(|Δ|, max(|Δ × r_i|, 1/256))`. The shader takes the sign from the product, and the sign of 0 is 0. For a positive rate both forms give the same result.
+2. **Amendment of 2026-11-25, item 3 (correction).** "The `1/256` floor applies even when the rate is 0. Each channel still moves by `min(|Δ|, 1/256)` per adapt draw." is replaced by: "At rate 0 the channel does not move. For a nonzero `Δ × r_i` the `1/256` floor applies, bounded by `|Δ|`." With `T = 0` the parameter update gives `r_x = r_y = 0`.
+
+**Confidence: high.** The original text above stays unchanged. This amendment supersedes it for the statements named here only.
