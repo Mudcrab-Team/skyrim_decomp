@@ -71,14 +71,17 @@ jobs:
         env:
           MSVC_BIN: ${{ steps.setup.outputs.bin }}
         run: python tools/ci_hash_check.py probe --bin "$env:MSVC_BIN" --out "$env:RUNNER_TEMP/probe.json"
-      - name: Install the VS2015 Update 2 compiler and probe its pins
+      - name: Install the VS2015 Update 2 compiler
         if: inputs.u2 == true
         id: u2
         shell: pwsh
-        run: |
-          python tools/verifier/vs2015_u2.py install --accept-license --root "$env:RUNNER_TEMP/msvc-v140u2" --sdk-from "$env:RUNNER_TEMP/msvc-v141" --work "$env:RUNNER_TEMP/u2-work"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -c "import sys; sys.path[:0]=['tools','tools/verifier']; import json, pathlib, ci_hash_check; r = ci_hash_check.probe(pathlib.Path('.'), pathlib.Path(sys.argv[1]), '19.00.23918'); print(json.dumps(r, indent=1)); sys.exit(int(r['toolset'] != 'MATCH'))" "${{ steps.u2.outputs.bin }}"
+        run: python tools/verifier/vs2015_u2.py install --accept-license --root "$env:RUNNER_TEMP/msvc-v140u2" --sdk-from "$env:RUNNER_TEMP/msvc-v141" --work "$env:RUNNER_TEMP/u2-work"
+      - name: Probe the VS2015 Update 2 pins
+        if: inputs.u2 == true
+        shell: pwsh
+        env:
+          U2_BIN: ${{ steps.u2.outputs.bin }}
+        run: python -c "import sys; sys.path[:0]=['tools','tools/verifier']; import json, pathlib, ci_hash_check; r = ci_hash_check.probe(pathlib.Path('.'), pathlib.Path(sys.argv[1]), '19.00.23918'); print(json.dumps(r, indent=1)); sys.exit(int(r['toolset'] != 'MATCH'))" "$env:U2_BIN"
       - name: Compile changed units and check published target hashes
         if: github.event_name == 'pull_request'
         shell: pwsh
