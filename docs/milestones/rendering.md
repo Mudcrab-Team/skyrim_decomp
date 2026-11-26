@@ -145,7 +145,7 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 11 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 9 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -153,8 +153,8 @@ Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functi
 | B: Shaders and materials | 454 | 236 | 52.0% | 3 | 37 | 178 | 0 | 89018 |
 | C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 0 | 29 | 113 | 0 | 68822 |
 | D: Image space, sky, water system | 726 | 614 | 84.6% | 11 | 17 | 84 | 0 | 67624 |
-| E: Shadows | 132 | 92 | 69.7% | 11 | 0 | 29 | 0 | 44438 |
-| **Total A-E** | 2060 | 1308 | 63.5% | 119 | 114 | 519 | 0 | 319925 |
+| E: Shadows | 132 | 92 | 69.7% | 2 | 2 | 36 | 0 | 46384 |
+| **Total A-E** | 2060 | 1308 | 63.5% | 110 | 116 | 526 | 0 | 321871 |
 | Adjacent, not assigned | 998 | 463 | 46.4% | 1 | 136 | 398 | 0 | 167857 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
@@ -397,24 +397,24 @@ Scope: shadow lights, shadow scene node, shadow-map setup and shadow passes.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| E1 Shadow lights, scene node, maps and passes | 132 | 92 | 11 | 0 | 29 | 0 | absent from the ready queue (29) | bsshader |
+| E1 Shadow lights, scene node, maps and passes | 132 | 92 | 2 | 2 | 36 | 0 | absent from the ready queue (36) | bsshader |
 
 <details><summary>Classes of workstream E with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| ShadowSceneNode | E1 | 61 | 45 | 4 | 0 | 12 | 0 | 120 |
-| BSShadowLight | E1 | 19 | 13 | 4 | 0 | 2 | 0 | 55 |
+| ShadowSceneNode | E1 | 61 | 45 | 2 | 0 | 14 | 0 | 120 |
+| BSShadowLight | E1 | 19 | 13 | 0 | 1 | 5 | 0 | 55 |
 | BSShadowDirectionalLight | E1 | 18 | 13 | 0 | 0 | 5 | 0 | 10 |
 | BSShadowParabolicLight | E1 | 12 | 8 | 0 | 0 | 4 | 0 | 9 |
 | BSShadowFrustumLight | E1 | 7 | 6 | 0 | 0 | 1 | 0 | 10 |
-| BSTArray_ShadowmapDescriptor_ | E1 | 3 | 1 | 2 | 0 | 0 | 0 | 0 |
+| BSTArray_ShadowmapDescriptor_ | E1 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | BSShadowParabolicLight_RenderImpl | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CalculateActiveShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CalculateAndDrawShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | DrawWorld_RenderShadowCasters | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | RenderVolumetricLightingShadowMaps | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| ShadowSceneNode_SetShadowCasterLightArrayEntry | E1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| ShadowSceneNode_SetShadowCasterLightArrayEntry | E1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 
 </details>
 
@@ -661,6 +661,8 @@ Scope: listed for context, owned by the general rounds.
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
+| `0x150fe80` | ShadowSceneNode_SetShadowCasterLightArrayEntry | 85 | ready | 0 |
+| `0x155c750` | BSShadowLight::ReleaseShadowmapDescriptor | 242 | ready | 0 |
 
 </details>
 
