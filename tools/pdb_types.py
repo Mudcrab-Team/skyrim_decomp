@@ -7,7 +7,7 @@ streams itself (no llvm-pdbutil needed) and rewrites the whole generated directo
 deterministically: one C++ layout header per class, a function-name map keyed by RVA, a type index
 and a README. Nothing else is written, and the PDB is never copied.
 
-    python3 tools/pdb_types.py generate <SkyrimSE.pdb> [--version 2026.10.24] [--out DIR]
+    python3 tools/pdb_types.py generate <SkyrimSE.pdb> [--version 2026.10.24] [--out DIR | --build ID]
     python3 tools/pdb_types.py rva 0x1234        # owning class and header of a function
     python3 tools/pdb_types.py class TESRace     # header path of a class
     python3 tools/pdb_types.py check             # the committed tree is well formed
@@ -1096,7 +1096,10 @@ def main(argv=None):
     g = sub.add_parser('generate')
     g.add_argument('pdb')
     g.add_argument('--version', default=DEFAULT_VERSION)
-    g.add_argument('--out', default=str(ROOT / GENERATED))
+    where = g.add_mutually_exclusive_group()
+    where.add_argument('--out', default=str(ROOT / GENERATED))
+    # A PDB of another runtime must never replace the committed tables of the pinned build.
+    where.add_argument('--build', help='write to .local/crashlogger_pdb/<build id> (ignored by git) instead')
     r = sub.add_parser('rva')
     r.add_argument('rva')
     c = sub.add_parser('class')
@@ -1104,9 +1107,14 @@ def main(argv=None):
     sub.add_parser('check')
     args = p.parse_args(argv)
     if args.cmd == 'generate':
+        out = args.out
+        if args.build:
+            if not re.fullmatch(r'[a-z0-9][a-z0-9-]*', args.build):
+                p.error('--build takes a build id such as sse-steam-1-6-1170')
+            out = str(ROOT / '.local' / 'crashlogger_pdb' / args.build)
         files = build_files(args.pdb, args.version)
-        write_tree(files, args.out)
-        print(f'wrote {len(files)} files under {args.out}')
+        write_tree(files, out)
+        print(f'wrote {len(files)} files under {out}')
     elif args.cmd == 'rva':
         got = lookup_rva(int(args.rva, 16))
         print(got if got else 'no public name for that RVA in the generated names map')
