@@ -1,11 +1,14 @@
-// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
+// Source exposure: mixed (binary-analysis of the pinned image, community-headers, sibling sources).
 // Code origin: original reconstruction from the pinned image listing; community names and offsets as labelled below
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ImageSpaceModifierInstanceTemp, ImageSpaceModifierInstanceTemp::ctor: CRASHLOGGER_PDB(59818@2026.10.24); names only
 // ImageSpaceModifierInstance, ImageSpaceModifierInstance::unk10, ImageSpaceModifierInstance::strength, ImageSpaceModifierInstance::target, ImageSpaceModifierInstance::age, ImageSpaceModifierInstance::flags, ImageSpaceModifierInstanceTemp::duration: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG's layout, the constructor arguments are read from the listing
 // ImageSpaceModifierInstance::Apply, ImageSpaceModifierInstance::PrintInfo: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); declared only so the vtable has the slots
 // NiObject, NiAVObject, NiPointer: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only what the constructor touches
-// NiAVObject::m_uiRefCount: SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0); the name only, the reference count at 08 that the pointer copy increments
+// Adapted bodies: none. The origin check reports NiAVObject::IncRefCount as similar to a body cited below (f3_decomp@f5bac1b5, CC0-1.0), and the NiPointer constructor resembles the second cited line; ours are short forms written for this unit.
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_00420000_o2.cpp:46360
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_00420000_o2.cpp:46366
+// NiRefObject::m_uiRefCount, NiRefObject::IncRefCount: SIBLING(momusdigital/f3_decomp@f5bac1b5, CC0-1.0); declared on the stand-ins here, the count at 08 that the pointer copy increments
 #pragma once
 
 #include <cstdint>

@@ -1,28 +1,92 @@
-// Source exposure: binary-analysis (the pinned image listing).
+// Source exposure: mixed (binary-analysis of the pinned image, community-headers).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// SPDX-License-Identifier: CC0-1.0
+// SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // TESImageSpaceModifier::InitializeData: CRASHLOGGER_PDB(59818@2026.10.24); name only
-// TESImageSpaceModifier, ImageSpaceModifierData and their members: STANDIN GUESS(low); offsets from the listing
+// ImageSpaceModifierData, ImageSpaceModifierData::MultAdd, ImageSpaceModifierData::MinMax, ImageSpaceModifierData::HDR, ImageSpaceModifierData::Bloom, ImageSpaceModifierData::Cinematic, ImageSpaceModifierData::DOF, ::mult, ::add, ::min, ::max, ::eyeAdaptSpeed, ::bloomBlurRadius, ::bloomThreshold, ::bloomScale, ::targetLum, ::sunlightScale, ::skyScale, ::empty, ::saturation, ::brightness, ::contrast, ::strength, ::distance, ::range, ::useTarget, ::pad0E, ::animatable, ::pad01, ::pad02, ::duration, ::hdr, ::bloom, ::cinematic, ::tintColor, ::blurRadius, ::doubleVisionStrength, ::radialBlurStrength, ::radialBlurRampUp, ::radialBlurStart, ::useTargetForRadialBlur, ::padC9, ::padCA, ::radialBlurCenter, ::dof, ::radialBlurRampDown, ::radialBlurDownStart, ::fadeColor, ::motionBlurStrength, NiPoint2, TESImageSpaceModifier::data: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// ImageSpaceModifierData::DOF::flags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) OBSERVED; NG's mode enumeration is a plain byte value here
+// ImageSpaceModifierData::Clear: GUESS(low); an inline reset of the whole block
 #pragma once
 
 #include <cstdint>
 #include <cstddef>
+#include <cstring>
 
-// ZeroBlock: GUESS(low); stands for the CRT memset the target calls. It is declared as an ordinary
-// external function so the compiler does not drop the explicit zero stores that follow it.
-void* ZeroBlock(void* a_dest, int a_value, std::size_t a_size);
+struct NiPoint2
+{
+    float x;
+    float y;
+};
 
 struct ImageSpaceModifierData
 {
-    std::uint8_t unk00[4];
-    float unk04;               // 04 (0x24 in the owner)
-    std::uint8_t unk08[0xC4];
-    float unkCC;               // CC (0xEC in the owner)
-    float unkD0;               // D0 (0xF0 in the owner)
-    std::uint8_t unkD4[0xE0 - 0xD4];
-    std::uint8_t unkE0;        // E0 (0x100 in the owner)
-    std::uint8_t unkE1;        // E1
-    std::uint8_t unkE2[0xF4 - 0xE2];
+    template <class T>
+    struct MultAdd
+    {
+        T mult;
+        T add;
+    };
+    template <class T>
+    struct MinMax
+    {
+        MultAdd<T> min;
+        MultAdd<T> max;
+    };
+    struct HDR
+    {
+        MultAdd<float> eyeAdaptSpeed;     // 00
+        MultAdd<float> bloomBlurRadius;   // 08
+        MultAdd<float> bloomThreshold;    // 10
+        MultAdd<float> bloomScale;        // 18
+        MinMax<float> targetLum;          // 20
+        MultAdd<float> sunlightScale;     // 30
+        MultAdd<float> skyScale;          // 38
+        MultAdd<float> empty[6];          // 40
+    };
+    struct Bloom
+    {
+        MultAdd<float> empty[3];          // 00
+    };
+    struct Cinematic
+    {
+        MultAdd<float> saturation;        // 00
+        MultAdd<float> brightness;        // 08
+        MultAdd<float> contrast;          // 10
+        MultAdd<float> empty;             // 18
+    };
+    struct DOF
+    {
+        std::uint32_t strength;  // 00
+        std::uint32_t distance;  // 04
+        std::uint32_t range;     // 08
+        bool useTarget;          // 0C
+        std::uint8_t flags;      // 0D
+        std::uint16_t pad0E;     // 0E
+    };
+
+    void Clear() { std::memset(this, 0, sizeof(*this)); }
+
+    bool animatable;                     // 00
+    std::uint8_t pad01;                  // 01
+    std::uint16_t pad02;                 // 02
+    float duration;                      // 04
+    HDR hdr;                             // 08
+    Bloom bloom;                         // 78
+    Cinematic cinematic;                 // 90
+    std::uint32_t tintColor;             // B0
+    std::uint32_t blurRadius;            // B4
+    std::uint32_t doubleVisionStrength;  // B8
+    std::uint32_t radialBlurStrength;    // BC
+    std::uint32_t radialBlurRampUp;      // C0
+    std::uint32_t radialBlurStart;       // C4
+    bool useTargetForRadialBlur;         // C8
+    std::uint8_t padC9;                  // C9
+    std::uint16_t padCA;                 // CA
+    NiPoint2 radialBlurCenter;           // CC
+    DOF dof;                             // D4
+    std::uint32_t radialBlurRampDown;    // E4
+    std::uint32_t radialBlurDownStart;   // E8
+    std::uint32_t fadeColor;             // EC
+    std::uint32_t motionBlurStrength;    // F0
 };
 static_assert(sizeof(ImageSpaceModifierData) == 0xF4, "data size");
 

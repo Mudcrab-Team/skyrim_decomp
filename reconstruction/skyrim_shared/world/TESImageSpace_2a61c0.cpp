@@ -5,8 +5,6 @@
 // 0x2a61c0 TESImageSpace::ctor
 #include "TESImageSpace_2a61c0.h"
 
-#include <cstring>
-
 TESImageSpace::TESImageSpace()
     : TESForm()
 {
@@ -29,6 +27,10 @@ void TESImageSpace::InitializeData()
     data.cinematic.brightness = 1.5f;
     data.cinematic.contrast = 1.1f;
     data.tint.amount = 0.0f;
-    // The tint colour and the first three depth-of-field floats are adjacent and cleared together.
-    std::memset(&data.tint.color, 0, 0x18);
+    data.tint.color.red = 0.0f;
+    data.tint.color.green = 0.0f;
+    data.tint.color.blue = 0.0f;
+    data.depthOfField.strength = 0.0f;
+    data.depthOfField.distance = 0.0f;
+    data.depthOfField.range = 0.0f;
 }
