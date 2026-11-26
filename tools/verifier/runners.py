@@ -62,6 +62,7 @@ import file_lock as fcntl  # noqa: E402
 import local_load  # noqa: E402
 import repo_slug  # noqa: E402
 import starts  # noqa: E402
+import toolsets  # noqa: E402
 
 SCHEMA = 1
 BACKENDS = ('boat', 'local', 'ssh', 'ci-hash')
@@ -69,6 +70,7 @@ BACKENDS = ('boat', 'local', 'ssh', 'ci-hash')
 # either name addresses the same hash job.
 LOADERS = ('wine', 'native')
 HOST_ID = re.compile(r'[a-z0-9][a-z0-9-]{1,39}')
+TOOLSET_ID = re.compile(r'19\.\d+\.\d+')
 # Everything on an ssh command line must survive PowerShell, cmd and POSIX shells unquoted.
 SAFE_TOKEN = re.compile(r'[A-Za-z0-9_:/\\.+=@-]+')
 RUN_NAME = re.compile(r'[a-z0-9][a-z0-9.-]{0,80}-[0-9a-f]{12}')
@@ -112,6 +114,17 @@ def config_origin():
 def main_root():
     """The main checkout: relative local paths in the config are relative to it."""
     return starts.state_dir().parent.parent
+
+
+def toolchain_args(host):
+    """`--toolchain ID=DIR` agent arguments for the host's other compiler builds."""
+    return [arg for tid, path in sorted((host.get('toolchains') or {}).items()) for arg in ('--toolchain', f'{tid}={path}')]
+
+
+def supports(host, toolset):
+    """True when `host` can build with `toolset`'s compiler (a ci-hash host decides that itself)."""
+    return (toolset == toolsets.DEFAULT or host.get('backend') == 'ci-hash'
+            or toolset in (host.get('toolchains') or {}))
 
 
 def _local_path(value, root):
@@ -164,6 +177,15 @@ def validate(raw, root=None):
         if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 64:
             raise RunnerError(f'{where}.max_parallel must be an integer from 1 to 64')
         host['max_parallel'] = limit
+        # Toolchains of other compiler builds, {toolset id: directory}, for units whose recipe names
+        # one (tools/verifier/toolsets.py). `msvc` stays the default toolset's.
+        tcs = h.get('toolchains', {})
+        if not isinstance(tcs, dict) or any(not TOOLSET_ID.fullmatch(str(k)) or not isinstance(v, str) or not v
+                                            for k, v in tcs.items()):
+            raise RunnerError(f'{where}.toolchains must map toolset ids such as 19.00.23918 to directories')
+        if toolsets.DEFAULT in tcs:
+            raise RunnerError(f'{where}.toolchains must not name {toolsets.DEFAULT}; that is `msvc`')
+        host['toolchains'] = dict(tcs)
         # Units per upload in a runner confirm: an ssh host pays several seconds of session setup per
         # transfer and command, so it gets units in batches; a local host gains nothing from batching.
         batch = h.get('batch', 2 * limit if backend == 'ssh' else 1)
@@ -178,6 +200,7 @@ def validate(raw, root=None):
             for key in ('msvc', 'work', 'wine_bin', 'wineprefix', 'image', 'objdump'):
                 if h.get(key) and (key != 'objdump' or '/' in h[key]):
                     host[key] = str(_local_path(h[key], root))
+            host['toolchains'] = {k: str(_local_path(v, root)) for k, v in tcs.items()}
             if h['loader'] == 'wine' and not host.get('wine_bin') and sys.platform == 'darwin':
                 raise RunnerError(f'{where}.wine_bin is required for Wine on macOS')
         else:
@@ -197,7 +220,8 @@ def validate(raw, root=None):
             if wake is not None and not (isinstance(wake, str)
                                          and re.fullmatch(r'[0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5}', wake)):
                 raise RunnerError(f'{where}.wake_mac must be a MAC address such as AA:BB:CC:DD:EE:FF')
-            for token in [h['ssh_host'], h['msvc'], h['image'], h['work'], *python] + ([h['objdump']] if h.get('objdump') else []):
+            for token in ([h['ssh_host'], h['msvc'], h['image'], h['work'], *python, *tcs.values()]
+                          + ([h['objdump']] if h.get('objdump') else [])):
                 if not isinstance(token, str) or not SAFE_TOKEN.fullmatch(token):
                     raise RunnerError(f'{where}: {token!r} needs quoting on the remote shell; use a path without '
                                       'spaces or shell characters (forward slashes work on Windows)')
@@ -573,7 +597,8 @@ class AgentHost:
                 code, out, err = self.transport.run(self._agent(name, 'run', '--bundle', self._remote(name + '.tar'),
                                                                 '--msvc', self.host['msvc'], '--image',
                                                                 self.host['image'], '--loader', self.host['loader'],
-                                                                '--label', self.label, *extra), timeout)
+                                                                '--label', self.label, *toolchain_args(self.host),
+                                                                *extra), timeout)
                 self.timings['run'] = self.timings.get('run', 0) + time.monotonic() - t0
         finally:
             for path in paths:
@@ -695,7 +720,7 @@ class BatchHost:
                     self._python() + ['-I', self._remote(name + '.py'), 'batch', '--run', self._remote(name),
                                       '--bundle', self._remote(name + '.tar'), '--msvc', self.host['msvc'],
                                       '--image', self.host['image'], '--loader', self.host['loader'],
-                                      '--label', self.label, '--jobs', str(jobs)], timeout)
+                                      '--label', self.label, '--jobs', str(jobs), *toolchain_args(self.host)], timeout)
                 self.timings['run'] = self.timings.get('run', 0) + time.monotonic() - t0
             if code != 0:
                 raise RunnerError(f'{self.label}: batch agent exit {code}' + (' (timeout)' if code == 124 else '')
@@ -785,15 +810,18 @@ def probe(host, transport=None, timeout=300):
     python = list(host['python']) if host['backend'] == 'ssh' else [sys.executable]
     remote = transport.join(host['work'], name)
     with tempfile.TemporaryDirectory() as tmp:
-        paths = make_bundle(tmp, name, {'pinned.sha256': HERE / 'pinned.sha256',
-                                        'target.json': REPO / 'builds' / 'target.json'})
+        blobs = {'pinned.sha256': HERE / 'pinned.sha256', 'target.json': REPO / 'builds' / 'target.json'}
+        for tid in (host.get('toolchains') or {}):
+            if (HERE / 'pinned' / f'{tid}.sha256').is_file():
+                blobs[f'pinned-{tid}.sha256'] = HERE / 'pinned' / f'{tid}.sha256'
+        paths = make_bundle(tmp, name, blobs)
         transport.prepare()
         transport.put(paths, host['work'])
     agent = [*python, '-I', remote + '.py']
     try:
         code, out, err = transport.run(agent + ['probe', '--run', remote, '--bundle', remote + '.tar', '--msvc',
-                                                host['msvc'], '--image', host['image'], '--loader', host['loader']],
-                                       timeout)
+                                                host['msvc'], '--image', host['image'], '--loader', host['loader'],
+                                                *toolchain_args(host)], timeout)
     finally:
         transport.run(agent + ['clean', '--run', remote], 120)
     fields = dict(line.split('=', 1) for line in out.splitlines() if '=' in line)
@@ -803,7 +831,8 @@ def probe(host, transport=None, timeout=300):
             'cpus': int(fields['CPUS']) if fields.get('CPUS', '').isdigit() else None,
             'os': fields.get('OS'), 'loader': fields.get('LOADER'), 'python': fields.get('PYTHON'),
             'running': int(fields['RUNNING']) if fields.get('RUNNING', '').isdigit() else None,
-            'compiler_sha256': json.loads(fields['COMPILER']) if fields.get('COMPILER') else {}}
+            'compiler_sha256': json.loads(fields['COMPILER']) if fields.get('COMPILER') else {},
+            'toolchains': json.loads(fields['TOOLCHAINS']) if fields.get('TOOLCHAINS') else {}}
 
 
 # ------------------------------------------------------------------ selection
@@ -912,7 +941,22 @@ def choose_compare(config, environ=None, probe_fn=None):
     return None, warnings
 
 
-def for_attempt(config=None, report=None):
+def for_toolset(config, host, toolset, probe_fn=None):
+    """`host` if it can build with `toolset`'s compiler, else another configured local or ssh host that can.
+
+    Raises RunnerError naming the toolset when no host has it, so a unit whose recipe names a compiler
+    nobody installed fails before any upload instead of compiling with the wrong one."""
+    if supports(host, toolset):
+        return host
+    probe_fn = probe_fn or reachable
+    for name, other in config['hosts'].items():
+        if other['backend'] in ('local', 'ssh') and supports(other, toolset) and probe_fn(other):
+            return other
+    raise RunnerError(f'no configured runner host has a toolchain for compiler {toolset} '
+                      f'(runners.json "toolchains" on a local or ssh host; tools/verifier/setup_toolchain_u2.sh)')
+
+
+def for_attempt(config=None, report=None, toolset=None):
     """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host).
 
     `report`, if given, receives the config path, its origin and the chosen host, plus warnings.
@@ -932,6 +976,11 @@ def for_attempt(config=None, report=None):
             report(f'WARNING: {w}')
     if host['backend'] == 'boat':
         return None
+    if toolset:
+        chosen = for_toolset(config, host, toolset)
+        if chosen is not host and report:
+            report(f'attempt host {chosen["name"]} instead: it has the compiler {toolset} the unit\'s recipe names')
+        host = chosen
     return with_image(host)
 
 
@@ -1033,11 +1082,14 @@ def status(config=None, log=print, probe_fn=probe):
             log(f'  {name}: {describe(host)}: unreachable or broken: {exc}')
             bad += 1
             continue
-        ok = p['toolchain'] == 'ok' and p['image'] == 'ok' and p['loader'] == host['loader']
+        extra = p.get('toolchains') or {}
+        ok = (p['toolchain'] == 'ok' and p['image'] == 'ok' and p['loader'] == host['loader']
+              and all(state == 'ok' for state in extra.values()))
         bad += not ok
         log(f'  {name}: {describe(host)}: toolchain {p["toolchain"]} (pinned.sha256), image {p["image"]} '
             f'(builds/target.json), {p["os"]}, python {p["python"]}, {p["cpus"]} CPUs, slots {busy}/'
-            f'{host["max_parallel"]} busy, runs on host {p["running"]}')
+            f'{host["max_parallel"]} busy, runs on host {p["running"]}'
+            + ''.join(f'; toolchain {tid} {state}' for tid, state in sorted(extra.items())))
     return 1 if bad else 0
 
 

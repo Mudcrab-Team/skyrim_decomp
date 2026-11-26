@@ -25,6 +25,7 @@ import ci_confirmation as evidence
 import lint_reconstruction
 import pipeline
 import runners
+import toolsets
 from source_digest import include_closure
 from digest_v2 import DIGEST_METHOD, tu_digest
 import target_hashes
@@ -83,8 +84,7 @@ def local_inputs(root, task, base):
         if result.get('host') != label:
             continue
         facts = result.get('host_facts') or {}
-        pins = {name: value for value, name in (s.split() for s in
-            (TOOLS_ROOT / 'tools/verifier/pinned.sha256').read_text().splitlines() if s.strip())}
+        pins = toolsets.pins_for_recipe(TOOLS_ROOT, task['recipe'])[2]
         evidence.require(facts.get('loader') == host['loader']
                          and (facts.get('loader'), facts.get('os')) in {('wine', 'macos'), ('wine', 'linux'), ('native', 'windows')}
                          and facts.get('toolchain_check') == 'checked'
@@ -218,7 +218,8 @@ def run(root, task_dirs, replace=False, out=None, log=print):
                 function_id=f'{task["build_id"]}-0x{rva:x}',
                 source=dict(translation_unit=unit['closure'], compiled=unit['unit'], digest_method=DIGEST_METHOD,
                             digest=unit['source_sha256']), recipe=dict(path=task['recipe'], sha256=unit['recipe_sha256']),
-                toolchain_pin=dict(path=check.TOOLCHAIN_PIN, sha256=evidence.sha((root / check.TOOLCHAIN_PIN).read_bytes())),
+                toolchain_pin=dict(path=check.recipe_toolchain_pin(root, task['recipe']),
+                                   sha256=evidence.sha((root / check.recipe_toolchain_pin(root, task['recipe'])).read_bytes())),
                 symbol_map=dict(path=task['symbols_repo'], sha256=evidence.sha(task['symbols_local'].read_bytes())),
                 reproduction='Run tools/verifier/confirm with a registered primary runner and the ci-hash confirmation runner; '
                              'tools/ci_confirm_batch.py compiles twice with the pinned recipe and checks published hashes.',

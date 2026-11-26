@@ -1786,8 +1786,16 @@ def pc_batch(a):
     (run / a.cands).unlink()
     spec = json.loads((run / 'repo' / '.unit' / 'spec.json').read_text())
     flags = json.loads((run / 'repo' / spec['recipe']).read_text())['flags']
+    # A unit whose recipe names another compiler is scored with that compiler, never the default one.
+    msvc = a.msvc
+    toolset = spec.get('toolset')
+    if toolset:
+        extra = dict(pair.split('=', 1) for pair in a.toolchain or [])
+        if toolset not in extra:
+            raise SystemExit(f'this host has no toolchain for compiler {toolset}')
+        msvc = extra[toolset]
     t0 = time.monotonic()
-    rows, objects = compile_batch(run, sources, a.jobs, host_compiler(a.msvc, a.loader, flags))
+    rows, objects = compile_batch(run, sources, a.jobs, host_compiler(msvc, a.loader, flags))
     compile_wall = round(time.monotonic() - t0, 2)
     blobs = {}
     scored_here = bool(getattr(a, 'objdump', None))
@@ -2016,7 +2024,8 @@ def runner_scorer(host, unit, jobs, score_all, timings, log, stage, outage=1800.
             code, out, err = tr.run(
                 host._python() + ['-I', tr.join(remote, 'repo/tools/verifier/permute.py'), 'pc-batch', '--run', remote,
                                   '--cands', f'cands-{tag}.tar', '--out', f'out-{tag}.tar', '--msvc',
-                                  host.host['msvc'], '--loader', host.host['loader'], '--jobs', str(granted)] + extra,
+                                  host.host['msvc'], '--loader', host.host['loader'], '--jobs', str(granted)]
+                                 + runners.toolchain_args(host.host) + extra,
                 600 if not remote_score else 1200)
         t3 = time.monotonic()
         if code in (124, 255):
@@ -2127,7 +2136,7 @@ def run(args):
         return dry_run(unit, lint, random.Random(args.seed), args.batch)
     import runners
     config = pipeline.load_config(task['dir'])
-    runner = runners.for_attempt()
+    runner = runners.for_attempt(toolset=task.get('toolset'))
     if runner is None:
         raise SystemExit('no runner host: set "attempt" to a local or ssh host in .local/verifier/runners.json '
                          '(or SR_RUNNERS_CONFIG)')
@@ -2358,6 +2367,7 @@ def main(argv=None):
     pb.add_argument('--out', required=True)
     pb.add_argument('--msvc', required=True)
     pb.add_argument('--loader', choices=('wine', 'native'), required=True)
+    pb.add_argument('--toolchain', action='append', default=[], metavar='ID=DIR')
     pb.add_argument('--jobs', type=int, required=True)
     pb.add_argument('--objdump')
     pb.add_argument('--image')

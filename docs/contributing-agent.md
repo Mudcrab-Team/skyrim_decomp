@@ -120,13 +120,49 @@ By submitting, a contributor dedicates their contribution under CC0 1.0, or unde
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
 
+## Havok and other code built with another compiler
+
+The target's Havok code was built with Visual Studio 2015 Update 2 (`cl` 19.00.23918), not the pinned VS 2017
+19.16 compiler, so large Havok functions do not match under the default recipe. A unit declares its compiler
+with the `Recipe:` line it already uses for flags: the recipe names its compiler by the `cl.exe` hash it records
+(`tools/verifier/toolsets.py`), so naming a recipe is naming the toolchain, and a unit with no `Recipe:` line
+keeps the default 19.16 compiler.
+
+```cpp
+// Recipe: reconstruction/recipes/msvc-19.00.23918-o2-reconstruction.json
+```
+
+The recipes are `msvc-19.00.23918-o2` (no include root), `-o2-reconstruction` and `-o2-root-includes` (cross-area
+headers by reconstruction path, like their 19.16 twins), plus the same shapes as the existing variants: `-o2-noeh*`
+(no `/EHsc`, tried automatically after a failed compare when the target has no exception frame), `-o2-fpfast*`
+(`/fp:fast`) and `-o2-fpfast-noeh*`. Each is its 19.16 twin with only the compiler changed. A different flag set
+needs its own recipe file and manifest entry.
+
+1. Install the compiler once: `./sr --json --yes setup --toolchain havok --accept-vs2015-license`. A person must
+   read and accept Microsoft's [Visual Studio Community 2015 licence terms](https://visualstudio.microsoft.com/license-terms/microsoft-visual-studio-community-2015/)
+   first; never pass the flag for them. It reads only the compiler packages (about 16 MB) from Microsoft's own
+   download of the VS 2015 Update 2 image and checks each by SHA-256, needs the default toolchain installed
+   (its Windows SDK is reused) and `msitools` on macOS/Linux, and takes about a minute. `./sr doctor` shows the
+   state (`compiler 19.00.23918 (havok)`, optional).
+2. Start the function with the recipe written for you: `./sr --json start 0x<rva> --toolchain havok` (or
+   `./sr go --toolchain havok ...`) puts the `Recipe:` line in the new unit.
+3. `./sr compare` builds with the unit's recipe, so it uses the 19.00.23918 compiler automatically. If the unit
+   names that recipe and the compiler is missing, `compare` stops with the exact `setup` command above.
+4. Submit as usual. The PR check installs the same compiler on the GitHub runner, from the same pinned
+   packages, only for a PR whose units name a 19.00.23918 recipe, and the bot's second host and the Reviewer
+   see the unit's compiler in the evidence. A match record binds the unit's pin file
+   (`tools/verifier/pinned/19.00.23918.sha256`) instead of `pinned.sha256`.
+
+Original Havok SDK source stays excluded (`docs/authorizations.md`); this changes only the compiler.
+
 ## When to ask the person
 
 Ask when the helper reports these decisions; account, fork and sign-in steps also need them.
 
 1. The path to their `SkyrimSE.exe`, if `setup` cannot find it (exit 5).
 2. Microsoft's licence for the Visual Studio 2017 Build Tools (exit 7, `licence` field). Show
-   the link; pass `--accept-microsoft-license` only after they accept. Never accept it yourself.
+   the link; pass `--accept-microsoft-license` only after they accept. Never accept it yourself. The
+   Havok compiler has its own licence (Visual Studio Community 2015, `--accept-vs2015-license`), asked the same way.
 3. System prompts such as Rosetta 2, a `sudo` password or winget source terms. Package installs
    themselves need no decision: pass `--yes`.
 

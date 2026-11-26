@@ -56,6 +56,8 @@ TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 from source_digest import include_closure, recipe_flag_problem  # noqa: E402
 from digest_v2 import tu_digest  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import toolsets  # noqa: E402
 
 SPEC_SCHEMA = 1
 # Variables that change include search or add compiler flags; the wrapper sets INCLUDE itself.
@@ -531,11 +533,15 @@ def run(args):
     if target.get('build_id') != spec['build_id']:
         raise UnitError(4, 'invalid-spec', 'spec build id differs from builds/target.json')
     spec['image_sha256'] = target['image_sha256']
-    # A compiler-build sweep names the pin file of the toolset it compiles with; every other unit
-    # uses the project's pinned compiler.
-    pins_file = spec.get('pins', PINS_FILE)
-    if pins_file != PINS_FILE and not re.fullmatch(r'tools/verifier/pinned/[a-z0-9][a-z0-9.-]*\.sha256', pins_file):
-        raise UnitError(4, 'invalid-spec', 'pins must be tools/verifier/pinned/<toolset>.sha256')
+    # The unit's recipe names its compiler (compiler.binary_sha256); the pin file is the one that
+    # holds that hash. A spec that names another pin file is refused: the compile would not be the
+    # one the recipe, and so the record, claims.
+    try:
+        toolset, pins_file, _ = toolsets.pins_for_recipe(repo, spec['recipe'])
+    except toolsets.ToolsetError as exc:
+        raise UnitError(EXIT_TOOLCHAIN, 'recipe-toolchain', str(exc))
+    if spec.get('pins', pins_file) != pins_file:
+        raise UnitError(4, 'invalid-spec', f'pins must be {pins_file} for the unit\'s recipe')
     prep, compiler_hashes = prepare_host(repo, msvc, args.image, wrapper, target['image_sha256'],
                                          use_cache=not spec.get('fresh_prep'), pins_file=pins_file)
     lap('prep')

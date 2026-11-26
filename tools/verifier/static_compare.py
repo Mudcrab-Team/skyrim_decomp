@@ -1,8 +1,10 @@
 """Compare original synthetic internal functions in a two-TU MSVC build, then perturb bindings.
 
-    python3 tools/verifier/static_compare.py <private-build-dir>
+    python3 tools/verifier/static_compare.py <private-build-dir> [--recipe reconstruction/recipes/<name>.json]
 
-Run build_static.sh first. The DLL has no CRT entry point and is never executed; it tests bytes
+Run build_static.sh first, with the toolchain directory of the compiler the recipe names (the
+default recipe is the pinned 19.16 one; a toolchain from tools/verifier/setup_toolchain_u2.sh
+goes with an msvc-19.00.23918 recipe). The DLL has no CRT entry point and is never executed; it tests bytes
 and identity only, not startup or registration semantics. No object or DLL is published.
 """
 import copy
@@ -22,7 +24,7 @@ SOURCE_ROOT = 'tools/verifier/synthetic'
 RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 
 
-def cases(directory):
+def cases(directory, recipe_path=RECIPE):
     directory = Path(directory)
     image = (directory / 'static.dll').read_bytes()
     base = PeImage(image).image_base
@@ -33,7 +35,7 @@ def cases(directory):
             rows.append((match[1], int(match[2], 16) - base, match[3]))
     externals = {name: {'rva': rva, 'size': None} for name, rva, obj in rows
                  if obj == 'static_identity_runtime.obj'}
-    recipe = (ROOT / RECIPE).read_bytes()
+    recipe = (ROOT / recipe_path).read_bytes()
     results = []
     for tu in ('static_identity_a', 'static_identity_b'):
         obj_bytes = (directory / f'{tu}.obj').read_bytes()
@@ -65,9 +67,9 @@ def cases(directory):
     return results
 
 
-def run(directory):
+def run(directory, recipe_path=RECIPE):
     result = []
-    all_cases = cases(directory)
+    all_cases = cases(directory, recipe_path)
     for tu, symbol, args in all_cases:
         report = ci.compare(**args)
         result.append({'tu': tu, 'function': symbol, 'case': 'complete',
@@ -103,4 +105,10 @@ def run(directory):
 
 
 if __name__ == '__main__':
-    print(json.dumps(run(sys.argv[1]), indent=2))
+    args = sys.argv[1:]
+    recipe_arg = RECIPE
+    if '--recipe' in args:
+        i = args.index('--recipe')
+        recipe_arg = args[i + 1]
+        del args[i:i + 2]
+    print(json.dumps(run(args[0], recipe_arg), indent=2))

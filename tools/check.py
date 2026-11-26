@@ -118,6 +118,10 @@ REVIEW_VERDICTS = {'approve', 'reject', 'escalate'}
 ESCALATION_CATEGORIES = {'none', 'provenance', 'legal', 'systemic', 'other'}
 MODEL_ID = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*')
 TOOLCHAIN_PIN = 'tools/verifier/pinned.sha256'
+# Pin files of the compilers a match record may name besides the default one: the compiler is the
+# one the unit's recipe pins by cl.exe hash (tools/verifier/toolsets.py), and these are the only
+# other builds the gate accepts. VS2015 Update 2 is the build of the target's Havok objects.
+SECOND_TOOLCHAIN_PINS = ('tools/verifier/pinned/19.00.23918.sha256',)
 MIN_HOSTS = 2
 
 
@@ -138,12 +142,32 @@ def public_path(name, prefixes, what, root):
     return path.as_posix()
 
 
-def pinned_compiler_sha256(root):
-    for line in read_text(root / TOOLCHAIN_PIN).splitlines():
+def pinned_compiler_sha256(root, pin=TOOLCHAIN_PIN):
+    for line in read_text(root / pin).splitlines():
         parts = line.split()
         if len(parts) == 2 and parts[1] == 'cl.exe':
             return parts[0]
-    raise ValueError(f'{TOOLCHAIN_PIN} names no cl.exe')
+    raise ValueError(f'{pin} names no cl.exe')
+
+
+def toolchain_pin_for(root, cl_sha256):
+    """The pin file whose cl.exe is `cl_sha256` among the ones the gate accepts, else None."""
+    for pin in (TOOLCHAIN_PIN, *SECOND_TOOLCHAIN_PINS):
+        try:
+            if pinned_compiler_sha256(root, pin) == cl_sha256:
+                return pin
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def recipe_toolchain_pin(root, recipe_rel):
+    """The accepted pin file of the compiler `recipe_rel` names (the default one for a recipe that names none)."""
+    try:
+        digest = json.loads(read_text(root / recipe_rel))['compiler']['binary_sha256']
+    except (OSError, ValueError, KeyError, TypeError):
+        return TOOLCHAIN_PIN
+    return toolchain_pin_for(root, digest) or TOOLCHAIN_PIN
 
 
 def tu_digest(root, paths, method=None):
@@ -256,10 +280,10 @@ def check_match(fn, target, root=None):
             'may name an include path')
 
     pin = record.get('toolchain_pin') or {}
-    require(pin.get('path') == TOOLCHAIN_PIN, f'Match record: toolchain_pin must be {TOOLCHAIN_PIN}')
-    require(pin.get('sha256') == file_sha256(root, TOOLCHAIN_PIN), 'Match record: toolchain pin is stale')
-    require(compiler['binary_sha256'] == pinned_compiler_sha256(root),
-            'Match record: recipe compiler is not the pinned cl.exe')
+    pin_path = toolchain_pin_for(root, compiler['binary_sha256'])
+    require(pin_path is not None, 'Match record: recipe compiler is not the pinned cl.exe')
+    require(pin.get('path') == pin_path, f'Match record: toolchain_pin must be {pin_path}')
+    require(pin.get('sha256') == file_sha256(root, pin_path), 'Match record: toolchain pin is stale')
     require(text(record.get('reproduction')), 'Match record: missing reproduction command')
 
     # The map decides resolution, placement, alias and overlap checks, so the version the runs used

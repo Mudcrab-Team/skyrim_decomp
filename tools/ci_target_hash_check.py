@@ -16,6 +16,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
+sys.path.insert(0, str(ROOT / 'tools/verifier'))
 import record_store
 import ci_hash_check as public
 import contrib
@@ -32,6 +33,7 @@ import digest_v2
 from digest_v2 import tu_digest
 import target_hashes as hashes
 import unit_deletion
+import toolsets
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # Optional source-header request for a new unit with no accepted symbol binding yet. It is a
@@ -45,7 +47,8 @@ MAX_CLAIMS_PER_UNIT = 2000
 # Same pattern as cookbook_notes.NOTE_FILE (a test keeps them equal); that module pulls in POSIX-only imports
 # that this job's Windows runner cannot load.
 NOTE_FILE = re.compile(r'docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]{0,60}\.md\Z')
-CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
+CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_', 'tools/verifier/toolsets.py',
+             'tools/verifier/vs2015', 'tools/verifier/pinned/',
              'tools/target_hashes.py', 'tools/contrib.py', 'tools/contributor_standing.py',
              'tools/build_leaderboard.py', 'tools/build_model_trend.py', '.gitattributes',
              '.github/workflows/ci-target-hash.yml')
@@ -498,9 +501,21 @@ def diagnostic_tail(log, tree):
     return tail[::-1]
 
 
+def as_bindirs(bindir):
+    """{toolset id: compiler bin directory}: a lone directory is the default toolset's."""
+    return dict(bindir) if isinstance(bindir, dict) else {toolsets.DEFAULT: bindir}
+
+
+def needed_toolsets(root, refs, base_recipes=()):
+    """Toolset ids the requests' recipes (and the base-tree recipes of the same units) call for, default first."""
+    ids = {toolsets.toolset_of_recipe(root, recipe)
+           for recipe in [*(r['recipe'] for r in refs), *base_recipes]}
+    return sorted(ids, key=lambda i: (i != toolsets.DEFAULT, i))
+
+
 def compile_requests(root, tree, requests_, bindir, work, manifest):
     ctx = contrib.Ctx(repo=root, platform='win32', interactive=False)
-    tool = dict(status='ok', flavour='native', bin=str(bindir), root=str(bindir.parents[6]))
+    bindirs = as_bindirs(bindir)
     targets = {row['rva']: row for row in manifest['functions']}
     built, failed = {}, {}
     rows = []
@@ -512,6 +527,11 @@ def compile_requests(root, tree, requests_, bindir, work, manifest):
             rows.append(row)
             continue
         key = ref['unit'], ref['recipe']
+        toolset = toolsets.toolset_of_recipe(root, ref['recipe'])
+        if toolset not in bindirs:
+            # A missing compiler is an infrastructure fault, not a verdict on the source.
+            raise ValueError('compiler toolchain unavailable')
+        tool = dict(status='ok', flavour='native', bin=str(bindirs[toolset]), root=str(bindirs[toolset].parents[6]))
         if key not in built:
             out_dir = work / str(len(built))
             try:
@@ -557,6 +577,9 @@ def compile_requests(root, tree, requests_, bindir, work, manifest):
                     row['symbols'] = symbols
                 row['source_sha256'] = tu_digest(tree, include_closure(tree, ref['unit']))
                 row['recipe_sha256'] = hashes.digest((root / ref['recipe']).read_bytes())
+                if toolset != toolsets.DEFAULT:
+                    row['toolset'] = toolset
+                    row['compiler_pins_sha256'] = hashes.digest((root / toolsets.pin_path(toolset)).read_bytes())
             except (ValueError, Reject):
                 row['result'], row['reason'] = 'no-target', 'unsupported-object-layout'
         rows.append(row)
@@ -629,6 +652,8 @@ def main(argv=None):
     p.add_argument('--base')
     p.add_argument('--head')
     p.add_argument('--bin', type=Path)
+    p.add_argument('--toolchain', action='append', default=[], metavar='ID=BIN',
+                   help='bin/Hostx64/x64 of another compiler build (repeatable), for units whose recipe names one')
     p.add_argument('--work', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--map-out', type=Path, help='regress: write {rva-or-unit: status} for the PR bot')
@@ -652,26 +677,36 @@ def main(argv=None):
             if os.environ.get('GITHUB_OUTPUT'):
                 with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
                     out.write('mode=' + ('check' if changed else 'sample') + '\n')
+                    # The workflow installs a second compiler only when a request's recipe names it.
+                    base_recipes = [unit_recipe((trusted / unit).read_text(encoding='utf-8-sig'))
+                                    for unit in {r['unit'] for r in refs} if (trusted / unit).is_file()]
+                    needed = [i for i in needed_toolsets(trusted, refs, base_recipes) if i != toolsets.DEFAULT]
+                    out.write('toolsets=' + ','.join(needed) + '\n')
         else:
             manifest = hashes.load_manifest(trusted)
             if not a.bin or public.probe(trusted, a.bin)['toolset'] != 'MATCH':
                 raise ValueError('compiler pin mismatch')
+            bins = {toolsets.DEFAULT: a.bin}
+            for tid, path in toolsets.toolchain_args(a.toolchain).items():
+                bins[tid] = Path(path)
+                if public.probe(trusted, bins[tid], tid)['toolset'] != 'MATCH':
+                    raise ValueError('compiler pin mismatch')
             report['toolset'] = 'MATCH'
             if a.command == 'sample':
-                report['functions'] = sample(trusted, a.bin, a.work, manifest)
+                report['functions'] = sample(trusted, bins, a.work, manifest)
             else:
                 prepared = json.loads(request_file.read_text())
                 if (prepared['base'], prepared['head']) != (a.base, a.head):
                     raise PrepareRevisionError('prepared revisions differ; run prepare with the requested base and head')
                 refs = prepared['refs']
                 if a.command == 'regress':
-                    report['functions'] = regress(trusted, a.work / 'source', refs, a.bin, a.work / 'objects', manifest)
+                    report['functions'] = regress(trusted, a.work / 'source', refs, bins, a.work / 'objects', manifest)
                     if a.map_out:
                         a.map_out.parent.mkdir(parents=True, exist_ok=True)
                         a.map_out.write_text(json.dumps({r['rva'] or r['unit']: r['status'] for r in report['functions']},
                                                         indent=2, sort_keys=True) + '\n')
                 else:
-                    report['functions'] = compile_requests(trusted, a.work / 'source', refs, a.bin,
+                    report['functions'] = compile_requests(trusted, a.work / 'source', refs, bins,
                                                            a.work / 'objects', manifest)
     except (ValueError, OSError, KeyError, StopIteration, Reject, contrib.Stop,
             subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:

@@ -2471,7 +2471,8 @@ class Bot:
             except (OSError, ValueError):
                 report = None
         facts = prereview.binding_facts(report, evidence.get('row'), digest, cpp, recipe_sha,
-                                        check.pinned_compiler_sha256(tree), target.get('image_sha256'))
+                                        check.pinned_compiler_sha256(tree, check.recipe_toolchain_pin(tree, recipe)),
+                                        target.get('image_sha256'))
         return facts, report
 
     def binding_lines(self, cpp, digest, evidence):
@@ -2526,6 +2527,15 @@ class Bot:
                'below, not the raw-bytes digest of tools/source_digest.py, which is a different method and is never '
                'equal to it; each agreement stated below is computed with the v2 method.',
                'compiler and toolchain pins (sha256 name):'] + [f'  {line}' for line in pins]
+        # A unit whose recipe names another compiler (Havok: VS2015 Update 2) is bound to that pin file.
+        import check as gate_check
+        for pin_file in sorted({gate_check.recipe_toolchain_pin(tree, (re.search(
+                r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json', (tree / cpp).read_text(errors='replace')) or [
+                'reconstruction/recipes/msvc-19.16.27054-o2.json'])[0]) for cpp in units}):
+            if pin_file != gate_check.TOOLCHAIN_PIN:
+                out_pins = (tree / pin_file).read_text().strip().splitlines()
+                out.append(f'second compiler for units whose recipe names it ({pin_file}; sha256 name):')
+                out.extend(f'  {line}' for line in out_pins)
         files, packs = set(), []
         for cpp, rvas in sorted(units.items()):
             rvas = [r for r in rvas if r in functions]

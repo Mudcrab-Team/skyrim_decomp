@@ -11,6 +11,11 @@ the toolchain, never a checkout or an installed script:
         --image <exe> --loader wine|native --label <host id> --jobs <n>
     python <work>/<name>.py clean --run <work>/<name>
 
+Each of run, batch and probe also takes `--toolchain <id>=<dir>` (repeatable): the toolchain of
+another compiler build, for units whose recipe names one (spec key `toolset`, see
+tools/verifier/toolsets.py). A unit with no `toolset` uses --msvc. A host that lacks the toolchain a
+unit needs refuses it with exit 44 and no result about the candidate.
+
 `batch` does what `run` does for each unit named in the archive's units.json (each unit under
 <name>/<unit>/repo with its own spec), up to --jobs at once, and packs every unit's results and
 its exit status into one <name>.out.tar; runner confirm uses it to save sessions on ssh hosts.
@@ -43,6 +48,8 @@ PRUNE_AFTER = 86400
 # The agent refused its own inputs (run name, label, archive): a host or transport problem, never
 # a result about the candidate, so tools/verifier/attempt does not count it against the budget.
 EXIT_AGENT = 45
+# unit_build's exit for a toolchain that does not match its pins; also used for a missing one.
+EXIT_TOOLCHAIN = 44
 
 
 class AgentRefusal(Exception):
@@ -60,6 +67,30 @@ def sha256_file(path):
 def bindir(msvc):
     found = sorted(p for p in (Path(msvc) / 'VC' / 'Tools' / 'MSVC').glob('*/bin/Hostx64/x64') if p.is_dir())
     return found[0] if len(found) == 1 else None
+
+
+# Kept equal to tools/verifier/toolsets.DEFAULT (a test checks it); this script ships alone.
+DEFAULT_TOOLSET = '19.16.27054'
+
+
+def toolchain_map(pairs):
+    """{toolset id: directory} from repeated --toolchain ID=DIR values."""
+    out = {}
+    for pair in pairs or ():
+        key, sep, value = pair.partition('=')
+        if not sep or not key or not value:
+            raise AgentRefusal('toolchain must be ID=DIR')
+        out[key] = value
+    return out
+
+
+def unit_msvc(spec_path, a):
+    """The toolchain directory this unit's spec calls for, or None when the host has none for it."""
+    try:
+        toolset = json.loads(Path(spec_path).read_text()).get('toolset', DEFAULT_TOOLSET)
+    except (OSError, ValueError, AttributeError):
+        return a.msvc
+    return a.msvc if toolset == DEFAULT_TOOLSET else toolchain_map(a.toolchain).get(toolset)
 
 
 def run_paths(run):
@@ -161,11 +192,16 @@ def cmd_run(a):
     work = run / 'work' / a.label
     marker = run / '.running'
     marker.write_text('running\n')
+    spec = run / 'repo' / '.unit' / 'spec.json'
+    msvc = unit_msvc(spec, a)
     try:
-        proc = subprocess.run([sys.executable, '-I', str(run / 'repo' / 'tools' / 'verifier' / 'unit_build.py'),
-                               '--repo', str(run / 'repo'), '--spec', str(run / 'repo' / '.unit' / 'spec.json'),
-                               '--msvc', a.msvc, '--image', a.image, '--work', str(work), '--loader', a.loader],
-                              capture_output=True, text=True, errors='replace')
+        if msvc is None:
+            proc = subprocess.CompletedProcess([], EXIT_TOOLCHAIN, 'toolchain-missing this host has no toolchain for the unit\'s compiler\n', '')
+        else:
+            proc = subprocess.run([sys.executable, '-I', str(run / 'repo' / 'tools' / 'verifier' / 'unit_build.py'),
+                                   '--repo', str(run / 'repo'), '--spec', str(spec),
+                                   '--msvc', msvc, '--image', a.image, '--work', str(work), '--loader', a.loader],
+                                  capture_output=True, text=True, errors='replace')
     finally:
         marker.unlink()
     if getattr(a, 'objdump', None):
@@ -211,9 +247,13 @@ def cmd_batch(a):
         work = run / unit / 'work' / a.label
         repo = run / unit / 'repo'
         started = time.monotonic()
+        msvc = unit_msvc(repo / '.unit' / 'spec.json', a)
+        if msvc is None:
+            return unit, {'exit': EXIT_TOOLCHAIN, 'seconds': 0.0,
+                          'stdout': 'toolchain-missing this host has no toolchain for the unit\'s compiler\n'}
         proc = subprocess.run([sys.executable, '-I', str(repo / 'tools' / 'verifier' / 'unit_build.py'),
                                '--repo', str(repo), '--spec', str(repo / '.unit' / 'spec.json'),
-                               '--msvc', a.msvc, '--image', a.image, '--work', str(work), '--loader', a.loader],
+                               '--msvc', msvc, '--image', a.image, '--work', str(work), '--loader', a.loader],
                               capture_output=True, text=True, errors='replace')
         if proc.stderr.strip():
             work.mkdir(parents=True, exist_ok=True)
@@ -260,6 +300,25 @@ def cmd_probe(a):
         if a.loader == 'wine' and not (Path(a.msvc) / 'bin' / 'x64' / 'cl').is_file():
             out['TOOLCHAIN'] = 'no-wrapper'
     out['COMPILER'] = json.dumps(hashes, sort_keys=True, separators=(',', ':'))
+    # Each extra toolchain against its own pin file, shipped in the probe bundle as pinned-<id>.sha256.
+    extra = {}
+    for tid, directory in sorted(toolchain_map(a.toolchain).items()):
+        pin_file = run / f'pinned-{tid}.sha256'
+        tbins = bindir(directory)
+        if tbins is None or not pin_file.is_file():
+            extra[tid] = 'missing'
+            continue
+        want = {}
+        for line in pin_file.read_text().splitlines():
+            parts = line.split()
+            if len(parts) == 2:
+                want[parts[1]] = parts[0]
+        got = {n: sha256_file(tbins / n) if (tbins / n).is_file() else None for n in want}
+        state = 'ok' if got == want else 'bad'
+        if state == 'ok' and a.loader == 'wine' and not (Path(directory) / 'bin' / 'x64' / 'cl').is_file():
+            state = 'no-wrapper'
+        extra[tid] = state
+    out['TOOLCHAINS'] = json.dumps(extra, sort_keys=True, separators=(',', ':'))
     target = json.loads((run / 'target.json').read_text())
     image = Path(a.image)
     if not image.is_file():
@@ -289,6 +348,8 @@ def main():
         s.add_argument('--msvc', required=True)
         s.add_argument('--image', required=True)
         s.add_argument('--loader', choices=('wine', 'native'), required=True)
+        s.add_argument('--toolchain', action='append', default=[], metavar='ID=DIR',
+                       help='toolchain of another compiler build (repeatable), for units whose recipe names one')
         if name in ('run', 'batch'):
             s.add_argument('--label', required=True)
         if name == 'run':

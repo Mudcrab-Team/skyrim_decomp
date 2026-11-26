@@ -30,6 +30,7 @@ import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import pipeline  # noqa: E402
 import runners  # noqa: E402
+import toolsets  # noqa: E402
 
 PREFETCH = 'prefetch.json'
 CONFIRM_MARK = '.confirm-done.json'
@@ -201,6 +202,11 @@ def run(task_dirs, config, name, deadline, batch=None, stage_root=None, log=prin
     unit (as wine_confirm.py does) and the result is kept where wine_confirm.py would have put it."""
     host = runners.with_image(config['hosts'][name])
     units = prepare(task_dirs, log, confirm, host['host_id'])
+    # A unit whose recipe names another compiler goes only to a host that has it; the rest take the ordinary path.
+    kept_units = [(t, f) for t, f in units if runners.supports(host, t.get('toolset', toolsets.DEFAULT))]
+    if len(kept_units) != len(units):
+        log(f'compare_batch: {len(units) - len(kept_units)} unit(s) need a compiler {host["host_id"]} lacks; left to attempt')
+    units = kept_units
     if not units:
         return 0
     size = batch or host['batch']

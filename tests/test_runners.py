@@ -671,7 +671,7 @@ class AgentEndToEnd(unittest.TestCase):
         (bindir / 'cl').chmod(0o755)
         files = {}
         for name in ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
-                     'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py'):
+                     'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/toolsets.py'):
             files[name] = ROOT / name
         pins = src / 'tools/verifier/pinned.sha256'
         pins.parent.mkdir(parents=True)

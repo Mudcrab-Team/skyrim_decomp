@@ -36,6 +36,15 @@ for one fetch and deletes the run. `result.json` carries the host's OS, loader a
 the compiler binaries it ran, and the seconds each phase took. Each host has `max_parallel` slots (file locks under
 `.local/verifier/runner-slots/`); attempts beyond that wait in turn.
 
+A host can carry the toolchain of a second compiler build for units whose recipe names it: `"toolchains":
+{"19.00.23918": "<dir>"}` beside `msvc` (the default 19.16.27054 toolchain). A unit's compiler is the toolset whose
+pin file holds the `cl.exe` hash its recipe records (`toolsets.py`; VS 2015 Update 2 for the Havok objects,
+recipes `msvc-19.00.23918-o2*`). `unit_spec` then carries `toolset` and `pins`, the host agent picks the toolchain
+(`--toolchain ID=DIR`, repeated; exit 44 `toolchain-missing` when the host has none, never a verdict), `unit_build`
+checks the binaries against that pin file, `attempt` and `compare_batch` send the unit to a host that has it, and
+`confirm` refuses a host pair where one lacks it (the `ci-hash` host installs it itself). `runners.py status` shows
+each extra toolchain.
+
 A machine that only orchestrates sets a top-level `"local_max_heavy": N` in the same file (default: no
 cap, so contributors and CI are unaffected). Every heavy local job of every checkout sharing that
 `.local/verifier` then holds one of N machine-wide slots (file locks under `.local/verifier/local-heavy/`,
@@ -140,6 +149,19 @@ objects, validates records before publication, and refuses to overwrite records 
   checks the compiler binaries against `pinned.sha256`. Running it accepts the Microsoft Build
   Tools licence (`--accept-license`); only run it where that licence basis is recorded.
 - `pinned.sha256`: expected SHA-256 of `cl.exe`, `c1xx.dll`, `c2.dll` and `link.exe`.
+  `pinned/<toolset>.sha256`: the same four for another compiler build (the sweep's stand-ins and
+  `19.00.23918`, the only one besides the default that the match gate accepts).
+- `toolsets.py`: which compiler a unit uses, from its recipe's `compiler.binary_sha256`; the pin-file
+  lookup every host, the CI jobs, the contributor helper and the bot share.
+- `vs2015_u2.py`, `vs2015-u2-packages.json`, `setup_toolchain_u2.sh`: install the VS 2015 Update 2 (19.00.23918)
+  x64 compiler from Microsoft's own `vs2015.2.com_enu.iso` on download.microsoft.com. Only the compiler packages
+  (about 16 MB of the 7.4 GB image) are read, by range request, and each is checked by SHA-256 against the table
+  before it is opened; the MSIs are unpacked with `msiexec /a` (Windows) or `msiextract`, and the four binaries
+  are checked against `pinned/19.00.23918.sha256`. `setup_toolchain_u2.sh --accept-license <pinned dir>` lays it
+  out for Wine beside the pinned install (reusing its wrapper and SDK); on Windows run
+  `python vs2015_u2.py install --accept-license --root <dir> --sdk-from <pinned toolchain>`. Running either uses
+  Microsoft's Visual Studio 2015 Community licence terms, so it needs the flag. The same image link, table and
+  pins serve the PR check and CI confirm workflows, which install it only when a unit's recipe names it.
 - `build_pilot.sh <msvc-dir> <new-output-dir>`: compiles `synthetic/pilot.cpp` and
   `synthetic/pilot_variant.cpp` and links `pilot.dll` with a map file. Run it twice.
 - `pilot_compare.py determinism A B`: attributes every differing byte between two builds to a

@@ -1,5 +1,9 @@
 # A Windows PC as a verifier host
 
+A host that must also build Havok units installs the VS 2015 Update 2 compiler beside the pinned one
+(`python tools/verifier/vs2015_u2.py install --accept-license --root <dir> --sdk-from <pinned toolchain>`,
+`tools/verifier/README.md`) and lists it as `"toolchains": {"19.00.23918": "<dir>"}` in the runner config.
+
 What a Windows machine needs to compile units natively for the matching gate, and what was
 measured on the first one. The runner side (`tools/verifier/runners.py`, `host_agent.py`,
 `unit_build.py --loader native`) drives it over SSH; this page is the host's half of that contract.

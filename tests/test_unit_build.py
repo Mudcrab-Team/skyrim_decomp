@@ -22,7 +22,7 @@ import synthetic_pecoff as sp  # noqa: E402
 import unit_build as ub  # noqa: E402
 
 COPY = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py', 'tools/verifier/verify_function.py',
-        'tools/verifier/unit_build.py')
+        'tools/verifier/unit_build.py', 'tools/verifier/toolsets.py')
 FAKE_CL = r'''#!/usr/bin/env bash
 # Fake cl for tests: report what it saw, print include notes, write the synthetic object.
 set -u
