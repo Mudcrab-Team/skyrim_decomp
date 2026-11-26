@@ -145,17 +145,17 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 21 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 11 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | A: Foundation | 416 | 176 | 42.3% | 94 | 31 | 115 | 0 | 50023 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 3 | 37 | 178 | 0 | 89018 |
-| C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 1 | 28 | 113 | 0 | 68738 |
-| D: Image space, sky, water system | 726 | 583 | 80.3% | 15 | 24 | 104 | 0 | 74553 |
-| E: Shadows | 132 | 92 | 69.7% | 15 | 0 | 25 | 0 | 39747 |
-| **Total A-E** | 2060 | 1277 | 62.0% | 128 | 120 | 535 | 0 | 322079 |
-| Adjacent, not assigned | 998 | 463 | 46.4% | 14 | 129 | 392 | 0 | 165876 |
+| C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 0 | 29 | 113 | 0 | 68822 |
+| D: Image space, sky, water system | 726 | 614 | 84.6% | 11 | 17 | 84 | 0 | 67624 |
+| E: Shadows | 132 | 92 | 69.7% | 11 | 0 | 29 | 0 | 44438 |
+| **Total A-E** | 2060 | 1308 | 63.5% | 119 | 114 | 519 | 0 | 319925 |
+| Adjacent, not assigned | 998 | 463 | 46.4% | 1 | 136 | 398 | 0 | 167857 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
@@ -290,14 +290,14 @@ Scope: render passes, batch renderer, accumulators, camera, frustum, culling, po
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| C1 Render passes, batch renderer, accumulators | 127 | 77 | 1 | 3 | 46 | 0 | absent from the ready queue (46) | bsshader |
+| C1 Render passes, batch renderer, accumulators | 127 | 77 | 0 | 4 | 46 | 0 | absent from the ready queue (46) | bsshader |
 | C2 Camera, frustum, culling, occlusion and portals | 205 | 113 | 0 | 25 | 67 | 0 | absent from the ready queue (67) | gamebryo |
 
 <details><summary>Classes of workstream C with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSShaderAccumulator | C1 | 48 | 29 | 1 | 0 | 18 | 0 | 145 |
+| BSShaderAccumulator | C1 | 48 | 29 | 0 | 1 | 18 | 0 | 145 |
 | BSBatchRenderer | C1 | 31 | 13 | 0 | 2 | 16 | 0 | 0 |
 | NiAlphaAccumulator | C1 | 10 | 8 | 0 | 0 | 2 | 0 | 12 |
 | BSShaderProperty::RenderPassArray | C1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
@@ -337,61 +337,57 @@ Scope: image space, sky, weather, fog, water.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| D2 Image space: manager, effects and image-space shaders | 615 | 534 | 8 | 16 | 57 | 0 | absent from the ready queue (57) | bsshader |
-| D3 Sky, sun, clouds, weather and fog | 71 | 28 | 5 | 3 | 35 | 0 | absent from the ready queue (35) | skyrim_shared |
-| D4 Water system, displacement and reflections | 40 | 21 | 2 | 5 | 12 | 0 | absent from the ready queue (12) | skyrim_shared |
+| D2 Image space: manager, effects and image-space shaders | 615 | 550 | 4 | 13 | 48 | 0 | absent from the ready queue (48) | bsshader |
+| D3 Sky, sun, clouds, weather and fog | 71 | 37 | 6 | 1 | 27 | 0 | absent from the ready queue (27) | skyrim_shared |
+| D4 Water system, displacement and reflections | 40 | 27 | 1 | 3 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
 
 <details><summary>Classes of workstream D with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSImagespaceShader | D2 | 19 | 16 | 1 | 0 | 2 | 0 | 29 |
-| TESImageSpaceModifier | D2 | 13 | 3 | 1 | 2 | 7 | 0 | 0 |
-| ImageSpaceEffect | D2 | 7 | 2 | 1 | 1 | 3 | 0 | 0 |
+| BSImagespaceShader | D2 | 19 | 17 | 1 | 0 | 1 | 0 | 29 |
+| TESImageSpaceModifier | D2 | 13 | 4 | 2 | 1 | 6 | 0 | 0 |
+| ImageSpaceEffect | D2 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | ImageSpaceEffectNoise | D2 | 7 | 3 | 0 | 1 | 3 | 0 | 0 |
-| ImageSpaceModifierInstanceForm | D2 | 7 | 1 | 1 | 1 | 4 | 0 | 19 |
+| ImageSpaceModifierInstanceForm | D2 | 7 | 3 | 0 | 1 | 3 | 0 | 19 |
 | BSImagespaceShaderWaterFlow | D2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceEffectGetHit | D2 | 6 | 2 | 0 | 0 | 4 | 0 | 0 |
-| TESImageSpace | D2 | 6 | 2 | 2 | 1 | 1 | 0 | 0 |
+| ImageSpaceEffectGetHit | D2 | 6 | 3 | 0 | 0 | 3 | 0 | 0 |
+| TESImageSpace | D2 | 6 | 3 | 1 | 1 | 1 | 0 | 0 |
 | TESImagespaceManager | D2 | 6 | 2 | 0 | 0 | 4 | 0 | 0 |
 | BSImagespaceShaderISBlur | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceEffectDepthOfField | D2 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
+| ImageSpaceEffectDepthOfField | D2 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
 | ImageSpaceEffectFullScreenBlur | D2 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
-| ImageSpaceEffectRefraction | D2 | 5 | 1 | 1 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectRefraction | D2 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceShaderParam | D2 | 5 | 2 | 0 | 1 | 2 | 0 | 0 |
 | BSImagespaceShaderISLightingCompositeMenu | D2 | 4 | 3 | 0 | 1 | 0 | 0 | 0 |
 | ImageSpaceEffectBlur | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectHDR | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceEffectMap | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectVolumetricLighting | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
-| ImageSpaceEffectWaterDisplacement | D2 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectWaterDisplacement | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceEffectWorldMap | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceManager | D2 | 3 | 0 | 0 | 3 | 0 | 0 | 0 |
-| ImageSpaceModifierInstance | D2 | 3 | 1 | 0 | 2 | 0 | 0 | 0 |
 | ImageSpaceModifierInstanceDOF | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceModifierInstanceTemp | D2 | 3 | 2 | 1 | 0 | 0 | 0 | 0 |
 | ImageSpaceEffectOption | D2 | 2 | 1 | 0 | 1 | 0 | 0 | 0 |
 | ImageSpaceEffectParam | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectRadialBlur | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | GetVLTemporalAccumulationFactor | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | UpdateVolumetricLightingRenderData | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | VolumetricLightingDescriptor | D2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| Sky | D3 | 31 | 12 | 4 | 1 | 14 | 0 | 145 |
-| Sun | D3 | 6 | 4 | 1 | 0 | 1 | 0 | 0 |
+| Sky | D3 | 31 | 13 | 4 | 0 | 14 | 0 | 145 |
+| Sun | D3 | 6 | 5 | 1 | 0 | 0 | 0 | 0 |
 | BSFogProperty | D3 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
-| Precipitation | D3 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
+| Precipitation | D3 | 5 | 1 | 1 | 0 | 3 | 0 | 0 |
 | TESWeather | D3 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
-| Atmosphere | D3 | 4 | 1 | 0 | 0 | 3 | 0 | 0 |
-| Clouds | D3 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
-| Moon | D3 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
-| Stars | D3 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
+| Atmosphere | D3 | 4 | 2 | 0 | 0 | 2 | 0 | 0 |
+| Clouds | D3 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
+| Stars | D3 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | Precipitation::OcclusionMapData | D3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| SkyObject | D3 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| TESWaterForm | D4 | 16 | 11 | 2 | 1 | 2 | 0 | 134 |
+| TESWaterForm | D4 | 16 | 13 | 1 | 1 | 1 | 0 | 134 |
 | TESWaterSystem | D4 | 15 | 10 | 0 | 1 | 4 | 0 | 0 |
-| TESWaterDisplacement | D4 | 4 | 0 | 0 | 2 | 2 | 0 | 0 |
-| TESWaterReflections | D4 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
-| TESWaterNormals | D4 | 2 | 0 | 0 | 1 | 1 | 0 | 0 |
+| TESWaterDisplacement | D4 | 4 | 2 | 0 | 0 | 2 | 0 | 0 |
+| TESWaterReflections | D4 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
+| TESWaterNormals | D4 | 2 | 1 | 0 | 1 | 0 | 0 | 0 |
 
 </details>
 
@@ -401,20 +397,20 @@ Scope: shadow lights, shadow scene node, shadow-map setup and shadow passes.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| E1 Shadow lights, scene node, maps and passes | 132 | 92 | 15 | 0 | 25 | 0 | absent from the ready queue (25) | bsshader |
+| E1 Shadow lights, scene node, maps and passes | 132 | 92 | 11 | 0 | 29 | 0 | absent from the ready queue (29) | bsshader |
 
 <details><summary>Classes of workstream E with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | ShadowSceneNode | E1 | 61 | 45 | 4 | 0 | 12 | 0 | 120 |
-| BSShadowLight | E1 | 19 | 13 | 5 | 0 | 1 | 0 | 55 |
-| BSShadowDirectionalLight | E1 | 18 | 13 | 1 | 0 | 4 | 0 | 10 |
-| BSShadowParabolicLight | E1 | 12 | 8 | 1 | 0 | 3 | 0 | 9 |
+| BSShadowLight | E1 | 19 | 13 | 4 | 0 | 2 | 0 | 55 |
+| BSShadowDirectionalLight | E1 | 18 | 13 | 0 | 0 | 5 | 0 | 10 |
+| BSShadowParabolicLight | E1 | 12 | 8 | 0 | 0 | 4 | 0 | 9 |
 | BSShadowFrustumLight | E1 | 7 | 6 | 0 | 0 | 1 | 0 | 10 |
 | BSTArray_ShadowmapDescriptor_ | E1 | 3 | 1 | 2 | 0 | 0 | 0 | 0 |
 | BSShadowParabolicLight_RenderImpl | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| CalculateActiveShadowCasterLights | E1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| CalculateActiveShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CalculateAndDrawShadowCasterLights | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | DrawWorld_RenderShadowCasters | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | RenderVolumetricLightingShadowMaps | E1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
@@ -428,7 +424,7 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 562 | 267 | 14 | 78 | 203 | 0 | absent from the ready queue (202) | gamebryo |
+| X1 Particle systems and emitters | 562 | 267 | 1 | 85 | 209 | 0 | absent from the ready queue (202) | gamebryo |
 | X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
 | X3 Game cameras and camera states | 154 | 69 | 0 | 25 | 60 | 0 | absent from the ready queue (59) | skyrim |
 | X4 Render-related forms, decals, effects, grass and LOD | 233 | 127 | 0 | 10 | 96 | 0 | absent from the ready queue (96) | skyrim_shared |
@@ -437,12 +433,12 @@ Scope: listed for context, owned by the general rounds.
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| NiPSysEmitterCtlr | X1 | 23 | 14 | 1 | 3 | 5 | 0 | 30 |
+| NiPSysEmitterCtlr | X1 | 23 | 14 | 0 | 3 | 6 | 0 | 30 |
 | BSMasterParticleSystem | X1 | 19 | 10 | 0 | 1 | 8 | 0 | 0 |
-| NiParticleSystem | X1 | 19 | 7 | 1 | 3 | 8 | 0 | 0 |
+| NiParticleSystem | X1 | 19 | 7 | 0 | 4 | 8 | 0 | 0 |
 | NiPSysBombModifier | X1 | 17 | 12 | 0 | 1 | 4 | 0 | 0 |
 | BSParticleSystemManager | X1 | 13 | 4 | 0 | 1 | 8 | 0 | 0 |
-| NiPSysGravityModifier | X1 | 13 | 7 | 1 | 2 | 3 | 0 | 0 |
+| NiPSysGravityModifier | X1 | 13 | 7 | 0 | 2 | 4 | 0 | 0 |
 | NiPSysMeshEmitter | X1 | 13 | 3 | 0 | 2 | 8 | 0 | 33 |
 | NiParticles | X1 | 13 | 7 | 0 | 0 | 6 | 0 | 24 |
 | BSPSysHavokUpdateModifier | X1 | 12 | 6 | 0 | 2 | 4 | 0 | 0 |
@@ -452,8 +448,8 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysBoundUpdateModifier | X1 | 10 | 3 | 0 | 0 | 7 | 0 | 16 |
 | BSPSysMultiTargetEmitterCtlr | X1 | 9 | 2 | 0 | 2 | 5 | 0 | 0 |
 | NiPSysColorModifier | X1 | 9 | 6 | 0 | 0 | 3 | 0 | 0 |
-| NiPSysMeshUpdateModifier | X1 | 9 | 4 | 1 | 0 | 4 | 0 | 0 |
-| NiPSysSpawnModifier | X1 | 9 | 4 | 2 | 2 | 1 | 0 | 0 |
+| NiPSysMeshUpdateModifier | X1 | 9 | 4 | 0 | 0 | 5 | 0 | 0 |
+| NiPSysSpawnModifier | X1 | 9 | 4 | 0 | 3 | 2 | 0 | 0 |
 | BSPSysInheritVelocityModifier | X1 | 8 | 2 | 0 | 2 | 4 | 0 | 0 |
 | BSPSysLODModifier | X1 | 8 | 4 | 0 | 3 | 1 | 0 | 0 |
 | BSPSysRecycleBoundModifier | X1 | 8 | 1 | 0 | 4 | 3 | 0 | 0 |
@@ -463,7 +459,7 @@ Scope: listed for context, owned by the general rounds.
 | BSPSysArrayEmitter | X1 | 7 | 3 | 0 | 0 | 4 | 0 | 23 |
 | BSPSysStripUpdateModifier | X1 | 7 | 4 | 0 | 0 | 3 | 0 | 0 |
 | NiPSysAirFieldModifier | X1 | 7 | 2 | 0 | 1 | 4 | 0 | 0 |
-| NiPSysBoxEmitter | X1 | 7 | 2 | 2 | 1 | 2 | 0 | 0 |
+| NiPSysBoxEmitter | X1 | 7 | 2 | 0 | 3 | 2 | 0 | 0 |
 | NiPSysDragFieldModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysDragModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
@@ -471,12 +467,12 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysModifierBoolCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysModifierFloatCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysPlanarCollider | X1 | 7 | 0 | 0 | 1 | 6 | 0 | 0 |
-| NiPSysRotationModifier | X1 | 7 | 2 | 1 | 3 | 1 | 0 | 0 |
-| NiPSysSphereEmitter | X1 | 7 | 3 | 1 | 1 | 2 | 0 | 0 |
+| NiPSysRotationModifier | X1 | 7 | 2 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysSphereEmitter | X1 | 7 | 3 | 0 | 2 | 2 | 0 | 0 |
 | NiPSysVortexFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | BSPSysSimpleColorModifier | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
 | BSPSysSubTexModifier | X1 | 6 | 2 | 0 | 3 | 1 | 0 | 0 |
-| NiPSysCylinderEmitter | X1 | 6 | 1 | 2 | 1 | 2 | 0 | 0 |
+| NiPSysCylinderEmitter | X1 | 6 | 1 | 0 | 3 | 2 | 0 | 0 |
 | NiPSysEmitter | X1 | 6 | 3 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysGravityFieldModifier | X1 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysSphericalCollider | X1 | 6 | 0 | 0 | 1 | 5 | 0 | 0 |
@@ -485,7 +481,7 @@ Scope: listed for context, owned by the general rounds.
 | NiParticleMeshesData | X1 | 6 | 0 | 0 | 3 | 3 | 0 | 0 |
 | BSPSysScaleModifier | X1 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 | NiPSysModifierActiveCtlr | X1 | 5 | 3 | 0 | 0 | 2 | 0 | 14 |
-| NiPSysResetOnLoopCtlr | X1 | 5 | 2 | 1 | 0 | 2 | 0 | 0 |
+| NiPSysResetOnLoopCtlr | X1 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
 | NiParticlesData | X1 | 5 | 0 | 0 | 2 | 3 | 0 | 0 |
 | BGSShaderParticleGeometryData | X1 | 4 | 1 | 0 | 0 | 3 | 0 | 0 |
 | BSParticleShaderGeometry | X1 | 4 | 2 | 1 | 0 | 1 | 0 | 3 |
@@ -629,6 +625,7 @@ Scope: listed for context, owned by the general rounds.
 | `0xff9230` | BSCompoundFrustum::SetActivePlaneState | 67 | ready | 0 |
 | `0x152b6d0` | BSCullingProcess::InitCullDescriptor | 68 | ready | 0 |
 | `0x1587090` | BSParabolicCullingProcess::TestBaseVisibility2 | 72 | ready | 0 |
+| `0x1520990` | BSShaderAccumulator::ResetAccumulatorState | 84 | ready | 0 |
 | `0x155fed0` | BSBatchRenderer::GetNextPassSlotInGroup | 100 | ready | 0 |
 | `0x15870e0` | BSParabolicCullingProcess::TestBaseVisibility1_14132C900 | 100 | ready | 0 |
 | `0x213b70` | BSPortal::dtor_deleting | 110 | ready | 0 |
@@ -639,27 +636,26 @@ Scope: listed for context, owned by the general rounds.
 | `0x1587150` | BSParabolicCullingProcess::GetHemisphereMask | 222 | ready | 1 |
 | `0xfdacc0` | BSPortalGraph::RemoveByPointer | 228 | ready | 0 |
 | `0xfd97a0` | BSPortalGraphEntry::HasSharedRoomVisibility | 250 | ready | 0 |
-| `0xf049c0` | BSCullingProcess::CullNodeAgainstFrustum | 273 | ready | 0 |
 
 **Workstream D entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
 | `0x1530d70` | GetVLTemporalAccumulationFactor | 22 | ready | 0 |
-| `0x2a8440` | TESImageSpaceModifier::MakeDefaultGetHit | 25 | ready | 0 |
 | `0x150a7e0` | BSImagespaceShaderISLightingCompositeMenu::Unk_0D | 50 | ready | 0 |
 | `0x14edb20` | ImageSpaceManager::SetupEffects | 65 | ready | 0 |
 | `0x150b880` | ImageSpaceManager::RegisterEffect | 95 | ready | 0 |
-| `0x528b30` | TESWaterDisplacement::sub_1404C4730 | 98 | ready | 0 |
-| `0x416a20` | Sky::sub_1403B5FD0 | 104 | ready | 0 |
 | `0x1585a20` | ImageSpaceEffectNoise::sub_14132B340 | 115 | ready | 1 |
 | `0x528ba0` | TESWaterNormals::ctor | 125 | ready | 0 |
-| `0x2a52d0` | ImageSpaceModifierInstance::~ImageSpaceModifierInstance | 128 | ready | 2 |
-| `0xfcd900` | ImageSpaceModifierInstance::~ImageSpaceModifierInstance | 128 | ready | 0 |
 | `0x15308a0` | UpdateVolumetricLightingRenderData | 141 | ready | 0 |
-| `0x41a320` | SkyObject::dtor_deleting | 146 | ready | 0 |
 | `0x152ae10` | ImageSpaceShaderParam::ctor | 148 | ready | 0 |
-| `0x52ef20` | TESWaterDisplacement::dtor_deleting | 196 | ready | 0 |
+| `0x1e50c0` | TESWaterForm::sub_140193D00 | 211 | ready | 0 |
+| `0x1553950` | ImageSpaceEffect::ctor | 216 | ready | 4 |
+| `0x2a36d0` | ImageSpaceModifierInstanceForm::SetTarget | 237 | ready | 0 |
+| `0x1541e20` | ImageSpaceManager::BuildDefaultEffectParams | 271 | ready | 0 |
+| `0x52d410` | TESWaterSystem::AddRipple | 407 | ready | 0 |
+| `0x309230` | TESWeather::InitializeData | 477 | ready | 0 |
+| `0x1554740` | ImageSpaceEffectOption::vfunc_1 | 518 | ready | 0 |
 
 **Workstream E entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
