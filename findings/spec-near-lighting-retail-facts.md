@@ -866,3 +866,20 @@ A renderer that decodes colours as sRGB, uses a flat ambient colour, clamps ligh
 ## Reviewer and outcome
 
 Author draft, one independent review and one second binary check by separate Sonnet 5.5 runs, merged by a further Sonnet 5.5 finalizer run (Sol unavailable). Outcome of the review: not implementable as first written; the corrections are applied here. The merged text had no separate review. This is not match evidence for any function and does not decide transfer eligibility. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-25, from SPEC-2): draws after the composite, tonemap destination and HDR input
+
+**Scope.** The statements named below. Addresses are RVAs. Static only. No visual result is claimed. Source: `spec-hdr-output-retail-facts.md` (SPEC-2), sections 4, 5, 8 and 14. SPEC-2 is `Transfer status: UNREVIEWED` and its merged wording had no separate review. Evidence: the SPEC-2 author, reviewer, second binary check and finalizer runs (all `claude-sonnet-5-5`); the marks below are SPEC-2 marks.
+
+### Correction to earlier finding
+
+1. **Section 1 row 15 and section 8.1 (C4: addition, not a wrong statement).** "Second stage | sorted blended draws, glare, second accumulator, first person" and "composite → second stage (sorted blended, sun glare) → second accumulator → first-person view → (volumetrics if enabled) → post-processing" are incomplete lists. The order is: composite → geometry group 10 → water colour passes (pass ids `0x5c000071` to `0x5c006071`, with an optional water resolve) → geometry groups 11, 12 and 7 → sorted blended list → sun glare → second accumulator → first-person view → compute SAO pass (off by default) → volumetric compute → lens flare sprites → indirect light, image-based lens flare and the additive flare and volumetric composite → post-processing. When the water state is 2, the sorted list runs before geometry group 10 instead. The contents of the numbered geometry groups are unverified. **V2** for the order.
+2. **Section 5 (C5: clarification, not a correction).** "The tonemap writes the back buffer when no later effect runs, else an 8-bit temporary copy (target 41)" is correct. With compiled `bUseTAA` 1 a later pass **does** run in the default frame, so the default tonemap destination is target 41. Temporal anti-aliasing then writes the final output, or target 42 when a later slot or an upsample follows. In section 1 row 19, the back buffer receives the result after that pass. The worked examples of section 11 give back-buffer bytes only if that pass is an identity step. **V2**.
+3. **Section 10 and open item O15 (C6: resolution of an open item).** "The scene input is `kMAIN` when no earlier image-space slot is active (earlier slots are not covered)." The earlier slots are 0 (world map), 1 (refraction) and 2 (FXAA). With defaults only refraction can be active in ordinary play, so the input is normally `kMAIN`; with the Low preset it is the FXAA output. Temporal anti-aliasing runs **after** the tonemap. Slots 3 to 7 (depth of field and blurs) run after the HDR effect while the manager flag `usesLDR` is 1, which is its default. **V2**.
+
+### Open items that SPEC-2 narrows (not corrections)
+
+4. **Section 8.4 and O4.** The sun glare, the lens flare sprites, the flare and volumetric composite, some water passes and some sorted passes have additive blend stores (**V2** for the stores). The render target of the lens flare sprites is open. That values above 1 reach the tonemap stays **I**.
+5. **Section 9.3 and O16.** Byte `0x3436311` is stored at `0x65803b` (function `0x657c90`): 1 when the pointer at `+0xc0` of the object at `[0x32303b8]` is nonzero (community name: loaded interior cell), or when the current world space flag byte `+0xa0` has bit `0x40` or bit `0x20`; else 0. **V2** for the writer; the names are **I**.
+
+**Confidence: high** for items 1 to 3. The original text above stays unchanged. This amendment supersedes it for the statements named here only.
