@@ -771,3 +771,13 @@ A renderer differs from retail in these steps if it tonemaps with a logarithmic 
 ## Reviewer and outcome
 
 Author draft, one independent review and one blind second binary check by separate Sonnet 5.5 runs, merged by a further Sonnet 5.5 finalizer run (Sol unavailable). Outcome of the review: implementable for the ordinary frame after corrections; those corrections and the second check's corrections are applied here. The merged text had no separate review. This is not match evidence for any function and does not decide transfer eligibility. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-26, from SPEC-4): frame clear colour
+
+Transfer status: UNREVIEWED. Static only. This item comes from the SPEC-4 runs (sky objects and weather; Sonnet 5.5 author, independent review, blind second binary check and finalizer, `claude-sonnet-5-5`). The original text above stays unchanged. This amendment supersedes it for the statement named here only.
+
+### Correction to earlier finding: section 3, row 1
+
+Published: "Clear to `k × fog far colour`".
+
+Corrected: the clear colour is the fog far colour × the **literal 0.83332998** (constant at `0x1869de8`), not `k`. All three sky update paths that write the clear-colour globals use the literal (`0x412253`, `0x412699`, `0x4127a9`); the frame start reads them (`0x656d8b`). With the file value of `k` the difference is about 3.3 × 10⁻⁶ of the colour value. After the console command `sfbr`, `k` changes and the clear colour does not. The rest of the row is unchanged. **V2**.
