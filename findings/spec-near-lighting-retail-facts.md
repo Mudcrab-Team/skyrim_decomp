@@ -709,7 +709,7 @@ Rows 8, 7, 0 = (180,200,220), (140,170,215), (80,120,190); dome vertex colour (0
 | O3 | Screen-space reflection and sparkle terms; snow subsurface pass; technique 14; projected UV; landscape snow-layer keys (#963 G03). |
 | O4 | Blend states, targets and content of the passes after the composite (sorted list and its sort key, second accumulator, first person, volumetrics, glare, lens flare). Tonemap input above 1 is inferred. Composite blend group (0 is inferred, #1121). |
 | O5 | Depth prepass: membership (terrain, objects, alpha-tested, decals, grass), the alpha cut shader and its depth shift. |
-| O6 | Sun and local shadow mask production and the shadow-slot light selection gates (see #806, #1248); mask UV constant values; whether the interior sun cascade runs. |
+| O6 | Sun and local shadow mask production and the shadow-slot light selection gates (see #806, #1248); mask UV constant values; whether the interior sun cascade runs. [Amended 2026-11-26: see the last amendment.] |
 | O7 | Script, effect or console writers of the sun light fade or colour; meaning of the light extra byte `+0x20`; default emittance source object; emittance-list membership; emittance with a negative light. |
 | O8 | Room lighting templates field by field; exterior lighting override; the lighting-template path for exterior world spaces. |
 | O9 | Run-time writers of the additive term `cb1[8]`; character, soft, rim, back, anisotropic lighting; multilayer parallax; effect-shader and water surfaces; grass and tree shading. |
@@ -719,7 +719,7 @@ Rows 8, 7, 0 = (180,200,220), (140,170,215), (80,120,190); dome vertex colour (0
 | O13 | Order of the sky update against the frame-start image-space copy (the weather block can be one frame old). |
 | O14 | Later writers of the emissive colour after the own-emit gate; runtime-created decals. |
 | O15 | Image-space slots before HDR and any temporal filter; HDR input when they are active. |
-| O16 | Parallax view constant on non-specular passes; which frame has decal byte `0x3436311` nonzero; decal per-pass blend. |
+| O16 | Parallax view constant on non-specular passes; which frame has decal byte `0x3436311` nonzero; decal per-pass blend. [Amended 2026-11-26: see the last amendment.] |
 | O17 | Plugin data: image-space, weather, cell and light values (not read). |
 
 ## 13. Corrections to earlier findings
@@ -883,3 +883,55 @@ Author draft, one independent review and one second binary check by separate Son
 5. **Section 9.3 and O16.** Byte `0x3436311` is stored at `0x65803b` (function `0x657c90`): 1 when the pointer at `+0xc0` of the object at `[0x32303b8]` is nonzero (community name: loaded interior cell), or when the current world space flag byte `+0xa0` has bit `0x40` or bit `0x20`; else 0. **V2** for the writer; the names are **I**.
 
 **Confidence: high** for items 1 to 3. The original text above stays unchanged. This amendment supersedes it for the statements named here only.
+
+## Amendment (2026-11-26, UNREVIEWED): open item O6, the sun shadow caster gate
+
+**Scope.** Open item O6, the part "whether the interior sun cascade runs". It also answers the part of O16 about the decal byte. Addresses are RVAs. Static only. No game run, no frame capture and no visual claim. The original text above stays unchanged, except for the markers on O6 and O16.
+
+**Evidence.** One fresh Sonnet 5.5 run (`claude-sonnet-5-5`) on the pinned image. The measured executable SHA-256 equals the pin. Its task stated the claim to check. It saved its binary results before it read the requester's note. No independent review covered this text. The marks follow section 0. The writer rule had two earlier runs and this run read it again (**V2**). The new gate statements have one run (**V1**). Names marked [PDB] are `CRASHLOGGER_PDB(59818@2026.10.24)`.
+
+### The byte
+
+1. Byte `0x3436311` is field `+0x51` of the global block at `0x34362c0` (accessor `0x1537410`). Function `0x657c90` stores it at `0x65803b`. `Main::Draw` [PDB] calls that function (`0x656f33`) before it builds the shadow caster list (`0x657024`). The value is 1 for a loaded interior cell. It is also 1 when flag byte `+0xa0` of the current world space has bit `0x40` or bit `0x20`. Else it is 0. **V2**; the cell and world-space field names are **I**.
+2. The image value is 0. No other store was found. Computed-address stores are not excluded. **V1**.
+3. The byte has 13 read sites. Nine direct compares: `0x15377fd`, `0x153795d`, `0x1537ac9`, `0x1538051`, `0x15388b5`, `0x15389fa`, `0x153917c`, `0x153937e`, `0x1539a9d`. Four reads through the accessor: `0x6571ab` (volumetric), `0x151fdaf`, `0x151fe1f` and `0x151ff5e` (decals). **V1**.
+
+### Effect on the sun shadow
+
+| Step | Byte 0 | Byte nonzero | Mark |
+|---|---|---|---|
+| Caster list build, `0x1537fd0` (`Main::QueueListAccumulationJobs` [PDB]) | The sun shadow light (scene `+0x210`, class `BSShadowDirectionalLight`) gets its camera update (virtual slot `0x10`), the optional focus setup, caster array entries from entry 0 (one for each of its shadow maps), a caster number, a mask bit and the directional culling | Only virtual slot `0x0C` of that light (`ReturnShadowmaps` [PDB]), when the light exists. The light gets no caster entry | V1 |
+| Shadow selector, `0x15389b0` | Calls the sun accumulate virtual (slot `0x09`). The caster count starts at 1 | No sun call. The caster count starts at 0 | V1 |
+| Local shadow lights (same selector, limit of 4 counted casters) | At most 3 beside the sun | At most 4, from entry 0 | V1 |
+| Shadow mask pass, `0x1539a70` (`RenderShadowmasks` [PDB]) | The first component of its clear colour is 1.0. The other three are 0 | The first component is 0.0. The other three are 0 | V1 |
+
+- The mask pass runs when byte `0x20d6811` is nonzero (image value 1) or the caster count is above 0.
+- The caster render loop (`0x1538430`) and the mask loop (`0x1539b10`) visit only caster array entries. With an empty array they draw nothing. Whether the clear then executes is **U**. The link from the clear colour to the mask sample `t14.x` is **U**.
+- Function `0x1538860` (progress name `ResetCalculatedShadowCasterLights`) contains the same gate. No direct call, jump, address load or data pointer to it was found. Only its unwind data names it. So use `0x1537fd0` as the per-frame site. **V1**; that the function is unused is **I**.
+- The caster entry setter `0x150fe80` has four direct callers: the sun site in `0x1537fd0`, the sun site in `0x1538860`, the local-light loop of the selector, and `UI3DSceneManager::Render` [PDB] on a different scene node. **V1**. No other path that adds the sun light was found. **I**.
+
+### Answer to the interior part of O6
+
+| Case | Static result | Mark |
+|---|---|---|
+| Loaded interior | The interior sun cascade does **not** run in a normal frame. The sun shadow light is not updated, accumulated, culled, put in the caster array, rendered or resolved into the mask. Local shadow lights continue | I (from the V1 gates) |
+| World space with flag `0x40` or `0x20` | The same byte gives the same result: no sun shadow map and no directional mask pass | I (from the V1 gates) |
+| Which world spaces carry those flags | Not read. This needs plugin data | U |
+| Other consumers of the mask in those frames (water, grass, LOD, effect shaders) | Not checked | U |
+
+**Near Lighting.** The section 2.3 statement "Bit 13 is never set in interiors" stays true. In a flagged exterior world space, byte `0x20d68f4` is 0. The light selector `0x1569550` keeps the sun-mask flag only when the object at scene `+0x210` is among the caster entries that it reads for the geometry. The sun is not a caster there, so bit 13 is not set. Then `ms = 1`: the sun term is unshadowed, not black. **I** (from the code reading of one run).
+
+### Two different bytes
+
+| Byte | Rule | Controls |
+|---|---|---|
+| `0x20d68f4` | Set from the interior cell only (one store, `0x14ebf00`). No world-space flag | Active shadow distance, key bit 13 (`0x151a64f`), water pass key bit |
+| `0x3436311` | Loaded interior, or world space flag `0x40` or `0x20` | Sun shadow caster, mask clear colour, decal raster and depth state (section 9.3), volumetric disable (SPEC-2 section 8.4), camera projection updates |
+
+**O16.** From rule 1, the decal byte is nonzero in a loaded interior and in a flagged world space. **I** for the game frames. The other parts of O16 stay open.
+
+### Name of the byte
+
+The reconstruction unit `bsshader/ShadowSceneNode_R5B2CasterReset` names this byte `lightsFrozen`. That name is a guess, and the evidence does not support it. No read or store shows a freeze. The byte is a location rule, and the writer computes it again in each world draw. A description that follows the evidence is "no sun shadow caster: loaded interior, or world space flag `0x40` or `0x20`". A possible name is `isInteriorOrFlaggedWorld` (**GUESS**). This amendment changes no reconstruction file.
+
+**Confidence: high** for the writer and the gates. **Medium** for "no other path adds the sun". A found writer or caller, or a runtime watch that shows a sun cascade draw in a loaded interior, would change this.
