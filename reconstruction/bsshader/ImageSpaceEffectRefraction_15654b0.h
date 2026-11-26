@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: CC0-1.0
 // ImageSpaceEffectRefraction, ImageSpaceEffectRefraction::ctor: CRASHLOGGER_PDB(59818@2026.10.24); names only
 // ImageSpaceEffect: STANDIN CRASHLOGGER_PDB(59818@2026.10.24); size 0x90 and the vtable slot order, bodies not compared here
-// unk90, unk98, unk9C, unkA0, unkA4, unkA8: GUESS(low); offsets from the listing; unk98 is volatile only to keep the target's store order
+// unk90, unk98, RefractionState, state, RefractionState::unk00, RefractionState::unk04, RefractionState::unk08, RefractionState::unk0C: GUESS(low); offsets from the listing; RefractionState groups the members that start out zeroed
 #pragma once
 
 #include <cstdint>
@@ -36,12 +36,25 @@ public:
     ImageSpaceEffectRefraction();  // compared: 0x15654b0
     ~ImageSpaceEffectRefraction() override;
 
-    void* unk90;            // 90
-    // volatile: keeps the constant store after the zero stores, as the target orders them
-    volatile std::int32_t unk98;  // 98
-    std::int32_t unk9C;     // 9C
-    std::int32_t unkA0;     // A0
-    std::int32_t unkA4;     // A4
-    bool unkA8;             // A8
+    // Cleared as one block by its own constructor.
+    struct RefractionState
+    {
+        RefractionState()
+            : unk00(0)
+            , unk04(0)
+            , unk08(0)
+            , unk0C(false)
+        {
+        }
+
+        std::int32_t unk00;  // 9C
+        std::int32_t unk04;  // A0
+        std::int32_t unk08;  // A4
+        bool unk0C;          // A8
+    };
+
+    void* unk90;          // 90
+    std::int32_t unk98;   // 98
+    RefractionState state;          // 9C
 };
-static_assert(offsetof(ImageSpaceEffectRefraction, unkA8) == 0xa8, "layout");
+static_assert(offsetof(ImageSpaceEffectRefraction, state) == 0x9c, "layout");

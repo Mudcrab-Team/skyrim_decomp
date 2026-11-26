@@ -7,13 +7,9 @@
 
 ImageSpaceEffectRefraction::ImageSpaceEffectRefraction()
     : ImageSpaceEffect()
-    , unk98(-1)
+    , unk90(nullptr)
 {
-    unk90 = nullptr;
-    unk9C = 0;
-    unkA0 = 0;
-    unkA4 = 0;
-    unkA8 = false;
+    unk98 = -1;
 }
 
 ImageSpaceEffectRefraction::~ImageSpaceEffectRefraction()

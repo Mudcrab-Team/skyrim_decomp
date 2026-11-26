@@ -7,7 +7,7 @@
 - Outcome: fixed
 - Cause: instruction-order
 - Best score: 68/68
-- Attempts: 3
+- Attempts: 5
 
 ## What differed
 
@@ -15,8 +15,16 @@ After a call that zeroes a block the target still stores zero to a word in that 
 
 ## Spellings tried that did not help
 
-A volatile 16-bit member (register store, size matched but bytes differ). An explicit zero store after `std::memset` (store removed).
+A volatile 16-bit member (register store, size matched but bytes differ). An explicit zero store after a direct `std::memset` in the owner (store removed). An opaque external zeroing function matched, but the review refused it as a helper declared only to keep redundant stores.
 
 ## Spelling that fixed it
 
-Declare the zeroing call as an ordinary external function (`void* ZeroBlock(void*, int, std::size_t);`, bound to the CRT address) so the compiler does not know it is memset, and write the two adjacent byte members `unkE0 = 0; unkE1 = 0;` (rule 32). The stores stay and merge into one immediate word store.
+Zero the block through an inline method of the data structure that calls `std::memset(this, 0, sizeof(*this))`, then assign the two-float point as one structure value before the two byte members. The point assignment is what keeps the later zero stores; assigning its two floats one by one drops them.
+
+```cpp
+data.Clear();
+data.duration = 1.0f;
+data.radialBlurCenter = NiPoint2{ 0.5f, 0.5f };
+data.dof.useTarget = false;
+data.dof.flags = 0;
+```
