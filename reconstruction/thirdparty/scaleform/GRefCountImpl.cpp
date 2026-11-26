@@ -14,10 +14,8 @@ int GRefCountImpl::AddRef()
 
 void GRefCountImpl::Release()
 {
-    // Intrusive ownership releases must update the count atomically.
-    if (_InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&refCount), -1) == 1 && this != nullptr) {
-        using DeletingDtorFn = void(__thiscall*)(void*, unsigned int);
-        auto vtable = *reinterpret_cast<void***>(this);
-        reinterpret_cast<DeletingDtorFn>(vtable[0])(this, 1);
+    // The last owner to release the object destroys it; the count is shared across threads.
+    if (_InterlockedExchangeAdd(reinterpret_cast<volatile long*>(&refCount), -1) == 1) {
+        delete this;
     }
 }
