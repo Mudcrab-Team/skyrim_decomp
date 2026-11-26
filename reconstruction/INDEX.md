@@ -26128,6 +26128,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/leaves/Leafb53100` | `Leafb53100::Invoke` (GUESS) | `sse-steam-1-7-104` / `0xb53100` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xb53100.json` | matched | family | open |
 | `unmapped/leaves/Leafb58ae0` | `Leafb58ae0::Invoke` (GUESS) | `sse-steam-1-7-104` / `0xb58ae0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xb58ae0.json` | matched | family | open |
 | `unmapped/leaves/Leafb58af0` | `Leafb58af0::Invoke` (GUESS) | `sse-steam-1-7-104` / `0xb58af0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xb58af0.json` | matched | family | open |
+| `bshavok/hkpWorld_b5a190` | `Functionb5a190` (GUESS) | `sse-steam-1-7-104` / `0xb5a190` / 1440 | `o2-fpfast-noeh-root-includes` | `reports/sse-steam-1-7-104/0xb5a190.json` | matched | full | - |
 | `gamebryo/niparticle/Ownerb5abe0` | `Functionb5abe0` (GUESS) | `sse-steam-1-7-104` / `0xb5abe0` / 8 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xb5abe0.json` | matched | full | - |
 | `skyrim_shared/extradata/Ownerb5b220` | `Functionb5b220` (GUESS) | `sse-steam-1-7-104` / `0xb5b220` / 9 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xb5b220.json` | matched | full | - |
 | `skyrim_shared/extradata/Ownerb5b230` | `Functionb5b230` (GUESS) | `sse-steam-1-7-104` / `0xb5b230` / 9 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xb5b230.json` | matched | full | - |
