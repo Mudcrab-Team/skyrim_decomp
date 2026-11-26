@@ -145,17 +145,17 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 9 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 8 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| A: Foundation | 416 | 176 | 42.3% | 94 | 31 | 115 | 0 | 50023 |
+| A: Foundation | 416 | 176 | 42.3% | 2 | 55 | 183 | 0 | 62919 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 3 | 37 | 178 | 0 | 89018 |
 | C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 0 | 29 | 113 | 0 | 68822 |
 | D: Image space, sky, water system | 726 | 614 | 84.6% | 11 | 17 | 84 | 0 | 67624 |
 | E: Shadows | 132 | 92 | 69.7% | 2 | 2 | 36 | 0 | 46384 |
-| **Total A-E** | 2060 | 1308 | 63.5% | 110 | 116 | 526 | 0 | 321871 |
-| Adjacent, not assigned | 998 | 463 | 46.4% | 1 | 136 | 398 | 0 | 167857 |
+| **Total A-E** | 2060 | 1308 | 63.5% | 18 | 140 | 594 | 0 | 334767 |
+| Adjacent, not assigned | 998 | 463 | 46.4% | 0 | 137 | 398 | 0 | 167923 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
@@ -165,57 +165,57 @@ Scope: BSGraphics state, render targets, buffers, textures and resources, render
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| A1 BSGraphics renderer and state | 64 | 10 | 9 | 15 | 30 | 0 | absent from the ready queue (29) | bsshader |
-| A2 Render targets, buffers and depth-stencil | 9 | 3 | 1 | 3 | 2 | 0 | absent from the ready queue (2) | bsshader |
-| A3 Shader manager, shader resources and textures | 64 | 41 | 10 | 3 | 10 | 0 | absent from the ready queue (10) | bsshader |
-| A4 Lights | 78 | 33 | 20 | 7 | 18 | 0 | absent from the ready queue (18) | gamebryo |
-| A5 Render geometry (shapes, skin instances) | 201 | 89 | 54 | 3 | 55 | 0 | absent from the ready queue (55) | gamebryo |
+| A1 BSGraphics renderer and state | 64 | 10 | 0 | 18 | 36 | 0 | absent from the ready queue (35) | bsshader |
+| A2 Render targets, buffers and depth-stencil | 9 | 3 | 0 | 3 | 3 | 0 | absent from the ready queue (3) | bsshader |
+| A3 Shader manager, shader resources and textures | 64 | 41 | 0 | 5 | 18 | 0 | absent from the ready queue (18) | bsshader |
+| A4 Lights | 78 | 33 | 2 | 12 | 31 | 0 | absent from the ready queue (31) | gamebryo |
+| A5 Render geometry (shapes, skin instances) | 201 | 89 | 0 | 17 | 95 | 0 | absent from the ready queue (95) | gamebryo |
 
 <details><summary>Classes of workstream A with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSGraphics::Renderer | A1 | 58 | 10 | 9 | 12 | 27 | 0 | 0 |
+| BSGraphics::Renderer | A1 | 58 | 10 | 0 | 15 | 33 | 0 | 0 |
 | BSGraphics::State | A1 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
 | BSGraphics | A1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | BSGraphics::Utility | A1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | RendererShadowState | A1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| BSGraphics::RenderTargetManager | A2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| BSGraphics::RenderTargetManager | A2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | BSShaderRenderTargets | A2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CreateIndexBuffer | A2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | GetImageSpaceRenderTarget_TAAMASK_SSRMASK_SWAP | A2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | PollOcclusionQuery | A2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | SetPSTextureFilterMode | A2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| NiSourceTexture | A3 | 11 | 5 | 3 | 1 | 2 | 0 | 32 |
-| NiTexture | A3 | 10 | 5 | 2 | 1 | 2 | 0 | 56 |
-| BSScaleformExternalTexture | A3 | 5 | 0 | 4 | 0 | 1 | 0 | 0 |
+| NiSourceTexture | A3 | 11 | 5 | 0 | 2 | 4 | 0 | 32 |
+| NiTexture | A3 | 10 | 5 | 0 | 2 | 3 | 0 | 56 |
+| BSScaleformExternalTexture | A3 | 5 | 0 | 0 | 0 | 5 | 0 | 0 |
 | BSShaderManager | A3 | 5 | 2 | 0 | 1 | 2 | 0 | 0 |
 | BSTextureDB__QueuedHandles__dtor | A3 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
 | BSTextureDB__anonymous_namespace__NiTextureDBForwarded | A3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| CreateSourceTexture | A3 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
-| BSLight | A4 | 20 | 5 | 7 | 0 | 8 | 0 | 105 |
-| NiPointLight | A4 | 15 | 8 | 4 | 0 | 3 | 0 | 17 |
-| NiLight | A4 | 9 | 5 | 3 | 0 | 1 | 0 | 19 |
+| CreateSourceTexture | A3 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSLight | A4 | 20 | 5 | 1 | 4 | 10 | 0 | 105 |
+| NiPointLight | A4 | 15 | 8 | 1 | 0 | 6 | 0 | 17 |
+| NiLight | A4 | 9 | 5 | 0 | 0 | 4 | 0 | 19 |
 | NiLightColorController | A4 | 8 | 0 | 0 | 6 | 2 | 0 | 0 |
-| NiSpotLight | A4 | 8 | 5 | 2 | 0 | 1 | 0 | 0 |
-| NiLightDimmerController | A4 | 7 | 4 | 2 | 1 | 0 | 0 | 12 |
+| NiSpotLight | A4 | 8 | 5 | 0 | 0 | 3 | 0 | 0 |
+| NiLightDimmerController | A4 | 7 | 4 | 0 | 1 | 2 | 0 | 12 |
 | NiDirectionalLight | A4 | 6 | 4 | 0 | 0 | 2 | 0 | 13 |
-| NiAmbientLight | A4 | 4 | 2 | 2 | 0 | 0 | 0 | 0 |
+| NiAmbientLight | A4 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
 | CalculateActiveNonShadowCasterLights | A4 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| NiGeometry | A5 | 28 | 20 | 2 | 0 | 6 | 0 | 48 |
-| BSGeometry | A5 | 26 | 14 | 5 | 0 | 7 | 0 | 52 |
-| BSDynamicTriShape | A5 | 21 | 9 | 5 | 0 | 7 | 0 | 24 |
-| NiSkinInstance | A5 | 18 | 10 | 3 | 0 | 5 | 0 | 31 |
-| BSTriShape | A5 | 17 | 6 | 5 | 0 | 6 | 0 | 13 |
-| NiSkinPartition | A5 | 16 | 5 | 6 | 1 | 4 | 0 | 0 |
-| BSLODTriShape | A5 | 13 | 4 | 9 | 0 | 0 | 0 | 0 |
+| NiGeometry | A5 | 28 | 20 | 0 | 0 | 8 | 0 | 48 |
+| BSGeometry | A5 | 26 | 14 | 0 | 1 | 11 | 0 | 52 |
+| BSDynamicTriShape | A5 | 21 | 9 | 0 | 0 | 12 | 0 | 24 |
+| NiSkinInstance | A5 | 18 | 10 | 0 | 0 | 8 | 0 | 31 |
+| BSTriShape | A5 | 17 | 6 | 0 | 2 | 9 | 0 | 13 |
+| NiSkinPartition | A5 | 16 | 5 | 0 | 3 | 8 | 0 | 0 |
+| BSLODTriShape | A5 | 13 | 4 | 0 | 5 | 4 | 0 | 0 |
 | NiGeometryData | A5 | 13 | 7 | 0 | 1 | 5 | 0 | 84 |
-| BSMeshLODTriShape | A5 | 11 | 1 | 8 | 0 | 2 | 0 | 0 |
-| BSSubIndexTriShape | A5 | 11 | 5 | 3 | 0 | 3 | 0 | 21 |
-| BSMultiIndexTriShape | A5 | 9 | 5 | 3 | 0 | 1 | 0 | 23 |
-| NiSkinData | A5 | 7 | 2 | 1 | 0 | 4 | 0 | 0 |
-| NiAdditionalGeometryData | A5 | 6 | 0 | 1 | 1 | 4 | 0 | 0 |
-| BSLODMultiIndexTriShape | A5 | 5 | 1 | 3 | 0 | 1 | 0 | 0 |
+| BSMeshLODTriShape | A5 | 11 | 1 | 0 | 2 | 8 | 0 | 0 |
+| BSSubIndexTriShape | A5 | 11 | 5 | 0 | 0 | 6 | 0 | 21 |
+| BSMultiIndexTriShape | A5 | 9 | 5 | 0 | 0 | 4 | 0 | 23 |
+| NiSkinData | A5 | 7 | 2 | 0 | 0 | 5 | 0 | 0 |
+| NiAdditionalGeometryData | A5 | 6 | 0 | 0 | 2 | 4 | 0 | 0 |
+| BSLODMultiIndexTriShape | A5 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 
 </details>
 
@@ -424,7 +424,7 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 562 | 267 | 1 | 85 | 209 | 0 | absent from the ready queue (202) | gamebryo |
+| X1 Particle systems and emitters | 562 | 267 | 0 | 86 | 209 | 0 | absent from the ready queue (202) | gamebryo |
 | X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
 | X3 Game cameras and camera states | 154 | 69 | 0 | 25 | 60 | 0 | absent from the ready queue (59) | skyrim |
 | X4 Render-related forms, decals, effects, grass and LOD | 233 | 127 | 0 | 10 | 96 | 0 | absent from the ready queue (96) | skyrim_shared |
@@ -484,7 +484,7 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysResetOnLoopCtlr | X1 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
 | NiParticlesData | X1 | 5 | 0 | 0 | 2 | 3 | 0 | 0 |
 | BGSShaderParticleGeometryData | X1 | 4 | 1 | 0 | 0 | 3 | 0 | 0 |
-| BSParticleShaderGeometry | X1 | 4 | 2 | 1 | 0 | 1 | 0 | 3 |
+| BSParticleShaderGeometry | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 3 |
 | BSParticleShaderGeometryEmitter | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 4 |
 | BSStripParticleSystem | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
 | NiPSysEmitterCtlrData | X1 | 4 | 2 | 0 | 2 | 0 | 0 | 0 |
@@ -583,19 +583,19 @@ Scope: listed for context, owned by the general rounds.
 |---|---|---:|---|---:|
 | `0x1010920` | BSGraphics::Renderer::GetScaleformRendererParameters | 16 | ready | 1 |
 | `0x101d730` | RendererShadowState::GetViewDepthRange | 16 | ready | 0 |
+| `0x1008b10` | Renderer::SetWindowPosition | 20 | ready | 0 |
 | `0x10193a0` | BSGraphics::Utility::CopyNiColorAToFloat | 23 | ready | 1 |
 | `0xec1e40` | NiTexture::QLoadLevel | 28 | ready | 0 |
 | `0x101e2d0` | SetPSTextureFilterMode | 29 | ready | 0 |
 | `0x100c6f0` | BSGraphics::Renderer::UnmapDynamicBuffer | 34 | ready | 0 |
 | `0x1010290` | BSGraphics::Renderer_SetPixelShader | 36 | ready | 0 |
 | `0xf7e7d0` | NiLightColorController::ctor | 39 | ready | 0 |
+| `0xf1b540` | BSLODTriShape::ctor_default | 40 | ready | 0 |
 | `0xf7e5a0` | NiLightColorController::CopyMembers | 40 | ready | 0 |
 | `0x100fee0` | BSGraphics::Renderer_SetShader | 41 | ready | 0 |
 | `0x1555990` | BSGraphics::GetThreadRenderContextLock | 43 | ready | 0 |
 | `0x1245df0` | NiSkinPartition::NiSkinPartition | 46 | ready | 0 |
 | `0x153c900` | GetImageSpaceRenderTarget_TAAMASK_SSRMASK_SWAP | 46 | ready | 0 |
-| `0xf7e6c0` | NiLightColorController::IsEqual | 62 | ready | 0 |
-| `0x1010620` | Renderer::SetScissorRect | 63 | ready | 0 |
 
 **Workstream B entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
