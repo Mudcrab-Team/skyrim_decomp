@@ -145,17 +145,17 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 3 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 5 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | A: Foundation | 416 | 176 | 42.3% | 0 | 57 | 183 | 0 | 63833 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 0 | 39 | 179 | 0 | 89783 |
-| C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 0 | 29 | 113 | 0 | 68822 |
-| D: Image space, sky, water system | 726 | 614 | 84.6% | 4 | 19 | 89 | 0 | 74910 |
+| C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 59 | 19 | 64 | 0 | 49198 |
+| D: Image space, sky, water system | 726 | 634 | 87.3% | 6 | 11 | 75 | 0 | 65497 |
 | E: Shadows | 132 | 92 | 69.7% | 0 | 2 | 38 | 0 | 48058 |
-| **Total A-E** | 2060 | 1308 | 63.5% | 4 | 146 | 602 | 0 | 345406 |
-| Adjacent, not assigned | 998 | 463 | 46.4% | 0 | 137 | 398 | 0 | 167923 |
+| **Total A-E** | 2060 | 1328 | 64.5% | 65 | 128 | 539 | 0 | 316369 |
+| Adjacent, not assigned | 999 | 464 | 46.4% | 0 | 137 | 398 | 0 | 167923 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
@@ -290,42 +290,42 @@ Scope: render passes, batch renderer, accumulators, camera, frustum, culling, po
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| C1 Render passes, batch renderer, accumulators | 127 | 77 | 0 | 4 | 46 | 0 | absent from the ready queue (46) | bsshader |
-| C2 Camera, frustum, culling, occlusion and portals | 205 | 113 | 0 | 25 | 67 | 0 | absent from the ready queue (67) | gamebryo |
+| C1 Render passes, batch renderer, accumulators | 127 | 77 | 21 | 1 | 28 | 0 | absent from the ready queue (28) | bsshader |
+| C2 Camera, frustum, culling, occlusion and portals | 205 | 113 | 38 | 18 | 36 | 0 | absent from the ready queue (36) | gamebryo |
 
 <details><summary>Classes of workstream C with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSShaderAccumulator | C1 | 48 | 29 | 0 | 1 | 18 | 0 | 145 |
-| BSBatchRenderer | C1 | 31 | 13 | 0 | 2 | 16 | 0 | 0 |
-| NiAlphaAccumulator | C1 | 10 | 8 | 0 | 0 | 2 | 0 | 12 |
-| BSShaderProperty::RenderPassArray | C1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
-| BSRenderPass | C1 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
-| NiBackToFrontAccumulator | C1 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
-| AccumulateNodeChildren | C1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| AccumulateSceneGraphNode | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSShaderAccumulator | C1 | 48 | 29 | 13 | 0 | 6 | 0 | 145 |
+| BSBatchRenderer | C1 | 31 | 13 | 1 | 1 | 16 | 0 | 0 |
+| NiAlphaAccumulator | C1 | 10 | 8 | 1 | 0 | 1 | 0 | 12 |
+| BSShaderProperty::RenderPassArray | C1 | 7 | 5 | 1 | 0 | 1 | 0 | 0 |
+| BSRenderPass | C1 | 6 | 5 | 1 | 0 | 0 | 0 | 0 |
+| NiBackToFrontAccumulator | C1 | 5 | 4 | 1 | 0 | 0 | 0 | 0 |
+| AccumulateNodeChildren | C1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| AccumulateSceneGraphNode | C1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
 | BSAccumProcess | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | BSRenderPassCache | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CullJob_SetupDeferredAppend | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | DrainRenderPassDeferredFreeQueue | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| FirstListAccumulationJob | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| BSCompoundFrustum | C2 | 29 | 10 | 0 | 8 | 11 | 0 | 0 |
-| BSCullingProcess | C2 | 25 | 12 | 0 | 3 | 10 | 0 | 0 |
-| NiCamera | C2 | 25 | 11 | 0 | 2 | 12 | 0 | 36 |
-| BSOcclusionPlane | C2 | 17 | 9 | 0 | 1 | 7 | 0 | 30 |
-| BSOcclusionBox | C2 | 15 | 10 | 0 | 0 | 5 | 0 | 19 |
+| FirstListAccumulationJob | C1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| BSCompoundFrustum | C2 | 29 | 10 | 8 | 5 | 6 | 0 | 0 |
+| BSCullingProcess | C2 | 25 | 12 | 6 | 3 | 4 | 0 | 0 |
+| NiCamera | C2 | 25 | 11 | 6 | 0 | 8 | 0 | 36 |
+| BSOcclusionPlane | C2 | 17 | 9 | 6 | 0 | 2 | 0 | 30 |
+| BSOcclusionBox | C2 | 15 | 10 | 2 | 0 | 3 | 0 | 19 |
 | BSPortalGraph | C2 | 15 | 9 | 0 | 3 | 3 | 0 | 0 |
-| BSParabolicCullingProcess | C2 | 14 | 7 | 0 | 3 | 4 | 0 | 0 |
-| BSPortalGraphEntry | C2 | 12 | 9 | 0 | 2 | 1 | 0 | 19 |
+| BSParabolicCullingProcess | C2 | 14 | 7 | 2 | 3 | 2 | 0 | 0 |
+| BSPortalGraphEntry | C2 | 12 | 9 | 1 | 2 | 0 | 0 | 19 |
 | BSCubeMapCamera | C2 | 7 | 4 | 0 | 0 | 3 | 0 | 11 |
 | BSGeometryListCullingProcess | C2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
-| BSFrustumFOVController | C2 | 4 | 1 | 0 | 0 | 3 | 0 | 0 |
-| BSPortal | C2 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
+| BSFrustumFOVController | C2 | 4 | 1 | 3 | 0 | 0 | 0 | 0 |
+| BSPortal | C2 | 4 | 2 | 1 | 1 | 0 | 0 | 0 |
 | HighActorCuller | C2 | 4 | 2 | 0 | 1 | 1 | 0 | 3 |
-| NiCullingProcess | C2 | 4 | 3 | 0 | 1 | 0 | 0 | 0 |
+| NiCullingProcess | C2 | 4 | 3 | 1 | 0 | 0 | 0 | 0 |
 | NiFrustumPlanes | C2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
-| SubmitCullResultsJob | C2 | 2 | 0 | 0 | 0 | 2 | 0 | 0 |
+| SubmitCullResultsJob | C2 | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
 | PruneFrustumPlanes | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | SetupCullingJobManager | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 
@@ -337,8 +337,8 @@ Scope: image space, sky, weather, fog, water.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| D2 Image space: manager, effects and image-space shaders | 615 | 550 | 3 | 14 | 48 | 0 | absent from the ready queue (48) | bsshader |
-| D3 Sky, sun, clouds, weather and fog | 71 | 37 | 1 | 1 | 32 | 0 | absent from the ready queue (32) | skyrim_shared |
+| D2 Image space: manager, effects and image-space shaders | 615 | 567 | 5 | 7 | 36 | 0 | absent from the ready queue (36) | bsshader |
+| D3 Sky, sun, clouds, weather and fog | 71 | 40 | 1 | 0 | 30 | 0 | absent from the ready queue (30) | skyrim_shared |
 | D4 Water system, displacement and reflections | 40 | 27 | 0 | 4 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
 
 <details><summary>Classes of workstream D with unmatched functions</summary>
@@ -346,39 +346,34 @@ Scope: image space, sky, weather, fog, water.
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | BSImagespaceShader | D2 | 19 | 17 | 1 | 0 | 1 | 0 | 29 |
-| TESImageSpaceModifier | D2 | 13 | 4 | 2 | 1 | 6 | 0 | 0 |
+| TESImageSpaceModifier | D2 | 13 | 4 | 3 | 0 | 6 | 0 | 0 |
 | ImageSpaceEffect | D2 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
-| ImageSpaceEffectNoise | D2 | 7 | 3 | 0 | 1 | 3 | 0 | 0 |
-| ImageSpaceModifierInstanceForm | D2 | 7 | 3 | 0 | 1 | 3 | 0 | 19 |
+| ImageSpaceEffectNoise | D2 | 7 | 5 | 0 | 1 | 1 | 0 | 0 |
+| ImageSpaceModifierInstanceForm | D2 | 7 | 4 | 0 | 0 | 3 | 0 | 19 |
 | BSImagespaceShaderWaterFlow | D2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceEffectGetHit | D2 | 6 | 3 | 0 | 0 | 3 | 0 | 0 |
+| ImageSpaceEffectGetHit | D2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | TESImageSpace | D2 | 6 | 3 | 0 | 2 | 1 | 0 | 0 |
 | TESImagespaceManager | D2 | 6 | 2 | 0 | 0 | 4 | 0 | 0 |
-| BSImagespaceShaderISBlur | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceEffectDepthOfField | D2 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
-| ImageSpaceEffectFullScreenBlur | D2 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
-| ImageSpaceEffectRefraction | D2 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
+| ImageSpaceEffectDepthOfField | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectFullScreenBlur | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectRefraction | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceShaderParam | D2 | 5 | 2 | 0 | 1 | 2 | 0 | 0 |
 | BSImagespaceShaderISLightingCompositeMenu | D2 | 4 | 3 | 0 | 1 | 0 | 0 | 0 |
-| ImageSpaceEffectBlur | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectHDR | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceEffectMap | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectVolumetricLighting | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
-| ImageSpaceEffectWaterDisplacement | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
-| ImageSpaceEffectWorldMap | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
-| ImageSpaceManager | D2 | 3 | 0 | 0 | 3 | 0 | 0 | 0 |
+| ImageSpaceEffectWaterDisplacement | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectWorldMap | D2 | 3 | 1 | 1 | 0 | 1 | 0 | 0 |
+| ImageSpaceManager | D2 | 3 | 2 | 0 | 1 | 0 | 0 | 0 |
 | ImageSpaceModifierInstanceDOF | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceEffectOption | D2 | 2 | 1 | 0 | 1 | 0 | 0 | 0 |
 | ImageSpaceEffectParam | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectRadialBlur | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
-| GetVLTemporalAccumulationFactor | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
-| UpdateVolumetricLightingRenderData | D2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 |
 | VolumetricLightingDescriptor | D2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| Sky | D3 | 31 | 13 | 0 | 0 | 18 | 0 | 145 |
+| Sky | D3 | 31 | 15 | 0 | 0 | 16 | 0 | 145 |
 | Sun | D3 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | BSFogProperty | D3 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
 | Precipitation | D3 | 5 | 1 | 1 | 0 | 3 | 0 | 0 |
-| TESWeather | D3 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
+| TESWeather | D3 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
 | Atmosphere | D3 | 4 | 2 | 0 | 0 | 2 | 0 | 0 |
 | Clouds | D3 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | Stars | D3 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
@@ -424,7 +419,7 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 562 | 267 | 0 | 86 | 209 | 0 | absent from the ready queue (202) | gamebryo |
+| X1 Particle systems and emitters | 563 | 268 | 0 | 86 | 209 | 0 | absent from the ready queue (202) | gamebryo |
 | X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
 | X3 Game cameras and camera states | 154 | 69 | 0 | 25 | 60 | 0 | absent from the ready queue (59) | skyrim |
 | X4 Render-related forms, decals, effects, grass and LOD | 233 | 127 | 0 | 10 | 96 | 0 | absent from the ready queue (96) | skyrim_shared |
@@ -443,8 +438,8 @@ Scope: listed for context, owned by the general rounds.
 | NiParticles | X1 | 13 | 7 | 0 | 0 | 6 | 0 | 24 |
 | BSPSysHavokUpdateModifier | X1 | 12 | 6 | 0 | 2 | 4 | 0 | 0 |
 | NiPSysData | X1 | 12 | 0 | 0 | 5 | 7 | 0 | 22 |
+| NiPSysModifier | X1 | 12 | 10 | 0 | 0 | 2 | 0 | 14 |
 | NiPSysModifierCtlr | X1 | 12 | 9 | 0 | 1 | 2 | 0 | 0 |
-| NiPSysModifier | X1 | 11 | 9 | 0 | 0 | 2 | 0 | 14 |
 | NiPSysBoundUpdateModifier | X1 | 10 | 3 | 0 | 0 | 7 | 0 | 16 |
 | BSPSysMultiTargetEmitterCtlr | X1 | 9 | 2 | 0 | 2 | 5 | 0 | 0 |
 | NiPSysColorModifier | X1 | 9 | 6 | 0 | 0 | 3 | 0 | 0 |
@@ -625,8 +620,6 @@ Scope: listed for context, owned by the general rounds.
 | `0xff9230` | BSCompoundFrustum::SetActivePlaneState | 67 | ready | 0 |
 | `0x152b6d0` | BSCullingProcess::InitCullDescriptor | 68 | ready | 0 |
 | `0x1587090` | BSParabolicCullingProcess::TestBaseVisibility2 | 72 | ready | 0 |
-| `0x1520990` | BSShaderAccumulator::ResetAccumulatorState | 84 | ready | 0 |
-| `0x155fed0` | BSBatchRenderer::GetNextPassSlotInGroup | 100 | ready | 0 |
 | `0x15870e0` | BSParabolicCullingProcess::TestBaseVisibility1_14132C900 | 100 | ready | 0 |
 | `0x213b70` | BSPortal::dtor_deleting | 110 | ready | 0 |
 | `0xfda080` | BSPortalGraph::AddRoom | 171 | ready | 0 |
@@ -636,26 +629,24 @@ Scope: listed for context, owned by the general rounds.
 | `0x1587150` | BSParabolicCullingProcess::GetHemisphereMask | 222 | ready | 1 |
 | `0xfdacc0` | BSPortalGraph::RemoveByPointer | 228 | ready | 0 |
 | `0xfd97a0` | BSPortalGraphEntry::HasSharedRoomVisibility | 250 | ready | 0 |
+| `0xf049c0` | BSCullingProcess::CullNodeAgainstFrustum | 273 | ready | 0 |
+| `0xff7ae0` | BSCompoundFrustum::ProcessMultiBoundShape | 274 | ready | 0 |
 
 **Workstream D entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
-| `0x1530d70` | GetVLTemporalAccumulationFactor | 22 | ready | 0 |
 | `0x150a7e0` | BSImagespaceShaderISLightingCompositeMenu::Unk_0D | 50 | ready | 0 |
-| `0x14edb20` | ImageSpaceManager::SetupEffects | 65 | ready | 0 |
-| `0x150b880` | ImageSpaceManager::RegisterEffect | 95 | ready | 0 |
 | `0x2a6650` | TESImageSpace::InitializeData | 100 | ready | 0 |
 | `0x1585a20` | ImageSpaceEffectNoise::sub_14132B340 | 115 | ready | 1 |
 | `0x528ba0` | TESWaterNormals::ctor | 125 | ready | 0 |
-| `0x15308a0` | UpdateVolumetricLightingRenderData | 141 | ready | 0 |
 | `0x152ae10` | ImageSpaceShaderParam::ctor | 148 | ready | 0 |
 | `0x1e50c0` | TESWaterForm::sub_140193D00 | 211 | ready | 0 |
 | `0x1553950` | ImageSpaceEffect::ctor | 216 | ready | 4 |
-| `0x2a36d0` | ImageSpaceModifierInstanceForm::SetTarget | 237 | ready | 0 |
 | `0x1541e20` | ImageSpaceManager::BuildDefaultEffectParams | 271 | ready | 0 |
 | `0x52d410` | TESWaterSystem::AddRipple | 407 | ready | 0 |
-| `0x309230` | TESWeather::InitializeData | 477 | ready | 0 |
+| `0x1536c70` | TESImageSpace::SetBaseData | 524 | ready | 0 |
+| `0x307460` | TESWaterForm::Function307460 | 865 | ready | 0 |
 
 **Workstream E entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
