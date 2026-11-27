@@ -46,7 +46,7 @@ counts exclude those and unreported claims. One KiB is
 | Other models | 8,762 |
 | Contributors (human / unstated) | 4,289 |
 | Scripts and tools | 1,440,901 |
-| Not reported | 723,036 |
+| Not reported | 747,347 |
 <!-- /model-trend-totals -->
 
 Regenerate from tracked first-parent history in a full checkout with

@@ -17,7 +17,7 @@ public:
         unsigned int validPassBits;
     };
 
-    bool GetNextPassSlotInGroup(unsigned int group, int& slot);
+    bool GetNextPassSlotInGroup(unsigned int group, unsigned int* slot);
     unsigned char unrecovered000[8];
     PassGroup* renderPass;
 };

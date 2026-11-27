@@ -8,20 +8,21 @@
 #include "BSBatchRenderer_155fed0.h"
 
 // Find an occupied slot, resetting the cursor to zero when the group is exhausted.
-bool BSBatchRenderer::GetNextPassSlotInGroup(unsigned int group, int& slot)
+bool BSBatchRenderer::GetNextPassSlotInGroup(unsigned int group, unsigned int* slot)
 {
-    if (slot < 0 || slot >= slotCount) {
-        slot = 0;
+    if (static_cast<int>(*slot) < 0 || static_cast<int>(*slot) >= slotCount) {
+        *slot = 0;
     }
     int i;
-    for (i = slot; i < slotCount; ++i) {
+    for (i = static_cast<int>(*slot); i < slotCount; ++i) {
         if (renderPass[group].passes[i]) {
-            slot = i;
+            *slot = static_cast<unsigned int>(i);
+            // NOTE: original advances the loop counter to slotCount so ++i exits at slotCount + 1.
             i = slotCount;
         }
     }
     if (i == slotCount) {
-        slot = 0;
+        *slot = 0;
     }
     return i == slotCount + 1;
 }
