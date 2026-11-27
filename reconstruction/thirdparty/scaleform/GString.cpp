@@ -7,6 +7,7 @@
 // Adapted bodies: none
 #include "GString.h"
 
+// The CrashLogger PDB names this class by its later Scaleform namespace name; this unit keeps the GFx 3 / CommonLib name.
 GString::GString()
 {
     // A default string shares the empty descriptor.

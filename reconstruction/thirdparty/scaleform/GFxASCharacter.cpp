@@ -6,8 +6,8 @@
 // Adapted bodies: none
 #include "GFxASCharacter.h"
 
+// Clears the two character flags kept in bits 2 and 3.
 void GFxASCharacter::Functiond35d50()
 {
-    // Clears the two character flags kept in bits 2 and 3.
     unk96 &= ~0x000C;
 }

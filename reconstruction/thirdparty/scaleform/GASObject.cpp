@@ -7,11 +7,13 @@
 #include "GASObject.h"
 #include "GFxASCharacter.h"
 
+// Returns this object as a character when its type says it is one, otherwise null.
 GFxASCharacter* GASObjectInterface::ToASCharacter()
 {
     return GetObjectType() == kObject_ASCharacter ? static_cast<GFxASCharacter*>(this) : nullptr;
 }
 
+// CommonLib's slot name; the CrashLogger PDB spells the same slot with a Func prefix.
 void GASObject::GASObjectInterface_04(GASEnvironment* a_env, const GASString& a_name, GASValue* a_value)
 {
     // The environment form forwards to the string-context form.
