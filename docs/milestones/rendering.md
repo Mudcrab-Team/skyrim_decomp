@@ -145,16 +145,16 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 6 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 5 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | A: Foundation | 416 | 176 | 42.3% | 0 | 57 | 183 | 0 | 63833 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 0 | 39 | 179 | 0 | 89783 |
-| C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 59 | 19 | 64 | 0 | 49198 |
+| C: Batching, passes, camera, culling | 332 | 221 | 66.6% | 0 | 23 | 88 | 0 | 59804 |
 | D: Image space, sky, water system | 726 | 637 | 87.7% | 7 | 11 | 71 | 0 | 61543 |
 | E: Shadows | 132 | 92 | 69.7% | 0 | 2 | 38 | 0 | 48058 |
-| **Total A-E** | 2060 | 1331 | 64.6% | 66 | 128 | 535 | 0 | 312415 |
+| **Total A-E** | 2060 | 1362 | 66.1% | 7 | 132 | 559 | 0 | 323021 |
 | Adjacent, not assigned | 999 | 469 | 46.9% | 0 | 132 | 398 | 0 | 166728 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
@@ -290,42 +290,38 @@ Scope: render passes, batch renderer, accumulators, camera, frustum, culling, po
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| C1 Render passes, batch renderer, accumulators | 127 | 77 | 21 | 1 | 28 | 0 | absent from the ready queue (28) | bsshader |
-| C2 Camera, frustum, culling, occlusion and portals | 205 | 113 | 38 | 18 | 36 | 0 | absent from the ready queue (36) | gamebryo |
+| C1 Render passes, batch renderer, accumulators | 127 | 86 | 0 | 1 | 40 | 0 | absent from the ready queue (40) | bsshader |
+| C2 Camera, frustum, culling, occlusion and portals | 205 | 135 | 0 | 22 | 48 | 0 | absent from the ready queue (48) | gamebryo |
 
 <details><summary>Classes of workstream C with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSShaderAccumulator | C1 | 48 | 29 | 13 | 0 | 6 | 0 | 145 |
-| BSBatchRenderer | C1 | 31 | 13 | 1 | 1 | 16 | 0 | 0 |
-| NiAlphaAccumulator | C1 | 10 | 8 | 1 | 0 | 1 | 0 | 12 |
-| BSShaderProperty::RenderPassArray | C1 | 7 | 5 | 1 | 0 | 1 | 0 | 0 |
-| BSRenderPass | C1 | 6 | 5 | 1 | 0 | 0 | 0 | 0 |
-| NiBackToFrontAccumulator | C1 | 5 | 4 | 1 | 0 | 0 | 0 | 0 |
-| AccumulateNodeChildren | C1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
-| AccumulateSceneGraphNode | C1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
+| BSShaderAccumulator | C1 | 48 | 32 | 0 | 0 | 16 | 0 | 145 |
+| BSBatchRenderer | C1 | 31 | 14 | 0 | 1 | 16 | 0 | 0 |
+| NiAlphaAccumulator | C1 | 10 | 9 | 0 | 0 | 1 | 0 | 12 |
+| BSShaderProperty::RenderPassArray | C1 | 7 | 6 | 0 | 0 | 1 | 0 | 0 |
+| AccumulateSceneGraphNode | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | BSAccumProcess | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | BSRenderPassCache | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | CullJob_SetupDeferredAppend | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | DrainRenderPassDeferredFreeQueue | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| FirstListAccumulationJob | C1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 |
-| BSCompoundFrustum | C2 | 29 | 10 | 8 | 5 | 6 | 0 | 0 |
-| BSCullingProcess | C2 | 25 | 12 | 6 | 3 | 4 | 0 | 0 |
-| NiCamera | C2 | 25 | 11 | 6 | 0 | 8 | 0 | 36 |
-| BSOcclusionPlane | C2 | 17 | 9 | 6 | 0 | 2 | 0 | 30 |
-| BSOcclusionBox | C2 | 15 | 10 | 2 | 0 | 3 | 0 | 19 |
+| FirstListAccumulationJob | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
+| BSCompoundFrustum | C2 | 29 | 17 | 0 | 6 | 6 | 0 | 0 |
+| BSCullingProcess | C2 | 25 | 12 | 0 | 3 | 10 | 0 | 0 |
+| NiCamera | C2 | 25 | 15 | 0 | 1 | 9 | 0 | 36 |
+| BSOcclusionPlane | C2 | 17 | 14 | 0 | 1 | 2 | 0 | 30 |
+| BSOcclusionBox | C2 | 15 | 12 | 0 | 0 | 3 | 0 | 19 |
 | BSPortalGraph | C2 | 15 | 9 | 0 | 3 | 3 | 0 | 0 |
-| BSParabolicCullingProcess | C2 | 14 | 7 | 2 | 3 | 2 | 0 | 0 |
-| BSPortalGraphEntry | C2 | 12 | 9 | 1 | 2 | 0 | 0 | 19 |
+| BSParabolicCullingProcess | C2 | 14 | 7 | 0 | 3 | 4 | 0 | 0 |
+| BSPortalGraphEntry | C2 | 12 | 9 | 0 | 2 | 1 | 0 | 19 |
 | BSCubeMapCamera | C2 | 7 | 4 | 0 | 0 | 3 | 0 | 11 |
 | BSGeometryListCullingProcess | C2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
-| BSFrustumFOVController | C2 | 4 | 1 | 3 | 0 | 0 | 0 | 0 |
-| BSPortal | C2 | 4 | 2 | 1 | 1 | 0 | 0 | 0 |
+| BSFrustumFOVController | C2 | 4 | 3 | 0 | 0 | 1 | 0 | 0 |
+| BSPortal | C2 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
 | HighActorCuller | C2 | 4 | 2 | 0 | 1 | 1 | 0 | 3 |
-| NiCullingProcess | C2 | 4 | 3 | 1 | 0 | 0 | 0 | 0 |
+| NiCullingProcess | C2 | 4 | 3 | 0 | 1 | 0 | 0 | 0 |
 | NiFrustumPlanes | C2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
-| SubmitCullResultsJob | C2 | 2 | 0 | 2 | 0 | 0 | 0 | 0 |
 | PruneFrustumPlanes | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | SetupCullingJobManager | C2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 
