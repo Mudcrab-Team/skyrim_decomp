@@ -2,17 +2,15 @@
 // Code origin: original bodies from the pinned image listing; GetHasPLSpecTex uses the existing project body from d7bcc19aa9.
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // 0x3cc6d0 TESActorBase::GetHasPLSpecTex
-// Adapted bodies: none
+// Adapted bodies: TestBit follows momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422
 // 0x3b03a0 TESActorBase::GetIsPlayerOwner
 // 0x3afed0 TESActorBase::IsAutoCalc
 // 0x3afef0 TESActorBase::SetAutoCalc
 // 0x3cbc60 TESActorBase::~TESActorBase
-// 0x3cc640 TESActorBase::Function3cc640
-// 0x3cc700 TESActorBase::Function3cc700
-// 0x3cd860 TESActorBase::Function3cd860
+// 0x3cc650 TESActorBase::GetCombatStyle
 #include "TESActorBase.h"
 
-// TestBit: GUESS(low)
 inline bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)
 {
     return ((a_flags >> a_bit) & 1) != 0;
@@ -67,25 +65,4 @@ bool TESActorBase::GetHasPLSpecTex() const
 // TESActorBase::RestoreActorValue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 void TESActorBase::RestoreActorValue(std::uint32_t a_modifier, std::uint32_t a_akValue, float a_value)
 {
-}
-
-// 0x3cc640 TESActorBase::Function3cc640; body from the pinned image listing.
-void TESActorBase::Function3cc640()
-{
-    auto** vtable = *reinterpret_cast<void***>(this);
-    reinterpret_cast<void (*)(void*)>(vtable[1])(this);
-}
-
-// 0x3cc700 TESActorBase::Function3cc700; body from the pinned image listing.
-void TESActorBase::Function3cc700()
-{
-    auto** vtable = *reinterpret_cast<void***>(this);
-    reinterpret_cast<void (*)(void*)>(vtable[1])(this);
-}
-
-// 0x3cd860 TESActorBase::Function3cd860; body from the pinned image listing.
-void TESActorBase::Function3cd860()
-{
-    auto** vtable = *reinterpret_cast<void***>(this);
-    reinterpret_cast<void (*)(void*)>(vtable[4])(this);
 }
