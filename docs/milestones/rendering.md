@@ -145,17 +145,17 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 5 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 6 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | A: Foundation | 416 | 176 | 42.3% | 0 | 57 | 183 | 0 | 63833 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 0 | 39 | 179 | 0 | 89783 |
 | C: Batching, passes, camera, culling | 332 | 190 | 57.2% | 59 | 19 | 64 | 0 | 49198 |
-| D: Image space, sky, water system | 726 | 634 | 87.3% | 6 | 11 | 75 | 0 | 65497 |
+| D: Image space, sky, water system | 726 | 637 | 87.7% | 7 | 11 | 71 | 0 | 61543 |
 | E: Shadows | 132 | 92 | 69.7% | 0 | 2 | 38 | 0 | 48058 |
-| **Total A-E** | 2060 | 1328 | 64.5% | 65 | 128 | 539 | 0 | 316369 |
-| Adjacent, not assigned | 999 | 464 | 46.4% | 0 | 137 | 398 | 0 | 167923 |
+| **Total A-E** | 2060 | 1331 | 64.6% | 66 | 128 | 535 | 0 | 312415 |
+| Adjacent, not assigned | 999 | 469 | 46.9% | 0 | 132 | 398 | 0 | 166728 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
@@ -337,8 +337,8 @@ Scope: image space, sky, weather, fog, water.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| D2 Image space: manager, effects and image-space shaders | 615 | 567 | 5 | 7 | 36 | 0 | absent from the ready queue (36) | bsshader |
-| D3 Sky, sun, clouds, weather and fog | 71 | 40 | 1 | 0 | 30 | 0 | absent from the ready queue (30) | skyrim_shared |
+| D2 Image space: manager, effects and image-space shaders | 615 | 568 | 6 | 7 | 34 | 0 | absent from the ready queue (34) | bsshader |
+| D3 Sky, sun, clouds, weather and fog | 71 | 42 | 1 | 0 | 28 | 0 | absent from the ready queue (28) | skyrim_shared |
 | D4 Water system, displacement and reflections | 40 | 27 | 0 | 4 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
 
 <details><summary>Classes of workstream D with unmatched functions</summary>
@@ -354,7 +354,7 @@ Scope: image space, sky, weather, fog, water.
 | ImageSpaceEffectGetHit | D2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | TESImageSpace | D2 | 6 | 3 | 0 | 2 | 1 | 0 | 0 |
 | TESImagespaceManager | D2 | 6 | 2 | 0 | 0 | 4 | 0 | 0 |
-| ImageSpaceEffectDepthOfField | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectDepthOfField | D2 | 5 | 4 | 1 | 0 | 0 | 0 | 0 |
 | ImageSpaceEffectFullScreenBlur | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectRefraction | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceShaderParam | D2 | 5 | 2 | 0 | 1 | 2 | 0 | 0 |
@@ -368,8 +368,7 @@ Scope: image space, sky, weather, fog, water.
 | ImageSpaceModifierInstanceDOF | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectParam | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectRadialBlur | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
-| VolumetricLightingDescriptor | D2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| Sky | D3 | 31 | 15 | 0 | 0 | 16 | 0 | 145 |
+| Sky | D3 | 31 | 17 | 0 | 0 | 14 | 0 | 145 |
 | Sun | D3 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | BSFogProperty | D3 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
 | Precipitation | D3 | 5 | 1 | 1 | 0 | 3 | 0 | 0 |
@@ -419,7 +418,7 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 563 | 268 | 0 | 86 | 209 | 0 | absent from the ready queue (202) | gamebryo |
+| X1 Particle systems and emitters | 563 | 273 | 0 | 81 | 209 | 0 | absent from the ready queue (202) | gamebryo |
 | X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
 | X3 Game cameras and camera states | 154 | 69 | 0 | 25 | 60 | 0 | absent from the ready queue (59) | skyrim |
 | X4 Render-related forms, decals, effects, grass and LOD | 233 | 127 | 0 | 10 | 96 | 0 | absent from the ready queue (96) | skyrim_shared |
@@ -446,7 +445,7 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysMeshUpdateModifier | X1 | 9 | 4 | 0 | 0 | 5 | 0 | 0 |
 | NiPSysSpawnModifier | X1 | 9 | 4 | 0 | 3 | 2 | 0 | 0 |
 | BSPSysInheritVelocityModifier | X1 | 8 | 2 | 0 | 2 | 4 | 0 | 0 |
-| BSPSysLODModifier | X1 | 8 | 4 | 0 | 3 | 1 | 0 | 0 |
+| BSPSysLODModifier | X1 | 8 | 6 | 0 | 1 | 1 | 0 | 0 |
 | BSPSysRecycleBoundModifier | X1 | 8 | 1 | 0 | 4 | 3 | 0 | 0 |
 | NiPSysAgeDeathModifier | X1 | 8 | 4 | 0 | 1 | 3 | 0 | 0 |
 | NiPSysCollider | X1 | 8 | 0 | 0 | 6 | 2 | 0 | 0 |
@@ -466,7 +465,7 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysSphereEmitter | X1 | 7 | 3 | 0 | 2 | 2 | 0 | 0 |
 | NiPSysVortexFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | BSPSysSimpleColorModifier | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
-| BSPSysSubTexModifier | X1 | 6 | 2 | 0 | 3 | 1 | 0 | 0 |
+| BSPSysSubTexModifier | X1 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | NiPSysCylinderEmitter | X1 | 6 | 1 | 0 | 3 | 2 | 0 | 0 |
 | NiPSysEmitter | X1 | 6 | 3 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysGravityFieldModifier | X1 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
