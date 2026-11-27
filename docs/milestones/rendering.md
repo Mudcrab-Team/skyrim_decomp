@@ -145,17 +145,17 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 5 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 10 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | A: Foundation | 416 | 176 | 42.3% | 0 | 57 | 183 | 0 | 63833 |
-| B: Shaders and materials | 454 | 236 | 52.0% | 0 | 39 | 179 | 0 | 89783 |
-| C: Batching, passes, camera, culling | 332 | 221 | 66.6% | 0 | 23 | 88 | 0 | 59804 |
-| D: Image space, sky, water system | 726 | 637 | 87.7% | 7 | 11 | 71 | 0 | 61543 |
+| B: Shaders and materials | 454 | 236 | 52.0% | 8 | 37 | 173 | 0 | 88909 |
+| C: Batching, passes, camera, culling | 332 | 221 | 66.6% | 1 | 23 | 87 | 0 | 59680 |
+| D: Image space, sky, water system | 726 | 637 | 87.7% | 3 | 12 | 74 | 0 | 62305 |
 | E: Shadows | 132 | 92 | 69.7% | 0 | 2 | 38 | 0 | 48058 |
-| **Total A-E** | 2060 | 1362 | 66.1% | 7 | 132 | 559 | 0 | 323021 |
-| Adjacent, not assigned | 999 | 469 | 46.9% | 0 | 132 | 398 | 0 | 166728 |
+| **Total A-E** | 2060 | 1362 | 66.1% | 12 | 131 | 555 | 0 | 322785 |
+| Adjacent, not assigned | 999 | 481 | 48.1% | 0 | 120 | 398 | 0 | 164146 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
@@ -227,7 +227,7 @@ Scope: shader classes, shader properties, materials, sky and water shaders.
 |---|---:|---:|---:|---:|---:|---:|---|---|
 | B1 Shader classes (lighting, effect, grass, tree, blood, particle, utility) | 53 | 14 | 0 | 6 | 33 | 0 | absent from the ready queue (33) | bsshader |
 | B2 Shader properties and their controllers | 190 | 93 | 0 | 15 | 82 | 0 | absent from the ready queue (81) | bsshader |
-| B3 Shader materials and texture sets | 162 | 108 | 0 | 14 | 40 | 0 | absent from the ready queue (39) | bsshader |
+| B3 Shader materials and texture sets | 162 | 108 | 8 | 12 | 34 | 0 | absent from the ready queue (33) | bsshader |
 | B4 Sky and water shaders, properties and materials | 49 | 21 | 0 | 4 | 24 | 0 | absent from the ready queue (24) | bsshader |
 
 <details><summary>Classes of workstream B with unmatched functions</summary>
@@ -258,20 +258,20 @@ Scope: shader classes, shader properties, materials, sky and water shaders.
 | BSLightingShaderPropertyUShortController | B2 | 10 | 8 | 0 | 0 | 2 | 0 | 18 |
 | BSShaderPropertyLightData | B2 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 | OnLoadTextureSet | B2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| BSLightingShaderMaterialBase | B3 | 13 | 10 | 0 | 2 | 1 | 0 | 0 |
+| BSLightingShaderMaterialBase | B3 | 13 | 10 | 1 | 1 | 1 | 0 | 0 |
 | BSLightingShaderMaterialMultiLayerParallax | B3 | 13 | 8 | 0 | 3 | 2 | 0 | 9 |
 | BSLightingShaderMaterialEnvmap | B3 | 12 | 10 | 0 | 0 | 2 | 0 | 9 |
 | BSLightingShaderMaterialEye | B3 | 11 | 9 | 0 | 1 | 1 | 0 | 8 |
-| BSLightingShaderMaterialSnow | B3 | 11 | 10 | 0 | 0 | 1 | 0 | 0 |
+| BSLightingShaderMaterialSnow | B3 | 11 | 10 | 1 | 0 | 0 | 0 | 0 |
 | BSLightingShaderMaterialLandscape | B3 | 10 | 5 | 0 | 2 | 3 | 0 | 0 |
 | BSLightingShaderMaterialFacegen | B3 | 9 | 4 | 0 | 1 | 4 | 0 | 0 |
-| BSLightingShaderMaterialFacegenTint | B3 | 9 | 7 | 0 | 0 | 2 | 0 | 3 |
+| BSLightingShaderMaterialFacegenTint | B3 | 9 | 7 | 2 | 0 | 0 | 0 | 3 |
 | BSLightingShaderMaterialParallaxOcc | B3 | 9 | 4 | 0 | 2 | 3 | 0 | 14 |
-| BSShaderMaterial | B3 | 9 | 7 | 0 | 0 | 2 | 0 | 12 |
+| BSShaderMaterial | B3 | 9 | 7 | 1 | 0 | 1 | 0 | 12 |
 | BSEffectShaderMaterial | B3 | 8 | 3 | 0 | 1 | 4 | 0 | 13 |
-| BSLightingShaderMaterialHairTint | B3 | 8 | 6 | 0 | 0 | 2 | 0 | 5 |
+| BSLightingShaderMaterialHairTint | B3 | 8 | 6 | 1 | 0 | 1 | 0 | 5 |
 | BSLightingShaderMaterialLODLandscape | B3 | 8 | 5 | 0 | 1 | 2 | 0 | 10 |
-| BSLightingShaderMaterialParallax | B3 | 8 | 5 | 0 | 1 | 2 | 0 | 9 |
+| BSLightingShaderMaterialParallax | B3 | 8 | 5 | 2 | 0 | 1 | 0 | 9 |
 | BSShaderTextureSet | B3 | 8 | 6 | 0 | 0 | 2 | 0 | 12 |
 | BSLightingShaderMaterialGlowmap | B3 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | BSTextureSet | B3 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
@@ -290,7 +290,7 @@ Scope: render passes, batch renderer, accumulators, camera, frustum, culling, po
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| C1 Render passes, batch renderer, accumulators | 127 | 86 | 0 | 1 | 40 | 0 | absent from the ready queue (40) | bsshader |
+| C1 Render passes, batch renderer, accumulators | 127 | 86 | 1 | 1 | 39 | 0 | absent from the ready queue (39) | bsshader |
 | C2 Camera, frustum, culling, occlusion and portals | 205 | 135 | 0 | 22 | 48 | 0 | absent from the ready queue (48) | gamebryo |
 
 <details><summary>Classes of workstream C with unmatched functions</summary>
@@ -298,7 +298,7 @@ Scope: render passes, batch renderer, accumulators, camera, frustum, culling, po
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | BSShaderAccumulator | C1 | 48 | 32 | 0 | 0 | 16 | 0 | 145 |
-| BSBatchRenderer | C1 | 31 | 14 | 0 | 1 | 16 | 0 | 0 |
+| BSBatchRenderer | C1 | 31 | 14 | 1 | 1 | 15 | 0 | 0 |
 | NiAlphaAccumulator | C1 | 10 | 9 | 0 | 0 | 1 | 0 | 12 |
 | BSShaderProperty::RenderPassArray | C1 | 7 | 6 | 0 | 0 | 1 | 0 | 0 |
 | AccumulateSceneGraphNode | C1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
@@ -333,16 +333,16 @@ Scope: image space, sky, weather, fog, water.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| D2 Image space: manager, effects and image-space shaders | 615 | 568 | 6 | 7 | 34 | 0 | absent from the ready queue (34) | bsshader |
-| D3 Sky, sun, clouds, weather and fog | 71 | 42 | 1 | 0 | 28 | 0 | absent from the ready queue (28) | skyrim_shared |
+| D2 Image space: manager, effects and image-space shaders | 615 | 568 | 3 | 8 | 36 | 0 | absent from the ready queue (36) | bsshader |
+| D3 Sky, sun, clouds, weather and fog | 71 | 42 | 0 | 0 | 29 | 0 | absent from the ready queue (29) | skyrim_shared |
 | D4 Water system, displacement and reflections | 40 | 27 | 0 | 4 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
 
 <details><summary>Classes of workstream D with unmatched functions</summary>
 
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| BSImagespaceShader | D2 | 19 | 17 | 1 | 0 | 1 | 0 | 29 |
-| TESImageSpaceModifier | D2 | 13 | 4 | 3 | 0 | 6 | 0 | 0 |
+| BSImagespaceShader | D2 | 19 | 17 | 0 | 0 | 2 | 0 | 29 |
+| TESImageSpaceModifier | D2 | 13 | 4 | 1 | 1 | 7 | 0 | 0 |
 | ImageSpaceEffect | D2 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | ImageSpaceEffectNoise | D2 | 7 | 5 | 0 | 1 | 1 | 0 | 0 |
 | ImageSpaceModifierInstanceForm | D2 | 7 | 4 | 0 | 0 | 3 | 0 | 19 |
@@ -367,7 +367,7 @@ Scope: image space, sky, weather, fog, water.
 | Sky | D3 | 31 | 17 | 0 | 0 | 14 | 0 | 145 |
 | Sun | D3 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | BSFogProperty | D3 | 5 | 3 | 0 | 0 | 2 | 0 | 0 |
-| Precipitation | D3 | 5 | 1 | 1 | 0 | 3 | 0 | 0 |
+| Precipitation | D3 | 5 | 1 | 0 | 0 | 4 | 0 | 0 |
 | TESWeather | D3 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
 | Atmosphere | D3 | 4 | 2 | 0 | 0 | 2 | 0 | 0 |
 | Clouds | D3 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
@@ -414,9 +414,9 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 563 | 273 | 0 | 81 | 209 | 0 | absent from the ready queue (202) | gamebryo |
+| X1 Particle systems and emitters | 563 | 283 | 0 | 71 | 209 | 0 | absent from the ready queue (202) | gamebryo |
 | X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
-| X3 Game cameras and camera states | 154 | 69 | 0 | 25 | 60 | 0 | absent from the ready queue (59) | skyrim |
+| X3 Game cameras and camera states | 154 | 71 | 0 | 23 | 60 | 0 | absent from the ready queue (59) | skyrim |
 | X4 Render-related forms, decals, effects, grass and LOD | 233 | 127 | 0 | 10 | 96 | 0 | absent from the ready queue (96) | skyrim_shared |
 
 <details><summary>Classes of adjacent with unmatched functions</summary>
@@ -439,7 +439,7 @@ Scope: listed for context, owned by the general rounds.
 | BSPSysMultiTargetEmitterCtlr | X1 | 9 | 2 | 0 | 2 | 5 | 0 | 0 |
 | NiPSysColorModifier | X1 | 9 | 6 | 0 | 0 | 3 | 0 | 0 |
 | NiPSysMeshUpdateModifier | X1 | 9 | 4 | 0 | 0 | 5 | 0 | 0 |
-| NiPSysSpawnModifier | X1 | 9 | 4 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysSpawnModifier | X1 | 9 | 6 | 0 | 1 | 2 | 0 | 0 |
 | BSPSysInheritVelocityModifier | X1 | 8 | 2 | 0 | 2 | 4 | 0 | 0 |
 | BSPSysLODModifier | X1 | 8 | 6 | 0 | 1 | 1 | 0 | 0 |
 | BSPSysRecycleBoundModifier | X1 | 8 | 1 | 0 | 4 | 3 | 0 | 0 |
@@ -449,20 +449,20 @@ Scope: listed for context, owned by the general rounds.
 | BSPSysArrayEmitter | X1 | 7 | 3 | 0 | 0 | 4 | 0 | 23 |
 | BSPSysStripUpdateModifier | X1 | 7 | 4 | 0 | 0 | 3 | 0 | 0 |
 | NiPSysAirFieldModifier | X1 | 7 | 2 | 0 | 1 | 4 | 0 | 0 |
-| NiPSysBoxEmitter | X1 | 7 | 2 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysBoxEmitter | X1 | 7 | 3 | 0 | 2 | 2 | 0 | 0 |
 | NiPSysDragFieldModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysDragModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
-| NiPSysGrowFadeModifier | X1 | 7 | 2 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysGrowFadeModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysModifierBoolCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysModifierFloatCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysPlanarCollider | X1 | 7 | 0 | 0 | 1 | 6 | 0 | 0 |
-| NiPSysRotationModifier | X1 | 7 | 2 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysRotationModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysSphereEmitter | X1 | 7 | 3 | 0 | 2 | 2 | 0 | 0 |
 | NiPSysVortexFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | BSPSysSimpleColorModifier | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
 | BSPSysSubTexModifier | X1 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
-| NiPSysCylinderEmitter | X1 | 6 | 1 | 0 | 3 | 2 | 0 | 0 |
+| NiPSysCylinderEmitter | X1 | 6 | 2 | 0 | 2 | 2 | 0 | 0 |
 | NiPSysEmitter | X1 | 6 | 3 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysGravityFieldModifier | X1 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysSphericalCollider | X1 | 6 | 0 | 0 | 1 | 5 | 0 | 0 |
@@ -528,7 +528,7 @@ Scope: listed for context, owned by the general rounds.
 | Scaleform::Render::Text::Paragraph::TextBuffer | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | Scaleform::Render::Text::SGMLParser | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | Scaleform::Render::Text::StyledText | X2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
-| PlayerCamera | X3 | 53 | 29 | 0 | 5 | 19 | 0 | 144 |
+| PlayerCamera | X3 | 53 | 31 | 0 | 3 | 19 | 0 | 144 |
 | DragonCameraState | X3 | 13 | 5 | 0 | 3 | 5 | 0 | 0 |
 | HorseCameraState | X3 | 13 | 5 | 0 | 1 | 7 | 0 | 6 |
 | LocalMapCamera | X3 | 11 | 5 | 0 | 1 | 5 | 0 | 0 |
@@ -596,7 +596,6 @@ Scope: listed for context, owned by the general rounds.
 | `0xd6e480` | BSEffectShaderProperty::CreateClone | 90 | ready | 0 |
 | `0x154c9a0` | BSLightingShader::SetupTexture | 94 | ready | 0 |
 | `0x157c030` | BSEffectShaderPropertyFloatController::InitSDM | 101 | ready | 0 |
-| `0x15260f0` | BSLightingShaderMaterialParallax::GetTextures | 106 | ready | 0 |
 | `0x1519140` | BSLightingShaderProperty::InitINISettings | 113 | ready | 0 |
 | `0xd6e9e0` | BSEffectShaderProperty::GetRenderPasses_ShadowMapOrMask | 115 | ready | 0 |
 | `0x118f2b0` | BSEffectShaderProperty::AsGeometry | 127 | ready | 0 |
@@ -606,6 +605,7 @@ Scope: listed for context, owned by the general rounds.
 | `0x15286c0` | BSLightingShaderMaterialMultiLayerParallax::ClearTextures | 155 | ready | 0 |
 | `0x1578980` | BSShader::ctor | 163 | ready | 8 |
 | `0x1526cd0` | BSLightingShaderMaterialFacegen::ReceiveValuesFromRootMaterial | 163 | ready | 0 |
+| `0x1569260` | BSShaderPropertyLightData::RemoveLight | 164 | ready | 0 |
 
 **Workstream C entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
 
@@ -631,6 +631,7 @@ Scope: listed for context, owned by the general rounds.
 
 | RVA | Name | Size | State | Callers unlocked |
 |---|---|---:|---|---:|
+| `0x2a8440` | TESImageSpaceModifier::MakeDefaultGetHit | 25 | ready | 0 |
 | `0x150a7e0` | BSImagespaceShaderISLightingCompositeMenu::Unk_0D | 50 | ready | 0 |
 | `0x2a6650` | TESImageSpace::InitializeData | 100 | ready | 0 |
 | `0x1585a20` | ImageSpaceEffectNoise::sub_14132B340 | 115 | ready | 1 |
