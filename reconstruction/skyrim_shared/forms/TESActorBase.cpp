@@ -25,7 +25,7 @@ TESActorBase::TESActorBase()
 // TODO body: RVA 0x3b03a0, 11 bytes, TESActorBase::GetIsPlayerOwner.
 bool TESActorBase::GetIsPlayerOwner() const
 {
-    return *reinterpret_cast<const std::int32_t*>(reinterpret_cast<const char*>(this) + 0x14) == 7;
+    return formID == 7u;
 }
 
 // 0x3afed0 TESActorBase::IsAutoCalc; body from the pinned image listing.
