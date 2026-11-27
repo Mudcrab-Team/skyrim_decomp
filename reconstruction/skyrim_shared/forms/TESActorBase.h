@@ -59,6 +59,9 @@ public:
     virtual bool GetHasPLSpecTex() const;
     virtual void RestoreActorValue(std::uint32_t a_modifier, std::uint32_t a_akValue, float a_value);
     virtual ~TESActorBase();  // compared: 0x3cbc60 (scalar deleting destructor)
+    void Function3cc640();  // compared: 0x3cc640
+    void Function3cc700();  // compared: 0x3cc700
+    void Function3cd860();  // compared: 0x3cd860
 
     std::uint8_t trailingData[0x60];
 };
