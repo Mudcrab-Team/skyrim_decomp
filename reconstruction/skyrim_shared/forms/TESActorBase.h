@@ -4,10 +4,14 @@
 // TESActorBase, ActorValueOwner, GetIsPlayerOwner, IsAutoCalc, SetAutoCalc, ~TESActorBase, GetCombatStyle, GetHasPLSpecTex: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // TESObject, TESBoundObject, TESBoundAnimObject, TESActorBaseComponents: STANDIN EXE_RTTI
 // TESActorBaseData::SetFlagBit: COMMUNITY(powerof3/CommonLibSSE@654e55f, GPL-3.0)
+// ACTOR_BASE_DATA::actorBaseFlags: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); held here in the stand-in
+// kFormTypeNPC: OBSERVED; the form type value NG names FormType::NPC
 #pragma once
 
 #include <cstdint>
 #include "TESForm.h"
+
+constexpr FormType kFormTypeNPC = static_cast<FormType>(0x2B);
 
 class TESObject : public TESForm
 {
@@ -42,7 +46,9 @@ class TESActorBaseComponents
 {
 public:
     virtual void ComponentStub();
-    std::uint8_t data[0xC0];
+    std::uint8_t unk08[0x10];
+    std::uint32_t actorBaseFlags;  // 18
+    std::uint8_t unk1C[0xAC];
 };
 static_assert(sizeof(TESActorBaseComponents) == 0xC8, "TESActorBaseComponents size");
 

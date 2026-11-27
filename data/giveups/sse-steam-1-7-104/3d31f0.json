@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x3d31f0",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "for loop with index and early return",
+        "while loop and pointer walk",
+        "found-alias local with break",
+        "about fifteen natural loop spellings"
+      ],
+      "still_differs": "the target keeps the loop index and the found alias in different registers, so the candidate needs an extra move at the end and is four bytes longer",
+      "suspected_cause": "register allocation of the loop index; the only form that reproduced it reset the result every iteration, which reads as steering and was rejected",
+      "best_similarity": 39.0,
+      "similarity_basis": "aligned_matching_bytes 16/41",
+      "model": "claude-opus-5-5",
+      "harness": "sr.cmd",
+      "lane": "contributor",
+      "best_code": {
+        "kind": "draft",
+        "ref": "drafts/sse-steam-1-7-104/3d31f0.cpp"
+      }
+    }
+  ]
+}

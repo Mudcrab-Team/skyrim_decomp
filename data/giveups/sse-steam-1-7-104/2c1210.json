@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x2c1210",
+  "records": [
+    {
+      "category": "other",
+      "tried": [
+        "dead locals of several sizes",
+        "unused array and loop",
+        "exception-handling toys"
+      ],
+      "still_differs": "candidates either drop the stack frame entirely or keep real code",
+      "suspected_cause": "frame layout kept from code removed late in compilation, the untested case in cookbook rules 12 and 13",
+      "model": "claude-opus-5-5",
+      "harness": "sr.cmd",
+      "lane": "contributor",
+      "best_code": {
+        "kind": "none"
+      }
+    }
+  ]
+}
