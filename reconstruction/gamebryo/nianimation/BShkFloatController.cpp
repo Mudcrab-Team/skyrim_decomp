@@ -6,6 +6,7 @@
 #include "BShkFloatController.h"
 
 // Reads this controller's float from the source's table, or zero when the index is out of range.
+// Differs from the CrashLogger PDB prototype (no argument, no result): the listing reads an argument and returns a float.
 float BShkFloatController::GetRawValue(const BShkVariableSource& a_source) const
 {
     const BShkFloatVariables* variables = a_source.variables;

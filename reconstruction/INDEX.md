@@ -11274,6 +11274,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/leaves/Unk217bd0_217bd0` | `Function217bd0` (GUESS) | `sse-steam-1-7-104` / `0x217bd0` / 7 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x217bd0.json` | matched | full | - |
 | `skyrim_shared/actors/BipedAnim_21ad20` | `BipedAnim::Function21ad20` (GUESS) | `sse-steam-1-7-104` / `0x21ad20` / 83 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x21ad20.json` | matched | full | - |
 | `skyrim_shared/actors/BipedAnim_21aff0` | `BipedAnim::Function21aff0` (GUESS) | `sse-steam-1-7-104` / `0x21aff0` / 28 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x21aff0.json` | matched | full | - |
+| `skyrim_shared/actors/BipedAnim_21cb30` | `NiAVObject::Function21cb30` (GUESS) | `sse-steam-1-7-104` / `0x21cb30` / 29 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x21cb30.json` | matched | full | - |
 | `gamebryo/nimain/NiAVObject_21cba0` | `NiAVObject::Function21cba0` (GUESS) | `sse-steam-1-7-104` / `0x21cba0` / 103 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x21cba0.json` | matched | full | - |
 | `gamebryo/nimain/NiAVObject_21cc10` | `NiAVObject::Function21cc10` (GUESS) | `sse-steam-1-7-104` / `0x21cc10` / 113 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0x21cc10.json` | matched | full | - |
 | `gamebryo/nimain/NiAVObject_21cd70` | `NiAVObject::Function21cd70` (GUESS) | `sse-steam-1-7-104` / `0x21cd70` / 173 | `msvc-19.16.27054-o2-root-includes` | `reports/sse-steam-1-7-104/0x21cd70.json` | matched | full | - |
@@ -27428,6 +27429,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/wrappers/HeapTripleTableDeallocators` | `Functiond11d70` (GUESS) | `sse-steam-1-7-104` / `0xd11d70` / 132 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd11d70.json` | matched | full | - |
 | `unmapped/support/Ownerd11e00_d11e00` | `Functiond11e00` (GUESS) | `sse-steam-1-7-104` / `0xd11e00` / 52 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd11e00.json` | matched | full | - |
 | `thirdparty/scaleform/GASObject` | `GASObject::Functiond12890` (GUESS) | `sse-steam-1-7-104` / `0xd12890` / 14 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd12890.json` | matched | full | - |
+| `thirdparty/scaleform/GASObject` | `GASObject::Functiond14810` (GUESS) | `sse-steam-1-7-104` / `0xd14810` / 41 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd14810.json` | matched | full | - |
 | `unmapped/wrappers/HeapDualTableDeallocators` | `Functiond16530` (GUESS) | `sse-steam-1-7-104` / `0xd16530` / 110 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd16530.json` | matched | full | - |
 | `unmapped/wrappers/HeapDualTableDeallocators` | `Functiond165a0` (GUESS) | `sse-steam-1-7-104` / `0xd165a0` / 110 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd165a0.json` | matched | full | - |
 | `unmapped/wrappers/HeapDualTableDeallocators` | `Functiond16610` (GUESS) | `sse-steam-1-7-104` / `0xd16610` / 110 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd16610.json` | matched | full | - |
@@ -27455,6 +27457,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `GFxCharacter::Functiond30ff0` (GUESS) | `sse-steam-1-7-104` / `0xd30ff0` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd30ff0.json` | matched | full | - |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functiond31050` (GUESS) | `sse-steam-1-7-104` / `0xd31050` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd31050.json` | matched | full | - |
 | `skyrim_shared/tempeffects/Ownerd33260` | `Functiond33260` (GUESS) | `sse-steam-1-7-104` / `0xd33260` / 15 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd33260.json` | matched | full | - |
+| `thirdparty/scaleform/GFxASCharacter` | `GFxASCharacter::Functiond35d50` (GUESS) | `sse-steam-1-7-104` / `0xd35d50` / 13 | `msvc-19.16.27054-o2-root-includes` | `reports/sse-steam-1-7-104/0xd35d50.json` | matched | full | - |
 | `unmapped/leaves/DeletingLeafd406b0` | `DeletingLeafd406b0::~DeletingLeafd406b0` (GUESS) | `sse-steam-1-7-104` / `0xd406b0` / 43 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd406b0.json` | matched | family | open |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functiond406e0` (GUESS) | `sse-steam-1-7-104` / `0xd406e0` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd406e0.json` | matched | full | - |
 | `unmapped/wrappers/HeapCleanupDeallocators1` | `Functiond40740` (GUESS) | `sse-steam-1-7-104` / `0xd40740` / 89 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xd40740.json` | matched | full | - |

@@ -46,6 +46,7 @@ bool BSOrderedNode::RegisterStreamables(NiStream& a_stream)
 }
 
 // Takes the next visit index from the culling process and hands it to the node's visible pass.
+// Differs from the CrashLogger PDB entry, which records the indexed three-argument form on another class; this is the one-argument virtual.
 void BSOrderedNode::OnVisible(NiCullingProcess& a_process)
 {
     BSCullingProcess& process = static_cast<BSCullingProcess&>(a_process);

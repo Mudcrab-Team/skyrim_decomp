@@ -4,9 +4,9 @@
 // BipedAnim, BipedAnim::_refCount, ::root, ::objects, ::bufferedObjects, ::actorRef: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // BIPOBJECT, BIPOBJECT::item, ::addon, ::part, ::skinTexture, ::partClone, ::weaponManager: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // TESModel, TESModel::model, ::textures, ::addons, ::numTextures, ::numAddons: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// BipedAnim::IsFaceGenObject, BIPED_OBJECT: SYMBOLS(tesv-2013-map); only bool(BIPED_OBJECT) member of BipedAnim in the map; 32-bit size differs
-// TESModel::flags: GUESS(low); named after TESModel::SetFlags(char) and GetSkinFlags in the 2013 map
-// TESModel::kFaceGenModel: GUESS(low); pinned code tests bit 0 of byte 0x23, named after IsFaceGenObject and TESModel::QHasFacegenData
+// BIPED_OBJECT, BIPED_OBJECT::kHead, BIPED_OBJECT::kTotal: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// BipedAnim::IsFaceGenObject: SYMBOLS(tesv-2013-map)
+// TESModel::flags, TESModel::kFaceGenModel: GUESS(low); the pinned code tests bit 0 of the byte after numAddons
 // TESForm, TESObjectARMA, BGSTextureSet, NiAVObject, NiNode, WeaponAnimationGraphManagerHolder: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 #pragma once
 #include <cstddef>
@@ -39,8 +39,8 @@ public:
     void*          textures;     // 10 - BSResource::ID*
     std::uint32_t* addons;       // 18
     std::uint16_t  numTextures;  // 20
-    std::uint8_t   numAddons;    // 22 - 8 bits: the 2013 map's LoadModelChildDataChunkIntoArrays takes it as unsigned char&; CommonLib declares 16
-    std::uint8_t   flags;        // 23
+    std::uint8_t   numAddons;    // 22 - CommonLib declares 16 bits; narrowed because the pinned code reads byte 23 alone
+    std::uint8_t   flags;        // 23 - single-byte bit test in the pinned code
 };
 static_assert(offsetof(TESModel, flags) == 0x23, "flags byte differs from the pinned access");
 static_assert(sizeof(TESModel) == 0x28, "layout differs from CommonLibSSE-NG");
