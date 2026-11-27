@@ -16,19 +16,40 @@ void NiNodeOnVisibleIndexed(NiNode* a_node, NiCullingProcess& a_process, int a_v
 // NiNodeRegisterStreamables: STANDIN GUESS(low); the target tests the low byte of the result, so the callee at address 0xee1650 is declared with a byte result
 char NiNodeRegisterStreamables(NiNode* a_node, NiStream& a_stream);
 
-// The culling process is a BSCullingProcess; the community header names its member at this offset unk301F0.
+// The culling process is a BSCullingProcess; declared complete only in this unit, with just the counter it reads.
+// NiCullingProcess, BSCullingProcess: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT); sizes 0x128 and 0x301F8 as NG
+// NiCullingProcess::~NiCullingProcess: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
 // BSCullingProcess::unk301F0: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e832f263dbef44e44cbe2936622a02f91a, MIT)
-static const std::size_t kCullingVisitCounterOffset = 0x301F0;
+// BSCullingProcess::unk301F0: OBSERVED; NG types it as 64 bits, the listing increments the low 32 bits atomically
+// NiCullingProcess::unk008, BSCullingProcess::unk128, BSCullingProcess::unk301F4: GUESS(low); regions this unit never touches
+class NiCullingProcess
+{
+public:
+    virtual ~NiCullingProcess();
+
+    std::uint8_t unk008[0x120];  // 008
+};
+static_assert(sizeof(NiCullingProcess) == 0x128, "NiCullingProcess size");
+
+class BSCullingProcess : public NiCullingProcess
+{
+public:
+    std::uint8_t unk128[0x301F0 - 0x128];  // 00128
+    long unk301F0;                         // 301F0
+    std::uint32_t unk301F4;                // 301F4
+};
+static_assert(sizeof(BSCullingProcess) == 0x301F8, "BSCullingProcess size");
 
 bool BSOrderedNode::RegisterStreamables(NiStream& a_stream)
 {
     return NiNodeRegisterStreamables(this, a_stream) != 0;
 }
 
+// Takes the next visit index from the culling process and hands it to the node's visible pass.
 void BSOrderedNode::OnVisible(NiCullingProcess& a_process)
 {
-    volatile long* counter = reinterpret_cast<volatile long*>(reinterpret_cast<char*>(&a_process) + kCullingVisitCounterOffset);
-    // The compared function does a locked increment of the culling counter, so the intrinsic is needed.
-    int visitIndex = _InterlockedIncrement(counter);
+    BSCullingProcess& process = static_cast<BSCullingProcess&>(a_process);
+    // The visit counter is shared between culling threads, so it is bumped atomically.
+    int visitIndex = _InterlockedIncrement(&process.unk301F0);
     NiNodeOnVisibleIndexed(this, a_process, visitIndex);
 }
