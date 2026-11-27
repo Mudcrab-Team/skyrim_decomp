@@ -7,6 +7,8 @@ import sys
 import tempfile
 import unittest
 
+from repo_fixture import rmtree
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
 import disasm  # noqa: E402
@@ -33,7 +35,7 @@ class TaskFiles(unittest.TestCase):
         (self.task_dir / 'symbols.json').write_text('{}')
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        rmtree(self.tmp)
 
     def write(self, **overrides):
         task = {'build_id': TARGET['build_id'], 'compiled': 'reconstruction/skyrim_shared/inventory/ArmorRatingVisitor.cpp',
@@ -56,6 +58,24 @@ class TaskFiles(unittest.TestCase):
         for name in pipeline.TOOL_FILES:
             self.assertIn(name, files)
         self.assertFalse(any(name.startswith(('.local', 'data/', 'findings/')) for name in files))
+
+    def test_unit_recipe_line_wins_over_the_task_file(self):
+        repo = self.tmp / 'repo'
+        (repo / 'builds').mkdir(parents=True)
+        shutil.copy(ROOT / 'builds/target.json', repo / 'builds/target.json')
+        (repo / 'reconstruction/recipes').mkdir(parents=True)
+        for name in ('default', 'fast'):
+            (repo / f'reconstruction/recipes/{name}.json').write_text('{}')
+        unit = repo / 'reconstruction/a/Unit.cpp'
+        unit.parent.mkdir(parents=True)
+        self.write(compiled='reconstruction/a/Unit.cpp', recipe='reconstruction/recipes/default.json')
+        unit.write_text('// 0x10 Unit::F\nint f();\n')
+        self.assertEqual(pipeline.load_task(self.task_dir, repo)['recipe'], 'reconstruction/recipes/default.json')
+        unit.write_text('// Recipe: reconstruction/recipes/fast.json\n// 0x10 Unit::F\nint f();\n')
+        self.assertEqual(pipeline.load_task(self.task_dir, repo)['recipe'], 'reconstruction/recipes/fast.json')
+        unit.write_text('// Recipe: reconstruction/recipes/missing.json\n')
+        with self.assertRaises(pipeline.PipelineError):
+            pipeline.load_task(self.task_dir, repo)
 
     def test_family_metadata_survives_task_loading_and_is_validated(self):
         metadata = {'origin': {'family': 'const-return', 'version': '2', 'template_digest': 'a' * 64},
@@ -189,7 +209,7 @@ class CompilerIncludeRoots(unittest.TestCase):
         self.recipe('plain', ['/nologo', '/c', '/O2'])
 
     def tearDown(self):
-        shutil.rmtree(self.repo)
+        rmtree(self.repo)
 
     def recipe(self, name, flags):
         (self.repo / f'reconstruction/recipes/{name}.json').write_text(json.dumps({'flags': flags}))
@@ -249,7 +269,7 @@ class AttemptCharge(unittest.TestCase):
         self.log = self.tmp / 'attempts.jsonl'
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        rmtree(self.tmp)
 
     def log_run(self, code):
         counted, free = self.attempt.charge(code, False, self.log)

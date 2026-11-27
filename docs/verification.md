@@ -110,7 +110,7 @@ A function is accepted only when ALL of these hold:
    - code that cannot be what it claims, such as an unreachable branch or impossible type use
      that signals a wrong binding or a wrong class;
    - provenance: code from unlicensed projects other than the permitted sibling decompilations
-     `momusdigital/fnv_decomp@91e1b6e8`, `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) and game-only `fo4-private@1b765c70`, which the
+     `momusdigital/fnv_decomp@2b07cb3e`, `momusdigital/f3_decomp@f5bac1b5` (CC0-1.0) and game-only `fo4-private@1b765c70`, which the
      maintainer allowed (`docs/authorizations.md`, Notes); leaked or proprietary material; a
      source header that does not state provenance and source exposure, or whose origin or licence statement is false; and undeclared reuse of
      sibling code, meaning a unit that reuses a permitted sibling body or a substantial part of
@@ -323,7 +323,13 @@ Match record, recomputed from the tree:
   equal the inventory entry's, and the current symbol map places the symbol at that range.
 - **Recipe and compiler.** The recipe and `tools/verifier/pinned.sha256` match their recorded
   hashes. The recipe's compiler is the pinned `cl.exe`, and every report names that recipe's
-  hash, compiler and flags.
+  hash, compiler and flags. One other compiler is accepted: a recipe whose `compiler.binary_sha256`
+  is the `cl.exe` of `tools/verifier/pinned/19.00.23918.sha256` (VS 2015 Update 2, the build of the
+  target's Havok objects; `check.SECOND_TOOLCHAIN_PINS`) binds that pin file as its `toolchain_pin`
+  instead, and every host then checks its compiler binaries against that file. Which pin file applies is
+  read from the recipe, never chosen by the record; other pin files under `pinned/` (the compiler-build
+  sweep's stand-ins) are not accepted. Each host and the CI hash job build a unit with the toolchain its
+  recipe names (`tools/verifier/toolsets.py`) and refuse a unit whose compiler they lack.
 - **Symbol map.** The record pins the SHA-256 of the map version its runs used. It binds if that
   is the current map, or if it is an earlier version all of whose entries are present and
   identical now and nothing added since could have changed the result. The first part is proven
@@ -712,11 +718,31 @@ maintainer's decision) can suggest hypotheses but cannot establish Skyrim behavi
 
 ## Progress and history
 
+Public near-miss sources live in `drafts/<build>/<rva>.cpp`, keyed by build and RVA, with the
+usual unit header and one score and wall line. Their give-up records point to the draft. Drafts
+are outside compile inputs, CI hash claims, the match gate, progress and INDEX. Scope and leak
+checks cover them. When the match is recorded, the source is removed and the give-up pointer
+becomes `draft-history`. Use `git log --diff-filter=AM -- drafts/<build>/<rva>.cpp` to recover it.
+The collector accepts `drafts/` or one draft plus a locally prepared task for the same function.
+
 The page renders the current committed data and source revision. Work items use `planned`,
 `active`, `blocked`, `done`. Milestones identify actual dated outcomes. No simulated trend,
 leaderboard, cost ledger or percentage is displayed without real supporting records.
 Add those only when there is data and a reviewed metric definition. Every record has an owner
 and outcome criteria. Update `updated_at` when the data changes. Git history is the audit trail.
+
+### Alternative flag sets (`accept_also`)
+
+A failed compare is retried under the alternative flag sets `data/recipe-alternatives.json` lists for the unit's
+recipe (`tools/recipe_alternatives.py`; `./sr compare` and `tools/verifier/attempt`, `--no-retry` skips it). Each
+alternative is a recipe file of its own, the base recipe's flags with the declared change (today `-noeh`: no `/EHsc`),
+tried in order for a function the pinned image's unwind data gives no exception handler. A pass prints
+`MATCH (under <flags>)` and the `Recipe:` line to add. The retry is advisory and never a match: the verdict under the
+unit's recipe stands. The unit is accepted under the other flags only when its own `Recipe:` line names the alternative
+recipe, because the CI hash job and the second host compile with the recipe the unit names and the target-hash manifest
+approves each recipe file by hash. The record therefore names the flags used, both hosts compile with them, and the
+match floor is unchanged: a byte match under named flags is a byte match. A new alternative needs its recipe file, a
+registry row (`python3 tools/recipe_alternatives.py generate`, `check`) and a manifest entry.
 
 ### CI hash check as the second host (p148)
 
@@ -755,6 +781,12 @@ that row. The evidence lists the matching names and the validator requires the f
 symbol to be among them, so both hosts are bound to the same function. The bot builds the evidence only from a run whose head is the revision it reviewed and merged. Only
 `pass` counts: `regressed`, `fail`, `preexisting-fail` and `unverified` give no confirmation, and a
 record without both hosts is refused as before.
+
+For repeated local `ci_target_hash_check.py prepare` runs, reuse the same private `--work` directory
+for each sequential verifier slot. The source worktree retains its trusted base checkout and include
+index, then replaces the previous run's source overlay with the new one. `--base` selects the trusted
+inputs even when the checkout running the trusted script is at a different revision. Pass the same
+`--base` and `--head` to `check` or `regress` to consume that preparation.
 
 ### Comment-only changes to a function with no target hash
 

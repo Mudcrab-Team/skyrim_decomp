@@ -4,11 +4,12 @@ import importlib.machinery
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -120,6 +121,49 @@ class Progress(unittest.TestCase):
         self.assertIsNone(result['0x1000']['previous'])
         self.assertEqual(result['0x1000']['no_improvement'], 0)
 
+    def test_stuck_attempt_threshold_uses_best_score_for_routing(self):
+        history = []
+        for value in (18, 17, 17, 17):
+            result = progress.update({'0x1000': self.metric(value)}, history, now=100)
+            history.append(dict(progress=result))
+        metric = result['0x1000']
+        self.assertIn('3 counted attempts → permute', progress.stuck_advice('0x1000', metric, 3, 100))
+        self.assertIsNone(progress.stuck_advice('0x1000', metric, 4, 100))
+
+    def test_stuck_timer_resets_on_a_new_best(self):
+        rva = '0x1000'
+        first = progress.update({rva: self.metric(16)}, [], now=100)
+        best = progress.update({rva: self.metric(17)}, [dict(progress=first)], now=350)
+        later = progress.update({rva: self.metric(17)}, [dict(progress=best)], now=500)[rva]
+        self.assertIsNone(progress.stuck_advice(rva, later, 3, 649))
+        self.assertIn('5 minutes → park', progress.stuck_advice(rva, later, 3, 650))
+        self.assertIsNone(progress.stuck_advice(rva, None, 3, 650))
+
+    def test_stuck_advice_uses_history_for_the_same_build_and_rva(self):
+        rva = '0x1000'
+        metric = dict(self.metric(18), best=18, no_improvement=3)
+        with tempfile.TemporaryDirectory() as tmp:
+            local = Path(tmp) / '.local'
+            task = local / 'tasks/toy'
+            pool = local / 'near-miss/toy-build' / rva
+            dirs = [root / 'permute' / rva for root in (task, pool)]
+            other = pool.with_name('0x2000') / 'permute/0x2000'
+            other.mkdir(parents=True)
+            (other / 'result.json').touch()
+            self.assertIn('→ permute (one run', progress.stuck_advice(rva, metric, 3, 100, permute_dirs=dirs))
+            for directory, name in ((dirs[0], 'history.jsonl'), (dirs[0], 'run.log'), (dirs[1], 'result.json')):
+                with self.subTest(name=name):
+                    directory.mkdir(parents=True, exist_ok=True)
+                    artifact = directory / name
+                    artifact.touch()
+                    advice = progress.stuck_advice(rva, metric, 3, 100, permute_dirs=dirs)
+                    self.assertIn('permuter exhausted', advice)
+                    self.assertIn('structural change', advice)
+                    self.assertIn('wall-identifier', advice)
+                    improved = progress.update({rva: self.metric(19)}, [{'progress': {rva: metric}}])[rva]
+                    self.assertIsNone(progress.stuck_advice(rva, improved, 3, 100, permute_dirs=dirs))
+                    artifact.unlink()
+
     def test_later_matching_region_rises_with_unchanged_first_mismatch(self):
         target = '1000: b8 01 00 00 00  mov eax, 1\n1005: 83 c0 02  add eax, 2\n1008: c3  ret\n'
         before = '0: b8 03 00 00 00  mov eax, 3\n5: 83 c0 04  add eax, 4\n8: c3  ret\n'
@@ -134,19 +178,24 @@ class Progress(unittest.TestCase):
     def test_attempt_persists_model_progress_and_keeps_hard_cap(self):
         attempt = load_attempt()
         with tempfile.TemporaryDirectory() as tmp:
-            directory = Path(tmp)
+            directory = Path(tmp).resolve() / '.local' / 'test'
+            directory.mkdir(parents=True)
             (directory / 'task.json').write_text(json.dumps(dict(drafter_model='synthetic-model')))
-            task = dict(dir=directory, task_id='synthetic', compiled='reconstruction/misc/X.cpp',
-                        max_attempts=2, symbols_local=directory / 'symbols.json',
+            other = directory.with_name('other') / 'attempts/001'
+            other.mkdir(parents=True)
+            (other / 'attempt.txt').write_text('other task')
+            (other.parents[1] / 'attempts.jsonl').write_text('{"attempt":1}\n')
+            task = dict(dir=directory, task_id='synthetic', build_id='toy-build', compiled='reconstruction/misc/X.cpp',
+                        max_attempts=3, symbols_local=directory / 'symbols.json',
                         functions=[dict(rva=0x1000, size=20, symbol='synthetic')])
-            values = iter([4, 8])
+            values = iter([4, 8, 12])
             def run_once(task, host, files, tdir, dest):
                 fdir = dest / '0x1000'
                 fdir.mkdir(parents=True)
                 (fdir / 'report.json').write_text(json.dumps(dict(result='fail', reason='code-byte-mismatch',
                                                                detail='differs at +0x0')))
-                (fdir / 'align.json').write_text(json.dumps(dict(matching_bytes=next(values),
-                                                               matching_regions=2, target_bytes=20)))
+                (fdir / 'align.json').write_text(json.dumps(dict(matching_bytes=next(values), matching_regions=2,
+                                                               target_bytes=20, diff_signature={'encoding': {'pair': 1}})))
                 return 1
             with patch.object(attempt.pipeline, 'load_task', return_value=task), \
                  patch.object(attempt.pipeline, 'lock'), patch.object(attempt.pipeline, 'unit_manifest', return_value=({}, [])), \
@@ -163,42 +212,88 @@ class Progress(unittest.TestCase):
                 output = io.StringIO()
                 with contextlib.redirect_stdout(output):
                     self.assertEqual(attempt.attempt(directory), 1)
+                    first = directory / 'attempts/001'
+                    self.assertTrue((first / 'attempt.txt').read_text().startswith('attempt 1 '))
+                    self.assertEqual(json.loads((first / 'diff-signature.json').read_text()),
+                                     {'0x1000': {'encoding': {'pair': 1}}})
+                    self.assertEqual(attempt.prune_attempts(directory, 0), (1, 0))
                     self.assertEqual(attempt.attempt(directory), 1)
+                    self.assertEqual(attempt.attempt(directory, max_attempt_bytes=0), 1)
                     self.assertEqual(attempt.attempt(directory), 5)
                 self.assertIn('+4 vs previous', output.getvalue())
                 self.assertIn('Next: revise the source', output.getvalue())
-                self.assertIn('stop after 3 counted attempts with no improvement', output.getvalue())
-                self.assertIn('attempt budget exhausted: 2 of 2', output.getvalue())
+                self.assertNotIn('stuck 0x1000:', output.getvalue())
+                self.assertIn('stop after 3 counted attempts or 5 minutes without a new best', output.getvalue())
+                self.assertIn('attempt budget exhausted: 3 of 3', output.getvalue())
             rows = [json.loads(line) for line in (directory / 'attempts.jsonl').read_text().splitlines()]
-            self.assertEqual(len(rows), 2)
             self.assertEqual(rows[-1]['model'], 'synthetic-model')
-            self.assertEqual(rows[-1]['progress']['0x1000']['best'], 8)
-            self.assertTrue((directory / 'attempts/001/attempt.txt').read_text().startswith('attempt 1 '))
+            self.assertEqual(rows[-1]['progress']['0x1000']['best'], 12)
+            self.assertEqual([row['attempt'] for row in rows], [1, 2, 3])
+            self.assertFalse(first.exists())
+            self.assertFalse((directory / 'attempts/002').exists())
+            self.assertTrue((directory / 'attempts/003/attempt.txt').is_file())
+            self.assertTrue(other.is_dir())
             self.assertEqual(json.loads((directory / 'task.json').read_text()), dict(drafter_model='synthetic-model'))
 
-    def test_attempt_snapshots_unit_sources_and_local_includes(self):
+    def test_runner_compiles_the_sources_saved_with_its_result(self):
         attempt = load_attempt()
         with tempfile.TemporaryDirectory() as raw:
-            repo = Path(raw)
+            repo = Path(raw).resolve()
             unit = repo / 'reconstruction/area'
             unit.mkdir(parents=True)
-            (unit / 'Thing_1.cpp').write_text('cpp v1')
-            (unit / 'Thing_1.h').write_text('h v1')
+            cpp = unit / 'Thing_1.cpp'
+            cpp.write_bytes(b'cpp v1\r\n')
+            (unit / 'Thing_1.h').write_text('paired header')
             (unit / 'Local.h').write_text('local')
-            (repo / 'reconstruction/Shared.h').write_text('shared')
-            closure = ['reconstruction/area/Thing_1.cpp', 'reconstruction/area/Thing_1.h',
-                       'reconstruction/area/Local.h', 'reconstruction/Shared.h']
-            task = dict(compiled='reconstruction/area/Thing_1.cpp')
-            first = repo / 'attempts/001'
-            attempt.snapshot_sources(repo, task, closure, first)
-            (unit / 'Thing_1.cpp').write_text('cpp v2')
-            second = repo / 'attempts/002'
-            attempt.snapshot_sources(repo, task, closure, second)
-            self.assertEqual(sorted(p.name for p in (first / 'src').iterdir()), ['Local.h', 'Thing_1.cpp', 'Thing_1.h'])
-            self.assertEqual((first / 'src/Thing_1.cpp').read_text(), 'cpp v1')
-            self.assertEqual((second / 'src/Thing_1.cpp').read_text(), 'cpp v2')
-            attempt.snapshot_sources(repo, dict(), closure, repo / 'attempts/003')
-            self.assertFalse((repo / 'attempts/003').exists())
+            shared = repo / 'reconstruction/Shared.h'
+            shared.write_text('shared')
+            files = {p.relative_to(repo).as_posix(): p for p in (cpp, unit / 'Local.h', shared)}
+            task = dict(compiled='reconstruction/area/Thing_1.cpp', functions=[dict(rva=1), dict(rva=2)])
+            directory = repo / '.local/test'
+            (directory / '.attempt').mkdir(parents=True)
+            dest = directory / 'attempts/001'
+
+            def run(staged, _stage):
+                cpp.write_text('cpp v2')
+                self.assertEqual(staged[task['compiled']].read_bytes(), b'cpp v1\r\n')
+                self.assertEqual(staged['reconstruction/Shared.h'], shared)
+                return 0, ''
+
+            def fetch(out):
+                (out / '0x1').mkdir(parents=True)
+                (out / '0x1/report.json').write_text('{"result": "pass"}')
+
+            host = Mock()
+            host.run.side_effect = run
+            host.fetch.side_effect = fetch
+            self.assertEqual(attempt.run_once(task, host, files, directory, dest), 0)
+            self.assertEqual(sorted(p.name for p in (dest / 'src').iterdir()), ['Local.h', 'Thing_1.cpp', 'Thing_1.h'])
+            self.assertEqual((dest / 'src/Thing_1.cpp').read_bytes(), b'cpp v1\r\n')
+            self.assertEqual(list((directory / '.attempt').iterdir()), [])
+            attempt.write_diff_signature(task, dest)
+            self.assertEqual(json.loads((dest / 'diff-signature.json').read_text()), {'0x1': {}, '0x2': None})
+
+    def test_prune_oldest_completed_results_across_tasks(self):
+        attempt = load_attempt()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw).resolve() / '.local'
+            oldest, newest, active = [root / task / 'attempts/001' for task in ('group/a', 'b', 'c')]
+            for timestamp, run in enumerate((oldest, newest, active), 1):
+                run.mkdir(parents=True)
+                summary = run / 'attempt.txt'
+                summary.write_text('x')
+                os.utime(summary, (timestamp, timestamp))
+                (run.parents[1] / 'attempts.jsonl').write_text('{"attempt":1}\n')
+            incomplete = newest.parent / '002'
+            incomplete.mkdir()
+            (incomplete / 'candidate.obj').write_text('output')
+            with attempt.pipeline.lock(active.parents[1]):
+                self.assertEqual(attempt.prune_attempts(root, 2), (1, 2))
+                self.assertEqual(attempt.prune_attempts(root, 0), (1, 1))
+                self.assertTrue(active.is_dir())
+            self.assertEqual(attempt.prune_attempts(root, 0), (1, 0))
+            self.assertTrue(incomplete.is_dir())
+            self.assertTrue((oldest.parents[1] / 'attempts.jsonl').is_file())
 
     def test_attempt_refuses_missing_identity_before_using_a_runner(self):
         attempt = load_attempt()

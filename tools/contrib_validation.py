@@ -10,8 +10,11 @@ import tempfile
 import check_code_rules
 import cookbook_notes
 import contrib_screen
+import draft_bundle
+import giveup
+import leakgrep
 import lint_reconstruction
-import lint_review_readiness
+import prereview
 import unit_paths
 from source_digest import include_closure, _repo_file
 from digest_v2 import tu_digest
@@ -20,7 +23,7 @@ from local_paths import local_path, no_sibling_names
 UNIT = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)\Z')
 
 
-def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
+def publication_problems(ctx, base, rows, head=None, merge_method='squash', *, scope=False):
     """Use intake's retained-publication policy on a private snapshot, without changing the index.
 
     The synthetic commit is unreferenced and never pushed. It lets the same Git-based screen see
@@ -28,6 +31,14 @@ def publication_problems(ctx, base, rows, head=None, merge_method='squash'):
     """
     from contrib_publication import PublicationRejected, screen_publication
     def screen(revision):
+        found = giveup.git_pair_problems(ctx.repo, [n for _status, n in rows], revision, base)
+        if found:
+            return [f'{name}: {", ".join(codes)}' for name, codes in found]
+        if scope:
+            import scope_check
+            for status, output in scope_check.results(ctx.repo, base, revision):
+                if status:
+                    return output.splitlines()
         try:
             screen_publication(ctx.repo, base, revision, merge_method=merge_method)
         except PublicationRejected as exc:
@@ -111,6 +122,19 @@ def screen_diagnostics(blob, name, *, headers=contrib_screen.STANDARD_HEADERS, c
                'remove the refused construct or reduce the reported resource use') for code in codes]
 
 
+def leakgrep_diagnostics(blob, name):
+    """The rules the bot's leakgrep applies to added lines (decompiler-style names such as `param_1`,
+    asm lines, byte runs), run here so a contributor finds them before the push. Include and path
+    findings are the deterministic screen's and are not repeated."""
+    out = []
+    for number, line in enumerate(blob.decode('utf-8', 'replace').splitlines(), 1):
+        for code in leakgrep.scan_line(line, path=name):
+            if code != 'include-outside-roots':
+                out.append(diagnostic(f'{name}:{number}: leakgrep: {code}; fix: remove or rename it; '
+                                      'the intake bot refuses this line'))
+    return out
+
+
 def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEADERS, guard=None,
                     companions=()):
     """Screen exactly the changed files and their complete compiler input closures."""
@@ -152,9 +176,12 @@ def source_problems(root, names, target, *, headers=contrib_screen.STANDARD_HEAD
                 problems.append(diagnostic(f'{name}: publication guard: {exc}'))
                 continue
         problems += screen_diagnostics(blob, name, headers=headers, changed=name in all_names_changed)
+        if name in all_names_changed:
+            problems += leakgrep_diagnostics(blob, name)
         try:
             problems += [diagnostic(p) for p in lint_reconstruction.lint_file(root, name, target)]
-            problems += [diagnostic(p) for p in lint_review_readiness.lint_files(root, [name], included_only)]
+            problems += [diagnostic(p) for p in prereview.readiness_problems(root, name, blob.decode('utf-8'),
+                                                                            included_only)]
         except (UnicodeError, ValueError) as exc:
             problems.append(diagnostic(f'{name}: source lint failed ({type(exc).__name__})'))
     # R38-R40 of docs/code-rules.md apply to the files this change touches, not to the include closure:
@@ -228,8 +255,11 @@ def intake_problems(ctx, rows, head=None, details=None):
                 problems.append(diagnostic(f'{name}: deleting a note is for maintainers'))
             else:
                 problems.extend(note_problems(ctx, name, head))
+        elif draft_bundle.owner(name) or giveup.RECORD_FILE.fullmatch(name):
+            if status == 'D':
+                problems.append(diagnostic(f'{name}: deleting a draft or give-up is for maintainers'))
         elif not UNIT.fullmatch(name):
-            problems.append(diagnostic(f'{name}: outside contributor scope (reconstruction/<area>/<Class>.h or .cpp only)'))
+            problems.append(diagnostic(f'{name}: outside contributor scope'))
         elif status == 'D':
             problems.append(diagnostic(f'{name}: deleting a unit file is for maintainers'))
         elif status == 'A' and not unit_paths.area_accepted(UNIT.fullmatch(name).group(1)):
@@ -270,7 +300,8 @@ def intake_problems(ctx, rows, head=None, details=None):
         # Headers are small public source. Include all repository headers so the canonical closure
         # resolver sees ambiguity, transitive and includer-chain resolution exactly as intake does.
         wanted = set(names) | {PurePosixPath(n).with_suffix('.cpp').as_posix() for n in names} | companions
-        wanted.update(n for n in entries if n.startswith('reconstruction/') and n.endswith('.h'))
+        wanted.update(n for n in entries if n.startswith('reconstruction/') and
+                      (n.endswith('.h') or n.startswith('reconstruction/recipes/')))
         sources = blobs(ctx.repo, entries, wanted)
         sources.update(blobs(ctx.repo, entries, lint_dependencies(sources)))
         with tempfile.TemporaryDirectory() as directory:
@@ -283,18 +314,29 @@ def intake_problems(ctx, rows, head=None, details=None):
     return sorted(set(problems))
 
 
-def accepted_sources(root):
-    """Use the same accepted-unit include closures intake collects for companion regressions."""
+def accepted_records(root):
+    """Load the matched inventory and its records together, in report-shard order."""
+    from scoped_memo import memoized
+    return memoized(('accepted_records', Path(root)), lambda: list(_accepted_records(Path(root))))
+
+
+def _accepted_records(root):
     root = Path(root)
     path = root / 'data/progress.json'
     if not path.is_file():
         return
-    functions = [fn for fn in json.loads(path.read_text())['functions']
-                 if fn.get('status') == 'matched' and fn.get('report')]
+    functions = sorted((fn for fn in json.loads(path.read_text())['functions']
+                        if fn.get('status') == 'matched' and fn.get('report')), key=lambda fn: fn['rva'])
     from sparse_checkouts import reports
     for fn, (_name, record) in zip(functions, reports(root, [fn['report'] for fn in functions])):
         if record is None:
             raise ValueError('accepted companion report is missing')
+        yield fn, record
+
+
+def accepted_sources(root):
+    """Use the same accepted-unit include closures intake collects for companion regressions."""
+    for fn, record in accepted_records(root):
         yield fn, record['source']
 
 

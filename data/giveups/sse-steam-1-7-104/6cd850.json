@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x6cd850",
+  "records": [
+    {
+      "category": "control-flow",
+      "tried": [
+        "used the DECAL_CREATION_DATA type with its constructor defaults",
+        "made the sine and cosine helper return one packed vector with a temporary matrix",
+        "walked body user data to collidable to filter info and shape material",
+        "wrote the mount-path collision filter as a bone, collision object, body chain",
+        "added a condition-plus-continue loop guard",
+        "tried a helper and a forced-inline helper to move the decal block out of line (placement unchanged)",
+        "used a GetCollisionLayer member (2.5 worse) and copy-then-scale hit position (0.4 worse)"
+      ],
+      "still_differs": "The decal-creation block (about 170 aligned rows) is placed inline where the target puts it out of line before the particle tail, and the hit-position spill and an early saved HitData float are not reproduced.",
+      "suspected_cause": "Compiler placement of the decal block, which MSVC kept both times despite helper attempts; no source shape found.",
+      "best_similarity": 64.15,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/6cd850/1"
+      }
+    }
+  ]
+}

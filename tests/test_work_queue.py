@@ -10,6 +10,8 @@ import sys
 import tempfile
 import unittest
 
+from repo_fixture import rmtree
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import work_queue as wq  # noqa: E402
@@ -31,7 +33,7 @@ class Queue(unittest.TestCase):
         self.q = self.tmp / 'q'
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        rmtree(self.tmp)
 
     def test_added_extension_queues_targets_and_retains_regression_comparisons(self):
         directory = self.tmp / '.local/tasks/extension'
@@ -41,7 +43,7 @@ class Queue(unittest.TestCase):
         path = directory / 'task.json'
         original = json.dumps(task)
         path.write_text(original)
-        self.assertEqual(wq.add(self.q, [str(directory)], repo=self.tmp), [str(directory)])
+        self.assertEqual(wq.add(self.q, [str(directory)], repo=self.tmp), [directory.as_posix()])
         unit = wq.read_queue(self.q)[0]
         self.assertEqual(unit['functions'], ['0x1000'])
         self.assertEqual(unit['budget'], 4)

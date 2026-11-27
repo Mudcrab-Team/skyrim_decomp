@@ -34,8 +34,8 @@ from test_acceptance_flow import WHEN, git as flow_git  # noqa: E402
 from test_match_gate import CPP, HDR  # noqa: E402
 from test_two_tier import LINT_CPP, LINT_HDR, TwoTierFixture  # noqa: E402
 
-PIN = '91e1b6e8'
-LABEL = f'SIBLING(momusdigital/fnv_decomp@{PIN}, no-licence)'
+PIN = '2b07cb3e'
+LABEL = f'SIBLING(momusdigital/fnv_decomp@{PIN}, CC0-1.0)'
 SIBLING_FINDING = 'SyntheticSum::value comes from the sibling decompilation but is labelled GUESS, not SIBLING'
 UNDECLARED = 'reuses the sibling body of SyntheticSum without a Sibling source header line'
 
@@ -43,7 +43,7 @@ UNDECLARED = 'reuses the sibling body of SyntheticSum without a Sibling source h
 def sibling_unit(rev=PIN):
     """Header and source of the synthetic unit, declaring one sibling name and one reused body."""
     hdr = LINT_HDR.replace('// SyntheticSum: GUESS\n',
-                           f'// SyntheticSum SyntheticSum::value: SIBLING(momusdigital/fnv_decomp@{rev}, no-licence)\n')
+                           f'// SyntheticSum SyntheticSum::value: SIBLING(momusdigital/fnv_decomp@{rev}, CC0-1.0)\n')
     cpp = LINT_CPP.replace('// Labels: v2\n',
                            f'// Labels: v2\n// Sibling source: momusdigital/fnv_decomp@{rev} src/core/sum.cpp:3\n')
     return hdr, cpp
@@ -84,7 +84,7 @@ class LintAndLabelProbes(SiblingFixture, unittest.TestCase):
         self.write(HDR, hdr)
         self.write(CPP, cpp)
         # The synthetic clone cannot have the real pin, so the allowed-sibling table points at it.
-        with mock.patch.dict(lint_reconstruction.SIBLING_SOURCES, {'momusdigital/fnv_decomp': (rev, 'no-licence')}):
+        with mock.patch.dict(lint_reconstruction.SIBLING_SOURCES, {'momusdigital/fnv_decomp': (rev, 'CC0-1.0')}):
             self.assertEqual(self.lint(CPP, HDR), [])
         self.write('findings/synthetic.md', '# synthetic, RVA 0x1010\n')
         flow_git(self.root, 'init', '-q')
@@ -112,8 +112,8 @@ class LintAndLabelProbes(SiblingFixture, unittest.TestCase):
 
     def test_wrong_licence_word_is_a_lint_problem(self):
         hdr, _ = sibling_unit()
-        self.write(HDR, hdr.replace('no-licence', 'MIT'))
-        self.assertTrue(any('licence word "no-licence"' in p for p in self.lint(HDR)))
+        self.write(HDR, hdr.replace('CC0-1.0', 'MIT'))
+        self.assertTrue(any('licence word "CC0-1.0"' in p for p in self.lint(HDR)))
 
     def test_sibling_source_outside_the_leading_comment_is_refused(self):
         _, cpp = sibling_unit()

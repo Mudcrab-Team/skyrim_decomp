@@ -34,6 +34,8 @@ another rule is listed under that rule, not repeated. The engineer then runs
 `python3 tools/cookbook_rank.py --collect <tasks dir or worktree>` (adds the `--rule` hits of accepted functions
 and the `// Cookbook:` header lines to `docs/cookbook-hits.json`) and commits the regenerated ranking section;
 `tests/test_cookbook_rank.py` fails when it is stale. The folding PR is a tooling PR and takes the normal route.
+The same engineer folds the batch's drafter reflections into `docs/near-tier-lessons.md` (steps in `docs/drafter-toolkit.md`,
+"Reflections and lessons") and runs `python3 tools/near_lessons.py`.
 
 **Superseded, pending deletion.** The sections below on claims, the lane and lane-run, the
 Drafter and Reviewer queue, review groups, families and the sampling second pass describe the

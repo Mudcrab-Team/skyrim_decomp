@@ -35,6 +35,7 @@ sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE))
 from source_digest import include_closure, recipe_flag_problem  # noqa: E402
 import boatctl  # noqa: E402
+import toolsets  # noqa: E402
 import disasm  # noqa: E402
 import vsession  # noqa: E402
 import record_store  # noqa: E402
@@ -45,7 +46,7 @@ except ImportError:
     cost_hooks = None
 
 TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
-              'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
+              'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/toolsets.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
 TASK_ID = re.compile(r'[a-z0-9][a-z0-9.-]{0,55}')
 PRIVATE_SYMBOLS = 'task/symbols.json'
 DEFAULT_TTL = int(os.environ.get('SR_VERIFIER_TTL', '3600'))
@@ -124,6 +125,26 @@ def resolve_task_dir(arg, repo=REPO):
     return (main_checkout(repo) / path).resolve()
 
 
+UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
+
+
+def unit_recipe(repo, compiled, fallback):
+    """The recipe the unit's own source names (first recipe path in the file), else `fallback`.
+
+    CI and `contrib.py compare` build the unit with the recipe it declares, so a drafter-side attempt that
+    kept the task file's recipe would measure a different compile than the one the project confirms."""
+    try:
+        found = UNIT_RECIPE.search((Path(repo) / compiled).read_text(encoding='utf-8-sig', errors='replace'))
+    except OSError:
+        return fallback
+    if not found:
+        return fallback
+    if not (Path(repo) / found.group(0)).is_file():
+        raise PipelineError(f'{compiled} names recipe {found.group(0)}, which does not exist; '
+                            'name a recipe under reconstruction/recipes/ or drop the Recipe: line')
+    return found.group(0)
+
+
 def load_task(task_dir, repo=REPO):
     task_dir = resolve_task_dir(task_dir, repo)
     private_root(task_dir)
@@ -144,6 +165,11 @@ def load_task(task_dir, repo=REPO):
     recipe = raw.get('recipe') or (f'reconstruction/recipes/{raw["recipe_name"]}.json' if raw.get('recipe_name') else None)
     if not isinstance(recipe, str) or not recipe.startswith('reconstruction/recipes/'):
         raise PipelineError('task.json: recipe must be reconstruction/recipes/<name>.json')
+    recipe = unit_recipe(repo, compiled, recipe)
+    try:
+        toolset = toolsets.toolset_of_recipe(repo, recipe)
+    except toolsets.ToolsetError as exc:
+        raise PipelineError(f'{exc}; a recipe names its compiler by cl.exe hash and a pin file under tools/verifier/ must hold it') from None
     symbols = raw.get('symbols', 'symbols.json')
     if not isinstance(symbols, str):
         raise PipelineError('task.json: symbols must be a path')
@@ -200,7 +226,7 @@ def load_task(task_dir, repo=REPO):
     if max_attempts is not None:
         max_attempts = parse_int(max_attempts, 'max_attempts')
     return {'dir': task_dir, 'task_id': task_id, 'build_id': raw['build_id'], 'compiled': compiled,
-            'recipe': recipe, 'symbols_local': symbols_path,
+            'recipe': recipe, 'toolset': toolset, 'symbols_local': symbols_path,
             'symbols_repo': symbols if public_symbols else None, 'functions': functions,
             'max_attempts': max_attempts, 'record_notes': notes}
 
@@ -222,6 +248,9 @@ def unit_manifest(task, repo=REPO):
     files = {name: repo / name for name in TOOL_FILES}
     files.update({name: repo / name for name in closure})
     files[task['recipe']] = recipe
+    toolset = task.get('toolset', toolsets.DEFAULT)
+    if toolset != toolsets.DEFAULT:
+        files[toolsets.pin_path(toolset)] = repo / toolsets.pin_path(toolset)
     files[task['symbols_repo'] or PRIVATE_SYMBOLS] = task['symbols_local']
     return files, closure
 
@@ -268,8 +297,12 @@ def unit_spec(task, files, host):
             'functions': [{k: f[k] for k in ('rva', 'size', 'symbol', 'internal_selector') if k in f}
                           for f in task['functions']],
             'files': {name: sha256_file(path) for name, path in sorted(files.items())}}
-    if task.get('pins'):
-        spec['pins'] = task['pins']
+    # A unit built with a non-default compiler tells the host which one; the host picks that
+    # toolchain and unit_build checks the pin file against the unit's recipe.
+    toolset = task.get('toolset', toolsets.DEFAULT)
+    if toolset != toolsets.DEFAULT:
+        spec['toolset'] = toolset
+        spec['pins'] = toolsets.pin_path(toolset)
     return spec
 
 
@@ -497,16 +530,36 @@ def compile_errors(log_path, limit=5):
     return out
 
 
+def compile_warnings(log_path, code='C4714', limit=8):
+    """Lines naming the functions a compiler warning is about (default C4714: marked `__forceinline`, not inlined).
+
+    The warning means the source's inline request was refused, so the object has a call where the
+    target may have none; it appears only in compile.log, which nobody reads while the comparison
+    result is on screen.
+    """
+    try:
+        text = Path(log_path).read_text(errors='replace')
+    except OSError:
+        return []
+    names = []
+    for m in re.finditer(r"warning " + re.escape(code) + r": function '([^']*)'", text):
+        if m.group(1) not in names:
+            names.append(m.group(1))
+    if not names:
+        return []
+    shown = ', '.join(names[:limit]) + (f' ... {len(names) - limit} more' if len(names) > limit else '')
+    return [f'  warning {code}: {len(names)} function(s) marked __forceinline were not inlined: {shown}']
+
+
 def lock(task_dir):
     path = Path(task_dir) / '.attempt' / 'lock'
     path.parent.mkdir(parents=True, exist_ok=True)
     handle = open(path, 'w')
-    # Imported here: the module is also loaded by Windows CI tools that never take the lock, and
-    # fcntl does not exist there.
-    import fcntl
+    import file_lock
     try:
-        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        file_lock.flock(handle, file_lock.LOCK_EX | file_lock.LOCK_NB)
     except OSError:
+        handle.close()
         raise PipelineError('another attempt or confirm is running for this task') from None
     return handle
 

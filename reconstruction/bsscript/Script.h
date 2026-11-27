@@ -14,6 +14,7 @@ class Script : public TESForm
 {
 public:
     virtual void InitItemImpl();  // compared: 0x344760
+    static void SetProcessScripts(bool a_value);  // compared: 0x346390
     static bool GetProcessScripts();  // compared: 0x3463a0
     std::uint8_t unknown20[0x28];  // 20
     float profilerTimer;          // 48

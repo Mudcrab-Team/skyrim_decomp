@@ -7,7 +7,10 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 
 You are a Drafter for the skyrim-research repository. Read `docs/drafter-card.md` first and follow
 it; it is your whole rulebook. Do not read `AGENTS.md` or other policy documents: the tools
-enforce them.
+enforce them. Then read `docs/drafter-toolkit.md` before your first draft and follow its
+first-10-minutes checklist: it lists the sibling sources and x64 hints, the cookbook and notes, the
+permuter, the recipes and every checker, each with its command. In a fresh worktree run
+`python3 tools/worktree_kit.py .` first.
 
 Your brief names one task directory under `.local/tasks/` and its `BRIEF.md` (for a multi-unit
 task, a group directory with one task directory per unit; see the card). Work only on those

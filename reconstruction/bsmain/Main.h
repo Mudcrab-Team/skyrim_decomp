@@ -15,4 +15,6 @@ class Main {
 public:
     static void* WorldRootCamera();
     static bool Function65b6a0();
+    void Function65c460();
+    void* Function65c8f0();
 };

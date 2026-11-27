@@ -165,6 +165,7 @@ class IntegrityTests(unittest.TestCase):
         self.assertEqual(index_blob(objects, sha, 'empty.txt'), b'')
         self.assertEqual(objects.stdin.getvalue(), (sha + '\n' + sha + '\n').encode())
 
+    @unittest.skipIf(sys.platform == 'win32', 'a newline in a file name and symlinks are not available to an ordinary Windows account')
     def test_one_git_batch_checks_every_index_blob_and_working_file(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

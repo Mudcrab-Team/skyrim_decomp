@@ -307,7 +307,7 @@ class MutationTests(ReviewFixture, unittest.TestCase):
         functions = self.progress()['functions']
         path = self.root / f'.local/reviews/{TASK}.md'
         clean = self.snapshot()
-        path.write_text(original)
+        path.write_bytes((original).encode('utf-8'))
         expected = {}
         for mode in ('all', 'one'):
             self.restore(clean)
@@ -320,7 +320,7 @@ class MutationTests(ReviewFixture, unittest.TestCase):
         different = []
         for text in mutants(original):
             counts['mutants'] += 1
-            path.write_text(text)
+            path.write_bytes((text).encode('utf-8'))
             outcomes = []
             for mode in ('all', 'one'):
                 try:
@@ -359,7 +359,7 @@ class HeadingTests(ReviewFixture, unittest.TestCase):
             'blocking_findings: none', 'blocking_findings:\n  - B1 conflicting').replace(
             f'## synthetic-fixture 0x{self.fn["rva"]:x} {self.fn["size"]}', '## ' + heading)
         path = self.root / '.local/reviews/r-head.md'
-        path.write_text(text[:reject_start] + block + text[reject_start:])
+        path.write_bytes((text[:reject_start] + block + text[reject_start:]).encode('utf-8'))
         return str(path)
 
     def test_malformed_heading_of_a_conflicting_reject_refuses(self):
@@ -387,12 +387,12 @@ class HeadingTests(ReviewFixture, unittest.TestCase):
     def test_unknown_function_heading_refuses(self):
         text = review(self.fn, self.record['source']['digest']).replace('0x3000 8', '0x3001 8')
         path = self.root / '.local/reviews/r-unknown.md'
-        path.write_text(text)
+        path.write_bytes((text).encode('utf-8'))
         self.assertRefused('function block but its heading', lambda: af.accept_many(self.root, str(path), when=WHEN))
 
     def test_valid_review_is_accepted(self):
         path = self.root / '.local/reviews/r-valid.md'
-        path.write_text(review(self.fn, self.record['source']['digest']))
+        path.write_bytes((review(self.fn, self.record['source']['digest'])).encode('utf-8'))
         changed, skipped = af.accept_many(self.root, str(path), when=WHEN)
         self.assertEqual(skipped, ['synthetic-fixture 0x3000 8: verdict reject', 'Notes: verdict None'])
         self.assertEqual(self.entry()['status'], 'matched')
@@ -407,7 +407,7 @@ class TitleTests(ReviewFixture, unittest.TestCase):
                        '  # Review r-other'):
             with self.subTest(second=second):
                 path = self.root / '.local/reviews/r-twice.md'
-                path.write_text(text + f'\n{second}\n\nfresh_context: no\n')
+                path.write_bytes((text + f'\n{second}\n\nfresh_context: no\n').encode('utf-8'))
                 self.assertRefused('second "# Review" title', lambda: af.accept_many(self.root, str(path), when=WHEN))
 
 

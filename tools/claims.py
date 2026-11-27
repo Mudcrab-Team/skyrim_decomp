@@ -6,6 +6,7 @@ cluster_lists. Cluster lists are JSON objects with build_id and clusters, each w
 members (RVA integers or hex strings). They become half-open ranges of function starts.
 Only the publication builder below may turn local state into issue text.
 """
+from bisect import bisect_right
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
@@ -27,7 +28,9 @@ BODY_LIMIT = 60000
 TTL = 600
 CLAIM_LAPSE = timedelta(hours=24)
 RENEWAL = 'skyrim-claim-renewal-v1'
-DONE_COMMENT = 'All claimed functions are matched \u2014 closing. Thanks!'
+DONE_COMMENT = 'All claimed functions are matched; closing.'
+LAPSED_COMMENT = ('Claim lapsed after 24 hours without activity, per the claims policy. '
+                  'Reopen or claim again to continue.')
 TOKEN = re.compile(r'(?<![A-Za-z0-9])0x([0-9a-fA-F]+)\b')
 ENTRY = re.compile(r'0x([0-9a-fA-F]+)(?:-0x([0-9a-fA-F]+))?(?:\s+[^\r\n]+)?')
 
@@ -78,6 +81,26 @@ def parse_issue(issue):
                 claim_renewals=issue.get('claim_renewals', []))
 
 
+class ClaimIntervals:
+    """A union of half-open claim ranges, indexed without expanding them into addresses."""
+    def __init__(self, entries):
+        self.entries = []
+        for start, end in sorted(entries):
+            if self.entries and start <= self.entries[-1][1]:
+                prev_start, prev_end = self.entries[-1]
+                self.entries[-1] = (prev_start, max(prev_end, end))
+            else:
+                self.entries.append((start, end))
+        self.ends = [end for _, end in self.entries]
+
+    def overlaps(self, start, end):
+        i = bisect_right(self.ends, start)
+        return i < len(self.entries) and self.entries[i][0] < end
+
+    def __contains__(self, address):
+        return self.overlaps(address, address + 1)
+
+
 class ClaimIndex(dict):
     """Point lookup with ranges, without expanding potentially enormous intervals."""
     def __init__(self, items=(), build=None):
@@ -99,10 +122,11 @@ class ClaimIndex(dict):
         return found or default
 
     def overlaps(self, entries, me=None, active=True):
-        return [it for it in self.records if (not active or any(a < d and c < b for a, b in entries
-                                     for c, d in live_entries(it))) and
+        wanted = ClaimIntervals(entries)
+        now = datetime.now(timezone.utc)
+        return [it for it in self.records if
                 (not me or me not in (it.get('assignees') or [it.get('author')])) and
-                any(a < d and c < b for a, b in entries for c, d in it['entries'])]
+                any(wanted.overlaps(a, b) for a, b in (live_entries(it, now) if active else it['entries']))]
 
 
 def claimed(index, address, me=None):
@@ -164,8 +188,10 @@ def activity(api, repo, raw):
                     raw.setdefault('claim_takeovers', []).append((a, b))
             if event.get('event') == 'renamed' and MANAGED in (raw.get('body') or ''):
                 continue  # automatic scope/title maintenance is not a broad renewal
-            dates = [event.get('updated_at'), event.get('created_at')]
             linked = (event.get('source') or {}).get('issue') or {}
+            if event.get('event') == 'cross-referenced' and 'pull_request' not in linked:
+                continue  # another issue merely naming the claim is not work on it
+            dates = [event.get('updated_at'), event.get('created_at')]
             if 'pull_request' in linked:
                 dates.append(linked.get('updated_at'))
             ordinary.extend(filter(None, dates))
@@ -219,13 +245,19 @@ class GitHub:
                 return result
         raise RuntimeError('open issue pagination limit reached')
 
-    def open_claims(self):
-        """Open claim issues of any author, parsed without the per-issue timeline reads `issues` makes."""
+    def open_claims(self, with_activity=False):
+        """Open claim issues of any author.
+
+        By default they are parsed without the per-issue timeline reads `issues` makes; `with_activity`
+        adds those reads so comments, renewals and linked pull requests count toward `updated_at`.
+        """
         result = []
         for page in range(1, 101):
             rows = self.api(f'repos/{REPO}/issues?state=open&per_page=100&page={page}')
             for raw in rows:
                 if 'pull_request' not in raw and (raw.get('title') or '').startswith('claim:'):
+                    if with_activity:
+                        raw['updated_at'] = activity(self.api, REPO, raw)
                     result.append(parse_issue(raw))
             if len(rows) < 100:
                 return result
@@ -289,9 +321,10 @@ def project_claims(root, refresh=False):
 
 
 def scope(entries, public, build):
+    wanted = ClaimIntervals(entries)
     names = sorted({f['name'].rsplit('::', 1)[0] for f in public['functions']
                     if f['build_id'] == build and f.get('name') and '::' in f['name'] and
-                    any(a <= f['rva'] < b for a, b in entries)})
+                    f['rva'] in wanted})
     # Names have already been read from the committed inventory, never from a queue or listing.
     names = [n for n in names if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_:<> ,*&~.-]*', n)]
     if names:
@@ -330,6 +363,9 @@ def parts(build, entries, public, me, managed=False, counts=None):
     entries = sorted(set(entries))
     if not entries:
         return []
+    # Each split and its title only need inventory rows in the requested scope.
+    wanted = ClaimIntervals(entries)
+    public = {'functions': [f for f in public['functions'] if f['build_id'] == build and f['rva'] in wanted]}
     def split(chunk):
         try:
             count = sum((counts or {}).get(e, 1) for e in chunk)
@@ -347,8 +383,8 @@ def parts(build, entries, public, me, managed=False, counts=None):
         title = f'claim: {build} {scope(chunk, public, build)} ({count} functions)'
         if len(chunks) > 1:
             title += f' (part {i} of {len(chunks)})'
-        done = sum(f['status'] == 'matched' and f['build_id'] == build and
-                   any(a <= f['rva'] < b for a, b in chunk) for f in public['functions'])
+        claimed = ClaimIntervals(chunk)
+        done = sum(f['status'] == 'matched' and f['rva'] in claimed for f in public['functions'])
         result.append((title, body(build, chunk, public, me, count, done, managed), chunk))
     return result
 
@@ -438,7 +474,8 @@ def publish(root, gh, public, family_roots=(), cluster_lists=(), dry_run=False):
         if conflicts:
             for it in conflicts:
                 print(f'skip overlap with claim #{it["number"]} by {it["author"]}', file=sys.stderr)
-            entries = [e for e in entries if not index.overlaps([e], me)]
+            blocked = ClaimIntervals(e for it in conflicts for e in live_entries(it))
+            entries = [e for e in entries if not blocked.overlaps(*e)]
         # A family and a cluster can describe the same work. Earlier plans already
         # preserve that scope, so do not open a second issue for covered entries.
         covered = [interval for _, prior, title, text in plans if prior
@@ -457,24 +494,25 @@ def publish(root, gh, public, family_roots=(), cluster_lists=(), dry_run=False):
                 known = {f['rva'] for f in public['functions'] if f['build_id'] == build}
                 # Unknown inventory scope cannot be safely recounted or silently discarded.
                 original_count = re.search(r'^Functions: (\d+)$', prior['body'], re.M)
-                known_prior = {r for r in known if any(a <= r < b for a, b in prior['entries'])}
+                prior_scope = ClaimIntervals(prior['entries'])
+                known_prior = {r for r in known if r in prior_scope}
                 if original_count and int(original_count[1]) > len(known_prior):
                     retained = prior['entries']
                 all_entries = sorted(set(retained) | set(chunk))
                 total_match = re.search(r'^Functions: (\d+)$', prior['body'], re.M)
                 additions = [e for e in chunk if not any(a <= e[0] and e[1] <= b for a, b in prior['entries'])]
                 total = (int(total_match[1]) if total_match else len(prior['entries'])) + sum(counts.get(e, 1) for e in additions)
+                combined = ClaimIntervals(all_entries)
                 if retained != prior['entries']:
-                    total = sum(f['build_id'] == build and any(a <= f['rva'] < b for a, b in all_entries)
-                                for f in public['functions'])
+                    total = sum(r in combined for r in known)
                 accepted = {f['rva'] for f in public['functions'] if f['build_id'] == build and f['status'] == 'matched'}
-                done = sum(any(a <= r < b for a, b in all_entries) for r in accepted)
+                done = sum(r in combined for r in accepted)
                 try:
                     text = body(build, all_entries, public, me, total, done, True)
                 except ValueError:
                     # Keep a full issue's original scope and split its additions into new issues.
                     previous_total = int(total_match[1]) if total_match else len(prior['entries'])
-                    old_done = sum(any(a <= r < b for a, b in prior['entries']) for r in accepted)
+                    old_done = sum(r in prior_scope for r in accepted)
                     old_text = body(build, prior['entries'], public, me, previous_total, old_done, True)
                     action = 'unchanged' if prior['body'] == old_text else 'update'
                     old_title = f'claim: {build} {scope(prior["entries"], public, build)} ({previous_total} functions)'
@@ -593,6 +631,32 @@ def close_completed(gh, public, dry_run=False):
     return closed
 
 
+def lapsed(item, now=None):
+    """True when no part of the claim has seen activity inside the lapse window."""
+    return not item.get('pull_request') and not live_entries(item, now)
+
+
+def sweep(gh, public, dry_run=False, now=None):
+    """Close every open claim that is finished or has lapsed. Returns (matched, lapsed) issue numbers.
+
+    A claim whose functions are all matched closes as done even when it is also silent; a silent claim
+    with unmatched functions closes as lapsed; a recently active claim with unmatched functions stays.
+    Claims are advisory, so closing only tidies the list; the single comment says why.
+    """
+    done, stale = [], []
+    for item in gh.open_claims(with_activity=True):
+        if completed(item, public):
+            reason, bucket = DONE_COMMENT, done
+        elif lapsed(item, now):
+            reason, bucket = LAPSED_COMMENT, stale
+        else:
+            continue
+        if not dry_run:
+            gh.close(item['number'], reason)
+        bucket.append(item['number'])
+    return done, stale
+
+
 def sync_safe(root):
     try:
         sync(root)
@@ -605,12 +669,12 @@ def main(argv=None):
     p.add_argument('--root', type=Path, default=ROOT)
     p.add_argument('--cache-dir', type=Path)
     sub = p.add_subparsers(dest='cmd', required=True)
-    for cmd in ('list', 'check', 'publish', 'sync', 'close-done'):
+    for cmd in ('list', 'check', 'publish', 'sync', 'close-done', 'sweep'):
         s = sub.add_parser(cmd)
         s.add_argument('--refresh', action='store_true')
         if cmd == 'check':
             s.add_argument('rvas', nargs='+')
-        if cmd in ('publish', 'close-done'):
+        if cmd in ('publish', 'close-done', 'sweep'):
             s.add_argument('--dry-run', action='store_true')
         if cmd == 'publish':
             s.add_argument('--family-root', type=Path, action='append', default=[])
@@ -625,15 +689,24 @@ def main(argv=None):
         elif a.cmd == 'close-done':
             done = close_completed(gh, git_json(a.root, 'origin/main'), a.dry_run)
             print(('would close: ' if a.dry_run else 'closed: ') + (', '.join(f'#{n}' for n in done) or 'none'))
+        elif a.cmd == 'sweep':
+            done, stale = sweep(gh, git_json(a.root, 'origin/main'), a.dry_run)
+            verb = 'would close' if a.dry_run else 'closed'
+            for label, numbers in (('matched', done), ('lapsed', stale)):
+                print(f'{verb} ({label}): ' + (', '.join(f'#{n}' for n in numbers) or 'none'))
         else:
             index, _ = cached(a.root, a.refresh, gh, a.cache_dir)
             public = git_json(a.root)
             build = public['target_build_id']
             index = ClaimIndex(index.records, build)
             if a.cmd == 'check':
+                import giveup
                 for address in a.rvas:
                     hits = claimed(index, rva(address))
                     print(address + ': ' + (', '.join(f'#{it["number"]} @{it["author"]}' for it in hits) or 'unclaimed'))
+                    # What earlier drafters learned about the function comes with the answer to "may I take it?".
+                    for line in giveup.lines_for(a.root, [address]):
+                        print('  ' + line)
             else:
                 print('issue\tassignee\tcount\tdone\tage (days)')
                 for it in index.records:

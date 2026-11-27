@@ -39,7 +39,7 @@ import argparse
 from collections import defaultdict
 import contextlib
 import datetime as dt
-import fcntl
+import file_lock as fcntl
 import json
 import os
 from pathlib import Path

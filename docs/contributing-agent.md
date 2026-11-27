@@ -7,10 +7,8 @@ verifier hosts.
 ## The flow
 
 1. Draft the reconstruction locally and get a local comparator PASS.
-2. Open a pull request that touches only `reconstruction/**` and `docs/cookbook-notes/**`. Read the notes there
-   for your function's class or cause before drafting; write a note with `./sr note <task>` only for a spelling that fixed
-   something the cookbook does not record, or a near-miss cause it does not cover (format:
-   `docs/cookbook-notes/README.md`), and include it in the PR. Merged notes are folded into the cookbook at the next round.
+2. Open a pull request that touches only `reconstruction/**`, `docs/cookbook-notes/**`, `data/giveups/**` and `drafts/**`. Read the notes there
+   for your function's class or cause before drafting, and **send your lessons** with the functions (below).
 3. Checks run on the PR: a path and leak scan, and a Windows compile whose hashes are compared to
    the published target hashes (host 1). The project's bot compares on a second host, reviews the
    source once and squash-merges the PR with its own message. Nothing else is needed from you.
@@ -18,10 +16,34 @@ verifier hosts.
 A function counts as `matched` only after both host comparisons and one review; a local pass is a
 candidate. A function that fails stays a draft and the bot comment names a reason code. The bot keeps
 one comment per PR and edits it for each new push. Fix it and push to the same branch.
-Aim for 50 to 200 functions per PR (200 is the per-PR cap); more is fine, and one PR per family or
+Aim for 50 to 200 functions per PR (2000 is the per-PR cap); more is fine, and one PR per family or
 class is ideal. A single large function is also a fine PR on its own. Classes can be mixed. Fewer,
 bigger PRs help most: each PR costs a full verification and merge cycle, and large batches have
 merged cleanly in about an hour. Thank you, don't be shy.
+
+## Check the generators first
+
+Many functions fall into a shape that a family generator already emits and checks locally. Look the shape up in
+[docs/generators.md](generators.md) before drafting by hand; it lists each generator's command, how it verifies, its
+author and its findings note. If you add or change a generator, or land 50 or more functions from one family, add a
+short family note (shape, why it matches, pitfalls) as `findings/<family>.md` or a lesson note.
+
+## Send your lessons
+
+A note is how the next drafter learns from your attempt, and it is credited to you as co-author of the merge commit.
+Write one when:
+
+- a function **did not match** (a near-miss): what differed and what you tried;
+- a pass **took four or more compares**: the spelling that finally closed it;
+- you **solved a compiler shape** the cookbook has no entry for;
+- a tool step was slow or wrong: that goes under "Bottlenecks" in the PR description (one line, with a time cost), not in a note.
+
+Run `./sr lesson <rva>` (pre-filled from your task; `--name` and `--outcome` for a function with no task), finish every
+`TODO`, and put the file in the same PR. The format, the list of causes and a complete example with no game bytes are in
+[docs/cookbook-notes/README.md](cookbook-notes/README.md); `tools/cookbook_notes.py` checks it, and the maintainers fold
+accepted notes into the matching cookbook and the near-tier lessons (`docs/near-tier-lessons.md`, checked by
+`tools/near_lessons.py`). Words and plain C++ only; an RVA and a name are enough. `submit` prints a reminder when a
+function mismatched or needed many attempts and no note is staged, and the bot's one comment asks too. It never blocks.
 
 ## Big batches: use subagents
 
@@ -42,14 +64,14 @@ equivalent). Cheaper models are fine for drafting.
 
 **Subagent batches are a drafting split, not a PR split.** Never open one PR per subagent, worktree or
 batch of 10 to 15. Subagents never open PRs or run `submit`; only the lead does, once, for the whole
-run. Split only above the 200 cap, and never open extra PRs just to trigger checks.
+run. Split only above the 2000 cap, and never open extra PRs just to trigger checks.
 
 Worktree and storage setup for this is in [contributor-parallel.md](contributor-parallel.md).
 
 ## Skills
 
-`.claude/skills/` holds `matcher` (a near-miss you are iterating on), `permute` (only register
-allocation or ordering differs) and `wall-identifier` (a stalled function: classify the wall before
+`.claude/skills/` holds `matcher` (a near-miss you are iterating on), `permute` (hints when only register
+allocation or ordering differs, after checking types, store placement and callee bodies) and `wall-identifier` (a stalled function: classify the wall before
 giving up). They are adapted from lemiur's Game-Decompilation-Skill-For-Claude, CC-BY-4.0; see the
 `NOTICE.md` in each directory.
 
@@ -86,13 +108,52 @@ the repository on GitHub). When you show output publicly, add `--redact`.
 entry in `data/progress.json` (`next` prints the counts and prefers small functions of classes that already have a
 layout). The bot adds the inventory entry (a `Function<rva>` GUESS name) when it records the match; you never edit `data/progress.json`.
 
-An entry still named `Function<rva>` has no class, so `start` stops and asks for one: `./sr start 0x<rva> --class <Class>`
-names the unit after your reading of the owner class. Label that class GUESS unless a public table (CrashLogger,
-`SYMBOLS(...)`, `SIBLING(...)`) names it. The flag does not rename the inventory entry and is not evidence of identity.
+For a named free function, `./sr start 0x<rva>` creates a plain function declaration and stub. Start free
+functions one RVA at a time. New units default to `reconstruction/unmapped/support/FreeFunction_<rva>.cpp`
+and its paired header. Use `--area` to select another area.
+
+An entry still named `Function<rva>` also gets a plain stub unless you supply `--class <Class>` to put it in
+the owner class. Label an inferred owner GUESS and keep the inventory entry unchanged. `--class` applies to
+members and unresolved placeholders.
 
 By submitting, a contributor dedicates their contribution under CC0 1.0, or under the file's stated exception licence (`LICENSE`). The contributor card has the source, label, short-header and stopping rules. Do not add licence text, task or evidence lines or disclaimers to a header: the PR check refuses a new or changed header that is long or carries licence text. The
 [matching cookbook](matching-cookbook.md) and [declaration kit](declaration-kit.md) are optional
 references.
+
+## Havok and other code built with another compiler
+
+The target's Havok code was built with Visual Studio 2015 Update 2 (`cl` 19.00.23918), not the pinned VS 2017
+19.16 compiler, so large Havok functions do not match under the default recipe. A unit declares its compiler
+with the `Recipe:` line it already uses for flags: the recipe names its compiler by the `cl.exe` hash it records
+(`tools/verifier/toolsets.py`), so naming a recipe is naming the toolchain, and a unit with no `Recipe:` line
+keeps the default 19.16 compiler.
+
+```cpp
+// Recipe: reconstruction/recipes/msvc-19.00.23918-o2-reconstruction.json
+```
+
+The recipes are `msvc-19.00.23918-o2` (no include root), `-o2-reconstruction` and `-o2-root-includes` (cross-area
+headers by reconstruction path, like their 19.16 twins), plus the same shapes as the existing variants: `-o2-noeh*`
+(no `/EHsc`, tried automatically after a failed compare when the target has no exception frame), `-o2-fpfast*`
+(`/fp:fast`) and `-o2-fpfast-noeh*`. Each is its 19.16 twin with only the compiler changed. A different flag set
+needs its own recipe file and manifest entry.
+
+1. Install the compiler once: `./sr --json --yes setup --toolchain havok --accept-vs2015-license`. A person must
+   read and accept Microsoft's [Visual Studio Community 2015 licence terms](https://visualstudio.microsoft.com/license-terms/microsoft-visual-studio-community-2015/)
+   first; never pass the flag for them. It reads only the compiler packages (about 16 MB) from Microsoft's own
+   download of the VS 2015 Update 2 image and checks each by SHA-256, needs the default toolchain installed
+   (its Windows SDK is reused) and `msitools` on macOS/Linux, and takes about a minute. `./sr doctor` shows the
+   state (`compiler 19.00.23918 (havok)`, optional).
+2. Start the function with the recipe written for you: `./sr --json start 0x<rva> --toolchain havok` (or
+   `./sr go --toolchain havok ...`) puts the `Recipe:` line in the new unit.
+3. `./sr compare` builds with the unit's recipe, so it uses the 19.00.23918 compiler automatically. If the unit
+   names that recipe and the compiler is missing, `compare` stops with the exact `setup` command above.
+4. Submit as usual. The PR check installs the same compiler on the GitHub runner, from the same pinned
+   packages, only for a PR whose units name a 19.00.23918 recipe, and the bot's second host and the Reviewer
+   see the unit's compiler in the evidence. A match record binds the unit's pin file
+   (`tools/verifier/pinned/19.00.23918.sha256`) instead of `pinned.sha256`.
+
+Original Havok SDK source stays excluded (`docs/authorizations.md`); this changes only the compiler.
 
 ## When to ask the person
 
@@ -100,7 +161,8 @@ Ask when the helper reports these decisions; account, fork and sign-in steps als
 
 1. The path to their `SkyrimSE.exe`, if `setup` cannot find it (exit 5).
 2. Microsoft's licence for the Visual Studio 2017 Build Tools (exit 7, `licence` field). Show
-   the link; pass `--accept-microsoft-license` only after they accept. Never accept it yourself.
+   the link; pass `--accept-microsoft-license` only after they accept. Never accept it yourself. The
+   Havok compiler has its own licence (Visual Studio Community 2015, `--accept-vs2015-license`), asked the same way.
 3. System prompts such as Rosetta 2, a `sudo` password or winget source terms. Package installs
    themselves need no decision: pass `--yes`.
 
@@ -115,6 +177,12 @@ into a commit, PR, issue or comment. A PR containing disassembly or decompiler n
 `param_1`, `local_28`), inline assembly, byte arrays or host paths is blocked by an automatic scan
 that reports only rule codes and line numbers. Squash merging replaces your commit messages with the
 bot's, so your history is not published.
+
+## If you can't match it
+
+Release the function with a give-up record, `./sr release 0x<rva> --reason "..." --category <wall> --tried "..."
+--still-differs "..." --suspected-cause "..."`, so the next drafter starts from what you learned
+([contributor card](contributor-card.md), "If you can't match it").
 
 ## Getting help
 
@@ -188,6 +256,9 @@ the start of each session; push fixes to the same branch and never force-push ov
 `data/symbol-names.json` and `data/name-corroboration.json` hold candidate names read from sibling
 symbol files (label `SYMBOLS(tesv-2013-map|fo4-pdb|fnv-x360-pdb)`; a name hint, never identity
 evidence); see `findings/sibling-symbol-files.md`. Contributed by lemiur (#572).
+
+For the register of sibling and community sources, their labels and the traps when reading them, see
+`docs/secondary-research.md`.
 
 ## Optional: 2013 map and Fallout 4 PDB (full use)
 

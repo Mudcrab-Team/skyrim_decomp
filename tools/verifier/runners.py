@@ -17,11 +17,20 @@ the unit's include closure, the comparator and the host scripts, a spec file and
 travels in a command), the host compiles and compares with tools/verifier/unit_build.py, the
 caller fetches `work/<host id>/` and the run directory is removed.
 
-The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides);
-tools/verifier/runners.example.json is the tracked example. Without it, or with `"attempt":
+The config is `.local/verifier/runners.json` of the main checkout (SR_RUNNERS_CONFIG overrides). `attempt` names the default attempt host; an optional
+`attempt_prefer` list is tried first (first reachable wins) and SR_ATTEMPT_HOST overrides both;
+tools/verifier/runners.example.json is the tracked example. An optional `compare_prefer` list
+(ssh hosts) is the PR bot's host for its bulk compare: tools/verifier/compare_batch.py uploads
+the units in batches there when one answers (SR_COMPARE_HOST overrides; `attempt` disables) and the
+ordinary `attempt` host takes over when none does; an ssh host may set `wake_mac` so an unreachable one
+is sent a Wake-on-LAN packet without being waited for. Without it, or with `"attempt":
 "boat"`, everything behaves as before. A host is named in records only by its `host_id`, with
 the OS, loader and compiler hashes it reports; private paths, user names and addresses stay in
 the config.
+
+Orchestrator-only machine: a top-level `local_max_heavy` (default: no cap) limits the heavy local jobs of
+every checkout sharing this state directory (tools/local_load.py); `attempt` then prefers a reachable
+ssh host over a local one, and a run that still has to compile here waits for one of those slots first.
 
 Concurrency: each local or ssh host has `max_parallel` slots (file locks under
 .local/verifier/runner-slots/); a run waits for a free slot, so Drafters queue instead of
@@ -29,9 +38,8 @@ overloading the host. SSH operations also share `max_sessions` transport slots (
 under .local/verifier/runner-sessions/, including transfers, probes and cleanup.
 """
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import errno
-import fcntl
 import io
 import json
 import os
@@ -50,8 +58,11 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(1, str(HERE.parent))
+import file_lock as fcntl  # noqa: E402
+import local_load  # noqa: E402
 import repo_slug  # noqa: E402
 import starts  # noqa: E402
+import toolsets  # noqa: E402
 
 SCHEMA = 1
 BACKENDS = ('boat', 'local', 'ssh', 'ci-hash')
@@ -59,6 +70,7 @@ BACKENDS = ('boat', 'local', 'ssh', 'ci-hash')
 # either name addresses the same hash job.
 LOADERS = ('wine', 'native')
 HOST_ID = re.compile(r'[a-z0-9][a-z0-9-]{1,39}')
+TOOLSET_ID = re.compile(r'19\.\d+\.\d+')
 # Everything on an ssh command line must survive PowerShell, cmd and POSIX shells unquoted.
 SAFE_TOKEN = re.compile(r'[A-Za-z0-9_:/\\.+=@-]+')
 RUN_NAME = re.compile(r'[a-z0-9][a-z0-9.-]{0,80}-[0-9a-f]{12}')
@@ -73,6 +85,11 @@ class RunnerError(Exception):
     pass
 
 
+# Ids of the local hosts of every config validated in this process: a compile slot of one of them
+# also takes a machine-wide heavy-job slot (tools/local_load.py), whoever asks for the slot.
+LOCAL_HOST_IDS = set()
+
+
 class TransportError(RunnerError):
     """No comparator result: the connection failed, possibly after remote execution began."""
 
@@ -82,9 +99,32 @@ def config_path():
     return Path(configured) if configured else starts.state_dir() / 'runners.json'
 
 
+def config_origin():
+    """Where config_path() came from: 'SR_RUNNERS_CONFIG', 'this checkout' or 'another checkout'.
+
+    A fresh worktree has no .local of its own, so the config of the main checkout is used; a
+    drafter there silently inherits that machine's choice of host.
+    """
+    if os.environ.get('SR_RUNNERS_CONFIG'):
+        return 'SR_RUNNERS_CONFIG'
+    here = Path(__file__).resolve().parents[2]
+    return 'this checkout' if here == main_root().resolve() else 'another checkout'
+
+
 def main_root():
     """The main checkout: relative local paths in the config are relative to it."""
     return starts.state_dir().parent.parent
+
+
+def toolchain_args(host):
+    """`--toolchain ID=DIR` agent arguments for the host's other compiler builds."""
+    return [arg for tid, path in sorted((host.get('toolchains') or {}).items()) for arg in ('--toolchain', f'{tid}={path}')]
+
+
+def supports(host, toolset):
+    """True when `host` can build with `toolset`'s compiler (a ci-hash host decides that itself)."""
+    return (toolset == toolsets.DEFAULT or host.get('backend') == 'ci-hash'
+            or toolset in (host.get('toolchains') or {}))
 
 
 def _local_path(value, root):
@@ -137,16 +177,30 @@ def validate(raw, root=None):
         if not isinstance(limit, int) or isinstance(limit, bool) or not 1 <= limit <= 64:
             raise RunnerError(f'{where}.max_parallel must be an integer from 1 to 64')
         host['max_parallel'] = limit
+        # Toolchains of other compiler builds, {toolset id: directory}, for units whose recipe names
+        # one (tools/verifier/toolsets.py). `msvc` stays the default toolset's.
+        tcs = h.get('toolchains', {})
+        if not isinstance(tcs, dict) or any(not TOOLSET_ID.fullmatch(str(k)) or not isinstance(v, str) or not v
+                                            for k, v in tcs.items()):
+            raise RunnerError(f'{where}.toolchains must map toolset ids such as 19.00.23918 to directories')
+        if toolsets.DEFAULT in tcs:
+            raise RunnerError(f'{where}.toolchains must not name {toolsets.DEFAULT}; that is `msvc`')
+        host['toolchains'] = dict(tcs)
         # Units per upload in a runner confirm: an ssh host pays several seconds of session setup per
         # transfer and command, so it gets units in batches; a local host gains nothing from batching.
         batch = h.get('batch', 2 * limit if backend == 'ssh' else 1)
         if not isinstance(batch, int) or isinstance(batch, bool) or not 1 <= batch <= 256:
             raise RunnerError(f'{where}.batch must be an integer from 1 to 256')
         host['batch'] = batch
+        # llvm-objdump on the host itself: the permuter then scores there and returns rows only.
+        if h.get('objdump') is not None and (not isinstance(h['objdump'], str) or not h['objdump']):
+            raise RunnerError(f'{where}.objdump must be a path')
         if backend == 'local':
-            for key in ('msvc', 'work', 'wine_bin', 'wineprefix', 'image'):
-                if h.get(key):
+            LOCAL_HOST_IDS.add(hid)
+            for key in ('msvc', 'work', 'wine_bin', 'wineprefix', 'image', 'objdump'):
+                if h.get(key) and (key != 'objdump' or '/' in h[key]):
                     host[key] = str(_local_path(h[key], root))
+            host['toolchains'] = {k: str(_local_path(v, root)) for k, v in tcs.items()}
             if h['loader'] == 'wine' and not host.get('wine_bin') and sys.platform == 'darwin':
                 raise RunnerError(f'{where}.wine_bin is required for Wine on macOS')
         else:
@@ -162,7 +216,12 @@ def validate(raw, root=None):
             if isinstance(python, str):
                 python = [python]
             host['python'] = python
-            for token in [h['ssh_host'], h['msvc'], h['image'], h['work'], *python]:
+            wake = h.get('wake_mac')
+            if wake is not None and not (isinstance(wake, str)
+                                         and re.fullmatch(r'[0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5}', wake)):
+                raise RunnerError(f'{where}.wake_mac must be a MAC address such as AA:BB:CC:DD:EE:FF')
+            for token in ([h['ssh_host'], h['msvc'], h['image'], h['work'], *python, *tcs.values()]
+                          + ([h['objdump']] if h.get('objdump') else [])):
                 if not isinstance(token, str) or not SAFE_TOKEN.fullmatch(token):
                     raise RunnerError(f'{where}: {token!r} needs quoting on the remote shell; use a path without '
                                       'spaces or shell characters (forward slashes work on Windows)')
@@ -177,7 +236,25 @@ def validate(raw, root=None):
         raise RunnerError('runners config: confirm must list configured hosts')
     if any(out[c]['backend'] == 'boat' for c in confirm):
         raise RunnerError('runners config: confirm lists runner hosts only; Boat confirms through the session')
-    return {'attempt': attempt, 'confirm': confirm, 'hosts': out}
+    prefer = raw.get('attempt_prefer', [])
+    if not isinstance(prefer, list) or any(p not in out or out[p]['backend'] == 'ci-hash' for p in prefer):
+        raise RunnerError('runners config: attempt_prefer must list configured attempt-capable hosts')
+    # The bot's host-2 compare: ssh hosts only, since a batch upload gains nothing on a local host.
+    compare = raw.get('compare_prefer', [])
+    if not isinstance(compare, list) or any(p not in out or out[p]['backend'] != 'ssh' for p in compare):
+        raise RunnerError('runners config: compare_prefer must list configured ssh hosts')
+    # Set on a machine that only orchestrates: caps the heavy local jobs machine-wide (tools/local_load.py).
+    try:
+        cap = local_load.parse(raw.get(local_load.KEY), f'runners config: {local_load.KEY}')
+    except ValueError as exc:
+        raise RunnerError(str(exc)) from None
+    # The host that prepares tasks and packs (tools/verifier/remote_prep.py): an ssh or local host
+    # with a work directory; unset means the preparation runs on this machine as before.
+    prep = raw.get('prep')
+    if prep is not None and (prep not in out or out[prep]['backend'] not in ('ssh', 'local')):
+        raise RunnerError('runners config: prep must name a configured ssh or local host')
+    return {'attempt': attempt, 'attempt_prefer': prefer, 'compare_prefer': compare, 'confirm': confirm,
+            'prep': prep, 'hosts': out, local_load.KEY: cap}
 
 
 def load(path=None, root=None):
@@ -208,6 +285,16 @@ def slot_dir():
     return starts.state_dir() / 'runner-slots'
 
 
+def _heavy_guard(host_id, want, directory, log):
+    """The machine-wide heavy-job cap around a compile slot of a local host; nothing for other slot pools.
+
+    A caller-chosen `directory` is a private pool (tests, ssh sessions), never the host's compile slots.
+    """
+    if directory is not None or host_id not in LOCAL_HOST_IDS:
+        return nullcontext(want)
+    return local_load.heavy(f'compile on {host_id}', want=want, log=log)
+
+
 @contextmanager
 def slot(host_id, limit, wait=DEFAULT_SLOT_WAIT, log=None, directory=None, poll=0.5):
     """Hold one of `limit` slots of a host for the duration of the block; wait for one if all are taken.
@@ -215,30 +302,31 @@ def slot(host_id, limit, wait=DEFAULT_SLOT_WAIT, log=None, directory=None, poll=
     The locks are flock()ed files, released by the kernel if the holder dies, so a crashed
     attempt never blocks a host. Yields the seconds spent waiting.
     """
-    directory = Path(directory) if directory else slot_dir()
-    directory.mkdir(parents=True, exist_ok=True)
-    started = time.monotonic()
-    said = False
-    while True:
-        for i in range(limit):
-            handle = open(directory / f'{host_id}.{i}.lock', 'w')
-            try:
-                fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except OSError:
-                handle.close()
-                continue
-            try:
-                yield time.monotonic() - started
-            finally:
-                fcntl.flock(handle, fcntl.LOCK_UN)
-                handle.close()
-            return
-        if time.monotonic() - started > wait:
-            raise RunnerError(f'{host_id}: all {limit} slots stayed busy for {wait} s')
-        if not said and log:
-            log(f'{host_id}: all {limit} slots busy; waiting for one')
-            said = True
-        time.sleep(poll)
+    with _heavy_guard(host_id, 1, directory, log):
+        directory = Path(directory) if directory else slot_dir()
+        directory.mkdir(parents=True, exist_ok=True)
+        started = time.monotonic()
+        said = False
+        while True:
+            for i in range(limit):
+                handle = open(directory / f'{host_id}.{i}.lock', 'w')
+                try:
+                    fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except OSError:
+                    handle.close()
+                    continue
+                try:
+                    yield time.monotonic() - started
+                finally:
+                    fcntl.flock(handle, fcntl.LOCK_UN)
+                    handle.close()
+                return
+            if time.monotonic() - started > wait:
+                raise RunnerError(f'{host_id}: all {limit} slots stayed busy for {wait} s')
+            if not said and log:
+                log(f'{host_id}: all {limit} slots busy; waiting for one')
+                said = True
+            time.sleep(poll)
 
 
 @contextmanager
@@ -248,6 +336,14 @@ def slots(host_id, limit, want, wait=DEFAULT_SLOT_WAIT, log=None, directory=None
     Yields how many are held. Extra slots are taken only without waiting, so two callers that
     each want several can never hold part of a set and wait on each other.
     """
+    with _heavy_guard(host_id, want, directory, log) as granted:
+        want = min(want, granted)
+        with _held_slots(host_id, limit, want, wait, log, directory, poll) as held:
+            yield held
+
+
+@contextmanager
+def _held_slots(host_id, limit, want, wait, log, directory, poll):
     directory = Path(directory) if directory else slot_dir()
     with slot(host_id, limit, wait=wait, log=log, directory=directory, poll=poll):
         extra = []
@@ -314,6 +410,9 @@ class LocalTransport:
         for path in paths:
             shutil.copyfile(path, Path(remote_dir) / Path(path).name)
 
+    def mkdir(self, path):
+        Path(path).mkdir(parents=True, exist_ok=True)
+
     def get(self, remote_file, local_file):
         shutil.copyfile(remote_file, local_file)
 
@@ -355,9 +454,11 @@ class SshTransport:
         with self._lock:
             if self.prepared:
                 return
-            self.run(['mkdir', self.host['work'].replace('/', '\\') if ':' in self.host['work']
-                      else self.host['work']], 60)
+            self.mkdir(self.host['work'])
             self.prepared = True
+
+    def mkdir(self, path):
+        self.run(['mkdir', path.replace('/', '\\') if ':' in path else path], 60)
 
     def _scp(self, *args, timeout=900):
         proc = self._call('scp', ['scp', *self.base, '-q', *args], timeout,
@@ -459,6 +560,9 @@ class AgentHost:
         self.waited = 0.0
         self.facts = None
         self._run = None
+        # When set and the host names an llvm-objdump, the run also aligns the failing functions there
+        # (tools/verifier/host_agent.py), so the caller reads the summaries instead of computing them.
+        self.align = False
 
     def _python(self):
         return list(self.host['python']) if self.host['backend'] == 'ssh' else [sys.executable]
@@ -489,10 +593,12 @@ class AgentHost:
                 self._run = name
                 self.timings['upload'] = self.timings.get('upload', 0) + time.monotonic() - start - waited
                 t0 = time.monotonic()
+                extra = ['--objdump', self.host['objdump']] if self.align and self.host.get('objdump') else []
                 code, out, err = self.transport.run(self._agent(name, 'run', '--bundle', self._remote(name + '.tar'),
                                                                 '--msvc', self.host['msvc'], '--image',
                                                                 self.host['image'], '--loader', self.host['loader'],
-                                                                '--label', self.label), timeout)
+                                                                '--label', self.label, *toolchain_args(self.host),
+                                                                *extra), timeout)
                 self.timings['run'] = self.timings.get('run', 0) + time.monotonic() - t0
         finally:
             for path in paths:
@@ -614,7 +720,7 @@ class BatchHost:
                     self._python() + ['-I', self._remote(name + '.py'), 'batch', '--run', self._remote(name),
                                       '--bundle', self._remote(name + '.tar'), '--msvc', self.host['msvc'],
                                       '--image', self.host['image'], '--loader', self.host['loader'],
-                                      '--label', self.label, '--jobs', str(jobs)], timeout)
+                                      '--label', self.label, '--jobs', str(jobs), *toolchain_args(self.host)], timeout)
                 self.timings['run'] = self.timings.get('run', 0) + time.monotonic() - t0
             if code != 0:
                 raise RunnerError(f'{self.label}: batch agent exit {code}' + (' (timeout)' if code == 124 else '')
@@ -704,15 +810,18 @@ def probe(host, transport=None, timeout=300):
     python = list(host['python']) if host['backend'] == 'ssh' else [sys.executable]
     remote = transport.join(host['work'], name)
     with tempfile.TemporaryDirectory() as tmp:
-        paths = make_bundle(tmp, name, {'pinned.sha256': HERE / 'pinned.sha256',
-                                        'target.json': REPO / 'builds' / 'target.json'})
+        blobs = {'pinned.sha256': HERE / 'pinned.sha256', 'target.json': REPO / 'builds' / 'target.json'}
+        for tid in (host.get('toolchains') or {}):
+            if (HERE / 'pinned' / f'{tid}.sha256').is_file():
+                blobs[f'pinned-{tid}.sha256'] = HERE / 'pinned' / f'{tid}.sha256'
+        paths = make_bundle(tmp, name, blobs)
         transport.prepare()
         transport.put(paths, host['work'])
     agent = [*python, '-I', remote + '.py']
     try:
         code, out, err = transport.run(agent + ['probe', '--run', remote, '--bundle', remote + '.tar', '--msvc',
-                                                host['msvc'], '--image', host['image'], '--loader', host['loader']],
-                                       timeout)
+                                                host['msvc'], '--image', host['image'], '--loader', host['loader'],
+                                                *toolchain_args(host)], timeout)
     finally:
         transport.run(agent + ['clean', '--run', remote], 120)
     fields = dict(line.split('=', 1) for line in out.splitlines() if '=' in line)
@@ -722,20 +831,156 @@ def probe(host, transport=None, timeout=300):
             'cpus': int(fields['CPUS']) if fields.get('CPUS', '').isdigit() else None,
             'os': fields.get('OS'), 'loader': fields.get('LOADER'), 'python': fields.get('PYTHON'),
             'running': int(fields['RUNNING']) if fields.get('RUNNING', '').isdigit() else None,
-            'compiler_sha256': json.loads(fields['COMPILER']) if fields.get('COMPILER') else {}}
+            'compiler_sha256': json.loads(fields['COMPILER']) if fields.get('COMPILER') else {},
+            'toolchains': json.loads(fields['TOOLCHAINS']) if fields.get('TOOLCHAINS') else {}}
 
 
 # ------------------------------------------------------------------ selection
 
 
-def for_attempt(config=None):
-    """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host)."""
+def reachable(host, timeout=8):
+    """True when the host can take an attempt now: a local host always, an ssh host if it answers."""
+    if host['backend'] == 'local':
+        return True
+    if host['backend'] != 'ssh':
+        return False
+    try:
+        proc = subprocess.run(['ssh', '-F', host['ssh_config'], '-o', 'BatchMode=yes',
+                               '-o', f'ConnectTimeout={timeout}', host['ssh_host'], 'echo ok'],
+                              capture_output=True, text=True, timeout=timeout + 5)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return proc.returncode == 0 and 'ok' in proc.stdout
+
+
+def choose_attempt(config, environ=None, probe_fn=None):
+    """(host name, warnings): SR_ATTEMPT_HOST, else the first reachable attempt_prefer entry, else `attempt`.
+
+    A Wine pick while a configured ssh host answers is warned about: that host is usually the
+    faster one and a long drafting session on the slow one is easy to miss.
+    """
+    environ = os.environ if environ is None else environ
+    probe_fn = probe_fn or reachable
+    hosts, warnings = config['hosts'], []
+    forced = environ.get('SR_ATTEMPT_HOST')
+    if forced:
+        if forced not in hosts or hosts[forced]['backend'] == 'ci-hash':
+            raise RunnerError(f'SR_ATTEMPT_HOST={forced!r} is not a configured attempt host '
+                              f'({", ".join(n for n, h in hosts.items() if h["backend"] != "ci-hash")})')
+        return forced, warnings
+    name = None
+    for cand in config.get('attempt_prefer', []):
+        if hosts[cand]['backend'] == 'boat' or probe_fn(hosts[cand]):
+            name = cand
+            break
+        warnings.append(f'preferred attempt host {cand} is not reachable' + (
+            '; wake-up packet sent' if wake(hosts[cand]) else ''))
+    if name is None:
+        name = config['attempt']
+    cap = local_load.limit(environ, config.get(local_load.KEY))
+    if cap and hosts[name]['backend'] == 'local':
+        # An orchestrator-only machine sends the work away first and runs it here only when no runner answers.
+        for other, h in hosts.items():
+            if h['backend'] == 'ssh' and probe_fn(h):
+                warnings.append(f'this machine is capped at {cap} heavy local jobs (local_max_heavy); the attempt '
+                                f'goes to {other} instead of {name}')
+                name = other
+                break
+        else:
+            warnings.append(f'no remote runner answers; the attempt runs here on {name}, one of {cap} heavy local slots')
+    if hosts[name].get('loader') == 'wine':
+        for other, h in hosts.items():
+            if other != name and h['backend'] == 'ssh' and probe_fn(h):
+                warnings.append(f'attempt runs on {name} (Wine, slow) but {other} is reachable; set '
+                                f'SR_ATTEMPT_HOST={other} or put it in attempt_prefer')
+                break
+    return name, warnings
+
+
+def wake(host):
+    """Send a Wake-on-LAN packet to an ssh host that sets `wake_mac`; True when one was sent.
+
+    Fire and forget: the caller never waits for the machine, so a sleeping host costs the current
+    run nothing and is up for the next one.
+    """
+    mac = host.get('wake_mac')
+    if not mac:
+        return False
+    import socket
+    raw = bytes.fromhex(re.sub(r'[:-]', '', mac))
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            sock.sendto(b'\xff' * 6 + raw * 16, ('255.255.255.255', 9))
+    except OSError:
+        return False
+    return True
+
+
+def choose_compare(config, environ=None, probe_fn=None):
+    """(host name or None, warnings): SR_COMPARE_HOST, else the first reachable `compare_prefer` entry.
+
+    None means the caller keeps its ordinary host (the `attempt` one). A preferred host that does not
+    answer gets a wake-up packet and is skipped for this run.
+    """
+    environ = os.environ if environ is None else environ
+    probe_fn = probe_fn or reachable
+    hosts, warnings = config['hosts'], []
+    forced = environ.get('SR_COMPARE_HOST')
+    if forced:
+        if forced == 'attempt':
+            return None, warnings
+        if forced not in hosts or hosts[forced]['backend'] != 'ssh':
+            raise RunnerError(f'SR_COMPARE_HOST={forced!r} is not a configured ssh host')
+        return forced, warnings
+    for cand in config.get('compare_prefer', []):
+        if probe_fn(hosts[cand]):
+            return cand, warnings
+        warnings.append(f'preferred compare host {cand} is not reachable' + (
+            '; wake-up packet sent' if wake(hosts[cand]) else ''))
+    return None, warnings
+
+
+def for_toolset(config, host, toolset, probe_fn=None):
+    """`host` if it can build with `toolset`'s compiler, else another configured local or ssh host that can.
+
+    Raises RunnerError naming the toolset when no host has it, so a unit whose recipe names a compiler
+    nobody installed fails before any upload instead of compiling with the wrong one."""
+    if supports(host, toolset):
+        return host
+    probe_fn = probe_fn or reachable
+    for name, other in config['hosts'].items():
+        if other['backend'] in ('local', 'ssh') and supports(other, toolset) and probe_fn(other):
+            return other
+    raise RunnerError(f'no configured runner host has a toolchain for compiler {toolset} '
+                      f'(runners.json "toolchains" on a local or ssh host; tools/verifier/setup_toolchain_u2.sh)')
+
+
+def for_attempt(config=None, report=None, toolset=None):
+    """The host dict attempts run on, or None for the Boat path (no config, or attempt = a boat host).
+
+    `report`, if given, receives the config path, its origin and the chosen host, plus warnings.
+    """
     config = config if config is not None else load()
     if config is None:
         return None
-    host = config['hosts'][config['attempt']]
+    name, warnings = choose_attempt(config)
+    host = config['hosts'][name]
+    if report:
+        origin = config_origin()
+        report(f'runners config: {config_path()} ({origin}); attempt host: {name}')
+        if origin == 'another checkout':
+            warnings.insert(0, "this checkout has no runners config of its own; the main checkout's is used "
+                               '(set SR_RUNNERS_CONFIG to choose another)')
+        for w in warnings:
+            report(f'WARNING: {w}')
     if host['backend'] == 'boat':
         return None
+    if toolset:
+        chosen = for_toolset(config, host, toolset)
+        if chosen is not host and report:
+            report(f'attempt host {chosen["name"]} instead: it has the compiler {toolset} the unit\'s recipe names')
+        host = chosen
     return with_image(host)
 
 
@@ -822,6 +1067,9 @@ def status(config=None, log=print, probe_fn=probe):
         log(f'runners: no config at {config_path()}; attempt and confirm use Boat')
         return 0
     log(f'runners: attempt on {config["attempt"]}; confirm on {", ".join(config["confirm"]) or "(Boat session)"}')
+    cap = local_load.limit(configured=config.get(local_load.KEY))
+    if cap:
+        log(f'  this machine: at most {cap} heavy local jobs at once ({local_load.busy(cap)} held now)')
     bad = 0
     for name, host in config['hosts'].items():
         if host['backend'] == 'boat':
@@ -834,11 +1082,14 @@ def status(config=None, log=print, probe_fn=probe):
             log(f'  {name}: {describe(host)}: unreachable or broken: {exc}')
             bad += 1
             continue
-        ok = p['toolchain'] == 'ok' and p['image'] == 'ok' and p['loader'] == host['loader']
+        extra = p.get('toolchains') or {}
+        ok = (p['toolchain'] == 'ok' and p['image'] == 'ok' and p['loader'] == host['loader']
+              and all(state == 'ok' for state in extra.values()))
         bad += not ok
         log(f'  {name}: {describe(host)}: toolchain {p["toolchain"]} (pinned.sha256), image {p["image"]} '
             f'(builds/target.json), {p["os"]}, python {p["python"]}, {p["cpus"]} CPUs, slots {busy}/'
-            f'{host["max_parallel"]} busy, runs on host {p["running"]}')
+            f'{host["max_parallel"]} busy, runs on host {p["running"]}'
+            + ''.join(f'; toolchain {tid} {state}' for tid, state in sorted(extra.items())))
     return 1 if bad else 0
 
 

@@ -8,7 +8,7 @@ import hashlib
 import json
 import multiprocessing
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import subprocess
 import sys
@@ -22,9 +22,11 @@ from check_source_digest import include_closure, source_digest_cache
 import source_moves
 from lint_reconstruction import lint_tree
 import cost_ledger
+import local_load
 import revision_cache
 from validation_reads import read_bytes, read_text, read_once
 import record_store
+import target_hash_store
 import symbol_map as symbol_maps
 import sparse_checkouts as sparse
 import compare_internal
@@ -116,6 +118,10 @@ REVIEW_VERDICTS = {'approve', 'reject', 'escalate'}
 ESCALATION_CATEGORIES = {'none', 'provenance', 'legal', 'systemic', 'other'}
 MODEL_ID = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]*')
 TOOLCHAIN_PIN = 'tools/verifier/pinned.sha256'
+# Pin files of the compilers a match record may name besides the default one: the compiler is the
+# one the unit's recipe pins by cl.exe hash (tools/verifier/toolsets.py), and these are the only
+# other builds the gate accepts. VS2015 Update 2 is the build of the target's Havok objects.
+SECOND_TOOLCHAIN_PINS = ('tools/verifier/pinned/19.00.23918.sha256',)
 MIN_HOSTS = 2
 
 
@@ -136,12 +142,32 @@ def public_path(name, prefixes, what, root):
     return path.as_posix()
 
 
-def pinned_compiler_sha256(root):
-    for line in read_text(root / TOOLCHAIN_PIN).splitlines():
+def pinned_compiler_sha256(root, pin=TOOLCHAIN_PIN):
+    for line in read_text(root / pin).splitlines():
         parts = line.split()
         if len(parts) == 2 and parts[1] == 'cl.exe':
             return parts[0]
-    raise ValueError(f'{TOOLCHAIN_PIN} names no cl.exe')
+    raise ValueError(f'{pin} names no cl.exe')
+
+
+def toolchain_pin_for(root, cl_sha256):
+    """The pin file whose cl.exe is `cl_sha256` among the ones the gate accepts, else None."""
+    for pin in (TOOLCHAIN_PIN, *SECOND_TOOLCHAIN_PINS):
+        try:
+            if pinned_compiler_sha256(root, pin) == cl_sha256:
+                return pin
+        except (OSError, ValueError):
+            continue
+    return None
+
+
+def recipe_toolchain_pin(root, recipe_rel):
+    """The accepted pin file of the compiler `recipe_rel` names (the default one for a recipe that names none)."""
+    try:
+        digest = json.loads(read_text(root / recipe_rel))['compiler']['binary_sha256']
+    except (OSError, ValueError, KeyError, TypeError):
+        return TOOLCHAIN_PIN
+    return toolchain_pin_for(root, digest) or TOOLCHAIN_PIN
 
 
 def tu_digest(root, paths, method=None):
@@ -254,10 +280,10 @@ def check_match(fn, target, root=None):
             'may name an include path')
 
     pin = record.get('toolchain_pin') or {}
-    require(pin.get('path') == TOOLCHAIN_PIN, f'Match record: toolchain_pin must be {TOOLCHAIN_PIN}')
-    require(pin.get('sha256') == file_sha256(root, TOOLCHAIN_PIN), 'Match record: toolchain pin is stale')
-    require(compiler['binary_sha256'] == pinned_compiler_sha256(root),
-            'Match record: recipe compiler is not the pinned cl.exe')
+    pin_path = toolchain_pin_for(root, compiler['binary_sha256'])
+    require(pin_path is not None, 'Match record: recipe compiler is not the pinned cl.exe')
+    require(pin.get('path') == pin_path, f'Match record: toolchain_pin must be {pin_path}')
+    require(pin.get('sha256') == file_sha256(root, pin_path), 'Match record: toolchain pin is stale')
     require(text(record.get('reproduction')), 'Match record: missing reproduction command')
 
     # The map decides resolution, placement, alias and overlap checks, so the version the runs used
@@ -757,26 +783,39 @@ def _work(fn):
     return outcome, (key, memo.get(key))
 
 
-def _check_functions(entries, target, root):
+def _check_functions(entries, target, root, *, staged=False):
     jobs = int(os.environ.get('SR_CHECK_JOBS') or os.cpu_count() or 1)
+    if staged and local_load.limit() is not None:
+        # Staged validation can hand the slot back between groups without losing its read and digest caches.
+        for start in range(0, len(entries), _CHUNK):
+            with local_load.heavy('staged check', foreground=False):
+                for fn in entries[start:start + _CHUNK]:
+                    yield _check_function(fn, target, root)
+        return
     if jobs < 2 or len(entries) < _PARALLEL_MIN or 'fork' not in multiprocessing.get_all_start_methods():
         for fn in entries:
             yield _check_function(fn, target, root)
         return
     global _WORK
-    _WORK = (target, root)
-    try:
-        with multiprocessing.get_context('fork').Pool(jobs) as pool:
-            memo = _STALE_MEMO.get()
-            for outcome, learned in pool.imap(_work, entries, chunksize=_CHUNK):
-                if memo is not None and learned is not None and learned[1] is not None:
-                    memo[learned[0]] = learned[1]
-                yield outcome
-    finally:
-        _WORK = None
+    # A machine capped by local_max_heavy gets no more workers than the slots it was granted.
+    with local_load.heavy('check', want=jobs, foreground=False) as granted:
+        if granted < 2:
+            for fn in entries:
+                yield _check_function(fn, target, root)
+            return
+        _WORK = (target, root)
+        try:
+            with multiprocessing.get_context('fork').Pool(granted) as pool:
+                memo = _STALE_MEMO.get()
+                for outcome, learned in pool.imap(_work, entries, chunksize=_CHUNK):
+                    if memo is not None and learned is not None and learned[1] is not None:
+                        memo[learned[0]] = learned[1]
+                    yield outcome
+        finally:
+            _WORK = None
 
 
-def validate(data, target, root=None, stale_ok=False):
+def validate(data, target, root=None, stale_ok=False, *, staged=False):
     """Validate the inventory; `stale_ok` (for tools that are about to clear staleness) skips the
     `matched` checks of stale entries instead of failing on them: True for every entry, or a set of
     function ids that may be stale. The result is never acceptance."""
@@ -820,7 +859,7 @@ def validate(data, target, root=None, stale_ok=False):
     # Units share headers and most entries share a unit, so resolving include closures once per
     # validation (not once per entry, per worker) is what keeps a full-inventory pass tolerable.
     with source_digest_cache():
-        for outcome in _check_functions(heavy, target, root):
+        for outcome in _check_functions(heavy, target, root, staged=staged):
             if outcome is not None:
                 stale.append(outcome)
     ordered_ranges = sorted(ranges)
@@ -952,34 +991,43 @@ def background(calls):
         for call, args in calls:
             call(*args)
         return
-    ctx = multiprocessing.get_context('fork')
-    started = []
-    try:
-        # Forked before the validation pool starts any thread, so no child inherits a held lock.
-        for call, args in calls:
-            receive, send = ctx.Pipe(duplex=False)
-            process = ctx.Process(target=_child, args=(send, call, args))
-            process.start()
-            send.close()
-            started.append((process, receive))
-        yield
-        failure = None
-        for process, receive in started:
-            try:
-                kind, value = receive.recv()
-            except EOFError:
-                kind, value = 'err', ValueError('a parallel check ended without a result')
-            process.join()
-            if kind == 'err' and failure is None:
-                failure = value
-        if failure is not None:
-            raise failure
-    finally:
-        for process, receive in started:
-            if process.is_alive():
-                process.terminate()
-            process.join()
-            receive.close()
+    # The body and each forked check are processes: all of them must fit the machine's heavy-job slots,
+    # otherwise the checks run in order after the body, in this one process.
+    with local_load.heavy('check', want=1 + len(calls), foreground=False) as granted:
+        if granted < 1 + len(calls):
+            yield
+            for call, args in calls:
+                call(*args)
+            return
+        ctx = multiprocessing.get_context('fork')
+        started = []
+        try:
+            # Forked before the validation pool starts any thread, so no child inherits a held lock.
+            for call, args in calls:
+                receive, send = ctx.Pipe(duplex=False)
+                process = ctx.Process(target=_child, args=(send, call, args))
+                process.start()
+                send.close()
+                started.append((process, receive))
+            with local_load.reserved(len(started)):
+                yield
+            failure = None
+            for process, receive in started:
+                try:
+                    kind, value = receive.recv()
+                except EOFError:
+                    kind, value = 'err', ValueError('a parallel check ended without a result')
+                process.join()
+                if kind == 'err' and failure is None:
+                    failure = value
+            if failure is not None:
+                raise failure
+        finally:
+            for process, receive in started:
+                if process.is_alive():
+                    process.terminate()
+                process.join()
+                receive.close()
 
 
 @read_once()
@@ -1008,7 +1056,7 @@ def _load_uncached(staged=False):
         subprocess.check_call(['git', 'checkout-index', '--all', f'--prefix={tmp}/'], cwd=ROOT)
         root = Path(tmp)
         data = validate(json.loads(read_text(root / 'data/progress.json')),
-                        json.loads(read_text(root / 'builds/target.json')), root)
+                        json.loads(read_text(root / 'builds/target.json')), root, staged=True)
         lint(root)
         check_index(root, data)
         check_costs(root, data)
@@ -1037,7 +1085,8 @@ def inspect_payload(name, payload, mode='100644'):
     limit_mib = 32 if large else 1
     require(len(payload) <= limit_mib * 1024 * 1024, f'{name}: exceeds {limit_mib} MiB limit')
     require(b'\0' not in payload, f'{name}: binary content')
-    require(not re.search(rb'(?im)^\s*// PRIVATE DECOMPILER HINT:', payload),
+    require(b'// private decompiler hint:' not in payload.lower()
+            or not re.search(rb'(?im)^\s*// PRIVATE DECOMPILER HINT:', payload),
             f'{name}: private decompiler output/project')
     try:
         payload.decode('utf-8')
@@ -1083,17 +1132,21 @@ def anonymity_terms(root=ROOT):
         require(isinstance(terms, list) and terms and all(text(t) for t in terms), '')
         tokens = data.get('forbidden_tokens', [])
         require(isinstance(tokens, list) and all(text(t) for t in tokens), '')
+        tokens = [token.casefold() for token in tokens]
         return (tuple(t.casefold() for t in terms)
-                + tuple(re.compile(r'(?<![a-z0-9_])' + re.escape(t.casefold()) + r'(?![a-z0-9_])')
-                        for t in tokens))
+                + tuple((token, re.compile(r'(?<![a-z0-9_])' + re.escape(token) + r'(?![a-z0-9_])'))
+                        for token in tokens))
     except (OSError, ValueError, KeyError, TypeError):
         raise ValueError('Anonymous sibling guard: private config missing or invalid') from None
 
 
 def check_anonymity(name, payload, terms):
     """Case-insensitive path/content check with a diagnostic that cannot expose an identity."""
+    if not terms:
+        return
     content = name.casefold() + '\n' + payload.decode('utf-8', 'replace').casefold()
-    require(not any(term in content if isinstance(term, str) else term.search(content) for term in terms),
+    require(not any(term in content if isinstance(term, str)
+                    else term[0] in content and term[1].search(content) for term in terms),
             'Anonymous sibling guard: forbidden private identity in publication tree (details withheld)')
 
 
@@ -1130,6 +1183,8 @@ def publication_policy_path(root, name, variable):
 
 
 def check_private_workflow(name, payload, terms):
+    if not terms:
+        return
     content = name.casefold() + '\n' + payload.decode('utf-8', 'replace').casefold()
     require(not any(term in content for term in terms),
             'Private workflow guard: forbidden private value in publication tree (details withheld)')
@@ -1172,7 +1227,15 @@ def check_git(root=ROOT, staged=False, content_revision=None, only=None):
         inspect_payload(name, payload, mode)
 
     def scan(name, payload, mode):
-        if record_store.is_pack_name(name):
+        if target_hash_store.BINARY.fullmatch(name):
+            # Rows are numbers and digests, so the structure is the whole check: a well-formed shard
+            # of the right size holds nothing a text scan could judge.
+            require(mode in {'100644', '100755'} and len(payload) <= 1024 * 1024, f'{name}: invalid target-hash shard')
+            try:
+                target_hash_store.rows(payload)
+            except (ValueError, KeyError, TypeError, target_hash_store.struct.error):
+                raise ValueError(f'{name}: invalid target-hash shard') from None
+        elif record_store.is_pack_name(name):
             # A shard is binary, so each record inside is judged as the file it replaces.
             require(mode in {'100644', '100755'} and len(payload) <= 8 * 1024 * 1024,
                     f'{name}: invalid record shard')
@@ -1235,30 +1298,32 @@ def check_git(root=ROOT, staged=False, content_revision=None, only=None):
     return count
 
 
-# Staged additions that need no inventory, index or picture re-check: a new unit is judged by the
-# source lint and the blob scan alone, and those read nothing that another unit can change.
-SCOPED_NOTES = re.compile(r'docs/cookbook-notes/[A-Za-z0-9_.-]+\.md')
+# Prose edits keep existing evidence paths intact. Infrastructure-only changes get the full
+# validation and tests in CI, so the local publication guard only needs their staged blobs.
+STAGED_PROSE = re.compile(r'(?:docs|findings|tools|tests)/.+\.md|(?:README|CONTRIBUTING|AGENTS|LEGAL)\.md')
+STAGED_INFRA = re.compile(r'(?:tools|tests)/.+\.py|\.github/workflows/[^/]+\.ya?ml')
 
 
 def scoped_staged_paths(root=ROOT):
-    """The staged paths when the change is only new unit sources (or cookbook notes), else None.
-
-    Anything else (an edit or deletion of a tracked file, metadata, tools, recipes, generated
-    files) can change what another entry's validation sees, so it keeps the whole-tree check.
-    """
+    """Paths for a staged blob scan and any new-unit lint, or None for full validation."""
     out = subprocess.check_output(['git', 'diff', '--cached', '--name-status', '--no-renames', '-z'],
                                   cwd=root).decode('utf-8').split('\0')
     fields = [f for f in out if f]
     if not fields or len(fields) % 2:
         return None
     from lint_reconstruction import SOURCE
-    names = []
-    for status, name in zip(fields[::2], fields[1::2]):
-        # The lint's own shape rule decides what a unit source is; a notes file needs the blob scan only.
-        if status != 'A' or not (SOURCE.fullmatch(name) or SCOPED_NOTES.fullmatch(name)):
-            return None
-        names.append(name)
-    return names
+    import draft_bundle
+    import giveup
+    rows = list(zip(fields[::2], fields[1::2]))
+    if any(status not in ('A', 'M') for status, _ in rows):
+        return None
+    names = fields[1::2]
+    if all(STAGED_PROSE.fullmatch(n) or STAGED_INFRA.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n)
+           or draft_bundle.owner(n) for n in names):
+        return names
+    if all(STAGED_PROSE.fullmatch(n) or (s == 'A' and SOURCE.fullmatch(n)) for s, n in rows):
+        return names
+    return None
 
 
 def scoped_context(root, names):
@@ -1270,26 +1335,46 @@ def scoped_context(root, names):
     """
     from lint_reconstruction import LICENCE_TEXT
     tracked = set(subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode('utf-8').split('\0'))
-    wanted = {'builds/target.json', LICENCE_TEXT} | {t for t in tracked if t.startswith('reconstruction/recipes/')}
+    wanted = {'builds/target.json', LICENCE_TEXT} & tracked
+    wanted.update(t for t in tracked if t.startswith('reconstruction/recipes/'))
     for name in names:
         blob = subprocess.check_output(['git', 'show', f':{name}'], cwd=root).decode('utf-8', 'replace')
         base = name.rsplit('/', 1)[0]
+        wanted.update({str(PurePosixPath(name).with_suffix('.h'))} & tracked)
         for word in set(re.findall(r'[A-Za-z0-9_][A-Za-z0-9_./+-]*', blob)):
-            wanted.update(c for c in (word, f'reconstruction/{word}', f'{base}/{word}', f'{base}/{name[len(base) + 1:].split(".")[0]}.h')
+            wanted.update(c for c in (word, f'reconstruction/{word}', f'{base}/{word}')
                           if c in tracked)
     return sorted(wanted - set(names))
 
 
-def check_staged_scoped(root, names):
-    """Blob scan plus source lint for the staged units only; (files scanned, None)."""
+def check_staged_sources(root, sources):
+    """Run source lint and prereview against the staged source and its dependencies."""
+    if not sources:
+        return
+    import prereview
     import staged_exports
-    count = check_git(root, staged=True, only=names)
-    sources = [n for n in names if n.startswith('reconstruction/')]
     with staged_exports.directory(root) as tmp:
-        wanted = [*names, *scoped_context(root, names)]
+        wanted = [*sources, *scoped_context(root, sources)]
         subprocess.run(['git', 'checkout-index', '-z', f'--prefix={tmp}/', '--stdin'], cwd=root,
                        input='\0'.join(wanted).encode('utf-8') + b'\0', check=True)
-        lint(Path(tmp), sources)
+        exported = Path(tmp)
+        lint(exported, sources)
+        problems = prereview.staged_problems(root, exported, sources)
+        require(not problems, 'Prereview: ' + '\n'.join(problems))
+
+
+def check_staged_scoped(root, names):
+    """Scan staged blobs and run source lint for staged new units."""
+    count = check_git(root, staged=True, only=names)
+    import draft_bundle
+    import giveup
+    if any(draft_bundle.owner(n) or giveup.RECORD_FILE.fullmatch(n) for n in names):
+        head = subprocess.check_output(['git', 'write-tree'], cwd=root).decode().strip()
+        problems = giveup.git_pair_problems(root, names, head, head)
+        if problems:
+            raise ValueError('\n'.join(f'{name}: {", ".join(codes)}' for name, codes in problems))
+    sources = [n for n in names if n.startswith('reconstruction/')]
+    check_staged_sources(root, sources)
     return count, None
 
 
@@ -1300,13 +1385,17 @@ def run(staged=False, then=None, full=False):
     builds from the validated data does not scan or validate again.
     """
     if staged and not full and then is None:
-        names = scoped_staged_paths()
+        names = scoped_staged_paths(ROOT)
         if names:
             return check_staged_scoped(ROOT, names)
     # Check anonymity before metadata/lint diagnostics could quote offending content.
     with sparse.full(ROOT):
         content_revision = []
         count = check_git(staged=staged, content_revision=content_revision)
+        if staged:
+            names = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '--no-renames',
+                                             '--diff-filter=AM', '-z', '--', 'reconstruction/'], cwd=ROOT)
+            check_staged_sources(ROOT, [n for n in names.decode('utf-8').split('\0') if n.endswith(('.cpp', '.h'))])
         with source_digest_cache():
             data = load(staged=staged, publication_revision=content_revision[0] if content_revision else None)
             if then is not None:
@@ -1318,15 +1407,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--staged', action='store_true', help='Check index blobs and staged metadata')
     parser.add_argument('--full', action='store_true',
-                        help='With --staged, check the whole index instead of only the staged new units')
+                        help='With --staged, force a complete check of the index')
     args = parser.parse_args()
     try:
         count, data = run(args.staged, full=args.full)
-    except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError) as exc:
+    except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError, local_load.LoadGuardError) as exc:
         print(f'FAIL: {exc}', file=sys.stderr)
         return 1
     if data is None:
-        print(f'PASS: {count} staged files (scan and source lint; inventory unchanged, use --full for the whole index). '
+        print(f'PASS: {count} staged files (publication scan, source lint and prereview where applicable). '
               'No Skyrim byte comparison performed.')
         return 0
     print(f'PASS: metadata and {count} tracked files. No Skyrim byte comparison performed.')

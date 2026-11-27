@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x51c670",
+  "records": [
+    {
+      "category": "control-flow",
+      "tried": [
+        "Retained the strongest scored source from the prior attempts"
+      ],
+      "still_differs": "The retained comparison did not pass",
+      "suspected_cause": "Control flow or function extent differs",
+      "best_distance": 10.5,
+      "model": "unknown",
+      "harness": "historical comparison",
+      "lane": "internal",
+      "best_code": {
+        "kind": "draft",
+        "ref": "drafts/sse-steam-1-7-104/51c670.cpp"
+      }
+    }
+  ]
+}

@@ -38,19 +38,20 @@ def blob(root, rev, name):
         return None
 
 
+def file_problems(name, new, old):
+    if new is None:
+        return []
+    header = leading_comment(new)
+    old_header = leading_comment(old) if old is not None else None
+    if header == old_header:
+        return []
+    shown = name if SAFE.fullmatch(name) else 'reconstruction/<unprintable path>'
+    return header_budget_problems(shown, header, old_header)
+
+
 def check(root, base, head):
-    problems = []
-    for name in changed_units(root, base, head):
-        new = blob(root, head, name)
-        if new is None:
-            continue
-        old = blob(root, base, name)
-        header = leading_comment(new)
-        if old is not None and leading_comment(old) == header:
-            continue
-        shown = name if SAFE.fullmatch(name) else 'reconstruction/<unprintable path>'
-        problems += header_budget_problems(shown, header, leading_comment(old) if old is not None else None)
-    return problems
+    return [problem for name in changed_units(root, base, head)
+            for problem in file_problems(name, blob(root, head, name), blob(root, base, name))]
 
 
 def main(argv=None):

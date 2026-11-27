@@ -2,7 +2,15 @@
 
 `tools/verifier/permute.py` searches for a source spelling of one near-miss function that compiles
 to the target's bytes, with no model in the loop (proposal P3 in [ideas-next.md](ideas-next.md),
-in the spirit of decomp-permuter). Run it on a near-miss before an Engineer triages it, within the ordinary attempt budget.
+in the spirit of decomp-permuter).
+
+Track record: about 150 bounded runs over roughly 70 register/schedule and control-flow near-misses,
+over 80,000 scored candidates, and no exact state. Every such near-miss that closed was closed by a
+source change found by reading the target: a parameter type or order, a store inside or after a
+branch, a helper body the unit could not see. So it is a hint generator, not a closing step. Before
+running it, check argument-register roles, store placement relative to branches and which callee
+bodies the unit defines (the matcher skill's levers). A short run (at most 150 s) is worth it only
+when those checks are done and its best states may point at a spelling to try by hand.
 A permuter result is a draft like any other. It is evidence of nothing until `attempt` passes on
 the winning source, the lint passes, and a Reviewer approves it under the rule in
 [verification.md](verification.md).
@@ -10,21 +18,35 @@ the winning source, the lint passes, and a Reviewer approves it under the rule i
 ## Use
 
 ```sh
-tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> --dry-run   # local: lint and mutation sites, no Boat time
-tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> [--budget 600] [--seed 1]
+tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> --dry-run   # local: lint and mutation sites, no host time
+tools/verifier/permute.py run .local/tasks/<task-id> --rva 0x<rva> [--budget 600] [--seed 1] [--batch 16] [--jobs N]
 ```
 
 The task directory is the one `attempt` uses (task.json, symbols.json); the function is found in
-the compiled file by its community name (`--function Class::Name` overrides it) and must have
+the compiled file by its community name (`--function Class::Name` overrides it; when the community name is a placeholder such as `Class::Function<rva>`, the unit's own `// 0x<rva> Class::Method` header line and then the name of the bound symbol are used, and overloads are told apart by the declared parameters) and must have
 exactly one definition there. `--source-root DIR` reads `reconstruction/` from a private copy
 instead of the checkout, so a near-miss draft never has to be in the working tree. The run uses
-the standing machine like `attempt` (it resumes it unless `--no-resume`), works in
-`~/tasks/permute/<task-id>-0x<rva>` (`--remote-root` to change), and removes that directory at the end.
+the runner host that `attempt` uses (`attempt` in `.local/verifier/runners.json`, or
+`SR_RUNNERS_CONFIG`; there is no other backend, and the run stops if none is configured).
+**Scoring** runs on the host when its runners entry has `"objdump": "<path to llvm-objdump>"` (a path
+without spaces; the host's own image is used): the host compiles and scores in `--jobs` processes and
+returns rows only, so the calling machine only mutates, lints and orchestrates. Without that key the
+objects come back and are scored on the calling machine, which then needs `llvm-objdump` and the local
+image (`.local/verifier/config.json`). The local image is needed in both cases to bind the baseline.
+**Bind hints count.** After the baseline compile the run fetches its object and binds it in a scratch copy
+of the task with the task's `bind-hints.json`, the pack and the target image. It uses the same
+alignment-derived hints as `attempt` when local `llvm-objdump` is available. With host-only scoring,
+run `attempt` first if the baseline has unbound references and no derived hints. The resulting map, with its thread-local entries (a SECREL
+field is scored as the declared offset plus its addend) and `_tls_index`, is what every candidate is
+scored against. The run saves binding details and unresolved reference names in the private
+`bind-report.txt` beside `baseline.obj`. It reads the unit's `// CI hash:` lines and header
+declarations from the selected source tree.
+The host keeps its files under its work directory for the run and removes them at the end.
 
 Outputs go to `<task-dir>/permute/0x<rva>/` (private): `best.cpp` (the whole unit with the best
 body), `history.jsonl` (every scored candidate: parent, mutations applied, distance and its
 components, object hash, compile seconds), `result.json` (start and best distance, candidates,
-timings, candidates per Boat minute, comparator result) and `final/` (the comparator's files for
+timings, candidates per minute, comparator result) and `final/` (the comparator's files for
 a distance-0 winner). Exit 0 only when the comparator passed. Then copy the body into the unit,
 tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `history.jsonl`.
 
@@ -44,6 +66,8 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    | `compare`, `commute`, `test-form` | R7 | compare direction and operand order; commutative operands; `!x` versus `x == 0`, `nullptr` versus `0` |
    | `increment` | | `++i`, `i++`, `i += 1`, `i = i + 1` |
    | `out-init` | cookbook 9 | a local whose address is passed keeps or drops its zero initialiser |
+   | `zero-form` | | how a zero is materialised: a never-written zero local read at the use, the literal at the use, or a new `zero_` local standing for one literal |
+   | `return-through` | cookbook 2 | a switch arm `x = e; break;` becomes `return e;`, so that path skips the code after the switch |
 
    Some rewrites can change meaning (a width, a re-read across a call). That does not matter
    for the search, because only identical bytes count, but the Reviewer still reads the result
@@ -51,22 +75,38 @@ tidy its spelling, and run `attempt`; the Reviewer sees the mutation list from `
    steps are recorded as `<rule>@<n>`). Cookbook rules 3 to 5, 7, 8, 10 and 11 add helpers, parameters or class
    members; they are outside the one body and are left to the Drafter or Engineer.
 2. **Lint gate.** Every candidate passes `tools/lint_reconstruction.py` before it is compiled;
-   the unchanged unit must pass too, or the run stops before using the machine.
-3. **Batches.** The candidate bodies of a batch go up as one compressed file (`boat scp`), and
-   one `boat exec` per batch returns one sanitized JSON line per candidate: distance and components from
-   `align.py`, instruction counts, a 16-hex hash of the function's code and relocations, compile
-   seconds, error codes on failure. The machine compiles `--jobs` candidates at once (default 4,
-   its vCPUs), each worker in its own hard-linked copy of the synced unit, with the recipe's flags
-   and the environment `unit_build.py` uses. Compiler output and listings stay on the machine.
-   File upload is the transport to use. `--transport inline` exists but is not to be used: it
-   puts the compressed candidate source in the exec command line, so reconstructed source would
-   sit in the provider's command log (G5 covers placing it on the machine, not in Boat's
-   records). Its throughput below is kept as a measurement only.
+   the unchanged unit must pass too, or the run stops before using the host.
+3. **Batches.** A first `unit_build` run of the unchanged unit on the host checks the toolchain
+   and image pins exactly as `attempt` does (so the unit's `// Recipe:` and the pinned compiler
+   apply) and leaves the run directory. Each batch is then one upload of the candidate sources
+   (an xz archive; near-identical sources cost almost nothing), one agent command that compiles
+   them `--jobs` at a time (default: the host's `max_parallel`; the first slot is waited for, the
+   others are taken only if free) in per-worker copies of the unit, with the recipe's flags and
+   the environment `unit_build.py` uses, and one download of the objects. The host needs no
+   objdump and no Python packages unless it also scores (above). The objects are disassembled and
+   scored on the host, or on the calling machine: distance and components from `align.py`, instruction counts, a 16-hex hash of the
+   function's code and relocations. Compiler output stays on the host; a failed compile reports
+   its error codes only. A score row needs only the alignment (`align.analyse`), not the report, so
+   the rule hints, behaviour tally and listing are not built, and the target's instructions are built
+   once per scoring process. The alignment fills its table only within a band of diagonals and widens
+   the band until the cost found is below the bound for any path outside it, which gives the full
+   table's alignment, ties included (`tests/test_align.py` compares the two). A large function's
+   score was 3 to 5 s of Python; it is now about 0.15 s.
 4. **Search.** Greedy hill-climb on (distance, exact edits, instruction-count difference), with
    sideways moves to new objects of equal score, a random restart from the best after
    `--restart-after` batches without progress, and a seen-set of object hashes, so a spelling
    that compiles to known code does not count as progress. Stops at distance 0, at `--budget`
-   seconds of wall time on the machine, or after `--patience` batches without a new best.
+   seconds of wall time (time spent waiting out a host outage is not counted), after `--patience`
+   rounds without a new best (default 30; `0` never stops for that reason, only at the budget), or as
+   `pool-exhausted`. A round with few new sources (under a quarter of a batch) or no new object code
+   widens the search by one more stacked mutation per candidate, up to 8; `--dry-limit` such rounds in a
+   row (default 4) at that width end the run, unless `--reseeds` (default 2) first restarts it from one
+   of the best distinct objects seen with the widening reset, so one exhausted neighbourhood does not
+   cut a long `--patience` short.
+   After every round `history.jsonl`, `best.cpp` and a partial `result.json` (status `running`)
+   are rewritten, so a run that dies keeps what it found (status `aborted: <error>`). A dropped
+   connection repeats the whole batch with a 5 s to 120 s backoff (and starts the host's run
+   directory again first, in case the host restarted) for up to `--outage` seconds (default 1800).
 5. **Confirmation.** A distance-0 winner is compiled and compared once more by `unit_build.py`
    (pinned toolchain and image checks, include closure, `verify_function.py`). Only that report
    says pass. Distance 0 alone is not a pass: `align.py` is run without the unwind infos.
@@ -75,14 +115,14 @@ The run's wall time is queued to the cost ledger as stage `draft`, as `attempt` 
 default budget is 600 seconds per function (`--budget 600`), capped at
 20 hours per 1,000 functions.
 
-## Measured (sse-steam-1-7-104, recipe msvc-19.16.27054-o2, standing machine, 4 vCPU)
+## Measured on the retired Boat backend (sse-steam-1-7-104, recipe msvc-19.16.27054-o2, 4 vCPU)
 
 First trial, nine runs, about 6 machine minutes in total (measured wall time of the runs; the
 machine was shared with other agents' compiles):
 
 - **Throughput.** One candidate compiles and scores in a median 0.2 to 0.34 s of a worker's time;
   a batch of 32 on 4 workers takes 1.5 to 2.7 s on the machine. With `--transport inline`, 490
-  to 550 candidates per Boat minute (one exec per batch, about 1 s of round trip). With the
+  to 550 candidates per minute (one exec per batch, about 1 s of round trip). With the
   default `scp`, 220 to 340 per Boat minute: the upload adds about 2.5 s per batch. The
   unchanged-unit `unit_build` run at the start costs 2.3 to 5.4 s. The 10-minute budget is
   therefore 2,000 to 5,000 candidates, far more than the rules generate for a small body: most

@@ -153,7 +153,7 @@ class MergeMainTests(unittest.TestCase):
         # No new comment: only an existing sticky one is brought up to date.
         self.assertEqual([create for _, create in bot.said], [False])
         self.assertTrue(state.get('done'))
-        self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve()}'])
+        self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve().as_posix()}'])
 
     def test_a_clean_merge_of_main_also_pushes_a_merge_commit(self):
         head = self.pr_commit(extra={'docs/pr.md': ['x\n']})
@@ -177,7 +177,7 @@ class MergeMainTests(unittest.TestCase):
         self.assertEqual(len(bot.said), 1)
         self.assertIn(pr_bot.CONFLICT_COMMENT, bot.said[0][0])
         self.assertTrue(bot.said[0][1])
-        self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve()}'])
+        self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve().as_posix()}'])
 
     def test_a_conflict_outside_reconstruction_is_not_resolved_even_when_it_is_only_comments(self):
         head = self.pr_commit(extra={'tools/x.py': ['# pr\n']})
@@ -207,7 +207,7 @@ class MergeMainTests(unittest.TestCase):
         self.assertIsNone(self.bot(can_modify=False).merge_main_into_branch(dict(shared.PR, headRefOid=head)))
         self.assertIsNone(self.bot(head='c' * 40).merge_main_into_branch(dict(shared.PR, headRefOid=head)))
         self.assertEqual(self.fork_head(), head)
-        self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve()}'])
+        self.assertEqual(self.worktrees(), [f'worktree {self.root.resolve().as_posix()}'])
 
     def test_a_branch_in_the_repository_itself_needs_no_maintainer_edit_flag(self):
         head = self.pr_commit(header=['// Evidence: pr\n'])

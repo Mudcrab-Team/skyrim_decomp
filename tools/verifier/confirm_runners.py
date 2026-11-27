@@ -31,6 +31,7 @@ import uuid
 import confirm_session
 import pipeline
 import runners
+import toolsets
 from pipeline import REPO, PipelineError
 
 # docs/verification.md, "Runner hosts", admits records from these hosts.
@@ -339,6 +340,13 @@ def run(base, task_dirs, replace=False, out=None, log=print, hosts=None, resume=
     ids = [t['task_id'] for t, _, _ in prepared]
     if len(set(ids)) != len(ids):
         raise PipelineError('a task id is listed twice')
+    # Both hosts must build a unit with the compiler its recipe names; a host without it would
+    # either fail every such unit or, worse, be asked to stand in with another compiler.
+    for task, _, _ in prepared:
+        lacking = [h['host_id'] for h in hosts if not runners.supports(h, task.get('toolset', toolsets.DEFAULT))]
+        if lacking:
+            raise PipelineError(f'{task["task_id"]}: confirm host(s) {", ".join(lacking)} have no toolchain for compiler '
+                                f'{task["toolset"]} (runners.json "toolchains")')
     log, handle, log_path = open_log(log)
     try:
         return _run(base, prepared, hosts, replace, out, log, log_path, resume, probe_fn, started)

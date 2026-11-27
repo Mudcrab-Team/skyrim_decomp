@@ -43,7 +43,8 @@ import runners  # noqa: E402
 BASELINE = '19.16.27054'
 # toolset id -> (what the Rich header calls the nearest build, or the family it stands in for)
 TOOLSETS = {
-    '19.00.24247': 'VS2015 Update 3 (Rich 24215 U3.1 and 23918 U2 are the targets; stand-in)',
+    '19.00.23918': 'VS2015 Update 2 (Rich 23918, the Havok objects; tools/verifier/setup_toolchain_u2.sh)',
+    '19.00.24247': 'VS2015 Update 3 (Rich 24215 U3.1 is the target; stand-in)',
     '19.11.25548': 'VS2017 15.4 (Rich 25547)',
     '19.12.25835': 'VS2017 15.5',
     '19.13.26132': 'VS2017 15.6',
@@ -72,7 +73,7 @@ def toolset_recipe(recipe, version):
     name = Path(recipe).name
     if not name.startswith(stem):
         raise PipelineError(f'recipe {recipe} is not named for {BASELINE}; the sweep cannot derive its sibling')
-    return str(Path(recipe).with_name(name.replace(stem, f'msvc-{version}', 1)))
+    return Path(recipe).with_name(name.replace(stem, f'msvc-{version}', 1)).as_posix()
 
 
 def overlay_attempt(files, task_dir, number=None):
@@ -153,19 +154,25 @@ def score_function(fdir, obj, fn, symbols, objdump, image):
 
 def sweep_toolset(base_host, tasks, files_by_task, version, out, root, log):
     """{task id: unit record} for every task under one toolset."""
-    if base_host['backend'] == 'ssh':
+    configured = (base_host.get('toolchains') or {}).get(version)
+    if configured:
+        # A toolchain the host's own config names (runners.json "toolchains") wins over the sweep layout.
+        host = dict(base_host, msvc=configured)
+    elif base_host['backend'] == 'ssh':
         # The remote toolsets sit next to the host's pinned toolchain under sweep/msvc-<version>; the
         # pinned build is the host's own.
         remote = base_host['msvc'].rsplit('/', 1)[0] + f'/sweep/msvc-{version}'
         host = dict(base_host, msvc=base_host['msvc'] if version == BASELINE else remote)
     else:
         host = dict(base_host, msvc=str(toolchain_dir(root, version).resolve()))
+    if version != BASELINE:
+        # The unit's spec names this toolset, so the host agent looks it up among the host's toolchains.
+        host = dict(host, toolchains=dict(host.get('toolchains') or {}, **{version: host['msvc']}))
     units, dests, variants = [], {}, {}
     for task in tasks:
         sweep_id = f'{task["task_id"][:38]}-s{version.replace(".", "")[-5:]}'
         variant = dict(task, task_id=sweep_id, recipe=toolset_recipe(task['recipe'], version))
-        if version != BASELINE:
-            variant['pins'] = PIN_NAME.format(version)
+        variant['toolset'] = version
         units.append((variant, files_by_task[task['task_id']][version]))
         dests[sweep_id] = Path(out) / task['task_id'] / version
         variants[sweep_id] = task

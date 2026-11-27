@@ -1,4 +1,6 @@
 """A function with no accepted record reaches the CI host: its symbol is found by hash, never supplied."""
+from contextlib import redirect_stdout
+import io
 import json
 from pathlib import Path
 import sys
@@ -57,6 +59,16 @@ class HeaderClaims(Fixture):
         got = ci.requests(self.root, [HEADER], {})
         self.assertEqual(got, [dict(unit=UNIT, rva=0x1010, symbol=None, recipe=ci.DEFAULT_RECIPE)])
 
+    def test_resolves_only_possible_transitive_includers_of_changed_paths(self):
+        self.write('reconstruction/shared/Leaf.h', 'int f();\n')
+        self.write(HEADER, '#include "../shared/Le\\\naf.h"\n')
+        self.write('reconstruction/unrelated/Leaf.h', 'int g();\n')
+        self.write('reconstruction/unrelated/Other.cpp', '#include "Leaf.h"\n')
+        self.write('reconstruction/unrelated/Broken.cpp', '#include "unrelated.h"\n')
+        leaf = 'reconstruction/shared/Leaf.h'
+        got = ci.requests(self.root, [leaf], {})
+        self.assertEqual({r['unit'] for r in got}, {UNIT})
+
     def test_ci_hash_hint_accepts_optional_space_after_the_colon(self):
         for spacing in ('', ' ', '  ', '\t'):
             with self.subTest(spacing=spacing):
@@ -68,6 +80,21 @@ class HeaderClaims(Fixture):
     def test_the_unit_names_its_recipe(self):
         self.write(UNIT, f'// recipe {RECIPE}\n#include "Fixture.h"\nint f() {{ return 1; }}\n')
         self.assertEqual(ci.requests(self.root, [HEADER], {})[0]['recipe'], RECIPE)
+
+    def test_explicit_request_and_other_claims_use_the_same_declared_recipe(self):
+        self.write(UNIT, f'// Recipe: {RECIPE}\n// CI hash: 0x1020 ?g@@YAHXZ\n#include "Fixture.h"\n')
+        by_rva = {r['rva']: r for r in ci.requests(self.root, [UNIT], {})}
+        self.assertEqual({r['recipe'] for r in by_rva.values()}, {RECIPE})
+        self.assertEqual(by_rva[0x1020]['symbol'], '?g@@YAHXZ')
+
+    def test_regression_uses_the_recipe_declared_at_each_revision(self):
+        head = self.root / 'head'
+        refs = [dict(unit=UNIT, rva=0x1010, symbol=None, recipe=RECIPE)]
+        with patch.object(ci, 'compile_requests', return_value=[]) as compile_requests:
+            ci.regress(self.root, head, refs, None, self.root / 'work', {})
+        head_call, base_call = compile_requests.call_args_list
+        self.assertEqual(head_call.args[2], refs)
+        self.assertEqual(base_call.args[2], [dict(refs[0], recipe=ci.DEFAULT_RECIPE)])
 
     def test_an_accepted_binding_wins_over_a_claim_and_other_claims_are_added(self):
         self.write(HEADER, '// 0x1010 f\n// 0x1020 g\nint f();\n')
@@ -97,6 +124,8 @@ class HeaderClaims(Fixture):
         self.write(HEADER, 'int f();\n')
         self.assertEqual(ci.requests(self.root, [HEADER], {}),
                          [dict(unit=UNIT, rva=None, symbol=None, recipe=ci.DEFAULT_RECIPE)])
+        self.write(UNIT, f'// Recipe: {RECIPE}\n#include "Fixture.h"\n')
+        self.assertEqual(ci.requests(self.root, [HEADER], {})[0]['recipe'], RECIPE)
 
 
 class Discovery(Fixture):
@@ -139,6 +168,24 @@ class Discovery(Fixture):
                            [target_row()])
         self.assertEqual((row['result'], row['symbols']), ('hash-match', [fx.FUNCTION]))
 
+    def test_identical_comdats_resolve_to_the_claimed_decorated_symbol(self):
+        left, right = '?Add@Left@@YAHXZ', '?Add@Right@@YAHXZ'
+        unit = fx.Unit()
+        for symbol in (left, right):
+            section = unit.section('.text$mn', bytes.fromhex('31c0c3'), 0x60001020)
+            unit.define(symbol, section, storage=fx.STORAGE_EXTERNAL, function=True)
+        blob = unit.coff()
+        _, section = compare.find_function(CoffObject(blob), left)
+        row = dict(rva=0x1010, size=len(section.data), extraction='linked-reference-inference',
+                   **hashes.section_hash(section))
+        self.write(UNIT, f'// Recipe: {RECIPE}\n// 0x1010 {right}\n#include "Fixture.h"\n')
+        refs = ci.requests(self.root, [UNIT], {UNIT: [dict(rva=0x1010, symbol=left, recipe=RECIPE)]})
+        (result,) = self.rows(blob, refs, [row])
+        self.assertEqual((result['result'], result['symbols']), ('hash-match', [right]))
+        refs[0]['claim'] = '?Add@Missing@@YAHXZ'
+        (result,) = self.rows(blob, refs, [row])
+        self.assertEqual(result['result'], 'mismatch')
+
 
     def test_a_stale_recorded_symbol_is_found_again_by_its_hash(self):
         # A declaration change (void made bool) renames the decorated symbol a record names.
@@ -152,6 +199,59 @@ class Discovery(Fixture):
                            [dict(unit=UNIT, rva=0x1010, symbol='?Setup@Shader@@UEAAXXZ', recipe=RECIPE)],
                            [target_row()])
         self.assertEqual((row['result'], row['reason']), ('mismatch', 'no-matching-function'))
+
+
+class CompileFailures(Fixture):
+    def test_rows_get_a_bounded_error_tail_from_the_failed_compile(self):
+        diagnostics = '\n'.join([
+            *(f'{UNIT}({n}): error C2065: \'dummy\': undeclared identifier' for n in range(1, 9)),
+            f'{self.root.resolve() / "work/source" / HEADER}(21): fatal error C1083: Cannot open include file: \'Missing.h\': '
+            'No such file or directory',
+            f'{UNIT}(22): error C1189: #error synthetic-payload',
+            'C:\\private\\Secret.h(23): error C2059: syntax error',
+            'Note: including file: C:\\private\\Secret.h',
+        ])
+
+        def fail(_ctx, _tree, _unit, _recipe, out, _tool):
+            out.mkdir(parents=True)
+            (out / 'compile.log').write_text(diagnostics)
+            raise ci.contrib.Stop(ci.contrib.COMPILE, 'compile failed', log=str(out / 'compile.log'))
+
+        self.write(UNIT, f'// Recipe: {RECIPE}\n// CI hash: 0x1020 ?g@@YAHXZ\n#include "Fixture.h"\n')
+        refs = ci.requests(self.root, [UNIT], {})
+        manifest = dict(functions=[], recipe_sha256={RECIPE: 'a' * 64})
+        self.write('work/requests.json', json.dumps(dict(base=None, head=None, refs=refs)))
+        for name in (UNIT, HEADER):
+            self.write(f'work/source/{name}', (self.root / name).read_text())
+        output = io.StringIO()
+        report = self.root / 'result.json'
+        with patch.object(ci.contrib, 'sdk_include_dirs', return_value=(None, [self.root / 'synthetic-sdk/include'])), \
+                patch.object(ci.contrib, 'compile_unit', side_effect=fail) as compile_unit, \
+                patch.object(ci, 'ROOT', self.root), patch.object(ci, 'trusted_inputs', return_value={}), \
+                patch.object(ci.hashes, 'load_manifest', return_value=manifest), \
+                patch.object(ci.public, 'probe', return_value={'toolset': 'MATCH'}), \
+                patch.dict(ci.os.environ, GITHUB_STEP_SUMMARY=''), redirect_stdout(output):
+            code = ci.main(['check', '--work', str(self.root / 'work'), '--out', str(report),
+                            '--bin', str(self.root / 'a/b/c/d/e/f/g')])
+        self.assertEqual(code, 1)
+        self.assertEqual(output.getvalue(), report.read_text())
+        rows = json.loads(output.getvalue())['functions']
+        compile_unit.assert_called_once()
+        self.assertEqual(compile_unit.call_args.args[3], RECIPE)
+        self.assertEqual([r['result'] for r in rows], ['mismatch', 'mismatch'])
+        self.assertEqual(rows[0]['reason'], rows[1]['reason'])
+        self.assertEqual(rows[0]['reason'].splitlines(), [
+            'compile-failed',
+            *(f'{UNIT}:{n}: C2065: undeclared identifier' for n in (6, 7, 8)),
+            f'{HEADER}:21: C1083: cannot open include file',
+            f'{UNIT}:22: C1189: an #error directive stopped compilation',
+        ])
+
+    def test_the_error_reader_ignores_output_before_the_read_limit(self):
+        log = self.root / 'compile.log'
+        log.write_text(f'{UNIT}(1): error C2065: undeclared identifier\n' + 'x' * ci.DIAGNOSTIC_READ_LIMIT)
+        self.assertEqual(ci.diagnostic_tail(log, self.root), [])
+
 
 if __name__ == '__main__':
     unittest.main()

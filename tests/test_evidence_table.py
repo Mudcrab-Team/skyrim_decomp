@@ -7,6 +7,8 @@ import sys
 import tempfile
 import unittest
 
+from repo_fixture import rmtree
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 sys.path.insert(0, str(ROOT / 'tools' / 'ghidra'))
@@ -43,7 +45,7 @@ class UnitTable(unittest.TestCase):
         self.task('demo-demob', 'reconstruction/netimmerse/DemoB.cpp', [fn(0x200), fn(0x400, role='regression')])
 
     def tearDown(self):
-        shutil.rmtree(self.root)
+        rmtree(self.root)
 
     def write_rows(self):
         (self.root / 'data/progress.json').write_text(json.dumps({'functions': self.rows}))

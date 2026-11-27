@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x1240a20",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "used native Havok vector storage for the packed endpoint stores",
+        "bound the ray vector and read the start coordinates before resetting the request",
+        "kept a single request argument for the virtual cast call",
+        "tried the precise recipe (same score and distance)",
+        "reused the packed endpoint (tied) and explicit half-vector packing (slightly lower)",
+        "wrote the request and result resets as inline members"
+      ],
+      "still_differs": "Endpoint packing and the spill layout still differ.",
+      "suspected_cause": "Not determined; the precise recipe and packed-endpoint variants tied, so the floating-point setup is not the cause.",
+      "best_similarity": 64.57,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/1240a20/1"
+      }
+    }
+  ]
+}

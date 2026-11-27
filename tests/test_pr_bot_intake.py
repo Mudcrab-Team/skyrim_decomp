@@ -105,7 +105,7 @@ class AutofixTests(WorkDir):
         functions = [dict(build_id='sse-test', rva=0x1000, name=n, status='matched') for n in (accepted or [])]
         (tree / 'data/progress.json').write_text(json.dumps({'functions': functions}))
         (tree / self.NAME).parent.mkdir(parents=True)
-        (tree / self.NAME).write_text(text)
+        (tree / self.NAME).write_text(text, newline='\n')
         bot = FakeBot(self.dir, files=[{'filename': self.NAME, 'status': 'modified'}])
         bot.tree = tree
         bot.pushed = []
@@ -121,8 +121,8 @@ class AutofixTests(WorkDir):
         bot.gh_json = lambda *a: {'id': 77}
 
         def push(pr, edits, message):
-            bot.pushed.append((edits, message))
-            return 'c' * 40
+            bot.pushed.append(({n: text for n, (text, _) in edits.items()}, message(edits)))
+            return 'c' * 40, edits
         bot.push_to_branch = push
         return bot
 
@@ -175,7 +175,11 @@ class PushToBranchTests(WorkDir):
         clone = self.dir / 'clone'
         git(self.dir, 'clone', '-q', str(fork), str(clone))
         (clone / 'reconstruction/a').mkdir(parents=True)
-        (clone / 'reconstruction/a/B.cpp').write_text('// old\n' + BODY)
+        good = 'reconstruction/a/B.cpp'
+        bad = 'reconstruction/a/C.cpp'
+        header = 'reconstruction/a/C.h'
+        for name in (good, bad, header):
+            (clone / name).write_text('// old\n' + BODY, newline='\n')
         git(clone, 'add', '-A')
         git(clone, 'commit', '-q', '-m', 'work')
         git(clone, 'push', '-q', 'origin', 'HEAD:feature')
@@ -186,20 +190,38 @@ class PushToBranchTests(WorkDir):
                                       headRepository={'name': 'r'}, headRepositoryOwner={'login': 'o'})
         bot.run = lambda argv, cwd=None, **kw: subprocess.run([str(a) for a in argv], cwd=cwd or clone,
                                                               capture_output=True, check=kw.get('check', True))
+        checked = []
+
+        def compile_unit(scratch, unit, files, _out):
+            checked.append(unit)
+            self.assertEqual(git(scratch, 'rev-parse', 'HEAD'), head)
+            self.assertTrue((scratch / unit).read_text().startswith('// new'))
+            self.assertTrue(all((scratch / name).read_text().startswith('// new') for name in files))
+            return unit != bad
+
+        bot.autofix_compile = compile_unit
         pr = dict(PR, headRefOid=head)
+        edits = {name: ('// new\n' + BODY, ['header']) for name in (good, bad, header)}
         with mock.patch.object(pr_bot, 'branch_url', return_value=str(fork)):
-            self.assertIsNone(bot.push_to_branch(pr, {'tools/x.py': 'x'}, 'm'))
-            sha = bot.push_to_branch(pr, {'reconstruction/a/B.cpp': '// new\n' + BODY}, 'Fix\n\nCo-authored-by: a <1+a@x>\n')
+            self.assertEqual(bot.push_to_branch(pr, {'tools/x.py': ('x', [])}, str), (None, {}))
+            self.assertEqual(bot.push_to_branch(pr, {bad: edits[bad]}, str), (None, {}))
+            self.assertEqual(git(fork, 'rev-parse', 'feature'), head)
+            sha, kept = bot.push_to_branch(pr, edits, lambda files: '\n'.join(files) + '\n\nCo-authored-by: a <1+a@x>\n')
+        self.assertEqual(checked, [bad, good, bad, good])
+        self.assertEqual(kept, {good: edits[good]})
         self.assertEqual(git(fork, 'rev-parse', 'feature'), sha)
         self.assertEqual(git(fork, 'rev-parse', 'feature^'), head)
-        self.assertIn('// new', git(fork, 'show', 'feature:reconstruction/a/B.cpp'))
+        self.assertIn('// new', git(fork, 'show', f'feature:{good}'))
+        for name in (bad, header):
+            self.assertIn('// old', git(fork, 'show', f'feature:{name}'))
+            self.assertNotIn(name, git(fork, 'log', '-1', '--format=%B', 'feature'))
         self.assertIn('Co-authored-by: a', git(fork, 'log', '-1', '--format=%B', 'feature'))
 
     def test_a_branch_that_does_not_allow_maintainer_edits_is_not_touched(self):
         bot = FakeBot(self.dir / 'work')
         bot.gh_json = lambda *a: dict(headRefOid=HEAD, headRefName='f', state='OPEN', maintainerCanModify=False,
                                       headRepository={'name': 'r'}, headRepositoryOwner={'login': 'o'})
-        self.assertIsNone(bot.push_to_branch(PR, {'reconstruction/a/B.cpp': 'x'}, 'm'))
+        self.assertEqual(bot.push_to_branch(PR, {'reconstruction/a/B.cpp': ('x', [])}, str), (None, {}))
 
 
 RECORD_STUB = '''import json, sys
@@ -235,13 +257,13 @@ class LandWithRecordsTests(WorkDir):
         (self.root / 'data').mkdir()
         (self.root / 'data/progress.json').write_text(json.dumps({'functions': []}))
         (self.root / 'reconstruction').mkdir()
-        (self.root / 'reconstruction/U.cpp').write_text('// base\n' + BODY)
+        (self.root / 'reconstruction/U.cpp').write_text('// base\n' + BODY, newline='\n')
         git(self.root, 'add', '-A')
         git(self.root, 'commit', '-q', '-m', 'base')
         git(self.root, 'push', '-q', 'origin', 'HEAD:main')
         self.base = git(self.root, 'rev-parse', 'HEAD')
         git(self.root, 'checkout', '-q', '-b', 'pr')
-        (self.root / 'reconstruction/U.cpp').write_text('// changed\n' + BODY)
+        (self.root / 'reconstruction/U.cpp').write_text('// changed\n' + BODY, newline='\n')
         git(self.root, 'commit', '-qam', 'pr work')
         self.head = git(self.root, 'rev-parse', 'HEAD')
         git(self.root, 'checkout', '-q', 'main')
@@ -352,7 +374,7 @@ class LandWithRecordsTests(WorkDir):
         self.assertEqual(git(self.origin, 'rev-parse', 'main'), self.base)
 
     def test_a_pr_that_conflicts_with_main_falls_back_and_leaves_main_alone(self):
-        (self.root / 'reconstruction/U.cpp').write_text('// other\n' + BODY)
+        (self.root / 'reconstruction/U.cpp').write_text('// other\n' + BODY, newline='\n')
         git(self.root, 'commit', '-qam', 'main moved')
         git(self.root, 'push', '-q', 'origin', 'HEAD:main')
         moved = git(self.root, 'rev-parse', 'HEAD')

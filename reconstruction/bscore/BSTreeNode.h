@@ -4,6 +4,9 @@
 // Adapted bodies: none
 // BSTreeNode, BSTreeNode::OnVisible: CRASHLOGGER_PDB(59818@2026.10.24)
 // BSLeafAnimNode, NiCullingProcess, NodeAt180, unk000_0E0, unk0E8, unkEC, unk0F0_144, unk148, unk14C, unk150, unk151, unk152, unk153, unk154, unk158_178, unk178, unk180, unk000_120, unk120, unk121, unk000_128, unk128, unk12C: GUESS(low)
+// BSLeafAnimNode, NiCullingProcess, NodeAt180, unk000_0E0, unk0E8, unkEC, unk0F0_118, unk118, unk120_148, unk148, unk14C, unk150, unk151, unk152, unk153, unk154, unk158_178, unk178, unk180, unk000_120, unk120, unk121, unk000_128, unk128, unk12C: GUESS(low)
+// BSTreeHolder
+// BSTreeTarget: GUESS(low) STANDIN; layouts for the holder and the virtual call shape
 #pragma once
 
 #include <cstdint>
@@ -23,6 +26,23 @@ struct NodeAt180
     std::int32_t unk12C;          // 0x12c
 };
 
+class BSTreeTarget
+{
+public:
+    virtual void Vfunc0();
+    virtual void Vfunc1();
+    virtual void Vfunc2();
+    virtual void Vfunc3();
+    virtual void Vfunc4();
+    virtual void Vfunc5();
+    virtual int Vfunc6();
+};
+
+struct BSTreeHolder
+{
+    BSTreeTarget* unk00; // 0x00
+};
+
 class BSLeafAnimNode
 {
 public:
@@ -31,7 +51,9 @@ public:
     std::uint64_t unk000_0E0[29]; // 0x000 .. 0x0e7
     std::uint32_t unk0E8;         // 0x0e8
     float unkEC;                  // 0x0ec
-    std::uint64_t unk0F0_144[11]; // 0x0f0 .. 0x147
+    std::uint64_t unk0F0_118[5];  // 0x0f0 .. 0x117
+    BSTreeHolder* unk118;         // 0x118
+    std::uint64_t unk120_148[5];  // 0x120 .. 0x147
     std::uint32_t unk148;         // 0x148
     float unk14C;                 // 0x14c
     std::uint8_t unk150;          // 0x150
@@ -47,6 +69,7 @@ class BSTreeNode : public BSLeafAnimNode
 {
 public:
     void OnVisible(NiCullingProcess* a_process, int a_arg);
+    int Function14e9650();
 
     NodeAt180* unk180;            // 0x180
 };

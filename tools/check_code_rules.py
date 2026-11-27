@@ -60,6 +60,7 @@ import bisect
 import collections
 import hashlib
 import json
+import os
 import posixpath
 import re
 import sys
@@ -765,30 +766,102 @@ def summary(units, status, counts, pending_by_rule):
     return '\n'.join(lines)
 
 
+_ANALYSED = {}
+
+
+def analysed(checkout, names=None):
+    """`analyse` of another checkout, once per run; only `names` when given."""
+    key = (checkout, tuple(sorted(names)) if names is not None else None)
+    if key not in _ANALYSED:
+        _ANALYSED[key] = analyse(checkout, names)
+    return _ANALYSED[key]
+
+
+def is_source(checkout, name):
+    """True when `name` is a .h or .cpp file the analysis reads (under reconstruction/, not a skipped root)."""
+    path = Path(checkout) / name
+    return (path.suffix in ('.h', '.cpp') and path.is_file() and name.startswith(SOURCE_ROOT.rstrip('/') + '/')
+            and not name.startswith(SKIPPED_ROOTS))
+
+
+def locate(arg, root, cwd=None):
+    """(checkout, repository-relative name) of a path given on the command line.
+
+    A relative path is read from the current directory when it exists there, else from the checkout, so
+    the tool works from a subdirectory; an absolute path may sit under the checkout or under another
+    checkout or git worktree (the nearest parent holding a reconstruction/ directory). A path that
+    matches nothing comes back unchanged and is reported as not a source file.
+    """
+    root = Path(root).resolve()
+    path = Path(arg)
+    if not path.is_absolute():
+        here = (Path(cwd) if cwd else Path.cwd()) / path
+        path = here if here.exists() else root / path
+    path = Path(os.path.normpath(path))
+    real = path.resolve()
+    try:
+        return root, real.relative_to(root).as_posix()
+    except ValueError:
+        pass
+    for parent in real.parents:
+        if (parent / SOURCE_ROOT).is_dir():
+            return parent, real.relative_to(parent).as_posix()
+    return root, Path(arg).as_posix()
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('files', nargs='*', help='repository-relative files to report on (default: totals only)')
+    parser.add_argument('--verbose', action='store_true', help='show every finding')
     parser.add_argument('--list', action='store_true', help='print one line per finding in the named files')
     parser.add_argument('--strict', action='store_true', help='exit 1 when a named file has a [match] finding')
     parser.add_argument('--json', dest='json_path', help='write counts and per-unit status to this path')
     parser.add_argument('--root', default=str(ROOT), help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     root = Path(args.root)
-    units = analyse(root)
-    status = unit_status(units)
-    named = [Path(f).as_posix() for f in args.files]
-    unknown = [f for f in named if f not in units]
+    here = root.resolve()
+    located = [locate(f, root) for f in args.files]
+    named = [name for _checkout, name in located]
+    # With files named and no totals asked for, only those files are read: the whole-tree scan is
+    # about a minute and the findings of a file do not depend on the rest of the tree except for the
+    # cross-file rows (a type defined differently elsewhere), which need the full run.
+    narrow = bool(named) and not args.json_path
+    unknown = [f for f, (checkout, name) in zip(args.files, located) if not is_source(checkout, name)]
     if unknown:
         print('not a source file under reconstruction/: ' + ', '.join(unknown), file=sys.stderr)
         return 2
+    if narrow:
+        by_checkout = {}
+        for checkout, name in located:
+            by_checkout.setdefault(checkout, []).append(name)
+        found_in = {c: analysed(c, sorted(set(names_))) for c, names_ in by_checkout.items()}
+        units = found_in.get(here, {})
+        status = {}
+    else:
+        units = analyse(root)
+        status = unit_status(units)
+        found_in = {here: units}
+        for checkout, _name in located:
+            if checkout != here:
+                found_in[checkout] = analysed(checkout)
     failed = False
-    for name in named:
-        for line, rule, code, message, function in units[name].findings:
+    finding_lines = []
+    for checkout, name in located:
+        found = found_in[checkout]
+        for line, rule, code, message, function in found[name].findings:
             matching = is_match(rule, code)
             failed = failed or matching
-            if args.list or args.strict:
+            if named:
                 where = f' in {function.name}' if function is not None else ''
-                print(f"{name}:{line}: {rule} {code} [{'match' if matching else 'advisory'}]{where}: {message}")
+                finding_lines.append(f"{name}:{line}: {rule} {code} [{'match' if matching else 'advisory'}]{where}: {message}")
+    if named and (args.list or args.strict or (not args.json_path and not os.environ.get('CI'))):
+        if args.verbose or os.environ.get('CI'):
+            for finding in finding_lines:
+                print(finding)
+        else:
+            print(f'check_code_rules: {len(finding_lines)} finding(s); {"match finding" if failed else "advisory only"}')
+            if finding_lines:
+                print(next((line for line in finding_lines if '[match]' in line), finding_lines[0]))
     if not named or args.json_path:
         counts, pending_by_rule = totals(root, status)
         if not named:

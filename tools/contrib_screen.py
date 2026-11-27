@@ -13,8 +13,10 @@ MAX_DEPTH = 32
 MAX_MACROS = 128
 MAX_EXPANSION = 100000
 # These are pinned compiler headers, never searched on the maintainer's ordinary include path.
-STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath',
-                              'type_traits', 'utility', 'new', 'limits', 'stddef.h', 'stdint.h', 'intrin.h', 'math.h'))
+STANDARD_HEADERS = frozenset(('cstddef', 'cstdint', 'cstring', 'climits', 'cfloat', 'cmath', 'cstdarg', 'cstdio',
+                              'type_traits', 'utility', 'new', 'limits', 'stddef.h', 'stdint.h', 'intrin.h', 'math.h',
+                              'algorithm', 'memory', 'vector', 'deque', 'list', 'forward_list', 'set', 'map', 'unordered_map', 'unordered_set',
+                              'array', 'queue', 'functional', 'bitset', 'string', 'string.h'))
 PRAGMAS = re.compile(r'(?:once|pack\s*\([^\n]*\)|warning\s*\([^\n]*\))\s*\Z')
 TOKEN = re.compile(r'[A-Za-z_]\w*|[^\s]')
 MAX_MESSAGE_BYTES = 4096
@@ -37,7 +39,7 @@ def stays_in_tree(name, target):
     return joined.startswith('reconstruction/') and '..' not in joined.split('/')
 
 
-def screen(blob, name, *, headers=STANDARD_HEADERS):
+def screen(blob, name, *, headers=STANDARD_HEADERS, relative_include=stays_in_tree):
     """Return fixed reason codes only; never echo attacker-controlled text into public comments.
 
     Over-refusal is deliberate: scan both raw and spliced text, including inactive branches,
@@ -70,7 +72,7 @@ def screen(blob, name, *, headers=STANDARD_HEADERS):
     # Comments cannot hide keywords or arguments from this additional screen.
     normalized = re.sub(r'/\*.*?\*/', ' ', spliced, flags=re.S)
     hops = {target for kind, target in includes if kind == '"' and '..' in target.split('/')
-            and stays_in_tree(name, target)}
+            and relative_include(name, target)}
     for text_variant in (text, spliced, normalized):
         if re.search(r'\b(?:__asm__|__asm|_asm|asm|__emit|__pragma|_Pragma)\b', text_variant):
             problems.add('assembly-or-pragma-operator')

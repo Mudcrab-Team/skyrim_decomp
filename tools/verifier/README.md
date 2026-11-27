@@ -36,10 +36,46 @@ for one fetch and deletes the run. `result.json` carries the host's OS, loader a
 the compiler binaries it ran, and the seconds each phase took. Each host has `max_parallel` slots (file locks under
 `.local/verifier/runner-slots/`); attempts beyond that wait in turn.
 
+A host can carry the toolchain of a second compiler build for units whose recipe names it: `"toolchains":
+{"19.00.23918": "<dir>"}` beside `msvc` (the default 19.16.27054 toolchain). A unit's compiler is the toolset whose
+pin file holds the `cl.exe` hash its recipe records (`toolsets.py`; VS 2015 Update 2 for the Havok objects,
+recipes `msvc-19.00.23918-o2*`). `unit_spec` then carries `toolset` and `pins`, the host agent picks the toolchain
+(`--toolchain ID=DIR`, repeated; exit 44 `toolchain-missing` when the host has none, never a verdict), `unit_build`
+checks the binaries against that pin file, `attempt` and `compare_batch` send the unit to a host that has it, and
+`confirm` refuses a host pair where one lacks it (the `ci-hash` host installs it itself). `runners.py status` shows
+each extra toolchain.
+
+A machine that only orchestrates sets a top-level `"local_max_heavy": N` in the same file (default: no
+cap, so contributors and CI are unaffected). Every heavy local job of every checkout sharing that
+`.local/verifier` then holds one of N machine-wide slots (file locks under `.local/verifier/local-heavy/`,
+no daemon, released when the process dies): a compile on a local host, `attempt`'s binding and
+diagnostics, the permuter's local scoring pool, the generators' probe compiles and the `check.py` fan-out
+(which gets no more workers than the slots it was granted). A job that has to wait prints one
+`local load guard: ... waits for a free slot` line. `attempt` also prefers a reachable ssh host over a
+local one while the cap is set. `SR_LOCAL_MAX_HEAVY` overrides the file for one process tree (a number,
+or `0` to lift the cap); `python3 tools/local_load.py` shows the cap and the slots held.
+
 ```sh
 python3 tools/verifier/runners.py status                    # each host: toolchain, image, CPUs, busy slots
 python3 tools/verifier/reproduce_records.py --host <name>   # recompile every recorded unit there; equal/different
 ```
+
+Work that is not a compile also moves to the ssh host, so a laptop stays free:
+
+- Alignment. With `"objdump": "<llvm-objdump on the host>"` on the host, `attempt` has the host align the
+  failing functions in the same run that compiled them (`host_agent.py run --objdump`, `align.py`): the
+  fetched directory already holds `align.txt`, `align.json` and `align-summary.txt`, and `attempt` only
+  reads them. Without that setting (or on a `local` host) it aligns here, as before.
+- Bind hints. References that stay unbound after binding get a hint derived from the alignment
+  (`auto_hints.py`, on by default; `attempt --no-auto-hints` skips it): the RVA the target encodes where the
+  candidate refers to the name, when the pack or the function table lists that RVA and the aligned
+  instructions agree, or a `tls:0x<offset>` for a thread-local. They go to `<task-dir>/bind-hints.json`
+  without replacing an entry a person wrote, and the names are recorded under `_derived`.
+- Task and pack preparation. With `"prep": "<host>"` in `runners.json`, `tools/verifier/remote_prep.py start
+  0x<rva>...` runs `tools/contrib.py start` (or `--script`, e.g. a wrapper) on that host and returns the task,
+  pack and skeleton files; `remote_prep.py sync` uploads this checkout's tracked files and the private inputs
+  the start reads (the function table, the FNV and x64 lookup indexes), by content, once. Without a prep
+  host it exits 3 and the caller runs the start here.
 
 A runner confirm writes records under the "Runner hosts" condition of `docs/verification.md`:
 into `reports/` only with a `local` host among the confirm hosts (it cross-compares the other
@@ -96,6 +132,7 @@ objects, validates records before publication, and refuses to overwrite records 
   writes `align.txt` (private aligned listing) and `align.json` (for a search tool) next to the
   side-by-side. Run it on stored attempts with `tools/verifier/align.py --attempt <dir>`. A
   reading aid and a score, never evidence of a match.
+- `auto_hints.py`, `remote_prep.py`, `prep_agent.py`: derived bind hints, and preparation on a runner host (see "Runners").
 - `permute.py`: source permuter for one near-miss function, no model in the loop
   ([docs/permuter.md](../../docs/permuter.md)). Seeded rewrites of one body from the cookbook's
   mechanisable rules, every candidate linted, batches compiled in parallel on the standing
@@ -112,6 +149,19 @@ objects, validates records before publication, and refuses to overwrite records 
   checks the compiler binaries against `pinned.sha256`. Running it accepts the Microsoft Build
   Tools licence (`--accept-license`); only run it where that licence basis is recorded.
 - `pinned.sha256`: expected SHA-256 of `cl.exe`, `c1xx.dll`, `c2.dll` and `link.exe`.
+  `pinned/<toolset>.sha256`: the same four for another compiler build (the sweep's stand-ins and
+  `19.00.23918`, the only one besides the default that the match gate accepts).
+- `toolsets.py`: which compiler a unit uses, from its recipe's `compiler.binary_sha256`; the pin-file
+  lookup every host, the CI jobs, the contributor helper and the bot share.
+- `vs2015_u2.py`, `vs2015-u2-packages.json`, `setup_toolchain_u2.sh`: install the VS 2015 Update 2 (19.00.23918)
+  x64 compiler from Microsoft's own `vs2015.2.com_enu.iso` on download.microsoft.com. Only the compiler packages
+  (about 16 MB of the 7.4 GB image) are read, by range request, and each is checked by SHA-256 against the table
+  before it is opened; the MSIs are unpacked with `msiexec /a` (Windows) or `msiextract`, and the four binaries
+  are checked against `pinned/19.00.23918.sha256`. `setup_toolchain_u2.sh --accept-license <pinned dir>` lays it
+  out for Wine beside the pinned install (reusing its wrapper and SDK); on Windows run
+  `python vs2015_u2.py install --accept-license --root <dir> --sdk-from <pinned toolchain>`. Running either uses
+  Microsoft's Visual Studio 2015 Community licence terms, so it needs the flag. The same image link, table and
+  pins serve the PR check and CI confirm workflows, which install it only when a unit's recipe names it.
 - `build_pilot.sh <msvc-dir> <new-output-dir>`: compiles `synthetic/pilot.cpp` and
   `synthetic/pilot_variant.cpp` and links `pilot.dll` with a map file. Run it twice.
 - `pilot_compare.py determinism A B`: attributes every differing byte between two builds to a

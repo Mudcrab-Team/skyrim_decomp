@@ -5,7 +5,8 @@
 // BSGeometry: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT) EXE_RTTI
 // BSGeometry::UpdateDownwardPass, BSGeometry::UpdateSelectedDownwardPass, BSGeometry::SetSelectiveUpdateFlags, BSGeometry::RegisterStreamables, BSGeometry::SaveBinary, BSGeometry::LoadBinary, BSGeometry::UpdateWorldBound, BSGeometry::ProcessClone: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // NiUpdateData, NiStream: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// unknown110: GUESS(low)
+// time, flags, modelBound, alphaProperty, shaderProperty, skinInstance: CRASHLOGGER_PDB(59818@2026.10.24)
+// NiSkinInstance, NiProperty, NiShadeProperty, NiAlphaProperty, BSShaderProperty, kDirty, kSelectiveUpdate, kSelectiveUpdateTransforms: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
 // Base-class calls and out-of-unit callees the compared code makes, declared only and bound by bind-hints.json: BaseUpdateDownwardPass, BaseUpdateSelectedDownwardPass, BaseSetSelectiveUpdateFlags, BaseRegisterStreamables, BaseSaveBinary, BaseLoadBinary,
 // UpdateBoundFromFlags: GUESS(low)
 // BSGeometryData110: GUESS(low); the object at +0x110, saved and loaded field by field
@@ -15,7 +16,22 @@
 #include <cstddef>
 #include "NiAVObject.h"
 
-class NiUpdateData;
+class NiUpdateData
+{
+public:
+    enum : std::uint32_t { kDirty = 1u << 0 };
+
+    float time;
+    std::uint32_t flags;
+};
+
+static_assert(sizeof(NiUpdateData) == 8, "NiUpdateData size");
+
+class NiSkinInstance : public NiObject {};
+class NiProperty : public NiObjectNET {};
+class NiAlphaProperty : public NiProperty {};
+class NiShadeProperty : public NiProperty {};
+class BSShaderProperty : public NiShadeProperty {};
 class NiStream;
 class NiCloningProcess;
 
@@ -49,7 +65,17 @@ public:
     void BaseLoadBinary(NiStream& a_stream);
     void UpdateBoundFromFlags(NiUpdateData& a_data);
 
-    // unknown110: GUESS(low); members not recovered yet, sized so the static_assert holds
-    std::uint8_t unknown110[0x48];  // 110
+    // Bit position of the CommonLibSSE-NG kSelectiveUpdateController mask.
+    static constexpr std::uint32_t selectiveUpdateControllerBit = 3;
+    enum : std::uint32_t {
+        kSelectiveUpdate = 1u << 1,
+        kSelectiveUpdateTransforms = 1u << 2
+    };
+
+    NiBound modelBound;
+    NiPointer<NiAlphaProperty> alphaProperty;
+    NiPointer<BSShaderProperty> shaderProperty;
+    NiPointer<NiSkinInstance> skinInstance;
+    std::uint8_t unknown138[0x20];
 };
 static_assert(sizeof(BSGeometry) == 0x158, "BSGeometry size");

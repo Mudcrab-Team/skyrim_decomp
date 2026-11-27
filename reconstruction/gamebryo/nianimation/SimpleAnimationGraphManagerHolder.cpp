@@ -7,6 +7,8 @@
 // 0x556670 SimpleAnimationGraphManagerHolder::SetAnimationGraphManagerImpl
 // 0x556610 SimpleAnimationGraphManagerHolder::GetAnimationGraphManagerImpl
 // 0x5564e0 SimpleAnimationGraphManagerHolder::Function5564e0
+// SimpleAnimationGraphManagerHolder::GetAnimationGraphManagerImpl: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
+// SimpleAnimationGraphManagerHolder::SetAnimationGraphManagerImpl: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "SimpleAnimationGraphManagerHolder.h"
 
 bool SimpleAnimationGraphManagerHolder::GetAnimationGraphManagerImpl(BSTSmartPointer<BSAnimationGraphManager>& out) const { out=animationGraphManager; return out.ptr != nullptr; }

@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 import record_store
 import contrib
+sys.path.insert(0, str(ROOT / 'tools/verifier'))
+import toolsets
 from compare import check_relocation_layout, code_section_sha256, find_function
 from pecoff import CoffObject, Reject
 from source_digest import include_closure
@@ -24,20 +26,23 @@ from digest_v2 import tu_digest
 SELF_TEST_RVAS = (contrib.SELF_TEST_RVA, 0x405a50, 0x1f3560)
 
 
-def probe(root, bindir):
-    """Measure all four pinned binaries; a version banner alone is insufficient."""
+def probe(root, bindir, toolset=toolsets.DEFAULT):
+    """Measure all four pinned binaries of `toolset`; a version banner alone is insufficient."""
     files = []
-    for name, expected in contrib.pinned_hashes(root).items():
+    for name, expected in toolsets.known(root)[toolset].items():
         path = bindir / name
         actual = contrib.sha256_file(path) if path.is_file() else None
         files.append(dict(name=name, size=path.stat().st_size if path.is_file() else None,
                           sha256=actual, expected_sha256=expected, equal=actual == expected))
     env = {k: v for k, v in os.environ.items() if k.upper() not in ('CL', '_CL_')}
-    result = subprocess.run([str(bindir / 'cl.exe')], env=env, capture_output=True,
-                            text=True, errors='replace', timeout=30)
-    banner = result.stdout + result.stderr
+    try:
+        result = subprocess.run([str(bindir / 'cl.exe')], env=env, capture_output=True,
+                                text=True, errors='replace', timeout=30)
+        banner = result.stdout + result.stderr
+    except OSError:
+        banner = ''
     version = re.search(r'Version (19\.\d+\.\d+)(?:\.\d+)? for (x64|x86)', banner)
-    version_ok = bool(version and version.group(1) == '19.16.27054' and version.group(2) == 'x64')
+    version_ok = bool(version and version.group(1) == toolset and version.group(2) == 'x64')
     return dict(schema=1, kind='toolchain-probe',
                 version=version.group(0) if version else 'unrecognized',
                 toolset='MATCH' if version_ok and files and all(f['equal'] for f in files) else 'MISMATCH',

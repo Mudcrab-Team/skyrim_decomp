@@ -18,17 +18,27 @@ import re
 ADDR = r'0x[0-9a-fA-F]+'
 SIZE_RECORD = re.compile(rf'\bRVA\s+({ADDR})\s*[,;]?\s*\d+\s+bytes?\b')
 COMPARED_AT = re.compile(rf'\b[Cc]ompared(?:\s+at)?\s+RVAs?\s+({ADDR}(?:(?:\s*,\s*(?:and\s+)?|\s+and\s+){ADDR})*)')
-COMPARED = re.compile(r'//[ \t]*(0x[0-9a-fA-F]+)[ \t]+\S')
+COMPARED = re.compile(r'//[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S.*)')
 
 
 def leading_lines(text):
-    """The `//` lines at the top of a file, up to the first line that is not one."""
+    """The `//` lines at the top of a file, allowing blank lines before and between them."""
     out = []
     for line in text.splitlines():
+        line = line.lstrip()
+        if not line:
+            continue
         if not line.startswith('//'):
             break
         out.append(line)
     return out
+
+
+def compact_claims(text):
+    """Yield the RVA and declaration of each explicit claim in the leading comments."""
+    for line in leading_lines(text.lstrip('\ufeff')):
+        if match := COMPARED.match(line):
+            yield int(match[1], 16), match[2].strip()
 
 
 def claimed_rvas(texts):
@@ -37,8 +47,5 @@ def claimed_rvas(texts):
         rvas.update(int(m[1], 16) for m in SIZE_RECORD.finditer(text))
         for match in COMPARED_AT.finditer(text):
             rvas.update(int(v, 16) for v in re.findall(ADDR, match[1]))
-        for line in leading_lines(text):
-            match = COMPARED.match(line)
-            if match:
-                rvas.add(int(match[1], 16))
+        rvas.update(rva for rva, _ in compact_claims(text))
     return rvas

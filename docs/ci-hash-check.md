@@ -84,11 +84,13 @@ differs, and the target-hash manifest still pins the index's exact bytes. Functi
 files under `.local/twins` and `.local/stamp-sweep`, passed as `--reserved-dir`) are skipped and, if not claimed,
 withdrawn from the window; the plans themselves are never published. The bot logs the slice and a line with
 claimable left, claimed and the daily burn rate. An open PR may also claim a function outside the window: when its header claims an RVA that has no
-row and the RVA is an ordinary, locally supported function start of the private table, the bot passes it to
+row and the private table identifies a locally supported ordinary function or compiler-generated static
+initializer or teardown at that RVA, the bot passes it to
 `target_hash_offers.py --extra-rva`, which publishes the same hash-only row (no class filter; at most 256 per run, kept
 until recorded), and the head gets a fresh hash run against the new base. Claims are read by `tools/rva_headers.py`: the compact
 `// 0x<rva> <Name>` lines, `RVA 0x<rva>, <n> bytes` records and `compared at RVA ...` labels, never an address in prose.
-A claim that still has no row is listed in the sticky comment. Install the
+Offer eligibility publishes hash metadata only. The comparison and review requirements in
+[`verification.md`](verification.md) apply to every function. A claim that still has no row is listed in the sticky comment. Install the
 local extraction dependency `iced-x86==1.21.0` in an ignored environment. For example:
 
 ```sh
@@ -98,8 +100,9 @@ python3.13 tools/target_hashes.py --image <private-image> \
     --out data/target-hashes/sse-steam-1-7-104.json
 ```
 
-The index manifest binds bounded JSON shards with SHA-256 and row counts, keeping every
-file below the existing publication cap. It records the build, image hash, inventory snapshot hash, comparator and normalizer
+The index manifest binds bounded binary shards (`tools/target_hash_store.py`: 73-byte fixed rows,
+raw digests, one shard per 0x100000 RVA range; `dump SHARD` prints one as JSON) with SHA-256 and row
+counts, keeping every file below the existing publication cap. It records the build, image hash, inventory snapshot hash, comparator and normalizer
 source hashes, compiler-pin file hash and recipe hashes. Each row records RVA, size, extraction
 method, `normalized_sha256` and `layout_sha256`; the build and normalization version are inherited
 from the manifest. **No bytes, mask contents, reference destinations, listings or decompiler output
@@ -117,9 +120,12 @@ funclets are outside this advisory digest and remain the local comparator's job.
 
 A linked PE does not retain the original COFF relocations. The local extractor infers RIP-relative
 four-byte reference fields (including REL32 trailing-immediate variants), four-byte direct calls
-(including self calls) and branches outside the function. Other internal branches stay unmasked. It never guesses address-like immediates.
+(including self calls) and branches outside the function. It also infers the four-byte TLS
+section offset in a local-static guard or in an access to the block obtained through the image's
+TLS index. A block access may encode the offset as a memory displacement or add it to the block
+pointer. Other internal branches and unrelated immediates stay unmasked.
 This is labelled `linked-reference-inference`, **not a claim of recovered original relocations**.
-ADDR32NB, SECREL, linker transformations and unusual instruction streams can require additional
+Other relocation forms, linker transformations and unusual instruction streams can require additional
 local evidence. An optional private layout file can supply comparator-checked fields; it never
 leaves `.local/`. Undecodable ranges receive an explicitly unmasked digest and
 `unmasked-unsupported`; the CI checker always returns `no-target` for these. A different candidate
@@ -147,24 +153,35 @@ GitHub-hosted Windows runner, `contents: read`, no secrets, persisted checkout c
 private inputs or object execution. The trusted checkout is the event's immutable **base SHA**.
 Only its tools, recipes, inventory and target commitments run. The head SHA is fetched as git
 objects; `prepare` reads bounded regular UTF-8 reconstruction blobs from the PR diff and overlays
-them on a separate trusted source tree. It enforces the contributor path/deletion/file-size rules
+them on a separate trusted source tree. Run `prepare` from a checkout whose `HEAD` equals `--base`
+and pass the proposed revision as `--head`. It enforces the contributor path/deletion/file-size rules
 and the same source lint; PR symlinks, recipes, response files and build commands are refused; CI tooling blobs are ignored,
 never materialized or executed.
 It never checks out PR tools or imports PR Python. Header edits trigger affected units too.
+Intake identifies possible transitive includers before resolving the exact include closure for
+those units and changed C++ files.
 
-Known RVA/symbol/recipe bindings come from base records. A new unit can request a public target
-in its source header with `// CI hash: 0x<RVA> <COFF-symbol>`. This is only a request to compare:
-it cannot change a target's size, committed layout, digest or fixed default v141 recipe. Unknown
-or unsupported bindings remain `no-target`. The compiler runs through `contrib.compile_unit`
+Known RVA and symbol bindings come from base records. A new unit can request a public target
+in its `.cpp` header comment with `// CI hash: 0x<RVA> <COFF-symbol>`. The request leaves the
+target's size, committed layout and digest fixed. CI uses the first recipe path in the `.cpp`,
+typically on the `Recipe:` line, and falls back to the default v141 recipe if the unit names none.
+The selected recipe must be approved by the trusted target-hash manifest. A recipe-only edit
+triggers a compile, and the regression check uses the declared recipe at each revision.
+Unknown or unsupported bindings remain `no-target`. A compact claim may also name the decorated
+symbol or the full template specialization. The checker tests that definition even when other
+definitions have the same hash. A claim that selects no matching definition or several identical
+definitions fails the check. The compiler runs through `contrib.compile_unit`
 with fixed recipe flags, cleared environment, include-closure checks, exact /showIncludes
 agreement and its timeout. All four compiler pins and the pinned SDK headers must match.
 
-Results contain only public identities/digests and `hash-match`, `mismatch` or `no-target` per
-function, with `acceptance: not-evaluated`. Compile failures are sanitized as `mismatch` with
-`compile-failed`; no compiler output, bytes or diffs enter logs or artifacts. Mismatches fail the
-advisory job, while absent coverage remains visibly `no-target`. No-target is never hash equality.
-The compiler's parser still receives untrusted C++, bounded by compile and job timeouts on a
-runner without private data. Compiler packages, objects and diagnostics stay in scratch.
+Results include public identities and digests, `hash-match`, `mismatch` or `no-target` per
+function, and `acceptance: not-evaluated`. A compile failure is a `mismatch` whose `reason` starts
+with `compile-failed`. When compiler errors are available, the CI log and the result row include
+up to five recent errors with repository-relative source locations, diagnostic codes and fixed
+messages. The bot retains the reason in its state. Raw diagnostic text, quoted source, host paths,
+bytes and objects stay in scratch. Mismatches fail the advisory job, while absent coverage remains
+visibly `no-target`. No-target is never hash equality. The compiler's parser still receives untrusted
+C++, bounded by compile and job timeouts on a runner without private data.
 
 The p123 adapter `tools/contrib_hash_signal.py:advisory_hash_signal` consumes GitHub check-run API
 metadata, selects only the latest GitHub Actions `target-hashes` job for the exact PR head SHA,

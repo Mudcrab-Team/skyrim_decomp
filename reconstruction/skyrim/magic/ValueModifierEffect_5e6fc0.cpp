@@ -7,6 +7,7 @@
 // SetExplosionLocation: CRASHLOGGER_PDB(59818@2026.10.24)
 // Adapted bodies: SetActorValue follows fo4-private@1b765c70 src/Game/Magic/StimpakEffect.cpp:6 (author permission); the same one-line setter is in momusdigital/fnv_decomp@91e1b6e src/fallout/magic/valuemodifiereffect.h:24.
 // 0x5e6fc0 ValueModifierEffect::CheckTarget
+// ValueModifierEffect::CheckTarget: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "ValueModifierEffect_5e6fc0.h"
 
 bool ValueModifierEffect::CheckTarget(ActiveEffectFactory::CheckTargetArgs& a_args)

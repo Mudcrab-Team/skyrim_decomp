@@ -1,0 +1,21 @@
+// Source exposure: binary-analysis (the pinned image listing).
+// Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
+// SPDX-License-Identifier: CC0-1.0
+// Recipe: reconstruction/recipes/msvc-19.16.27054-o2-root-includes.json
+// 0x15663d0 ImageSpaceEffectRadialBlur::dtor_deleting
+// CI hash: 0x15663d0 ??_GImageSpaceEffectRadialBlur@@UEAAPEAXI@Z
+#include "ImageSpaceEffectRadialBlur_15663d0.h"
+
+ImageSpaceEffectRadialBlur::ImageSpaceEffectRadialBlur()
+{
+}
+
+ImageSpaceEffectRadialBlur::~ImageSpaceEffectRadialBlur()
+{
+    ImageSpaceEffectParam* first = params._data[0];
+    if (first)
+    {
+        delete first;
+        params.SetAt(0, nullptr);
+    }
+}

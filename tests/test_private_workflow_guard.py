@@ -6,10 +6,12 @@ import subprocess
 import sys
 import tempfile
 import unittest
+
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 import check
+from repo_fixture import kept_environment
 
 
 class PrivateWorkflowGuard(unittest.TestCase):
@@ -20,7 +22,7 @@ class PrivateWorkflowGuard(unittest.TestCase):
         subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
         (self.root / '.local').mkdir()
         self.config = self.root / '.local/publication-forbidden.json'
-        self.environment = patch.dict(os.environ, {}, clear=True)
+        self.environment = patch.dict(os.environ, kept_environment(), clear=True)
         self.environment.start()
         self.addCleanup(self.environment.stop)
 

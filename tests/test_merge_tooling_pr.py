@@ -19,6 +19,10 @@ class JobTests(unittest.TestCase):
         self.assertEqual(m.job_problems([job('check'), job('tests (0)'), job('tests (1)'),
                                          dict(name='scope', workflowName='PR check', conclusion='FAILURE')]), [])
 
+    def test_a_skipped_aggregate_is_ignored_but_not_counted(self):
+        self.assertEqual(m.job_problems([job('check'), job('tests (0)'), job('tests', 'SKIPPED')]), [])
+        self.assertTrue(m.job_problems([job('check'), job('tests', 'SKIPPED')]))
+
     def test_red_tests_or_check_refuses(self):
         self.assertTrue(m.job_problems([job('check'), job('tests (0)', 'FAILURE')]))
         self.assertTrue(m.job_problems([job('check', 'FAILURE'), job('tests (0)')]))

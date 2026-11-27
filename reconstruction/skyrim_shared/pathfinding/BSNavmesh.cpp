@@ -9,7 +9,7 @@
 // 0x11e01e0 BSNavmesh::Function11e01e0
 // 0x11e02a0 BSNavmesh::Function11e02a0
 // 0x11e02c0 BSNavmesh::Function11e02c0
-// 0x11e70b0 BSNavmesh::Function11e70b0
+// 0x11e70b0 BSNavmesh::GetGridCellCount
 // 0x11e70c0 BSNavmesh::Function11e70c0
 // ForwardMeshGrid, NavmeshEdgeHelper2, NavmeshEdgeHelper3: GUESS(low)
 #include "BSNavmesh.h"
@@ -64,7 +64,7 @@ std::int32_t BSNavmesh::Function11e02c0(std::uint16_t a_triangleIndex) const
     return -1;
 }
 
-std::uint32_t BSNavmesh::Function11e70b0() const
+std::uint32_t BSNavmesh::GetGridCellCount() const
 {
     return meshGrid.gridSize * meshGrid.gridSize;
 }

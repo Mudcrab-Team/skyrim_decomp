@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Advisory PR compilation using trusted base tools and target-hash commitments only.
 
-Never run PR tools or resulting objects. Compiler output remains in scratch. No image input,
-acceptance record, network credential, artifact upload or cache is part of this check.
+Never run PR tools or resulting objects. Raw compiler output remains in scratch. This check
+needs no image input, acceptance record or network credential.
 """
 import argparse
 import json
 import os
 from pathlib import Path
+import posixpath
 import re
 import shutil
 import subprocess
@@ -15,19 +16,24 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
+sys.path.insert(0, str(ROOT / 'tools/verifier'))
 import record_store
 import ci_hash_check as public
 import contrib
+import bind
+import draft_bundle
+import giveup
 import pdb_types
 import lint_reconstruction as lint
 import compare
 from pecoff import CoffObject, Reject
-from rva_headers import claimed_rvas
-from source_digest import include_closure
+from rva_headers import claimed_rvas, compact_claims
+from source_digest import STRICT_INCLUDE, include_closure
 import digest_v2
 from digest_v2 import tu_digest
 import target_hashes as hashes
 import unit_deletion
+import toolsets
 
 DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # Optional source-header request for a new unit with no accepted symbol binding yet. It is a
@@ -36,13 +42,13 @@ DEFAULT_RECIPE = 'reconstruction/recipes/msvc-19.16.27054-o2.json'
 # rather than fail the whole unit.
 REQUEST = re.compile(r'^// CI hash:[ \t]*(0x[0-9a-fA-F]+)[ \t]+(\S+)\s*$', re.M)
 SHA = re.compile(r'[0-9a-f]{40}')
-UNIT_RECIPE = re.compile(r'\breconstruction/recipes/[a-zA-Z0-9_.-]+\.json')
 # A header can claim any number of RVAs; each claim costs a scan of the unit's object.
-MAX_CLAIMS_PER_UNIT = 200
+MAX_CLAIMS_PER_UNIT = 2000
 # Same pattern as cookbook_notes.NOTE_FILE (a test keeps them equal); that module pulls in POSIX-only imports
 # that this job's Windows runner cannot load.
 NOTE_FILE = re.compile(r'docs/cookbook-notes/[0-9a-f]{3,8}-[a-z0-9][a-z0-9-]{0,60}\.md\Z')
-CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_',
+CI_INPUTS = ('data/target-hashes/', 'tools/toolchain/', 'tools/ci_', 'tools/verifier/toolsets.py',
+             'tools/verifier/vs2015', 'tools/verifier/pinned/',
              'tools/target_hashes.py', 'tools/contrib.py', 'tools/contributor_standing.py',
              'tools/build_leaderboard.py', 'tools/build_model_trend.py', '.gitattributes',
              '.github/workflows/ci-target-hash.yml')
@@ -55,8 +61,8 @@ CARRIED = re.compile(r'reports/[^/]+/0x[0-9a-f]+(?:\.review)?\.json|data/progres
                      r'|reconstruction/INDEX\.md')
 
 
-def git(root, *args):
-    return subprocess.run(['git', *args], cwd=root, capture_output=True, check=True).stdout
+def git(root, *args, input=None):
+    return subprocess.run(['git', *args], cwd=root, input=input, capture_output=True, check=True).stdout
 
 
 def trusted_inputs(root):
@@ -76,12 +82,12 @@ def comment_only_change(root, base, name, blob):
     old = subprocess.run(['git', '-C', str(root), 'show', f'{base}:{name}'], capture_output=True)
     if old.returncode != 0:
         return False
-    def requests(text):
-        return REQUEST.findall(text.decode('utf-8-sig', 'replace')[:8192])
-
-    # A `// CI hash:` line is a request to compare, not prose: stripping it as a comment would let a PR that
-    # only adds the request skip the very compile the request asks for.
-    if requests(old.stdout) != requests(blob):
+    before = old.stdout.decode('utf-8-sig', 'replace')
+    after = blob.decode('utf-8-sig')
+    # Request and recipe comments control the compile even when the source code is unchanged.
+    if REQUEST.findall(before[:8192]) != REQUEST.findall(after[:8192]):
+        return False
+    if name.endswith('.cpp') and unit_recipe(before) != unit_recipe(after):
         return False
     try:
         return digest_v2.strip_comments(old.stdout, name) == digest_v2.strip_comments(blob, name)
@@ -102,11 +108,70 @@ class LintFailure(ValueError):
         self.findings = findings
 
 
+class PrepareRevisionError(ValueError):
+    """A prepare invocation with invalid revision arguments."""
+
+
+SOURCE_DIRS = ('reconstruction', 'builds', 'findings', 'reports')
+
+
+def worktree_at(root, tree, base, folders):
+    """Create a scratch checkout once and move it to a new trusted base only when needed."""
+    if not (tree / '.git').is_file():
+        if tree.exists():
+            shutil.rmtree(tree)  # A scratch tree left by the copy-based prepare.
+        tree.parent.mkdir(parents=True, exist_ok=True)
+        git(root, '-c', f'core.hooksPath={os.devnull}', 'worktree', 'add', '--detach', '--no-checkout',
+            str(tree.resolve()), base)
+        git(tree, 'sparse-checkout', 'set', '--cone', '--sparse-index', *folders)
+        git(tree, 'reset', '--hard', base)
+    elif git(tree, 'rev-parse', 'HEAD').decode().strip() != base:
+        git(tree, 'reset', '--hard', base)
+    return tree
+
+
+def base_view(root, base, work):
+    if not base or git(root, 'rev-parse', 'HEAD').decode().strip() == base:
+        return root
+    if not SHA.fullmatch(base):
+        raise PrepareRevisionError('expected a full commit SHA for --base')
+    return worktree_at(root, work / 'base', base, (*SOURCE_DIRS, 'data', 'tools'))
+
+
+def overlay_source(root, base, rows, work, index_includes):
+    tree = work / 'source'
+    journal = work / 'source-overlay.json'
+    if journal.is_file() and (tree / '.git').is_file():
+        previous = json.loads(journal.read_text())
+        tracked = []
+        for name, existed in previous:
+            if not contrib.UNIT_PATH.fullmatch(name):
+                raise ValueError('invalid source overlay path')
+            if existed:
+                tracked.append(name)
+            else:
+                (tree / name).unlink(missing_ok=True)
+        if tracked:
+            git(tree, '--literal-pathspecs', 'restore', '--source=HEAD', '--worktree',
+                '--pathspec-from-file=-', '--pathspec-file-nul', input=('\0'.join(tracked) + '\0').encode())
+    worktree_at(root, tree, base, SOURCE_DIRS)
+    if index_includes:
+        update_include_graph(tree, base, work / 'source-includes.json')
+    paths = [(name, (tree / name).is_file()) for name, _ in rows]
+    pending = journal.with_suffix('.tmp')
+    pending.write_text(json.dumps(paths))
+    pending.replace(journal)
+    for name, blob in rows:
+        path = tree / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(blob)
+    return tree
+
+
 def prepare(root, base, head, work):
-    if not SHA.fullmatch(base) or not SHA.fullmatch(head):
-        raise ValueError('revision must be a full SHA')
-    if git(root, 'rev-parse', 'HEAD').decode().strip() != base:
-        raise ValueError('tools must be from the trusted base revision')
+    if not SHA.fullmatch(base or '') or not SHA.fullmatch(head or ''):
+        raise PrepareRevisionError('prepare requires full commit SHAs for --base and --head')
+    trusted = base_view(root, base, work)
     merge_base = git(root, 'merge-base', base, head).decode().strip()
     diff = git(root, 'diff', '--no-renames', '--name-status', '-z', merge_base, head).split(b'\0')
     rows, comment_only, deleted, carried = [], set(), [], []
@@ -114,14 +179,15 @@ def prepare(root, base, head, work):
     # A lesson note is a file a function PR may carry (the scope check admits it), so it must not fail intake.
     names = [n for i in range(0, len(diff) - 1, 2)
              if not (pdb_types.is_generated(n := diff[i + 1].decode('utf-8')) or CARRIED.fullmatch(n)
-                     or NOTE_FILE.fullmatch(n))]
+                     or NOTE_FILE.fullmatch(n) or giveup.RECORD_FILE.fullmatch(n) or draft_bundle.owner(n))]
     if names and not any(contrib.UNIT_PATH.fullmatch(n) for n in names):
         # No unit file at all (tooling, docs or data): nothing of the PR is read or compiled, and the
         # trusted-base sample runs instead, as for a PR that changes only CI inputs.
-        return root, []
+        return trusted, []
     for i in range(0, len(diff) - 1, 2):
         status, name = diff[i].decode('ascii'), diff[i + 1].decode('utf-8')
-        if pdb_types.is_generated(name) or NOTE_FILE.fullmatch(name):
+        if (pdb_types.is_generated(name) or NOTE_FILE.fullmatch(name) or giveup.RECORD_FILE.fullmatch(name)
+                or draft_bundle.owner(name)):
             continue
         if CARRIED.fullmatch(name):
             carried.append(name)
@@ -156,27 +222,21 @@ def prepare(root, base, head, work):
                 return None
             shown = subprocess.run(['git', '-C', str(root), 'show', f'{head}:{path}'], capture_output=True)
             return shown.stdout.decode('utf-8-sig', 'replace') if shown.returncode == 0 else None
-        found = unit_deletion.problems(root, deleted, lambda n: base_text(root, merge_base, n),
+        found = unit_deletion.problems(trusted, deleted, lambda n: base_text(root, merge_base, n),
                                        lambda n: bool(git(root, 'ls-tree', head, '--', n).strip()), head_file)
         if found:
             raise ValueError('unit deletion would orphan an accepted function: ' + '; '.join(found))
     if not rows:
-        return root, []
-    tree = work / 'source'
-    tree.mkdir(parents=True)
-    for name in ('reconstruction', 'builds', 'findings', 'reports'):
-        shutil.copytree(root / name, tree / name, symlinks=False)
-    target = json.loads((root / 'builds/target.json').read_text())['build_id']
-    for name, blob in rows:
-        path = tree / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(blob)
+        return trusted, []
+    changed = [name for name, _ in rows if name not in comment_only]
+    tree = overlay_source(root, base, rows, work, bool(changed))
+    target = json.loads((trusted / 'builds/target.json').read_text())['build_id']
     found = [line for name, _blob in rows for line in lint.lint_file(tree, name, target)]
     if found:
         raise LintFailure(found)
     # A file whose text differs from base only in comments (digest_v2.strip_comments) compiles to the
     # same code, so it asks for no compile of its own; it is still linted and still in the tree above.
-    return tree, [name for name, _ in rows if name not in comment_only]
+    return tree, changed
 
 
 def rebound_units(root, base, head):
@@ -225,59 +285,125 @@ def bindings(root):
     return result
 
 
-def requests(tree, changed, known):
+def unit_recipe(text):
+    found = contrib.UNIT_RECIPE.search(text)
+    return found[0] if found else DEFAULT_RECIPE
+
+
+INCLUDE_LINES = re.compile('^' + STRICT_INCLUDE.pattern + '$', re.M)
+
+
+def source_files(tree):
+    for folder in SOURCE_DIRS:
+        for directory, _dirs, names in os.walk(tree / folder):
+            for name in names:
+                yield (Path(directory) / name).relative_to(tree).as_posix()
+
+
+def included_basenames(path):
+    if path.is_symlink() or not path.is_file():
+        return []
+    text = path.read_text(encoding='utf-8-sig', errors='replace').replace('\\\n', '')
+    return sorted({posixpath.basename(posixpath.normpath(match[1] or match[2]))
+                   for match in INCLUDE_LINES.finditer(text)})
+
+
+def update_include_graph(tree, base, cache):
+    """Keep the basename graph at the clean base, updating only files changed since the last run."""
+    graph = {}
+    names = source_files(tree)
+    try:
+        saved = json.loads(cache.read_text())
+        previous, stored = saved['base'], saved['graph']
+        if SHA.fullmatch(previous) and isinstance(stored, dict):
+            if previous == base:
+                return
+            names = git(tree, 'diff', '--no-renames', '--name-only', '-z', previous, base,
+                        '--', *SOURCE_DIRS).decode().split('\0')[:-1]
+            graph = stored
+    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError):
+        pass
+    for name in names:
+        if includes := included_basenames(tree / name):
+            graph[name] = includes
+        else:
+            graph.pop(name, None)
+    pending = cache.with_suffix('.tmp')
+    pending.write_text(json.dumps(dict(base=base, graph=graph)))
+    pending.replace(cache)
+
+
+def include_candidates(tree, changed, graph=None):
+    """Find possible includers by basename before resolving full translation units."""
+    if graph is None:
+        graph = {name: includes for name in source_files(tree) if (includes := included_basenames(tree / name))}
+    reverse = {}
+    for name, includes in graph.items():
+        for basename in includes:
+            reverse.setdefault(basename, set()).add(name)
+    names = {posixpath.basename(path) for path in changed}
+    pending_names = list(names)
+    includers = set()
+    while pending_names:
+        for path in reverse.get(pending_names.pop(), ()):
+            includers.add(path)
+            name = posixpath.basename(path)
+            if name not in names:
+                names.add(name)
+                pending_names.append(name)
+    return {name for name in includers if name.startswith('reconstruction/') and name.endswith('.cpp')}
+
+
+def requests(tree, changed, known, work=None):
     from check_source_digest import include_closure as cached_closure, source_digest_cache
     import revision_cache
     tree = Path(tree)
-    key = None
-    # Scratch CI trees have no git metadata; scoped resolution still avoids repeated directory scans.
-    if (tree / '.git').exists():
-        key = revision_cache.snapshot(tree)
-    index = revision_cache.read(tree, 'include-index', key) if key else None
-    if index is None:
-        index = {}
+    changed = set(changed)
+    if not changed:
+        return []
+    snapshot = revision_cache.snapshot(tree) if work is None and (tree / '.git').exists() else None
+    key = hashes.digest(json.dumps([snapshot, sorted(changed)]).encode()) if snapshot else None
+    units = revision_cache.read(tree, 'affected-units', key) if key else None
+    if units is None:
+        units = {name for name in changed if name.endswith('.cpp')}
+        graph = None
+        if work is not None:
+            graph = json.loads((work / 'source-includes.json').read_text())['graph']
+            for name, _ in json.loads((work / 'source-overlay.json').read_text()):
+                graph[name] = included_basenames(tree / name)
+        candidates = units | include_candidates(tree, changed, graph)
         with source_digest_cache():
-            for path in sorted((tree / 'reconstruction').rglob('*.cpp')):
-                unit = path.relative_to(tree).as_posix()
-                for name in cached_closure(tree, unit):
-                    index.setdefault(name, []).append(unit)
-        if key and revision_cache.snapshot(tree) == key:
-            revision_cache.save(tree, 'include-index', key, index)
-    units = {name for name in changed if name.endswith('.cpp')}
-    for name in changed:
-        units.update(index.get(name, []))
+            units = sorted(unit for unit in candidates if changed.intersection(cached_closure(tree, unit)))
+        if key and revision_cache.snapshot(tree) == snapshot:
+            revision_cache.save(tree, 'affected-units', key, units)
     result = []
     for unit in sorted(units):
         unit_text = (tree / unit).read_text(encoding='utf-8-sig')
-        declared = UNIT_RECIPE.search(unit_text)
-        entries = {r['rva']: dict(r) for r in known.get(unit, [])}
-        # The first host compiles the whole unit with the recipe the unit declares, or the default one when
-        # it declares none; an accepted function's older recorded recipe would give a second-host row whose
-        # recipe the record cannot bind.
-        for entry in entries.values():
-            entry['recipe'] = declared[0] if declared else DEFAULT_RECIPE
-        # New source may request an RVA/symbol, but cannot select the target mask, size or recipe.
-        for rva, symbol in REQUEST.findall((tree / unit).read_text(encoding='utf-8-sig')[:8192]):
+        recipe = unit_recipe(unit_text)
+        entries = {r['rva']: dict(r, recipe=recipe) for r in known.get(unit, [])}
+        for rva, symbol in REQUEST.findall(unit_text[:8192]):
             value = int(rva, 16)
-            if value not in entries:
-                entries[value] = dict(rva=value, symbol=symbol, recipe=DEFAULT_RECIPE)
-        # A new function has no accepted record to name its symbol. Its header claims the RVA and
-        # the object is searched for the function whose hash equals that published target, so the
-        # symbol is found by the comparison, never taken from the PR.
-        recipe = (UNIT_RECIPE.search((tree / unit).read_text(encoding='utf-8-sig')) or [DEFAULT_RECIPE])[0]
-        stem = unit.rsplit('.', 1)[0]
-        texts = [(tree / (stem + ext)).read_text(encoding='utf-8-sig') for ext in ('.h', '.cpp')
-                 if (tree / (stem + ext)).is_file()]
+            entries.setdefault(value, dict(rva=value, symbol=symbol, recipe=recipe, claim=symbol))
+        header = (tree / unit).with_suffix('.h')
+        texts = [unit_text]
+        if header.is_file():
+            texts.append(header.read_text(encoding='utf-8-sig'))
+        claims = {}
+        for text in texts:
+            for value, name in compact_claims(text):
+                claims.setdefault(value, bind.claim_identity(name))
         for value in sorted(claimed_rvas(texts))[:MAX_CLAIMS_PER_UNIT]:
-            entries.setdefault(value, dict(rva=value, symbol=None, recipe=recipe))
+            entry = entries.setdefault(value, dict(rva=value, symbol=None, recipe=recipe))
+            if claims.get(value):
+                entry.setdefault('claim', claims[value])
         if not entries:
-            result.append(dict(unit=unit, rva=None, symbol=None, recipe=DEFAULT_RECIPE))
+            result.append(dict(unit=unit, rva=None, symbol=None, recipe=recipe))
         else:
             result += [dict(unit=unit, **r) for r in entries.values()]
     return result
 
 
-def matching_symbols(blob, target):
+def matching_symbols(blob, target, claim=None):
     """Names of the object's functions whose normalized hash and layout equal the published target.
 
     Only sections of the target's size are hashed. The validator requires the first host's symbol
@@ -290,6 +416,11 @@ def matching_symbols(blob, target):
             sec = obj.section(sym.section)
             if sec.data is not None and len(sec.data) == target['size']:
                 names.add(sym.name)
+    if claim:
+        demangler = bind.Names(bind.find_undname())
+        if not claim.startswith('?'):
+            demangler.load(sorted(names))
+        names = {name for name in names if bind.matches_claim(name, claim, demangler)}
     found = []
     for name in sorted(names):
         try:
@@ -308,11 +439,85 @@ def defines(blob, name):
         return False
 
 
+DIAGNOSTIC = re.compile(r'(?:(?P<file>[^\r\n]+)\((?P<line>[0-9]{1,7})(?:,[0-9]{1,5})?\)'
+                        r'|cl) *: *(?:Command line )?(?:fatal )?error (?P<code>[CD][0-9]{4}): (?P<message>.+)')
+DIAGNOSTIC_MESSAGES = {
+    'C1001': 'internal compiler error',
+    'C1010': 'unexpected end of file while looking for a precompiled header',
+    'C1083': 'cannot open file',
+    'C1189': 'an #error directive stopped compilation',
+    'C1903': 'unable to recover from previous errors',
+    'C2001': 'newline in constant',
+    'C2059': 'syntax error',
+    'C2065': 'undeclared identifier',
+    'C2079': 'uses an undefined class, struct or union',
+    'C2143': 'syntax error: missing token',
+    'C2338': 'static assertion failed',
+    'C2440': 'cannot convert between types',
+    'C2504': 'base class undefined',
+    'C2660': 'function does not take this number of arguments',
+    'C2664': 'cannot convert a function argument',
+    'D8021': 'invalid numeric argument to a compiler option',
+}
+DIAGNOSTIC_LIMIT = 5
+DIAGNOSTIC_READ_LIMIT = 64 * 1024
+DIAGNOSTIC_LINE_LIMIT = 4096
+
+
+def diagnostic_tail(log, tree):
+    """Reconstruct a short error tail from public source locations and fixed diagnostic text."""
+    try:
+        with log.open('rb') as stream:
+            size = stream.seek(0, os.SEEK_END)
+            stream.seek(max(0, size - DIAGNOSTIC_READ_LIMIT))
+            if size > DIAGNOSTIC_READ_LIMIT:
+                stream.readline()
+            lines = stream.read(DIAGNOSTIC_READ_LIMIT).decode(errors='replace').split('\n')
+    except OSError:
+        return []
+    tree = tree.resolve()
+    tail = []
+    for line in reversed(lines):
+        match = DIAGNOSTIC.fullmatch(line[:DIAGNOSTIC_LINE_LIMIT].strip())
+        if not match:
+            continue
+        file, number, code, message = match.group('file', 'line', 'code', 'message')
+        location = ''
+        if file:
+            try:
+                path = (tree / file.replace('\\', '/')).relative_to(tree).as_posix()
+            except ValueError:
+                continue
+            if len(path) > 240 or not contrib.UNIT_PATH.fullmatch(path) or not (tree / path).is_file():
+                continue
+            location = f'{path}:{number}: '
+        # Error text can quote arbitrary source, including directives and assertion messages.
+        safe = DIAGNOSTIC_MESSAGES.get(code, 'compiler error')
+        if code == 'C1083' and message.startswith('Cannot open include file:'):
+            safe = 'cannot open include file'
+        tail.append(f'{location}{code}: {safe}')
+        if len(tail) == DIAGNOSTIC_LIMIT:
+            break
+    return tail[::-1]
+
+
+def as_bindirs(bindir):
+    """{toolset id: compiler bin directory}: a lone directory is the default toolset's."""
+    return dict(bindir) if isinstance(bindir, dict) else {toolsets.DEFAULT: bindir}
+
+
+def needed_toolsets(root, refs, base_recipes=()):
+    """Toolset ids the requests' recipes (and the base-tree recipes of the same units) call for, default first."""
+    ids = {toolsets.toolset_of_recipe(root, recipe)
+           for recipe in [*(r['recipe'] for r in refs), *base_recipes]}
+    return sorted(ids, key=lambda i: (i != toolsets.DEFAULT, i))
+
+
 def compile_requests(root, tree, requests_, bindir, work, manifest):
     ctx = contrib.Ctx(repo=root, platform='win32', interactive=False)
-    tool = dict(status='ok', flavour='native', bin=str(bindir), root=str(bindir.parents[6]))
+    bindirs = as_bindirs(bindir)
     targets = {row['rva']: row for row in manifest['functions']}
-    built = {}
+    built, failed = {}, {}
     rows = []
     for ref in requests_:
         target = targets.get(ref['rva'])
@@ -322,38 +527,59 @@ def compile_requests(root, tree, requests_, bindir, work, manifest):
             rows.append(row)
             continue
         key = ref['unit'], ref['recipe']
+        toolset = toolsets.toolset_of_recipe(root, ref['recipe'])
+        if toolset not in bindirs:
+            # A missing compiler is an infrastructure fault, not a verdict on the source.
+            raise ValueError('compiler toolchain unavailable')
+        tool = dict(status='ok', flavour='native', bin=str(bindirs[toolset]), root=str(bindirs[toolset].parents[6]))
         if key not in built:
+            out_dir = work / str(len(built))
             try:
                 recipe = json.loads((root / ref['recipe']).read_text())
                 _, includes = contrib.sdk_include_dirs(ctx, tool['root'], recipe['sdk'])
                 if not includes or includes[0].parent.name != recipe['sdk']:
                     raise ValueError('pinned SDK missing')
                 built[key] = contrib.compile_unit(ctx, tree, ref['unit'], ref['recipe'],
-                                                work / str(len(built)), tool)['object'].read_bytes()
-            except (ValueError, OSError, Reject, contrib.Stop, subprocess.TimeoutExpired):
+                                                out_dir, tool)['object'].read_bytes()
+            except (ValueError, OSError, Reject, contrib.Stop, subprocess.TimeoutExpired) as exc:
                 built[key] = None
+                tail = (diagnostic_tail(out_dir / 'compile.log', tree)
+                        if isinstance(exc, contrib.Stop) and exc.data.get('log') else [])
+                failed[key] = '\n'.join(['compile-failed', *tail])
         if built[key] is None:
-            row['result'], row['reason'] = 'mismatch', 'compile-failed'
+            row['result'], row['reason'] = 'mismatch', failed[key]
         elif target is None or (ref['symbol'] is None and ref['rva'] is None) \
                 or target['extraction'] == 'unmasked-unsupported':
             row['reason'] = 'published-target-or-binding-unavailable'
         else:
             try:
-                # A record's or request line's decorated name goes stale when the declaration changes
-                # (a void return made bool, a parameter retyped); the function is then found by its
-                # hash like a header-claimed one, never by the stale name.
-                if ref['symbol'] is None or not defines(built[key], ref['symbol']):
-                    symbols = matching_symbols(built[key], target)
-                    row['result'] = 'hash-match' if symbols else 'mismatch'
+                # A stale record can fall back to the hash. An explicit source claim still selects
+                # its own definition when other definitions have the same hash.
+                claim = ref.get('claim')
+                symbol = ref['symbol']
+                if claim and (claim.startswith('?') or claim == symbol):
+                    if defines(built[key], claim):
+                        row['result'] = hashes.candidate(built[key], claim, target)
+                        symbols = [claim]
+                    else:
+                        row['result'], row['reason'] = 'mismatch', 'no-matching-function'
+                elif claim or symbol is None or not defines(built[key], symbol):
+                    symbols = matching_symbols(built[key], target, claim)
+                    row['result'] = 'hash-match' if symbols and (not claim or len(symbols) == 1) else 'mismatch'
                     if not symbols:
                         row['reason'] = 'no-matching-function'
+                    elif claim and len(symbols) > 1:
+                        row['reason'] = 'ambiguous-function-claim'
                 else:
-                    row['result'] = hashes.candidate(built[key], ref['symbol'], target)
-                    symbols = [ref['symbol']]
+                    row['result'] = hashes.candidate(built[key], symbol, target)
+                    symbols = [symbol]
                 if row['result'] == 'hash-match':
                     row['symbols'] = symbols
                 row['source_sha256'] = tu_digest(tree, include_closure(tree, ref['unit']))
                 row['recipe_sha256'] = hashes.digest((root / ref['recipe']).read_bytes())
+                if toolset != toolsets.DEFAULT:
+                    row['toolset'] = toolset
+                    row['compiler_pins_sha256'] = hashes.digest((root / toolsets.pin_path(toolset)).read_bytes())
             except (ValueError, Reject):
                 row['result'], row['reason'] = 'no-target', 'unsupported-object-layout'
         rows.append(row)
@@ -397,7 +623,9 @@ def classify(head_rows, base_rows):
 def regress(root, tree, refs, bindir, work, manifest):
     head = compile_requests(root, tree, refs, bindir, work / 'head', manifest)
     # Units absent from the base tree are new; compiling them there would only add noise.
-    old = [r for r in refs if (root / r['unit']).is_file()]
+    base_recipes = {unit: unit_recipe((root / unit).read_text(encoding='utf-8-sig'))
+                    for unit in {r['unit'] for r in refs} if (root / unit).is_file()}
+    old = [dict(r, recipe=base_recipes[r['unit']]) for r in refs if r['unit'] in base_recipes]
     base = compile_requests(root, root, old, bindir, work / 'base', manifest) if old else []
     return classify(head, base)
 
@@ -424,6 +652,8 @@ def main(argv=None):
     p.add_argument('--base')
     p.add_argument('--head')
     p.add_argument('--bin', type=Path)
+    p.add_argument('--toolchain', action='append', default=[], metavar='ID=BIN',
+                   help='bin/Hostx64/x64 of another compiler build (repeatable), for units whose recipe names one')
     p.add_argument('--work', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--map-out', type=Path, help='regress: write {rva-or-unit: status} for the PR bot')
@@ -432,38 +662,58 @@ def main(argv=None):
                   base_sha=a.base, normalization_version=hashes.VERSION, acceptance='not-evaluated')
     try:
         a.work.mkdir(parents=True, exist_ok=True)
-        report.update(trusted_inputs(ROOT))
-        manifest = hashes.load_manifest(ROOT)
+        request_file = a.work / 'requests.json'
         if a.command == 'prepare':
+            request_file.unlink(missing_ok=True)
             tree, changed = prepare(ROOT, a.base, a.head, a.work)
-            refs = requests(tree, changed, without_rebound(bindings(ROOT), rebound_units(ROOT, a.base, a.head)))
-            (a.work / 'requests.json').write_text(json.dumps(refs))
+        trusted = base_view(ROOT, a.base, a.work)
+        report.update(trusted_inputs(trusted))
+        if a.command == 'prepare':
+            refs = requests(tree, changed, without_rebound(bindings(trusted), rebound_units(ROOT, a.base, a.head)),
+                            work=a.work)
+            request_file.write_text(json.dumps(dict(base=a.base, head=a.head, refs=refs)))
             report['intake'] = 'pass'
             report['requested_functions'] = len(refs)
             if os.environ.get('GITHUB_OUTPUT'):
                 with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
                     out.write('mode=' + ('check' if changed else 'sample') + '\n')
+                    # The workflow installs a second compiler only when a request's recipe names it.
+                    base_recipes = [unit_recipe((trusted / unit).read_text(encoding='utf-8-sig'))
+                                    for unit in {r['unit'] for r in refs} if (trusted / unit).is_file()]
+                    needed = [i for i in needed_toolsets(trusted, refs, base_recipes) if i != toolsets.DEFAULT]
+                    out.write('toolsets=' + ','.join(needed) + '\n')
         else:
-            if not a.bin or public.probe(ROOT, a.bin)['toolset'] != 'MATCH':
+            manifest = hashes.load_manifest(trusted)
+            if not a.bin or public.probe(trusted, a.bin)['toolset'] != 'MATCH':
                 raise ValueError('compiler pin mismatch')
+            bins = {toolsets.DEFAULT: a.bin}
+            for tid, path in toolsets.toolchain_args(a.toolchain).items():
+                bins[tid] = Path(path)
+                if public.probe(trusted, bins[tid], tid)['toolset'] != 'MATCH':
+                    raise ValueError('compiler pin mismatch')
             report['toolset'] = 'MATCH'
             if a.command == 'sample':
-                report['functions'] = sample(ROOT, a.bin, a.work, manifest)
-            elif a.command == 'regress':
-                refs = json.loads((a.work / 'requests.json').read_text())
-                report['functions'] = regress(ROOT, a.work / 'source', refs, a.bin, a.work / 'objects', manifest)
-                if a.map_out:
-                    a.map_out.parent.mkdir(parents=True, exist_ok=True)
-                    a.map_out.write_text(json.dumps({r['rva'] or r['unit']: r['status'] for r in report['functions']},
-                                                    indent=2, sort_keys=True) + '\n')
+                report['functions'] = sample(trusted, bins, a.work, manifest)
             else:
-                refs = json.loads((a.work / 'requests.json').read_text())
-                report['functions'] = compile_requests(ROOT, a.work / 'source', refs, a.bin,
-                                                       a.work / 'objects', manifest)
+                prepared = json.loads(request_file.read_text())
+                if (prepared['base'], prepared['head']) != (a.base, a.head):
+                    raise PrepareRevisionError('prepared revisions differ; run prepare with the requested base and head')
+                refs = prepared['refs']
+                if a.command == 'regress':
+                    report['functions'] = regress(trusted, a.work / 'source', refs, bins, a.work / 'objects', manifest)
+                    if a.map_out:
+                        a.map_out.parent.mkdir(parents=True, exist_ok=True)
+                        a.map_out.write_text(json.dumps({r['rva'] or r['unit']: r['status'] for r in report['functions']},
+                                                        indent=2, sort_keys=True) + '\n')
+                else:
+                    report['functions'] = compile_requests(trusted, a.work / 'source', refs, bins,
+                                                           a.work / 'objects', manifest)
     except (ValueError, OSError, KeyError, StopIteration, Reject, contrib.Stop,
             subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         report['error'] = type(exc).__name__
-        if isinstance(exc, LintFailure):
+        if isinstance(exc, PrepareRevisionError):
+            report['error'] = str(exc)
+        elif isinstance(exc, LintFailure):
             report['findings'] = exc.findings
     a.out.parent.mkdir(parents=True, exist_ok=True)
     a.out.write_text(json.dumps(report, indent=2) + '\n')

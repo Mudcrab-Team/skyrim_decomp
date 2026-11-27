@@ -29,7 +29,7 @@ import textwrap
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lint_reconstruction import DEFAULT_RECIPE, SKELETON_MARKER  # noqa: E402,F401 (re-exported for the CLIs and tests)
+from lint_reconstruction import DEFAULT_RECIPE, FREE_FUNCTION_PREFIX, SKELETON_MARKER  # noqa: E402,F401
 
 BODY_MARKER = 'SKELETON_TODO_BODY'
 MODEL_MARKER = 'SKELETON_TODO_MODEL'
@@ -188,12 +188,17 @@ def is_gpl(label):
 
 # ------------------------------------------------------------------ the contributor-flow writer
 
+def unit_stem(cls, rva):
+    return cls or f'{FREE_FUNCTION_PREFIX}{rva:x}'
+
+
 def skeleton(fn, cls, method, area, drafted_by, recipe, code_origin=None):
     """Compatibility entry point; render through the same engine as task skeletons."""
-    unit = {'cls': cls, 'area': area, 'header': f'reconstruction/{area}/{cls}.h',
-            'compiled': f'reconstruction/{area}/{cls}.cpp', 'brief': '', 'material': [],
-            'task': {'task_id': f'contrib-{cls.lower()}', 'build_id': fn['build_id'], 'recipe': recipe},
-            'functions': [dict(fn, community_name=f'{cls}::{method}',
+    stem = unit_stem(cls, fn['rva'])
+    unit = {'cls': cls, 'area': area, 'header': f'reconstruction/{area}/{stem}.h',
+            'compiled': f'reconstruction/{area}/{stem}.cpp', 'brief': '', 'material': [],
+            'task': {'task_id': f'contrib-{stem.lower()}', 'build_id': fn['build_id'], 'recipe': recipe},
+            'functions': [dict(fn, community_name=f'{cls}::{method}' if cls else method,
                                pack_json={'identity': {'name_source': fn.get('name_source')}})],
             'evidence': fn.get('evidence'), 'contributor_origin': True, 'code_origin': code_origin}
     _hp, header, _cp, source = render_unit(unit, drafted_by)
@@ -269,12 +274,14 @@ def contributor_files(repo, functions, cls, area, drafted_by, recipe, sources=No
         info = facts.get(cls, {})
         members.append(dict(fn, community_name=fn['name'], pack_dir=pack, readme=readme, destructor=destructor,
                             pack_json={'identity': {'name_source': info.get('source') or fn.get('name_source')}}))
-        hints += advice(repo, cls, method, decl['slot'] if decl else None)
-        if decl and facts.get(cls, {}).get('bases'):
-            hints += advice(repo, facts[cls]['bases'][0], method, decl['slot'])
-    unit = {'cls': cls, 'area': area, 'header': f'reconstruction/{area}/{cls}.h',
-            'compiled': f'reconstruction/{area}/{cls}.cpp', 'brief': '', 'material': [],
-            'task': {'task_id': f'contrib-{cls.lower()}', 'build_id': functions[0]['build_id'], 'recipe': recipe},
+        if cls:
+            hints += advice(repo, cls, method, decl['slot'] if decl else None)
+            if decl and facts.get(cls, {}).get('bases'):
+                hints += advice(repo, facts[cls]['bases'][0], method, decl['slot'])
+    stem = unit_stem(cls, functions[0]['rva'])
+    unit = {'cls': cls, 'area': area, 'header': f'reconstruction/{area}/{stem}.h',
+            'compiled': f'reconstruction/{area}/{stem}.cpp', 'brief': '', 'material': [],
+            'task': {'task_id': f'contrib-{stem.lower()}', 'build_id': functions[0]['build_id'], 'recipe': recipe},
             'functions': members, 'evidence': functions[0].get('evidence'), 'contributor': True, 'code_origin': code_origin,
             'community_facts': facts, 'signature_conflicts': conflicts,
             'notices': [n for n in notices if not any(n != other and n in other for other in notices)]}
@@ -504,6 +511,8 @@ def type_names(text):
 
 def method_of(fn, cls):
     name = fn.get('community_name') or ''
+    if not cls:
+        return name
     method = name.split('::')[-1] if '::' in name else name
     if method in ('ctor', cls):
         return 'ctor'
@@ -577,13 +586,16 @@ def plan(unit, repo=None):
         ident = (f.get('pack_json') or {}).get('identity') or {}
         label, _ = community_label(ident.get('name_source'))
         method = method_of(f, cls)
-        decl = None if method in ('ctor', 'dtor') else community_declaration(f, unit['material'], method)
-        members.append({'fn': f, 'method': method, 'label': label, 'decl': decl,
+        decl = None if cls and method in ('ctor', 'dtor') else community_declaration(f, unit['material'], method)
+        name_origin = f.get('name_origin') or ''
+        name_label = name_origin if re.fullmatch(
+            r'CRASHLOGGER_PDB\(59818@[\w.+-]+\)|SYMBOLS\((?:tesv-2013-map|fo4-pdb|fnv-x360-pdb)\)', name_origin) else None
+        members.append({'fn': f, 'method': method, 'label': label, 'name_label': name_label, 'decl': decl,
                         'parts': split_declaration(decl) if decl else None})
         class_label = class_label or label
     # Repeated bare `dtor` names are not evidence that distinct RVAs are one C++ destructor.
     # Keep each address separately draftable without inventing subobject ownership or a signature.
-    ambiguous = [m for m in members if m['method'] == 'dtor' and not m['fn'].get('destructor')]
+    ambiguous = [m for m in members if cls and m['method'] == 'dtor' and not m['fn'].get('destructor')]
     if len(ambiguous) > 1:
         for m in ambiguous:
             rva = m['fn']['rva']
@@ -631,12 +643,11 @@ def render_unit(unit, drafted_by=None, repo=None):
             if n not in labels[label]:
                 labels[label].append(n)
 
-    if p['class_label']:
-        add(cls, p['class_label'] + (' EXE_RTTI' if p['rtti'] else ''))
-    elif p['rtti']:
-        add(cls, 'EXE_RTTI')
-    else:
-        add(cls, 'GUESS(low)')
+    if cls:
+        if p['class_label']:
+            add(cls, p['class_label'] + (' EXE_RTTI' if p['rtti'] else ''))
+        else:
+            add(cls, 'EXE_RTTI' if p['rtti'] else 'GUESS(low)')
     for s in p['standins']:
         if not (p['inline_base'] and s in INLINE_BASE_ROOTS):  # those blocks carry their own labels
             add(s, 'STANDIN ' + (p['facts'].get(s, {}).get('label')
@@ -645,8 +656,8 @@ def render_unit(unit, drafted_by=None, repo=None):
     forward, todo_types, decls, defs, notes = [], [], [], [], []
     nested_forward = {}
     event_types = set()
-    has_ctor = any(m['method'] == 'ctor' for m in p['members'])
-    has_dtor = any(m['method'] == 'dtor' for m in p['members'])
+    has_ctor = cls and any(m['method'] == 'ctor' for m in p['members'])
+    has_dtor = cls and any(m['method'] == 'dtor' for m in p['members'])
     ctor_params = base_constructor(p['included_text'], p['include'][0]) if p['include'] else None
     if has_dtor and not has_ctor:
         params = ctor_params or ''
@@ -663,17 +674,20 @@ def render_unit(unit, drafted_by=None, repo=None):
             '}']))
     for m in p['members']:
         f, method = m['fn'], m['method']
+        qualified = f'{cls}::{method}' if cls else method
+        if m['name_label']:
+            add(qualified, m['name_label'])
         rva, size = int(str(f['rva']), 16) if isinstance(f['rva'], str) else f['rva'], f['size']
         where = f'RVA 0x{rva:x}, {size} bytes, {f.get("community_name")}'
-        kind = (f.get('destructor') or {}).get('kind')
-        if method == 'ctor':
+        kind = (f.get('destructor') or {}).get('kind') if cls else None
+        if cls and method == 'ctor':
             if m['label']:
                 # Labelled under the name the community source gives the function (meh321's list
                 # calls constructors `ctor`), which is the name check_labels.py can find there.
                 add(f'{f.get("community_name")}', m['label'])
             decls.append(f'{cls}();  // compared: 0x{rva:x}')
             head = f'{cls}::{cls}()'
-        elif method == 'dtor':
+        elif cls and method == 'dtor':
             if m['label']:
                 add(f'{cls}::~{cls}', m['label'])
             decls.append(f'virtual ~{cls}();  // compared: 0x{rva:x}' + (f' ({kind})' if kind else ''))
@@ -688,10 +702,10 @@ def render_unit(unit, drafted_by=None, repo=None):
         elif m['parts']:
             ret, params, quals, virtual, static = m['parts']
             if m['label']:
-                add(f'{cls}::{method}', m['label'])
-            prefix = 'static ' if static else 'virtual ' if virtual else ''
+                add(qualified, m['label'])
+            prefix = 'static ' if cls and static else 'virtual ' if cls and virtual else ''
             decls.append(f'{prefix}{ret} {method}({params}){" " + quals if quals else ""};  // compared: 0x{rva:x}')
-            head = f'{ret} {cls}::{method}({without_defaults(params)}){" " + quals if quals else ""}'
+            head = f'{ret} {qualified}({without_defaults(params)}){" " + quals if quals else ""}'
             by_ref, by_value = type_names(f'{ret} ({params})')
             for t in SUPPORT_DECLARATIONS:
                 if t in by_ref + by_value and not defined_in(p['included_text'], t):
@@ -720,12 +734,12 @@ def render_unit(unit, drafted_by=None, repo=None):
                     todo_types.append((t, 'used by value: declare it (an enum or a small class) before the class'))
         else:
             if m['label']:
-                add(f'{cls}::{method}', m['label'])
-            else:
-                add(f'{cls}::{method}', 'GUESS(low)')
+                add(qualified, m['label'])
+            elif not m['name_label']:
+                add(qualified, 'GUESS(low)')
             decls.append(f'void {method}();  // compared: 0x{rva:x}; TODO signature: no community declaration, '
                          'read it from the listing')
-            head = f'void {cls}::{method}()'
+            head = f'void {qualified}()'
         complete_form = (f.get('destructor') or {}).get('complete_form')
         if method == 'dtor' and kind and 'deleting' in kind and complete_form == 'out-of-line':
             # Keep only the declaration: the emitted deleting wrapper calls the complete dtor.
@@ -749,7 +763,10 @@ def render_unit(unit, drafted_by=None, repo=None):
                 remaining.remove(selected)
                 ordered.append(selected + f'  // slot {entry["slot"]:02X}')
             else:
-                ordered.append(entry['declaration'] + f'  // {entry["slot"]:02X}')
+                declaration = re.sub(r'\b(?:override|final)\b\s*', '', entry['declaration'])
+                if not re.search(r'\bvirtual\b', declaration):
+                    declaration = 'virtual ' + declaration
+                ordered.append(declaration + f'  // {entry["slot"]:02X}')
                 add(f'{name}::{method}', info['label'])
             # Reference declarations for non-compared slots need the same preparation too.
             parts = split_declaration(entry['declaration'])
@@ -796,17 +813,20 @@ def render_unit(unit, drafted_by=None, repo=None):
         nested = [f'    struct {n};' for n in sorted(nested_forward.get(s, ()))]
         blocks.append('\n'.join([f'class {s}{base}', '{', 'public:', *nested, *inherit, *vptr, *body, '};', *assert_line, '']))
         parent = s
-    body, assert_line, running = pad_lines(cls, running, p['sizes'], pads)
-    base = f' : public {parent}' if parent else ''
-    nested = [f'    struct {n};' for n in sorted(nested_forward.get(cls, ()))]
-    cls_block = [f'class {cls}{base}', '{', 'public:', *nested, *[f'    {d}' for d in decls]]
-    if parent is None and not any(d.startswith('virtual ') for d in decls) and p['rtti']:
-        cls_block.append('    void* unknown00;  // primary vftable storage')
-        pads.append('unknown00')
-    if body:
-        cls_block += ['', '    // TODO members: replace part of the padding with the members the bodies read,',
-                      '    // keeping every offset and the size check true.', *body]
-    cls_block += ['};', *assert_line, '']
+    if cls:
+        body, assert_line, running = pad_lines(cls, running, p['sizes'], pads)
+        base = f' : public {parent}' if parent else ''
+        nested = [f'    struct {n};' for n in sorted(nested_forward.get(cls, ()))]
+        blocks += [f'class {cls}{base}', '{', 'public:', *nested, *[f'    {d}' for d in decls]]
+        if parent is None and not any(d.startswith('virtual ') for d in decls) and p['rtti']:
+            blocks.append('    void* unknown00;  // primary vftable storage')
+            pads.append('unknown00')
+        if body:
+            blocks += ['', '    // TODO members: replace part of the padding with the members the bodies read,',
+                       '    // keeping every offset and the size check true.', *body]
+        blocks += ['};', *assert_line, '']
+    else:
+        blocks += [*decls, '']
     if pads:
         add(pads, 'GUESS(low)')
 
@@ -862,7 +882,7 @@ def render_unit(unit, drafted_by=None, repo=None):
     if extra_bases:
         header += [f'// TODO bases: the available class context also lists {", ".join(extra_bases)} after the first base; add them '
                    'in that order if a compared function needs them (cookbook rule 25).', '']
-    header += blocks + cls_block
+    header += blocks
 
     compared = [f'// 0x{(int(str(m["fn"]["rva"]), 16) if isinstance(m["fn"]["rva"], str) else m["fn"]["rva"]):x} '
                 f'{m["fn"].get("community_name")}' for m in p['members']]
@@ -875,7 +895,7 @@ def render_unit(unit, drafted_by=None, repo=None):
         *compared,
         f'// Adapted bodies: {ORIGIN_MARKER} (write "none" when attempt prints no "origin advice" line;',
         '// otherwise name each adapted body, its upstream file, revision and licence).',
-        f'#include "{cls}.h"',
+        f'#include "{Path(unit["header"]).name}"',
         '',
         '\n\n'.join(defs),
         '',
@@ -1003,6 +1023,11 @@ def function_sheet(unit, fn, sibling=False, repo=None):
     cautions = (fn.get('pack_json') or {}).get('cautions') or []
     if cautions:
         out.append('Cautions: ' + '; '.join(cautions) + '.')
+    # Earlier give-ups come first: they are what the last drafters learned, and a repeat of their tries is wasted.
+    import giveup
+    earlier = giveup.lines_for(repo, [rva])
+    if earlier:
+        out += [''] + earlier
     conv = readme_section(readme, 'Calling and return convention')
     conv = '\n'.join(line for line in conv.splitlines() if line.startswith('- '))
     out += ['', '## Signature and registers', conv or '- No community declaration; derive the signature from the listing.']
@@ -1103,6 +1128,11 @@ def overview(task_dir, cap=SHEET_CAP, repo=None):
     for f in unit['functions']:
         n = len(paginate(function_sheet(unit, f, repo=repo), cap - FOOTER_ROOM))
         lines.append(f'| {f["rva"]} | {f["size"]} | {f.get("community_name")} | {n} |')
+    import giveup
+    earlier = [(f['rva'], giveup.brief(repo, f['rva'])) for f in unit['functions']]
+    earlier = [f'- {rva}: {text}' for rva, text in earlier if text]
+    if earlier:
+        lines += ['', 'Earlier give-ups (the sheet of each function lists them first):'] + earlier
     lines += ['', f'Read one function: python3 tools/sheet.py {d} --function <rva> [--page N]']
     return '\n'.join(lines) + '\n'
 

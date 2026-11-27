@@ -85,7 +85,6 @@ class CurrentTaskTests(unittest.TestCase):
         git(self.repo, 'add', '.')
         git(self.repo, 'commit', '-q', '-m', 'c')
         self.ctx = contrib.Ctx(repo=self.repo, env={}, private=self.tmp / 'private', interactive=False)
-        self.times = {}
         for i, name in enumerate(('A', 'B', 'C')):
             tdir = self.tmp / 'private/tasks' / f'contrib-{name.lower()}'
             tdir.mkdir(parents=True)
@@ -102,23 +101,33 @@ class CurrentTaskTests(unittest.TestCase):
         with self.assertRaises(contrib.Stop):
             contrib.load_task(self.ctx)
 
-    def test_most_recently_modified_task_is_chosen_and_named(self):
-        said = []
-        self.ctx.say = said.append
+    def test_ambiguous_tasks_are_listed_without_using_recency(self):
+        with self.assertRaises(contrib.Stop) as stopped:
+            contrib.load_task(self.ctx, pick_current=True)
+        for name in ('contrib-a', 'contrib-b', 'contrib-c'):
+            self.assertIn(name, stopped.exception.message)
+
+    def test_task_started_in_this_worktree_is_preferred(self):
+        path = self.ctx.private / 'tasks/contrib-a/task.json'
+        task = json.loads(path.read_text())
+        task['contrib']['worktree'] = str(self.repo)
+        path.write_text(json.dumps(task))
         tdir, _task = contrib.load_task(self.ctx, pick_current=True)
-        self.assertEqual(tdir.name, 'contrib-c')
-        self.assertTrue(any('contrib-c' in line for line in said))
+        self.assertEqual(tdir.name, 'contrib-a')
 
     def test_unit_with_uncommitted_changes_beats_recency(self):
         (self.repo / 'reconstruction/forms/A.cpp').write_text('// changed\n')
         tdir, _task = contrib.load_task(self.ctx, pick_current=True)
         self.assertEqual(tdir.name, 'contrib-a')
 
-    def test_two_changed_units_fall_back_to_recency_among_them(self):
+    def test_two_changed_units_limit_the_choices(self):
         (self.repo / 'reconstruction/forms/A.cpp').write_text('// changed\n')
         (self.repo / 'reconstruction/forms/B.cpp').write_text('// changed\n')
-        tdir, _task = contrib.load_task(self.ctx, pick_current=True)
-        self.assertEqual(tdir.name, 'contrib-b')
+        with self.assertRaises(contrib.Stop) as stopped:
+            contrib.load_task(self.ctx, pick_current=True)
+        self.assertIn('contrib-a', stopped.exception.message)
+        self.assertIn('contrib-b', stopped.exception.message)
+        self.assertNotIn('contrib-c', stopped.exception.message)
 
     def test_an_explicit_name_is_untouched(self):
         tdir, _task = contrib.load_task(self.ctx, 'contrib-a', pick_current=True)
@@ -183,11 +192,11 @@ class StartExistingUnitTests(unittest.TestCase):
         self.assertEqual(data['unit'], ['reconstruction/custom/Widget.h', self.unit])
         self.assertEqual(data['created'], [])
 
-    def test_a_function_the_unit_does_not_name_still_gets_its_own_header(self):
+    def test_a_new_function_is_registered_without_a_source_marker(self):
         self.run_start(rva=0x2000)
-        text = (self.repo / self.unit).read_text()
-        self.assertTrue(text.endswith(self.cpp_text))
-        self.assertIn('// 0x2000 ', text)
+        self.assertEqual((self.repo / self.unit).read_text(), self.cpp_text)
+        task = json.loads((self.tdir / 'task.json').read_text())
+        self.assertIn('0x2000', [fn['rva'] for fn in task['functions']])
 
 
 class UnitIndexTests(unittest.TestCase):

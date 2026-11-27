@@ -10,6 +10,12 @@
     "findings/fourth-batch-selection.md"
   ],
   "image": {
+    "pe_code_virtual_size": {
+      "value": 24929512,
+      "basis": "measured",
+      "source": "builds/target.json",
+      "method": "Verify the installed executable against the pinned SHA-256, then sum PE section VirtualSize for entries flagged IMAGE_SCN_CNT_CODE. Only the executable .text entry qualifies. This counts CRT and import code without file-alignment padding."
+    },
     "ghidra_functions": {
       "value": 176587,
       "basis": "measured",
@@ -74,12 +80,12 @@
     },
     {
       "id": "std",
-      "label": "std and CRT",
+      "label": "CRT and unsplit std",
       "functions": 5883,
       "bytes": 1078377,
       "basis": "estimated",
       "treatment": "out_of_scope",
-      "method": "Nearest vftable-labelled neighbour is a std or Concurrency class."
+      "method": "Nearest vftable-labelled neighbour is a std or Concurrency class. Not split: std:: template instances the game instantiated are game code and counted when matched (docs/resource-guidelines.md); plain C runtime functions stay out of scope. This estimate has no measured split, so it stays a denominator estimate and is never edited by hand to follow matches."
     },
     {
       "id": "init",

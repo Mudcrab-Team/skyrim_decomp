@@ -23,7 +23,7 @@ import time
 
 TOOL_FILES = ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py',
               'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py', 'tools/verifier/verify_function.py',
-              'tools/verifier/unit_build.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
+              'tools/verifier/unit_build.py', 'tools/verifier/toolsets.py', 'tools/verifier/pinned.sha256', 'builds/target.json')
 CAUSES = ('header-drift', 'recipe-or-compiler-mismatch', 'missing-file', 'other')
 
 

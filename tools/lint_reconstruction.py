@@ -3,8 +3,9 @@
 These are the mechanical parts of the Reviewer's checklist (docs/verification.md, acceptance
 rule item 2), so a Reviewer pass is not spent on them and a Drafter learns them from the tool:
 
-- layout: `reconstruction/<area>/<Class>.h` and `.cpp` with a lowercase area and a class-named
-  file; the .cpp includes its own header by quoted name and the header declares the class;
+- layout: paired `.h` and `.cpp` files in a lowercase area. The .cpp includes its own header
+  by quoted name. A class-named header declares its class and a `FreeFunction_<rva>.h` header
+  declares a labelled function;
   recipes are `reconstruction/recipes/*.json`; README.md and the generated INDEX.md are the only
   other files;
 - banned constructs, checked on the spliced logical lines of tools/source_digest.py (backslash-
@@ -78,7 +79,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from source_digest import INCLUDE_ROOTS, STRICT_INCLUDE, logical_lines, quoted_includes  # noqa: E402
-from digest_v2 import LABEL_WORD  # noqa: E402
+from digest_v2 import LABEL_WORD, strip_comments  # noqa: E402
 import pdb_types  # noqa: E402
 import unit_paths  # noqa: E402
 
@@ -95,6 +96,12 @@ ALLOWED_PRAGMAS = {'once', 'pack', 'warning'}
 # The area is one or more lower-case folders (tools/unit_paths.py); a folder of the earlier
 # single-level layout is accepted too while units written against it are still landing.
 SOURCE = re.compile(r'reconstruction/((?:[a-z][a-z0-9_]*/)*[a-z][a-z0-9_]*)/((?:hk[a-z]{0,2})?[A-Z][A-Za-z0-9_]*)\.(h|cpp)')
+FREE_FUNCTION_PREFIX = 'FreeFunction_'
+FREE_FUNCTION_UNIT = re.compile(rf'{FREE_FUNCTION_PREFIX}[0-9a-f]+')
+FREE_FUNCTION_TOKENS = re.compile(
+    r'^[ \t]*(?:extern[ \t]+"C"[ \t]+)?[A-Za-z_][\w:<>.,\s*&]*?[\s*&]'
+    r'(?P<name>[A-Za-z_]\w*)\s*\([^;{}]*\)[^;{}]*;'
+    r'|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|[{}]', re.M)
 # A second unit of a split class is named `<Class>_<lowest rva>`; the class it declares is the base.
 SPLIT_TAG = re.compile(r'_[0-9a-f]{3,8}$')
 CODEGEN_DECLSPEC = r'naked|code_seg|allocate|safebuffers'
@@ -158,9 +165,12 @@ LABEL = (r'(?:COMMUNITY\([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+@[0-9a-f]{7,40}, [A-Za-z
 # names, declarations and code (docs/authorizations.md, Notes): repository -> (pinned revision
 # prefix, the licence word its labels must carry). A SIBLING label or `Sibling source:` line
 # citing anything else is refused, so a new sibling needs a recorded decision and an entry here.
-SIBLING_SOURCES = {'momusdigital/fnv_decomp': ('91e1b6e8', 'no-licence'),
+SIBLING_SOURCES = {'momusdigital/fnv_decomp': ('2b07cb3e', 'CC0-1.0'),
                    'momusdigital/f3_decomp': ('f5bac1b5', 'CC0-1.0'),
                    'fo4-private': ('1b765c70', 'author-permission')}
+# Earlier pins whose labels stay valid: merged units are never rewritten when a pin moves, and each
+# pin carries the licence word it was recorded with.
+SIBLING_LEGACY_PINS = {'momusdigital/fnv_decomp': (('91e1b6e8', 'no-licence'),)}
 SIBLING_ID = r'(?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|fo4-private)'
 SIBLING_LABEL = re.compile(rf'SIBLING\(({SIBLING_ID})@([0-9a-f]{{7,40}}), ([A-Za-z0-9.+-]+)\)')
 # Header line of a unit that reuses a body, or a substantial part of one, from a sibling:
@@ -271,12 +281,15 @@ def sibling_problems(where, repo, rev, licence=None):
                 'a new one needs a maintainer decision in docs/authorizations.md)']
     pin, word = allowed
     out = []
-    valid_pin = rev.startswith(pin) or pin.startswith(rev)
+    pins = [allowed, *SIBLING_LEGACY_PINS.get(repo, ())]
+    match = next((p for p in pins if rev.startswith(p[0]) or p[0].startswith(rev)), None)
     if repo == 'fo4-private':
         from fo4_private import REVISION
-        valid_pin = rev in (pin, REVISION)
-    if not valid_pin:
+        match = allowed if rev in (pin, REVISION) else None
+    if match is None:
         out.append(f'{where}: {repo} is pinned at {pin}, the citation gives {rev}')
+    else:
+        word = match[1]
     if licence is not None and licence != word:
         out.append(f'{where}: a {repo} label carries the recorded permission/licence word "{word}", not "{licence}"')
     return out
@@ -603,6 +616,25 @@ def skeleton_problems(name, text):
     return problems
 
 
+def free_function_header_problems(blob, name, header):
+    try:
+        code = strip_comments(blob, name, keep_provenance=False)
+    except ValueError as exc:
+        return [str(exc)]
+    labelled = {n.strip() for line in header.splitlines()
+                if (label := LABEL_LINE.match(line)) and ORIGIN_LABEL.search(label['labels'])
+                for n in label['names'].split(',')}
+    depth = 0
+    for token in FREE_FUNCTION_TOKENS.finditer(code):
+        if token[0] == '{':
+            depth += 1
+        elif token[0] == '}':
+            depth -= 1
+        elif depth == 0 and token['name'] in labelled:
+            return []
+    return [f'{name}: header must declare a free function with a name-origin label']
+
+
 def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_files=None):
     """Findings for one file; `skeleton_ok` skips only the skeleton-placeholder rule, `compact` adds
     the header budget that new and changed units must meet."""
@@ -675,7 +707,8 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
         problems.append(f'{name}: header comment needs "Source exposure: <{"|".join(EXPOSURE)}>"')
     if ext == 'cpp':
         if not COMPARED_LINE.search(header) and not re.search(r'\bRVA 0x[0-9a-fA-F]+', header):
-            problems.append(f'{name}: header comment needs one "// 0x<rva> <Name>" line per compared function')
+            problems.append(f'{name}: for each compared function, add or move its "// 0x<rva> <Name>" line '
+                            'to the leading comment above the first include')
         for ref in re.findall(r'Evidence:\s*([^\s,;]+)', header):
             ref = ref.rstrip('.')
             if PurePosixPath(ref).parts[:1] not in {('findings',), ('reports',)} or not (root / ref).is_file():
@@ -692,9 +725,21 @@ def lint_file(root, name, target_build, skeleton_ok=False, compact=False, spdx_f
     else:
         if not any(re.search(rf'\b{o}\b', header) for o in NAME_ORIGINS):
             problems.append(f'{name}: header comment must label name origin ({", ".join(NAME_ORIGINS)})')
+        if FREE_FUNCTION_UNIT.fullmatch(cls):
+            return problems + free_function_header_problems(blob, name, header)
         declared = (cls, SPLIT_TAG.sub('', cls))
+        # An address-derived filename may house a class whose name came from a sibling.
+        if re.fullmatch(r'Unk[0-9a-fA-F]+', declared[-1]):
+            for line in header.splitlines():
+                label = LABEL_LINE.match(line)
+                if label and 'SIBLING(' in label.group('labels'):
+                    declared += tuple(n.strip() for n in label.group('names').split(',')
+                                      if re.fullmatch(r'[A-Za-z_]\w*', n.strip()))
         if not any(re.search(rf'\b(?:class|struct)\s+{re.escape(c)}\b(?!\s*;)', spliced) for c in declared):
-            problems.append(f'{name}: header must declare class {declared[-1]}')
+            message = f'{name}: header must declare class {SPLIT_TAG.sub("", cls)}'
+            if re.fullmatch(r'Unk[0-9a-fA-F]+', SPLIT_TAG.sub('', cls)):
+                message += '; an Unk<RVA> unit may instead declare its explicitly SIBLING-labelled class'
+            problems.append(message)
     return problems
 
 

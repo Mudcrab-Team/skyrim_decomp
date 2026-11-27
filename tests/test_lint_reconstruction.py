@@ -63,6 +63,31 @@ class LintTests(unittest.TestCase):
     def test_good_unit_passes(self):
         self.assertEqual(self.problems(), [])
 
+    def test_free_function_header_requires_a_labelled_declaration(self):
+        path = 'reconstruction/misc/FreeFunction_1234.h'
+        header = '// Source exposure: binary-analysis\n// RunExample: GUESS(low)\n#pragma once\n'
+        for declaration, allowed in (('void RunExample();', True), ('void\nRunExample();', True),
+                                     ('void DifferentName();', False), ('/*\nvoid RunExample();\n*/', False),
+                                     ('void Owner::RunExample();', False),
+                                     ('class Owner {\npublic:\n    void RunExample();\n};', False)):
+            with self.subTest(declaration=declaration):
+                (self.root / path).write_text(header + declaration + '\n')
+                problems = lint.lint_file(self.root, path, BUILD)
+                expected = [] if allowed else [f'{path}: header must declare a free function with a name-origin label']
+                self.assertEqual(problems, expected)
+
+    def test_standard_instantiation_unit_passes(self):
+        header = ("// Source exposure: binary-analysis\n"
+                  "// Labels: v2\n"
+                  "// Template from the compiler's standard headers; the source is our own instantiation.\n"
+                  "// Widget, Get, value: GUESS(low)\n"
+                  "// vector, Widget_vector: OBSERVED\n"
+                  "#pragma once\n#include <vector>\n\n"
+                  "class Widget {\npublic:\n    int Get() const;\n    int value;\n};\n"
+                  "template class std::vector<Widget*>;\n")
+        self.write(header, SOURCE)
+        self.assertEqual(self.problems(), [])
+
     def test_banned_constructs(self):
         body = SOURCE.replace('{ return value; }', '{{ {} return value; }}')
         cases = {
@@ -139,6 +164,17 @@ class LintTests(unittest.TestCase):
         (self.root / 'reconstruction/Engine').mkdir()
         (self.root / 'reconstruction/Engine/widget.cpp').write_text(SOURCE)
         self.assertTrue(any('reconstruction/<area>/<Class>' in p for p in self.problems()))
+
+    def test_address_named_unit_accepts_only_an_explicit_sibling_class_label(self):
+        name = 'reconstruction/misc/Unk1234.h'
+        path = self.root / name
+        header = ('// Source exposure: mixed\n// Labels: v2\n'
+                  '// Widget, Widget::Get: SIBLING(momusdigital/fnv_decomp@2b07cb3e, CC0-1.0)\n'
+                  '#pragma once\nclass Widget {};\n')
+        path.write_text(header)
+        self.assertFalse(any('header must declare' in p for p in lint.lint_file(self.root, name, BUILD)))
+        path.write_text(header.replace('Widget, Widget::Get:', 'Widget::Get:'))
+        self.assertTrue(any('explicitly SIBLING-labelled class' in p for p in lint.lint_file(self.root, name, BUILD)))
 
     def test_include_style(self):
         self.assert_problem('must be included as "misc/Widget.h"', source=SOURCE.replace('"Widget.h"', '<misc/Widget.h>'))
@@ -246,7 +282,7 @@ class ReviewerFollowUpTests(LintTests):
     def test_sibling_citations_must_name_the_allowed_sibling_at_its_pin(self):
         cases = {
             'SIBLING(other/decomp@91e1b6e8, no-licence)': 'not an allowed sibling source',
-            'SIBLING(momusdigital/fnv_decomp@1234567, no-licence)': 'pinned at 91e1b6e8',
+            'SIBLING(momusdigital/fnv_decomp@1234567, no-licence)': 'pinned at 2b07cb3e',
             'SIBLING(momusdigital/fnv_decomp@91e1b6e8, MIT)': 'licence word "no-licence"',
             'SIBLING (momusdigital/fnv_decomp@91e1b6e8, no-licence)': 'label outside the v2 grammar',
             'SIBLING(momusdigital/fnv_decomp, no-licence)': 'label outside the v2 grammar',
@@ -263,7 +299,7 @@ class ReviewerFollowUpTests(LintTests):
         bad = {
             '// Sibling source: fnv ninode.cpp': 'write "Sibling source:',
             '// Sibling source: other/decomp@91e1b6e8 src/a.cpp': 'not an allowed sibling source',
-            '// Sibling source: momusdigital/fnv_decomp@abcdef0 src/a.cpp': 'pinned at 91e1b6e8',
+            '// Sibling source: momusdigital/fnv_decomp@abcdef0 src/a.cpp': 'pinned at 2b07cb3e',
             '// Sibling source: momusdigital/fnv_decomp@91e1b6e8 build/units.json': 'write "Sibling source:',
         }
         for line, needle in bad.items():
@@ -453,6 +489,12 @@ class CompactHeaderTests(LintTests):
         self.assertTrue(any('header states GPL' in p for p in self.problems()))
         self.write(header=HEADER.replace('// Widget', f'{gpl}// Widget'))
         self.assertFalse(any('header states GPL' in p for p in self.problems()))
+
+    def test_gpl_and_mit_labels_for_unlisted_community_repositories_are_accepted(self):
+        for label in ('COMMUNITY(libxse/commonlibf4@0123abc, GPL-3.0)', 'COMMUNITY(Someone/CommonLibF4@0123abc, MIT)',
+                      'COMMUNITY(Fork/CommonLibF4@0123abc, AGPL-3.0-only)'):
+            self.write(header=HEADER.replace('GUESS(low)', label))
+            self.assertFalse(any('COMMUNITY' in p for p in self.problems()), label)
 
     def test_gpl_spdx_line_is_not_flagged(self):
         self.write(header=HEADER.replace('// Widget', '// SPDX-License-Identifier: GPL-3.0-only\n// Widget'))

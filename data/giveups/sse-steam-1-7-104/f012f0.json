@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0xf012f0",
+  "records": [
+    {
+      "category": "eh-frame",
+      "tried": [
+        "reused the observed word as the next compare-exchange input and read the source owner again",
+        "saved a reference to the thread-local word",
+        "put the buffered allocation path ahead of the unbuffered path",
+        "tried scoped ownership of the retained stream and thread-local state (81.67, lower)",
+        "tried standard atomic compare-exchange (84.62, lower)",
+        "tried an explicit writable-byte accessor (tied)",
+        "rewrote the loops as do-while (worse)"
+      ],
+      "still_differs": "The ownership cleanup on unwind and the frame layout still differ.",
+      "suspected_cause": "Not determined; the scoped-ownership variants scored lower, so the unwind shape of the retained reference was not reproduced.",
+      "best_similarity": 86.55,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "gpt-6.2-sol",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/f012f0/1"
+      }
+    }
+  ]
+}

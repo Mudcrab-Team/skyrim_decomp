@@ -3,6 +3,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 TOOLS = Path(__file__).resolve().parents[1] / 'tools'
@@ -196,6 +197,16 @@ class PdbTypesTest(unittest.TestCase):
         self.assertFalse((out / 'types' / 'Stale.h').exists())
         self.assertEqual(sorted(p.relative_to(out).as_posix() for p in out.rglob('*') if p.is_file()),
                          sorted(self.files))
+
+    def test_build_option_writes_under_local_not_the_committed_tree(self):
+        root = Path(tempfile.mkdtemp(dir=self.tmp.name))
+        with mock.patch.object(P, 'ROOT', root):
+            self.assertEqual(P.main(['generate', str(self.pdb), '--version', VERSION, '--build', 'toy-build-1']), 0)
+            with self.assertRaises(SystemExit):
+                P.main(['generate', str(self.pdb), '--build', '../escape'])
+        written = root / '.local' / 'crashlogger_pdb' / 'toy-build-1'
+        self.assertTrue((written / 'README.md').is_file())
+        self.assertFalse((root / P.GENERATED).exists())
 
     def make_repo(self):
         root = Path(tempfile.mkdtemp(dir=self.tmp.name))

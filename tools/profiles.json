@@ -27,7 +27,7 @@
         "reviewer": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"},
         "strong": {"provider": "claude", "model": "sonnet", "effort": null, "harness": "claude-code"}
       },
-      "project_docs": ["docs/drafter-card.md", "docs/matching-cookbook.md", "the unit BRIEF.md and packs"],
+      "project_docs": ["docs/drafter-card.md", "docs/drafter-toolkit.md", "docs/matching-cookbook.md", "the unit BRIEF.md and packs"],
       "contrib_docs": ["docs/contributing-agent.md", "docs/contributor-card.md"],
       "kit": "class pack skeleton.h, per-function packs and the full brief; skeleton and sheets optional",
       "queue_dir": ".local/queue/full",

@@ -7,6 +7,7 @@
 // Code origin: original; the listing and community declarations only
 // SPDX-License-Identifier: CC0-1.0
 // 0xf96ed0 NiExtraDataController::IsEqual
+// NiExtraDataController::IsEqual: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "NiExtraDataController_f96ed0.h"
 
 // ExtraDataView: GUESS(low); file-local view of the extra data object; the padding virtuals put IsEqual on slot 0x1C.

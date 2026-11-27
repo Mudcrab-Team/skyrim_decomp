@@ -24,7 +24,8 @@ class DecompilerTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.ctx = contrib.Ctx(repo=ROOT, private=self.root / '.local/contrib',
-                               as_json=True, assume_yes=True, env={'PATH': ''})
+                               as_json=True, assume_yes=True,
+                               env={'PATH': '', 'ProgramFiles': str(self.root), 'ProgramFiles(x86)': str(self.root)})
         if sys.platform == 'cygwin':
             self.ctx.platform = 'linux'
         self.project = self.ctx.private / 'decompiler/projects/synthetic'
@@ -192,6 +193,8 @@ class DecompilerTests(unittest.TestCase):
             code, data, _ = self.ordinary_setup()
             self.assertEqual(code, contrib.OK)
             self.assertEqual(data['decompiler']['state'], 'starting')
+            self.assertIn('setup --no-self-test for progress', next(s['detail'] for s in data['steps']
+                                                                   if s['step'] == 'decompiler'))
             setup.assert_called_once_with(self.ctx, False)
             setup.reset_mock()
             code, data, _ = self.ordinary_setup('--no-decompiler')
@@ -295,6 +298,7 @@ class DecompilerTests(unittest.TestCase):
             self.assertEqual(d.setup(self.ctx)['state'], 'ready')
             start.assert_not_called()
 
+    @unittest.skipIf(sys.platform == 'win32', 'the analysis runs through a junction made with mklink, which this test counts among the launched commands')
     def test_analysis_resumes_saved_import_and_requires_fresh_completion(self):
         imported = []
         def run(cmd, **kw):
@@ -325,6 +329,7 @@ class DecompilerTests(unittest.TestCase):
                 d.run_analysis(self.ctx, self.project)
         self.assertEqual(d.status(self.project)['state'], 'failed')
 
+    @unittest.skipIf(sys.platform == 'win32', 'the analysis runs through a junction made with mklink, and this test patches the process launcher that makes it')
     def test_oom_cannot_publish_ready_even_with_zero_exit_and_checkpoint(self):
         (self.project / 'imported').write_text('synthetic import')
         (self.project / 'skyrim.gpr').write_text('synthetic project')

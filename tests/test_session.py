@@ -94,6 +94,7 @@ print(json.dumps(out))
 '''
 
 
+@unittest.skipIf(sys.platform == 'win32', 'the fake boat CLI is a script run through its shebang line, which Windows cannot execute')
 class FakeBoat(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp()).resolve()

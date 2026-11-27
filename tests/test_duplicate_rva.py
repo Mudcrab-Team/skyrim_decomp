@@ -82,5 +82,54 @@ class NewDuplicates(unittest.TestCase):
         self.assertEqual({}, duplicate_rva.new_duplicates(self.root, self.base, self.head()))
 
 
+class AgainstMain(unittest.TestCase):
+    """A PR checked on an older base can repeat an RVA that main gained afterwards."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        git(self.root, 'init', '-q', '-b', 'main')
+        write(self.root, 'reconstruction/a/A.cpp', '// 0x1000 A::F\n')
+        git(self.root, 'add', '.')
+        git(self.root, 'commit', '-q', '-m', 'base')
+        git(self.root, 'checkout', '-q', '-b', 'pr')
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def commit(self, branch, message='c'):
+        git(self.root, 'add', '-A')
+        git(self.root, 'commit', '-q', '-m', message)
+        return git(self.root, 'rev-parse', branch)
+
+    def land_on_main(self, name, text):
+        git(self.root, 'checkout', '-q', 'main')
+        write(self.root, name, text)
+        self.commit('main')
+        git(self.root, 'checkout', '-q', 'pr')
+
+    def test_a_unit_main_gained_for_the_same_rva_is_a_repeat(self):
+        write(self.root, 'reconstruction/std/S.cpp', '// 0x2000 S::F\n')
+        head = self.commit('pr')
+        self.land_on_main('reconstruction/b/B.cpp', '// 0x2000 B::F\n')
+        found = duplicate_rva.against_main(self.root, 'main', head)
+        self.assertEqual({0x2000: ['reconstruction/b/B.cpp', 'reconstruction/std/S.cpp']}, found)
+
+    def test_unrelated_units_and_an_unchanged_old_duplicate_are_not_repeats(self):
+        write(self.root, 'reconstruction/std/S.cpp', '// 0x2000 S::F\n')
+        head = self.commit('pr')
+        self.land_on_main('reconstruction/b/B.cpp', '// 0x3000 B::F\n')
+        self.assertEqual({}, duplicate_rva.against_main(self.root, 'main', head))
+
+    def test_replacing_the_unit_main_holds_is_not_a_repeat(self):
+        git(self.root, 'rm', '-q', 'reconstruction/a/A.cpp')
+        write(self.root, 'reconstruction/c/C.cpp', '// 0x1000 C::F\n')
+        head = self.commit('pr')
+        self.assertEqual({}, duplicate_rva.against_main(self.root, 'main', head))
+
+    def test_marked_lists_every_rva_with_its_units(self):
+        self.assertEqual({0x1000: ['reconstruction/a/A.cpp']}, duplicate_rva.marked(self.root))
+
+
 if __name__ == '__main__':
     unittest.main()

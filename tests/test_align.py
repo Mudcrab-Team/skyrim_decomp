@@ -5,6 +5,7 @@ import re
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools' / 'verifier'))
@@ -85,7 +86,7 @@ def listing(rows, candidate=False, symbols=None):
 def run(target_rows, cand_rows, symbols=None, unwind=None):
     text, data = align.summarise(listing(target_rows), listing(cand_rows, candidate=True),
                                  symbols=SYMBOLS if symbols is None else symbols, image_base=BASE,
-                                 unwind=unwind)
+                                 unwind=unwind, signature=True)
     return text, data
 
 
@@ -200,6 +201,7 @@ class Classes(unittest.TestCase):
                                 (None, '89 44 24 38', 'mov dword ptr [rsp + 0x38], eax', None)] + BASE_ROWS[4:]
         _, data = run(BASE_ROWS, rows)
         self.assertEqual(self.classes(data), {'extra-instruction'})
+        self.assertEqual(data['diff_signature'], {'extra-instruction': {'extra': 2}})
         self.assertEqual(data['distance'], 2 * align.WEIGHT['extra'])
         self.assertIn(9, data['cookbook_rules'])
 
@@ -221,6 +223,7 @@ class Classes(unittest.TestCase):
         rows = replace(BASE_ROWS, 7, (None, '48 8b 4f 10', 'mov rcx, qword ptr [rdi + 0x10]', None))
         _, data = run(BASE_ROWS, rows)
         self.assertEqual(self.classes(data), {'operand-width-or-signedness'})
+        self.assertEqual(data['diff_signature'], {'operand-width-or-signedness': {'pair': 1}})
         self.assertEqual(data['distance'], align.WEIGHT['width'])
 
     def test_reordered_independent_instructions(self):
@@ -228,6 +231,7 @@ class Classes(unittest.TestCase):
         rows = BASE_ROWS[:4] + [(None, 'b8 01 00 00 00', 'mov eax, 0x1', None)] + BASE_ROWS[4:]
         _, data = run(target, rows)
         self.assertEqual(self.classes(data), {'reordered-instructions'})
+        self.assertEqual(data['diff_signature'], {'reordered-instructions': {'moved': 1}})
         self.assertEqual(data['distance'], align.WEIGHT['moved'])
         self.assertIn(4, data['cookbook_rules'])
 
@@ -356,6 +360,25 @@ class Distance(unittest.TestCase):
 
 
 class Output(unittest.TestCase):
+    def test_diff_signature_counts_only_mismatching_operation_kinds(self):
+        target = BASE_ROWS
+        candidate = target[:5] + target[7:]
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / '.local/task/attempts/001'
+            fdir = work / '0x1000'
+            fdir.mkdir(parents=True)
+            (work / 'candidate.obj').touch()
+            (fdir / 'report.json').write_text(json.dumps({
+                'result': 'fail', 'function': {'rva': 0x1000, 'size': 100, 'symbol': 'f'},
+            }))
+            symbols = work / 'symbols.json'
+            symbols.write_text(json.dumps(SYMBOLS))
+            with patch.object(align, 'objdump_target', return_value=(listing(target), BASE)), \
+                 patch.object(align, 'objdump_candidate', return_value=listing(candidate, candidate=True)):
+                list(align.run_attempt_dir(work, symbols_path=symbols))
+            data = json.loads((fdir / 'align.json').read_text())
+        self.assertEqual(data['diff_signature'], {'missing-instruction': {'missing': 2}})
+
     def test_summary_is_short_and_has_no_bytes_or_instruction_text(self):
         rows = replace(swapped(BASE_ROWS), 10, (None, 'e8 ?? ?? ?? ??', 'call {T}', ('sym', '?Other@@YAXH@Z')))
         rows = rows[:5] + rows[7:]
@@ -381,6 +404,7 @@ class Output(unittest.TestCase):
         self.assertEqual(data['schema'], align.SCHEMA)
         self.assertEqual(len(data['alignment']), len(BASE_ROWS))
         self.assertTrue(set(data['classes']) <= set(align.CLASSES))
+        self.assertNotIn('diff_signature', data)
 
     def test_rows_input_is_accepted(self):
         rows = align.parse_listing(listing(BASE_ROWS))
@@ -400,6 +424,232 @@ class Output(unittest.TestCase):
             self.assertEqual(align.unwind_from_diagnostics(tmp), ('aa', 'bb'))
             (Path(tmp) / 'diagnostics.json').write_text(json.dumps({'report': {'reason': 'code-byte-mismatch'}}))
             self.assertIsNone(align.unwind_from_diagnostics(tmp))
+
+
+SMALL = [
+    (None, '48 8b 41 08', 'mov rax, qword ptr [rcx + 0x8]', None),
+    (None, '48 83 c0 20', 'add rax, 0x20', None),
+    (None, '48 89 41 08', 'mov qword ptr [rcx + 0x8], rax', None),
+    (None, 'c3', 'ret', None),
+]
+
+
+def behaviour(target_rows, cand_rows, symbols=None):
+    """align.behaviour_mismatches over the alignment of two synthetic listings."""
+    t_rows, c_rows = align.parse_listing(listing(target_rows)), align.parse_listing(
+        listing(cand_rows, candidate=True, symbols=symbols))
+    T = align.build(t_rows, base=BASE)
+    C = align.build(c_rows, symbols=SYMBOLS if symbols is None else symbols, candidate=True)
+    return align.behaviour_mismatches(T, C, align.analyse(T, C)['ops'])
+
+
+class BehaviourMismatches(unittest.TestCase):
+    def test_identical_and_renamed_code_has_none(self):
+        for cand in (BASE_ROWS, swapped(BASE_ROWS)):
+            found = behaviour(BASE_ROWS, cand)
+            self.assertEqual(found['count'], 0)
+            self.assertEqual(found['multiset']['missing'] + found['multiset']['extra'], 0)
+            self.assertEqual(align.behaviour_summary(found), '')
+
+    def test_immediate_that_differs_by_one_constant(self):
+        cand = replace(SMALL, 1, (None, '48 83 c0 10', 'add rax, 0x10', None))
+        found = behaviour(SMALL, cand)
+        self.assertEqual(found['count'], 1)
+        self.assertEqual(found['by_kind'], {'immediate': 1})
+        diff = found['pairs'][0]['differences'][0]
+        self.assertEqual((diff['target'], diff['candidate']), ('0x20', '0x10'))
+        self.assertEqual((found['pairs'][0]['t'], found['pairs'][0]['c']), (4, 4))
+        self.assertEqual((found['multiset']['missing'], found['multiset']['extra']), (1, 1))
+
+    def test_member_displacement_that_differs(self):
+        cand = replace(BASE_ROWS, 13, ('store', '89 47 18', 'mov dword ptr [rdi + 0x18], eax', None))
+        found = behaviour(BASE_ROWS, cand)
+        self.assertEqual(found['by_kind'], {'displacement': 1})
+        self.assertEqual(found['count'], 1)
+
+    def test_call_target_and_global_reference(self):
+        symbols = dict(SYMBOLS)
+        call = replace(BASE_ROWS, 10, (None, 'e8 ?? ?? ?? ??', 'call {T}', ('sym', '?Other@@YAXH@Z')))
+        self.assertEqual(behaviour(BASE_ROWS, call, symbols)['by_kind'], {'call-target': 1})
+        glob = replace(BASE_ROWS, 4, (None, '8b 1d ?? ?? ?? ??', 'mov ebx, dword ptr [{T}]', ('rip', 'g_other')))
+        self.assertEqual(behaviour(BASE_ROWS, glob, symbols)['by_kind'], {'global-ref': 1})
+
+    def test_unresolved_reference_is_not_a_mismatch(self):
+        call = replace(BASE_ROWS, 10, (None, 'e8 ?? ?? ?? ??', 'call {T}', ('sym', '?Missing@@YAXH@Z')))
+        found = behaviour(BASE_ROWS, call, {k: v for k, v in SYMBOLS.items() if k != '?Missing@@YAXH@Z'})
+        self.assertEqual(found['count'], 0)
+        self.assertEqual(found['unresolved'], 1)
+
+    def test_stack_frame_values_are_layout_not_behaviour(self):
+        cand = replace(BASE_ROWS, 2, (None, '48 83 ec 30', 'sub rsp, 0x30', None))
+        cand = replace(cand, 14, ('out', '48 8b 5c 24 40', 'mov rbx, qword ptr [rsp + 0x40]', None))
+        cand = replace(cand, 15, (None, '48 83 c4 30', 'add rsp, 0x30', None))
+        found = behaviour(BASE_ROWS, cand)
+        self.assertEqual(found['count'], 0)
+        self.assertEqual(found['multiset']['missing'] + found['multiset']['extra'], 0)
+
+    def test_value_missing_where_the_alignment_cannot_pair_it(self):
+        cand = SMALL[:1] + SMALL[2:]
+        found = behaviour(SMALL, cand)
+        self.assertEqual(found['count'], 0)
+        self.assertEqual(found['multiset']['largest'][0]['value'], '0x20')
+        self.assertEqual(found['multiset']['largest'][0]['difference'], -1)
+
+    def test_report_carries_counts_and_offsets_but_no_values(self):
+        cand = replace(SMALL, 1, (None, '48 83 c0 10', 'add rax, 0x10', None))
+        text, data = run(SMALL, cand)
+        self.assertEqual(data['behaviour']['count'], 1)
+        self.assertEqual(data['behaviour']['pairs'], [{'t': 4, 'c': 4, 'mnemonic': 'add', 'kinds': ['immediate']}])
+        self.assertIn('behaviour: 1 aligned pairs', text)
+        self.assertNotIn('0x20', json.dumps(data['behaviour']))
+        self.assertNotIn('0x20', text)
+        same, data = run(SMALL, SMALL)
+        self.assertNotIn('behaviour', same)
+        self.assertEqual(data['behaviour']['count'], 0)
+
+
+class ThreadLocalScoring(unittest.TestCase):
+    """A candidate's SECREL field holds only the addend and its `_tls_index` is a symbol; the target
+    holds the resolved offset and slot, so scoring needs the symbol map's thread-local entries."""
+
+    TARGET = ('\n'.join([
+        'Disassembly of section .text:',
+        f'\t{START:x}: 8b 0d ee 0f 00 00\tmov ecx, dword ptr [rip + 0xfee]',
+        f'\t{START + 6:x}: 8b 82 68 07 00 00\tmov eax, dword ptr [rdx + 0x768]',
+        f'\t{START + 12:x}: 05 68 07 00 00\tadd eax, 0x768',
+        f'\t{START + 17:x}: c3\tret', '']))
+    CANDIDATE = ('\n'.join([
+        'Disassembly of section .text:',
+        '\t0: 8b 0d 00 00 00 00\tmov ecx, dword ptr [rip]',
+        '\t\t0000000000000002:  IMAGE_REL_AMD64_REL32\t_tls_index',
+        '\t6: 8b 82 00 00 00 00\tmov eax, dword ptr [rdx]',
+        '\t\t0000000000000008:  IMAGE_REL_AMD64_SECREL\ttGuard',
+        '\tc: 05 00 00 00 00\tadd eax, 0x0',
+        '\t\t000000000000000d:  IMAGE_REL_AMD64_SECREL\ttGuard',
+        '\x11\tc3\tret', '']).replace('\x11', '\t11:'))
+
+    def distance(self, symbols, tls):
+        _, data = align.summarise(self.TARGET, self.CANDIDATE, symbols=symbols, image_base=BASE,
+                                  target_size=18, tls=tls)
+        # `distance` is 0 whenever the bytes agree outside relocated fields; the components still say
+        # whether the referent was resolved.
+        return sum(data['components'].values())
+
+    def test_thread_local_offset_and_index_slot_resolve(self):
+        self.assertEqual(self.distance({'_tls_index': 0x1ff4}, {'tGuard': 0x768}), 0)
+
+    def test_unresolved_thread_local_is_a_difference(self):
+        self.assertGreater(self.distance({'_tls_index': 0x1ff4}, {}), 0)
+        self.assertGreater(self.distance({}, {'tGuard': 0x768}), 0)
+
+    def test_wrong_offset_is_a_difference(self):
+        self.assertGreater(self.distance({'_tls_index': 0x1ff4}, {'tGuard': 0x770}), 0)
+
+    def test_load_scoring_reads_thread_local_entries(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'symbols.json'
+            path.write_text(json.dumps({'schema': 1, 'symbols': {
+                'f': {'rva': 16, 'size': 4}, 'tGuard': {'kind': 'thread-local', 'tls_offset': 0x768, 'size': None}}}))
+            symbols, tls = align.load_scoring(path)
+            self.assertEqual(symbols, {'f': 16})
+            self.assertEqual(tls, {'tGuard': 0x768})
+
+
+def _reference_edit_align(T, C, mapping=None):
+    """The unbanded table: every cell filled, costs from `align._cost`."""
+    n, m = len(T), len(C)
+    INF = float('inf')
+    prev = [float(j) for j in range(m + 1)]
+    back = bytearray((n + 1) * (m + 1))
+    for j in range(1, m + 1):
+        back[j] = 2
+    for i in range(1, n + 1):
+        cur = [INF] * (m + 1)
+        cur[0] = float(i)
+        back[i * (m + 1)] = 1
+        for j in range(1, m + 1):
+            best, how = prev[j - 1] + align._cost(T[i - 1], C[j - 1], mapping), 0
+            if prev[j] + 1 < best:
+                best, how = prev[j] + 1, 1
+            if cur[j - 1] + 1 < best:
+                best, how = cur[j - 1] + 1, 2
+            cur[j] = best
+            back[i * (m + 1) + j] = how
+        prev = cur
+    ops, i, j = [], n, m
+    while i or j:
+        how = back[i * (m + 1) + j]
+        if i and j and how == 0:
+            i, j = i - 1, j - 1
+            if align._cost(T[i], C[j]) >= 2.0:
+                ops += [('ins', j), ('del', i)]
+            else:
+                ops.append(('pair', i, j))
+        elif i and (how == 1 or not j):
+            i -= 1
+            ops.append(('del', i))
+        else:
+            j -= 1
+            ops.append(('ins', j))
+    return ops[::-1]
+
+
+class BandedAlignment(unittest.TestCase):
+    """The banded table must give exactly the alignment of the full table, ties included."""
+
+    VOCAB = ['mov eax, ecx', 'mov ecx, eax', 'mov ebx, dword ptr [rdi + 0x10]', 'mov rbx, rsi', 'mov rsi, rbx',
+             'add eax, 0x1', 'add eax, 0x2', 'sub rsp, 0x20', 'add rsp, 0x20', 'test rdi, rdi', 'cmp ecx, ebx',
+             'xor eax, eax', 'lea rax, [rdi + 0x8]', 'movzx eax, byte ptr [rdi]', 'movsx eax, byte ptr [rdi]',
+             'shl eax, 0x2', 'shr eax, 0x2', 'imul eax, ecx', 'nop', 'push rbx', 'pop rbx', 'ret']
+
+    def instructions(self, texts):
+        rows, at = [], 0
+        for text in texts:
+            rows.append([at, ['90'], text, []])
+            at += 1
+        return align.build(rows, candidate=True)
+
+    def edit(self, rng, texts, edits):
+        texts = list(texts)
+        for _ in range(edits):
+            kind = rng.choice(('del', 'ins', 'sub', 'swap', 'move'))
+            k = rng.randrange(max(1, len(texts) - 1))
+            if kind == 'del' and len(texts) > 2:
+                del texts[k]
+            elif kind == 'ins':
+                texts.insert(k, rng.choice(self.VOCAB))
+            elif kind == 'sub':
+                texts[k] = rng.choice(self.VOCAB)
+            elif kind == 'swap' and k + 1 < len(texts):
+                texts[k], texts[k + 1] = texts[k + 1], texts[k]
+            elif kind == 'move':
+                texts.insert(rng.randrange(len(texts)), texts.pop(k))
+        return texts
+
+    def test_matches_the_full_table(self):
+        import random
+        rng = random.Random(5)
+        maps = (None, {'rbx': 'rsi', 'rsi': 'rbx'})
+        checked = 0
+        for size in (3, 12, 40, 90, 200):
+            for edits in (0, 1, 4, 15, 60):
+                for _ in range(3):
+                    base = [rng.choice(self.VOCAB) for _ in range(size)]
+                    T = self.instructions(base)
+                    C = self.instructions(self.edit(rng, base, edits))
+                    for mapping in maps:
+                        self.assertEqual(align._edit_align(T, C, mapping), _reference_edit_align(T, C, mapping),
+                                         (size, edits, mapping))
+                        checked += 1
+        self.assertEqual(checked, 150)
+
+    def test_unrelated_and_empty_sequences(self):
+        import random
+        rng = random.Random(9)
+        for n, m in ((0, 0), (0, 5), (7, 0), (1, 1), (60, 5), (5, 60), (80, 80)):
+            T = self.instructions([rng.choice(self.VOCAB) for _ in range(n)])
+            C = self.instructions([rng.choice(self.VOCAB) for _ in range(m)])
+            self.assertEqual(align._edit_align(T, C), _reference_edit_align(T, C), (n, m))
 
 
 if __name__ == '__main__':

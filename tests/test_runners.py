@@ -59,12 +59,19 @@ class Config(unittest.TestCase):
     def test_valid_config_resolves_local_paths_against_the_checkout(self):
         c = runners.validate(config(hosts={'mac': host(msvc='.local/toolchains/msvc', work='.local/w'),
                                            'winpc': ssh_host()}), root='/repo')
-        self.assertEqual(c['hosts']['mac']['msvc'], '/repo/.local/toolchains/msvc')
-        self.assertEqual(c['hosts']['winpc']['ssh_config'], '/repo/.local/winpc/ssh_config')
+        self.assertEqual(c['hosts']['mac']['msvc'], str(Path('/repo/.local/toolchains/msvc')))
+        self.assertEqual(c['hosts']['winpc']['ssh_config'], str(Path('/repo/.local/winpc/ssh_config')))
         self.assertEqual(c['hosts']['winpc']['msvc'], 'C:/example/verifier/msvc')
         self.assertEqual(c['attempt'], 'mac')
         # An ssh host gets units in batches by default; a local host one at a time.
         self.assertEqual((c['hosts']['mac']['batch'], c['hosts']['winpc']['batch']), (1, 8))
+
+    def test_host_objdump_is_optional_and_kept(self):
+        c = runners.validate(config(hosts={'mac': host(objdump='llvm-objdump'),
+                                           'winpc': ssh_host(objdump='C:/example/llvm/llvm-objdump.exe')}), root='/repo')
+        self.assertEqual(c['hosts']['winpc']['objdump'], 'C:/example/llvm/llvm-objdump.exe')
+        self.assertEqual(c['hosts']['mac']['objdump'], 'llvm-objdump')
+        self.assertNotIn('objdump', runners.validate(config(), root='/repo')['hosts']['winpc'])
 
     def test_rejections(self):
         cases = [
@@ -79,6 +86,8 @@ class Config(unittest.TestCase):
             (dict(hosts={'mac': host(), 'winpc': ssh_host(batch=True)}), 'batch'),
             (dict(hosts={'mac': host(), 'winpc': ssh_host(msvc='C:/Program Files/msvc')}), 'quoting'),
             (dict(hosts={'mac': host(), 'winpc': ssh_host(image='C:/x;rm -rf')}), 'quoting'),
+            (dict(hosts={'mac': host(), 'winpc': ssh_host(objdump='C:/Program Files/LLVM/bin/llvm-objdump.exe')}), 'quoting'),
+            (dict(hosts={'mac': host(), 'winpc': ssh_host(objdump=3)}), 'objdump'),
             (dict(hosts={'mac': host(), 'winpc': ssh_host(ssh_host=None)}), 'ssh_host'),
             (dict(attempt='nowhere'), 'not a host'),
             (dict(confirm=['boat']), 'runner hosts only'),
@@ -100,6 +109,82 @@ class Config(unittest.TestCase):
             path.write_text(json.dumps(config()))
             chosen = runners.for_attempt(runners.load(path, root=tmp))
             self.assertEqual((chosen['host_id'], chosen['backend']), ('mac-wine', 'local'))
+
+    def test_an_unreachable_preferred_attempt_host_is_woken_and_the_fallback_runs(self):
+        c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
+        with mock.patch.object(runners, 'wake', return_value=True) as woken:
+            name, warns = runners.choose_attempt(c, {}, lambda h: False)
+        self.assertEqual(name, 'mac')
+        woken.assert_called_once()
+        self.assertIn('wake-up packet sent', warns[0])
+
+    def test_attempt_host_choice(self):
+        c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
+        up, down = (lambda h: True), (lambda h: False)
+        self.assertEqual(runners.choose_attempt(c, {}, up), ('winpc', []))
+        name, warns = runners.choose_attempt(c, {}, down)
+        self.assertEqual(name, 'mac')
+        self.assertEqual(len(warns), 1)
+        self.assertIn('winpc is not reachable', warns[0])
+        # Env override beats preference and probes nothing.
+        self.assertEqual(runners.choose_attempt(c, {'SR_ATTEMPT_HOST': 'mac'}, None), ('mac', []))
+        with self.assertRaises(runners.RunnerError):
+            runners.choose_attempt(c, {'SR_ATTEMPT_HOST': 'nowhere'}, up)
+
+    def test_wine_pick_with_reachable_ssh_host_warns(self):
+        c = runners.validate(config(), root='/repo')
+        name, warns = runners.choose_attempt(c, {}, lambda h: True)
+        self.assertEqual(name, 'mac')
+        self.assertTrue(any('winpc is reachable' in w and 'SR_ATTEMPT_HOST' in w for w in warns))
+        self.assertEqual(runners.choose_attempt(c, {}, lambda h: False), ('mac', []))
+
+    def test_compare_host_choice_and_wake(self):
+        c = runners.validate(config(compare_prefer=['winpc'], hosts={'mac': host(), 'winpc': ssh_host(
+            wake_mac='AA:BB:CC:DD:EE:FF')}), root='/repo')
+        self.assertEqual(runners.choose_compare(c, {}, lambda h: True), ('winpc', []))
+        with mock.patch.object(runners, 'wake', return_value=True) as sent:
+            name, warns = runners.choose_compare(c, {}, lambda h: False)
+        self.assertIsNone(name)
+        self.assertEqual(sent.call_count, 1)
+        self.assertIn('wake-up packet sent', warns[0])
+        self.assertEqual(runners.choose_compare(c, {'SR_COMPARE_HOST': 'attempt'}, None), (None, []))
+        self.assertEqual(runners.choose_compare(c, {'SR_COMPARE_HOST': 'winpc'}, None), ('winpc', []))
+        with self.assertRaises(runners.RunnerError):
+            runners.choose_compare(c, {'SR_COMPARE_HOST': 'mac'}, None)
+        self.assertEqual(runners.choose_compare(runners.validate(config(), root='/repo'), {}, lambda h: True),
+                         (None, []))
+        for bad in (dict(compare_prefer=['mac']), dict(compare_prefer=['nowhere']),
+                    dict(hosts={'mac': host(), 'winpc': ssh_host(wake_mac='nonsense')})):
+            with self.subTest(bad=bad), self.assertRaises(runners.RunnerError):
+                runners.validate(config(**bad), root='/repo')
+
+    def test_wake_sends_a_magic_packet_only_when_configured(self):
+        self.assertFalse(runners.wake({}))
+        sock = mock.MagicMock()
+        with mock.patch('socket.socket', return_value=sock):
+            self.assertTrue(runners.wake({'wake_mac': 'aa-bb-cc-dd-ee-ff'}))
+        data = sock.__enter__.return_value.sendto.call_args[0][0]
+        self.assertEqual(data, b'\xff' * 6 + bytes.fromhex('aabbccddeeff') * 16)
+
+    def test_attempt_prefer_must_name_hosts(self):
+        with self.assertRaises(runners.RunnerError):
+            runners.validate(config(attempt_prefer=['nowhere']), root='/repo')
+
+    def test_for_attempt_reports_config_and_host(self):
+        lines = []
+        c = runners.validate(config(attempt_prefer=['winpc']), root='/repo')
+        with mock.patch.object(runners, 'reachable', return_value=True), \
+                mock.patch.object(runners, 'config_origin', return_value='another checkout'), \
+                mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop('SR_ATTEMPT_HOST', None)
+            chosen = runners.for_attempt(c, report=lines.append)
+        self.assertEqual(chosen['host_id'], 'winpc-native')
+        self.assertIn('attempt host: winpc', lines[0])
+        self.assertTrue(any(l.startswith('WARNING') and 'main checkout' in l for l in lines))
+
+    def test_config_origin(self):
+        with mock.patch.dict(os.environ, {'SR_RUNNERS_CONFIG': '/x/r.json'}):
+            self.assertEqual(runners.config_origin(), 'SR_RUNNERS_CONFIG')
 
     def test_example_config_is_valid(self):
         example = json.loads((ROOT / 'tools/verifier/runners.example.json').read_text())
@@ -561,6 +646,7 @@ class StubSsh(runners.LocalTransport):
         return '/'.join(p.rstrip('/') for p in parts)
 
 
+@unittest.skipIf(sys.platform == 'win32', 'the fake msvc-wine compiler is a bash script, which the native Windows host path cannot run')
 class AgentEndToEnd(unittest.TestCase):
     """attempt's host interface (run, fetch) through host_agent.py and unit_build.py."""
 
@@ -585,7 +671,7 @@ class AgentEndToEnd(unittest.TestCase):
         (bindir / 'cl').chmod(0o755)
         files = {}
         for name in ('tools/compare_runtime.py', 'tools/compare_internal.py', 'tools/compare.py', 'tools/pecoff.py', 'tools/source_digest.py', 'tools/digest_v2.py',
-                     'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py'):
+                     'tools/verifier/verify_function.py', 'tools/verifier/unit_build.py', 'tools/verifier/toolsets.py'):
             files[name] = ROOT / name
         pins = src / 'tools/verifier/pinned.sha256'
         pins.parent.mkdir(parents=True)
@@ -744,6 +830,102 @@ class AgentEndToEnd(unittest.TestCase):
         self.assertEqual([p.name for p in (self.tmp / 'work').iterdir() if p.name != '.prep'], [])
         self.assertEqual(list((self.tmp / 'stage').iterdir()), [])
 
+    def test_prefetched_result_is_used_once_and_only_for_the_same_sources(self):
+        import compare_batch
+        results, _ = self.batch(('unit-a',))
+        code, unit, _ = results['unit-a']
+        task = dict(self.task, task_id='unit-a', dir=self.tmp / 'task')
+        (task['dir'] / '.attempt').mkdir(parents=True)
+        h = dict(host(msvc=str(self.msvc), work=str(self.tmp / 'work'), image=str(self.image), wine_bin=None,
+                      wineprefix=None, max_parallel=2), backend='ssh', python=[sys.executable], name='winpc',
+                 ssh_config='x', ssh_host='y')
+        config = {'hosts': {'winpc': h}}
+        unit.rename(task['dir'] / '.attempt' / compare_batch.UNIT_DIR)
+        compare_batch.write_entry(task['dir'], compare_batch.spec_key(task, self.files, h['host_id']), 'winpc', code)
+        found = compare_batch.read_entry(task['dir'], task, self.files, config)
+        self.assertEqual(found[2], 0)
+        worker = compare_batch.PrefetchedHost(found[0], task, found, transport=StubSsh(h))
+        self.assertEqual(worker.run(self.files, self.tmp / 'stage'), (0, ''))
+        dest = worker.fetch(self.tmp / 'task' / 'attempts' / '001')
+        self.assertTrue((dest / 'candidate.obj').is_file())
+        self.assertIsNone(compare_batch.read_entry(task['dir'], task, self.files, config))
+        # Changed sources make a stale result unusable.
+        other = self.tmp / 'edited.cpp'
+        other.write_text('#include "Synth.h"\nint edited;\n')
+        results, _ = self.batch(('unit-a',))
+        results['unit-a'][1].rename(task['dir'] / '.attempt' / compare_batch.UNIT_DIR)
+        compare_batch.write_entry(task['dir'], compare_batch.spec_key(task, self.files, h['host_id']), 'winpc', 0)
+        changed = dict(self.files, **{'reconstruction/synth/Synth.cpp': other})
+        self.assertIsNone(compare_batch.read_entry(task['dir'], task, changed, config))
+
+    def test_a_finished_confirm_is_skipped_only_while_its_sources_are_unchanged(self):
+        import compare_batch
+        task = dict(self.task, dir=self.tmp / 'confirm-task')
+        kept = task['dir'] / 'confirm' / 'mac-wine'
+        kept.mkdir(parents=True)
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))
+        compare_batch.mark_confirm(task['dir'], task, self.files, 'mac-wine', 1)
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))  # no kept result yet
+        (kept / 'result.json').write_text('{}')
+        self.assertEqual(compare_batch.confirm_done(task['dir'], task, self.files), 1)
+        other = self.tmp / 'edited.cpp'
+        other.write_text('#include "Synth.h"\nint edited;\n')
+        changed = dict(self.files, **{'reconstruction/synth/Synth.cpp': other})
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, changed))
+        # A run that produced no verdict leaves no mark, and removes an older one.
+        compare_batch.mark_confirm(task['dir'], task, self.files, 'mac-wine', 3)
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files))
+
+    def test_a_confirmation_made_on_another_host_is_not_this_hosts(self):
+        import compare_batch
+        task = dict(self.task, dir=self.tmp / 'confirm-other')
+        kept = task['dir'] / 'confirm' / 'winpc-native'
+        kept.mkdir(parents=True)
+        (kept / 'result.json').write_text('{}')
+        compare_batch.mark_confirm(task['dir'], task, self.files, 'winpc-native', 0)
+        self.assertEqual(compare_batch.confirm_done(task['dir'], task, self.files), 0)
+        self.assertEqual(compare_batch.confirm_done(task['dir'], task, self.files, 'winpc-native'), 0)
+        # The record's first host is the registered one; the other host's kept result must be redone there.
+        self.assertIsNone(compare_batch.confirm_done(task['dir'], task, self.files, 'mac-wine'))
+
+    def test_confirmations_run_only_on_a_registered_confirm_host(self):
+        import compare_batch
+        mac = dict(host_id='mac-wine', backend='local', loader='wine', machine='maintainer-mac', os='macos')
+        pc = dict(host_id='winpc-native', backend='ssh', loader='native', machine='pc', os='windows')
+        ci = dict(host_id='github-windows-native', backend='ci-hash', loader='native',
+                  machine='github-hosted-windows', os='windows')
+        cfg = {'hosts': {'mac': mac, 'winpc': pc, 'ghci': ci}, 'confirm': ['mac', 'ghci']}
+        with mock.patch.object(runners, 'with_image', side_effect=lambda h: h), \
+                mock.patch.object(runners, 'for_confirm', return_value=[mac, ci]):
+            self.assertTrue(compare_batch.confirm_host(cfg, 'mac'))
+            self.assertFalse(compare_batch.confirm_host(cfg, 'winpc'))
+        with mock.patch.object(runners, 'with_image', side_effect=lambda h: h), \
+                mock.patch.object(runners, 'for_confirm', side_effect=runners.RunnerError('x')):
+            self.assertFalse(compare_batch.confirm_host(cfg, 'mac'))
+
+    def test_a_confirm_batch_keeps_each_result_where_wine_confirm_does_and_marks_it(self):
+        import compare_batch
+        h = dict(host(msvc=str(self.msvc), work=str(self.tmp / 'work'), image=str(self.image), wine_bin=None,
+                      wineprefix=None, max_parallel=2), backend='ssh', python=[sys.executable], name='winpc',
+                 ssh_config='x', ssh_host='y', batch=4)
+        tasks = [dict(self.task, task_id=tid, dir=self.tmp / tid) for tid in ('c-a', 'c-b')]
+        for t in tasks:
+            t['dir'].mkdir()
+        with mock.patch.object(compare_batch.pipeline, 'load_task', side_effect=tasks), \
+                mock.patch.object(compare_batch.pipeline, 'unit_manifest', return_value=(self.files, [])), \
+                mock.patch.object(compare_batch.pipeline, 'compiler_include_problem', return_value=None), \
+                mock.patch.object(compare_batch.pipeline, 'REPO', self.tmp / 'src'), \
+                mock.patch.object(runners, 'transport_for', return_value=StubSsh(h)):
+            kept = compare_batch.run([t['dir'] for t in tasks], {'hosts': {'winpc': h}}, 'winpc',
+                                     time.monotonic() + 600, stage_root=self.tmp / 'cs', confirm=True,
+                                     log=lambda m: None)
+        self.assertEqual(kept, 2)
+        for t in tasks:
+            self.assertTrue((t['dir'] / 'confirm' / h['host_id'] / 'candidate.obj').is_file())
+            self.assertEqual(compare_batch.confirm_done(t['dir'], t, self.files), 0)
+            facts = json.loads((t['dir'] / 'confirm' / h['host_id'] / 'result.json').read_text())['host_facts']
+            self.assertEqual(facts['toolchain_check'], 'checked')
+
     def test_batch_missing_one_agent_result_affects_only_that_unit(self):
         unpack = runners.unpack
 
@@ -821,6 +1003,7 @@ class LoaderPaths(unittest.TestCase):
         self.assertEqual(tool, 1)
         self.assertEqual(len(out), 3)
 
+    @unittest.skipIf(sys.platform == 'win32', 'classify_includes is the POSIX loader path logic and these fixtures are POSIX absolute paths')
     def test_fold_case_accepts_only_closure_files(self):
         closure = ['reconstruction/a/B.cpp', 'reconstruction/a/B.h']
         files, rest = ub.fold_case_includes(['/w/repo/reconstruction/a/b.h', '/w/repo/reconstruction/a/c.h',

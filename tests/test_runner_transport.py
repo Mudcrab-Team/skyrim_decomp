@@ -139,6 +139,8 @@ t = runners.SshTransport(host)
 number = sys.argv[3]
 def record(kind):
     with open(state / 'events.jsonl', 'a') as f:
+        # Windows append can race between seeking to the end and writing the record.
+        runners.fcntl.flock(f, runners.fcntl.LOCK_EX)
         f.write(json.dumps([kind, os.getpid()]) + '\n')
 def execute(*args, **kwargs):
     record('start')

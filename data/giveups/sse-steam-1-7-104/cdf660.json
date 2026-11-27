@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0xcdf660",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "dropped the invented inFreeLists flag for if not found chains",
+        "wrote the best-fit descent flat so it is jump-threaded",
+        "corrected the tree realignment offset",
+        "computed a gap in the grow path and realigned when it is small",
+        "added a NextLarger in-order successor helper with a null guard",
+        "tested the aligned case first in the small-list search and derived the index from the payload shifted",
+        "moved the split after the loop, moved the retry block and hoisted bestWaste (no gain or worse, reverted)"
+      ],
+      "still_differs": "The target shrink-wraps the early return before most saves, places the retry block inside the split region, holds one constant in a register all function, uses a branch where the draft uses a conditional move, and keeps two locals in different stack slots.",
+      "suspected_cause": "Block-order and register walls that the drafter calls permuter candidates; no source change identified.",
+      "best_similarity": 85.93,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/cdf660/1"
+      }
+    }
+  ]
+}

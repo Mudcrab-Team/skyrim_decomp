@@ -16,7 +16,8 @@ import lint_reconstruction  # noqa: E402
 from lint_reconstruction import lint_file  # noqa: E402
 
 HEAD = '// Thing, build b. Source exposure: black-box. Names: GUESS.\n'
-PIN = '91e1b6e8'
+PIN = '2b07cb3e'
+LEGACY_PIN = '91e1b6e8'
 NG = 'CharmedBaryon/CommonLibSSE-NG@b93280e'
 PO3 = 'powerof3/CommonLibSSE@654e55f'
 
@@ -103,15 +104,24 @@ class LintSiblingTests(unittest.TestCase):
     lint = LintLicenceTests.lint
 
     def test_sibling_label_checked_in_files_without_labels_v2(self):
-        for label, want in ((f'SIBLING(momusdigital/fnv_decomp@abcdef12, no-licence)', f'pinned at {PIN}'),
-                            (f'SIBLING(momusdigital/fnv_decomp@{PIN}, MIT)', 'licence word "no-licence"'),
+        for label, want in ((f'SIBLING(momusdigital/fnv_decomp@abcdef12, CC0-1.0)', f'pinned at {PIN}'),
+                            (f'SIBLING(momusdigital/fnv_decomp@{PIN}, MIT)', 'licence word "CC0-1.0"'),
                             (f'SIBLING(other/decomp@{PIN}, no-licence)', 'not an allowed sibling source'),
                             ('SIBLING(momusdigital/fnv_decomp, no-licence)', 'is not "SIBLING(')):
             with self.subTest(label=label):
                 problems = self.lint(HEAD + f'struct Thing {{\n    // Get: {label}\n    int Get();\n}};\n')
                 self.assertTrue(any(want in p for p in problems), problems)
-        ok = f'struct Thing {{\n    // Get: SIBLING(momusdigital/fnv_decomp@{PIN}, no-licence)\n    int Get();\n}};\n'
+        ok = f'struct Thing {{\n    // Get: SIBLING(momusdigital/fnv_decomp@{PIN}, CC0-1.0)\n    int Get();\n}};\n'
         self.assertEqual(self.lint(HEAD + ok), [])
+
+    def test_retired_fnv_pin_keeps_validating_with_its_own_word(self):
+        ok = f'struct Thing {{\n    // Get: SIBLING(momusdigital/fnv_decomp@{LEGACY_PIN}, no-licence)\n    int Get();\n}};\n'
+        self.assertEqual(self.lint(HEAD + ok), [])
+        # Each pin keeps its own licence word; the new word does not attach to the old pin.
+        bad = ok.replace('no-licence', 'CC0-1.0')
+        self.assertTrue(any('licence word "no-licence"' in p for p in self.lint(HEAD + bad)))
+        src = f'// Sibling source: momusdigital/fnv_decomp@{LEGACY_PIN} src/core/a.cpp:3\n' + HEAD
+        self.assertEqual([p for p in self.lint(src) if 'pinned' in p or 'sibling' in p.lower()], [])
 
     def test_f3_sibling_label_needs_its_pin_and_cc0_word(self):
         for label, want in (('SIBLING(momusdigital/f3_decomp@abcdef12, CC0-1.0)', 'pinned at f5bac1b5'),

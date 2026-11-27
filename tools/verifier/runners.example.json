@@ -1,10 +1,13 @@
 {
   "runners_schema": 1,
   "attempt": "mac",
+  "attempt_prefer": ["winpc"],
+  "compare_prefer": ["winpc"],
   "confirm": [
     "mac",
     "winpc"
   ],
+  "prep": "winpc",
   "hosts": {
     "boat": {
       "backend": "boat"
@@ -18,7 +21,8 @@
       "wine_bin": ".local/toolchains/wine-11.0_1/Wine Stable.app/Contents/Resources/wine/bin",
       "wineprefix": ".local/verifier/hosts/mac/wineprefix",
       "work": ".local/verifier/hosts/mac/work",
-      "max_parallel": 6
+      "max_parallel": 6,
+      "toolchains": {"19.00.23918": ".local/toolchains/msvc-19.00.23918"}
     },
     "winpc": {
       "backend": "ssh",
@@ -30,10 +34,13 @@
       "python": ["py", "-3.12"],
       "msvc": "C:/example/verifier/msvc",
       "image": "C:/example/verifier/private/SkyrimSE.exe",
+      "objdump": "C:/example/verifier/llvm/llvm-objdump.exe",
       "work": "C:/example/verifier/work",
       "max_parallel": 8,
       "max_sessions": 4,
-      "batch": 16
+      "batch": 32,
+      "wake_mac": "AA:BB:CC:DD:EE:FF",
+      "toolchains": {"19.00.23918": "C:/example/verifier/msvc-19.00.23918"}
     },
     "ci": {
       "backend": "ci-hash",

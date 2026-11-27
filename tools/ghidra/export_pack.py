@@ -31,16 +31,26 @@ import time
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
+
+
+def class_dirname(cls):
+    """Directory name for a class's shared material. Instantiated template classes can have names
+    longer than a file name may be, so a long or unusual name is cut and given a digest suffix."""
+    if len(cls) <= 100 and re.fullmatch(r'[A-Za-z0-9_:.~-]+', cls):
+        return cls
+    return re.sub(r'[^A-Za-z0-9_]+', '_', cls)[:80] + '-' + hashlib.sha1(cls.encode()).hexdigest()[:10]
+
 sys.path.insert(0, str(REPO / 'tools'))
 sys.path.insert(0, str(HERE))
 from pecoff import (EH_HANDLERS, EH_LAYOUTS, FUNCINFO_MAGIC, TYPE_DESCRIPTOR_NAME, UNW_FLAG_CHAININFO,  # noqa: E402
                     UNW_FLAG_EHANDLER, UNW_FLAG_UHANDLER, CoffObject, PeImage, Reject, eh_size, unwind_header)
 import community_ids  # noqa: E402
+import record_store  # noqa: E402
 import unit_paths  # noqa: E402
+from analysis import x64  # noqa: E402
 
 PACK_SCHEMA = 1
 TASK_SCHEMA = 1
-DEFAULT_CONFIG = REPO / '.local/config/export_pack.json'
 DEFAULT_RECIPE = 'msvc-19.16.27054-o2'
 # Placeholder until bind reads the decorated name from a compiled object. The attempt command
 # needs a non-empty symbol to run at all; the comparator then fails this function with a
@@ -649,29 +659,41 @@ def funclet_branch_refs(img, rva, funclets):
 
     The analysis covers the parent body only, so an unwind funclet that jumps to an out-of-line
     destructor (a scope guard, a local visitor) would leave that function out of the reference
-    table and no bind hint could name it. A funclet has no leaf-size record without .pdata, so the
-    window ends at the first int3 or the scan limit. A byte pair is accepted only when its rel32
-    lands exactly on a function start (a .pdata begin, or an aligned address after int3 padding), which makes a stray E8/E9 inside another operand
-    practically never a row.
+    table and no bind hint could name it. A leaf has no size record, so decoding stops at padding,
+    a return, an out-of-line jump or the scan limit. Each target must meet the function-start rules.
     """
     rows = []
     for start, size in funclets:
+        if size is None:
+            sec = img.section(start)
+            if sec is None:
+                continue
+            limit = min(FUNCLET_SCAN_LIMIT, sec.vaddr + min(sec.vsize or sec.raw_size, sec.raw_size) - start)
+            if limit <= 0:
+                continue
+        else:
+            limit = size
         try:
-            blob = img.read(start, size or FUNCLET_SCAN_LIMIT)
-        except Exception:
+            blob = img.read(start, limit)
+        except Reject:
             continue
-        end = len(blob) if size else (blob.find(b'\xcc') if b'\xcc' in blob else len(blob))
-        for i in range(max(end, 0) - 4):
-            op = blob[i]
-            if op not in (0xE8, 0xE9):
-                continue
-            target = (start + i + 5 + struct.unpack_from('<i', blob, i + 1)[0]) & 0xFFFFFFFF
-            if not starts_function(img, target):
-                continue
-            call = op == 0xE8
-            rows.append({'offset': start + i - rva, 'ref_type': 'UNCONDITIONAL_CALL' if call else 'UNCONDITIONAL_JUMP',
-                         'target': target, 'mnemonic': 'CALL' if call else 'JMP', 'operand': 0,
-                         'ghidra_names': '', 'target_entry': target})
+        i = 0
+        while i < len(blob):
+            try:
+                ins = x64.decode(blob, i, start + i)
+            except x64.DecodeError:
+                break
+            if ins.flow in (x64.CALL, x64.JMP) and ins.rel[1] == 4 and starts_function(img, ins.target):
+                call = ins.flow == x64.CALL
+                rows.append({'offset': start + i - rva, 'operand_offset': ins.rel[0],
+                             'ref_type': 'UNCONDITIONAL_CALL' if call else 'UNCONDITIONAL_JUMP',
+                             'target': ins.target, 'mnemonic': 'CALL' if call else 'JMP', 'operand': 0,
+                             'ghidra_names': '', 'target_entry': ins.target})
+                if size is None and not call:
+                    break
+            if size is None and ins.flow in (x64.INT3, x64.RET, x64.IJMP):
+                break
+            i += ins.length
     return rows
 
 
@@ -751,7 +773,7 @@ def classify(img, addrlib, communities, rva, gmeta, grefs):
                         'or an unrecovered switch)')
     if funclets:
         cautions.append('funclet code references are not listed except direct call/jump targets that start a '
-                        'function (found by a byte scan, not the analysis); bind the rest by hint or by position')
+                        'function (decoded from funclet code)')
         grefs = list(grefs) + funclet_branch_refs(img, rva, funclets)
     if gmeta['thunk']:
         reasons.append('thunk')
@@ -1134,7 +1156,7 @@ def drafter_aids(pack_dir, img, addrlib, comms, ident, listing_text, excerpt, bu
     lines += ['', 'Virtual slots: `' + files.get('vtables', 'none (no community vtable id)') + '`; types in the '
               'signature: `' + files.get('signature_types', 'none') + '`.', '']
     if cls and build_id:
-        class_dir = REPO / '.local/packs' / build_id / 'class' / cls
+        class_dir = REPO / '.local/packs' / build_id / 'class' / class_dirname(cls)
         if (class_dir / 'README.md').is_file():
             lines += [f'Class material shared by every function of `{cls}` in this batch (vtables, offsets '
                       f'observed across all of them, declarations): `{class_dir.relative_to(REPO)}/README.md`.', '']
@@ -1573,17 +1595,25 @@ def render_pack_readme(p):
     return '\n'.join(lines)
 
 
-def shared_unit_functions(unit_cpp):
-    """Inventory entries whose match record already binds this unit: editing it re-opens them."""
-    out = []
-    progress = json.loads((REPO / 'data/progress.json').read_text())
+def shared_unit_functions(root=None):
+    """Index accepted functions by translation unit so edits re-open their matches."""
+    root = Path(root or REPO)
+    out = defaultdict(list)
+    progress = json.loads((root / 'data/progress.json').read_text())
     for fn in progress['functions']:
-        rec = fn.get('report')
-        if rec and (REPO / rec).is_file() and unit_cpp in (REPO / rec).read_text():
-            runs = json.loads((REPO / rec).read_text()).get('runs') or [{}]
-            symbol = runs[0].get('report', {}).get('function', {}).get('symbol')
-            out.append({'function_id': fn['id'], 'status': fn['status'], 'record': rec, 'rva': hex(fn['rva']),
-                        'size': fn['size'], 'symbol': symbol, 'community_name': fn['name']})
+        path = fn.get('report')
+        if not path:
+            continue
+        try:
+            record = json.loads(record_store.read_text(root / path))
+        except FileNotFoundError:
+            continue
+        run = (record.get('runs') or [{}])[0].get('report', {})
+        unit = (record.get('source') or {}).get('compiled') or (run.get('source') or {}).get('path')
+        if unit:
+            symbol = run.get('function', {}).get('symbol')
+            out[unit].append({'function_id': fn['id'], 'status': fn['status'], 'record': path,
+                              'rva': hex(fn['rva']), 'size': fn['size'], 'symbol': symbol, 'community_name': fn['name']})
     return out
 
 
@@ -1592,25 +1622,32 @@ def regression_symbols(shared, build_id, root=None):
     root = Path(root or REPO)
     paths = []
     for fn in shared:
-        record = json.loads((root / fn['record']).read_text())
+        record = json.loads(record_store.read_text(root / fn['record']))
         path = record.get('symbol_map', {}).get('path') or f'reports/{build_id}/symbol-map.json'
         if path not in paths:
             paths.append(path)
-    symbols, folds, provenance = {}, [], []
+    symbols, folds, provenance, ambiguous_vftables = {}, [], [], set()
     for path in paths:
-        payload = json.loads((root / path).read_text())
+        payload = json.loads(record_store.read_text(root / path))
         for name, entry in payload['symbols'].items():
             previous = symbols.get(name)
             if previous is not None and {k: v for k, v in previous.items() if k != 'size'} != {
                     k: v for k, v in entry.items() if k != 'size'}:
-                raise ValueError(f'regression symbol {name} has conflicting bindings')
+                if not name.startswith('??_7'):
+                    raise ValueError(f'regression symbol {name} has conflicting bindings')
+                # A vftable can have multiple image copies. Resolve its address from each function's references.
+                ambiguous_vftables.add(name)
             if previous is None or previous.get('size') is None:
                 symbols[name] = entry
             provenance.append({'name': name, 'from': path})
         for group in payload.get('folds', []):
             if not any(set(group) == set(known) for known in folds):
                 folds.append(group)
-    return symbols, folds, provenance
+    for name in ambiguous_vftables:
+        symbols.pop(name)
+    folds = [[name for name in group if name not in ambiguous_vftables] for group in folds]
+    return symbols, [group for group in folds if len(group) > 1], [
+        entry for entry in provenance if entry['name'] not in ambiguous_vftables]
 
 
 AREA_PREFIXES = (('Ni', 'netimmerse'), ('BS', 'bsengine'), ('TES', 'forms'), ('BGS', 'forms'))
@@ -1632,7 +1669,7 @@ def area_for(cls, classes=None):
     return None
 
 
-def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts, attempts_per_function=None):
+def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts, attempts_per_function=None, *, shared=()):
     if not (REPO / unit_cpp).exists() and (REPO / f'reconstruction/recipes/{recipe}-reconstruction.json').is_file():
         from reconstruction_includes import root_recipe
         recipe = Path(root_recipe(REPO, f'reconstruction/recipes/{recipe}.json')).stem
@@ -1655,7 +1692,6 @@ def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts
             if r['symbol'] and r['symbol'] not in symbols:
                 symbols[r['symbol']] = {'rva': r['target_rva'], 'size': None}
                 provenance.append({'name': r['symbol'], 'rva': hex(r['target_rva']), 'from': r['resolution']})
-    shared = shared_unit_functions(unit_cpp)
     regression, folds, origins = regression_symbols(shared, target['build_id'])
     # A unit's accepted records can use private reference names frozen in immutable unit maps.
     # A global map alone loses those names and their explicitly declared aliases.
@@ -1675,7 +1711,7 @@ def write_task(task_id, unit_cpp, recipe, packs, target, task_root, max_attempts
         max_attempts = attempts_per_function * sum(1 for f in functions if f.get('role') != 'regression')
     # A community `X::~X` at vtable slot 0 is a deleting destructor in the image; record which
     # destructor function the target is so binding never settles on the plain `??1`.
-    sys.path.insert(0, str(REPO / 'tools' / 'verifier'))
+    sys.path.insert(0, str(HERE.parent / 'verifier'))
     import bind as binding
     binding.annotate_destructors({'functions': functions}, REPO)
     classes = sorted({p['identity'].get('owning_class') or 'Unknown' for p in packs})
@@ -1868,7 +1904,7 @@ def write_class_material(task_dirs, target, img, addrlib, comms, shared_name='_s
                     .read_text() for p in packs
                     if (REPO / '.local/packs' / target['build_id'] / p['rva_hex'] / 'listing.txt').is_file()}
         files, facts = class_material(cls, packs, listings, img, addrlib, comms)
-        d = root / cls
+        d = root / class_dirname(cls)
         if d.is_dir():
             for old in d.iterdir():
                 old.unlink()  # a re-run must not leave a stale file from an earlier selection
@@ -2162,7 +2198,7 @@ def shared_headers(cls, packs, headers, classes=None):
     repository headers of its RTTI ancestors and of the classes its functions reference."""
     wanted = list((classes or {}).get(cls, {}).get('ancestors') or [])
     build = packs[0]['build_id'] if packs else None
-    material = REPO / '.local/packs' / (build or '-') / 'class' / cls / 'class.json'
+    material = REPO / '.local/packs' / (build or '-') / 'class' / class_dirname(cls) / 'class.json'
     if material.is_file():
         # Signature and reference types found by the class material (write_class_material).
         wanted += json.loads(material.read_text()).get('referenced_classes', [])
@@ -2979,6 +3015,7 @@ def cmd_packs(args):
                 moved += [(p['rva_hex'], task_id, 'dropped') for p in flagged]
                 print(f'task {task_id}: dropped ' + ', '.join(p['rva_hex'] for p in flagged))
     task_dirs = []
+    shared_by_unit = shared_unit_functions()
     for task_id, items in by_task.items():
         units = {u for _, u in items if u}
         if len(units) > 1:
@@ -2995,7 +3032,8 @@ def cmd_packs(args):
         root = REPO / '.local/tasks' / group if group else REPO / '.local/tasks'
         task_dirs.append(write_task(task_id, unit, recipes[task_id], [p for p, _ in items], target, root,
                                     budgets.get(task_id, args.max_attempts),
-                                    None if task_id in budgets else args.attempts_per_function))
+                                    None if task_id in budgets else args.attempts_per_function,
+                                    shared=shared_by_unit.get(unit, ())))
     if args.class_material:
         shared = write_class_material(task_dirs, target, img, addrlib, comms, args.shared_classes_name)
         for rva in packs:
@@ -3011,10 +3049,12 @@ def cmd_packs(args):
         write_group(REPO / '.local/tasks' / group, [REPO / '.local/tasks' / group / i for i in ids])
     # The findings file these tasks cite gets a table naming each unit, so tools/check_labels.py can
     # match a unit's Evidence line without a hand edit.
-    rows = progress_rows()
-    cited = list(dict.fromkeys(ev for d in task_dirs for ev in task_evidence(json.loads((d / 'task.json').read_text()), rows)))
-    for ev in write_unit_tables(cited):
-        print(f'{ev}: unit table updated')
+    if not args.no_evidence_tables:
+        inventory = progress_rows()
+        cited = list(dict.fromkeys(ev for d in task_dirs
+                                  for ev in task_evidence(json.loads((d / 'task.json').read_text()), inventory)))
+        for ev in write_unit_tables(cited):
+            print(f'{ev}: unit table updated')
     if moved:
         (run / 'fpfast.json').write_text(json.dumps(moved, indent=2) + '\n')
     t_py = time.monotonic() - t0
@@ -3166,8 +3206,10 @@ def cmd_survey(args):
 
 
 def main():
+    global REPO, ANALYSIS
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--config', default=str(DEFAULT_CONFIG))
+    p.add_argument('--repo', type=Path, help='Checkout whose inventory, units and private files to use')
+    p.add_argument('--config')
     sub = p.add_subparsers(dest='cmd', required=True)
     a = sub.add_parser('packs')
     a.add_argument('list')
@@ -3182,6 +3224,8 @@ def main():
     a.add_argument('--fpfast-recipe', default='o2-fpfast')
     a.add_argument('--class-material', action='store_true',
                    help='Also write .local/packs/<build>/class/<Class>/ for the classes of these tasks')
+    a.add_argument('--no-evidence-tables', action='store_true',
+                   help='Export tasks without reading other tasks or updating findings files')
     a.add_argument('--shared-classes-name', default='_shared-classes.json',
                    help='File name of the shared-class summary under class/ (a new name keeps an earlier batch\'s)')
     pl = sub.add_parser('plan', help='Propose class-grouped units from the community-named survey')
@@ -3230,6 +3274,11 @@ def main():
     b.add_argument('--task', required=True)
     b.add_argument('--object', default=None, help='Default: the newest attempts/<NNN>/candidate.obj')
     args = p.parse_args()
+    if args.repo is not None:
+        REPO = args.repo.resolve()
+        ANALYSIS = REPO / '.local/analysis'
+    if args.config is None:
+        args.config = REPO / '.local/config/export_pack.json'
     if args.cmd == 'packs':
         cmd_packs(args)
     elif args.cmd == 'survey':

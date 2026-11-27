@@ -36,8 +36,8 @@
 // SetName, RecalculateWorldTransform, GetBoneFromName: COMMUNITY(meh321/AddressLibraryDatabase@0379cb6, permission) OBSERVED; signatures restored from the listings
 // UpdateControllers, PerformOp, AttachProperty, SetMaterialNeedsUpdate, SetDefaultMaterialNeedsUpdateFlag: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); slot placeholders so GetObjectByName lands on slot 42
 // parent, parentIndex, collisionObject, local, world, previousWorld, worldBound, flags, userData, fadeAmount, lastUpdatedFrameCounter: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
-// unk3C, unk109: GUESS(low); members not recovered
-// unk108: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
+// unk3C: GUESS(low); member not recovered
+// lodMode, flags02, unk10A: CRASHLOGGER_PDB(59818@2026.10.24)
 // kFlagBit9: GUESS; bit index of NG's kSaveExternalGeometryData (1 << 9), for TestBit
 // TestBit: GUESS(low); a flag-word bit test by bit index, taking the word by value
 // NiNode: STANDIN COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT); only the base class, parent->world is all the unit reads
@@ -238,8 +238,9 @@ public:
 	TESObjectREFR*               userData;                 // F8
 	float                        fadeAmount;               // 100
 	std::uint32_t                lastUpdatedFrameCounter;  // 104
-	std::uint8_t                 unk108;                   // 108
-	std::uint8_t                 unk109[7];                // 109
+	std::uint8_t                 lodMode;                  // 108
+	std::uint8_t                 flags02;                  // 109
+	std::uint16_t                unk10A;                   // 10A
 };
 static_assert(sizeof(NiAVObject) == 0x110, "NiAVObject size");
 

@@ -42,7 +42,7 @@ import export_pack as ep  # noqa: E402
 import harvest_handlers as hh  # noqa: E402
 
 TABLE_SCHEMA = 1
-DISASM_SCHEMA = 3
+DISASM_SCHEMA = 4  # 4: call-site register setups (`reg_calls`) are part of the pass; older caches lack them
 OBJDUMP_CANDIDATES = ('llvm-objdump', '/opt/homebrew/opt/llvm/bin/llvm-objdump', '/usr/local/opt/llvm/bin/llvm-objdump')
 FUNCLET_PREFIXES = ('Unwind@', 'Catch@', 'Catch_All@')
 CXX_HANDLERS = ('__CxxFrameHandler3', '__GSHandlerCheck_EH')
@@ -698,7 +698,7 @@ def class_checks(decl, own, parent, asserted, image_size, rtti_match, header_bas
 AREA_LABELS = {
     'netimmerse': 'NetImmerse (Ni*)', 'bsengine': 'Bethesda engine (BS*)', 'forms': 'Forms (TES*, BGS*)',
     'actors': 'Actors', 'magic': 'Magic', 'havok': 'Havok (hk*)', 'scaleform': 'Scaleform (GFx)',
-    'bnet': 'Bethesda.net client', 'std': 'std and CRT', 'other': 'Other engine classes',
+    'bnet': 'Bethesda.net client', 'std': 'CRT and unsplit std', 'other': 'Other engine classes',
     'unattributed': 'No class known'}
 MAGIC = re.compile(r'^(Magic|ActiveEffect|SpellItem|EnchantmentItem|ScrollItem|AlchemyItem|IngredientItem|'
                    r'MagicItem|MagicCaster|MagicTarget|ActorMagicCaster)')

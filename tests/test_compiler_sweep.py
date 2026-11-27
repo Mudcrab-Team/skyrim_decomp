@@ -66,8 +66,9 @@ class SweepTests(unittest.TestCase):
         task = {'task_id': 'x', 'build_id': 'b', 'compiled': 'reconstruction/a/B.cpp', 'recipe': 'r',
                 'symbols_repo': None, 'functions': [{'rva': 1, 'size': 1, 'symbol': 's'}]}
         self.assertNotIn('pins', pipeline.unit_spec(task, {}, 'h'))
-        self.assertEqual(pipeline.unit_spec(dict(task, pins='tools/verifier/pinned/19.15.26731.sha256'), {}, 'h')['pins'],
-                         'tools/verifier/pinned/19.15.26731.sha256')
+        spec = pipeline.unit_spec(dict(task, toolset='19.15.26731'), {}, 'h')
+        self.assertEqual(spec['pins'], 'tools/verifier/pinned/19.15.26731.sha256')
+        self.assertEqual(spec['toolset'], '19.15.26731')
         self.assertEqual(ub.PINS_FILE, 'tools/verifier/pinned.sha256')
 
 

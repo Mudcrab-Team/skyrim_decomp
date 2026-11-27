@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x27c210",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "swapped bytes in place through a reference template",
+        "reused one function-scope form-id local for all form-id subrecords",
+        "used an inline helper per model-path subrecord",
+        "read the legacy DATA layout into a stack struct and converted it by value",
+        "used an RAII load context and scratch buffer with bound constructors and destructors",
+        "used BSTArray push_back with a stack allocator functor",
+        "defaulted the functor destructor, forced inline on the conversion and wrapped the form id in a struct (no change)"
+      ],
+      "still_differs": "The form id is still loaded before the big-endian branch, the four model paths share one stack slot where the target uses separate ones, and the base allocator functor vtable store at destruction is missing.",
+      "suspected_cause": "Not determined; the late source changes had no effect, and the missing vtable store suggests functor destructor handling that was not reproduced.",
+      "best_similarity": 85.62,
+      "similarity_basis": "aligned shape similarity of the best run (near-pilot study)",
+      "model": "claude-opus-5-5",
+      "harness": "near-pilot study",
+      "lane": "internal",
+      "best_code": {
+        "kind": "local",
+        "ref": ".local/giveups/sse-steam-1-7-104/27c210/1"
+      }
+    }
+  ]
+}

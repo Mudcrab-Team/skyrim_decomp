@@ -6,6 +6,7 @@
 // 0xf61760 NiFloatInterpolator::IsFloatValueSupported
 // 0xf61810 NiFloatInterpolator::GetKeyType
 // Adapted bodies: none
+// NiFloatInterpolator::IsEqual: CRASHLOGGER_PDB(59818@2026.10.24) SYMBOLS(tesv-2013-map)
 #include "NiFloatInterpolator.h"
 
 bool NiFloatInterpolator::IsEqual(NiObject* a_object)

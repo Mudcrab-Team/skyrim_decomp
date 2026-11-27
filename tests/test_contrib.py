@@ -38,7 +38,7 @@ class FakeGitHub:
         self.repo, self.created, self.comments, self.closed = contrib.UPSTREAM, [], [], []
         self.after_create = after_create
 
-    def open_items(self, refresh=False):
+    def open_items(self, refresh=False, **_scope):
         if self.offline:
             raise contrib.Offline('no network in tests')
         if refresh and self.created and self.after_create is not None:
@@ -54,6 +54,10 @@ class FakeGitHub:
 
     def gh(self):
         return 'gh' if self.can_create else None
+
+    def api(self, path):
+        assert path == f'repos/{self.repo}'
+        return {'permissions': {'push': False}}
 
     def feedback(self):
         return {'needs_action_prs': 0}
@@ -123,7 +127,7 @@ class LocalDirectoryTests(Base):
     def test_redact_hides_shared_storage_outside_checkout(self):
         ctx = contrib.Ctx(repo=ROOT, env={'SR_LOCAL_DIR': str(self.tmp)}, as_json=True)
         ctx.redact = True
-        self.assertEqual(ctx.scrub(str(ctx.local / 'contrib/config.json')), '<local>/contrib/config.json')
+        self.assertEqual(ctx.scrub(str(ctx.local / 'contrib/config.json')).replace('\\', '/'), '<local>/contrib/config.json')
 
     def test_source_fetch_uses_shared_storage_and_passes_environment(self):
         calls = []
@@ -169,7 +173,7 @@ class ExecutableTests(Base):
 
     def test_missing_executable(self):
         self.assertEqual(contrib.inspect_exe(self.tmp / 'nope.exe', TARGET)['status'], 'missing')
-        ctx = self.ctx(env={'PATH': '', 'HOME': str(self.tmp)})
+        ctx = self.ctx(env={'PATH': '', 'HOME': str(self.tmp), 'ProgramFiles': str(self.tmp), 'ProgramFiles(x86)': str(self.tmp)})
         with self.assertRaises(contrib.Stop) as cm:
             contrib.require_exe(ctx, TARGET)
         self.assertEqual(cm.exception.code, contrib.MISSING)
@@ -194,6 +198,51 @@ class ExecutableTests(Base):
 
 
 class ToolchainTests(Base):
+    def test_wrapper_bindir_accepts_a_spelling_of_the_same_directory(self):
+        import unit_build
+        root = self.tmp / 'source'
+        root.mkdir()
+        (root / 'Unit.cpp').write_text('int f();\n')
+        (root / 'recipe.json').write_text(json.dumps({'flags': ['/O2']}))
+        bindir = root / 'VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64'
+        bindir.mkdir(parents=True)
+        alternate = root / 'vc/tools/msvc/14.16.27023/bin/Hostx64/x64'
+        if not alternate.is_dir():
+            self.skipTest('requires a case-insensitive filesystem')
+        other = root / 'different'
+        other.mkdir()
+        ctx = self.ctx(platform='darwin')
+        tool = dict(status='ok', flavour='wine', root=str(root), bin=str(bindir))
+        for actual, expected in ((alternate, 'sentinel include check'), (other, 'different toolset')):
+            with unittest.mock.patch.object(unit_build, 'wrapper_settings',
+                                            return_value={'BINDIR': str(actual), 'BASE': '', 'INCLUDE': ''}), \
+                    unittest.mock.patch.object(unit_build, 'include_problem', return_value='sentinel include check'), \
+                    self.assertRaisesRegex(contrib.Stop, expected):
+                contrib.compile_unit(ctx, root, 'Unit.cpp', 'recipe.json', root / 'out', tool)
+
+    def test_autodetect_uses_all_pins_for_the_selected_recipe(self):
+        roots = [self.tmp / name for name in ('msvc-old', 'msvc-broken', 'msvc-correct')]
+        files = ('cl.exe', 'c1xx.dll', 'c2.dll', 'link.exe')
+        for i, root in enumerate(roots):
+            bin_dir = root / 'VC/Tools/MSVC/toy/bin/Hostx64/x64'
+            bin_dir.mkdir(parents=True)
+            for name in files:
+                (bin_dir / name).write_text('old' if i == 0 or (i == 1 and name == 'c2.dll') else 'new')
+        rep = self.tmp / 'fixture'
+        pin_dir = rep / 'tools/verifier/pinned'
+        pin_dir.mkdir(parents=True)
+        for path, content in ((pin_dir.parent / 'pinned.sha256', b'new'), (pin_dir / '1.2.3.sha256', b'old')):
+            path.write_text(''.join(f'{hashlib.sha256(content).hexdigest()}  {name}\n' for name in files))
+        recipe = rep / 'toy.json'
+        recipe.write_text(json.dumps({'compiler': {'version': '1.2.3 for x64',
+                                                   'binary_sha256': hashlib.sha256(b'old').hexdigest()}}))
+        with unittest.mock.patch.object(contrib, 'toolchain_dirs', return_value=roots):
+            ctx = self.ctx(platform='win32', env={})
+            self.assertEqual(contrib.check_toolchain(ctx, rep)['root'], str(roots[2]))
+            self.assertEqual(contrib.check_toolchain(ctx, rep, recipe.name)['root'], str(roots[0]))
+            explicit = self.ctx(platform='win32', env={'SR_MSVC': str(roots[1])})
+            self.assertEqual(contrib.check_toolchain(explicit, rep)['differing'], ['c2.dll'])
+
     def test_missing_compiler(self):
         ctx = self.ctx(env={'SR_MSVC': str(self.tmp / 'msvc'), 'PATH': ''})
         self.assertEqual(contrib.check_toolchain(ctx)['status'], 'missing')
@@ -207,6 +256,7 @@ class ToolchainTests(Base):
         self.assertEqual(state['status'], 'mismatch')
         self.assertEqual(sorted(state['differing']), ['c1xx.dll', 'c2.dll', 'cl.exe', 'link.exe'])
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_doctor_names_one_next_step(self):
         ctx = self.ctx(env={'SR_MSVC': str(self.tmp / 'msvc'), 'PATH': '/usr/bin:/bin', 'HOME': str(self.tmp),
                             'SR_SKYRIM_EXE': str(self.tmp / 'none.exe')}, platform='linux')
@@ -245,6 +295,7 @@ class ToolchainTests(Base):
         self.assertEqual(contrib.classify_windows(outside, 'C:/repo', ['C:/msvc']),
                          ([], 0, outside))
 
+    @unittest.skipIf(sys.platform == 'win32', 'the test stands in for ntpath.realpath with the POSIX one, which on Windows is the same function')
     def test_classify_windows_link_escapes(self):
         repo, tool, outside = (self.tmp / name for name in ('repo', 'msvc', 'outside'))
         for root in (repo, tool, outside / 'child'):
@@ -269,6 +320,7 @@ class ToolchainTests(Base):
         self.assertIn('--yes', cm.exception.next_action)
         self.assertTrue(self.ctx(assume_yes=True).ask('Install wine?', '--yes'))
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_setup_without_yes_does_not_install_when_not_a_terminal(self):
         bin_dir = self.tmp / 'bin'
         bin_dir.mkdir()
@@ -294,6 +346,42 @@ class ToolchainTests(Base):
 
 
 class ClaimTests(Base):
+    def test_repeated_classes_share_selection_and_fall_back_to_exact_names(self):
+        rows = [{'rva': rva, 'name': name, 'status': status} for rva, name, status in (
+            (0x1000, 'Alpha::Tick', 'mapped'), (0x2000, 'Beta::Tick', 'mapped'),
+            (0x3000, 'util::tick', 'mapped'), (0x4000, 'util::tick', 'matched'),
+        )]
+        args = contrib.parser().parse_args(['claim', '--class', 'Alpha', '--class', 'Beta',
+                                            '--class', 'util::tick', '--class', 'Alpha'])
+        ctx = self.ctx()
+        self.assertEqual(contrib.claim_selection(ctx, args, {'functions': rows}),
+                         (rows[:3], [(r, r + 1) for r in (0x1000, 0x2000, 0x3000)]))
+        args.classes = ['Unknown']
+        with self.assertRaises(contrib.Stop) as cm:
+            contrib.claim_selection(ctx, args, {'functions': rows})
+        self.assertIn('claim 0x<RVA>', cm.exception.next_action)
+
+    def test_scoped_listing_checks_only_overlapping_timelines_and_refreshes(self):
+        ctx = self.ctx()
+        gh = contrib.GitHub(ctx)
+        issues = [{'number': n, 'title': title, 'body': 'toy'}
+                  for n, title in enumerate(('claim: toy 0x1000', 'claim: toy 0x2000', 'claim: other 0x1000'), 1)]
+        fetches = []
+
+        def api(path):
+            fetches.append(path.split('?')[0])
+            return [] if '/timeline?' in path else issues
+
+        with unittest.mock.patch.object(gh, 'api', side_effect=api):
+            scope = dict(build='toy', entries=[(0x1000, 0x1001)])
+            self.assertEqual([it['number'] for it in gh.open_items(**scope).records], [1])
+            issues.append({'number': 4, 'title': 'claim: toy 0x1000', 'body': 'toy'})
+            self.assertEqual([it['number'] for it in gh.open_items(refresh=True, **scope).records], [1, 4])
+            self.assertEqual([it['number'] for it in gh.open_items().records], [1, 2, 3, 4])
+        prefix = f'repos/{gh.repo}/issues'
+        self.assertEqual(fetches[:5], [prefix, prefix + '/1/timeline', prefix,
+                                        prefix + '/1/timeline', prefix + '/4/timeline'])
+
     def run_claim(self, gh, *extra):
         ctx = self.ctx(github=gh)
         out = io.StringIO()
@@ -608,6 +696,54 @@ class CompareTests(Base):
         text = json.dumps({k: v for k, v in data.items() if k != 'private_dir'})
         self.assertNotIn(sp.CODE.hex()[:16], text)
 
+    def test_compare_names_its_default_and_bind_uses_the_compiled_candidate(self):
+        code, data, _ = contrib.run_compare(self.ctx_)
+        self.assertEqual(code, contrib.OK, data)
+        self.assertIn('using task contrib-synthetic (reconstruction/forms/Synthetic.cpp)', self.ctx_.log)
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(contrib.main(['bind'], ctx=self.ctx_), contrib.OK)
+        self.assertEqual(json.loads(output.getvalue())['task'], data['task'])
+
+    def test_recompiling_the_same_source_does_not_charge_an_attempt(self):
+        for _ in range(2):
+            code, data, _ = contrib.run_compare(self.ctx_)
+            self.assertEqual(code, contrib.OK, data)
+            self.assertEqual(data['functions'][0]['attempts'], 1)
+        self.assertEqual(data['run'], 2)
+
+
+    def test_note_bundles_declarations_and_compare_scores_the_public_draft(self):
+        rva = hex(sp.LAYOUT[sp.FUNCTION])
+        snapshot = self.tmp / 'snapshot'
+        snapshot.mkdir()
+        source = snapshot / 'Synthetic.cpp'
+        source.write_text(f'// Source exposure: black-box\n// {rva} {sp.FUNCTION}\n'
+                          '// Recipe: reconstruction/recipes/synthetic.json\n'
+                          f'#include "Synthetic.h"\nint {sp.FUNCTION}() {{ return Value; }}\n')
+        (snapshot / 'Synthetic.h').write_text('// Source exposure: black-box\n// Value: OBSERVED\n'
+                                              '#pragma once\nconstexpr int Value = 2;\n')
+        (self.repo / 'data').mkdir()
+        (self.repo / 'data/progress.json').write_text(json.dumps(
+            {'functions': [{'rva': int(rva, 16), 'size': len(sp.CODE), 'status': 'mapped'}]}))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(contrib.main(['note', '--rva', rva, '--draft-from', str(source),
+                                          '--category', 'other', '--tried', 'changed a return value',
+                                          '--still-differs', 'return value differs',
+                                          '--suspected-cause', 'a constant differs',
+                                          '--best-distance', '1'], ctx=self.ctx_), contrib.OK)
+        shutil.rmtree(snapshot)
+        shutil.rmtree(self.repo / 'reconstruction/forms')
+        shutil.rmtree(self.private / 'tasks')
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = contrib.main(['compare', '--draft', rva, '--no-retry'], ctx=self.ctx_)
+        data = json.loads(output.getvalue())
+        self.assertEqual(code, contrib.OK, data)
+        self.assertEqual(data['unit'], f'drafts/synthetic-fixture/{rva[2:]}.cpp')
+        self.assertEqual(data['progress'][rva]['value'], len(sp.CODE))
+        self.assertFalse((self.private / 'tasks/contrib-synthetic/last-compare.json').exists())
+
     def test_shared_storage_compare_preserves_results_and_diagnostics(self):
         default_code, default_data, _ = contrib.run_compare(self.ctx_, 'contrib-synthetic')
         shared = (self.tmp / 'shared').resolve()
@@ -669,6 +805,108 @@ class CompareTests(Base):
         with self.assertRaises(contrib.Stop) as cm:
             contrib.run_compare(self.ctx_, 'contrib-synthetic')
         self.assertEqual(cm.exception.code, contrib.MISSING)
+
+
+class TaskRoutingTests(Base):
+    def setUp(self):
+        super().setUp()
+        self.repo = self.tmp / 'repo'
+        self.repo.mkdir()
+        subprocess.run(['git', 'init', '-q', '-b', 'contrib/owner-more', self.repo], check=True)
+        self.ctx_ = self.ctx(repo=self.repo)
+        self.small = 'reconstruction/forms/Owner.cpp'
+        self.large = 'reconstruction/forms/Owner_More.cpp'
+        (self.repo / self.small).parent.mkdir(parents=True)
+        (self.repo / self.small).write_text('// 0x11 Owner::Small\nint Owner::Small() { return 17; }\n')
+        (self.repo / self.large).write_text('// 0x22 Owner::Large\nint Owner::Large() { return 34; }\n')
+
+    def test_start_creates_a_plain_free_function_with_provenance(self):
+        fn = {'id': 'toy-free', 'build_id': 'toy', 'rva': 0x1234, 'size': 1, 'name': 'RunExample',
+              'status': 'mapped', 'name_origin': 'SYMBOLS(tesv-2013-map)'}
+        report = self.repo / 'reports/toy/symbol-map.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{"symbols": {}}')
+        args = contrib.parser().parse_args(['start', '0x1234', '--no-branch', '--drafted-by', 'tester'])
+        with unittest.mock.patch.object(contrib, 'inventory', return_value={'functions': [fn]}), \
+                unittest.mock.patch.object(contrib, 'target_manifest', return_value={'build_id': 'toy'}), \
+                unittest.mock.patch.object(contrib, 'require_exe', return_value={'path': self.tmp / 'image'}), \
+                unittest.mock.patch.object(contrib, 'write_pack', return_value=(self.tmp / 'pack', {})), \
+                unittest.mock.patch('x64_lookup.hints', return_value=({}, [])):
+            code, result, _ = contrib.start(self.ctx_, args, quiet=True)
+        self.assertEqual(code, contrib.OK)
+        header, source = result['created']
+        self.assertEqual(source, 'reconstruction/unmapped/support/FreeFunction_1234.cpp')
+        header_text = (self.repo / header).read_text()
+        source_text = (self.repo / source).read_text()
+        self.assertNotIn('class ', header_text)
+        self.assertIn('\nvoid RunExample();', header_text)
+        self.assertIn('// RunExample: SYMBOLS(tesv-2013-map)', header_text)
+        self.assertIn('// 0x1234 RunExample\n', source_text)
+        self.assertIn('SKELETON_TODO_CODE_ORIGIN', source_text)
+        self.assertIn('#include "FreeFunction_1234.h"', source_text)
+        self.assertIn('\nvoid RunExample()\n{\n    SKELETON_TODO_BODY;', source_text)
+        for path in (header, source):
+            self.assertEqual(lint_reconstruction.lint_file(self.repo, path, 'toy', skeleton_ok=True), [])
+        task = json.loads((self.private / 'tasks' / result['task'] / 'task.json').read_text())
+        self.assertEqual(task['functions'][0]['community_name'], 'RunExample')
+
+    def test_start_targets_the_claimed_unit_instead_of_the_other_class_task(self):
+        task = self.private / 'tasks/contrib-owner'
+        task.mkdir(parents=True)
+        (task / 'task.json').write_text(json.dumps({'compiled': self.small}))
+        fn = {'id': 'toy-fn', 'rva': 0x22, 'size': 1, 'name': 'Owner::Large', 'status': 'mapped'}
+        args = contrib.parser().parse_args(['start', '0x22', '--no-branch'])
+        manifest = {'build_id': 'toy'}
+        report = self.repo / 'reports/toy/symbol-map.json'
+        report.parent.mkdir(parents=True)
+        report.write_text('{"symbols": {}}')
+        with unittest.mock.patch.object(contrib, 'inventory', return_value={'functions': [fn]}), \
+                unittest.mock.patch.object(contrib, 'target_manifest', return_value=manifest), \
+                unittest.mock.patch.object(contrib, 'require_exe', return_value={'path': self.tmp / 'image'}), \
+                unittest.mock.patch.object(contrib, 'write_pack', return_value=(self.tmp / 'pack', {})), \
+                unittest.mock.patch('x64_lookup.hints', return_value=({}, [])):
+            contrib.start(self.ctx_, args, quiet=True)
+        selected = self.private / 'tasks/contrib-owner-more/task.json'
+        self.assertEqual(json.loads(selected.read_text())['compiled'], self.large)
+        self.assertEqual(json.loads((task / 'task.json').read_text())['compiled'], self.small)
+
+    def test_start_lists_units_for_an_unclaimed_function(self):
+        args = contrib.parser().parse_args(['start', '0x33'])
+        with self.assertRaises(contrib.Stop) as stopped:
+            contrib.start_unit(self.ctx_, 'Owner', {0x33}, args, None)
+        for choice in ('--unit', self.small, self.large):
+            self.assertIn(choice, stopped.exception.message)
+        args.unit = self.large
+        self.assertEqual(contrib.start_unit(self.ctx_, 'Owner', {0x33}, args, None), self.large)
+
+    def test_compare_prefers_a_changed_unit_then_the_current_branch(self):
+        for name, unit in (('contrib-owner-more', self.large), ('contrib-owner', self.small)):
+            tdir = self.private / 'tasks' / name
+            tdir.mkdir(parents=True)
+            (tdir / 'task.json').write_text(json.dumps({'compiled': unit, 'functions': []}))
+        self.assertEqual(contrib.load_task(self.ctx_, pick_current=True)[1]['compiled'], self.large)
+        subprocess.run(['git', 'add', '--', self.large], cwd=self.repo, check=True)
+        subprocess.run(['git', '-c', 'user.name=Toy', '-c', 'user.email=toy@example.invalid',
+                        'commit', '-qm', 'fixture'], cwd=self.repo, check=True)
+        self.assertEqual(contrib.load_task(self.ctx_, pick_current=True)[1]['compiled'], self.small)
+
+    def test_attempts_only_advance_for_the_edited_function(self):
+        task = {'compiled': self.small, 'functions': [
+            {'symbol': 'unbound:Owner::Small', 'community_name': 'Owner::Small'},
+            {'symbol': 'unbound:Owner::Large', 'community_name': 'Owner::Large'}]}
+        source = self.repo / self.small
+        source.write_text('// 0x11 Owner::Small\n// 0x22 Owner::Large\n'
+                          'int Owner::Small() { return 17; }\nint Owner::Large() { return 34; }\n')
+        history = []
+        for index, expected in enumerate(([1, 1], [1, 1], [2, 1])):
+            if index == 2:
+                source.write_text(source.read_text().replace('17;', '18;'))
+            digest = hashlib.sha256(source.read_bytes()).hexdigest()
+            rows = [{'rva': rva, 'code_section_sha256': None} for rva in ('0x11', '0x22')]
+            counted = contrib.count_attempts(self.repo, task, rows, history, digest)
+            self.assertEqual([row['attempts'] for row in rows], expected)
+            self.assertEqual(counted, ({'0x11', '0x22'}, set(), {'0x11'})[index])
+            history.append({'source_revision': digest, 'functions': rows})
 
 
 class SubmitTests(Base):
@@ -899,6 +1137,7 @@ class FollowUpTests(Base):
         found = contrib.exe_candidates(ctx, exists=lambda p: p == str(exe), dir_exists=lambda p: False)
         self.assertEqual(found, [str(exe)])
 
+    @unittest.skipIf(sys.platform == 'win32', 'simulates a Linux host with shell stubs and a colon-separated PATH')
     def test_apt_steamcmd_is_left_to_the_person(self):
         bin_dir = self.tmp / 'bin'
         bin_dir.mkdir()
@@ -925,11 +1164,11 @@ class FollowUpTests(Base):
             self.assertEqual(cm.exception.code, contrib.USAGE, bad)
             self.assertIn('--area must be', cm.exception.message)
 
-    def _bare_entry_start(self, *extra):
+    def _bare_entry_start(self, *extra, name='Function2c5ce0'):
         entry = {'id': 'x-0x2c5ce0', 'build_id': TARGET['build_id'], 'rva': 0x2c5ce0, 'size': 29, 'status': 'mapped',
-                 'name': 'Function2c5ce0', 'name_origin': 'GUESS'}
+                 'name': name, 'name_origin': 'GUESS'}
         data = {'target_build_id': TARGET['build_id'], 'functions': [entry]}
-        args = contrib.parser().parse_args(['start', '0x2c5ce0', '--no-branch', *extra])
+        args = contrib.parser().parse_args(['start', '0x2c5ce0', '--no-branch', '--area', 'skyrim/ai', *extra])
         seen = {}
 
         def stop_after_naming(ctx, target):
@@ -937,26 +1176,41 @@ class FollowUpTests(Base):
             raise contrib.Stop(contrib.USAGE, 'no executable in this test')
 
         with unittest.mock.patch.object(contrib, 'inventory', return_value=data), \
-                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming):
+                unittest.mock.patch.object(contrib, 'target_manifest', return_value=TARGET), \
+                unittest.mock.patch.object(contrib, 'require_exe', stop_after_naming), \
+                unittest.mock.patch.object(contrib, 'unit_files', wraps=contrib.unit_files) as unit_files:
             with self.assertRaises(contrib.Stop) as cm:
-                contrib.start(self.ctx(env={'PATH': ''}), args)
+                contrib.start(self.ctx(repo=self.tmp, env={'PATH': ''}), args)
+        if unit_files.called:
+            seen['class'] = unit_files.call_args.args[1]
         return cm.exception, seen
 
     def test_start_names_the_class_of_a_bare_placeholder_entry_only_when_given(self):
         stop, seen = self._bare_entry_start()
-        self.assertIn('--class', stop.message)
-        self.assertNotIn('named', seen)
+        self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'FreeFunction_2c5ce0')
         stop, seen = self._bare_entry_start('--class', 'TESObjectCELL')
         self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'TESObjectCELL')
         stop, seen = self._bare_entry_start('--class', 'not a class')
         self.assertIn('--class must be', stop.message)
         self.assertNotIn('named', seen)
 
+    def test_start_explicit_class_overrides_an_existing_name(self):
+        stop, seen = self._bare_entry_start('--class', 'TESObjectCELL', name='TESObjectCell::GetValue')
+        self.assertTrue(seen.get('named'), stop.message)
+        self.assertEqual(seen['class'], 'TESObjectCELL')
+
+    def test_start_explains_why_class_does_not_apply_to_a_named_free_function(self):
+        stop, seen = self._bare_entry_start('--class', 'TESObjectCELL', name='RunExample')
+        self.assertIn('--class does not apply to free function RunExample', stop.message)
+        self.assertNotIn('named', seen)
+
     def test_redact_hides_checkout_and_home(self):
         home = str(self.tmp / 'home')
-        ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home})
+        ctx = self.ctx(repo=self.tmp / 'home/src/skyrim-research', env={'HOME': home, 'USERPROFILE': home})
         ctx.redact = True
-        text = ctx.scrub(f'{self.tmp}/home/src/skyrim-research/.local/x and {home}/Games/SkyrimSE.exe')
+        text = ctx.scrub(f'{self.tmp.as_posix()}/home/src/skyrim-research/.local/x and {Path(home).as_posix()}/Games/SkyrimSE.exe')
         self.assertEqual(text, '<repo>/.local/x and ~/Games/SkyrimSE.exe')
 
     def test_practice_tasks_have_their_own_id_and_are_not_picked_by_default(self):
@@ -967,6 +1221,19 @@ class FollowUpTests(Base):
             (d / 'task.json').write_text(json.dumps({'compiled': 'x', 'functions': [],
                                                      'contrib': {'practice': practice}}))
         self.assertEqual(contrib.load_task(self.ctx())[0].name, 'contrib-ninode')
+
+    def test_practice_uses_the_unit_claiming_the_template_instance(self):
+        root = self.tmp / 'fixture'
+        area = root / 'reconstruction/synthetic'
+        area.mkdir(parents=True)
+        (area / 'Owner.cpp').write_text('// Calls the function at RVA 0x1010.\nint f();\n')
+        (area / 'Owner_Members.cpp').write_text('// 0x1010 Array<Pointer<Owner>, Allocator>::Add\n'
+                                               '// 0x1020 Array<Pointer<Twin>, Allocator>::Add\n')
+        self.assertEqual(contrib.practice_unit(root, {0x1010, 0x1020}),
+                         'reconstruction/synthetic/Owner_Members.cpp')
+        (area / 'Other.cpp').write_text('// 0x1010 ?Add@Other@@YAXXZ\n')
+        with self.assertRaisesRegex(contrib.Stop, 'claimed by several units'):
+            contrib.practice_unit(root, {0x1010})
 
     def test_self_test_is_skipped_not_passed_without_its_function(self):
         repo = self.tmp / 'repo'
@@ -1185,6 +1452,60 @@ class OutsiderRegressionTests(Base):
         result = json.loads(ctx.scrub(json.dumps({'path': external, 'log': 'opened ' + external})))
         self.assertEqual(result, {'path': '<exe>', 'log': 'opened <exe>'})
 
+    def test_fresh_windows_doctor_redacts_discovered_exe_and_tools(self):
+        exe = r'D:\Private Library\Café\SkyrimSE.exe'
+        git = r'E:\Private Tools\Git\bin\git.exe'
+        llvm = r'F:\Private Tools\LLVM\bin\llvm-objdump.exe'
+        env = {'USERPROFILE': r'C:\Users\synthetic', 'SR_OBJDUMP': llvm, 'SR_CONTRIB_COMPILER': 'stand-in'}
+        # LLVM is found by the filesystem fallback, while Git is found on PATH.
+        def which(name, **_):
+            return git if name == 'git' else None
+
+        for json_mode in (False, True):
+            for status in ('ok', 'wrong-build'):
+                with self.subTest(json_mode=json_mode, status=status):
+                    ctx = self.ctx(env=env, platform='win32', as_json=json_mode)
+                    info = {'status': status, 'path': exe.replace('\\', '/'),
+                            'version': 'private-version', 'sha256': 'a' * 64}
+                    flags = ['--json'] if json_mode else []
+                    with unittest.mock.patch('contrib.shutil.which', side_effect=which), \
+                            unittest.mock.patch('contrib.os.path.isfile', side_effect=lambda p: p == llvm), \
+                            unittest.mock.patch('contrib.exe_candidates', return_value=[exe]), \
+                            unittest.mock.patch('contrib.inspect_exe', return_value=info), \
+                            contextlib.redirect_stdout(io.StringIO()) as output:
+                        code = contrib.main([*flags, '--redact', 'doctor'], ctx=ctx)
+                    shown = output.getvalue()
+                    self.assertEqual(code, contrib.OK if status == 'ok' else contrib.MISSING)
+                    for private in ('Private Library', 'Private Tools', 'private-version', 'a' * 16):
+                        self.assertNotIn(private, shown)
+                    for marker in ('<exe>', '<git>', '<llvm-objdump>'):
+                        self.assertIn(marker, shown)
+                    if json_mode:
+                        self.assertTrue(json.loads(shown)['checks'])
+                    self.assertFalse(contrib.config_path(ctx).exists())
+
+    def test_redacted_setup_omits_private_self_test_failure_details(self):
+        for failure in ('compile', 'compare'):
+            with self.subTest(failure=failure):
+                ctx = self.ctx(env={'SR_CONTRIB_COMPILER': 'stand-in'}, platform='win32')
+                exe = r'D:\Private Library\SkyrimSE.exe'
+                exc = contrib.Stop(contrib.COMPILE, 'synthetic private diagnostic', errors=['synthetic listing'])
+                result = (contrib.FAILED, {'bind': ['synthetic private diagnostic'], 'functions': []}, None)
+                with unittest.mock.patch.object(ctx, 'which', return_value='git'), \
+                        unittest.mock.patch('contrib.wanted_packages', return_value=[]), \
+                        unittest.mock.patch('contrib.exe_candidates', return_value=[exe]), \
+                        unittest.mock.patch('contrib.inspect_exe', return_value={'status': 'ok', 'path': exe}), \
+                        unittest.mock.patch('contrib.run_self_test', side_effect=exc if failure == 'compile' else None,
+                                            return_value=result), \
+                        contextlib.redirect_stdout(io.StringIO()) as output:
+                    code = contrib.main(['--json', '--redact', 'setup', '--no-sources', '--no-decompiler'], ctx=ctx)
+                shown = output.getvalue()
+                self.assertEqual(code, contrib.COMPILE if failure == 'compile' else contrib.FAILED)
+                self.assertNotIn('Private Library', shown)
+                self.assertNotIn('synthetic private diagnostic', shown)
+                self.assertNotIn('synthetic listing', shown)
+                self.assertEqual(json.loads(shown)['steps'][-1]['step'], 'self-test')
+
     def test_setup_emits_one_json_object_even_when_installer_prints(self):
         ctx = self.ctx(env={'PATH': '/usr/bin:/bin', 'HOME': str(self.tmp)})
         def setup(ctx, args):
@@ -1212,6 +1533,51 @@ class OutsiderRegressionTests(Base):
 
 
 class SubmitPreflightTests(SubmitTests):
+    def test_submit_with_upstream_rights_never_pushes_to_another_contributor(self):
+        self.git('remote', 'add', 'origin', 'https://github.com/Mudcrab-Team/skyrim_decomp.git')
+        self.git('switch', '-q', '-c', 'contrib/toy')
+        gh = FakeGitHub()
+        commands = []
+
+        def runner(cmd, **kw):
+            if cmd[:2] in (['git', 'push'], ['gh', 'pr']):
+                commands.append(cmd)
+                return subprocess.CompletedProcess(cmd, 0, 'https://example.invalid/pull/1\n', '')
+            return self.runner(cmd, **kw)
+
+        ctx = self.ctx(repo=self.repo, github=gh, runner=runner)
+        with unittest.mock.patch.object(gh, 'api', return_value={'permissions': {'push': True}}), \
+                contextlib.redirect_stdout(io.StringIO()):
+            code = contrib.main(['--json', 'submit', '--base', 'HEAD'], ctx=ctx)
+        self.assertEqual(code, contrib.OK)
+        ref = 'HEAD:refs/heads/contrib/toy'
+        self.assertEqual(commands[:2], [['git', 'push', '--dry-run', 'origin', ref], ['git', 'push', 'origin', ref]])
+        self.assertEqual(commands[2][commands[2].index('--head') + 1], 'contrib/toy')
+
+    def test_upstream_permission_cannot_select_a_fork_via_origin_pushurl(self):
+        self.git('remote', 'add', 'origin', 'https://github.com/Mudcrab-Team/skyrim_decomp.git')
+        self.git('remote', 'set-url', '--push', 'origin', 'https://github.com/other/skyrim_decomp.git')
+        gh = FakeGitHub()
+        with unittest.mock.patch.object(gh, 'api', return_value={'permissions': {'push': True}}), \
+                self.assertRaisesRegex(contrib.Stop, 'single push URL'):
+            contrib.submit_remote(self.ctx(repo=self.repo, github=gh, runner=self.runner), 'fork')
+
+    def test_git_only_upstream_access_is_checked_without_updating_a_ref(self):
+        self.git('remote', 'add', 'origin', 'https://github.com/Mudcrab-Team/skyrim_decomp.git')
+        self.git('switch', '-q', '-c', 'contrib/toy')
+        probes = []
+
+        def runner(cmd, **kw):
+            if cmd[:2] == ['git', 'push']:
+                probes.append(cmd)
+                return subprocess.CompletedProcess(cmd, 0, '', '')
+            return self.runner(cmd, **kw)
+
+        ctx = self.ctx(repo=self.repo, github=FakeGitHub(can_create=False), runner=runner)
+        self.assertEqual(contrib.submit_remote(ctx, 'fork'), ('origin', True))
+        self.assertEqual(len(probes), 1)
+        self.assertEqual(probes[0][:4], ['git', 'push', '--dry-run', 'origin'])
+
     def test_renamed_or_legacy_upstream_can_never_receive_submit_push(self):
         self.git('remote', 'remove', 'fork')
         self.git('remote', 'add', 'origin', 'https://github.com/awarebayes/skyrim_decomp.git')
