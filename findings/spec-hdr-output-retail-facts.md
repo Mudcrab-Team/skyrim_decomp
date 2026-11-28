@@ -20,7 +20,7 @@ Transfer status: UNREVIEWED
 | Build | `sse-steam-1-7-104`, retail `1.7.104.0`, Steam build 24914197. Measured SHA-256 of the executable `846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f` equals the pin in `builds/target.json`. |
 | Shader package | `shadersfx/shaders011.fxp`, SHA-256 `72cfc73eb0938d5949f0b3a8683722a33b671a34b41b750ba138de8d154c5fbc`. Pixel records of groups 26, 27, 29, 30, 31, 32, 34, 36 and 50 and the trailing records 49, 51 and 53 were decoded locally by one or more runs. |
 | Shipped INI files | `Skyrim_Default.ini` `61c151bc…`, `Low.ini` `f045a016…`, `Medium.ini` `e5cb56c2…`, `High.ini` `2413dc2f…`, `Ultra.ini` `10dc00f0…`. Other INI files were not used, because they can be player files. |
-| Source exposure | Mixed: pinned native binary analysis, shipped shader bytecode decoded locally and offscreen, shipped INI files, published CrashLogger name tables, earlier published findings, the SPEC-1 file, and the matched reconstructions of section 15.3. **No value was read from any game plugin.** No decompiler text and no disassembly appears here. A reader of this file must not claim to be unexposed to the binary analysis. |
+| Source exposure | Mixed: pinned native binary analysis, shipped shader bytecode decoded locally and offscreen, shipped INI files, published CrashLogger name tables, earlier published findings, the SPEC-1 file, and the reconstruction source of section 15.3. **No value was read from any game plugin.** No decompiler text and no disassembly appears here. A reader of this file must not claim to be unexposed to the binary analysis. |
 | Name provenance | Class, shader, setting, console-command and render-target names are strings of the image, run-time type names of the image, or `CRASHLOGGER_PDB(59818@2026.10.24)`. Names of structure fields taken from community layouts are inferred. Other labels are GUESS. Subrecord names are public format names; their link to an offset follows SPEC-1 and #1059. |
 | Intended recipient | The Skyrim Research project, for boundary review under `docs/clean-room.md`. Maintainer transfer decision pending. |
 
@@ -31,7 +31,7 @@ Transfer status: UNREVIEWED
 **Method.** Static analysis only. No game run, no frame capture and no comparator run.
 
 * The runs read the pinned executable of build `sse-steam-1-7-104` and the shipped shader package. They used local reader scripts and local disassembly, and they decoded shader records locally and offscreen. The scripts and raw output are private and stay in `.local/`.
-* The runs also used the shipped INI files, the published CrashLogger name tables, earlier published findings, the SPEC-1 file and the matched reconstructions of section 15.3.
+* The runs also used the shipped INI files, the published CrashLogger name tables, earlier published findings, the SPEC-1 file and the reconstruction source of section 15.3.
 * An author run wrote the draft. It carried some claims over from published findings. Section 15 names the runs for each claim.
 * An independent reviewer run, with a fresh context, checked claims against the image and the shaders and reproduced the worked examples.
 * A blind second binary-check run, with a fresh context, saved its own results before it opened the draft. It recomputed the examples.
@@ -760,11 +760,11 @@ Points where the reviewer and the second check differed, and the result:
 | Accumulators "zeroed" against "tint starts at the base values" | Both are right: the tint accumulators are the copied base values; all other accumulators are cleared after the copy. |
 | Interior byte: object name | Same byte and the same writer rule. |
 
-### 15.3 Matched reconstructions used as support
+### 15.3 Reconstruction source used as support
 
-These are `matched` entries of `data/progress.json` on `origin/main`. A match proves compiled code identity, not a name or a purpose. Names are the project's labels (GUESS unless community).
+These are reconstruction source units on the main branch. This finding makes no claim about their comparison or acceptance status, and they do not prove a name or a purpose. Names are the project's labels (GUESS unless community).
 
-| RVA | Progress name | Support given |
+| RVA | Source label | Support given |
 |---|---|---|
 | `0x14f4370` | `Function14f4370` | counts active slots 0 to 7 under the global gate |
 | `0x14eedf0` | `Function14eedf0` | reads mgr `+0x211`, `+0x218` (screenshot block) |
