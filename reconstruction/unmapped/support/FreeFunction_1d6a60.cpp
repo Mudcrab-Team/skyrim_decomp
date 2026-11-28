@@ -5,7 +5,9 @@
 // Adapted bodies: none
 #include "FreeFunction_1d6a60.h"
 
-// Rounds a floating-point value upward toward positive infinity.
+// Ceiling by way of a signed 32-bit integer conversion.
+// NOTE: original behaviour: the result is the ceiling only for inputs that fit that integer; NaN and larger
+// magnitudes are out of range for the conversion and give another value.
 float FloatCeil(float a_value)
 {
     float truncated = static_cast<float>(static_cast<std::int32_t>(a_value));
