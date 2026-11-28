@@ -305,3 +305,11 @@ Verdict: **7 confirmed, 5 corrected, 1 unverified and cut.** The groups L11 and 
 Source exposure of the review: mixed. The reviewer used the pinned executable, the shipped shader package, the committed name and layout tables and published findings. It did not open a game plugin. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by a separate fresh-context `claude-sonnet-5-5` run. Outcome: 7 confirmed, 5 corrected, 1 unverified and cut, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-25, UNREVIEWED): eye-adaptation step sign at rate 0
+
+**Scope.** One sentence of L02. Static only. No visual result is claimed. Source: [spec-near-lighting-retail-facts.md](spec-near-lighting-retail-facts.md), section 13. That merged file had no separate review of its final wording. Evidence: two separate `claude-sonnet-5-5` runs decoded the adapt pixel shaders (groups 32 and 34); one of them also re-read the parameter update at `0x153daeb–0x153dbe3`.
+
+1. **L02 (correction).** "With `T = 0` both adapt rates are 0, and each channel moves only by the `1/256` floor per adapt draw." is replaced by: "With `T = 0` both adapt rates are 0, and neither channel moves." The shader takes the step sign from `Δ × r_i`, not from `Δ`. The L01 statement about the `1/256` floor applies to nonzero rates.
+
+**Confidence: high.** The original text above stays unchanged. This amendment supersedes it for the statements named here only.

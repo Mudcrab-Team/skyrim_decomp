@@ -526,3 +526,11 @@ The later run did not re-run the snow specular records. It read no plugin.
 Source exposure of the review: pinned native binary, shipped shader package and committed name tables. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by a Sonnet 5.5 run. Outcome: 8 confirmed, 8 corrected, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-25, UNREVIEWED): which depth fogs a decal
+
+**Scope.** One inferred statement of G08. Addresses are RVAs. Static only. No visual result is claimed. Source: [spec-near-lighting-retail-facts.md](spec-near-lighting-retail-facts.md), section 13. That merged file had no separate review of its final wording. The depth binding is from [live-k-composite-target-retail-facts.md](live-k-composite-target-retail-facts.md) G04. Two later `claude-sonnet-5-5` runs re-read it: the depth copy at the end of `RenderDepth` (`0x15399df`), its call (`0x657213`) before the world render (`0x6576be`), and the skipped second copy site (`0x151f2c2`).
+
+1. **G08 (correction of an inference).** "**Inferred.** A non-blended decal writes depth, so the composite fogs it at its own depth. A blended decal writes no depth, so it takes the fog of the depth already there." is replaced by: "**Verified for the binding.** The composite reads the depth copy made after the depth prepass and before the first colour stage. It does not see the colour-stage depth write of a decal, so every decal pixel takes the fog of the depth in that copy. **Unverified:** whether the depth prepass draws decals." The G07 depth, bias and write-mask rows do not change.
+
+**Confidence: high** for the binding. The original text above stays unchanged. This amendment supersedes it for the statements named here only.

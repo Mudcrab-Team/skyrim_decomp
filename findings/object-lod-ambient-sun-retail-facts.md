@@ -224,3 +224,11 @@ Source exposure of the review: mixed. The reviewer used the local pinned executa
 Reviewer and outcome: Reviewed independently by `gpt-6.2-sol` via Codex. Outcome: 1 confirmed, 5 corrected, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
 
 **Amendment (2026-11-24, UNREVIEWED):** plugin-derived values were replaced by symbolic text (hygiene). Rules and arithmetic are unchanged.
+
+## Amendment (2026-11-25, UNREVIEWED): weather flash clamp wording
+
+**Scope.** Wording clarification of one G03 sentence. The published sentence is ambiguous, not wrong. Addresses are RVAs. Static only. No visual result is claimed. Source: [spec-near-lighting-retail-facts.md](spec-near-lighting-retail-facts.md), section 13. That merged file had no separate review of its final wording. The same rule is already stated in [sky-sun-ambient-day-retail-facts.md](sky-sun-ambient-day-retail-facts.md).
+
+1. **G03 (clarification).** The sentence "When current weather exists, each adjusted channel is clamped between zero and its cap byte divided by 255." stands inside the flash paragraph. It reads: "When the flash adjustment is positive and a current weather exists, each adjusted channel is limited to [0, cap byte/255]. Otherwise each channel is limited above at 1." A reading that applies the cap bytes without a positive adjustment is not correct (`0x414e2a`, `0x414ee7`, `0xef2e80`).
+
+**Confidence: high.** The original text above stays unchanged. This amendment supersedes it for the statements named here only.
