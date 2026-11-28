@@ -145,7 +145,7 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 10 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 11 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -155,7 +155,7 @@ Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functi
 | D: Image space, sky, water system | 726 | 637 | 87.7% | 3 | 12 | 74 | 0 | 62305 |
 | E: Shadows | 132 | 92 | 69.7% | 0 | 2 | 38 | 0 | 48058 |
 | **Total A-E** | 2060 | 1362 | 66.1% | 12 | 131 | 555 | 0 | 322785 |
-| Adjacent, not assigned | 999 | 481 | 48.1% | 0 | 120 | 398 | 0 | 164146 |
+| Adjacent, not assigned | 999 | 500 | 50.1% | 1 | 100 | 398 | 0 | 162080 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
 
@@ -414,9 +414,9 @@ Scope: listed for context, owned by the general rounds.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| X1 Particle systems and emitters | 563 | 283 | 0 | 71 | 209 | 0 | absent from the ready queue (202) | gamebryo |
+| X1 Particle systems and emitters | 563 | 301 | 1 | 52 | 209 | 0 | absent from the ready queue (202) | gamebryo |
 | X2 Scaleform UI renderer | 49 | 0 | 0 | 16 | 33 | 0 | absent from the ready queue (33) | - |
-| X3 Game cameras and camera states | 154 | 71 | 0 | 23 | 60 | 0 | absent from the ready queue (59) | skyrim |
+| X3 Game cameras and camera states | 154 | 72 | 0 | 22 | 60 | 0 | absent from the ready queue (59) | skyrim |
 | X4 Render-related forms, decals, effects, grass and LOD | 233 | 127 | 0 | 10 | 96 | 0 | absent from the ready queue (96) | skyrim_shared |
 
 <details><summary>Classes of adjacent with unmatched functions</summary>
@@ -424,15 +424,15 @@ Scope: listed for context, owned by the general rounds.
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | NiPSysEmitterCtlr | X1 | 23 | 14 | 0 | 3 | 6 | 0 | 30 |
-| BSMasterParticleSystem | X1 | 19 | 10 | 0 | 1 | 8 | 0 | 0 |
+| BSMasterParticleSystem | X1 | 19 | 11 | 0 | 0 | 8 | 0 | 0 |
 | NiParticleSystem | X1 | 19 | 7 | 0 | 4 | 8 | 0 | 0 |
-| NiPSysBombModifier | X1 | 17 | 12 | 0 | 1 | 4 | 0 | 0 |
-| BSParticleSystemManager | X1 | 13 | 4 | 0 | 1 | 8 | 0 | 0 |
-| NiPSysGravityModifier | X1 | 13 | 7 | 0 | 2 | 4 | 0 | 0 |
+| NiPSysBombModifier | X1 | 17 | 13 | 0 | 0 | 4 | 0 | 0 |
+| BSParticleSystemManager | X1 | 13 | 5 | 0 | 0 | 8 | 0 | 0 |
+| NiPSysGravityModifier | X1 | 13 | 8 | 0 | 1 | 4 | 0 | 0 |
 | NiPSysMeshEmitter | X1 | 13 | 3 | 0 | 2 | 8 | 0 | 33 |
 | NiParticles | X1 | 13 | 7 | 0 | 0 | 6 | 0 | 24 |
 | BSPSysHavokUpdateModifier | X1 | 12 | 6 | 0 | 2 | 4 | 0 | 0 |
-| NiPSysData | X1 | 12 | 0 | 0 | 5 | 7 | 0 | 22 |
+| NiPSysData | X1 | 12 | 1 | 0 | 4 | 7 | 0 | 22 |
 | NiPSysModifier | X1 | 12 | 10 | 0 | 0 | 2 | 0 | 14 |
 | NiPSysModifierCtlr | X1 | 12 | 9 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysBoundUpdateModifier | X1 | 10 | 3 | 0 | 0 | 7 | 0 | 16 |
@@ -440,43 +440,43 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysColorModifier | X1 | 9 | 6 | 0 | 0 | 3 | 0 | 0 |
 | NiPSysMeshUpdateModifier | X1 | 9 | 4 | 0 | 0 | 5 | 0 | 0 |
 | NiPSysSpawnModifier | X1 | 9 | 6 | 0 | 1 | 2 | 0 | 0 |
-| BSPSysInheritVelocityModifier | X1 | 8 | 2 | 0 | 2 | 4 | 0 | 0 |
+| BSPSysInheritVelocityModifier | X1 | 8 | 4 | 0 | 0 | 4 | 0 | 0 |
 | BSPSysLODModifier | X1 | 8 | 6 | 0 | 1 | 1 | 0 | 0 |
 | BSPSysRecycleBoundModifier | X1 | 8 | 1 | 0 | 4 | 3 | 0 | 0 |
-| NiPSysAgeDeathModifier | X1 | 8 | 4 | 0 | 1 | 3 | 0 | 0 |
+| NiPSysAgeDeathModifier | X1 | 8 | 5 | 0 | 0 | 3 | 0 | 0 |
 | NiPSysCollider | X1 | 8 | 0 | 0 | 6 | 2 | 0 | 0 |
 | NiPSysVolumeEmitter | X1 | 8 | 7 | 0 | 0 | 1 | 0 | 0 |
 | BSPSysArrayEmitter | X1 | 7 | 3 | 0 | 0 | 4 | 0 | 23 |
 | BSPSysStripUpdateModifier | X1 | 7 | 4 | 0 | 0 | 3 | 0 | 0 |
-| NiPSysAirFieldModifier | X1 | 7 | 2 | 0 | 1 | 4 | 0 | 0 |
+| NiPSysAirFieldModifier | X1 | 7 | 3 | 0 | 0 | 4 | 0 | 0 |
 | NiPSysBoxEmitter | X1 | 7 | 3 | 0 | 2 | 2 | 0 | 0 |
-| NiPSysDragFieldModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
-| NiPSysDragModifier | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| NiPSysDragFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
+| NiPSysDragModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysGrowFadeModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysModifierBoolCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysModifierFloatCtlr | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysPlanarCollider | X1 | 7 | 0 | 0 | 1 | 6 | 0 | 0 |
 | NiPSysRotationModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
-| NiPSysSphereEmitter | X1 | 7 | 3 | 0 | 2 | 2 | 0 | 0 |
+| NiPSysSphereEmitter | X1 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysVortexFieldModifier | X1 | 7 | 5 | 0 | 0 | 2 | 0 | 0 |
-| BSPSysSimpleColorModifier | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
+| BSPSysSimpleColorModifier | X1 | 6 | 3 | 0 | 0 | 3 | 0 | 0 |
 | BSPSysSubTexModifier | X1 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | NiPSysCylinderEmitter | X1 | 6 | 2 | 0 | 2 | 2 | 0 | 0 |
 | NiPSysEmitter | X1 | 6 | 3 | 0 | 1 | 2 | 0 | 0 |
 | NiPSysGravityFieldModifier | X1 | 6 | 4 | 0 | 0 | 2 | 0 | 0 |
 | NiPSysSphericalCollider | X1 | 6 | 0 | 0 | 1 | 5 | 0 | 0 |
 | NiPSysUpdateCtlr | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
-| NiParticleMeshes | X1 | 6 | 2 | 0 | 1 | 3 | 0 | 0 |
+| NiParticleMeshes | X1 | 6 | 2 | 1 | 0 | 3 | 0 | 0 |
 | NiParticleMeshesData | X1 | 6 | 0 | 0 | 3 | 3 | 0 | 0 |
 | BSPSysScaleModifier | X1 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 | NiPSysModifierActiveCtlr | X1 | 5 | 3 | 0 | 0 | 2 | 0 | 14 |
 | NiPSysResetOnLoopCtlr | X1 | 5 | 2 | 0 | 0 | 3 | 0 | 0 |
-| NiParticlesData | X1 | 5 | 0 | 0 | 2 | 3 | 0 | 0 |
+| NiParticlesData | X1 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
 | BGSShaderParticleGeometryData | X1 | 4 | 1 | 0 | 0 | 3 | 0 | 0 |
 | BSParticleShaderGeometry | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 3 |
 | BSParticleShaderGeometryEmitter | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 4 |
-| BSStripParticleSystem | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
+| BSStripParticleSystem | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 0 |
 | NiPSysEmitterCtlrData | X1 | 4 | 2 | 0 | 2 | 0 | 0 | 0 |
 | NiPSysEmitterDeclinationCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
 | NiPSysEmitterDeclinationVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
@@ -493,7 +493,7 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysInitialRotAngleVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
 | NiPSysInitialRotSpeedCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
 | NiPSysInitialRotSpeedVarCtlr | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 14 |
-| NiPSysTurbulenceFieldModifier | X1 | 4 | 2 | 0 | 1 | 1 | 0 | 0 |
+| NiPSysTurbulenceFieldModifier | X1 | 4 | 3 | 0 | 0 | 1 | 0 | 0 |
 | BSParticleShaderCollisionEmitter | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 4 |
 | BSParticleShaderRayEmitter | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 4 |
 | NiPSysAirFieldAirFrictionCtlr | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 14 |
@@ -504,7 +504,6 @@ Scope: listed for context, owned by the general rounds.
 | NiPSysRadialFieldModifier | X1 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | BSParticleShaderEmitter | X1 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
 | BSParticleShaderObjectEmitter | X1 | 2 | 1 | 0 | 0 | 1 | 0 | 2 |
-| NiParticleInfo | X1 | 2 | 0 | 0 | 2 | 0 | 0 | 0 |
 | NiParticleSDM | X1 | 1 | 0 | 0 | 0 | 1 | 0 | 0 |
 | Scaleform::Render::Text::DocView | X2 | 15 | 0 | 0 | 1 | 14 | 0 | 0 |
 | Scaleform::Render::Text | X2 | 6 | 0 | 0 | 1 | 5 | 0 | 0 |
@@ -535,7 +534,7 @@ Scope: listed for context, owned by the general rounds.
 | FreeCameraState | X3 | 10 | 5 | 0 | 1 | 4 | 0 | 0 |
 | FurnitureCameraState | X3 | 8 | 2 | 0 | 1 | 5 | 0 | 0 |
 | TESCamera | X3 | 8 | 5 | 0 | 3 | 0 | 0 | 9 |
-| TweenMenuCameraState | X3 | 8 | 3 | 0 | 3 | 2 | 0 | 0 |
+| TweenMenuCameraState | X3 | 8 | 4 | 0 | 2 | 2 | 0 | 0 |
 | VATSCameraState | X3 | 8 | 1 | 0 | 3 | 4 | 0 | 0 |
 | PlayerCameraTransitionState | X3 | 6 | 1 | 0 | 2 | 3 | 0 | 0 |
 | BleedoutCameraState | X3 | 5 | 1 | 0 | 1 | 3 | 0 | 0 |
