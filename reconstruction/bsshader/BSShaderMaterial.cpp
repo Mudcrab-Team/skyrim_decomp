@@ -3,7 +3,7 @@
 // image).
 // Adapted bodies: none
 // Function15757c0, CRC32SizeOfSize: GUESS(low); bodies are written from the local listing, no community code adapted
-// 0x15757c0 BSShaderMaterial::Function15757c0
+// Legacy unaccepted checksum draft; the current candidate is in BSShaderMaterial_15757c0.cpp.
 // 0x1575700 BSShaderMaterial::CopyMembers
 // 0x15758f0 BSShaderMaterial::~BSShaderMaterial
 #include "BSShaderMaterial.h"
