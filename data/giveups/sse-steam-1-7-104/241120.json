@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "build_id": "sse-steam-1-7-104",
+  "rva": "0x241120",
+  "records": [
+    {
+      "category": "register-schedule",
+      "tried": [
+        "switch over the animation type",
+        "range helper and combined bow or crossbow helper",
+        "early return, ternary and named locals",
+        "unscoped enum and plain byte compare"
+      ],
+      "still_differs": "the second type test is one byte longer: the target reuses an address computation for the compare, the candidate subtracts on the byte register",
+      "suspected_cause": "instruction selection for the second range test depends on a source shape not yet found",
+      "best_similarity": 74.1,
+      "similarity_basis": "aligned_matching_bytes 20/27",
+      "model": "claude-opus-5-5",
+      "harness": "sr.cmd",
+      "lane": "contributor",
+      "best_code": {
+        "kind": "none"
+      }
+    }
+  ]
+}

@@ -31,8 +31,7 @@ bool TESActorBase::GetIsPlayerOwner() const
 // 0x3afed0 TESActorBase::IsAutoCalc; body from the pinned image listing.
 bool TESActorBase::IsAutoCalc() const
 {
-    if (*reinterpret_cast<const std::uint8_t*>(reinterpret_cast<const char*>(this) + 0x1a) == '+' &&
-        TestBit(*reinterpret_cast<const std::uint32_t*>(reinterpret_cast<const char*>(this) + 0x38), 4)) {
+    if (formType == kFormTypeNPC && TestBit(actorBaseFlags, 4)) {
         return true;
     }
     return false;
