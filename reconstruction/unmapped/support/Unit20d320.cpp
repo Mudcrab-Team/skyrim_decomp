@@ -8,6 +8,7 @@
 #include <cstring>
 
 // Compares two prefixed strings for equality after stripping any 13-byte prefix.
+// NOTE: original behaviour: only the prefix test checks for null; a null text still reaches strcmp.
 bool Unit20d320::Equals20d320(const Unit20d320& a_other) const
 {
     bool equal = (data == a_other.data);

@@ -8,6 +8,7 @@
 #include <cstring>
 
 // Compares the prefix-stripped string against a_other, returning false when a_other is null.
+// NOTE: original behaviour: only the prefix test checks for null; a null text still reaches strcmp.
 bool Unit20d3d0::EqualsCString20d3d0(const char* a_other) const
 {
     if (a_other) {
