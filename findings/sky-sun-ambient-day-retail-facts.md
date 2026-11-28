@@ -311,3 +311,22 @@ After the review, a third run applied the corrections and re-read 13 items in th
 Source exposure of the review: pinned native binary, shipped shader bytecode and shipped mesh structure. This is a static review. It is not match evidence for any function, and it does not decide transfer eligibility.
 
 Reviewer and outcome: Reviewed independently by a Sonnet 5.5 run. Outcome: 11 confirmed, 4 corrected, 0 rejected. Static evidence only. Transfer status: UNREVIEWED.
+
+## Amendment (2026-11-26, from SPEC-4): weather textures, moon angle, flash trigger, masks, glare scale and additions
+
+Transfer status: UNREVIEWED. Static only. These items come from the SPEC-4 runs (sky objects and weather, `findings/spec-sky-weather-retail-facts.md`; Sonnet 5.5 author, independent review, blind second binary check and finalizer, `claude-sonnet-5-5`; a Sol run was not available). The original text above stays unchanged. This amendment supersedes it for the statements named here only. Every row is confirmed by at least two of those runs (**V2**).
+
+| # | Statement above | Amended statement |
+|---|---|---|
+| 1 | G04: "`+0x98` and `+0xa0` are the current and previous weather textures". | In a transition `+0x98` holds the **outgoing** texture and `+0xa0` the **incoming** one. In the steady state `+0x98` holds the current texture and `+0xa0` the engine default texture. |
+| 2 | G07: "First use sets 90. Each frame adds `speed × 60 × Δh`". | The first update yields `90 + speed × 60 × h`, because the previous hour is taken as 0. |
+| 3 | G01 and the review table: `0x414180` "not read", later "the weather sound update (GUESS)" that "does not change the answer". | It also triggers the lightning flash: it sets `Sky+0x1c8` and the flash start time. The decay step later in the same sky update then makes the strength 1. |
+| 4 | G09: the meaning of the stars factor `f` is unverified. | It is a horizon fade: `sat((vertex height − eye height) / 17)` in the camera-relative world. The identity of the eye term was read by one run only. |
+| 5 | G09: the pixel stage table lists one output. | Addition: every sky pixel shader also writes output 1 = screen motion `(current − previous) × (−0.5, +0.5)` and output 2 = the constant `(0.5, 0.5, 0, 0)`. |
+| 6 | G01 and the limitations: the `0x41ca50` call is unverified. | It enables the sun occlusion tests and reads the query results. |
+| 7 | G13: "The settings may be overridden by INI or by other writers; I did not check them." | The `fWeather*`, `fSun*`, `fMasser*`, `fSecunda*`, `fStars*`, aurora and `fDaytimeColorExtension` rows **without** a `:Weather` section are game settings, so loaded data files can override them. The `:Weather` rows (`fSunBaseSize`, `fSunGlareSize`, `fSunBoost`, `fSunGlareMultiplier`) are INI settings. |
+| 8 | G07: "The moon is hidden when its alpha is 0". | Addition: it is also hidden when `NAM0` row 16 is zero. |
+| 9 | G10 technique table: write mask mode 1 for techniques 3 to 8. | The technique setup stores no mask for them. Mode 1 is the inherited state at the first sky draw; the restore writes it after each sky draw. |
+| 10 | G06: the glare scale "moves toward the target `(1 − occlusion)²` … at `fSunReduceGlareSpeed` (4.0) per second". | Only a rise (and the fall branch) is rate limited. While the sun is not fully occluded and the target is at least the minimum, a lower target is taken at once. |
+| 11 | G10: write mask mode 0 is "none", and the type 7 quad "writes depth only"; G06: the query "colour write mask is zero". | Mode 0 closes colour output 0 only. Outputs 1 to 7 stay writable, and the mask and query pixel shaders write outputs 1 and 2. |
+| 12 | G02 and G04: cloud colours use the same mixer as the rows. | Addition: in a transition a packed cloud colour of 0 is first replaced by the other weather's colour of the same time slot (current from previous, then previous from the replaced current). Alpha and the 17 rows get no such replacement. |
