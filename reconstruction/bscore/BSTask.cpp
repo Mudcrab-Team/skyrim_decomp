@@ -2,6 +2,7 @@
 // image).
 // Declarations derived from powerof3/CommonLibSSE are GPL-3.0 (its licence).
 // Adapted bodies: none.
+// 0xfc26e0 BSTask::GetDescription
 // 0x19be50 BSTask::~BSTask
 #include "BSTask.h"
 #include <cstddef>
