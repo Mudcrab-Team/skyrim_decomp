@@ -1,11 +1,13 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// 0x1cc400 TESFile::IsMasterFilesValid
+// 0x1cc400 TESFile::HasInvalidMasterFile
 // Adapted bodies: none
 #include "TESFile_1cc400.h"
 
-// Checks whether any master file is missing or differs from its recorded size.
-bool TESFile::IsMasterFilesValid() const
+// True when any master file is missing or differs from its recorded size.
+// The CrashLogger name is IsMasterFilesValid, which reads as the opposite of the returned value, so a
+// stand-in name is used here.
+bool TESFile::HasInvalidMasterFile() const
 {
     const SimpleListNode<const char*>* masterNode = &masters;
     bool invalid = false;

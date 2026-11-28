@@ -1,7 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
 // Code origin: original reconstruction from the pinned image listing; names and prototypes as labelled below
-// TESFile, TESFile::IsMasterFilesValid, TESFile::masters, TESFile::mastersData, WIN32_FIND_DATAA: CRASHLOGGER_PDB(59818@2026.10.24)
-// TESFile::unk000, MasterFileSize, MasterFileSize::low, MasterFileSize::high, SimpleListNode, SimpleListNode::item, SimpleListNode::next, FormatPath, FindFirstFileA, FindClose, kMasterFilePathFormat, WIN32_FIND_DATAA::unk00, WIN32_FIND_DATAA::nFileSizeHigh, WIN32_FIND_DATAA::nFileSizeLow, WIN32_FIND_DATAA::unk24: GUESS(low); offsets and calls observed in listing
+// TESFile, TESFile::masters, TESFile::mastersData, WIN32_FIND_DATAA: CRASHLOGGER_PDB(59818@2026.10.24)
+// TESFile::HasInvalidMasterFile, TESFile::unk000, MasterFileSize, MasterFileSize::low, MasterFileSize::high, SimpleListNode, SimpleListNode::item, SimpleListNode::next, FormatPath, FindFirstFileA, FindClose, kMasterFilePathFormat, WIN32_FIND_DATAA::unk00, WIN32_FIND_DATAA::nFileSizeHigh, WIN32_FIND_DATAA::nFileSizeLow, WIN32_FIND_DATAA::unk24: GUESS(low); offsets and calls observed in listing
 #pragma once
 
 #include <cstddef>
@@ -43,7 +43,7 @@ struct SimpleListNode
 class TESFile
 {
 public:
-    bool IsMasterFilesValid() const;
+    bool HasInvalidMasterFile() const;
 
     std::uint8_t                    unk000[0x440];  // 000
     SimpleListNode<const char*>     masters;        // 440
