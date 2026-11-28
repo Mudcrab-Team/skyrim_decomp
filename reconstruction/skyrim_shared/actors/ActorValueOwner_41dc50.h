@@ -1,5 +1,7 @@
 // Source exposure: mixed (community headers; the pinned image listing).
-// Code origin: original; the listing, CommonLibSSE-NG declarations and CrashLogger PDB declarations only
+// Code origin: written from the listing, CommonLibSSE-NG declarations and CrashLogger PDB declarations; see Adapted bodies.
+// Adapted bodies: TestBit, treated as adapted: it resembles the sibling bit-test helper cited below (CC0-1.0).
+// Sibling source: momusdigital/f3_decomp@f5bac1b5 src/f3staging/f3blk_004e0000_o2.cpp:49422
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
 // ActorValueOwner, ActorValueOwner::sub_1403BD3C0: CRASHLOGGER_PDB(59818@2026.10.24)
 // ActorValueOwner::GetPermanentActorValue: COMMUNITY(CharmedBaryon/CommonLibSSE-NG@b93280e, MIT)
