@@ -24,6 +24,29 @@ Transfer status: UNREVIEWED
 | Name provenance | Class, shader, setting, console-command and render-target names are strings of the image, run-time type names of the image, or `CRASHLOGGER_PDB(59818@2026.10.24)`. Names of structure fields taken from community layouts are inferred. Other labels are GUESS. Subrecord names are public format names; their link to an offset follows SPEC-1 and #1059. |
 | Intended recipient | The Skyrim Research project, for boundary review under `docs/clean-room.md`. Maintainer transfer decision pending. |
 
+## Question and method
+
+**Question.** What does retail do between the lit first stage and the byte that the swap chain receives?
+
+**Method.** Static analysis only. No game run, no frame capture and no comparator run.
+
+* The runs read the pinned executable of build `sse-steam-1-7-104` and the shipped shader package. They used local reader scripts and local disassembly, and they decoded shader records locally and offscreen. The scripts and raw output are private and stay in `.local/`.
+* The runs also used the shipped INI files, the published CrashLogger name tables, earlier published findings, the SPEC-1 file and the matched reconstructions of section 15.3.
+* An author run wrote the draft. It carried some claims over from published findings. Section 15 names the runs for each claim.
+* An independent reviewer run, with a fresh context, checked claims against the image and the shaders and reproduced the worked examples.
+* A blind second binary-check run, with a fresh context, saved its own results before it opened the draft. It recomputed the examples.
+* A finalizer run applied both correction sets and re-read the items of section 15.2.
+* The amendment at the end of this file states its own evidence.
+
+**Confidence.** The confidence of each claim is its mark. The verification ledger (section 15.1) has 56 rows in this version of the file:
+
+* 45 rows are **V2** (checked twice, by two different runs).
+* 8 rows are **V1**: H13, H17, H20, H22, H27, H31, H32 and H46. Row H20 names two runs that checked different parts.
+* 3 rows are **I** (inferred): H14, H36 and H54.
+* No ledger row is **U**. Section 13 lists the open items.
+* All the runs of this specification are `claude-sonnet-5-5`. Agreement between them is not independent proof. The finalizer did not re-read every V2 row that rests on a published finding or on an earlier run. The merged wording had no further independent review.
+* Overall confidence: **medium**, as a static reading. The overall level was set on 2026-11-27, when this section was added, from the marks and limits in this file. No new binary read supports this section. Transfer status stays UNREVIEWED.
+
 ## 0. How to read this file
 
 | Mark | Meaning |
