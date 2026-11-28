@@ -145,7 +145,7 @@ The PR bot refreshes this block and the tracking and task issue bodies during ho
 
 <!-- inventory:start -->
 
-Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 11 open claim issues are counted as claimed.
+Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functions. Matched functions come from `data/progress.json`, and functions under 10 open claim issues are counted as claimed.
 
 | Workstream | Known | Matched | Matched % | Claimed | Ready | Waiting | Unlisted | Open bytes |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
