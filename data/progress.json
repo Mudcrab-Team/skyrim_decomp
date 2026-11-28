@@ -75028,7 +75028,7 @@
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 0. RVA 0x19be50; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md",
+      "evidence": "reports/sse-steam-1-7-104/0x19be50.json",
       "report": "reports/sse-steam-1-7-104/0x19be50.json"
     },
     {
@@ -197259,12 +197259,13 @@
       "build_id": "sse-steam-1-7-104",
       "rva": 16525024,
       "size": 34,
-      "status": "mapped",
+      "status": "matched",
       "name": "BSTask::GetDescription",
       "name_origin": "COMMUNITY",
       "name_source": "Community name, not verified: powerof3/CommonLibSSE commit 654e55f7979c1733033d5dbef176e43827bac944 (GPL-3.0), virtual slot comment of the class header, joined through the image RTTI vftable slot 4. RVA 0xfc26e0; size from the comparator v2 extent.",
       "owner": "awarebayes",
-      "evidence": "findings/queue-small-2-selection.md"
+      "evidence": "reports/sse-steam-1-7-104/0xfc26e0.json",
+      "report": "reports/sse-steam-1-7-104/0xfc26e0.json"
     },
     {
       "id": "sse-steam-1-7-104-0xfc39a0",
@@ -598612,7 +598613,7 @@
     "notes": "Inventory and exclusions have not been established. No completion percentage is meaningful yet."
   },
   "target_build_id": "sse-steam-1-7-104",
-  "updated_at": "2026-11-28T00:50:37Z",
+  "updated_at": "2026-11-28T01:21:16Z",
   "work_items": [
     {
       "id": "pin-target",

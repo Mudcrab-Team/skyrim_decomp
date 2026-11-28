@@ -30633,7 +30633,7 @@ integrated source (`docs/verification.md`, "Stale acceptances and delta reviews"
 | `unmapped/leaves/ReturnLeaffc26a0` | `ReturnLeaffc26a0::Invoke` (GUESS) | `sse-steam-1-7-104` / `0xfc26a0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc26a0.json` | matched | family | open |
 | `bscore/BSTask_fc26b0` | `IOTask::Functionfc26b0` (GUESS) | `sse-steam-1-7-104` / `0xfc26b0` / 18 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc26b0.json` | matched | full | - |
 | `unmapped/leaves/Leaffc26d0` | `Leaffc26d0::Invoke` (GUESS) | `sse-steam-1-7-104` / `0xfc26d0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc26d0.json` | matched | family | open |
-| - | `BSTask::GetDescription` (COMMUNITY) | `sse-steam-1-7-104` / `0xfc26e0` / 34 | - | - | mapped | - | - |
+| `bscore/BSTask` | `BSTask::GetDescription` (COMMUNITY) | `sse-steam-1-7-104` / `0xfc26e0` / 34 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc26e0.json` | matched | full | - |
 | `bssystem/Unlockfc27b0` | `Functionfc27b0` (GUESS) | `sse-steam-1-7-104` / `0xfc27b0` / 11 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc27b0.json` | matched | full | - |
 | `bscore/IOManager_fc2d40` | `IOManager::Functionfc2d40` (GUESS) | `sse-steam-1-7-104` / `0xfc2d40` / 105 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc2d40.json` | matched | full | - |
 | `unmapped/leaves/Leaffc39a0` | `Leaffc39a0::Invoke` (GUESS) | `sse-steam-1-7-104` / `0xfc39a0` / 3 | `msvc-19.16.27054-o2` | `reports/sse-steam-1-7-104/0xfc39a0.json` | matched | family | open |
