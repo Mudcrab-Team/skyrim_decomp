@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-// Returns true when duration exceeds epsilon and elapsed time exceeds duration.
+// Returns true when the magnitude of duration exceeds 0.0001 and elapsed time exceeds duration.
 bool Obj2a46c0::Function2a46c0() const
 {
     if (std::fabsf(duration) > 0.0001f) {

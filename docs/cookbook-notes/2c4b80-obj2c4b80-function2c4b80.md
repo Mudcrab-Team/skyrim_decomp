@@ -25,7 +25,7 @@ Three small code-generation differences appeared across iterations on this exter
 
 ## Spelling that fixed it
 
-Using a by-value bit-test helper (`TestBit(formFlags, 13u)`), assigning zero coordinates in the explicit `else` branch, and computing the floored float with a ternary before a single integer conversion closed the function:
+Using a by-value bit-test helper (`TestBit(formFlags, 13u)`), assigning zero coordinates in the explicit `else` branch, and computing the floored float with a ternary before a single integer conversion closed the function. The helper floors correctly only for values inside the int32 range:
 
 ```cpp
 bool TestBit(std::uint32_t a_flags, std::uint32_t a_bit)

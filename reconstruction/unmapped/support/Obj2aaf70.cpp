@@ -7,6 +7,8 @@
 #include "Obj2aaf70.h"
 
 // Stores a normalized alpha weight for a land quadrant, vertex, and texture layer.
+// A value of zero or less stores zero. A value above 1 is not clamped; the byte conversion
+// holds only for values up to 1.
 void Obj2aaf70::Function2aaf70(std::uint8_t a_quad, std::uint16_t a_vertex, std::uint16_t a_layer, float a_alpha)
 {
     if (a_quad < 4u && a_vertex < 289u && a_layer < 5u && data40) {

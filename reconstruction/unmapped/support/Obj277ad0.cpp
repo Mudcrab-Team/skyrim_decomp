@@ -9,6 +9,7 @@
 #include <cmath>
 
 // Computes half the XY diagonal length of the 16-bit integer bounding box.
+// Each extent is held in 16 bits, so the result holds only when both extents fit that range.
 float Obj277ad0::Function277ad0() const
 {
     std::int16_t dx = maxX - minX;

@@ -15,6 +15,7 @@ namespace
         return ((a_flags >> a_bit) & 0x1u) != 0;
     }
 
+    // Floor through a 32-bit integer: this holds only for values inside the int32 range.
     std::int32_t FloorCoord(float a_value)
     {
         float asFloat = static_cast<float>(static_cast<std::int32_t>(a_value));
