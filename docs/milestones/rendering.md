@@ -152,9 +152,9 @@ Build `sse-steam-1-7-104`. The published queue lists 18868 of 18868 ready functi
 | A: Foundation | 416 | 176 | 42.3% | 0 | 57 | 183 | 0 | 63833 |
 | B: Shaders and materials | 454 | 236 | 52.0% | 8 | 37 | 173 | 0 | 88909 |
 | C: Batching, passes, camera, culling | 332 | 221 | 66.6% | 1 | 23 | 87 | 0 | 59680 |
-| D: Image space, sky, water system | 726 | 637 | 87.7% | 3 | 12 | 74 | 0 | 62305 |
+| D: Image space, sky, water system | 728 | 639 | 87.8% | 1 | 13 | 75 | 0 | 63218 |
 | E: Shadows | 132 | 92 | 69.7% | 0 | 2 | 38 | 0 | 48058 |
-| **Total A-E** | 2060 | 1362 | 66.1% | 12 | 131 | 555 | 0 | 322785 |
+| **Total A-E** | 2062 | 1364 | 66.1% | 10 | 132 | 556 | 0 | 323698 |
 | Adjacent, not assigned | 999 | 500 | 50.1% | 1 | 100 | 398 | 0 | 162080 |
 
 Known counts functions named in the CrashLogger tables or `data/progress.json`. Ready counts available functions in the published queue. Waiting covers give-ups, functions of unknown size and functions absent from the portion of the queue with complete coverage. Unlisted marks unknown readiness when the queue has incomplete coverage or is unavailable. Open bytes sum the sizes of the Ready, Waiting and Unlisted functions.
@@ -333,7 +333,7 @@ Scope: image space, sky, weather, fog, water.
 
 | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Main blocker | Unit area |
 |---|---:|---:|---:|---:|---:|---:|---|---|
-| D2 Image space: manager, effects and image-space shaders | 615 | 568 | 3 | 8 | 36 | 0 | absent from the ready queue (36) | bsshader |
+| D2 Image space: manager, effects and image-space shaders | 617 | 570 | 1 | 9 | 37 | 0 | absent from the ready queue (37) | bsshader |
 | D3 Sky, sun, clouds, weather and fog | 71 | 42 | 0 | 0 | 29 | 0 | absent from the ready queue (29) | skyrim_shared |
 | D4 Water system, displacement and reflections | 40 | 27 | 0 | 4 | 9 | 0 | absent from the ready queue (9) | skyrim_shared |
 
@@ -342,24 +342,24 @@ Scope: image space, sky, weather, fog, water.
 | Class | Group | Known | Matched | Claimed | Ready | Waiting | Unlisted | Sibling names not placed |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | BSImagespaceShader | D2 | 19 | 17 | 0 | 0 | 2 | 0 | 29 |
-| TESImageSpaceModifier | D2 | 13 | 4 | 1 | 1 | 7 | 0 | 0 |
-| ImageSpaceEffect | D2 | 7 | 4 | 0 | 1 | 2 | 0 | 0 |
+| TESImageSpaceModifier | D2 | 13 | 4 | 0 | 2 | 7 | 0 | 0 |
+| ImageSpaceEffect | D2 | 8 | 5 | 0 | 1 | 2 | 0 | 0 |
 | ImageSpaceEffectNoise | D2 | 7 | 5 | 0 | 1 | 1 | 0 | 0 |
 | ImageSpaceModifierInstanceForm | D2 | 7 | 4 | 0 | 0 | 3 | 0 | 19 |
 | BSImagespaceShaderWaterFlow | D2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectGetHit | D2 | 6 | 5 | 0 | 0 | 1 | 0 | 0 |
+| ImageSpaceShaderParam | D2 | 6 | 3 | 0 | 1 | 2 | 0 | 0 |
 | TESImageSpace | D2 | 6 | 3 | 0 | 2 | 1 | 0 | 0 |
 | TESImagespaceManager | D2 | 6 | 2 | 0 | 0 | 4 | 0 | 0 |
 | ImageSpaceEffectDepthOfField | D2 | 5 | 4 | 1 | 0 | 0 | 0 | 0 |
 | ImageSpaceEffectFullScreenBlur | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectRefraction | D2 | 5 | 4 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceShaderParam | D2 | 5 | 2 | 0 | 1 | 2 | 0 | 0 |
 | BSImagespaceShaderISLightingCompositeMenu | D2 | 4 | 3 | 0 | 1 | 0 | 0 | 0 |
 | ImageSpaceEffectHDR | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceEffectMap | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectVolumetricLighting | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceEffectWaterDisplacement | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
-| ImageSpaceEffectWorldMap | D2 | 3 | 1 | 1 | 0 | 1 | 0 | 0 |
+| ImageSpaceEffectWorldMap | D2 | 3 | 1 | 0 | 0 | 2 | 0 | 0 |
 | ImageSpaceManager | D2 | 3 | 2 | 0 | 1 | 0 | 0 | 0 |
 | ImageSpaceModifierInstanceDOF | D2 | 3 | 2 | 0 | 0 | 1 | 0 | 0 |
 | ImageSpaceEffectParam | D2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 |
@@ -641,6 +641,7 @@ Scope: listed for context, owned by the general rounds.
 | `0x1541e20` | ImageSpaceManager::BuildDefaultEffectParams | 271 | ready | 0 |
 | `0x52d410` | TESWaterSystem::AddRipple | 407 | ready | 0 |
 | `0x1536c70` | TESImageSpace::SetBaseData | 524 | ready | 0 |
+| `0x2a8170` | TESImageSpaceModifier::ClearData | 609 | ready | 0 |
 | `0x307460` | TESWaterForm::Function307460 | 865 | ready | 0 |
 
 **Workstream E entry points** (names are CrashLogger-derived, CRASHLOGGER_PDB(59818@2026.10.24))
