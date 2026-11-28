@@ -26,6 +26,28 @@ Static only. No game run, no capture, no visual claim.
 | Name provenance | Class and field names are `CRASHLOGGER_PDB(59818@2026.10.24)` or image strings. Record subrecord tags are public format names; their link to an offset is read from the loader only where a row says so, else inferred. Other labels are GUESS. Several PDB function names are wrong: `0x40e140` (named `Sky::ResetWeather`) is a piece of the moon update; `0x414780` (`Sky::UpdateClouds`) is the aurora update; some pieces near `0x416760` and `0x4152xx` are chunk labels. |
 | Intended recipient | The Skyrim Research project, for boundary review under `docs/clean-room.md`. Maintainer transfer decision pending. |
 
+## Question and method
+
+**Question.** How does retail choose and blend weather, and how does it draw the sky objects?
+
+**Method.** Static analysis only. No game run, no frame capture and no comparator run.
+
+* The runs read the pinned executable of build `sse-steam-1-7-104` and the shipped shader package. They used local reader scripts and local disassembly, and they decoded shader records locally and offscreen. The scripts and raw output are private and stay in `.local/`.
+* The runs also used sky group 4 of the shader package, installed sky meshes, compiled setting objects, public generated CrashLogger names and types, matched reconstructions and earlier findings, as the evidence record above lists them.
+* An author run wrote the draft. An independent reviewer run, with a fresh context, checked claim groups and reproduced worked examples E1 to E4.
+* A blind second binary-check run, with a fresh context, saved its own results before it read the draft. Its examples E1 to E4 matched.
+* A finalizer run applied both correction sets and re-read disputed and single-run facts in the pinned image. It recomputed examples E1 to E4 and added E5.
+* The corrections to earlier findings are in section 16.
+
+**Confidence.** The confidence of each claim is its mark. The verification ledger (section 17) has 42 rows in this version of the file:
+
+* 40 rows are **V2** (checked twice, by two different runs). This count includes the rows marked V2 with a limit such as "static" or "scoped".
+* 2 rows are **V1** (checked once): L41 and L42.
+* No row is marked only **I**. Rows L29 and L30 contain an inferred (**I**) part. Rows L09, L16 and L33 contain a **V1** part inside a V2 row.
+* In section 16, corrections C9 and C12 are **I**. Section 14 lists the open items. The choices of section 15 are not retail facts.
+* All the runs of this specification are `claude-sonnet-5-5`. Agreement between them is not independent proof. The finalizer did not re-read every V2 row that rests on a published finding or on an earlier run. The merged wording had no further independent review.
+* Overall confidence: **medium**, as a static reading. The overall level was set on 2026-11-27, when this section was added, from the marks and limits in this file. No new binary read supports this section. Transfer status stays UNREVIEWED.
+
 ## 0. How to read this file
 
 | Mark | Meaning |
