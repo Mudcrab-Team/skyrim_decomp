@@ -414,14 +414,7 @@ Pixel constants: `cb0[0]` = (1/width, 1/height, 0, 0) (V1). `cb0[1].z` = filter 
 
 **Bias constants** (`0x1568300` function): `y = b·0.00025·k`, `z = b/12000`, `k = fShadowDirectionalBiasScale` for the sun and 1.0 otherwise. The sun's `b` is 60.0. So the sun has `y` = 0.0045 and `z` = 0.005. The decoded local mask shaders read only `y` = `b·0.00025`. **V2**.
 
-**Sample table** `o_j`, j = 0..15 (shader immediate data; the same in every decoded permutation; focus records store four selector rows before it; **V2**):
-
-```text
-(0.493393,0.394269) (0.798547,0.885922) (0.247322,0.926450) (0.051454,0.140782)
-(0.831843,0.009552) (0.428632,0.017151) (0.015656,0.749779) (0.758385,0.496170)
-(0.223487,0.562151) (0.011628,0.406995) (0.241462,0.304636) (0.430311,0.727226)
-(0.981811,0.278359) (0.407056,0.500534) (0.123478,0.463546) (0.809534,0.682272)
-```
+**Sample offsets** `o_j`, j = 0..15: sixteen fixed two-dimensional offsets, each component in [0, 1], stored as immediate data in the mask shader. They are the same in every decoded permutation; focus records store four selector rows before them (**V2**). The values are shipped shader data and this file does not reproduce them. An implementation that uses its own sixteen offsets keeps the formulas below, but its soft-edge pattern differs from retail.
 
 Default filter (type 3): `PCF(c, σ, ref) = (1/16) Σ_j tap( c + (2·o_j − 1)·ρ, slice σ, ref )`. No rotation, no noise. Filter types 1, 2 and 4 were not decoded for this file (#1248 reports that one-tap and 3×3 forms exist).
 
@@ -758,7 +751,7 @@ Not errors, but now answered: #806 section 4 (which LOD meshes enter sun caster 
 | L36 | Technique and filter bits, textures, comparison `LESS` linear | V2 | R, S3, V, K |
 | L37 | `Far`/`Near` constants, `Far[2]` copy, bias constants | V2 | R, S3, K, F |
 | L38 | `cb0[3].w` = 4 for local lights; `cb0[0]` content | V1 | F; S3 |
-| L39 | Sample table, filter radius | V2 | S3, V, K, F |
+| L39 | Sample offsets (values not reproduced), filter radius | V2 | S3, V, K, F |
 | L40 | Sun shader formulas including sun focus | V2 | M, R, S3, V, K |
 | L41 | Spot, hemisphere, omni formulas | V2 | S3, V, K, F (omni) |
 | L42 | Spot focus formula | V2 | V, K, F |
