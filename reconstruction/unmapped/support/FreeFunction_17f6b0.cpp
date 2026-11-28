@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (pinned image listing).
+// Source exposure: mixed (pinned image listing; sibling source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: Function17f6b0, treated as adapted: shaped like BSSimpleList::RemoveAll in the sibling source cited below (CC0-1.0).
 // Sibling source: momusdigital/fnv_decomp@2b07cb3e src/bscore/bssimplelist.inl:62

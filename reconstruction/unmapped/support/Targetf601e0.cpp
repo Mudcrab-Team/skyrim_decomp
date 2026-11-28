@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (the pinned image listing).
+// Source exposure: mixed (pinned image listing; community source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: BinaryStreamf601e0::Load, treated as adapted: shaped like NiBinaryStream::binary_read (CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/N/NiBinaryStream.cpp:23, MIT).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

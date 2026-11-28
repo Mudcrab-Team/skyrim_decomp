@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (pinned image listing).
+// Source exposure: mixed (pinned image listing; community source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: Cxformd6dcf0::Cxformd6dcf0, treated as adapted: shaped like GRenderer::Cxform::SetIdentity (CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/G/GRenderer.cpp:98, MIT).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

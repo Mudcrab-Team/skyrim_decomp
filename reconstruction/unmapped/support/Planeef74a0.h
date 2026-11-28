@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (the pinned image listing).
+// Source exposure: mixed (pinned image listing; sibling source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: Planeef74a0::Planeef74a0, treated as adapted: shaped like NiPlane::NiPlane in the sibling source cited below (CC0-1.0).
 // Sibling source: momusdigital/fnv_decomp@2b07cb3e src/gamebryo2.2/corelibs/nimain/console/nipoint3.inl:58

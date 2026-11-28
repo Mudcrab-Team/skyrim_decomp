@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (pinned image listing).
+// Source exposure: mixed (pinned image listing; community source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: TESCondition4a6d90::ClearAllConditions, treated as adapted: shaped like TESCondition::~TESCondition (CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/T/TESCondition.cpp:57, MIT).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (pinned image listing).
+// Source exposure: mixed (pinned image listing; community source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: UIManagercefd60::UpdateCounter, treated as adapted: shaped like ControlMap::AllowTextInput (CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/C/ControlMap.cpp:13, MIT).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

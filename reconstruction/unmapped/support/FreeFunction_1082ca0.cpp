@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (pinned image listing).
+// Source exposure: mixed (pinned image listing; community source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: Function1082ca0, treated as adapted: shaped like BSSpinLock::Unlock (CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/B/BSAtomic.cpp:54, MIT).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)

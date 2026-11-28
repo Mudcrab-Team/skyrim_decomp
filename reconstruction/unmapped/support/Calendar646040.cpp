@@ -1,4 +1,4 @@
-// Source exposure: binary-analysis (pinned image listing).
+// Source exposure: mixed (pinned image listing; community source).
 // Code origin: written from the pinned image listing; see Adapted bodies.
 // Adapted bodies: Calendar646040::GetDaysPassed, Calendar646040::GetHoursPassed, treated as adapted: shaped like Calendar::GetDaysPassed and Calendar::GetHoursPassed (CharmedBaryon/CommonLibSSE-NG@b93280e src/RE/C/Calendar.cpp:67 and src/RE/C/Calendar.cpp:84, MIT).
 // SPDX-License-Identifier: MIT (CommonLibSSE-NG declarations, Copyright (c) 2018 Ryan-rsm-McKenzie; full text: licenses/CommonLibSSE-NG.txt)
