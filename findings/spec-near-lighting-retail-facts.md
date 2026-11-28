@@ -22,6 +22,29 @@ Transfer status: UNREVIEWED
 | Name provenance | Type, field and render-target names are `CRASHLOGGER_PDB(59818@2026.10.24)` or strings of the image. NAM0 row names are the Sky field names of the same tables. Subrecord names (`XCLL`, `LGTM`, `NAM0`, `FNAM`, `IMSP`, `HNAM`, `XLIG`, `XRDS`, `XEMI`) are public format names; their link to an offset is **inferred** unless a row says otherwise. Sky object type names are inferred. Other labels are GUESS. |
 | Intended recipient | Skyrim Research department lead, for boundary review under `docs/clean-room.md`. Maintainer transfer decision pending. |
 
+## Question and method
+
+**Question.** How does retail get from the lighting input bytes of records and meshes to the screen byte, for ordinary near Lighting?
+
+**Method.** Static analysis only. No game run, no frame capture and no comparator run.
+
+* The runs read the pinned executable of build `sse-steam-1-7-104` and the shipped shader package. They used local reader scripts and local disassembly, and they decoded shader records locally and offscreen. The scripts and raw output are private and stay in `.local/`.
+* The runs also used the shipped preset INI files, the published CrashLogger name and layout tables, and earlier published findings of this repository (section 0).
+* An author run wrote the draft. An independent reviewer run, with a fresh context, checked claims against the image and the shaders.
+* A second binary-check run, with a fresh context, saved its own results before it opened the draft.
+* A finalizer run applied both correction sets. It re-read the items of section 15 with its own reader, which asserts both hashes. It also ran the example script again, with the same output.
+* Each amendment at the end of this file states its own evidence.
+
+**Confidence.** The confidence of each claim is its mark. The verification ledger (section 14) has 75 rows in this version of the file:
+
+* 66 rows are **V2** (checked twice, by two different runs).
+* 3 rows are **V1** (checked once): L16, L17 and L28.
+* 6 rows are **I** (inferred): L03, L21, L54, L62, L63 and L65.
+* No ledger row is **U**. Section 12 lists the open items.
+* The counts cover the ledger only. The amendments carry their own marks. The SPEC-4 amendment corrects the statement of row L61, and the ledger row is not edited.
+* All the runs of this specification are `claude-sonnet-5-5`. Agreement between them is not independent proof. The finalizer did not re-read every V2 row that rests on a published finding or on an earlier run. The merged wording had no further independent review.
+* Overall confidence: **medium**, as a static reading. The overall level was set on 2026-11-27, when this section was added, from the marks and limits in this file. No new binary read supports this section. Transfer status stays UNREVIEWED.
+
 ## 0. How to read this file
 
 | Mark | Meaning |
