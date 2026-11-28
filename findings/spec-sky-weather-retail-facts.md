@@ -21,8 +21,8 @@ Static only. No game run, no capture, no visual claim.
 | Reviewer | Independent review and blind second binary check done. The finalizer applied their corrections and re-read disputed and single-run facts. The merged text had no separate review. |
 | Date | 2026-11-26 CST. |
 | Build | `sse-steam-1-7-104`. Measured SHA-256 of `SkyrimSE.exe` `846efccf0c1374d71f892907f46549560f2fcb0a75cb87a3eed438baa0f1402f` equals the pin in `builds/target.json`. The readers assert it. Shader package SHA-256 `72cfc73eb0938d5949f0b3a8683722a33b671a34b41b750ba138de8d154c5fbc` (also asserted). |
-| Sources | The pinned executable; shader group 4 of the shipped package; installed sky meshes (the author read three; the reviewer four; the second checker read three, for the layer, dome and star claims) for shape counts, types, order, vertex colour and extents; compiled setting objects; public generated CrashLogger names and types; matched reconstructions on the main branch (section 17). Earlier findings #812, #1003, #1077, #1080 and #1121, and SPEC-1 (#1274) and SPEC-2 (#1276). #879, #1073 and #1245 are background only; no ledger row rests on them. Some earlier findings were used as quoted by #1080, SPEC-1 and SPEC-2 and were not re-read in full by every run. |
-| Source exposure | Mixed: binary and shader analysis of the operator's own install. Matched reconstruction files were read; some are labelled `SIBLING(fo4-private)` and some use CommonLibSSE-NG declarations. No value was read from any game plugin. No plugin world or weather name is given. No decompiler text or disassembly appears here. A reader of this file must not claim to be unexposed to the binary analysis. |
+| Sources | The pinned executable; shader group 4 of the shipped package; installed sky meshes (the author read three; the reviewer four; the second checker read three, for the layer, dome and star claims) for shape counts, types, order, vertex colour and extents; compiled setting objects; public generated CrashLogger names and types; reconstruction source files on the main branch (section 17). Earlier findings #812, #1003, #1077, #1080 and #1121, and SPEC-1 (#1274) and SPEC-2 (#1276). #879, #1073 and #1245 are background only; no ledger row rests on them. Some earlier findings were used as quoted by #1080, SPEC-1 and SPEC-2 and were not re-read in full by every run. |
+| Source exposure | Mixed: binary and shader analysis of the operator's own install. Reconstruction source files were read; some are labelled `SIBLING(fo4-private)` and some use CommonLibSSE-NG declarations. No value was read from any game plugin. No plugin world or weather name is given. No decompiler text or disassembly appears here. A reader of this file must not claim to be unexposed to the binary analysis. |
 | Name provenance | Class and field names are `CRASHLOGGER_PDB(59818@2026.10.24)` or image strings. Record subrecord tags are public format names; their link to an offset is read from the loader only where a row says so, else inferred. Other labels are GUESS. Several PDB function names are wrong: `0x40e140` (named `Sky::ResetWeather`) is a piece of the moon update; `0x414780` (`Sky::UpdateClouds`) is the aurora update; some pieces near `0x416760` and `0x4152xx` are chunk labels. |
 | Intended recipient | The Skyrim Research project, for boundary review under `docs/clean-room.md`. Maintainer transfer decision pending. |
 
@@ -33,9 +33,9 @@ Static only. No game run, no capture, no visual claim.
 **Method.** Static analysis only. No game run, no frame capture and no comparator run.
 
 * The runs read the pinned executable of build `sse-steam-1-7-104` and the shipped shader package. They used local reader scripts and local disassembly, and they decoded shader records locally and offscreen. The scripts and raw output are private and stay in `.local/`.
-* The runs also used sky group 4 of the shader package, installed sky meshes, compiled setting objects, public generated CrashLogger names and types, matched reconstructions and earlier findings, as the evidence record above lists them.
+* The runs also used sky group 4 of the shader package, installed sky meshes, compiled setting objects, public generated CrashLogger names and types, reconstruction source files and earlier findings, as the evidence record above lists them.
 * An author run wrote the draft. An independent reviewer run, with a fresh context, checked claim groups and reproduced worked examples E1 to E4.
-* A blind second binary-check run, with a fresh context, saved its own results before it read the draft. Its examples E1 to E4 matched.
+* A blind second binary-check run, with a fresh context, saved its own results before it read the draft. Its examples E1 to E4 agreed.
 * A finalizer run applied both correction sets and re-read disputed and single-run facts in the pinned image. It recomputed examples E1 to E4 and added E5.
 * The corrections to earlier findings are in section 16.
 
@@ -57,7 +57,7 @@ Static only. No game run, no capture, no visual claim.
 | **I** | Inferred. A deduction with stated assumptions. |
 | **U** | Unverified or open. |
 
-Run keys: **S4** = SPEC-4 author. **R** = SPEC-4 independent review. **B** = SPEC-4 blind second binary check. **X** = SPEC-4 finalizer. **K** = #1080 (author and independent review). **N** = SPEC-1. **H** = SPEC-2. **F** = #812. **O** = #1003. **Z** = #1121. **M** = a matched reconstruction on the main branch. A claim without its own mark takes the mark of its section heading or table row.
+Run keys: **S4** = SPEC-4 author. **R** = SPEC-4 independent review. **B** = SPEC-4 blind second binary check. **X** = SPEC-4 finalizer. **K** = #1080 (author and independent review). **N** = SPEC-1. **H** = SPEC-2. **F** = #812. **O** = #1003. **Z** = #1121. **M** = a reconstruction source file on the main branch. A claim without its own mark takes the mark of its section heading or table row.
 
 Addresses are RVAs (image base `0x140000000`). `h` = game hour in [0,24). `k` = global float at `0x20d694c` (file value 0.8333333; run-time value 1.0 during the interface draw, `1/x` after console `sfbr x`). `sat(x)` limits x to [0,1]. `lum(c) = 0.2125 r + 0.7154 g + 0.0721 b`. "`W+0x…`" = byte offset in a `TESWeather` object; "`C+0x…`" = offset in a `TESClimate` object; "`Sky+0x…`" = offset in the sky object. "`b/255`" means byte × 0.00392157.
 
@@ -327,7 +327,7 @@ Other consumers of the same weights:
 
 For layer `i < numLayers`. `numLayers` is the layer count of the cloud object, taken from the cloud mesh (29 with the shipped mesh, at most 32). `LNAM` is the weather's own count.
 
-- Layer index used in a weather: `i` if `i < LNAM`, else 0. With `LNAM ≤ 0`: fallback colours (slot 0 `0x5b4b46`, 1 `0x9b9b9b`, 2 `0x6c5953`, 3 `0x1c140f`; packed as `PNAM`, lowest byte = R, so slot 0 is R `0x46`, G `0x4b`, B `0x5b`) and alpha 1.0. **V2** (K; accessor `0x308250` matched; byte order R).
+- Layer index used in a weather: `i` if `i < LNAM`, else 0. With `LNAM ≤ 0`: fallback colours (slot 0 `0x5b4b46`, 1 `0x9b9b9b`, 2 `0x6c5953`, 3 `0x1c140f`; packed as `PNAM`, lowest byte = R, so slot 0 is R `0x46`, G `0x4b`, B `0x5b`) and alpha 1.0. **V2** (K; accessor source for `0x308250`; byte order R).
 - **Black substitution** (**V2**, S4, R, B): only when a previous weather exists. Before mixing, a packed colour of 0 is replaced, in this order: current-first by previous-first, current-second by previous-second, then previous-first by current-first (after its replacement), previous-second by current-second (after its replacement). With no previous weather nothing is substituted. `NAM0` rows do not do this.
 - Colour = mixer of section 6.2. Alpha = `Σ wj × alpha_j` (**V2**). Alpha is not substituted.
 - Flash is applied to layer 0 only, and only with no previous weather (**V2**).
@@ -480,7 +480,7 @@ Lens flare of the weather: interface in SPEC-2 only.
 | Other consumers | Water splashes toggle with rain; an occlusion depth map (`bUsePrecipitationOcclusion`) exists (`0x40f890`, `0x40ea30`). |
 | Not covered | Particle shader, particle counts, occlusion map, draw states. The particle draw in the sorted list is **I**. |
 
-Initial values of the precipitation object (matched `0x40eda0`): box 4096, both densities 1.0.
+Initial values of the precipitation object (reconstruction source for `0x40eda0`): box 4096, both densities 1.0.
 
 ### 8.8 Visual effect and sky statics (interface)
 
@@ -762,9 +762,9 @@ These are suggestions to fill open points. **None is a retail fact.**
 | L41 | No transform write on the moons root | V1 (scoped negative) | S4; a heuristic search by X also found none |
 | L42 | Climate model and sun texture fields; horizon-fade eye definition; `bPrecipitation` sound gate; compiled-defaults table search | V1 | S4 or R |
 
-Matched reconstructions used (each confirms only its own function): `Sky::ResetWeather` `0x4154c0`, `Sky::ReleaseWeatherOverride` `0x4155f0`, `0x40d370` (moon phase), `0x416a20` (weather colour fetch), `0x419d00`/`0x419d50`, `0x411940` (flag `0x10`), `0x308250` (cloud alpha), `Sun::GetSunOcclusionPercent` `0x41ad30`, `Sun::GetSunPositionData` `0x41cbb0`, `Precipitation` constructor `0x40eda0`. `TESClimate::InitializeData` `0x2a5c10` is only mapped, not matched; section 2.1 rests on two binary reads.
+Reconstruction source used as support (each supports only its own function): `Sky::ResetWeather` `0x4154c0`, `Sky::ReleaseWeatherOverride` `0x4155f0`, `0x40d370` (moon phase), `0x416a20` (weather colour fetch), `0x419d00`/`0x419d50`, `0x411940` (flag `0x10`), `0x308250` (cloud alpha), `Sun::GetSunOcclusionPercent` `0x41ad30`, `Sun::GetSunPositionData` `0x41cbb0`, `Precipitation` constructor `0x40eda0`. `TESClimate::InitializeData` `0x2a5c10` has a mapping only, and no source of it is used here; section 2.1 rests on two binary reads.
 
-Note on one reconstruction constant: the matched unit for `0x419d00`/`0x419d50` declares 1/255 (its header says that the value is a guess; a match does not prove a referenced constant). The image multiplies by 1/6 hour per climate byte (K, R). Do not copy the 1/255.
+Note on one reconstruction constant: the source unit for `0x419d00`/`0x419d50` declares 1/255 (its header says that the value is a guess; the source does not prove a referenced constant). The image multiplies by 1/6 hour per climate byte (K, R). Do not copy the 1/255.
 
 ## Interpretation and alternatives
 
