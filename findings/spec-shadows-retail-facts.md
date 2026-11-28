@@ -29,6 +29,29 @@ Static only. No game run, no frame capture and no visual claim.
 | Name provenance | Function names with "(PDB)" are `CRASHLOGGER_PDB(59818@2026.10.24)`. Three of those names do not fit their bodies: `0x153b680` (`CalculateAndDrawShadowCasterLights`) creates render targets; `0x1539b10` (`BSShadowParabolicLight_RenderImpl`) is the mask draw loop for all light kinds; `0x155d270` (`BSShadowParabolicLight::RenderCascade`) renders a map slice for all light kinds. All other names are GUESS. Setting names are the image's own strings. A name is not evidence of behaviour. |
 | Intended recipient | Skyrim Research department lead, for boundary review under `docs/clean-room.md`. Proposed downstream use: the Mudcrab shadow implementation. Maintainer transfer decision pending. |
 
+## Question and method
+
+**Question.** How do retail shadows work, from the per-frame sun gate to the mask that Lighting reads?
+
+**Method.** Static analysis only. No game run, no frame capture and no comparator run.
+
+* The runs read the pinned executable of build `sse-steam-1-7-104` and the shipped shader package. They used local reader scripts and local disassembly, and they decoded shader records locally and offscreen. The scripts and raw output are private and stay in `.local/`.
+* The utility and grass shader records, the five shipped INI files, the committed CrashLogger tables and the earlier findings are listed in the evidence record above.
+* An author run wrote the draft. An independent reviewer run, with a fresh context, spot-checked claims and recomputed worked examples.
+* A blind second binary-check run, with a fresh context, saved its own results before it read the draft.
+* A finalizer run applied both correction sets. It re-read the points where those runs differed and load-bearing facts that had one run (section 17). It recomputed the worked examples by script.
+* The amendments that this work made to other findings are listed in section 15 and in those files.
+
+**Confidence.** The confidence of each claim is its mark. The verification ledger (section 16) has 52 rows in this version of the file:
+
+* 42 rows are **V2** (checked twice, by two different runs).
+* 8 rows are **V1** (checked once): L12, L14, L18, L25, L33, L38, L46 and L52.
+* 1 row is mixed **V2 / V1**: L27.
+* 1 row is **I** (inferred): L49.
+* No ledger row is **U**. Section 14A lists the open items. The choices of section 14B are not retail facts.
+* All the runs of this specification are `claude-sonnet-5-5`. Agreement between them is not independent proof. The finalizer did not re-read every V2 row that rests on a published finding or on an earlier run. The merged wording had no further independent review.
+* Overall confidence: **medium**, as a static reading. The overall level was set on 2026-11-27, when this section was added, from the marks and limits in this file. No new binary read supports this section. Transfer status stays UNREVIEWED.
+
 ## 0. How to read this file
 
 | Mark | Meaning |
@@ -176,23 +199,22 @@ The window uses the raw floating-point bounds: no rounding to texels and no sphe
 
 **Sampling matrices.** Before the engine builds a sampling matrix it swaps the frustum top and bottom (`0x155d426`–`0x155d4f8`). For an orthographic non-paraboloid map it then applies scale (0.5, 0.5, 1) and offset (0.5, 0.5, 0) (`0x155d605`–`0x155d68c`). It also widens an orthographic frustum when the map uses only part of the slice (section 7). Spot and paraboloid matrices do not get the scale step; their mask shaders apply 0.5 themselves. The upload makes each matrix relative to the main camera (`0x15683c4`–`0x1568567`). So the shader input `p` is camera-relative and the world point is `C + p`. A local light uses the matrix of its first (front) map (`0x1568759`).
 
+Sun cascade matrices have three rows `M`. `P` is the anchor of 4.3, and `C` is the main camera position:
+
 ```text
-Sun cascade (three rows M):
-    w = p + C − P                           P = anchor of 4.3, C = main camera position
-    x = w·R,  y = w·V,  depth = w·d + 15000
-    q = ( (x − left)/(right − left),  (top − y)/(top − bottom),  (depth − near_L)/(far_L − near_L) )
-
-Local light (four rows M), with L = light position, w = C + p − L and light-node axes
-    X = w·right,  U = w·up,  F = w·forward
-
-  spot:        (M·p) gives  q = ( X/(F·tan h),  −U/(F·tan h),  f·(F − n)/((f − n)·F) )    after the divide by F
-               n = clamped near clip, f = far value (6.1), h = half angle
-  paraboloid:  (M·p) gives  q = ( X, −U, (F − 0.1)/0.9 ),  divide value 1;   row2 · p = (F − 0.1)/0.9
-
-Paraboloid map draw (vertex input to the formula of 5.5):
-    q = ( X,  U, (F − 0.1)/0.9 )   front half
-    q = ( X, −U, (F − 0.1)/0.9 )   back half
+w = p + C − P
+x = w·R,  y = w·V,  depth = w·d + 15000
+q = ( (x − left)/(right − left),  (top − y)/(top − bottom),  (depth − near_L)/(far_L − near_L) )
 ```
+
+Local light matrices have four rows `M`. `L` is the light position and `w = C + p − L`. The light-node axes give `X = w·right`, `U = w·up` and `F = w·forward`.
+
+| Case | Result `q` | Terms and conditions |
+|---|---|---|
+| Spot sampling: `M·p`, after the divide by `F` | `( X/(F·tan h),  −U/(F·tan h),  f·(F − n)/((f − n)·F) )` | `n` = clamped near clip, `f` = far value (6.1), `h` = half angle |
+| Paraboloid sampling: `M·p` | `( X, −U, (F − 0.1)/0.9 )` | divide value 1; `row2 · p = (F − 0.1)/0.9` |
+| Paraboloid map draw, front half | `( X,  U, (F − 0.1)/0.9 )` | vertex input to the formula of 5.5 |
+| Paraboloid map draw, back half | `( X, −U, (F − 0.1)/0.9 )` | vertex input to the formula of 5.5 |
 
 The paraboloid depth axis is **not** the raw view depth. The camera is orthographic with window −1..1, near 0 (raised to 0.1) and far 1. So the third component is `(F − 0.1)/0.9` game units in the map draw and in the mask lookup alike. X and U stay in game units.
 
@@ -419,21 +441,17 @@ The sun's fade flag is set by its constructor chain (#806). Every draw writes it
 
 **Sun.**
 
-```text
-if zd > Far[2]:  mask = 1
-c = 2 if N ≥ 3 and zd > Far[1];  else 1 if zd > Far[0];  else 0
-bias(0) = y = 0.0045;   bias(1) = bias(2) = z = 0.005
-q = M_c · p                                      (q.xy map UV, q.z map depth)
-L = PCF(q.xy, c, q.z − bias(c))
-if c = 0 and zd > Near[1]:
-    L1 = PCF(from M_1 · p, slice 1, depth − z)
-    m  = sat((zd − Near[1]) / (Far[0] − Near[1]));   L = lerp(L, L1, m²(3 − 2m))
-if focus record and stencil S > 0:  i = S − 1
-    Lf = (1/16) Σ tap( F_i·p .xy + (2·o_j − 0.5)·ρ, array t6 slice i + 4, F_i·p .z − 3·bias_used )
-         bias_used = bias(c), or z if the blend ran
-    L  = min( L, 1 + g_i·(Lf − 1) )
-mask = 1 + s·(L − 1)                              (distance fades the shadow to lit)
-```
+The rows apply in order. Row 1 is the case beyond the last far plane; rows 2 to 7 give the mask for the other pixels.
+
+| # | Quantity | Condition | Rule |
+|---|---|---|---|
+| 1 | Beyond range | `zd > Far[2]` | `mask = 1` |
+| 2 | Cascade index `c` | `zd ≤ Far[2]` | `c = 2` when `N ≥ 3` and `zd > Far[1]`; otherwise `c = 1` when `zd > Far[0]`; otherwise `c = 0` |
+| 3 | Bias | by cascade | `bias(0) = y = 0.0045`;  `bias(1) = bias(2) = z = 0.005` |
+| 4 | Cascade lookup | — | `q = M_c · p` (`q.xy` map UV, `q.z` map depth);  `L = PCF(q.xy, c, q.z − bias(c))` |
+| 5 | Cascade blend | `c = 0` and `zd > Near[1]` | `L1 = PCF(from M_1 · p, slice 1, depth − z)`;  `m = sat((zd − Near[1]) / (Far[0] − Near[1]))`;  `L = lerp(L, L1, m²(3 − 2m))` |
+| 6 | Focus term | focus record and stencil `S > 0`; `i = S − 1` | `Lf = (1/16) Σ tap( F_i·p .xy + (2·o_j − 0.5)·ρ, array t6 slice i + 4, F_i·p .z − 3·bias_used )`, with `bias_used` = `bias(c)`, or `z` if the blend ran;  `L = min( L, 1 + g_i·(Lf − 1) )` |
+| 7 | Result | `zd ≤ Far[2]` | `mask = 1 + s·(L − 1)` (distance fades the shadow to lit) |
 
 Note that the **sun** focus offsets use `2·o − 0.5`, not `2·o − 1`. With N = 3 there is no blend between cascades 1 and 2.
 
@@ -610,21 +628,28 @@ Lighting, with the unrounded mask: `N·L` = 0.8, sun colour (1.2, 1.1, 0.9) → 
 
 ## 13. One end-to-end formula (default settings)
 
+The sun gate and the distance factor are:
+
 ```text
 sunOn   = not interiorCell and not (worldFlags & 0x60)
 s(p, B) = 1 − ( sat(|p|² / B) )^8
+```
 
-if sunOn:
-    m_0 = 1                                              if camera depth is beyond far_1
-    m_0 = 1 + s(p, A²) · ( Lsun(p) − 1 )                 else
-    Lsun = cascade PCF with bias_c, smoothstep blend of cascade 0 into 1, then min with the sun focus term
+The mask channels then have these values. A local light `j` is counted in admission order. It uses channel `k = j + (sunOn ? 1 : 0)`, inside its screen rectangle.
 
-local light j (admission order), channel k = j + (sunOn ? 1 : 0), inside its screen rectangle:
-    v   = L_j(p) · cone_j(p)                  cone = 1 − |q.xy|^e for a spot, else 1
-    if light j owns focus maps and stencil S > 0:  v = min( v, 1 + g · (Lf − 1) )       (8.3)
-    m_k = max( v · s(p, B_j), 0 )             B_j = A² if the light's fade flag is set, else 1e8
-outside the rectangle, and unused channels: the clear value (0), when the mask pass draws at least once (8.1)
+| Value | Applies | Definition |
+|---|---|---|
+| `m_0` (sun) | `sunOn`, camera depth beyond `far_1` | `m_0 = 1` |
+| `m_0` (sun) | `sunOn`, otherwise | `m_0 = 1 + s(p, A²) · ( Lsun(p) − 1 )` |
+| `Lsun` | sun term | cascade PCF with `bias_c`, smoothstep blend of cascade 0 into 1, then min with the sun focus term |
+| `v` | local light `j` | `v = L_j(p) · cone_j(p)`; for a spot the cone is `1 − \|q.xy\|^e`, else 1 |
+| `v` with focus | light `j` owns focus maps and stencil `S > 0` | `v = min( v, 1 + g · (Lf − 1) )` (8.3) |
+| `m_k` | local light `j` | `m_k = max( v · s(p, B_j), 0 )`; `B_j = A²` if the light's fade flag is set, else 1e8 |
+| any channel | outside the rectangle, and unused channels, when the mask pass draws at least once (8.1) | the clear value (0) |
 
+The Lighting colour is:
+
+```text
 colour = Albedo · [ sat(N·Ls) · SunColour · (bit13 ? m_0 : 1)
                     + Σ_i sat(N·l_i) · C_i · att_i · (shadow light i ? m[cb2[2][i]] : 1)
                     + ambient + emission ] · VertexColour
